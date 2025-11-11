@@ -47,40 +47,45 @@ document.addEventListener("DOMContentLoaded", function () {
     resultsTableBody.innerHTML =
       '<tr><td colspan="7" class="text-center">Generating and checking emails...</td></tr>';
 
-    const generatedEmails = new Set();
+    const generatedEmails = new Set(); // Tracks emails generated so far in this batch
     let allEmailsValid = true;
+    userBatch = []; // Clear global userBatch for new generation
 
     for (let i = 0; i < names.length; i++) {
       const name = names[i];
-      const cleanedName = name.replace(/[,.']/g, ""); // Clean the name
+      const cleanedName = name.replace(/[,.']/g, "");
       const nikNip = nikNips[i];
-      const { username: generatedUsername, email } = generateEmail(cleanedName); // Use cleaned name
-      const password = generatePassword(cleanedName); // Use cleaned name
-      const isDuplicate = generatedEmails.has(email);
+      const { username: generatedUsername, email } = generateEmail(cleanedName);
+      const password = generatePassword(cleanedName);
+      
+      // Check for initial in-batch duplicate
+      const isInitialDuplicate = generatedEmails.has(email);
 
-      if (isDuplicate) {
-        allEmailsValid = false;
-      }
-
-      generatedEmails.add(email);
-
-      userBatch.push({
-        name: cleanedName.trim(), // Store the cleaned name for display
+      const user = {
+        name: cleanedName.trim(),
         nikNip: nikNip.trim(),
         unitKerja: unitKerja,
         generatedUsername: generatedUsername,
         email: email,
         password: password,
-        quota: 1024, // Default quota
-        isDuplicate: isDuplicate,
-        isAvailable: false,
-        status: "pending", // Initialize status for each user
-      });
+        quota: 1024,
+        isDuplicate: isInitialDuplicate, // Mark if duplicate within batch (initial check)
+        isAvailable: false, // Will be checked later
+        status: "pending",
+      };
+      userBatch.push(user);
+      generatedEmails.add(email); // Add to set for future in-batch checks
+
+      if (isInitialDuplicate) {
+        allEmailsValid = false;
+      }
     }
 
+    // Now, iterate through the userBatch to check server availability and apply auto-fix for 'used' emails.
     for (const user of userBatch) {
+        // If already marked as an in-batch duplicate from the first pass, skip server check and auto-fix.
         if (user.isDuplicate) {
-            allEmailsValid = false;
+            allEmailsValid = false; // Ensure allEmailsValid is correctly set
             continue;
         }
 
@@ -88,30 +93,45 @@ document.addEventListener("DOMContentLoaded", function () {
         user.isAvailable = result.available;
 
         if (!user.isAvailable) {
-            allEmailsValid = false;
+            // Email is used on the server. Attempt to auto-fix.
+            allEmailsValid = false; // Mark batch as not fully valid yet
+
             const nikNipPart = getNikNipPart(user.nikNip);
-            const originalUsername = user.generatedUsername;
+            const originalUsername = user.generatedUsername; // Use the original generated username
             
+            // Construct new username by appending nikNipPart (no attempt index)
             const newUsername = `${originalUsername}${nikNipPart}`;
             const domain = "@sinjaikab.go.id";
             const newEmail = `${newUsername}${domain}`;
 
-            // Check for duplicates in the batch for the new email
-            const isDuplicateInBatch = userBatch.some((otherUser) => otherUser.email === newEmail && otherUser !== user);
-            if (isDuplicateInBatch) {
+            // Check if this newly constructed email is a duplicate within the batch.
+            // This requires checking against all *other* emails in userBatch,
+            // including those that might have been auto-fixed earlier in this loop.
+            const isDuplicateInBatchAfterFix = userBatch.some((otherUser) => 
+                otherUser !== user && otherUser.email === newEmail
+            );
+
+            if (isDuplicateInBatchAfterFix) {
+                // If the auto-fixed email creates an in-batch duplicate,
+                // mark this user's email as a duplicate and stop auto-fixing.
                 user.isDuplicate = true;
-                user.isAvailable = false;
+                user.isAvailable = false; // It's not available due to in-batch duplicate
+                // allEmailsValid remains false (already set above)
                 continue; // Move to the next user
-            }
+            } else {
+                // No in-batch duplicate after auto-fix. Update user's email and re-check server.
+                user.email = newEmail;
+                user.generatedUsername = newUsername;
+                user.isDuplicate = false; // Clear duplicate flag if it was set by previous logic
 
-            user.email = newEmail;
-            user.generatedUsername = newUsername;
-
-            // Re-check availability for the new email
-            result = await checkEmailAvailability(user.email);
-            user.isAvailable = result.available;
-            if (!user.isAvailable) {
-                allEmailsValid = false;
+                // Re-check availability for the new email
+                result = await checkEmailAvailability(user.email);
+                user.isAvailable = result.available;
+                if (!user.isAvailable) {
+                    // Even after auto-fix, if it's still not available on server,
+                    // it remains problematic.
+                    allEmailsValid = false;
+                }
             }
         }
     }
@@ -222,8 +242,8 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function getNikNipPart(nikNip) {
-    if (typeof nikNip !== 'string' || nikNip.length < 6) {
-        return '';
+    if (typeof nikNip !== "string" || nikNip.length < 6) {
+      return "";
     }
     const length = nikNip.length;
     const startIndex = length - 6;
@@ -378,19 +398,22 @@ document.addEventListener("DOMContentLoaded", function () {
     userBatch[index].email = newEmail;
 
     // Check for duplicates within the current batch
-    const isDuplicateInBatch = userBatch.some((user, i) => user.email === newEmail && i !== index);
+    const isDuplicateInBatch = userBatch.some(
+      (user, i) => user.email === newEmail && i !== index
+    );
 
     if (isDuplicateInBatch) {
-        userBatch[index].isDuplicate = true;
-        userBatch[index].isAvailable = false;
+      userBatch[index].isDuplicate = true;
+      userBatch[index].isAvailable = false;
     } else {
-        userBatch[index].isDuplicate = false;
-        // Only check with the server if it's not a duplicate in the batch
-        const statusCell = editedCell.closest("tr").cells[6];
-        statusCell.innerHTML = '<span class="badge bg-info">Re-checking...</span>';
+      userBatch[index].isDuplicate = false;
+      // Only check with the server if it's not a duplicate in the batch
+      const statusCell = editedCell.closest("tr").cells[6];
+      statusCell.innerHTML =
+        '<span class="badge bg-info">Re-checking...</span>';
 
-        const result = await checkEmailAvailability(newEmail);
-        userBatch[index].isAvailable = result.available;
+      const result = await checkEmailAvailability(newEmail);
+      userBatch[index].isAvailable = result.available;
     }
 
     // Re-render the specific row or the entire table to reflect new status
@@ -425,7 +448,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const newName = editedCell.textContent.trim();
 
     if (newName === oldName) {
-        return; // No change
+      return; // No change
     }
 
     // Update name
@@ -483,13 +506,16 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function highlightNikNip(nikNip) {
-    if (typeof nikNip !== 'string' || nikNip.length < 6) {
-        return nikNip;
+    if (typeof nikNip !== "string" || nikNip.length < 6) {
+      return nikNip;
     }
     const length = nikNip.length;
     const highlightStartIndex = length - 6;
     const beforeHighlight = nikNip.substring(0, highlightStartIndex);
-    const highlightChars = nikNip.substring(highlightStartIndex, highlightStartIndex + 2);
+    const highlightChars = nikNip.substring(
+      highlightStartIndex,
+      highlightStartIndex + 2
+    );
     const afterHighlight = nikNip.substring(highlightStartIndex + 2);
     return `${beforeHighlight}<span style="background-color: yellow; font-weight: bold;">${highlightChars}</span>${afterHighlight}`;
   }
