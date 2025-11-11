@@ -182,22 +182,28 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
 
-    // Re-render the entire table to reflect the new statuses and make passwords editable
-    renderResults(userBatch);
-
     if (failureCount === 0) {
+      // All successful
+      renderResults(userBatch); // Show all with "Created" status
       alert(`Successfully created all ${successCount} email accounts!`);
       setTimeout(() => {
         window.location.href = "/email";
-      }, 1000); // Redirect after a short delay
+      }, 1000);
     } else {
+      // Partial or total failure
+      // Filter userBatch to only include failed emails
+      userBatch = userBatch.filter(user => user.status === 'failed');
+      
+      // Re-render the table with only the failed emails
+      renderResults(userBatch);
+      
       alert(
         `Batch submission completed with ${failureCount} errors. Please review the statuses, edit passwords for failed entries if needed, and click "Submit Batch" again.`
       );
+      
+      // After a partial failure, re-evaluate which users are valid for the next submission attempt
+      updateSubmitButtonState();
     }
-
-    // After a partial failure, re-evaluate which users are valid for the next submission attempt
-    updateSubmitButtonState();
   }
 
   function generateEmail(name) {
