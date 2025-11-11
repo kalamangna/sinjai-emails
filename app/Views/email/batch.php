@@ -5,7 +5,7 @@
         </a>
     </div>
 
-    <div class="card border-0 shadow-sm mb-4">
+    <div class="card shadow-sm">
         <div class="card-header bg-light py-3">
             <h5 class="card-title mb-0">
                 <i class="fas fa-users me-2 text-primary"></i>
@@ -43,7 +43,7 @@
         </div>
     </div>
 
-    <div class="card border-0 shadow-sm">
+    <div class="card shadow-sm mt-4">
         <div class="card-header bg-light py-3">
             <h5 class="card-title mb-0">
                 <i class="fas fa-list-alt me-2 text-primary"></i>
