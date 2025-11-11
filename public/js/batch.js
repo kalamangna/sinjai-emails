@@ -227,14 +227,16 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     userBatch.forEach((user, index) => {
-      let statusBadge;
       let emailCellContent;
       let passwordCellContent;
-      let isEmailEditable = !user.isAvailable || user.isDuplicate; // Editable if not available or duplicate
-      let isPasswordEditable = user.status === "failed"; // Editable if status is failed
+      let nameCellContent; // New
+      let isEmailEditable = !user.isAvailable || user.isDuplicate;
+      let isPasswordEditable = user.status === "failed";
+      let isNameEditable = true; // Assuming names are always editable before submission
 
       if (user.status === "created") {
         statusBadge = '<span class="badge bg-success">Created</span>';
+        isNameEditable = false; // Don't allow editing after creation
       } else if (user.status === "failed") {
         statusBadge = `<span class="badge bg-danger" title="${
           user.errorMessage || "Failed"
@@ -260,13 +262,19 @@ document.addEventListener("DOMContentLoaded", function () {
         passwordCellContent = user.password;
       }
 
+      if (isNameEditable) {
+        nameCellContent = `<span contenteditable="true" class="editable-name" data-name-index="${index}">${user.name.toUpperCase()}</span>`;
+      } else {
+        nameCellContent = user.name.toUpperCase();
+      }
+
       const highlightedNikNip = highlightNikNip(user.nikNip);
 
       const row = `
                 <tr>
                     <td>${index + 1}</td>
                     <td>${highlightedNikNip}</td>
-                    <td>${user.name.toUpperCase()}</td>
+                    <td>${nameCellContent}</td>
                     <td>${user.unitKerja}</td>
                     <td>${emailCellContent}</td>
                     <td>${passwordCellContent}</td>
@@ -276,10 +284,10 @@ document.addEventListener("DOMContentLoaded", function () {
       resultsTableBody.insertAdjacentHTML("beforeend", row);
     });
 
-    // Add event listeners to editable email cells after rendering
+    // Add event listeners to editable cells after rendering
     addEditableEmailListeners();
-    // Add event listeners to editable password cells after rendering
     addEditablePasswordListeners();
+    addEditableNameListeners(); // New
   }
 
   function addEditableEmailListeners() {
@@ -301,6 +309,18 @@ document.addEventListener("DOMContentLoaded", function () {
         if (e.key === "Enter") {
           e.preventDefault(); // Prevent new line
           cell.blur(); // Trigger blur event
+        }
+      });
+    });
+  }
+
+  function addEditableNameListeners() {
+    document.querySelectorAll(".editable-name").forEach((cell) => {
+      cell.addEventListener("blur", handleNameEdit);
+      cell.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          cell.blur();
         }
       });
     });
@@ -356,6 +376,43 @@ document.addEventListener("DOMContentLoaded", function () {
     renderResults(userBatch);
 
     // Re-evaluate the submit button state
+    updateSubmitButtonState();
+  }
+
+  async function handleNameEdit(event) {
+    const editedCell = event.target;
+    const index = parseInt(editedCell.dataset.nameIndex);
+    const oldName = userBatch[index].name;
+    const newName = editedCell.textContent.trim();
+
+    if (newName === oldName) {
+        return; // No change
+    }
+
+    // Update name
+    userBatch[index].name = newName;
+
+    // Regenerate email and password
+    const { username: generatedUsername, email } = generateEmail(newName);
+    const password = generatePassword(newName);
+
+    userBatch[index].generatedUsername = generatedUsername;
+    userBatch[index].email = email;
+    userBatch[index].password = password;
+    userBatch[index].isDuplicate = false;
+    userBatch[index].isAvailable = false;
+
+    // Temporarily update status badge to indicate re-checking
+    const statusCell = editedCell.closest("tr").cells[6];
+    statusCell.innerHTML = '<span class="badge bg-info">Re-checking...</span>';
+
+    const result = await checkEmailAvailability(email);
+    userBatch[index].isAvailable = result.available;
+
+    // Re-render the table
+    renderResults(userBatch);
+
+    // Re-evaluate submit button state
     updateSubmitButtonState();
   }
 
