@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", function () {
     submitBtn.disabled = true;
 
     resultsTableBody.innerHTML =
-      '<tr><td colspan="7" class="text-center">Generating and checking emails...</td></tr>';
+      '<tr><td colspan="8" class="text-center">Generating and checking emails...</td></tr>';
 
     const generatedEmails = new Set();
     userBatch = [];
@@ -259,7 +259,7 @@ document.addEventListener("DOMContentLoaded", function () {
     resultsTableBody.innerHTML = "";
     if (userBatch.length === 0) {
       resultsTableBody.innerHTML =
-        '<tr><td colspan="7" class="text-center">No names entered.</td></tr>';
+        '<tr><td colspan="8" class="text-center">No names entered.</td></tr>';
       return;
     }
 
@@ -306,6 +306,11 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       const highlightedNikNip = highlightNikNip(user.nikNip);
+      
+      let messageCellContent = '';
+      if (user.status === 'failed') {
+          messageCellContent = `<span class="text-danger">${user.errorMessage || ''}</span>`;
+      }
 
       const row = `
                 <tr>
@@ -316,6 +321,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     <td>${emailCellContent}</td>
                     <td>${passwordCellContent}</td>
                     <td class="text-center">${statusBadge}</td>
+                    <td>${messageCellContent}</td>
                 </tr>
             `;
       resultsTableBody.insertAdjacentHTML("beforeend", row);
