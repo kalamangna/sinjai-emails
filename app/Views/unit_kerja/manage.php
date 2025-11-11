@@ -1,7 +1,7 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
-            <div class="card shadow-sm">
+            <div class="card border-0 shadow-sm">
                 <div class="card-header bg-light">
                     <h5 class="card-title mb-0">
                         <i class="fas fa-building me-2"></i>Manage Unit Kerja
