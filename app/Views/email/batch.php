@@ -65,7 +65,7 @@
                             <th scope="col">Generated Email</th>
                             <th scope="col">Password</th>
                             <th scope="col" class="text-center">Availability</th>
-                            <th scope="col">Message</th>
+                            <th scope="col" class="message-column d-none">Message</th>
                         </tr>
                     </thead>
                     <tbody>

@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   let validUserBatch = [];
   let userBatch = []; // Declared at a higher scope
+  let isMessageColumnVisible = false;
 
   generateBtn.addEventListener("click", async function () {
     const names = nameInput.value
@@ -202,6 +203,8 @@ document.addEventListener("DOMContentLoaded", function () {
       // All successful
       renderResults(userBatch); // Show all with "Created" status
       alert(`Successfully created all ${successCount} email accounts!`);
+      isMessageColumnVisible = false;
+      toggleMessageColumnVisibility(false); // Hide message column
       setTimeout(() => {
         window.location.href = "/email";
       }, 1000);
@@ -217,6 +220,8 @@ document.addEventListener("DOMContentLoaded", function () {
         `Batch submission completed with ${failureCount} errors. Please review the statuses, edit passwords for failed entries if needed, and click "Submit Batch" again.`
       );
       
+      isMessageColumnVisible = true;
+      toggleMessageColumnVisibility(true); // Show message column
       // After a partial failure, re-evaluate which users are valid for the next submission attempt
       updateSubmitButtonState();
     }
@@ -337,7 +342,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     <td>${emailCellContent}</td>
                     <td>${passwordCellContent}</td>
                     <td class="text-center">${statusBadge}</td>
-                    <td>${messageCellContent}</td>
+                    <td class="message-column">${messageCellContent}</td>
                 </tr>
             `;
       resultsTableBody.insertAdjacentHTML("beforeend", row);
@@ -519,5 +524,15 @@ document.addEventListener("DOMContentLoaded", function () {
     const highlightChars = nikNip.substring(highlightStartIndex, highlightStartIndex + 2);
     const afterHighlight = nikNip.substring(highlightStartIndex + 2);
     return `${beforeHighlight}<span style="background-color: yellow; font-weight: bold;">${highlightChars}</span>${afterHighlight}`;
+  }
+
+  function toggleMessageColumnVisibility(show) {
+    document.querySelectorAll('.message-column').forEach(element => {
+        if (show) {
+            element.classList.remove('d-none');
+        } else {
+            element.classList.add('d-none');
+        }
+    });
   }
 });
