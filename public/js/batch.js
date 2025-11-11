@@ -48,71 +48,72 @@ document.addEventListener("DOMContentLoaded", function () {
       '<tr><td colspan="7" class="text-center">Generating and checking emails...</td></tr>';
 
     const generatedEmails = new Set();
-    userBatch = [];
     let allEmailsValid = true;
 
     for (let i = 0; i < names.length; i++) {
-        const name = names[i];
-        const cleanedName = name.replace(/[,.']/g, "");
-        const nikNip = nikNips[i];
-        const password = generatePassword(cleanedName);
+      const name = names[i];
+      const cleanedName = name.replace(/[,.']/g, ""); // Clean the name
+      const nikNip = nikNips[i];
+      const { username: generatedUsername, email } = generateEmail(cleanedName); // Use cleaned name
+      const password = generatePassword(cleanedName); // Use cleaned name
+      const isDuplicate = generatedEmails.has(email);
 
-        const { username: originalUsername, email: originalEmail } = generateEmail(cleanedName);
-        let currentUsername = originalUsername;
-        let currentEmail = originalEmail;
+      if (isDuplicate) {
+        allEmailsValid = false;
+      }
 
-        let isAvailable = false;
-        let attempts = 0;
-        const maxAttempts = 10;
+      generatedEmails.add(email);
 
-        while (attempts < maxAttempts) {
-            attempts++;
+      userBatch.push({
+        name: cleanedName.trim(), // Store the cleaned name for display
+        nikNip: nikNip.trim(),
+        unitKerja: unitKerja,
+        generatedUsername: generatedUsername,
+        email: email,
+        password: password,
+        quota: 1024, // Default quota
+        isDuplicate: isDuplicate,
+        isAvailable: false,
+        status: "pending", // Initialize status for each user
+      });
+    }
 
-            // Check for in-batch duplicates first
-            if (generatedEmails.has(currentEmail)) {
-                // If it's a duplicate, modify and restart the while loop
-                const nikNipPart = getNikNipPart(nikNip);
-                currentUsername = `${originalUsername}${nikNipPart}${attempts > 1 ? `_${attempts}` : ''}`;
-                currentEmail = `${currentUsername}@sinjaikab.go.id`;
-                continue; // Restart while loop to re-check this new email
-            }
-
-            // Not an in-batch duplicate, so check server
-            const result = await checkEmailAvailability(currentEmail);
-            if (result.available) {
-                isAvailable = true;
-                break; // Found a good email, exit while loop
-            } else {
-                // Used on server, modify and let the while loop try again
-                const nikNipPart = getNikNipPart(nikNip);
-                currentUsername = `${originalUsername}${nikNipPart}${attempts > 1 ? `_${attempts}` : ''}`;
-                currentEmail = `${currentUsername}@sinjaikab.go.id`;
-            }
-        }
-
-        const isDuplicate = generatedEmails.has(currentEmail);
-        if (isDuplicate) {
-            isAvailable = false;
-        }
-
-        if (!isAvailable) {
+    for (const user of userBatch) {
+        if (user.isDuplicate) {
             allEmailsValid = false;
+            continue;
         }
 
-        const user = {
-            name: cleanedName.trim(),
-            nikNip: nikNip.trim(),
-            unitKerja: unitKerja,
-            generatedUsername: currentUsername,
-            email: currentEmail,
-            password: password,
-            quota: 1024,
-            isDuplicate: isDuplicate,
-            isAvailable: isAvailable,
-            status: "pending",
-        };
-        userBatch.push(user);
-        generatedEmails.add(currentEmail);
+        let result = await checkEmailAvailability(user.email);
+        user.isAvailable = result.available;
+
+        if (!user.isAvailable) {
+            allEmailsValid = false;
+            const nikNipPart = getNikNipPart(user.nikNip);
+            const originalUsername = user.generatedUsername;
+            
+            const newUsername = `${originalUsername}${nikNipPart}`;
+            const domain = "@sinjaikab.go.id";
+            const newEmail = `${newUsername}${domain}`;
+
+            // Check for duplicates in the batch for the new email
+            const isDuplicateInBatch = userBatch.some((otherUser) => otherUser.email === newEmail && otherUser !== user);
+            if (isDuplicateInBatch) {
+                user.isDuplicate = true;
+                user.isAvailable = false;
+                continue; // Move to the next user
+            }
+
+            user.email = newEmail;
+            user.generatedUsername = newUsername;
+
+            // Re-check availability for the new email
+            result = await checkEmailAvailability(user.email);
+            user.isAvailable = result.available;
+            if (!user.isAvailable) {
+                allEmailsValid = false;
+            }
+        }
     }
 
     renderResults(userBatch);
