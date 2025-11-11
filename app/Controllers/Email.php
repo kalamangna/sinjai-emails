@@ -35,7 +35,7 @@ class Email extends BaseController
             $search = $this->request->getGet('search');
             $status = $this->request->getGet('status');
             $perPage = $this->request->getGet('per_page') ?? 100;
-            $sort = $this->request->getGet('sort') ?? 'newest'; // Default to 'newest' (mtime DESC)
+            $sort = $this->request->getGet('sort') ?? 'newest';
 
             $builder = $this->emailModel;
 
@@ -375,7 +375,7 @@ class Email extends BaseController
             }
 
             $unitKerjaName = $unitKerja['nama_unit_kerja'];
-            $emails = $this->emailModel->where('unit_kerja', $unitKerjaName)->orderBy('name', 'ASC')->findAll();
+            $emails = $this->emailModel->where('unit_kerja', $unitKerjaName)->findAll();
             $totalEmails = count($emails);
 
             $data = [
