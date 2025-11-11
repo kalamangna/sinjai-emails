@@ -7,6 +7,8 @@ use App\Models\EmailModel;
 use App\Models\AppSettingModel;
 use App\Models\UnitKerjaModel;
 use CodeIgniter\Controller;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 use Exception;
 
 class Email extends BaseController
@@ -60,9 +62,9 @@ class Email extends BaseController
 
             // Fetch all unit_kerja and their email counts
             $unitKerjaList = $this->unitKerjaModel->select('unit_kerja.id, unit_kerja.nama_unit_kerja, COUNT(emails.id) as email_count')
-                                                ->join('emails', 'emails.unit_kerja = unit_kerja.nama_unit_kerja', 'left')
-                                                ->groupBy('unit_kerja.id, unit_kerja.nama_unit_kerja')
-                                                ->findAll();
+                ->join('emails', 'emails.unit_kerja = unit_kerja.nama_unit_kerja', 'left')
+                ->groupBy('unit_kerja.id, unit_kerja.nama_unit_kerja')
+                ->findAll();
 
             $data = [
                 'emails' => $emails,
@@ -96,6 +98,74 @@ class Email extends BaseController
         return view('templates/header') .
             view('email/batch', $data) .
             view('templates/footer');
+    }
+
+    public function batch_update()
+    {
+        $data['unit_kerja'] = $this->unitKerjaModel->findAll();
+        return view('templates/header') .
+            view('email/batch_update', $data) .
+            view('templates/footer');
+    }
+
+    public function batch_update_process()
+    {
+        if (strtolower($this->request->getMethod()) !== 'post') {
+            return $this->response->setJSON(['success' => false, 'message' => 'Invalid request method.']);
+        }
+
+        $data = $this->request->getJSON();
+        if (empty($data) || !isset($data->emails) || !is_array($data->emails)) {
+            return $this->response->setJSON(['success' => false, 'message' => 'No email data provided.']);
+        }
+
+        $emailsToUpdate = $data->emails;
+        $newNames = $data->names ?? [];
+        $newPasswords = $data->passwords ?? [];
+        $newNikNips = $data->nik_nips ?? [];
+        $newUnitKerja = $data->unit_kerja ?? null;
+
+        $results = [];
+        foreach ($emailsToUpdate as $index => $emailAddress) {
+            $emailRecord = $this->emailModel->where('email', $emailAddress)->first();
+
+            if (!$emailRecord) {
+                $results[] = ['email' => $emailAddress, 'success' => false, 'message' => 'Email not found in local database.'];
+                continue;
+            }
+
+            $updateData = [];
+            if (isset($newNames[$index]) && !empty($newNames[$index])) {
+                $updateData['name'] = $newNames[$index];
+            }
+            if (isset($newPasswords[$index]) && !empty($newPasswords[$index])) {
+                $updateData['password'] = $newPasswords[$index];
+            }
+            if (isset($newNikNips[$index]) && !empty($newNikNips[$index])) {
+                $updateData['nik_nip'] = $newNikNips[$index];
+            }
+            if (!empty($newUnitKerja)) {
+                $updateData['unit_kerja'] = $newUnitKerja;
+            }
+
+            if (empty($updateData)) {
+                $results[] = ['email' => $emailAddress, 'success' => false, 'message' => 'No update data provided.'];
+                continue;
+            }
+
+            try {
+                $updated = $this->emailModel->update($emailRecord['id'], $updateData);
+                if ($updated) {
+                    $results[] = ['email' => $emailAddress, 'success' => true, 'message' => 'Successfully updated.'];
+                } else {
+                    $results[] = ['email' => $emailAddress, 'success' => false, 'message' => 'Failed to update (no changes or database error).'];
+                }
+            } catch (Exception $e) {
+                $results[] = ['email' => $emailAddress, 'success' => false, 'message' => 'Database error: ' . $e->getMessage()];
+            }
+        }
+
+        return $this->response->setJSON(['success' => true, 'results' => $results]);
     }
 
     public function batch_create()
@@ -132,6 +202,9 @@ class Email extends BaseController
                         'user'       => explode('@', $item->email)[0],
                         'domain'     => explode('@', $item->email)[1],
                         'unit_kerja' => $item->unitKerja ?? null,
+                        'password'   => $item->password ?? null,
+                        'nik_nip'    => $item->nikNip ?? null,
+                        'name'       => $item->name ?? null,
                     ]);
 
                     $results[] = ['email' => $item->email, 'success' => true];
@@ -225,23 +298,65 @@ class Email extends BaseController
     public function export_csv()
     {
         try {
-            $all_emails = $this->emailModel->findAll();
+            $all_data = $this->emailModel->findAll();
+            $totalEmails = count($all_data);
+            $limit = 50;
 
-            $filename = 'email_addresses_' . date('Y-m-d') . '.csv';
+            if ($totalEmails <= $limit) {
+                $filename = 'email_addresses_' . date('Y-m-d') . '.csv';
 
-            header('Content-Type: text/csv');
-            header('Content-Disposition: attachment; filename="' . $filename . '"');
+                header('Content-Type: text/csv');
+                header('Content-Disposition: attachment; filename="' . $filename . '"');
 
-            $output = fopen('php://output', 'w');
+                $output = fopen('php://output', 'w');
+                fputcsv($output, ['name', 'email'], ','); // Fixed headers and delimiter
 
-            fputcsv($output, ['email']);
+                foreach ($all_data as $row) {
+                    fputcsv($output, [$row['name'], $row['email']], ','); // Fixed keys
+                }
 
-            foreach ($all_emails as $email) {
-                fputcsv($output, [$email['email']]);
+                fclose($output);
+                exit();
+            } else {
+                $zip = new \ZipArchive();
+                $zipFileName = 'email_addresses_' . date('Y-m-d') . '.zip';
+                $tempZipPath = WRITEPATH . 'uploads/' . $zipFileName;
+
+                if ($zip->open($tempZipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== TRUE) {
+                    throw new Exception('Cannot create ZIP archive.');
+                }
+
+                $chunks = array_chunk($all_data, $limit);
+                $fileCount = 1;
+
+                foreach ($chunks as $chunk) {
+                    $csvFileName = 'email_addresses_part_' . $fileCount . '.csv';
+                    
+                    $stream = fopen('php://memory', 'w+');
+                    fputcsv($stream, ['name', 'email'], ','); // Fixed headers and delimiter
+                    foreach ($chunk as $row) {
+                        fputcsv($stream, [$row['name'], $row['email']], ','); // Fixed keys
+                    }
+                    rewind($stream);
+                    $csvContent = stream_get_contents($stream);
+                    fclose($stream);
+
+                    $zip->addFromString($csvFileName, $csvContent);
+                    $fileCount++;
+                }
+
+                $zip->close();
+
+                header('Content-Type: application/zip');
+                header('Content-Disposition: attachment; filename="' . $zipFileName . '"');
+                header('Content-Length: ' . filesize($tempZipPath));
+                
+                readfile($tempZipPath);
+                
+                unlink($tempZipPath);
+                
+                exit();
             }
-
-            fclose($output);
-            exit();
         } catch (Exception $e) {
             $data['error'] = $e->getMessage();
             return view('templates/header') .
@@ -261,11 +376,14 @@ class Email extends BaseController
 
             $unitKerjaName = $unitKerja['nama_unit_kerja'];
             $emails = $this->emailModel->where('unit_kerja', $unitKerjaName)->findAll();
+            $totalEmails = count($emails);
 
             $data = [
                 'unit_kerja_name' => $unitKerjaName,
                 'emails' => $emails,
                 'back_url' => site_url('email'),
+                'unit_kerja_id' => $unitKerjaId,
+                'total_emails' => $totalEmails,
             ];
 
             return view('templates/header') .
@@ -274,6 +392,235 @@ class Email extends BaseController
         } catch (Exception $e) {
             $data['error'] = $e->getMessage();
             $data['back_url'] = site_url('email');
+            return view('templates/header') .
+                view('email/error', $data) .
+                view('templates/footer');
+        }
+    }
+
+    public function export_unit_kerja_csv($unitKerjaId)
+    {
+        try {
+            $unitKerja = $this->unitKerjaModel->find($unitKerjaId);
+
+            if (!$unitKerja) {
+                throw new Exception('Unit Kerja not found.');
+            }
+
+            $unitKerjaName = $unitKerja['nama_unit_kerja'];
+            $emails = $this->emailModel->where('unit_kerja', $unitKerjaName)->findAll();
+            $totalEmails = count($emails);
+            $limit = 50;
+
+            if ($totalEmails <= $limit) {
+                // Original logic for a single file
+                $filename = 'export_' . url_title($unitKerjaName, '_', true) . '_' . date('Y-m-d') . '.csv';
+
+                header('Content-Type: text/csv');
+                header('Content-Disposition: attachment; filename="' . $filename . '"');
+
+                $output = fopen('php://output', 'w');
+                fputcsv($output, ['nama', 'emailAddress'], ',');
+                foreach ($emails as $email) {
+                    fputcsv($output, [$email['name'], $email['email']], ',');
+                }
+                fclose($output);
+                exit();
+            } else {
+                // New logic for multiple files (ZIP archive)
+                $zip = new \ZipArchive();
+                $zipFileName = 'export_' . url_title($unitKerjaName, '_', true) . '_' . date('Y-m-d') . '.zip';
+                $tempZipPath = WRITEPATH . 'uploads/' . $zipFileName;
+
+                if ($zip->open($tempZipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== TRUE) {
+                    throw new Exception('Cannot create ZIP archive.');
+                }
+
+                $chunks = array_chunk($emails, $limit);
+                $fileCount = 1;
+
+                foreach ($chunks as $chunk) {
+                    $csvFileName = 'export_' . url_title($unitKerjaName, '_', true) . '_part_' . $fileCount . '.csv';
+                    
+                    // Using memory stream to avoid creating temporary CSV files on disk
+                    $stream = fopen('php://memory', 'w+');
+                    fputcsv($stream, ['nama', 'emailAddress'], ',');
+                    foreach ($chunk as $email) {
+                        fputcsv($stream, [$email['name'], $email['email']], ',');
+                    }
+                    rewind($stream);
+                    $csvContent = stream_get_contents($stream);
+                    fclose($stream);
+
+                    $zip->addFromString($csvFileName, $csvContent);
+                    $fileCount++;
+                }
+
+                $zip->close();
+
+                header('Content-Type: application/zip');
+                header('Content-Disposition: attachment; filename="' . $zipFileName . '"');
+                header('Content-Length: ' . filesize($tempZipPath));
+                
+                readfile($tempZipPath);
+                
+                // Clean up the temporary zip file
+                unlink($tempZipPath);
+                
+                exit();
+            }
+        } catch (Exception $e) {
+            $data['error'] = $e->getMessage();
+            return view('templates/header') .
+                view('email/error', $data) .
+                view('templates/footer');
+        }
+    }
+
+    public function export_unit_kerja_pdf($unitKerjaId)
+    {
+        try {
+            $unitKerja = $this->unitKerjaModel->find($unitKerjaId);
+
+            if (!$unitKerja) {
+                throw new Exception('Unit Kerja not found.');
+            }
+
+            $unitKerjaName = $unitKerja['nama_unit_kerja'];
+            $emails = $this->emailModel->where('unit_kerja', $unitKerjaName)->findAll();
+
+            $options = new Options();
+            $options->set('isHtml5ParserEnabled', true);
+            $options->set('isRemoteEnabled', true);
+
+            $dompdf = new Dompdf($options);
+
+            // Fungsi esc() untuk keamanan
+            if (!function_exists('esc')) {
+                function esc($str)
+                {
+                    return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
+                }
+            }
+
+            $html = '<!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Akun Email - ' . esc($unitKerjaName) . '</title>
+                    <style>
+                        body { 
+                            font-family: Arial, sans-serif; 
+                            margin: 10px; 
+                            font-size: 12px; 
+                        }
+                        h1 { color: #333; text-align: center; margin-bottom: 20px; }
+                        table { 
+                            width: 100%; 
+                            border-collapse: collapse; 
+                            margin-bottom: 20px; 
+                        }
+                        th, td { 
+                            border: 1px solid #ddd; 
+                            padding: 8px; 
+                            text-align: left; 
+                            word-wrap: break-word;
+                            overflow-wrap: break-word;
+                        }
+                        th { background-color: #f2f2f2; }
+                        
+                        /* Kolom No. */
+                        th:nth-child(1), td:nth-child(1) { 
+                            text-align: center;
+                        } 
+                        
+                        /* Kolom NIK/NIP */
+                        th:nth-child(2), td:nth-child(2) { }
+                        
+                        /* Kolom Nama */
+                        th:nth-child(3), td:nth-child(3) { } 
+                        
+                        /* Kolom Email */
+                        th:nth-child(4), td:nth-child(4) { }
+                        
+                        /* Kolom Password */
+                        th:nth-child(5), td:nth-child(5) { }
+
+                        .footer { 
+                            text-align: center;
+                            font-size: 10px; 
+                            color: #777; 
+                            position: fixed; 
+                            bottom: 20px; 
+                            right: 20px; 
+                            left: 20px;
+                            line-height: 1.4; 
+                        }
+                        
+                        .instruction {
+                            text-align: center;
+                            font-weight: bold;
+                            font-size: 1.1em;
+                            margin-bottom: 25px;
+                            padding: 10px;
+                            border: 1px solid #ddd;
+                            background-color: #f9f9f9;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <h1>Daftar Akun Email<br>' . esc($unitKerjaName) . '</h1>
+
+                    <p class="instruction">
+                        Untuk AKTIVASI AKUN, login menggunakan EMAIL dan PASSWORD melalui halaman sinjaikab.go.id/webmail
+                    </p>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>NIK/NIP</th>
+                                <th>Nama</th>
+                                <th>Email</th>
+                                <th>Password</th>
+                            </tr>
+                        </thead>
+                        <tbody>';
+
+            // MODIFIKASI PHP: Inisialisasi nomor
+            $nomor = 1;
+            foreach ($emails as $email) {
+                $html .= '<tr>
+                                <td>' . $nomor . '</td> 
+                                <td>' . esc($email['nik_nip'] ?? 'N/A') . '</td>
+                                <td>' . esc($email['name'] ?? 'N/A') . '</td>
+                                <td>' . esc($email['email'] ?? 'N/A') . '</td>
+                                <td>' . esc($email['password'] ?? 'N/A') . '</td>
+                            </tr>';
+                // MODIFIKASI PHP: Increment nomor
+                $nomor++;
+            }
+
+            $html .= '</tbody>
+                    </table>
+                    
+                    <div class="footer">
+                        Bidang Aplikasi dan Informatika<br>
+                        Dinas Komunikasi Informatika dan Persandian<br>
+                        Kabupaten Sinjai<br><br>
+                        Dibuat pada ' . date('Y-m-d H:i:s') . '
+                    </div>
+                </body>
+                </html>';
+
+            $dompdf->loadHtml($html);
+            $dompdf->setPaper('A4', 'portrait');
+            $dompdf->render();
+
+            $filename = 'email_accounts_' . url_title($unitKerjaName, '_', true) . '.pdf';
+            $dompdf->stream($filename, ["Attachment" => true]);
+            exit();
+        } catch (Exception $e) {
+            $data['error'] = $e->getMessage();
             return view('templates/header') .
                 view('email/error', $data) .
                 view('templates/footer');

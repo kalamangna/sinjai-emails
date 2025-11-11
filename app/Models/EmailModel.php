@@ -23,6 +23,9 @@ class EmailModel extends Model
         'diskusedpercent',
         'diskusedpercent_float',
         'user',
+        'password',
+        'nik_nip',
+        'name',
     ];
     protected $useTimestamps = true;
 
@@ -68,8 +71,11 @@ class EmailModel extends Model
             ];
 
             if (isset($existing_emails_map[$emailData['email']])) {
-                // Don't update unit_kerja during sync
+                // Don't update unit_kerja and password during sync
                 unset($data['unit_kerja']);
+                unset($data['password']);
+                unset($data['nik_nip']);
+                unset($data['name']);
                 $to_update[] = $data;
             } else {
                 $to_insert[] = $data;

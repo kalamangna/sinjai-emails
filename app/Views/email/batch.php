@@ -14,9 +14,19 @@
             </h5>
         </div>
         <div class="card-body">
-            <div class="mb-3">
-                <label for="name_input" class="form-label">Enter one full name per line.</label>
-                <textarea class="form-control" id="name_input" rows="8" placeholder="e.g.&#10;John Doe&#10;Jane Smith"></textarea>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="nik_nip_input" class="form-label">Enter one NIK/NIP per line.</label>
+                        <textarea class="form-control" id="nik_nip_input" rows="8" placeholder="e.g.&#10;1234567890123456&#10;0987654321098765"></textarea>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="name_input" class="form-label">Enter one full name per line.</label>
+                        <textarea class="form-control" id="name_input" rows="8" placeholder="e.g.&#10;John Doe&#10;Jane Smith"></textarea>
+                    </div>
+                </div>
             </div>
             <div class="mb-3">
                 <label for="unit_kerja_input" class="form-label">Unit Kerja</label>
@@ -47,6 +57,7 @@
                     <thead class="table-light">
                         <tr>
                             <th scope="col">#</th>
+                            <th scope="col">NIK/NIP</th>
                             <th scope="col">Name</th>
                             <th scope="col">Unit Kerja</th>
                             <th scope="col">Generated Email</th>

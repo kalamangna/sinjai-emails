@@ -1,20 +1,20 @@
 <div class="row">
   <div class="col-12">
     <div id="flash-message-container">
-        <?php if (session()->getFlashdata('success')): ?>
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <i class="fas fa-check-circle me-2"></i>
-                <?= session()->getFlashdata('success') ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        <?php endif; ?>
-        <?php if (session()->getFlashdata('error')): ?>
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <i class="fas fa-exclamation-triangle me-2"></i>
-                <?= session()->getFlashdata('error') ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        <?php endif; ?>
+      <?php if (session()->getFlashdata('success')): ?>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+          <i class="fas fa-check-circle me-2"></i>
+          <?= session()->getFlashdata('success') ?>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      <?php endif; ?>
+      <?php if (session()->getFlashdata('error')): ?>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          <i class="fas fa-exclamation-triangle me-2"></i>
+          <?= session()->getFlashdata('error') ?>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      <?php endif; ?>
     </div>
 
     <!-- Back Button -->
@@ -59,8 +59,8 @@
 
     <!-- Disk Usage Information -->
     <div class="row">
-      <div class="col-lg-6 mb-4">
-        <div class="card shadow-sm h-100">
+      <div class="col-lg-12 mb-4">
+        <div class="card shadow-sm">
           <div class="card-header bg-light py-3">
             <h5 class="card-title mb-0">
               <i class="fas fa-hdd me-2 text-info"></i>Disk Usage
@@ -160,25 +160,62 @@
                 </div>
               </div>
             </div>
+            <hr>
+            <div class="row mb-3">
+              <div class="col-6">
+                <strong class="text-muted">Quota Type:</strong>
+              </div>
+              <div class="col-6">
+                <?php if ($is_unlimited): ?>
+                  <span class="badge bg-info">Unlimited</span>
+                <?php else: ?>
+                  <span class="badge bg-secondary">Limited (<?= $disk_quota ?>)</span>
+                <?php endif; ?>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- Account Information -->
-      <div class="col-lg-6 mb-4">
-        <div class="card shadow-sm h-100">
+      <div class="col-lg-12 mb-4">
+        <div class="card shadow-sm">
           <div class="card-header bg-light py-3">
             <h5 class="card-title mb-0">
-              <i class="fas fa-info-circle me-2 text-primary"></i>Account Information
+              <i class="fas fa-info-circle me-2 text-primary"></i>Account Details
             </h5>
           </div>
           <div class="card-body">
+            <div class="row mb-3">
+              <div class="col-6">
+                <strong class="text-muted">Name:</strong>
+              </div>
+              <div class="col-6">
+                <?= esc($email['name']) ?>
+              </div>
+            </div>
             <div class="row mb-3">
               <div class="col-6">
                 <strong class="text-muted">Email:</strong>
               </div>
               <div class="col-6">
                 <?= esc($email['email']) ?>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-6">
+                <strong class="text-muted">Password:</strong>
+              </div>
+              <div class="col-6">
+                <?= esc($email['password']) ?>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-6">
+                <strong class="text-muted">NIK/NIP:</strong>
+              </div>
+              <div class="col-6">
+                <?= esc($email['nik_nip']) ?>
               </div>
             </div>
             <div class="row mb-3">
@@ -203,18 +240,6 @@
             </div>
             <div class="row mb-3">
               <div class="col-6">
-                <strong class="text-muted">Quota Type:</strong>
-              </div>
-              <div class="col-6">
-                <?php if ($is_unlimited): ?>
-                  <span class="badge bg-info">Unlimited</span>
-                <?php else: ?>
-                  <span class="badge bg-secondary">Limited (<?= $disk_quota ?>)</span>
-                <?php endif; ?>
-              </div>
-            </div>
-            <div class="row mb-3">
-              <div class="col-6">
                 <strong class="text-muted">Unit Kerja:</strong>
               </div>
               <div class="col-6">
@@ -227,7 +252,7 @@
                 <?php endif; ?>
               </div>
             </div>
-            <div class="row">
+            <div class="row mb-3">
               <div class="col-6">
                 <strong class="text-muted">Webmail:</strong>
               </div>
@@ -238,8 +263,7 @@
               </div>
             </div>
             <hr>
-            <!-- Update Unit Kerja -->
-            <form action="<?= site_url('email/update_unit_kerja/' . $email['user']) ?>" method="post">
+            <form action="<?= site_url('email/update_unit_kerja/' . $email['user']) ?>" method="post" class="mt-3">
               <div class="row align-items-center">
                 <div class="col-md-4">
                   <label for="unit_kerja" class="form-label fw-bold"><i class="fas fa-building me-2"></i>Unit Kerja:</label>
@@ -265,7 +289,7 @@
     </div>
 
     <!-- Quick Actions -->
-    <div class="row mt-4">
+    <div class="row">
       <div class="col-12">
         <div class="card shadow-sm">
           <div class="card-header bg-light py-3">

@@ -1,10 +1,18 @@
 <div class="row">
   <div class="col-12">
     <!-- Back Button -->
-    <div class="mb-4">
+    <div class="mb-4 d-flex justify-content-between">
       <a href="<?= $back_url ?>" class="btn btn-outline-secondary">
         <i class="fas fa-arrow-left me-2"></i>Back to Email List
       </a>
+      <div class="d-flex gap-2">
+        <a href="<?= site_url('email/export_unit_kerja_csv/' . $unit_kerja_id) ?>" class="btn btn-success">
+          <i class="fas fa-file-csv me-2"></i>Export CSV
+        </a>
+        <a href="<?= site_url('email/export_unit_kerja_pdf/' . $unit_kerja_id) ?>" class="btn btn-danger">
+          <i class="fas fa-file-pdf me-2"></i>Export PDF
+        </a>
+      </div>
     </div>
 
     <!-- Unit Kerja Header -->
@@ -22,9 +30,14 @@
     <!-- Email List for Unit Kerja -->
     <div class="card shadow-sm">
       <div class="card-header bg-light py-3">
-        <h5 class="card-title mb-0">
-          <i class="fas fa-list me-2 text-primary"></i>Email Accounts in <?= esc($unit_kerja_name) ?>
-        </h5>
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+          <h5 class="card-title mb-2 mb-md-0">
+            <i class="fas fa-list me-2 text-primary"></i>Email Accounts in <?= esc($unit_kerja_name) ?>
+          </h5>
+          <span class="badge bg-primary fs-6">
+            <?= $total_emails ?> Accounts
+          </span>
+        </div>
       </div>
       <div class="card-body p-0">
         <?php if (!empty($emails)): ?>
@@ -33,9 +46,8 @@
               <thead class="table-light">
                 <tr>
                   <th class="ps-4"><i class="fas fa-envelope me-2"></i>Email Address</th>
+                  <th><i class="fas fa-user me-2"></i>Name</th>
                   <th class="text-center"><i class="fas fa-chart-pie me-2"></i>Disk Usage</th>
-                  <th class="text-center"><i class="fas fa-calendar me-2"></i>Modified</th>
-                  <th class="text-center"><i class="fas fa-circle me-2"></i>Status</th>
                   <th class="text-center"><i class="fas fa-cog me-2"></i>Action</th>
                 </tr>
               </thead>
@@ -63,6 +75,7 @@
                         </div>
                       </div>
                     </td>
+                    <td><?= esc($email['name']) ?></td>
                     <td class="text-center align-middle">
                       <div class="d-flex flex-column align-items-center">
                         <?php if ($is_unlimited): ?>
@@ -89,26 +102,6 @@
                           </small>
                         <?php endif; ?>
                       </div>
-                    </td>
-                    <td class="text-center align-middle">
-                      <small class="text-muted">
-                        <?php if (isset($email['mtime']) && $email['mtime'] > 0): ?>
-                          <?= get_local_date($email['mtime']) ?>
-                          <br>
-                          <small><?= get_local_time($email['mtime']) ?></small>
-                          <br>
-                          <small class="text-info"><?= relative_local_time($email['mtime']) ?></small>
-                        <?php else: ?>
-                          -
-                        <?php endif; ?>
-                      </small>
-                    </td>
-                    <td class="text-center align-middle">
-                      <?php if (($email['suspended_login'] ?? 0) == 0): ?>
-                        <span class="badge bg-success">Active</span>
-                      <?php else: ?>
-                        <span class="badge bg-danger">Suspended</span>
-                      <?php endif; ?>
                     </td>
                     <td class="text-center align-middle">
                       <a href="<?= site_url('email/detail/' . $email['user']) ?>"

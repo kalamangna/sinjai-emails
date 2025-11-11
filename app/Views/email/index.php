@@ -74,6 +74,12 @@
             <a href="<?= site_url('email/batch') ?>" class="btn btn-info">
                 <i class="fas fa-plus-circle me-2"></i>Batch Create Emails
             </a>
+            <a href="<?= site_url('email/batch_update') ?>" class="btn btn-warning">
+                <i class="fas fa-edit me-2"></i>Batch Update Emails
+            </a>
+            <a href="<?= site_url('unit_kerja/manage') ?>" class="btn btn-secondary">
+                <i class="fas fa-building me-2"></i>Manage Unit Kerja
+            </a>
         </div>
         <div class="text-end mt-2">
             <small class="text-muted">
@@ -87,25 +93,29 @@
 <!-- Unit Kerja List Section -->
 <div class="row mb-4">
     <div class="col-12">
-        <div class="card shadow-sm">
-            <div class="card-header bg-light py-3">
-                <h5 class="card-title mb-0">
-                    <i class="fas fa-building me-2 text-primary"></i>Unit Kerja List
-                </h5>
-            </div>
-            <div class="card-body">
-                <?php if (!empty($unit_kerja_list)): ?>
-                    <div class="list-group">
-                        <?php foreach ($unit_kerja_list as $unit): ?>
-                            <a href="<?= site_url('email/unit_kerja/' . $unit['id']) ?>" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                                <?= esc($unit['nama_unit_kerja']) ?>
-                                <span class="badge bg-primary rounded-pill"><?= $unit['email_count'] ?></span>
-                            </a>
-                        <?php endforeach; ?>
+        <div class="accordion shadow-sm" id="unitKerjaAccordion">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingOne">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                        <i class="fas fa-building me-2 text-primary"></i>Unit Kerja List
+                    </button>
+                </h2>
+                <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#unitKerjaAccordion">
+                    <div class="accordion-body">
+                        <?php if (!empty($unit_kerja_list)): ?>
+                            <div class="list-group">
+                                <?php foreach ($unit_kerja_list as $unit): ?>
+                                    <a href="<?= site_url('email/unit_kerja/' . $unit['id']) ?>" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                        <?= esc($unit['nama_unit_kerja']) ?>
+                                        <span class="badge bg-primary rounded-pill"><?= $unit['email_count'] ?></span>
+                                    </a>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php else: ?>
+                            <p class="text-muted">No Unit Kerja found.</p>
+                        <?php endif; ?>
                     </div>
-                <?php else: ?>
-                    <p class="text-muted">No Unit Kerja found.</p>
-                <?php endif; ?>
+                </div>
             </div>
         </div>
     </div>
@@ -121,17 +131,18 @@
                         <i class="fas fa-filter me-2 text-primary"></i>Filter & Search
                     </h5>
                 </div>
-            </div>                                <div class="card-body">
-                                    <form method="GET" action="" class="row g-3 align-items-end">
-                                        <!-- Search Input -->
-                                        <div class="col-md-3">
-                                            <label for="search" class="form-label">Search Email</label>
-                                            <div class="input-group">
-                                                <span class="input-group-text"><i class="fas fa-search"></i></span>
-                                                <input type="text" class="form-control" id="search" name="search"
-                                                    placeholder="Enter email..." value="<?= isset($search) ? esc($search) : '' ?>">
-                                            </div>
-                                        </div>
+            </div>
+            <div class="card-body">
+                <form method="GET" action="" class="row g-3 align-items-end">
+                    <!-- Search Input -->
+                    <div class="col-md-3">
+                        <label for="search" class="form-label">Search Email</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-search"></i></span>
+                            <input type="text" class="form-control" id="search" name="search"
+                                placeholder="Enter email..." value="<?= isset($search) ? esc($search) : '' ?>">
+                        </div>
+                    </div>
                     <!-- Status Filter -->
                     <div class="col-md-2">
                         <label for="status" class="form-label">Status</label>
@@ -409,7 +420,9 @@
         fetch('<?= site_url('email/sync') ?>')
             .then(response => {
                 if (!response.ok) {
-                    return response.json().then(err => { throw new Error(err.message || 'Server error') });
+                    return response.json().then(err => {
+                        throw new Error(err.message || 'Server error')
+                    });
                 }
                 return response.json();
             })
@@ -422,7 +435,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>`;
                     flashContainer.innerHTML = alert;
-                    
+
                     setTimeout(() => {
                         window.location.reload();
                     }, 1000);
@@ -447,7 +460,7 @@
                 flashContainer.innerHTML = alert;
                 resetButton();
             });
-        
+
         function resetButton() {
             button.classList.remove('disabled');
             button.removeAttribute('aria-disabled');
