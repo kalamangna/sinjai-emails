@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (generatedEmails.has(currentEmail)) {
                 // If it's a duplicate, modify and restart the while loop
                 const nikNipPart = getNikNipPart(nikNip);
-                currentUsername = `${originalUsername}${nikNipPart}${attempts > 1 ? `_${attempts}` : ''}`;
+                currentUsername = `${originalUsername}${nikNipPart}`;
                 currentEmail = `${currentUsername}@sinjaikab.go.id`;
                 continue; // Restart while loop to re-check this new email
             }
@@ -85,7 +85,7 @@ document.addEventListener("DOMContentLoaded", function () {
             } else {
                 // Used on server, modify and let the while loop try again
                 const nikNipPart = getNikNipPart(nikNip);
-                currentUsername = `${originalUsername}${nikNipPart}${attempts > 1 ? `_${attempts}` : ''}`;
+                currentUsername = `${originalUsername}${nikNipPart}`;
                 currentEmail = `${currentUsername}@sinjaikab.go.id`;
             }
         }
