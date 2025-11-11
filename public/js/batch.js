@@ -176,7 +176,23 @@ document.addEventListener("DOMContentLoaded", function () {
           successCount++;
         } else {
           user.status = "failed";
-          user.errorMessage = res.message; // Store the error message
+          let originalErrorMessage = res.message;
+          let simplifiedErrorMessage = originalErrorMessage;
+
+          // Regex to find password strength details
+          const passwordStrengthRegex = /strength rating of “(\d+)”.*strength rating of “(\d+)”/;
+          const match = originalErrorMessage.match(passwordStrengthRegex);
+
+          if (match && match.length === 3) {
+            const currentStrength = match[1];
+            const requiredStrength = match[2];
+            simplifiedErrorMessage = `Password too weak. Current strength: ${currentStrength}, required: ${requiredStrength}.`;
+          } else if (originalErrorMessage.includes("already exists")) {
+            simplifiedErrorMessage = "Email already exists.";
+          }
+          // Add other simplification rules here if needed
+
+          user.errorMessage = simplifiedErrorMessage; // Store the simplified message
           failureCount++;
         }
       }
