@@ -343,7 +343,7 @@ class Email extends BaseController
 
                 foreach ($chunks as $chunk) {
                     $csvFileName = 'email_addresses_part_' . $fileCount . '.csv';
-                    
+
                     $stream = fopen('php://memory', 'w+');
                     fputcsv($stream, ['name', 'email'], ','); // Fixed headers and delimiter
                     foreach ($chunk as $row) {
@@ -362,11 +362,11 @@ class Email extends BaseController
                 header('Content-Type: application/zip');
                 header('Content-Disposition: attachment; filename="' . $zipFileName . '"');
                 header('Content-Length: ' . filesize($tempZipPath));
-                
+
                 readfile($tempZipPath);
-                
+
                 unlink($tempZipPath);
-                
+
                 exit();
             }
         } catch (Exception $e) {
@@ -422,7 +422,7 @@ class Email extends BaseController
 
             if ($totalEmails <= $limit) {
                 // Original logic for a single file
-                $filename = 'export_' . url_title($unitKerjaName, '_', true) . '_' . date('Y-m-d') . '.csv';
+                $filename = url_title($unitKerjaName, '_', true) . '.csv';
 
                 header('Content-Type: text/csv');
                 header('Content-Disposition: attachment; filename="' . $filename . '"');
@@ -437,7 +437,7 @@ class Email extends BaseController
             } else {
                 // New logic for multiple files (ZIP archive)
                 $zip = new \ZipArchive();
-                $zipFileName = 'export_' . url_title($unitKerjaName, '_', true) . '_' . date('Y-m-d') . '.zip';
+                $zipFileName = url_title($unitKerjaName, '_', true) . '.zip';
                 $tempZipPath = WRITEPATH . 'uploads/' . $zipFileName;
 
                 if ($zip->open($tempZipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== TRUE) {
@@ -448,8 +448,8 @@ class Email extends BaseController
                 $fileCount = 1;
 
                 foreach ($chunks as $chunk) {
-                    $csvFileName = 'export_' . url_title($unitKerjaName, '_', true) . '_part_' . $fileCount . '.csv';
-                    
+                    $csvFileName = url_title($unitKerjaName, '_', true) . '_part_' . $fileCount . '.csv';
+
                     // Using memory stream to avoid creating temporary CSV files on disk
                     $stream = fopen('php://memory', 'w+');
                     fputcsv($stream, ['nama', 'emailAddress'], ',');
@@ -469,12 +469,12 @@ class Email extends BaseController
                 header('Content-Type: application/zip');
                 header('Content-Disposition: attachment; filename="' . $zipFileName . '"');
                 header('Content-Length: ' . filesize($tempZipPath));
-                
+
                 readfile($tempZipPath);
-                
+
                 // Clean up the temporary zip file
                 unlink($tempZipPath);
-                
+
                 exit();
             }
         } catch (Exception $e) {
@@ -662,6 +662,32 @@ class Email extends BaseController
             default:
                 $builder->orderBy('mtime', 'DESC');
                 break;
+        }
+    }
+
+    public function delete($id)
+    {
+        try {
+            $email = $this->emailModel->find($id);
+
+            if (!$email) {
+                return redirect()->to('email')->with('error', 'Email account not found.');
+            }
+
+            // Delete from cPanel
+            $this->cpanelApi->delete_email_account($email['email']);
+
+            // Delete from local database
+            $this->emailModel->delete($id);
+
+            return redirect()->to('email')->with('success', 'Email account ' . $email['email'] . ' has been deleted successfully.');
+        } catch (Exception $e) {
+            // If cPanel deletion fails, we still might want to delete from local DB or handle differently
+            // For now, just log the error and redirect with a generic error message.
+            log_message('error', 'Failed to delete email: ' . $e->getMessage());
+            // Optionally, attempt to delete from local DB even if cPanel fails
+            $this->emailModel->delete($id);
+            return redirect()->to('email')->with('error', 'Failed to delete email account from cPanel, but removed from local list. Please check cPanel manually.');
         }
     }
 }

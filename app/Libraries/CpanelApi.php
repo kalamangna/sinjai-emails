@@ -133,4 +133,22 @@ class CpanelApi
             throw new Exception('Failed to create email account: ' . $e->getMessage());
         }
     }
+
+    public function delete_email_account($email)
+    {
+        try {
+            list($user, $domain) = explode('@', $email);
+
+            $parameters = [
+                'email' => $user,
+                'domain' => $domain,
+            ];
+
+            $response = $this->make_request('Email', 'delete_pop', 'POST', $parameters);
+            return $response;
+        } catch (Exception $e) {
+            log_message('error', 'Failed to delete email account: ' . $e->getMessage());
+            throw new Exception('Failed to delete email account: ' . $e->getMessage());
+        }
+    }
 }
