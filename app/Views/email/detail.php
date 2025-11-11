@@ -215,7 +215,19 @@
                 <strong class="text-muted">NIK/NIP:</strong>
               </div>
               <div class="col-6">
-                <?= esc($email['nik_nip']) ?>
+                <?php
+                $nik_nip = esc($email['nik_nip']);
+                $length = strlen($nik_nip);
+                if ($length >= 6) {
+                    $highlight_start_index = $length - 6;
+                    $before_highlight = substr($nik_nip, 0, $highlight_start_index);
+                    $highlight_chars = substr($nik_nip, $highlight_start_index, 2);
+                    $after_highlight = substr($nik_nip, $highlight_start_index + 2);
+                    echo $before_highlight . '<span style="background-color: yellow; font-weight: bold;">' . $highlight_chars . '</span>' . $after_highlight;
+                } else {
+                    echo $nik_nip;
+                }
+                ?>
               </div>
             </div>
             <div class="row mb-3">
