@@ -78,20 +78,43 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     }
 
-    const checkPromises = userBatch.map((user) => {
-      if (user.isDuplicate) {
-        return Promise.resolve(user);
-      }
-      return checkEmailAvailability(user.email).then((result) => {
-        user.isAvailable = result.available;
-        if (!result.available) {
-          allEmailsValid = false;
+    for (const user of userBatch) {
+        if (user.isDuplicate) {
+            allEmailsValid = false;
+            continue;
         }
-        return user;
-      });
-    });
 
-    await Promise.all(checkPromises);
+        let result = await checkEmailAvailability(user.email);
+        user.isAvailable = result.available;
+
+        if (!user.isAvailable) {
+            allEmailsValid = false;
+            const nikNipPart = getNikNipPart(user.nikNip);
+            const originalUsername = user.generatedUsername;
+            
+            const newUsername = `${originalUsername}${nikNipPart}`;
+            const domain = "@sinjaikab.go.id";
+            const newEmail = `${newUsername}${domain}`;
+
+            // Check for duplicates in the batch for the new email
+            const isDuplicateInBatch = userBatch.some((otherUser) => otherUser.email === newEmail && otherUser !== user);
+            if (isDuplicateInBatch) {
+                user.isDuplicate = true;
+                user.isAvailable = false;
+                continue; // Move to the next user
+            }
+
+            user.email = newEmail;
+            user.generatedUsername = newUsername;
+
+            // Re-check availability for the new email
+            result = await checkEmailAvailability(user.email);
+            user.isAvailable = result.available;
+            if (!user.isAvailable) {
+                allEmailsValid = false;
+            }
+        }
+    }
 
     renderResults(userBatch);
 
@@ -196,6 +219,15 @@ document.addEventListener("DOMContentLoaded", function () {
     const capitalizedNamePart =
       namePart.charAt(0).toUpperCase() + namePart.slice(1);
     return `${capitalizedNamePart}@${day}#`;
+  }
+
+  function getNikNipPart(nikNip) {
+    if (typeof nikNip !== 'string' || nikNip.length < 6) {
+        return '';
+    }
+    const length = nikNip.length;
+    const startIndex = length - 6;
+    return nikNip.substring(startIndex, startIndex + 2);
   }
 
   async function checkEmailAvailability(email) {
