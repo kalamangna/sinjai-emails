@@ -267,7 +267,7 @@ document.addEventListener("DOMContentLoaded", function () {
       let emailCellContent;
       let passwordCellContent;
       let nameCellContent; // New
-      let isEmailEditable = !user.isAvailable || user.isDuplicate;
+      let isEmailEditable = true;
       let isPasswordEditable = user.status === "failed";
       let isNameEditable = true; // Assuming names are always editable before submission
 
