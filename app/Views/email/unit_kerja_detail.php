@@ -16,7 +16,7 @@
     </div>
 
     <!-- Unit Kerja Header -->
-    <div class="card border-0 shadow-sm mb-4">
+    <div class="card shadow-sm mb-4">
       <div class="card-header bg-light py-3">
         <h5 class="card-title mb-0">
           <i class="fas fa-building me-2 text-primary"></i>Unit Kerja: <?= esc($unit_kerja_name) ?>
@@ -28,7 +28,7 @@
     </div>
 
     <!-- Email List for Unit Kerja -->
-    <div class="card border-0 shadow-sm">
+    <div class="card shadow-sm">
       <div class="card-header bg-light py-3">
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
           <h5 class="card-title mb-2 mb-md-0">

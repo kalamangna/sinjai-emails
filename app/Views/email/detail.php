@@ -25,7 +25,7 @@
     </div>
 
     <!-- Email Header -->
-    <div class="card border-0 shadow-sm mb-4">
+    <div class="card shadow-sm mb-4">
       <div class="card-header bg-light py-3">
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
           <h5 class="card-title mb-2 mb-md-0">
@@ -60,7 +60,7 @@
     <!-- Disk Usage Information -->
     <div class="row">
       <div class="col-lg-12 mb-4">
-        <div class="card border-0 shadow-sm">
+        <div class="card shadow-sm">
           <div class="card-header bg-light py-3">
             <h5 class="card-title mb-0">
               <i class="fas fa-hdd me-2 text-info"></i>Disk Usage
@@ -179,7 +179,7 @@
 
       <!-- Account Information -->
       <div class="col-lg-12 mb-4">
-        <div class="card border-0 shadow-sm">
+        <div class="card shadow-sm">
           <div class="card-header bg-light py-3">
             <h5 class="card-title mb-0">
               <i class="fas fa-info-circle me-2 text-primary"></i>Account Details
@@ -298,7 +298,7 @@
     <!-- Quick Actions -->
     <div class="row">
       <div class="col-12">
-        <div class="card border-0 shadow-sm">
+        <div class="card shadow-sm">
           <div class="card-header bg-light py-3">
             <h5 class="card-title mb-0">
               <i class="fas fa-bolt me-2 text-danger"></i>Quick Actions
