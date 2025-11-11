@@ -1,9 +1,5 @@
 <?= $this->extend('templates/layout') ?>
 
-<?= $this->section('title') ?>
-Email Dashboard - Sinjai Emails
-<?= $this->endSection() ?>
-
 <?= $this->section('content') ?>
 <div id="flash-message-container">
     <!-- Flash Messages -->
