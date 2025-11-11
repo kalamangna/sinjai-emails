@@ -375,7 +375,7 @@ class Email extends BaseController
             }
 
             $unitKerjaName = $unitKerja['nama_unit_kerja'];
-            $emails = $this->emailModel->where('unit_kerja', $unitKerjaName)->findAll();
+            $emails = $this->emailModel->where('unit_kerja', $unitKerjaName)->orderBy('name', 'ASC')->findAll();
             $totalEmails = count($emails);
 
             $data = [

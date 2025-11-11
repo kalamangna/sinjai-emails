@@ -260,10 +260,12 @@ document.addEventListener("DOMContentLoaded", function () {
         passwordCellContent = user.password;
       }
 
+      const highlightedNikNip = highlightNikNip(user.nikNip);
+
       const row = `
                 <tr>
                     <td>${index + 1}</td>
-                    <td>${user.nikNip}</td>
+                    <td>${highlightedNikNip}</td>
                     <td>${user.name.toUpperCase()}</td>
                     <td>${user.unitKerja}</td>
                     <td>${emailCellContent}</td>
@@ -382,5 +384,17 @@ document.addEventListener("DOMContentLoaded", function () {
     // 2. There are no problematic emails that are still pending (hasProblematicPendingEmails is false).
     submitBtn.disabled =
       validUserBatch.length === 0 || hasProblematicPendingEmails;
+  }
+
+  function highlightNikNip(nikNip) {
+    if (typeof nikNip !== 'string' || nikNip.length < 6) {
+        return nikNip;
+    }
+    const length = nikNip.length;
+    const highlightStartIndex = length - 6;
+    const beforeHighlight = nikNip.substring(0, highlightStartIndex);
+    const highlightChars = nikNip.substring(highlightStartIndex, highlightStartIndex + 2);
+    const afterHighlight = nikNip.substring(highlightStartIndex + 2);
+    return `${beforeHighlight}<span style="background-color: yellow; font-weight: bold;">${highlightChars}</span>${afterHighlight}`;
   }
 });
