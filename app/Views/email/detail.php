@@ -38,7 +38,7 @@
           <?php endif; ?>
         </div>
       </div>
-      <div class="card-body">
+      <div class="card-body py-4">
         <div class="row align-items-center">
           <div class="col-md-8">
             <h3 class="text-primary mb-2"><?= esc($email['email']) ?></h3>
@@ -66,7 +66,7 @@
               <i class="fas fa-hdd me-2 text-info"></i>Disk Usage
             </h5>
           </div>
-          <div class="card-body">
+          <div class="card-body py-4">
             <?php
             // Cek apakah kuota unlimited berdasarkan respon API
             $is_unlimited = ($email['diskquota'] ?? '') == 'unlimited' ||
@@ -185,7 +185,7 @@
               <i class="fas fa-info-circle me-2 text-primary"></i>Account Details
             </h5>
           </div>
-          <div class="card-body">
+          <div class="card-body py-4">
             <div class="row mb-3">
               <div class="col-6">
                 <strong class="text-muted">Name:</strong>
@@ -304,7 +304,7 @@
               <i class="fas fa-bolt me-2 text-danger"></i>Quick Actions
             </h5>
           </div>
-          <div class="card-body">
+          <div class="card-body py-4">
             <div class="row g-3">
               <div class="col-md-3 col-sm-6">
                 <button class="btn btn-outline-primary w-100" onclick="copyToClipboard('<?= esc($email['email'], 'js') ?>')">

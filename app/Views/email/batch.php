@@ -50,7 +50,7 @@
                 Generated Emails
             </h5>
         </div>
-        <div class="card-body">
+        <div class="card-body p-0">
             <div class="table-responsive">
                 <table id="results_table" class="table table-striped table-hover">
                     <thead class="table-light">
