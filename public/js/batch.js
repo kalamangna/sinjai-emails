@@ -344,15 +344,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Update userBatch and re-check availability
     userBatch[index].email = newEmail;
-    userBatch[index].isDuplicate = false; // Reset duplicate status
-    userBatch[index].isAvailable = false; // Reset availability status
 
-    // Temporarily update status badge to indicate re-checking
-    const statusCell = editedCell.closest("tr").cells[6]; // Assuming status is the 7th column (index 6)
-    statusCell.innerHTML = '<span class="badge bg-info">Re-checking...</span>';
+    // Check for duplicates within the current batch
+    const isDuplicateInBatch = userBatch.some((user, i) => user.email === newEmail && i !== index);
 
-    const result = await checkEmailAvailability(newEmail);
-    userBatch[index].isAvailable = result.available;
+    if (isDuplicateInBatch) {
+        userBatch[index].isDuplicate = true;
+        userBatch[index].isAvailable = false;
+    } else {
+        userBatch[index].isDuplicate = false;
+        // Only check with the server if it's not a duplicate in the batch
+        const statusCell = editedCell.closest("tr").cells[6];
+        statusCell.innerHTML = '<span class="badge bg-info">Re-checking...</span>';
+
+        const result = await checkEmailAvailability(newEmail);
+        userBatch[index].isAvailable = result.available;
+    }
 
     // Re-render the specific row or the entire table to reflect new status
     // For simplicity, re-rendering the entire table for now.
