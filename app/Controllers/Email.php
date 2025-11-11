@@ -295,6 +295,28 @@ class Email extends BaseController
         return redirect()->to('email');
     }
 
+    public function update_name($username)
+    {
+        if ($this->request->getMethod() === 'post') {
+            $name = $this->request->getPost('name');
+
+            $email = $this->emailModel->where('user', $username)->first();
+            if (!$email) {
+                return redirect()->to('email')->with('error', 'Email account not found.');
+            }
+
+            $updated = $this->emailModel->update($email['id'], ['name' => $name]);
+
+            if ($updated) {
+                return redirect()->to('email/detail/' . $username)->with('success', 'Name has been updated successfully.');
+            } else {
+                return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update name.');
+            }
+        }
+
+        return redirect()->to('email');
+    }
+
     public function export_csv()
     {
         try {

@@ -191,7 +191,14 @@
                 <strong class="text-muted">Name:</strong>
               </div>
               <div class="col-6">
-                <?= esc($email['name']) ?>
+                <form action="<?= site_url('email/update_name/' . $email['user']) ?>" method="post" id="name-form">
+                    <div class="input-group">
+                        <input type="text" name="name" id="name-input" value="<?= esc($email['name']) ?>" class="form-control" readonly>
+                        <button type="button" id="edit-name-btn" class="btn btn-outline-secondary"><i class="fas fa-pencil-alt"></i></button>
+                        <button type="submit" id="save-name-btn" class="btn btn-primary d-none"><i class="fas fa-save"></i></button>
+                        <button type="button" id="cancel-name-btn" class="btn btn-outline-secondary d-none"><i class="fas fa-times"></i></button>
+                    </div>
+                </form>
               </div>
             </div>
             <div class="row mb-3">
@@ -344,4 +351,29 @@
       alert('Failed to copy email: ' + err);
     });
   }
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const editBtn = document.getElementById('edit-name-btn');
+    const saveBtn = document.getElementById('save-name-btn');
+    const cancelBtn = document.getElementById('cancel-name-btn');
+    const nameInput = document.getElementById('name-input');
+    const originalName = nameInput.value;
+
+    editBtn.addEventListener('click', function() {
+        nameInput.removeAttribute('readonly');
+        nameInput.focus();
+        editBtn.classList.add('d-none');
+        saveBtn.classList.remove('d-none');
+        cancelBtn.classList.remove('d-none');
+    });
+
+    cancelBtn.addEventListener('click', function() {
+        nameInput.setAttribute('readonly', true);
+        nameInput.value = originalName;
+        editBtn.classList.remove('d-none');
+        saveBtn.classList.add('d-none');
+        cancelBtn.classList.add('d-none');
+    });
+});
 </script>
