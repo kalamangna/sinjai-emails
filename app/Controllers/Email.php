@@ -35,7 +35,7 @@ class Email extends BaseController
             $search = $this->request->getGet('search');
             $status = $this->request->getGet('status');
             $perPage = $this->request->getGet('per_page') ?? 100;
-            $sort = $this->request->getGet('sort') ?? 'newest';
+            $sort = $this->request->getGet('sort') ?? 'newest'; // Default to 'newest' (mtime DESC)
 
             $builder = $this->emailModel;
 
@@ -81,23 +81,17 @@ class Email extends BaseController
                 'unit_kerja_list' => $unitKerjaList,
             ];
 
-            return view('templates/header') .
-                view('email/index', $data) .
-                view('templates/footer');
+            return view('email/index', $data);
         } catch (Exception $e) {
             $data['error'] = $e->getMessage();
-            return view('templates/header') .
-                view('email/error', $data) .
-                view('templates/footer');
+            return view('email/error', $data);
         }
     }
 
     public function batch()
     {
         $data['unit_kerja'] = $this->unitKerjaModel->findAll();
-        return view('templates/header') .
-            view('email/batch', $data) .
-            view('templates/footer');
+        return view('email/batch', $data);
     }
 
     public function batch_update()
@@ -260,15 +254,11 @@ class Email extends BaseController
             $currentUnitKerja = $this->unitKerjaModel->where('nama_unit_kerja', $email_detail['unit_kerja'])->first();
             $data['current_unit_kerja_id'] = $currentUnitKerja['id'] ?? null;
 
-            return view('templates/header') .
-                view('email/detail', $data) .
-                view('templates/footer');
+            return view('email/detail', $data);
         } catch (Exception $e) {
             $data['error'] = $e->getMessage();
             $data['back_url'] = site_url('email');
-            return view('templates/header') .
-                view('email/error', $data) .
-                view('templates/footer');
+            return view('email/error', $data);
         }
     }
 
@@ -408,15 +398,11 @@ class Email extends BaseController
                 'total_emails' => $totalEmails,
             ];
 
-            return view('templates/header') .
-                view('email/unit_kerja_detail', $data) .
-                view('templates/footer');
+            return view('email/unit_kerja_detail', $data);
         } catch (Exception $e) {
             $data['error'] = $e->getMessage();
             $data['back_url'] = site_url('email');
-            return view('templates/header') .
-                view('email/error', $data) .
-                view('templates/footer');
+            return view('email/error', $data);
         }
     }
 

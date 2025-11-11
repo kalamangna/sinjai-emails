@@ -1,3 +1,6 @@
+<?= $this->extend('templates/layout') ?>
+
+<?= $this->section('content') ?>
 <div class="row">
   <div class="col-12">
     <div id="flash-message-container">
@@ -333,7 +336,9 @@
     </div>
   </div>
 </div>
+<?= $this->endSection() ?>
 
+<?= $this->section('scripts') ?>
 <script>
   function copyToClipboard(text) {
     navigator.clipboard.writeText(text).then(function() {
@@ -377,3 +382,4 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+<?= $this->endSection() ?>

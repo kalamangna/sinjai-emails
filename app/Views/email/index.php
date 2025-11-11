@@ -1,3 +1,6 @@
+<?= $this->extend('templates/layout') ?>
+
+<?= $this->section('content') ?>
 <div id="flash-message-container">
     <!-- Flash Messages -->
     <?php if (session()->getFlashdata('success')): ?>
@@ -394,7 +397,9 @@
         </div>
     </div>
 </div>
+<?= $this->endSection() ?>
 
+<?= $this->section('scripts') ?>
 <script>
     document.getElementById('syncButton').addEventListener('click', function(e) {
         e.preventDefault(); // Prevent default link navigation
@@ -470,3 +475,4 @@
         }
     });
 </script>
+<?= $this->endSection() ?>

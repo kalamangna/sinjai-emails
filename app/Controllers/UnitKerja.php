@@ -18,10 +18,9 @@ class UnitKerja extends BaseController
         }
 
         $data['search'] = $search;
+        $data['title'] = 'Manage Unit Kerja';
 
-        return view('templates/header', ['title' => 'Manage Unit Kerja'])
-            . view('unit_kerja/manage', $data)
-            . view('templates/footer');
+        return view('unit_kerja/manage', $data);
     }
 
     public function add()
@@ -38,10 +37,9 @@ class UnitKerja extends BaseController
     {
         $unitKerjaModel = new UnitKerjaModel();
         $data['unit_kerja'] = $unitKerjaModel->find($id);
+        $data['title'] = 'Edit Unit Kerja';
 
-        return view('templates/header', ['title' => 'Edit Unit Kerja'])
-            . view('unit_kerja/edit', $data)
-            . view('templates/footer');
+        return view('unit_kerja/edit', $data);
     }
 
     public function update($id)

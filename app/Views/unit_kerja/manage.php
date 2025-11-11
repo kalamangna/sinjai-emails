@@ -1,3 +1,6 @@
+<?= $this->extend('templates/layout') ?>
+
+<?= $this->section('content') ?>
     <div class="row">
         <div class="col-12">
             <div class="card shadow-sm">
@@ -62,3 +65,4 @@
             </div>
         </div>
     </div>
+<?= $this->endSection() ?>

@@ -1,3 +1,6 @@
+<?= $this->extend('templates/layout') ?>
+
+<?= $this->section('content') ?>
 <div class="row">
   <div class="col-12">
     <!-- Back Button -->
@@ -125,3 +128,4 @@
     </div>
   </div>
 </div>
+<?= $this->endSection() ?>
