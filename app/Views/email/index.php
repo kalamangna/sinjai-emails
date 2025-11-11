@@ -20,10 +20,7 @@
 <div class="row mb-4">
     <div class="col-12">
         <div class="row g-3">
-            <!-- Total Accounts Card -->
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body text-center py-4">
+<div class="card-body text-center">
                         <div class="mb-3">
                             <i class="fas fa-envelope fa-3x text-primary"></i>
                         </div>
@@ -36,7 +33,7 @@
             <!-- Active Accounts Card -->
             <div class="col-md-4">
                 <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body text-center py-4">
+                    <div class="card-body text-center">
                         <div class="mb-3">
                             <i class="fas fa-check-circle fa-3x text-success"></i>
                         </div>
@@ -46,10 +43,7 @@
                 </div>
             </div>
 
-            <!-- Suspended Accounts Card -->
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body text-center py-4">
+<div class="card-body text-center">
                         <div class="mb-3">
                             <i class="fas fa-times-circle fa-3x text-danger"></i>
                         </div>
