@@ -47,7 +47,7 @@
                             <?php foreach ($unit_kerja_list as $unit): ?>
                                 <tr>
                                     <td><?= $unit['id'] ?></td>
-                                    <td><?= esc($unit['nama_unit_kerja']) ?></td>
+                                    <td><?= strtoupper(esc($unit['nama_unit_kerja'])) ?></td>
                                     <td>
                                         <a href="<?= site_url('unit_kerja/edit/' . $unit['id']) ?>" class="btn btn-sm btn-outline-primary">
                                             <i class="fas fa-edit"></i>

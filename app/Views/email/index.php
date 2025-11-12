@@ -164,9 +164,10 @@
                             <option value="oldest" <?= (isset($sort) && $sort == 'oldest') ? 'selected' : '' ?>>Oldest</option>
                             <option value="email_asc" <?= (isset($sort) && $sort == 'email_asc') ? 'selected' : '' ?>>A-Z Email</option>
                             <option value="email_desc" <?= (isset($sort) && $sort == 'email_desc') ? 'selected' : '' ?>>Z-A Email</option>
+                            <option value="unit_kerja_asc" <?= (isset($sort) && $sort == 'unit_kerja_asc') ? 'selected' : '' ?>>A-Z Unit Kerja</option>
+                            <option value="unit_kerja_desc" <?= (isset($sort) && $sort == 'unit_kerja_desc') ? 'selected' : '' ?>>Z-A Unit Kerja</option>
                             <option value="usage_asc" <?= (isset($sort) && $sort == 'usage_asc') ? 'selected' : '' ?>>Usage Asc</option>
                             <option value="usage_desc" <?= (isset($sort) && $sort == 'usage_desc') ? 'selected' : '' ?>>Usage Desc</option>
-                            <option value="status" <?= (isset($sort) && $sort == 'status') ? 'selected' : '' ?>>Status</option>
                         </select>
                     </div>
 
@@ -229,6 +230,9 @@
                                         <?php endif; ?>
                                     </th>
                                     <th class="text-center">
+                                        <i class="fas fa-building me-2"></i>Unit Kerja
+                                    </th>
+                                    <th class="text-center">
                                         <i class="fas fa-chart-pie me-2"></i>Disk Usage
                                         <?php if (isset($sort) && in_array($sort, ['usage_asc', 'usage_desc'])): ?>
                                             <i class="fas fa-sort-<?= $sort == 'usage_asc' ? 'down' : 'up' ?> text-primary"></i>
@@ -238,12 +242,6 @@
                                         <i class="fas fa-calendar me-2"></i>Modified
                                         <?php if (isset($sort) && in_array($sort, ['newest', 'oldest'])): ?>
                                             <i class="fas fa-sort-<?= $sort == 'newest' ? 'down' : 'up' ?> text-primary"></i>
-                                        <?php endif; ?>
-                                    </th>
-                                    <th class="text-center">
-                                        <i class="fas fa-circle me-2"></i>Status
-                                        <?php if (isset($sort) && $sort == 'status'): ?>
-                                            <i class="fas fa-sort text-primary"></i>
                                         <?php endif; ?>
                                     </th>
                                     <th class="text-center">
@@ -270,7 +268,7 @@
                                     ?>
 
                                     <tr>
-                                        <td class="ps-4">
+                                        <td class="ps-4 align-middle">
                                             <div class="d-flex align-items-center">
                                                 <i class="fas fa-envelope text-primary me-3"></i>
                                                 <div>
@@ -278,6 +276,9 @@
                                                     <small class="text-muted"><?= esc($email['domain']) ?></small>
                                                 </div>
                                             </div>
+                                        </td>
+                                        <td class="text-center align-middle">
+                                            <small><?= esc($email['unit_kerja']) ?: '-' ?></small>
                                         </td>
                                         <td class="text-center align-middle">
                                             <div class="d-flex flex-column align-items-center">
@@ -322,13 +323,6 @@
                                                     -
                                                 <?php endif; ?>
                                             </small>
-                                        </td>
-                                        <td class="text-center align-middle">
-                                            <?php if (($email['suspended_login'] ?? 0) == 0): ?>
-                                                <span class="badge bg-success">Active</span>
-                                            <?php else: ?>
-                                                <span class="badge bg-danger">Suspended</span>
-                                            <?php endif; ?>
                                         </td>
                                         <td class="text-center align-middle">
                                             <a href="<?= site_url('email/detail/' . $email['user']) ?>"

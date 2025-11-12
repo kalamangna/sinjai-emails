@@ -650,14 +650,17 @@ class Email extends BaseController
             case 'email_desc':
                 $builder->orderBy('email', 'DESC');
                 break;
+            case 'unit_kerja_asc':
+                $builder->orderBy('unit_kerja', 'ASC');
+                break;
+            case 'unit_kerja_desc':
+                $builder->orderBy('unit_kerja', 'DESC');
+                break;
             case 'usage_asc':
                 $builder->orderBy('diskusedpercent_float', 'ASC');
                 break;
             case 'usage_desc':
                 $builder->orderBy('diskusedpercent_float', 'DESC');
-                break;
-            case 'status':
-                $builder->orderBy('suspended_login', 'ASC');
                 break;
             default:
                 $builder->orderBy('mtime', 'DESC');
