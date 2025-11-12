@@ -30,16 +30,34 @@
                     </div>
                 </div>
             </div>
+
             <div class="mb-3">
-                <label for="unit_kerja_input" class="form-label">Unit Kerja</label>
-                <select class="form-select" id="unit_kerja_input">
+                <label class="form-label">Unit Kerja Mode:</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="unitKerjaMode" id="mode_single" value="single" checked>
+                    <label class="form-check-label" for="mode_single">Single Unit Kerja (for all)</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="unitKerjaMode" id="mode_multiple" value="multiple">
+                    <label class="form-check-label" for="mode_multiple">Multiple Unit Kerja (one per line)</label>
+                </div>
+            </div>
+
+            <div id="single_unit_kerja_wrapper" class="mb-3">
+                <label for="unit_kerja_input_single" class="form-label">Unit Kerja</label>
+                <select class="form-select" id="unit_kerja_input_single">
                     <option selected disabled value="">Choose...</option>
                     <?php foreach ($unit_kerja as $unit) : ?>
                         <option value="<?= esc($unit['nama_unit_kerja']); ?>"><?= esc($unit['nama_unit_kerja']); ?></option>
                     <?php endforeach; ?>
-                    <option value="Lainnya">Lainnya</option>
                 </select>
             </div>
+
+            <div id="multiple_unit_kerja_wrapper" class="mb-3" style="display: none;">
+                <label for="unit_kerja_input_multiple" class="form-label">Enter one Unit Kerja per line.</label>
+                <textarea class="form-control" id="unit_kerja_input_multiple" rows="8" placeholder="e.g.&#10;Dinas Komunikasi dan Informatika&#10;Badan Perencanaan Pembangunan"></textarea>
+            </div>
+
             <button id="generate_btn" class="btn btn-primary">
                 <i class="fas fa-cogs me-2"></i>Generate
             </button>
@@ -102,5 +120,8 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
+<script>
+    const unitKerjaOptions = <?= json_encode(array_map(function($unit) { return ['id' => $unit['id'], 'nama_unit_kerja' => $unit['nama_unit_kerja']]; }, $unit_kerja)) ?>;
+</script>
 <script src="/js/batch.js"></script>
 <?= $this->endSection() ?>

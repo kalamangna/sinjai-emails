@@ -1,7 +1,15 @@
 document.addEventListener("DOMContentLoaded", function () {
   const nameInput = document.getElementById("name_input");
   const nikNipInput = document.getElementById("nik_nip_input");
-  const unitKerjaInput = document.getElementById("unit_kerja_input");
+  
+  // Mode selection elements
+  const modeSingleRadio = document.getElementById("mode_single");
+  const modeMultipleRadio = document.getElementById("mode_multiple");
+  const singleUnitKerjaWrapper = document.getElementById("single_unit_kerja_wrapper");
+  const multipleUnitKerjaWrapper = document.getElementById("multiple_unit_kerja_wrapper");
+  const unitKerjaInputSingle = document.getElementById("unit_kerja_input_single");
+  const unitKerjaInputMultiple = document.getElementById("unit_kerja_input_multiple");
+
   const generateBtn = document.getElementById("generate_btn");
   const resultsTableBody = document.querySelector("#results_table tbody");
   const submitBtn = document.getElementById("submit_btn");
@@ -15,19 +23,59 @@ document.addEventListener("DOMContentLoaded", function () {
   let validUserBatch = [];
   let userBatch = [];
 
-  generateBtn.addEventListener("click", async function () {
-    const names = nameInput.value
-      .trim()
-      .split("\n")
-      .filter((name) => name.trim() !== "");
-    const nikNips = nikNipInput.value
-      .trim()
-      .split("\n")
-      .filter((nikNip) => nikNip.trim() !== "");
-    const unitKerja = unitKerjaInput.value;
+  // Create a Set of valid unit_kerja names for quick, case-insensitive lookup
+  const validUnitKerjaNames = new Set(unitKerjaOptions.map(option => option.nama_unit_kerja.toLowerCase()));
 
-    if (names.length === 0 || nikNips.length === 0 || names.length !== nikNips.length || !unitKerja) {
-      alert("Please ensure all fields are filled correctly and the number of names and NIK/NIPs match.");
+  // Event listeners for mode switching
+  modeSingleRadio.addEventListener('change', () => {
+    singleUnitKerjaWrapper.style.display = 'block';
+    multipleUnitKerjaWrapper.style.display = 'none';
+  });
+
+  modeMultipleRadio.addEventListener('change', () => {
+    singleUnitKerjaWrapper.style.display = 'none';
+    multipleUnitKerjaWrapper.style.display = 'block';
+  });
+
+  generateBtn.addEventListener("click", async function () {
+    const names = nameInput.value.trim().split("\n").filter(name => name.trim() !== "");
+    const nikNips = nikNipInput.value.trim().split("\n").filter(nikNip => nikNip.trim() !== "");
+    const mode = document.querySelector('input[name="unitKerjaMode"]:checked').value;
+    
+    let unitKerjaValues = [];
+    let validationError = "";
+
+    if (names.length === 0) {
+      validationError = "Please enter at least one name.";
+    } else if (nikNips.length === 0) {
+      validationError = "Please enter at least one NIK/NIP.";
+    } else if (names.length !== nikNips.length) {
+      validationError = "The number of names and NIK/NIPs must match.";
+    }
+
+    if (mode === 'single') {
+      const singleUnitKerja = unitKerjaInputSingle.value;
+      if (!singleUnitKerja) {
+        validationError = "Please select a Unit Kerja.";
+      } else {
+        for (let i = 0; i < names.length; i++) {
+          unitKerjaValues.push(singleUnitKerja);
+        }
+      }
+    } else { // multiple mode
+      unitKerjaValues = unitKerjaInputMultiple.value.trim().split("\n").filter(uk => uk.trim() !== "");
+      if (unitKerjaValues.length > 0 && unitKerjaValues.length !== names.length) {
+        validationError = "The number of Unit Kerja entries must match the number of names and NIK/NIPs.";
+      }
+      if (unitKerjaValues.length === 0) {
+        for (let i = 0; i < names.length; i++) {
+          unitKerjaValues.push("");
+        }
+      }
+    }
+
+    if (validationError) {
+      alert(validationError);
       return;
     }
 
@@ -42,6 +90,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const name = names[i];
       const cleanedName = name.replace(/[,.']/g, "");
       const nikNip = nikNips[i];
+      const unitKerja = unitKerjaValues[i];
       const password = generatePassword(cleanedName);
       const { username: originalUsername, email: originalEmail } = generateEmail(cleanedName);
       
@@ -77,7 +126,7 @@ document.addEventListener("DOMContentLoaded", function () {
       userBatch.push({
         name: cleanedName.trim(),
         nikNip: nikNip.trim(),
-        unitKerja: unitKerja,
+        unitKerja: unitKerja.trim(),
         generatedUsername: currentUsername,
         email: currentEmail,
         password: password,
@@ -157,14 +206,15 @@ document.addEventListener("DOMContentLoaded", function () {
           userBatch = userBatch.filter(user => user.status === "failed");
           renderResults(userBatch);
           alert(`Batch submission completed with ${failureCount} errors. Please review the statuses and logs, edit passwords for failed entries if needed, and click "Submit Batch" again.`);
+          progressSection.style.display = "none";
       } else {
-          renderResults(userBatch); // Show all as "created" before redirecting
+          renderResults(userBatch);
           alert(`Successfully created all ${successCount} email accounts!`);
           setTimeout(() => { window.location.href = "/email"; }, 1000);
       }
     } finally {
       submitBtn.innerHTML = `<i class="fas fa-check-circle me-2"></i>Submit Batch`;
-      if (failureCount > 0) { // Only re-evaluate button state if not redirecting
+      if (failureCount > 0) {
           updateSubmitButtonState();
       }
     }
@@ -235,16 +285,21 @@ document.addEventListener("DOMContentLoaded", function () {
         statusBadge = '<span class="badge bg-danger">Used</span>';
       }
 
+      const isUnitKerjaValid = validUnitKerjaNames.has(user.unitKerja.toLowerCase());
+      const unitKerjaCellClass = !isUnitKerjaValid && user.unitKerja !== '' ? 'table-danger' : '';
+      const unitKerjaTitle = !isUnitKerjaValid && user.unitKerja !== '' ? 'This Unit Kerja does not exist.' : '';
+
       const nameCellContent = `<span contenteditable="true" class="editable-name" data-name-index="${index}">${user.name.toUpperCase()}</span>`;
       const emailCellContent = `<span contenteditable="true" class="editable-email" data-email-index="${index}">${user.email}</span>`;
       const passwordCellContent = `<span contenteditable="true" class="editable-password" data-password-index="${index}">${user.password}</span>`;
+      const unitKerjaCellContent = `<span contenteditable="true" class="editable-unit-kerja" data-unit-kerja-index="${index}">${user.unitKerja}</span>`;
       
       const row = `
         <tr>
             <td>${index + 1}</td>
             <td>${highlightNikNip(user.nikNip)}</td>
             <td>${nameCellContent}</td>
-            <td>${user.unitKerja}</td>
+            <td class="${unitKerjaCellClass}" title="${unitKerjaTitle}">${unitKerjaCellContent}</td>
             <td>${emailCellContent}</td>
             <td>${passwordCellContent}</td>
             <td class="text-center">${statusBadge}</td>
@@ -269,7 +324,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function addEditableListeners() {
-    document.querySelectorAll(".editable-name, .editable-email, .editable-password").forEach(cell => {
+    document.querySelectorAll(".editable-name, .editable-email, .editable-password, .editable-unit-kerja").forEach(cell => {
       cell.addEventListener("blur", handleCellEdit);
       cell.addEventListener("keydown", e => {
         if (e.key === "Enter") {
@@ -282,7 +337,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   async function handleCellEdit(event) {
     const editedCell = event.target;
-    const index = parseInt(editedCell.dataset.nameIndex || editedCell.dataset.emailIndex || editedCell.dataset.passwordIndex);
+    const index = parseInt(editedCell.dataset.nameIndex || editedCell.dataset.emailIndex || editedCell.dataset.passwordIndex || editedCell.dataset.unitKerjaIndex);
     const user = userBatch[index];
     const newContent = editedCell.textContent.trim();
 
@@ -304,13 +359,18 @@ document.addEventListener("DOMContentLoaded", function () {
     } else if (editedCell.classList.contains('editable-password')) {
         if (newContent === user.password) return;
         user.password = newContent;
-        user.status = "pending"; // Mark for re-submission
+        user.status = "pending";
         renderResults(userBatch);
         updateSubmitButtonState();
-        return; // No need to re-check availability for a password change
+        return;
+    } else if (editedCell.classList.contains('editable-unit-kerja')) {
+        if (newContent === user.unitKerja) return;
+        user.unitKerja = newContent;
+        renderResults(userBatch);
+        updateSubmitButtonState();
+        return;
     }
 
-    // Re-check availability for name or email change
     const statusCell = editedCell.closest("tr").cells[6];
     statusCell.innerHTML = '<span class="badge bg-info">Re-checking...</span>';
     const result = await checkEmailAvailability(user.email);
@@ -327,9 +387,21 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function updateSubmitButtonState() {
-    validUserBatch = userBatch.filter(user => !user.isDuplicate && user.isAvailable && user.status !== "created");
+    const hasInvalidUnitKerja = userBatch.some(user => 
+        user.status !== "created" && 
+        !validUnitKerjaNames.has(user.unitKerja.toLowerCase())
+    );
+
+    validUserBatch = userBatch.filter(user => 
+        !user.isDuplicate && 
+        user.isAvailable && 
+        user.status !== "created" &&
+        validUnitKerjaNames.has(user.unitKerja.toLowerCase())
+    );
+    
     const hasProblematicPendingEmails = userBatch.some(user => user.status !== "created" && (!user.isAvailable || user.isDuplicate));
-    submitBtn.disabled = validUserBatch.length === 0 || hasProblematicPendingEmails;
+    
+    submitBtn.disabled = validUserBatch.length === 0 || hasProblematicPendingEmails || hasInvalidUnitKerja;
   }
 
   function highlightNikNip(nikNip) {
