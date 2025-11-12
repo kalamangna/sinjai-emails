@@ -283,8 +283,8 @@
                     <select class="form-select" id="unit_kerja" name="unit_kerja">
                       <option value="">--Pilih Unit Kerja--</option>
                       <?php foreach ($unit_kerja_options as $unit): ?>
-                        <option value="<?= esc($unit['nama_unit_kerja']) ?>" <?= ($unit['nama_unit_kerja'] == $email['unit_kerja']) ? 'selected' : '' ?>>
-                          <?= esc($unit['nama_unit_kerja']) ?>
+                        <option value="<?= esc(strtoupper($unit['nama_unit_kerja'])) ?>" <?= (trim(strtolower($unit['nama_unit_kerja'])) == trim(strtolower($email['unit_kerja']))) ? 'selected' : '' ?>>
+                          <?= esc(strtoupper($unit['nama_unit_kerja'])) ?>
                         </option>
                       <?php endforeach; ?>
                     </select>
