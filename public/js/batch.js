@@ -6,8 +6,14 @@ document.addEventListener("DOMContentLoaded", function () {
   const resultsTableBody = document.querySelector("#results_table tbody");
   const submitBtn = document.getElementById("submit_btn");
 
+  // Progress section elements
+  const progressSection = document.getElementById("progress_section");
+  const progressBar = document.getElementById("progress_bar");
+  const progressText = document.getElementById("progress_text");
+  const resultsLog = document.getElementById("results_log");
+
   let validUserBatch = [];
-  let userBatch = []; // Declared at a higher scope
+  let userBatch = [];
 
   generateBtn.addEventListener("click", async function () {
     const names = nameInput.value
@@ -20,107 +26,72 @@ document.addEventListener("DOMContentLoaded", function () {
       .filter((nikNip) => nikNip.trim() !== "");
     const unitKerja = unitKerjaInput.value;
 
-    if (names.length === 0) {
-      alert("Please enter at least one name.");
-      return;
-    }
-    if (nikNips.length === 0) {
-      alert("Please enter at least one NIK/NIP.");
-      return;
-    }
-    if (names.length !== nikNips.length) {
-      alert("The number of names and NIK/NIPs must match.");
-      return;
-    }
-    if (!unitKerja) {
-      alert("Please select a Unit Kerja.");
+    if (names.length === 0 || nikNips.length === 0 || names.length !== nikNips.length || !unitKerja) {
+      alert("Please ensure all fields are filled correctly and the number of names and NIK/NIPs match.");
       return;
     }
 
-    // Reset and disable buttons
-    validUserBatch = [];
-    userBatch = []; // Clear global userBatch for new generation
     generateBtn.disabled = true;
     generateBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generating...`;
     submitBtn.disabled = true;
-
-    resultsTableBody.innerHTML =
-      '<tr><td colspan="8" class="text-center">Generating and checking emails...</td></tr>';
+    resultsTableBody.innerHTML = '<tr><td colspan="7" class="text-center">Generating and checking emails...</td></tr>';
 
     const generatedEmails = new Set();
     userBatch = [];
-    let allEmailsValid = true;
-
     for (let i = 0; i < names.length; i++) {
-        const name = names[i];
-        const cleanedName = name.replace(/[,.']/g, "");
-        const nikNip = nikNips[i];
-        const password = generatePassword(cleanedName);
+      const name = names[i];
+      const cleanedName = name.replace(/[,.']/g, "");
+      const nikNip = nikNips[i];
+      const password = generatePassword(cleanedName);
+      const { username: originalUsername, email: originalEmail } = generateEmail(cleanedName);
+      
+      let currentUsername = originalUsername;
+      let currentEmail = originalEmail;
+      let isAvailable = false;
+      let attempts = 0;
+      const maxAttempts = 10;
 
-        const { username: originalUsername, email: originalEmail } = generateEmail(cleanedName);
-        let currentUsername = originalUsername;
-        let currentEmail = originalEmail;
-
-        let isAvailable = false;
-        let attempts = 0;
-        const maxAttempts = 10;
-
-        while (attempts < maxAttempts) {
-            attempts++;
-
-            // Check for in-batch duplicates first
-            if (generatedEmails.has(currentEmail)) {
-                // If it's a duplicate, modify and restart the while loop
-                const nikNipPart = getNikNipPart(nikNip);
-                currentUsername = `${originalUsername}${nikNipPart}`;
-                currentEmail = `${currentUsername}@sinjaikab.go.id`;
-                continue; // Restart while loop to re-check this new email
-            }
-
-            // Not an in-batch duplicate, so check server
-            const result = await checkEmailAvailability(currentEmail);
-            if (result.available) {
-                isAvailable = true;
-                break; // Found a good email, exit while loop
-            } else {
-                // Used on server, modify and let the while loop try again
-                const nikNipPart = getNikNipPart(nikNip);
-                currentUsername = `${originalUsername}${nikNipPart}`;
-                currentEmail = `${currentUsername}@sinjaikab.go.id`;
-            }
+      while (attempts < maxAttempts) {
+        attempts++;
+        if (generatedEmails.has(currentEmail)) {
+          const nikNipPart = getNikNipPart(nikNip);
+          currentUsername = `${originalUsername}${nikNipPart}`;
+          currentEmail = `${currentUsername}@sinjaikab.go.id`;
+          continue;
         }
 
-        const isDuplicate = generatedEmails.has(currentEmail);
-        if (isDuplicate) {
-            isAvailable = false;
+        const result = await checkEmailAvailability(currentEmail);
+        if (result.available) {
+          isAvailable = true;
+          break;
+        } else {
+          const nikNipPart = getNikNipPart(nikNip);
+          currentUsername = `${originalUsername}${nikNipPart}`;
+          currentEmail = `${currentUsername}@sinjaikab.go.id`;
         }
+      }
 
-        if (!isAvailable) {
-            allEmailsValid = false;
-        }
+      const isDuplicate = generatedEmails.has(currentEmail);
+      if (isDuplicate) isAvailable = false;
 
-        const user = {
-            name: cleanedName.trim(),
-            nikNip: nikNip.trim(),
-            unitKerja: unitKerja,
-            generatedUsername: currentUsername,
-            email: currentEmail,
-            password: password,
-            quota: 1024,
-            isDuplicate: isDuplicate,
-            isAvailable: isAvailable,
-            status: "pending",
-        };
-        userBatch.push(user);
-        generatedEmails.add(currentEmail);
+      userBatch.push({
+        name: cleanedName.trim(),
+        nikNip: nikNip.trim(),
+        unitKerja: unitKerja,
+        generatedUsername: currentUsername,
+        email: currentEmail,
+        password: password,
+        quota: 1024,
+        isDuplicate: isDuplicate,
+        isAvailable: isAvailable,
+        status: "pending",
+      });
+      generatedEmails.add(currentEmail);
     }
 
     renderResults(userBatch);
-
     generateBtn.disabled = false;
-
     generateBtn.innerHTML = `<i class="fas fa-cogs me-2"></i>Generate`;
-
     updateSubmitButtonState();
   });
 
@@ -132,104 +103,84 @@ document.addEventListener("DOMContentLoaded", function () {
 
     submitBtn.disabled = true;
     submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Submitting...`;
+    progressSection.style.display = "block";
+    resultsLog.innerHTML = "";
 
-    try {
-      const response = await fetch("/email/batch_create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Requested-With": "XMLHttpRequest",
-        },
-        body: JSON.stringify(validUserBatch),
-      });
-
-      if (!response.ok) {
-        throw new Error("Server responded with an error.");
-      }
-
-      const result = await response.json();
-      handleSubmitResponse(result);
-    } catch (error) {
-      console.error("Error submitting batch:", error);
-      alert("An unexpected error occurred during submission.");
-    } finally {
-      submitBtn.disabled = false;
-      submitBtn.innerHTML = `<i class="fas fa-check-circle me-2"></i>Submit Batch`;
-    }
-  });
-
-  function handleSubmitResponse(result) {
-    if (result.success === false && result.message) {
-      alert(`Submission failed: ${result.message}`);
-      return;
-    }
-
+    const totalToSubmit = validUserBatch.length;
     let successCount = 0;
     let failureCount = 0;
 
-    // Update the status of each user in the userBatch based on the server response
-    result.results.forEach((res) => {
-      const user = userBatch.find((u) => u.email === res.email);
-      if (user) {
-        if (res.success) {
-          user.status = "created";
-          successCount++;
-        } else {
-          user.status = "failed";
-          let originalErrorMessage = res.message;
-          let simplifiedErrorMessage = originalErrorMessage;
+    try {
+      for (let i = 0; i < totalToSubmit; i++) {
+        const user = validUserBatch[i];
+        const percentage = Math.round(((i + 1) / totalToSubmit) * 100);
+        
+        progressBar.style.width = `${percentage}%`;
+        progressBar.textContent = `${percentage}%`;
+        progressBar.setAttribute("aria-valuenow", percentage);
+        progressText.textContent = `Processing ${i + 1} / ${totalToSubmit}`;
 
-          // Regex to find password strength details
-          const passwordStrengthRegex = /strength rating of “(\d+)”.*strength rating of “(\d+)”/;
-          const match = originalErrorMessage.match(passwordStrengthRegex);
+        try {
+          const response = await fetch("/email/create_single", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "X-Requested-With": "XMLHttpRequest" },
+            body: JSON.stringify(user),
+          });
 
-          if (match && match.length === 3) {
-            const currentStrength = match[1];
-            const requiredStrength = match[2];
-            simplifiedErrorMessage = `Password too weak. Current strength: ${currentStrength}, required: ${requiredStrength}.`;
-          } else if (originalErrorMessage.includes("already exists")) {
-            simplifiedErrorMessage = "Email already exists.";
+          const result = await response.json();
+          const userInBatch = userBatch.find(u => u.email === user.email);
+
+          if (response.ok && result.success) {
+            successCount++;
+            logResult(user.email, "SUCCESS", "Account created successfully.");
+            if(userInBatch) userInBatch.status = "created";
+          } else {
+            failureCount++;
+            logResult(user.email, "FAILURE", result.message || "An unknown error occurred.");
+            if(userInBatch) {
+              userInBatch.status = "failed";
+              userInBatch.errorMessage = result.message;
+            }
           }
-          // Add other simplification rules here if needed
-
-          user.errorMessage = simplifiedErrorMessage; // Store the simplified message
+        } catch (error) {
           failureCount++;
+          logResult(user.email, "FAILURE", "A network or server error occurred.");
+          const userInBatch = userBatch.find(u => u.email === user.email);
+          if(userInBatch) {
+              userInBatch.status = "failed";
+              userInBatch.errorMessage = "A network or server error occurred.";
+          }
         }
       }
-    });
 
-    if (failureCount === 0) {
-      // All successful
-      renderResults(userBatch); // Show all with "Created" status
-      alert(`Successfully created all ${successCount} email accounts!`);
-      setTimeout(() => {
-        window.location.href = "/email";
-      }, 1000);
-    } else {
-      // Partial or total failure
-      // Filter userBatch to only include failed emails
-      userBatch = userBatch.filter(user => user.status === 'failed');
-      
-      // Re-render the table with only the failed emails
-      renderResults(userBatch);
-      
-      alert(
-        `Batch submission completed with ${failureCount} errors. Please review the statuses, edit passwords for failed entries if needed, and click "Submit Batch" again.`
-      );
-      
-      // After a partial failure, re-evaluate which users are valid for the next submission attempt
-      updateSubmitButtonState();
+      if (failureCount > 0) {
+          userBatch = userBatch.filter(user => user.status === "failed");
+          renderResults(userBatch);
+          alert(`Batch submission completed with ${failureCount} errors. Please review the statuses and logs, edit passwords for failed entries if needed, and click "Submit Batch" again.`);
+      } else {
+          renderResults(userBatch); // Show all as "created" before redirecting
+          alert(`Successfully created all ${successCount} email accounts!`);
+          setTimeout(() => { window.location.href = "/email"; }, 1000);
+      }
+    } finally {
+      submitBtn.innerHTML = `<i class="fas fa-check-circle me-2"></i>Submit Batch`;
+      if (failureCount > 0) { // Only re-evaluate button state if not redirecting
+          updateSubmitButtonState();
+      }
     }
+  });
+
+  function logResult(email, status, message) {
+    const statusColor = status === "SUCCESS" ? "text-success" : "text-danger";
+    const logEntry = `<div>[<span class="${statusColor}">${status}</span>] ${email}: ${message}</div>`;
+    resultsLog.insertAdjacentHTML("beforeend", logEntry);
+    resultsLog.scrollTop = resultsLog.scrollHeight;
   }
 
   function generateEmail(name) {
     const domain = "@sinjaikab.go.id";
     const maxUsernameLength = 30 - domain.length;
-    const username = name
-      .toLowerCase()
-      .replace(/\s+/g, "")
-      .replace(/[,.]/g, "") // Remove commas and periods
-      .substring(0, maxUsernameLength);
+    const username = name.toLowerCase().replace(/\s+/g, "").replace(/[,.]/g, "").substring(0, maxUsernameLength);
     return { username: username, email: `${username}${domain}` };
   }
 
@@ -237,15 +188,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const day = new Date().getDate();
     const namePart = name.replace(/\s+/g, "").substring(0, 5).toLowerCase();
     if (!namePart) return `@${day}#`;
-    const capitalizedNamePart =
-      namePart.charAt(0).toUpperCase() + namePart.slice(1);
+    const capitalizedNamePart = namePart.charAt(0).toUpperCase() + namePart.slice(1);
     return `${capitalizedNamePart}@${day}#`;
   }
 
   function getNikNipPart(nikNip) {
-    if (typeof nikNip !== 'string' || nikNip.length < 6) {
-        return '';
-    }
+    if (typeof nikNip !== 'string' || nikNip.length < 6) return '';
     const length = nikNip.length;
     const startIndex = length - 6;
     return nikNip.substring(startIndex, startIndex + 2);
@@ -255,15 +203,10 @@ document.addEventListener("DOMContentLoaded", function () {
     try {
       const response = await fetch("/user/check_email", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Requested-With": "XMLHttpRequest",
-        },
+        headers: { "Content-Type": "application/json", "X-Requested-With": "XMLHttpRequest" },
         body: JSON.stringify({ email: email }),
       });
-      if (!response.ok) {
-        return { available: false, message: "Server error during check." };
-      }
+      if (!response.ok) return { available: false, message: "Server error during check." };
       return await response.json();
     } catch (error) {
       console.error("Error checking email availability:", error);
@@ -274,119 +217,61 @@ document.addEventListener("DOMContentLoaded", function () {
   function renderResults(userBatch) {
     resultsTableBody.innerHTML = "";
     if (userBatch.length === 0) {
-      resultsTableBody.innerHTML =
-        '<tr><td colspan="8" class="text-center">No names entered.</td></tr>';
+      resultsTableBody.innerHTML = '<tr><td colspan="7" class="text-center">No names entered.</td></tr>';
       return;
     }
 
     userBatch.forEach((user, index) => {
-      let emailCellContent;
-      let passwordCellContent;
-      let nameCellContent; // New
-      let isEmailEditable = true;
-      let isPasswordEditable = user.status === "failed";
-      let isNameEditable = true; // Assuming names are always editable before submission
       let statusBadge;
-
       if (user.status === "created") {
         statusBadge = '<span class="badge bg-success">Created</span>';
-        isNameEditable = false; // Don't allow editing after creation
       } else if (user.status === "failed") {
-        statusBadge = `<span class="badge bg-danger" title="${
-          user.errorMessage || "Failed"
-        }">Failed</span>`;
+        statusBadge = `<span class="badge bg-danger" title="${user.errorMessage || 'Failed'}">Failed</span>`;
       } else if (user.isDuplicate) {
-        statusBadge =
-          '<span class="badge bg-warning text-dark">Duplicate</span>';
+        statusBadge = '<span class="badge bg-warning text-dark">Duplicate</span>';
       } else if (user.isAvailable) {
         statusBadge = '<span class="badge bg-success">Available</span>';
       } else {
         statusBadge = '<span class="badge bg-danger">Used</span>';
       }
 
-      if (isEmailEditable) {
-        emailCellContent = `<span contenteditable="true" class="editable-email" data-email-index="${index}">${user.email}</span>`;
-      } else {
-        emailCellContent = user.email;
-      }
-
-      if (isPasswordEditable) {
-        passwordCellContent = `<span contenteditable="true" class="editable-password" data-password-index="${index}">${user.password}</span>`;
-      } else {
-        passwordCellContent = user.password;
-      }
-
-      if (isNameEditable) {
-        nameCellContent = `<span contenteditable="true" class="editable-name" data-name-index="${index}">${user.name.toUpperCase()}</span>`;
-      } else {
-        nameCellContent = user.name.toUpperCase();
-      }
-
-      const highlightedNikNip = highlightNikNip(user.nikNip);
+      const nameCellContent = `<span contenteditable="true" class="editable-name" data-name-index="${index}">${user.name.toUpperCase()}</span>`;
+      const emailCellContent = `<span contenteditable="true" class="editable-email" data-email-index="${index}">${user.email}</span>`;
+      const passwordCellContent = `<span contenteditable="true" class="editable-password" data-password-index="${index}">${user.password}</span>`;
       
       const row = `
-                <tr>
-                    <td>${index + 1}</td>
-                    <td>${highlightedNikNip}</td>
-                    <td>${nameCellContent}</td>
-                    <td>${user.unitKerja}</td>
-                    <td>${emailCellContent}</td>
-                    <td>${passwordCellContent}</td>
-                    <td class="text-center">${statusBadge}</td>
-                </tr>
-            `;
+        <tr>
+            <td>${index + 1}</td>
+            <td>${highlightNikNip(user.nikNip)}</td>
+            <td>${nameCellContent}</td>
+            <td>${user.unitKerja}</td>
+            <td>${emailCellContent}</td>
+            <td>${passwordCellContent}</td>
+            <td class="text-center">${statusBadge}</td>
+        </tr>`;
       resultsTableBody.insertAdjacentHTML("beforeend", row);
 
-      // Error message row
       if (user.status === 'failed' && user.errorMessage) {
         const errorRow = `
-                <tr class="error-row" data-index="${index}">
-                    <td colspan="7" class="py-0">
-                        <div class="alert alert-danger mb-0 py-1 px-2 border-0 rounded-0">
-                            <i class="fas fa-exclamation-circle me-2"></i>
-                            <small>${user.errorMessage}</small>
-                        </div>
-                    </td>
-                </tr>
-            `;
+          <tr class="error-row" data-index="${index}">
+              <td colspan="7" class="py-0">
+                  <div class="alert alert-danger mb-0 py-1 px-2 border-0 rounded-0">
+                      <i class="fas fa-exclamation-circle me-2"></i>
+                      <small>${user.errorMessage}</small>
+                  </div>
+              </td>
+          </tr>`;
         resultsTableBody.insertAdjacentHTML("beforeend", errorRow);
       }
     });
 
-    // Add event listeners to editable cells after rendering
-    addEditableEmailListeners();
-    addEditablePasswordListeners();
-    addEditableNameListeners(); // New
+    addEditableListeners();
   }
 
-  function addEditableEmailListeners() {
-    document.querySelectorAll(".editable-email").forEach((cell) => {
-      cell.addEventListener("blur", handleEmailEdit);
-      cell.addEventListener("keydown", function (e) {
-        if (e.key === "Enter") {
-          e.preventDefault(); // Prevent new line
-          cell.blur(); // Trigger blur event
-        }
-      });
-    });
-  }
-
-  function addEditablePasswordListeners() {
-    document.querySelectorAll(".editable-password").forEach((cell) => {
-      cell.addEventListener("blur", handlePasswordEdit);
-      cell.addEventListener("keydown", function (e) {
-        if (e.key === "Enter") {
-          e.preventDefault(); // Prevent new line
-          cell.blur(); // Trigger blur event
-        }
-      });
-    });
-  }
-
-  function addEditableNameListeners() {
-    document.querySelectorAll(".editable-name").forEach((cell) => {
-      cell.addEventListener("blur", handleNameEdit);
-      cell.addEventListener("keydown", function (e) {
+  function addEditableListeners() {
+    document.querySelectorAll(".editable-name, .editable-email, .editable-password").forEach(cell => {
+      cell.addEventListener("blur", handleCellEdit);
+      cell.addEventListener("keydown", e => {
         if (e.key === "Enter") {
           e.preventDefault();
           cell.blur();
@@ -395,134 +280,60 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  async function handleEmailEdit(event) {
+  async function handleCellEdit(event) {
     const editedCell = event.target;
-    const index = parseInt(editedCell.dataset.emailIndex);
-    const oldEmail = userBatch[index].email;
-    const newEmail = editedCell.textContent.trim();
+    const index = parseInt(editedCell.dataset.nameIndex || editedCell.dataset.emailIndex || editedCell.dataset.passwordIndex);
+    const user = userBatch[index];
+    const newContent = editedCell.textContent.trim();
 
-    if (newEmail === oldEmail) {
-      return; // No change, do nothing
+    if (editedCell.classList.contains('editable-name')) {
+        if (newContent === user.name) return;
+        user.name = newContent;
+        const { username, email } = generateEmail(newContent);
+        user.generatedUsername = username;
+        user.email = email;
+        user.password = generatePassword(newContent);
+    } else if (editedCell.classList.contains('editable-email')) {
+        if (newContent === user.email) return;
+        if (!isValidEmail(newContent)) {
+            alert("Invalid email format.");
+            editedCell.textContent = user.email;
+            return;
+        }
+        user.email = newContent;
+    } else if (editedCell.classList.contains('editable-password')) {
+        if (newContent === user.password) return;
+        user.password = newContent;
+        user.status = "pending"; // Mark for re-submission
+        renderResults(userBatch);
+        updateSubmitButtonState();
+        return; // No need to re-check availability for a password change
     }
 
-    if (!isValidEmail(newEmail)) {
-      alert("Please enter a valid email address.");
-      editedCell.textContent = oldEmail; // Revert to old email
-      return;
-    }
-
-    // Update userBatch and re-check availability
-    userBatch[index].email = newEmail;
-
-    // Check for duplicates within the current batch
-    const isDuplicateInBatch = userBatch.some((user, i) => user.email === newEmail && i !== index);
-
-    if (isDuplicateInBatch) {
-        userBatch[index].isDuplicate = true;
-        userBatch[index].isAvailable = false;
-    } else {
-        userBatch[index].isDuplicate = false;
-        // Only check with the server if it's not a duplicate in the batch
-        const statusCell = editedCell.closest("tr").cells[6];
-        statusCell.innerHTML = '<span class="badge bg-info">Re-checking...</span>';
-
-        const result = await checkEmailAvailability(newEmail);
-        userBatch[index].isAvailable = result.available;
-    }
-
-    // Re-render the specific row or the entire table to reflect new status
-    // For simplicity, re-rendering the entire table for now.
-    renderResults(userBatch);
-
-    // Re-evaluate submit button state
-    updateSubmitButtonState();
-  }
-
-  function handlePasswordEdit(event) {
-    const editedCell = event.target;
-    const index = parseInt(editedCell.dataset.passwordIndex);
-    const newPassword = editedCell.textContent.trim();
-
-    // Update the password in the userBatch array
-    userBatch[index].password = newPassword;
-    // Change the status back to 'pending' to mark it as ready for re-submission
-    userBatch[index].status = "pending";
-
-    // Re-render the table to update the status badge visually
-    renderResults(userBatch);
-
-    // Re-evaluate the submit button state
-    updateSubmitButtonState();
-  }
-
-  async function handleNameEdit(event) {
-    const editedCell = event.target;
-    const index = parseInt(editedCell.dataset.nameIndex);
-    const oldName = userBatch[index].name;
-    const newName = editedCell.textContent.trim();
-
-    if (newName === oldName) {
-        return; // No change
-    }
-
-    // Update name
-    userBatch[index].name = newName;
-
-    // Regenerate email and password
-    const { username: generatedUsername, email } = generateEmail(newName);
-    const password = generatePassword(newName);
-
-    userBatch[index].generatedUsername = generatedUsername;
-    userBatch[index].email = email;
-    userBatch[index].password = password;
-    userBatch[index].isDuplicate = false;
-    userBatch[index].isAvailable = false;
-
-    // Temporarily update status badge to indicate re-checking
+    // Re-check availability for name or email change
     const statusCell = editedCell.closest("tr").cells[6];
     statusCell.innerHTML = '<span class="badge bg-info">Re-checking...</span>';
-
-    const result = await checkEmailAvailability(email);
-    userBatch[index].isAvailable = result.available;
-
-    // Re-render the table
+    const result = await checkEmailAvailability(user.email);
+    user.isAvailable = result.available;
+    user.isDuplicate = userBatch.some((u, i) => u.email === user.email && i !== index);
+    if (user.isDuplicate) user.isAvailable = false;
+    
     renderResults(userBatch);
-
-    // Re-evaluate submit button state
     updateSubmitButtonState();
   }
 
   function isValidEmail(email) {
-    // Basic email validation regex
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   }
 
   function updateSubmitButtonState() {
-    // Identify emails that are ready for a new submission attempt.
-    // These are emails that are available, not duplicates, and have not been successfully created yet.
-    validUserBatch = userBatch.filter(
-      (user) =>
-        !user.isDuplicate && user.isAvailable && user.status !== "created"
-    );
-
-    // Check if there are any "problematic" emails that are not yet created.
-    // Problematic emails are those that are either not available or are duplicates.
-    const hasProblematicPendingEmails = userBatch.some(
-      (user) =>
-        user.status !== "created" && (!user.isAvailable || user.isDuplicate)
-    );
-
-    // The submit button should be enabled only if:
-    // 1. There is at least one valid email to submit (validUserBatch is not empty).
-    // 2. There are no problematic emails that are still pending (hasProblematicPendingEmails is false).
-    submitBtn.disabled =
-      validUserBatch.length === 0 || hasProblematicPendingEmails;
+    validUserBatch = userBatch.filter(user => !user.isDuplicate && user.isAvailable && user.status !== "created");
+    const hasProblematicPendingEmails = userBatch.some(user => user.status !== "created" && (!user.isAvailable || user.isDuplicate));
+    submitBtn.disabled = validUserBatch.length === 0 || hasProblematicPendingEmails;
   }
 
   function highlightNikNip(nikNip) {
-    if (typeof nikNip !== 'string' || nikNip.length < 6) {
-        return nikNip;
-    }
+    if (typeof nikNip !== 'string' || nikNip.length < 6) return nikNip;
     const length = nikNip.length;
     const highlightStartIndex = length - 6;
     const beforeHighlight = nikNip.substring(0, highlightStartIndex);

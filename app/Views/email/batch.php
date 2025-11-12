@@ -75,6 +75,25 @@
         </div>
     </div>
 
+    <!-- Progress Bar and Results Log -->
+    <div id="progress_section" class="card shadow-sm my-4" style="display: none;">
+        <div class="card-header bg-light py-3">
+            <h5 class="card-title mb-0">
+                <i class="fas fa-tasks me-2 text-primary"></i>
+                Batch Submission Progress
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="progress mb-3" style="height: 25px;">
+                <div id="progress_bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+            </div>
+            <p id="progress_text" class="text-center mb-2">Processing 0 / 0</p>
+            <div id="results_log" class="p-3 bg-light rounded" style="max-height: 300px; overflow-y: auto; font-family: monospace;">
+                <!-- Log messages will be appended here -->
+            </div>
+        </div>
+    </div>
+
     <div class="mt-4 text-end">
         <button id="submit_btn" class="btn btn-success btn-lg" disabled>
             <i class="fas fa-check-circle me-2"></i>Submit Batch

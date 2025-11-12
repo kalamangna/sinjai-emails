@@ -693,4 +693,47 @@ class Email extends BaseController
             return redirect()->to('email')->with('error', 'Failed to delete email account from cPanel, but removed from local list. Please check cPanel manually.');
         }
     }
+
+    public function create_single_email()
+    {
+        if (strtolower($this->request->getMethod()) !== 'post') {
+            return $this->response->setStatusCode(405)->setJSON(['success' => false, 'message' => 'Invalid request method.']);
+        }
+
+        $data = $this->request->getJSON(true);
+        if (empty($data) || !isset($data['email'])) {
+            return $this->response->setStatusCode(400)->setJSON(['success' => false, 'message' => 'No data provided.']);
+        }
+
+        try {
+            // Check if email exists in local DB first
+            $existing_email = $this->emailModel->where('email', $data['email'])->first();
+            if ($existing_email) {
+                return $this->response->setStatusCode(409)->setJSON(['success' => false, 'message' => 'Email already exists in local database.']);
+            }
+
+            // Create on cPanel
+            $this->cpanelApi->create_email_account($data['email'], $data['password'], $data['quota'] ?? 1024);
+
+            // Save to local DB
+            $this->emailModel->insert([
+                'email'      => $data['email'],
+                'user'       => explode('@', $data['email'])[0],
+                'domain'     => explode('@', $data['email'])[1],
+                'unit_kerja' => $data['unitKerja'] ?? null,
+                'password'   => $data['password'] ?? null,
+                'nik_nip'    => $data['nikNip'] ?? null,
+                'name'       => $data['name'] ?? null,
+            ]);
+
+            return $this->response->setJSON(['success' => true, 'email' => $data['email']]);
+        } catch (Exception $e) {
+            $errorMessage = $e->getMessage();
+            // Check for specific cPanel error messages
+            if (strpos($errorMessage, 'already exists') !== false) {
+                return $this->response->setStatusCode(409)->setJSON(['success' => false, 'message' => 'Email already exists on cPanel.']);
+            }
+            return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => $errorMessage]);
+        }
+    }
 }

@@ -11,6 +11,7 @@ $routes->get('email/sync', 'Email::sync');
 $routes->get('email/detail/(:any)', 'Email::detail/$1');
 $routes->get('email/unit_kerja/(:num)', 'Email::unit_kerja_detail/$1');
 $routes->get('email/batch', 'Email::batch');
+$routes->post('email/create_single', 'Email::create_single_email');
 $routes->get('email/batch_update', 'Email::batch_update');
 $routes->post('email/batch_update_process', 'Email::batch_update_process');
 $routes->post('email/batch_create', 'Email::batch_create');
