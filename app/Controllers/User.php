@@ -51,4 +51,32 @@ class User extends BaseController
             return $this->response->setStatusCode(500)->setJSON(['available' => false, 'message' => 'An unexpected error occurred while checking email availability.']);
         }
     }
+
+    public function check_niknip()
+    {
+        if (strtolower($this->request->getMethod()) !== 'post') {
+            return $this->response->setStatusCode(405)->setJSON(['exists' => false, 'message' => 'Method not allowed.']);
+        }
+
+        $nikNip = $this->request->getJSON()->nik_nip ?? null;
+
+        if (empty($nikNip)) {
+            return $this->response->setStatusCode(400)->setJSON(['exists' => false, 'message' => 'A NIK/NIP is required.']);
+        }
+
+        try {
+            $emailModel = new EmailModel();
+            $existingNikNip = $emailModel->where('nik_nip', $nikNip)->first();
+
+            if ($existingNikNip) {
+                return $this->response->setJSON(['exists' => true, 'message' => 'NIK/NIP already exists in the database.']);
+            }
+
+            return $this->response->setJSON(['exists' => false, 'message' => 'NIK/NIP is available.']);
+
+        } catch (Exception $e) {
+            log_message('error', '[User Controller] Check NIK/NIP availability failed: ' . $e->getMessage());
+            return $this->response->setStatusCode(500)->setJSON(['exists' => false, 'message' => 'An unexpected error occurred while checking NIK/NIP availability.']);
+        }
+    }
 }
