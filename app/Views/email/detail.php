@@ -29,8 +29,8 @@
 
     <!-- Back Button -->
     <div class="mb-4">
-      <a href="<?= $back_url ?>" class="btn btn-outline-secondary">
-        <i class="fas fa-arrow-left me-2"></i>Back to Email List
+      <a href="javascript:void(0);" onclick="history.back();" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Back
       </a>
     </div>
 

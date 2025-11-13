@@ -5,8 +5,8 @@
   <div class="col-12">
     <!-- Back Button -->
     <div class="mb-4 d-flex justify-content-between">
-      <a href="<?= $back_url ?>" class="btn btn-outline-secondary">
-        <i class="fas fa-arrow-left me-2"></i>Back to Email List
+      <a href="javascript:void(0);" onclick="history.back();" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Back
       </a>
       <div class="d-flex gap-2">
         <a href="<?= site_url('email/export_unit_kerja_csv/' . $unit_kerja['id']) ?>" class="btn btn-success">
@@ -28,7 +28,7 @@
       <div class="card-body">
         <?php if ($parent_unit): ?>
           <p class="card-text">
-            This is a sub-unit of: 
+            This is a sub-unit of:
             <a href="<?= site_url('email/unit_kerja/' . $parent_unit['id']) ?>"><?= esc(strtoupper($parent_unit['nama_unit_kerja'])) ?></a>
           </p>
         <?php else: ?>
@@ -39,20 +39,28 @@
 
     <!-- Child Units List -->
     <?php if (!empty($child_units)): ?>
-    <div class="card shadow-sm mb-4">
-      <div class="card-header bg-light py-3">
-        <h5 class="card-title mb-0">
-          <i class="fas fa-sitemap me-2 text-info"></i>Sub Unit Kerja
-        </h5>
+      <div class="accordion shadow-sm mb-4" id="subUnitKerjaAccordion">
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingSubUnits">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSubUnits" aria-expanded="false" aria-controls="collapseSubUnits">
+              <i class="fas fa-sitemap me-2 text-info"></i>Sub Unit Kerja
+            </button>
+          </h2>
+          <div id="collapseSubUnits" class="accordion-collapse collapse" aria-labelledby="headingSubUnits" data-bs-parent="#subUnitKerjaAccordion">
+            <div class="accordion-body">
+              <div class="row">
+                <?php foreach ($child_units as $child): ?>
+                  <div class="col-md-6 mb-2">
+                    <a href="<?= site_url('email/unit_kerja/' . $child['id']) ?>" class="list-group-item list-group-item-action">
+                      <?= esc(strtoupper($child['nama_unit_kerja'])) ?>
+                    </a>
+                  </div>
+                <?php endforeach; ?>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="list-group list-group-flush">
-        <?php foreach ($child_units as $child): ?>
-          <a href="<?= site_url('email/unit_kerja/' . $child['id']) ?>" class="list-group-item list-group-item-action">
-            <?= esc(strtoupper($child['nama_unit_kerja'])) ?>
-          </a>
-        <?php endforeach; ?>
-      </div>
-    </div>
     <?php endif; ?>
 
 
@@ -98,7 +106,7 @@
                   }
                   ?>
                   <tr>
-                    <td class="ps-4">
+                    <td class="ps-4 align-middle">
                       <div class="d-flex align-items-center">
                         <i class="fas fa-envelope text-primary me-3"></i>
                         <div>
@@ -107,9 +115,20 @@
                         </div>
                       </div>
                     </td>
-                    <td><?= esc($email['name']) ?></td>
+                    <td class="align-middle"><?= esc($email['name']) ?></td>
                     <?php if (!empty($child_units)): ?>
-                      <td><?= esc(strtoupper($email['unit_kerja_name'] ?? 'N/A')) ?></td>
+                      <td class="align-middle">
+                        <?php if (!empty($email['parent_unit_kerja_name'])): ?>
+                            <small class="d-block"><?= esc(strtoupper($email['parent_unit_kerja_name'])) ?></small>
+                            <small class="d-block text-muted">
+                                (<?= esc(strtoupper($email['unit_kerja_name'])) ?>)
+                            </small>
+                        <?php else: ?>
+                            <small>
+                                <?= esc(strtoupper($email['unit_kerja_name'])) ?>
+                            </small>
+                        <?php endif; ?>
+                      </td>
                     <?php endif; ?>
                     <td class="text-center align-middle">
                       <div class="d-flex flex-column align-items-center">
@@ -149,6 +168,27 @@
               </tbody>
             </table>
           </div>
+
+          <!-- Pagination -->
+          <?php if ($pagination): ?>
+              <nav class="d-flex flex-column flex-md-row justify-content-between align-items-center p-3" aria-label="Page navigation">
+                  <div class="mb-2 mb-md-0">
+                      <?php
+                      $currentPage = $pagination->getCurrentPage();
+                      $perPage = $pagination->getPerPage();
+                      $total = $total_emails;
+
+                      $start_entry = ($currentPage - 1) * $perPage + 1;
+                      $end_entry = min($currentPage * $perPage, $total);
+                      ?>
+                      <span class="text-muted">
+                          Showing <strong><?= $start_entry ?></strong> to <strong><?= $end_entry ?></strong> of <strong><?= $total ?></strong> entries
+                      </span>
+                  </div>
+                  <?= $pagination->links() ?>
+              </nav>
+          <?php endif; ?>
+
         <?php else: ?>
           <div class="text-center py-5">
             <i class="fas fa-inbox fa-3x text-muted mb-3"></i>

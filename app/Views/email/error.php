@@ -14,7 +14,7 @@
           <?= esc($error ?? 'An unknown error occurred.') ?>
         </p>
         <?php if (!empty($back_url)): ?>
-          <a href="<?= esc($back_url) ?>" class="btn btn-primary mt-4">
+          <a href="javascript:void(0);" onclick="history.back();" class="btn btn-primary mt-4">
             <i class="fas fa-arrow-left me-2"></i>Go Back
           </a>
         <?php endif; ?>

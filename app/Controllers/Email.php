@@ -60,14 +60,21 @@ class Email extends BaseController
 
             $lastSync = $this->appSettingModel->where('key', 'last_sync_time')->first();
 
-            // Fetch all parent unit_kerja and count their total emails (including children)
-            $unitKerjaList = $this->unitKerjaModel
-                ->select('unit_kerja.id, unit_kerja.nama_unit_kerja, COUNT(emails.id) as email_count')
-                ->join('unit_kerja as child', 'child.parent_id = unit_kerja.id', 'left')
-                ->join('emails', 'emails.unit_kerja_id = unit_kerja.id OR emails.unit_kerja_id = child.id', 'left')
-                ->where('unit_kerja.parent_id IS NULL')
-                ->groupBy('unit_kerja.id, unit_kerja.nama_unit_kerja')
-                ->findAll();
+            // Fetch all parent unit_kerja
+            $parentUnitKerjaList = $this->unitKerjaModel->where('parent_id IS NULL')->findAll();
+
+            // Calculate email count for each parent unit (including children)
+            $unitKerjaList = [];
+            foreach ($parentUnitKerjaList as $parentUnit) {
+                $parentId = $parentUnit['id'];
+                $childrenIds = $this->unitKerjaModel->where('parent_id', $parentId)->findColumn('id');
+                $allUnitIds = array_merge([$parentId], $childrenIds);
+
+                $emailCount = $this->emailModel->allowCallbacks(false)->whereIn('unit_kerja_id', $allUnitIds)->countAllResults();
+                
+                $parentUnit['email_count'] = $emailCount;
+                $unitKerjaList[] = $parentUnit;
+            }
 
             $data = [
                 'emails' => $emails,
@@ -356,14 +363,22 @@ class Email extends BaseController
 
             // Find all emails belonging to this unit AND all its children
             $allUnitIds = array_merge([$unitKerjaId], $childrenIds);
-            $emails = $this->emailModel->whereIn('unit_kerja_id', $allUnitIds)->orderBy('unit_kerja_name', 'ASC')->orderBy('name', 'ASC')->findAll();
+
+            $perPage = $this->request->getGet('per_page') ?? 100;
+            $emails = $this->emailModel->whereIn('unit_kerja_id', $allUnitIds)
+                ->orderBy('unit_kerja_name', 'ASC')
+                ->orderBy('name', 'ASC')
+                ->paginate($perPage);
+            $pager = $this->emailModel->pager;
 
             $data = [
                 'unit_kerja' => $unitKerja,
                 'parent_unit' => !empty($unitKerja['parent_id']) ? $this->unitKerjaModel->find($unitKerja['parent_id']) : null,
                 'child_units' => $children,
                 'emails' => $emails,
-                'total_emails' => count($emails),
+                'total_emails' => $pager->getTotal(),
+                'pagination' => $pager,
+                'per_page' => $perPage,
                 'back_url' => site_url('email'),
             ];
 
@@ -463,8 +478,16 @@ class Email extends BaseController
                 throw new Exception('Unit Kerja not found.');
             }
 
-            $unitKerjaName = $unitKerja['nama_unit_kerja'];
-            $emails = $this->emailModel->where('unit_kerja', $unitKerjaName)->findAll();
+            // Find children of the current unit
+            $children = $this->unitKerjaModel->where('parent_id', $unitKerjaId)->findAll();
+            $childrenIds = array_column($children, 'id');
+
+            // Find all emails belonging to this unit AND all its children, sorted by name
+            $allUnitIds = array_merge([$unitKerjaId], $childrenIds);
+            $emails = $this->emailModel->allowCallbacks(false)
+                                       ->whereIn('unit_kerja_id', $allUnitIds)
+                                       ->orderBy('name', 'ASC')
+                                       ->findAll();
 
             $options = new Options();
             $options->set('isHtml5ParserEnabled', true);
@@ -483,7 +506,7 @@ class Email extends BaseController
             $html = '<!DOCTYPE html>
                 <html>
                 <head>
-                    <title>Akun Email - ' . esc($unitKerjaName) . '</title>
+                    <title>Akun Email - ' . esc($unitKerja['nama_unit_kerja']) . '</title>
                     <style>
                         body { 
                             font-family: Arial, sans-serif; 
@@ -545,7 +568,7 @@ class Email extends BaseController
                     </style>
                 </head>
                 <body>
-                    <h1>Daftar Akun Email<br>' . esc($unitKerjaName) . '</h1>
+                    <h1>Daftar Akun Email<br>' . esc($unitKerja['nama_unit_kerja']) . '</h1>
 
                     <p class="instruction">
                         Untuk AKTIVASI AKUN, login menggunakan EMAIL dan PASSWORD melalui halaman sinjaikab.go.id/webmail
@@ -593,7 +616,7 @@ class Email extends BaseController
             $dompdf->setPaper('A4', 'portrait');
             $dompdf->render();
 
-            $filename = 'email_accounts_' . url_title($unitKerjaName, '_', true) . '.pdf';
+            $filename = url_title($unitKerja['nama_unit_kerja'], '_', true) . '.pdf';
             $dompdf->stream($filename, ["Attachment" => true]);
             exit();
         } catch (Exception $e) {

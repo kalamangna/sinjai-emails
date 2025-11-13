@@ -3,8 +3,8 @@
 <?= $this->section('content') ?>
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1 class="h3 mb-0">Batch Email Generation</h1>
-        <a href="<?= site_url('email') ?>" class="btn btn-outline-primary">
-            <i class="fas fa-arrow-left me-2"></i>Back to Email List
+        <a href="javascript:void(0);" onclick="history.back();" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left me-2"></i>Back
         </a>
     </div>
 

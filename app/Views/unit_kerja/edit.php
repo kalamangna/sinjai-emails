@@ -18,7 +18,7 @@
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-save me-2"></i>Update
                     </button>
-                    <a href="<?= site_url('unit_kerja/manage') ?>" class="btn btn-secondary">
+                    <a href="javascript:void(0);" onclick="history.back();" class="btn btn-secondary">
                         <i class="fas fa-times me-2"></i>Cancel
                     </a>
                 </form>
