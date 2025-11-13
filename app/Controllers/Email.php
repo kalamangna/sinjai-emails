@@ -60,11 +60,19 @@ class Email extends BaseController
 
             $lastSync = $this->appSettingModel->where('key', 'last_sync_time')->first();
 
-            // Fetch all unit_kerja and their email counts
-            $unitKerjaList = $this->unitKerjaModel->select('unit_kerja.id, unit_kerja.nama_unit_kerja, COUNT(emails.id) as email_count')
-                ->join('emails', 'emails.unit_kerja = unit_kerja.nama_unit_kerja', 'left')
-                ->groupBy('unit_kerja.id, unit_kerja.nama_unit_kerja')
-                ->findAll();
+            // Get a list of all names that are now considered sub-units
+            $subUnitKerjaNames = $this->emailModel->distinct()->where('sub_unit_kerja IS NOT NULL')->findColumn('sub_unit_kerja') ?? [];
+            $lowerSubUnitKerjaNames = array_map('strtolower', $subUnitKerjaNames);
+
+            // Fetch all "parent" unit_kerja and their email counts
+            $unitKerjaBuilder = $this->unitKerjaModel->select('unit_kerja.id, unit_kerja.nama_unit_kerja, COUNT(emails.id) as email_count')
+                ->join('emails', 'emails.unit_kerja = unit_kerja.nama_unit_kerja', 'left');
+
+            if (!empty($lowerSubUnitKerjaNames)) {
+                $unitKerjaBuilder->whereNotIn('LOWER(unit_kerja.nama_unit_kerja)', $lowerSubUnitKerjaNames);
+            }
+            
+            $unitKerjaList = $unitKerjaBuilder->groupBy('unit_kerja.id, unit_kerja.nama_unit_kerja')->findAll();
 
             $data = [
                 'emails' => $emails,
@@ -97,9 +105,7 @@ class Email extends BaseController
     public function batch_update()
     {
         $data['unit_kerja'] = $this->unitKerjaModel->findAll();
-        return view('templates/header') .
-            view('email/batch_update', $data) .
-            view('templates/footer');
+        return view('email/batch_update', $data);
     }
 
     public function batch_update_process()
@@ -108,23 +114,30 @@ class Email extends BaseController
             return $this->response->setJSON(['success' => false, 'message' => 'Invalid request method.']);
         }
 
-        $data = $this->request->getJSON();
-        if (empty($data) || !isset($data->emails) || !is_array($data->emails)) {
-            return $this->response->setJSON(['success' => false, 'message' => 'No email data provided.']);
+        $data = $this->request->getJSON(true);
+        if (empty($data) || !isset($data['identifiers']) || !is_array($data['identifiers'])) {
+            return $this->response->setJSON(['success' => false, 'message' => 'No identifiers provided.']);
         }
 
-        $emailsToUpdate = $data->emails;
-        $newNames = $data->names ?? [];
-        $newPasswords = $data->passwords ?? [];
-        $newNikNips = $data->nik_nips ?? [];
-        $newUnitKerja = $data->unit_kerja ?? null;
+        $mode = $data['mode'] ?? 'email';
+        $identifiers = $data['identifiers'];
+        $newNames = $data['names'] ?? [];
+        $newPasswords = $data['passwords'] ?? [];
+        $newNikNips = $data['nik_nips'] ?? [];
+        $newUnitKerja = $data['unit_kerja'] ?? null;
+        $newSubUnitKerja = $data['sub_unit_kerja'] ?? [];
 
         $results = [];
-        foreach ($emailsToUpdate as $index => $emailAddress) {
-            $emailRecord = $this->emailModel->where('email', $emailAddress)->first();
+        foreach ($identifiers as $index => $identifier) {
+            $emailRecord = null;
+            if ($mode === 'email') {
+                $emailRecord = $this->emailModel->where('email', $identifier)->first();
+            } else { // nik_nip mode
+                $emailRecord = $this->emailModel->where('nik_nip', $identifier)->first();
+            }
 
             if (!$emailRecord) {
-                $results[] = ['email' => $emailAddress, 'success' => false, 'message' => 'Email not found in local database.'];
+                $results[] = ['identifier' => $identifier, 'success' => false, 'message' => 'Record not found in local database.'];
                 continue;
             }
 
@@ -141,21 +154,24 @@ class Email extends BaseController
             if (!empty($newUnitKerja)) {
                 $updateData['unit_kerja'] = $newUnitKerja;
             }
+            if (isset($newSubUnitKerja[$index]) && !empty($newSubUnitKerja[$index])) {
+                $updateData['sub_unit_kerja'] = $newSubUnitKerja[$index];
+            }
 
             if (empty($updateData)) {
-                $results[] = ['email' => $emailAddress, 'success' => false, 'message' => 'No update data provided.'];
+                $results[] = ['identifier' => $identifier, 'success' => true, 'message' => 'No update data provided, skipped.'];
                 continue;
             }
 
             try {
                 $updated = $this->emailModel->update($emailRecord['id'], $updateData);
                 if ($updated) {
-                    $results[] = ['email' => $emailAddress, 'success' => true, 'message' => 'Successfully updated.'];
+                    $results[] = ['identifier' => $identifier, 'success' => true, 'message' => 'Successfully updated.'];
                 } else {
-                    $results[] = ['email' => $emailAddress, 'success' => false, 'message' => 'Failed to update (no changes or database error).'];
+                    $results[] = ['identifier' => $identifier, 'success' => false, 'message' => 'Failed to update (no changes or database error).'];
                 }
             } catch (Exception $e) {
-                $results[] = ['email' => $emailAddress, 'success' => false, 'message' => 'Database error: ' . $e->getMessage()];
+                $results[] = ['identifier' => $identifier, 'success' => false, 'message' => 'Database error: ' . $e->getMessage()];
             }
         }
 
@@ -254,6 +270,14 @@ class Email extends BaseController
             $currentUnitKerja = $this->unitKerjaModel->where('nama_unit_kerja', $email_detail['unit_kerja'])->first();
             $data['current_unit_kerja_id'] = $currentUnitKerja['id'] ?? null;
 
+            // Get the ID of the sub_unit_kerja if it exists
+            if (!empty($email_detail['sub_unit_kerja'])) {
+                $subUnitKerja = $this->unitKerjaModel->where('nama_unit_kerja', $email_detail['sub_unit_kerja'])->first();
+                $data['sub_unit_kerja_id'] = $subUnitKerja['id'] ?? null;
+            } else {
+                $data['sub_unit_kerja_id'] = null;
+            }
+
             return view('email/detail', $data);
         } catch (Exception $e) {
             $data['error'] = $e->getMessage();
@@ -305,6 +329,35 @@ class Email extends BaseController
         }
 
         return redirect()->to('email');
+    }
+
+    public function sub_unit_kerja_detail($subUnitKerjaId)
+    {
+        try {
+            $unitKerja = $this->unitKerjaModel->find($subUnitKerjaId);
+
+            if (!$unitKerja) {
+                throw new Exception('Sub Unit Kerja not found.');
+            }
+
+            $subUnitKerjaName = $unitKerja['nama_unit_kerja'];
+
+            $emails = $this->emailModel->where('sub_unit_kerja', $subUnitKerjaName)->orderBy('name', 'ASC')->findAll();
+            $totalEmails = count($emails);
+
+            $data = [
+                'sub_unit_kerja_name' => $subUnitKerjaName,
+                'emails' => $emails,
+                'back_url' => site_url('email'),
+                'total_emails' => $totalEmails,
+            ];
+
+            return view('email/sub_unit_kerja_detail', $data);
+        } catch (Exception $e) {
+            $data['error'] = $e->getMessage();
+            $data['back_url'] = site_url('email');
+            return view('email/error', $data);
+        }
     }
 
     public function export_csv()
@@ -387,7 +440,15 @@ class Email extends BaseController
             }
 
             $unitKerjaName = $unitKerja['nama_unit_kerja'];
-            $emails = $this->emailModel->where('unit_kerja', $unitKerjaName)->orderBy('name', 'ASC')->findAll();
+
+            $emailQuery = $this->emailModel->where('unit_kerja', $unitKerjaName);
+
+            // If the parent unit is one of the "Dinas Pendidikan" groups, sort by sub_unit_kerja
+            if (str_contains($unitKerjaName, 'Dinas Pendidikan')) {
+                $emailQuery->orderBy('sub_unit_kerja', 'ASC');
+            }
+
+            $emails = $emailQuery->orderBy('name', 'ASC')->findAll();
             $totalEmails = count($emails);
 
             $data = [

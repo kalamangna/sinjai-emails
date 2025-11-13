@@ -12,6 +12,7 @@ class EmailModel extends Model
         'email',
         'domain',
         'unit_kerja',
+        'sub_unit_kerja',
         'mtime',
         'suspended_login',
         'diskquota',

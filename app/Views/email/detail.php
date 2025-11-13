@@ -255,13 +255,25 @@
               <div class="col-6">
                 <?php if (!empty($email['unit_kerja']) && !empty($current_unit_kerja_id)): ?>
                   <a href="<?= site_url('email/unit_kerja/' . $current_unit_kerja_id) ?>" class="btn btn-sm btn-outline-info">
-                    <i class="fas fa-building me-1"></i><?= esc($email['unit_kerja']) ?>
+                    <i class="fas fa-building me-1"></i><?= esc(strtoupper($email['unit_kerja'])) ?>
                   </a>
                 <?php else: ?>
                   N/A
                 <?php endif; ?>
               </div>
             </div>
+            <?php if (!empty($email['sub_unit_kerja']) && !empty($sub_unit_kerja_id)): ?>
+            <div class="row mb-3">
+              <div class="col-6">
+                <strong class="text-muted">Sub Unit Kerja:</strong>
+              </div>
+              <div class="col-6">
+                <a href="<?= site_url('email/sub_unit_kerja/' . $sub_unit_kerja_id) ?>" class="btn btn-sm btn-outline-secondary">
+                  <i class="fas fa-sitemap me-1"></i><?= esc(strtoupper($email['sub_unit_kerja'])) ?>
+                </a>
+              </div>
+            </div>
+            <?php endif; ?>
             <div class="row mb-3">
               <div class="col-6">
                 <strong class="text-muted">Webmail:</strong>

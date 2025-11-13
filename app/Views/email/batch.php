@@ -48,7 +48,7 @@
                 <select class="form-select" id="unit_kerja_input_single">
                     <option selected disabled value="">Choose...</option>
                     <?php foreach ($unit_kerja as $unit) : ?>
-                        <option value="<?= esc($unit['nama_unit_kerja']); ?>"><?= esc($unit['nama_unit_kerja']); ?></option>
+                        <option value="<?= esc($unit['nama_unit_kerja']); ?>"><?= esc(strtoupper($unit['nama_unit_kerja'])); ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>

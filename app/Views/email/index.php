@@ -109,7 +109,7 @@
                             <div class="list-group">
                                 <?php foreach ($unit_kerja_list as $unit): ?>
                                     <a href="<?= site_url('email/unit_kerja/' . $unit['id']) ?>" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                                        <?= esc($unit['nama_unit_kerja']) ?>
+                                        <?= esc(strtoupper($unit['nama_unit_kerja'])) ?>
                                         <span class="badge bg-primary rounded-pill"><?= $unit['email_count'] ?></span>
                                     </a>
                                 <?php endforeach; ?>
@@ -278,7 +278,7 @@
                                             </div>
                                         </td>
                                         <td class="text-center align-middle">
-                                            <small><?= esc($email['unit_kerja']) ?: '-' ?></small>
+                                            <small><?= esc(strtoupper($email['unit_kerja'])) ?: '-' ?></small>
                                         </td>
                                         <td class="text-center align-middle">
                                             <div class="d-flex flex-column align-items-center">
