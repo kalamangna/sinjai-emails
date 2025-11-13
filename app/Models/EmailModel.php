@@ -11,8 +11,7 @@ class EmailModel extends Model
     protected $allowedFields = [
         'email',
         'domain',
-        'unit_kerja',
-        'sub_unit_kerja',
+        'unit_kerja_id',
         'mtime',
         'suspended_login',
         'diskquota',
@@ -29,6 +28,15 @@ class EmailModel extends Model
         'name',
     ];
     protected $useTimestamps = true;
+    protected $beforeFind = ['joinUnitKerja'];
+
+    protected function joinUnitKerja(array $data)
+    {
+        $this->select('emails.*, unit_kerja.nama_unit_kerja as unit_kerja_name, parent_unit_kerja.nama_unit_kerja as parent_unit_kerja_name');
+        $this->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left');
+        $this->join('unit_kerja as parent_unit_kerja', 'parent_unit_kerja.id = unit_kerja.parent_id', 'left');
+        return $data;
+    }
 
     public function email_exists($email)
     {

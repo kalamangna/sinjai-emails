@@ -18,6 +18,13 @@
           <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
       <?php endif; ?>
+      <?php if (session()->getFlashdata('info')): ?>
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+          <i class="fas fa-info-circle me-2"></i>
+          <?= session()->getFlashdata('info') ?>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      <?php endif; ?>
     </div>
 
     <!-- Back Button -->
@@ -253,23 +260,27 @@
                 <strong class="text-muted">Unit Kerja:</strong>
               </div>
               <div class="col-6">
-                <?php if (!empty($email['unit_kerja']) && !empty($current_unit_kerja_id)): ?>
-                  <a href="<?= site_url('email/unit_kerja/' . $current_unit_kerja_id) ?>" class="btn btn-sm btn-outline-info">
-                    <i class="fas fa-building me-1"></i><?= esc(strtoupper($email['unit_kerja'])) ?>
+                <?php if (!empty($parent_unit_kerja)): ?>
+                  <a href="<?= site_url('email/unit_kerja/' . $parent_unit_kerja['id']) ?>" class="btn btn-sm btn-outline-info">
+                    <i class="fas fa-building me-1"></i><?= esc(strtoupper($parent_unit_kerja['nama_unit_kerja'])) ?>
+                  </a>
+                <?php elseif (!empty($current_unit_kerja)): ?>
+                  <a href="<?= site_url('email/unit_kerja/' . $current_unit_kerja['id']) ?>" class="btn btn-sm btn-outline-info">
+                    <i class="fas fa-building me-1"></i><?= esc(strtoupper($current_unit_kerja['nama_unit_kerja'])) ?>
                   </a>
                 <?php else: ?>
                   N/A
                 <?php endif; ?>
               </div>
             </div>
-            <?php if (!empty($email['sub_unit_kerja']) && !empty($sub_unit_kerja_id)): ?>
+            <?php if (!empty($parent_unit_kerja)): ?>
             <div class="row mb-3">
               <div class="col-6">
                 <strong class="text-muted">Sub Unit Kerja:</strong>
               </div>
               <div class="col-6">
-                <a href="<?= site_url('email/sub_unit_kerja/' . $sub_unit_kerja_id) ?>" class="btn btn-sm btn-outline-secondary">
-                  <i class="fas fa-sitemap me-1"></i><?= esc(strtoupper($email['sub_unit_kerja'])) ?>
+                <a href="<?= site_url('email/unit_kerja/' . $current_unit_kerja['id']) ?>" class="btn btn-sm btn-outline-secondary">
+                  <i class="fas fa-sitemap me-1"></i><?= esc(strtoupper($current_unit_kerja['nama_unit_kerja'])) ?>
                 </a>
               </div>
             </div>
@@ -288,14 +299,14 @@
             <form action="<?= site_url('email/update_unit_kerja/' . $email['user']) ?>" method="post" class="mt-3">
               <div class="row align-items-center">
                 <div class="col-md-4">
-                  <label for="unit_kerja" class="form-label fw-bold"><i class="fas fa-building me-2"></i>Unit Kerja:</label>
+                  <label for="unit_kerja_id" class="form-label fw-bold"><i class="fas fa-building me-2"></i>Change Unit Kerja:</label>
                 </div>
                 <div class="col-md-8">
                   <div class="input-group">
-                    <select class="form-select" id="unit_kerja" name="unit_kerja">
+                    <select class="form-select" id="unit_kerja_id" name="unit_kerja_id">
                       <option value="">--Pilih Unit Kerja--</option>
                       <?php foreach ($unit_kerja_options as $unit): ?>
-                        <option value="<?= esc(strtoupper($unit['nama_unit_kerja'])) ?>" <?= (trim(strtolower($unit['nama_unit_kerja'])) == trim(strtolower($email['unit_kerja']))) ? 'selected' : '' ?>>
+                        <option value="<?= esc($unit['id']) ?>" <?= ($unit['id'] == ($parent_unit_kerja['id'] ?? $current_unit_kerja['id'])) ? 'selected' : '' ?>>
                           <?= esc(strtoupper($unit['nama_unit_kerja'])) ?>
                         </option>
                       <?php endforeach; ?>

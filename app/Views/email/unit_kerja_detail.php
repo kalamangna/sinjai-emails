@@ -9,10 +9,10 @@
         <i class="fas fa-arrow-left me-2"></i>Back to Email List
       </a>
       <div class="d-flex gap-2">
-        <a href="<?= site_url('email/export_unit_kerja_csv/' . $unit_kerja_id) ?>" class="btn btn-success">
+        <a href="<?= site_url('email/export_unit_kerja_csv/' . $unit_kerja['id']) ?>" class="btn btn-success">
           <i class="fas fa-file-csv me-2"></i>Export CSV
         </a>
-        <a href="<?= site_url('email/export_unit_kerja_pdf/' . $unit_kerja_id) ?>" class="btn btn-danger">
+        <a href="<?= site_url('email/export_unit_kerja_pdf/' . $unit_kerja['id']) ?>" class="btn btn-danger">
           <i class="fas fa-file-pdf me-2"></i>Export PDF
         </a>
       </div>
@@ -22,20 +22,46 @@
     <div class="card shadow-sm mb-4">
       <div class="card-header bg-light py-3">
         <h5 class="card-title mb-0">
-          <i class="fas fa-building me-2 text-primary"></i>Unit Kerja: <?= esc(strtoupper($unit_kerja_name)) ?>
+          <i class="fas fa-building me-2 text-primary"></i>Unit Kerja: <?= esc(strtoupper($unit_kerja['nama_unit_kerja'])) ?>
         </h5>
       </div>
       <div class="card-body">
-        <p class="card-text">Daftar akun email yang terkait dengan unit kerja ini.</p>
+        <?php if ($parent_unit): ?>
+          <p class="card-text">
+            This is a sub-unit of: 
+            <a href="<?= site_url('email/unit_kerja/' . $parent_unit['id']) ?>"><?= esc(strtoupper($parent_unit['nama_unit_kerja'])) ?></a>
+          </p>
+        <?php else: ?>
+          <p class="card-text">Daftar akun email yang terkait dengan unit kerja ini dan semua sub-unit di bawahnya.</p>
+        <?php endif; ?>
       </div>
     </div>
+
+    <!-- Child Units List -->
+    <?php if (!empty($child_units)): ?>
+    <div class="card shadow-sm mb-4">
+      <div class="card-header bg-light py-3">
+        <h5 class="card-title mb-0">
+          <i class="fas fa-sitemap me-2 text-info"></i>Sub Unit Kerja
+        </h5>
+      </div>
+      <div class="list-group list-group-flush">
+        <?php foreach ($child_units as $child): ?>
+          <a href="<?= site_url('email/unit_kerja/' . $child['id']) ?>" class="list-group-item list-group-item-action">
+            <?= esc(strtoupper($child['nama_unit_kerja'])) ?>
+          </a>
+        <?php endforeach; ?>
+      </div>
+    </div>
+    <?php endif; ?>
+
 
     <!-- Email List for Unit Kerja -->
     <div class="card shadow-sm">
       <div class="card-header bg-light py-3">
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
           <h5 class="card-title mb-2 mb-md-0">
-            <i class="fas fa-list me-2 text-primary"></i>Email Accounts in <?= esc(strtoupper($unit_kerja_name)) ?>
+            <i class="fas fa-list me-2 text-primary"></i>Email Accounts
           </h5>
           <span class="badge bg-primary fs-6">
             <?= $total_emails ?> Accounts
@@ -50,8 +76,8 @@
                 <tr>
                   <th class="ps-4"><i class="fas fa-envelope me-2"></i>Email Address</th>
                   <th><i class="fas fa-user me-2"></i>Name</th>
-                  <?php if (str_contains($unit_kerja_name, 'Dinas Pendidikan')): ?>
-                    <th><i class="fas fa-sitemap me-2"></i>Sub Unit Kerja</th>
+                  <?php if (!empty($child_units)): ?>
+                    <th><i class="fas fa-building me-2"></i>Unit Kerja</th>
                   <?php endif; ?>
                   <th class="text-center"><i class="fas fa-chart-pie me-2"></i>Disk Usage</th>
                   <th class="text-center"><i class="fas fa-cog me-2"></i>Action</th>
@@ -82,8 +108,8 @@
                       </div>
                     </td>
                     <td><?= esc($email['name']) ?></td>
-                    <?php if (str_contains($unit_kerja_name, 'Dinas Pendidikan')): ?>
-                      <td><?= esc(strtoupper($email['sub_unit_kerja'] ?? 'N/A')) ?></td>
+                    <?php if (!empty($child_units)): ?>
+                      <td><?= esc(strtoupper($email['unit_kerja_name'] ?? 'N/A')) ?></td>
                     <?php endif; ?>
                     <td class="text-center align-middle">
                       <div class="d-flex flex-column align-items-center">
@@ -127,7 +153,7 @@
           <div class="text-center py-5">
             <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
             <h5 class="text-muted">No email accounts found for this Unit Kerja.</h5>
-            <p class="text-muted">There are no email accounts currently assigned to "<?= esc($unit_kerja_name) ?>".</p>
+            <p class="text-muted">There are no email accounts currently assigned to "<?= esc(strtoupper($unit_kerja['nama_unit_kerja'])) ?>".</p>
           </div>
         <?php endif; ?>
       </div>

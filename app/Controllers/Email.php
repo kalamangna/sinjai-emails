@@ -56,23 +56,18 @@ class Email extends BaseController
             $emails = $builder->paginate($perPage);
             $pager = $builder->pager;
 
-            $counts = $this->emailModel->select('COUNT(*) as total_emails, SUM(CASE WHEN suspended_login = 0 THEN 1 ELSE 0 END) as active_count, SUM(CASE WHEN suspended_login = 1 THEN 1 ELSE 0 END) as suspended_count')->first();
+            $counts = $this->emailModel->allowCallbacks(false)->select('COUNT(*) as total_emails, SUM(CASE WHEN suspended_login = 0 THEN 1 ELSE 0 END) as active_count, SUM(CASE WHEN suspended_login = 1 THEN 1 ELSE 0 END) as suspended_count')->first();
 
             $lastSync = $this->appSettingModel->where('key', 'last_sync_time')->first();
 
-            // Get a list of all names that are now considered sub-units
-            $subUnitKerjaNames = $this->emailModel->distinct()->where('sub_unit_kerja IS NOT NULL')->findColumn('sub_unit_kerja') ?? [];
-            $lowerSubUnitKerjaNames = array_map('strtolower', $subUnitKerjaNames);
-
-            // Fetch all "parent" unit_kerja and their email counts
-            $unitKerjaBuilder = $this->unitKerjaModel->select('unit_kerja.id, unit_kerja.nama_unit_kerja, COUNT(emails.id) as email_count')
-                ->join('emails', 'emails.unit_kerja = unit_kerja.nama_unit_kerja', 'left');
-
-            if (!empty($lowerSubUnitKerjaNames)) {
-                $unitKerjaBuilder->whereNotIn('LOWER(unit_kerja.nama_unit_kerja)', $lowerSubUnitKerjaNames);
-            }
-            
-            $unitKerjaList = $unitKerjaBuilder->groupBy('unit_kerja.id, unit_kerja.nama_unit_kerja')->findAll();
+            // Fetch all parent unit_kerja and count their total emails (including children)
+            $unitKerjaList = $this->unitKerjaModel
+                ->select('unit_kerja.id, unit_kerja.nama_unit_kerja, COUNT(emails.id) as email_count')
+                ->join('unit_kerja as child', 'child.parent_id = unit_kerja.id', 'left')
+                ->join('emails', 'emails.unit_kerja_id = unit_kerja.id OR emails.unit_kerja_id = child.id', 'left')
+                ->where('unit_kerja.parent_id IS NULL')
+                ->groupBy('unit_kerja.id, unit_kerja.nama_unit_kerja')
+                ->findAll();
 
             $data = [
                 'emails' => $emails,
@@ -256,6 +251,7 @@ class Email extends BaseController
     public function detail($username)
     {
         try {
+            // The beforeFind callback in EmailModel automatically joins unit_kerja
             $email_detail = $this->emailModel->where('user', $username)->first();
 
             if (!$email_detail) {
@@ -263,19 +259,18 @@ class Email extends BaseController
             }
 
             $data['email'] = $email_detail;
-            $data['unit_kerja_options'] = $this->unitKerjaModel->findAll();
+            $data['unit_kerja_options'] = $this->unitKerjaModel->where('parent_id IS NULL')->findAll();
             $data['back_url'] = site_url('email');
 
-            // Get the ID of the current unit_kerja if it exists
-            $currentUnitKerja = $this->unitKerjaModel->where('nama_unit_kerja', $email_detail['unit_kerja'])->first();
-            $data['current_unit_kerja_id'] = $currentUnitKerja['id'] ?? null;
+            // Get the full unit_kerja object for the email
+            $currentUnitKerja = $this->unitKerjaModel->find($email_detail['unit_kerja_id']);
+            $data['current_unit_kerja'] = $currentUnitKerja;
 
-            // Get the ID of the sub_unit_kerja if it exists
-            if (!empty($email_detail['sub_unit_kerja'])) {
-                $subUnitKerja = $this->unitKerjaModel->where('nama_unit_kerja', $email_detail['sub_unit_kerja'])->first();
-                $data['sub_unit_kerja_id'] = $subUnitKerja['id'] ?? null;
+            // Find the parent unit if the current unit is a sub-unit
+            if (!empty($currentUnitKerja['parent_id'])) {
+                $data['parent_unit_kerja'] = $this->unitKerjaModel->find($currentUnitKerja['parent_id']);
             } else {
-                $data['sub_unit_kerja_id'] = null;
+                $data['parent_unit_kerja'] = null;
             }
 
             return view('email/detail', $data);
@@ -288,21 +283,20 @@ class Email extends BaseController
 
     public function update_unit_kerja($username)
     {
-
         if ($this->request->getMethod() === 'POST') {
-            $unitKerja = $this->request->getPost('unit_kerja');
+            $unitKerjaId = $this->request->getPost('unit_kerja_id');
 
             $email = $this->emailModel->where('user', $username)->first();
             if (!$email) {
                 return redirect()->to('email')->with('error', 'Email account not found.');
             }
 
-            $updated = $this->emailModel->update($email['id'], ['unit_kerja' => $unitKerja]);
+            $updated = $this->emailModel->update($email['id'], ['unit_kerja_id' => $unitKerjaId]);
 
             if ($updated) {
                 return redirect()->to('email/detail/' . $username)->with('success', 'Unit Kerja has been updated successfully.');
             } else {
-                return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update Unit Kerja.');
+                return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update Unit Kerja. No changes were detected.');
             }
         }
 
@@ -311,152 +305,66 @@ class Email extends BaseController
 
     public function update_name($username)
     {
-        if ($this->request->getMethod() === 'post') {
-            $name = $this->request->getPost('name');
+        if (strtolower($this->request->getMethod()) === 'post') {
+            $newName = $this->request->getPost('name');
 
             $email = $this->emailModel->where('user', $username)->first();
             if (!$email) {
-                return redirect()->to('email')->with('error', 'Email account not found.');
+                return redirect()->to('email/detail/' . $username)->with('error', 'Email account not found.');
             }
 
-            $updated = $this->emailModel->update($email['id'], ['name' => $name]);
+            // Check if the new name is actually different from the current name
+            if ($newName === $email['name']) {
+                return redirect()->to('email/detail/' . $username)->with('info', 'No changes detected. Name is already up to date.');
+            }
 
-            if ($updated) {
-                return redirect()->to('email/detail/' . $username)->with('success', 'Name has been updated successfully.');
-            } else {
-                return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update name.');
+            // Validate newName (e.g., not empty)
+            if (empty($newName)) {
+                return redirect()->to('email/detail/' . $username)->with('error', 'Name cannot be empty.');
+            }
+
+            try {
+                $updated = $this->emailModel->update($email['id'], ['name' => $newName]);
+
+                if ($updated) {
+                    return redirect()->to('email/detail/' . $username)->with('success', 'Name has been updated successfully.');
+                } else {
+                    // This case might not be reachable if the name check above is thorough,
+                    // but it's good for robustness.
+                    return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update name. The database did not report any changes.');
+                }
+            } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
+                log_message('error', 'Database error during name update: ' . $e->getMessage());
+                return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update name due to a database error: ' . $e->getMessage());
             }
         }
 
-        return redirect()->to('email');
-    }
-
-    public function sub_unit_kerja_detail($subUnitKerjaId)
-    {
-        try {
-            $unitKerja = $this->unitKerjaModel->find($subUnitKerjaId);
-
-            if (!$unitKerja) {
-                throw new Exception('Sub Unit Kerja not found.');
-            }
-
-            $subUnitKerjaName = $unitKerja['nama_unit_kerja'];
-
-            $emails = $this->emailModel->where('sub_unit_kerja', $subUnitKerjaName)->orderBy('name', 'ASC')->findAll();
-            $totalEmails = count($emails);
-
-            $data = [
-                'sub_unit_kerja_name' => $subUnitKerjaName,
-                'emails' => $emails,
-                'back_url' => site_url('email'),
-                'total_emails' => $totalEmails,
-            ];
-
-            return view('email/sub_unit_kerja_detail', $data);
-        } catch (Exception $e) {
-            $data['error'] = $e->getMessage();
-            $data['back_url'] = site_url('email');
-            return view('email/error', $data);
-        }
-    }
-
-    public function export_csv()
-    {
-        try {
-            $all_data = $this->emailModel->findAll();
-            $totalEmails = count($all_data);
-            $limit = 50;
-
-            if ($totalEmails <= $limit) {
-                $filename = 'email_addresses_' . date('Y-m-d') . '.csv';
-
-                header('Content-Type: text/csv');
-                header('Content-Disposition: attachment; filename="' . $filename . '"');
-
-                $output = fopen('php://output', 'w');
-                fputcsv($output, ['name', 'email'], ','); // Fixed headers and delimiter
-
-                foreach ($all_data as $row) {
-                    fputcsv($output, [$row['name'], $row['email']], ','); // Fixed keys
-                }
-
-                fclose($output);
-                exit();
-            } else {
-                $zip = new \ZipArchive();
-                $zipFileName = 'email_addresses_' . date('Y-m-d') . '.zip';
-                $tempZipPath = WRITEPATH . 'uploads/' . $zipFileName;
-
-                if ($zip->open($tempZipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== TRUE) {
-                    throw new Exception('Cannot create ZIP archive.');
-                }
-
-                $chunks = array_chunk($all_data, $limit);
-                $fileCount = 1;
-
-                foreach ($chunks as $chunk) {
-                    $csvFileName = 'email_addresses_part_' . $fileCount . '.csv';
-
-                    $stream = fopen('php://memory', 'w+');
-                    fputcsv($stream, ['name', 'email'], ','); // Fixed headers and delimiter
-                    foreach ($chunk as $row) {
-                        fputcsv($stream, [$row['name'], $row['email']], ','); // Fixed keys
-                    }
-                    rewind($stream);
-                    $csvContent = stream_get_contents($stream);
-                    fclose($stream);
-
-                    $zip->addFromString($csvFileName, $csvContent);
-                    $fileCount++;
-                }
-
-                $zip->close();
-
-                header('Content-Type: application/zip');
-                header('Content-Disposition: attachment; filename="' . $zipFileName . '"');
-                header('Content-Length: ' . filesize($tempZipPath));
-
-                readfile($tempZipPath);
-
-                unlink($tempZipPath);
-
-                exit();
-            }
-        } catch (Exception $e) {
-            $data['error'] = $e->getMessage();
-            return view('templates/header') .
-                view('email/error', $data) .
-                view('templates/footer');
-        }
+        return redirect()->to('email/detail/' . $username);
     }
 
     public function unit_kerja_detail($unitKerjaId)
     {
         try {
             $unitKerja = $this->unitKerjaModel->find($unitKerjaId);
-
             if (!$unitKerja) {
                 throw new Exception('Unit Kerja not found.');
             }
 
-            $unitKerjaName = $unitKerja['nama_unit_kerja'];
+            // Find children of the current unit
+            $children = $this->unitKerjaModel->where('parent_id', $unitKerjaId)->findAll();
+            $childrenIds = array_column($children, 'id');
 
-            $emailQuery = $this->emailModel->where('unit_kerja', $unitKerjaName);
-
-            // If the parent unit is one of the "Dinas Pendidikan" groups, sort by sub_unit_kerja
-            if (str_contains($unitKerjaName, 'Dinas Pendidikan')) {
-                $emailQuery->orderBy('sub_unit_kerja', 'ASC');
-            }
-
-            $emails = $emailQuery->orderBy('name', 'ASC')->findAll();
-            $totalEmails = count($emails);
+            // Find all emails belonging to this unit AND all its children
+            $allUnitIds = array_merge([$unitKerjaId], $childrenIds);
+            $emails = $this->emailModel->whereIn('unit_kerja_id', $allUnitIds)->orderBy('unit_kerja_name', 'ASC')->orderBy('name', 'ASC')->findAll();
 
             $data = [
-                'unit_kerja_name' => $unitKerjaName,
+                'unit_kerja' => $unitKerja,
+                'parent_unit' => !empty($unitKerja['parent_id']) ? $this->unitKerjaModel->find($unitKerja['parent_id']) : null,
+                'child_units' => $children,
                 'emails' => $emails,
+                'total_emails' => count($emails),
                 'back_url' => site_url('email'),
-                'unit_kerja_id' => $unitKerjaId,
-                'total_emails' => $totalEmails,
             ];
 
             return view('email/unit_kerja_detail', $data);
@@ -712,10 +620,10 @@ class Email extends BaseController
                 $builder->orderBy('email', 'DESC');
                 break;
             case 'unit_kerja_asc':
-                $builder->orderBy('unit_kerja', 'ASC');
+                $builder->orderBy('unit_kerja.nama_unit_kerja', 'ASC');
                 break;
             case 'unit_kerja_desc':
-                $builder->orderBy('unit_kerja', 'DESC');
+                $builder->orderBy('unit_kerja.nama_unit_kerja', 'DESC');
                 break;
             case 'usage_asc':
                 $builder->orderBy('diskusedpercent_float', 'ASC');

@@ -278,7 +278,12 @@
                                             </div>
                                         </td>
                                         <td class="text-center align-middle">
-                                            <small><?= esc(strtoupper($email['unit_kerja'])) ?: '-' ?></small>
+                                            <?php if (!empty($email['parent_unit_kerja_name'])): ?>
+                                                <small class="d-block"><?= esc(strtoupper($email['parent_unit_kerja_name'])) ?></small>
+                                                <small class="d-block text-muted">(<?= esc(strtoupper($email['unit_kerja_name'])) ?>)</small>
+                                            <?php else: ?>
+                                                <small><?= esc(strtoupper($email['unit_kerja_name'])) ?: '-' ?></small>
+                                            <?php endif; ?>
                                         </td>
                                         <td class="text-center align-middle">
                                             <div class="d-flex flex-column align-items-center">

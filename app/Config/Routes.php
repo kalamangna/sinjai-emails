@@ -10,7 +10,7 @@ $routes->get('email', 'Email::index');
 $routes->get('email/sync', 'Email::sync');
 $routes->get('email/detail/(:any)', 'Email::detail/$1');
 $routes->get('/email/unit_kerja/(:num)', 'Email::unit_kerja_detail/$1');
-$routes->get('/email/sub_unit_kerja/(:num)', 'Email::sub_unit_kerja_detail/$1');
+$routes->post('/email/update_name/(:any)', 'Email::update_name/$1');
 $routes->post('/email/delete/(:num)', 'Email::delete/$1');
 $routes->post('/email/create_single', 'Email::create_single_email');
 $routes->post('/user/check_email', 'User::checkEmailAvailability');
