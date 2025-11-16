@@ -462,7 +462,7 @@
 
         const flashContainer = document.getElementById('flash-message-container');
 
-        fetch('<?= site_url('email/sync') ?>')
+        fetch('<?= site_url('email/sync') ?>?t=' + new Date().getTime())
             .then(response => {
                 if (!response.ok) {
                     return response.json().then(err => {

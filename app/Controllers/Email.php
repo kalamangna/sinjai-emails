@@ -71,7 +71,7 @@ class Email extends BaseController
                 $allUnitIds = array_merge([$parentId], $childrenIds);
 
                 $emailCount = $this->emailModel->allowCallbacks(false)->whereIn('unit_kerja_id', $allUnitIds)->countAllResults();
-                
+
                 $parentUnit['email_count'] = $emailCount;
                 $unitKerjaList[] = $parentUnit;
             }
@@ -484,10 +484,15 @@ class Email extends BaseController
 
             // Find all emails belonging to this unit AND all its children, sorted by name
             $allUnitIds = array_merge([$unitKerjaId], $childrenIds);
-            $emails = $this->emailModel->allowCallbacks(false)
-                                       ->whereIn('unit_kerja_id', $allUnitIds)
-                                       ->orderBy('name', 'ASC')
-                                       ->findAll();
+            $emails = $this->emailModel
+                ->whereIn('unit_kerja_id', $allUnitIds)
+                ->orderBy('unit_kerja_name', 'ASC')
+                ->orderBy('name', 'ASC')
+                ->findAll();
+
+            // Determine if the "Unit Kerja" column should be shown
+            $uniqueUnitKerjaIds = array_unique(array_column($emails, 'unit_kerja_id'));
+            $showUnitKerjaColumn = count($uniqueUnitKerjaIds) > 1;
 
             $options = new Options();
             $options->set('isHtml5ParserEnabled', true);
@@ -503,17 +508,35 @@ class Email extends BaseController
                 }
             }
 
+            $logoPath = FCPATH . 'logo.png';
+            $logoData = base64_encode(file_get_contents($logoPath));
+            $logoSrc = 'data:image/png;base64,' . $logoData;
+
             $html = '<!DOCTYPE html>
                 <html>
                 <head>
                     <title>Akun Email - ' . esc($unitKerja['nama_unit_kerja']) . '</title>
                     <style>
+                        @page {
+                            margin: 10px 25px;
+                        }
                         body { 
                             font-family: Arial, sans-serif; 
                             margin: 10px; 
-                            font-size: 12px; 
+                            font-size: 10px; 
                         }
-                        h1 { color: #333; text-align: center; margin-bottom: 20px; }
+                        h1 { 
+                            color: #333; 
+                            text-align: center; 
+                            font-size: 14px;
+                        }
+                        h2 { 
+                            color: #555; 
+                            text-align: center; 
+                            font-size: 12px;
+                            margin-top: -10px;
+                            margin-bottom: 20px;
+                        }
                         table { 
                             width: 100%; 
                             border-collapse: collapse; 
@@ -521,54 +544,73 @@ class Email extends BaseController
                         }
                         th, td { 
                             border: 1px solid #ddd; 
-                            padding: 8px; 
+                            padding: 5px; 
                             text-align: left; 
                             word-wrap: break-word;
                             overflow-wrap: break-word;
                         }
-                        th { background-color: #f2f2f2; }
+                        th { 
+                            background-color: #f2f2f2; 
+                        }
                         
                         /* Kolom No. */
                         th:nth-child(1), td:nth-child(1) { 
                             text-align: center;
+                            width: 5%;
                         } 
                         
                         /* Kolom NIK/NIP */
-                        th:nth-child(2), td:nth-child(2) { }
+                        th:nth-child(2), td:nth-child(2) { width: 15%; }
                         
                         /* Kolom Nama */
-                        th:nth-child(3), td:nth-child(3) { } 
+                        th:nth-child(3), td:nth-child(3) { width: 20%; } 
+                        
+                        /* Kolom Unit Kerja */
+                        ' . ($showUnitKerjaColumn ? 'th:nth-child(4), td:nth-child(4) { width: 20%; }' : '') . '
                         
                         /* Kolom Email */
-                        th:nth-child(4), td:nth-child(4) { }
+                        th:nth-child(' . ($showUnitKerjaColumn ? '5' : '4') . '), td:nth-child(' . ($showUnitKerjaColumn ? '5' : '4') . ') { width: 20%; }
                         
                         /* Kolom Password */
-                        th:nth-child(5), td:nth-child(5) { }
+                        th:nth-child(' . ($showUnitKerjaColumn ? '6' : '5') . '), td:nth-child(' . ($showUnitKerjaColumn ? '6' : '5') . ') { width: 15%; }
 
                         .footer { 
                             text-align: center;
-                            font-size: 10px; 
+                            font-size: 9px; 
                             color: #777; 
                             position: fixed; 
-                            bottom: 20px; 
+                            bottom: 10px; 
                             right: 20px; 
                             left: 20px;
-                            line-height: 1.4; 
+                            line-height: 1.2; 
                         }
                         
                         .instruction {
                             text-align: center;
                             font-weight: bold;
                             font-size: 1.1em;
-                            margin-bottom: 25px;
-                            padding: 10px;
+                            margin-bottom: 15px;
+                            padding: 8px;
                             border: 1px solid #ddd;
                             background-color: #f9f9f9;
+                        }
+                        .header {
+                            text-align: center;
+                            margin-bottom: 15px;
+                        }
+                        .logo {
+                            max-width: 80px;
+                            max-height: 80px;
+                            margin-bottom: 10px;
                         }
                     </style>
                 </head>
                 <body>
-                    <h1>Daftar Akun Email<br>' . esc($unitKerja['nama_unit_kerja']) . '</h1>
+                    <div class="header">
+                        <img src="' . $logoSrc . '" alt="Logo" class="logo"/>
+                        <h1>DAFTAR AKUN EMAIL</h1>
+                        <h2>' . esc($unitKerja['nama_unit_kerja']) . '</h2>
+                    </div>
 
                     <p class="instruction">
                         Untuk AKTIVASI AKUN, login menggunakan EMAIL dan PASSWORD melalui halaman sinjaikab.go.id/webmail
@@ -580,6 +622,7 @@ class Email extends BaseController
                                 <th>No.</th>
                                 <th>NIK/NIP</th>
                                 <th>Nama</th>
+                                ' . ($showUnitKerjaColumn ? '<th>Unit Kerja</th>' : '') . '
                                 <th>Email</th>
                                 <th>Password</th>
                             </tr>
@@ -593,6 +636,7 @@ class Email extends BaseController
                                 <td>' . $nomor . '</td> 
                                 <td>' . esc($email['nik_nip'] ?? 'N/A') . '</td>
                                 <td>' . esc($email['name'] ?? 'N/A') . '</td>
+                                ' . ($showUnitKerjaColumn ? '<td>' . esc($email['unit_kerja_name'] ?? 'N/A') . '</td>' : '') . '
                                 <td>' . esc($email['email'] ?? 'N/A') . '</td>
                                 <td>' . esc($email['password'] ?? 'N/A') . '</td>
                             </tr>';
@@ -604,10 +648,8 @@ class Email extends BaseController
                     </table>
                     
                     <div class="footer">
-                        Bidang Aplikasi dan Informatika<br>
-                        Dinas Komunikasi Informatika dan Persandian<br>
-                        Kabupaten Sinjai<br><br>
-                        Dibuat pada ' . date('Y-m-d H:i:s') . '
+                        Bidang Aplikasi dan Informatika - Dinas Komunikasi Informatika dan Persandian Kabupaten Sinjai<br>
+                        Dibuat pada ' . date('d-m-Y H:i:s') . '
                     </div>
                 </body>
                 </html>';
