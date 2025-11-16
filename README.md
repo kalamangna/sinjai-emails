@@ -1,3 +1,15 @@
+# Sinjai Emails Management
+
+This application is a tool for managing email accounts on a cPanel server. It is built with CodeIgniter 4 and provides the following features:
+
+*   **Email Account Management:** View, create, and delete email accounts.
+*   **cPanel Integration:** Sync email accounts from a cPanel server.
+*   **Batch Operations:** Perform batch creation and updates of email accounts.
+*   **Unit Kerja Management:** Organize email accounts by "unit kerja" (work units) and sub-units.
+*   **PDF and CSV Export:** Export email account lists to PDF and CSV formats.
+
+---
+
 # CodeIgniter 4 Application Starter
 
 ## What is CodeIgniter?
