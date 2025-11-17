@@ -237,23 +237,59 @@ class Email extends BaseController
         }
     }
 
-    public function sync()
-    {
-        try {
-            $all_emails = $this->cpanelApi->get_email_accounts_detailed();
-            $this->emailModel->upsertBatch($all_emails);
+        public function sync()
 
-            // Save last sync time
-            $this->appSettingModel->where('key', 'last_sync_time')->set(['value' => date('Y-m-d H:i:s')])->update();
-            if ($this->appSettingModel->affectedRows() == 0) {
-                $this->appSettingModel->insert(['key' => 'last_sync_time', 'value' => date('Y-m-d H:i:s')]);
+        {
+
+            try {
+
+                $all_emails = $this->cpanelApi->get_email_accounts_detailed();
+
+                $this->emailModel->upsertBatch($all_emails);
+
+    
+
+                // Save last sync time
+
+                $this->appSettingModel->where('key', 'last_sync_time')->set(['value' => date('Y-m-d H:i:s')])->update();
+
+                if ($this->appSettingModel->affectedRows() == 0) {
+
+                    $this->appSettingModel->insert(['key' => 'last_sync_time', 'value' => date('Y-m-d H:i:s')]);
+
+                }
+
+    
+
+                $result = ['success' => true, 'message' => 'Email data synchronization from cPanel was successful.'];
+
+    
+
+                if (is_cli()) {
+
+                    return $result;
+
+                }
+
+                return $this->response->setJSON($result);
+
+    
+
+            } catch (Exception $e) {
+
+                $result = ['success' => false, 'message' => 'Failed to synchronize: ' . $e->getMessage()];
+
+                if (is_cli()) {
+
+                    return $result;
+
+                }
+
+                return $this->response->setStatusCode(500)->setJSON($result);
+
             }
 
-            return $this->response->setJSON(['success' => true, 'message' => 'Email data synchronization from cPanel was successful.']);
-        } catch (Exception $e) {
-            return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => 'Failed to synchronize: ' . $e->getMessage()]);
         }
-    }
 
     public function detail($username)
     {
