@@ -294,7 +294,7 @@ class Email extends BaseController
     public function detail($username)
     {
         try {
-            // The beforeFind callback in EmailModel automatically joins unit_kerja
+            // The beforeFind callback in EmailModel is disabled here to prevent side effects.
             $email_detail = $this->emailModel->allowCallbacks(false)->where('user', $username)->first();
 
             if (!$email_detail) {
@@ -305,19 +305,20 @@ class Email extends BaseController
             $data['unit_kerja_options'] = $this->unitKerjaModel->where('parent_id IS NULL')->findAll();
             $data['back_url'] = site_url('email');
 
-                            $currentUnitKerja = null;
-                            if (!empty($email_detail['unit_kerja_id'])) {
-                                $currentUnitKerja = $this->unitKerjaModel->find($email_detail['unit_kerja_id']);
-                            }
-                            $data['current_unit_kerja'] = $currentUnitKerja;
-                    
-                            $parentUnitKerja = null;
-                            if (!empty($currentUnitKerja) && !empty($currentUnitKerja['parent_id'])) {
-                                $parentUnitKerja = $this->unitKerjaModel->find($currentUnitKerja['parent_id']);
-                            }
-                            $data['parent_unit_kerja'] = $parentUnitKerja;
-                    
-                            return view('email/detail', $data);        } catch (Exception $e) {
+            $currentUnitKerja = null;
+            if (!empty($email_detail['unit_kerja_id'])) {
+                $currentUnitKerja = $this->unitKerjaModel->find($email_detail['unit_kerja_id']);
+            }
+            $data['current_unit_kerja'] = $currentUnitKerja;
+
+            $parentUnitKerja = null;
+            if (!empty($currentUnitKerja) && !empty($currentUnitKerja['parent_id'])) {
+                $parentUnitKerja = $this->unitKerjaModel->find($currentUnitKerja['parent_id']);
+            }
+            $data['parent_unit_kerja'] = $parentUnitKerja;
+
+            return view('email/detail', $data);
+        } catch (Exception $e) {
             $data['error'] = $e->getMessage();
             $data['back_url'] = site_url('email');
             return view('email/error', $data);
