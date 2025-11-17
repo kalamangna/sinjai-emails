@@ -295,7 +295,7 @@ class Email extends BaseController
     {
         try {
             // The beforeFind callback in EmailModel automatically joins unit_kerja
-            $email_detail = $this->emailModel->where('user', $username)->first();
+            $email_detail = $this->emailModel->allowCallbacks(false)->where('user', $username)->first();
 
             if (!$email_detail) {
                 throw new Exception('Email tidak ditemukan di database lokal.');
