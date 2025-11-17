@@ -306,7 +306,7 @@
                     <select class="form-select" id="unit_kerja_id" name="unit_kerja_id">
                       <option value="">--Pilih Unit Kerja--</option>
                       <?php foreach ($unit_kerja_options as $unit): ?>
-                        <option value="<?= esc($unit['id']) ?>" <?= ($unit['id'] == ($parent_unit_kerja['id'] ?? $current_unit_kerja['id'])) ? 'selected' : '' ?>>
+                        <option value="<?= esc($unit['id']) ?>" <?= ($unit['id'] == ($parent_unit_kerja['id'] ?? $current_unit_kerja['id'] ?? null)) ? 'selected' : '' ?>>
                           <?= esc(strtoupper($unit['nama_unit_kerja'])) ?>
                         </option>
                       <?php endforeach; ?>
