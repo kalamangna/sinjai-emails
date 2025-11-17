@@ -61,7 +61,7 @@ class Email extends BaseController
             $lastSync = $this->appSettingModel->where('key', 'last_sync_time')->first();
 
             // Fetch all parent unit_kerja
-            $parentUnitKerjaList = $this->unitKerjaModel->where('parent_id IS NULL')->findAll();
+            $parentUnitKerjaList = $this->unitKerjaModel->where('parent_id IS NULL')->orderBy('nama_unit_kerja', 'ASC')->findAll();
 
             // Calculate email count for each parent unit (including children)
             $unitKerjaList = [];
@@ -269,18 +269,17 @@ class Email extends BaseController
             $data['unit_kerja_options'] = $this->unitKerjaModel->where('parent_id IS NULL')->findAll();
             $data['back_url'] = site_url('email');
 
-            // Get the full unit_kerja object for the email
-            $currentUnitKerja = $this->unitKerjaModel->find($email_detail['unit_kerja_id']);
-            $data['current_unit_kerja'] = $currentUnitKerja;
-
-            // Find the parent unit if the current unit is a sub-unit
-            if (!empty($currentUnitKerja['parent_id'])) {
-                $data['parent_unit_kerja'] = $this->unitKerjaModel->find($currentUnitKerja['parent_id']);
-            } else {
-                $data['parent_unit_kerja'] = null;
-            }
-
-            return view('email/detail', $data);
+                    $currentUnitKerja = null;
+                    if (!empty($email_detail['unit_kerja_id'])) {
+                        $currentUnitKerja = $this->unitKerjaModel->find($email_detail['unit_kerja_id']);
+                    }
+                    $data['current_unit_kerja'] = $currentUnitKerja;
+            
+                    $parentUnitKerja = null;
+                    if (!empty($currentUnitKerja) && !empty($currentUnitKerja['parent_id'])) {
+                        $parentUnitKerja = $this->unitKerjaModel->find($currentUnitKerja['parent_id']);
+                    }
+                    $data['parent_unit_kerja'] = $parentUnitKerja;            return view('email/detail', $data);
         } catch (Exception $e) {
             $data['error'] = $e->getMessage();
             $data['back_url'] = site_url('email');

@@ -12,9 +12,9 @@ class UnitKerja extends BaseController
         $search = $this->request->getGet('search');
 
         if ($search) {
-            $data['unit_kerja_list'] = $unitKerjaModel->like('nama_unit_kerja', $search)->findAll();
+            $data['unit_kerja_list'] = $unitKerjaModel->like('nama_unit_kerja', $search)->orderBy('nama_unit_kerja', 'ASC')->findAll();
         } else {
-            $data['unit_kerja_list'] = $unitKerjaModel->findAll();
+            $data['unit_kerja_list'] = $unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->findAll();
         }
 
         $data['search'] = $search;
