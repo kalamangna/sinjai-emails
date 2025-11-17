@@ -294,8 +294,8 @@ class Email extends BaseController
     public function detail($username)
     {
         try {
-            // The beforeFind callback in EmailModel is disabled here to prevent side effects.
-            $email_detail = $this->emailModel->allowCallbacks(false)->where('user', $username)->first();
+            // The beforeFind callback in EmailModel automatically joins unit_kerja
+            $email_detail = $this->emailModel->where('user', $username)->first();
 
             if (!$email_detail) {
                 throw new Exception('Email tidak ditemukan di database lokal.');
