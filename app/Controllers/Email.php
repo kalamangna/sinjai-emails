@@ -40,7 +40,10 @@ class Email extends BaseController
             $builder = $this->emailModel;
 
             if (!empty($search)) {
-                $builder->like('email', $search);
+                $builder->groupStart()
+                    ->like('email', $search)
+                    ->orLike('name', $search)
+                    ->groupEnd();
             }
 
             if (!empty($status)) {
