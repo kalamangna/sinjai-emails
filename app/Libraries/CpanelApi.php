@@ -20,7 +20,7 @@ class CpanelApi
 
         $client = Services::curlrequest([
             'baseURI' => $url,
-            'timeout' => 30,
+            'timeout' => 120,
             'http_errors' => false, // Allow handling of non-200 responses
         ]);
 
