@@ -64,6 +64,23 @@
     <?php endif; ?>
 
 
+    <!-- Search Form -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form action="<?= current_url() ?>" method="get" class="row g-3 align-items-center">
+                <div class="col-md-10">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                        <input type="text" class="form-control" name="search" placeholder="Search by email or name..." value="<?= esc($search ?? '') ?>">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">Search</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Email List for Unit Kerja -->
     <div class="card shadow-sm">
       <div class="card-header bg-light py-3">

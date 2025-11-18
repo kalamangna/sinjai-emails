@@ -399,8 +399,18 @@ class Email extends BaseController
             $allUnitIds = array_merge([$unitKerjaId], $childrenIds);
 
             $perPage = $this->request->getGet('per_page') ?? 100;
-            $emails = $this->emailModel->whereIn('unit_kerja_id', $allUnitIds)
-                ->orderBy('unit_kerja_name', 'ASC')
+            $search = $this->request->getGet('search');
+
+            $emailBuilder = $this->emailModel->whereIn('unit_kerja_id', $allUnitIds);
+
+            if ($search) {
+                $emailBuilder->groupStart()
+                    ->like('email', $search)
+                    ->orLike('name', $search)
+                    ->groupEnd();
+            }
+
+            $emails = $emailBuilder->orderBy('unit_kerja_name', 'ASC')
                 ->orderBy('name', 'ASC')
                 ->paginate($perPage);
             $pager = $this->emailModel->pager;
@@ -413,6 +423,7 @@ class Email extends BaseController
                 'total_emails' => $pager->getTotal(),
                 'pagination' => $pager,
                 'per_page' => $perPage,
+                'search' => $search,
                 'back_url' => site_url('email'),
             ];
 
