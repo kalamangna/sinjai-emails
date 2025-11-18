@@ -138,7 +138,7 @@
             <div class="card-body">
                 <form method="GET" action="" class="row g-3 align-items-end">
                     <!-- Search Input -->
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <label for="search" class="form-label">Search Email</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="fas fa-search"></i></span>
@@ -146,15 +146,7 @@
                                 placeholder="Enter email..." value="<?= isset($search) ? esc($search) : '' ?>">
                         </div>
                     </div>
-                    <!-- Status Filter -->
-                    <div class="col-md-2">
-                        <label for="status" class="form-label">Status</label>
-                        <select class="form-select" id="status" name="status">
-                            <option value="">All Statuses</option>
-                            <option value="active" <?= (isset($status) && $status == 'active') ? 'selected' : '' ?>>Active</option>
-                            <option value="suspended" <?= (isset($status) && $status == 'suspended') ? 'selected' : '' ?>>Suspended</option>
-                        </select>
-                    </div>
+
 
                     <!-- Sorting -->
                     <div class="col-md-2">
@@ -183,7 +175,7 @@
                     </div>
 
                     <!-- Action Buttons -->
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-primary">
                                 <i class="fas fa-filter me-2"></i>Apply Filter
@@ -191,9 +183,7 @@
                             <a href="<?= current_url() ?>" class="btn btn-outline-secondary">
                                 <i class="fas fa-sync-alt me-2"></i>Reset
                             </a>
-                            <a href="<?= site_url('email/export_csv') ?>" class="btn btn-outline-success">
-                                <i class="fas fa-file-csv me-2"></i>Export to CSV
-                            </a>
+
                         </div>
                     </div>
                 </form>
@@ -229,9 +219,7 @@
                                             <i class="fas fa-sort-<?= $sort == 'email_asc' ? 'down' : 'up' ?> text-primary"></i>
                                         <?php endif; ?>
                                     </th>
-                                    <th class="text-center">
-                                        <i class="fas fa-building me-2"></i>Unit Kerja
-                                    </th>
+
                                     <th class="text-center">
                                         <i class="fas fa-chart-pie me-2"></i>Disk Usage
                                         <?php if (isset($sort) && in_array($sort, ['usage_asc', 'usage_desc'])): ?>
@@ -277,14 +265,7 @@
                                                 </div>
                                             </div>
                                         </td>
-                                        <td class="text-center align-middle">
-                                            <?php if (!empty($email['parent_unit_kerja_name'])): ?>
-                                                <small class="d-block"><?= esc(strtoupper($email['parent_unit_kerja_name'])) ?></small>
-                                                <small class="d-block text-muted">(<?= esc(strtoupper($email['unit_kerja_name'])) ?>)</small>
-                                            <?php else: ?>
-                                                <small><?= esc(strtoupper($email['unit_kerja_name'])) ?: '-' ?></small>
-                                            <?php endif; ?>
-                                        </td>
+
                                         <td class="text-center align-middle">
                                             <div class="d-flex flex-column align-items-center">
                                                 <?php if ($is_unlimited): ?>

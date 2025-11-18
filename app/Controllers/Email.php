@@ -33,7 +33,7 @@ class Email extends BaseController
 
         try {
             $search = $this->request->getGet('search');
-            $status = $this->request->getGet('status');
+
             $perPage = $this->request->getGet('per_page') ?? 100;
             $sort = $this->request->getGet('sort') ?? 'newest'; // Default to 'newest' (mtime DESC)
 
@@ -46,13 +46,7 @@ class Email extends BaseController
                     ->groupEnd();
             }
 
-            if (!empty($status)) {
-                if ($status == 'active') {
-                    $builder->where('suspended_login', 0);
-                } elseif ($status == 'suspended') {
-                    $builder->where('suspended_login', 1);
-                }
-            }
+
 
             $this->apply_sorting($builder, $sort);
 
@@ -89,7 +83,7 @@ class Email extends BaseController
                 'sort' => $sort,
                 'pagination' => $pager,
                 'search' => $search,
-                'status' => $status,
+
                 'last_sync_time' => $lastSync['value'] ?? null,
                 'unit_kerja_list' => $unitKerjaList,
             ];
@@ -298,27 +292,26 @@ class Email extends BaseController
     {
         try {
             // The beforeFind callback in EmailModel automatically joins unit_kerja
-            $email_detail = $this->emailModel->where('user', $username)->first();
-
-            if (!$email_detail) {
-                throw new Exception('Email tidak ditemukan di database lokal.');
-            }
-
-            $data['email'] = $email_detail;
-            $data['unit_kerja_options'] = $this->unitKerjaModel->where('parent_id IS NULL')->findAll();
-            $data['back_url'] = site_url('email');
-
-                                            $currentUnitKerja = null;
-                                            if (!empty($email_detail['unit_kerja_id'])) {
-                                                $currentUnitKerja = $this->unitKerjaModel->find($email_detail['unit_kerja_id']);
-                                            }
-                                            $data['current_unit_kerja'] = $currentUnitKerja;
-                                
-                                            $parentUnitKerja = null;
-                                            if (!empty($currentUnitKerja) && !empty($currentUnitKerja['parent_id'])) {
-                                                $parentUnitKerja = $this->unitKerjaModel->find($currentUnitKerja['parent_id']);
-                                            }
-                                            $data['parent_unit_kerja'] = $parentUnitKerja;                    return view('email/detail', $data);        } catch (Exception $e) {
+                        $email_detail = $this->emailModel->allowCallbacks(false)->where('user', $username)->first();
+            
+                        if (!$email_detail) {
+                            throw new Exception('Email tidak ditemukan di database lokal.');
+                        }
+            
+                        $data['email'] = $email_detail;
+                        $data['unit_kerja_options'] = $this->unitKerjaModel->where('parent_id IS NULL')->findAll();
+                        $data['back_url'] = site_url('email');
+            
+                        // Rely on the beforeFind callback to populate unit_kerja_name and parent_unit_kerja_name
+                        // If unit_kerja_id is null, these will be null.
+                        $data['current_unit_kerja'] = [
+                            'id' => $email_detail['unit_kerja_id'] ?? null,
+                            'nama_unit_kerja' => $email_detail['unit_kerja_name'] ?? null
+                        ];
+                        $data['parent_unit_kerja'] = [
+                            'id' => null, // Not directly available from the join without another query
+                            'nama_unit_kerja' => $email_detail['parent_unit_kerja_name'] ?? null
+                        ];                    return view('email/detail', $data);        } catch (Exception $e) {
             $data['error'] = $e->getMessage();
             $data['back_url'] = site_url('email');
             return view('email/error', $data);
@@ -438,84 +431,7 @@ class Email extends BaseController
         }
     }
 
-    public function export_unit_kerja_csv($unitKerjaId)
-    {
-        try {
-            $unitKerja = $this->unitKerjaModel->find($unitKerjaId);
 
-            if (!$unitKerja) {
-                throw new Exception('Unit Kerja not found.');
-            }
-
-            $unitKerjaName = $unitKerja['nama_unit_kerja'];
-            $emails = $this->emailModel->where('unit_kerja', $unitKerjaName)->findAll();
-            $totalEmails = count($emails);
-            $limit = 50;
-
-            if ($totalEmails <= $limit) {
-                // Original logic for a single file
-                $filename = url_title($unitKerjaName, '_', true) . '.csv';
-
-                header('Content-Type: text/csv');
-                header('Content-Disposition: attachment; filename="' . $filename . '"');
-
-                $output = fopen('php://output', 'w');
-                fputcsv($output, ['nama', 'emailAddress'], ',');
-                foreach ($emails as $email) {
-                    fputcsv($output, [$email['name'], $email['email']], ',');
-                }
-                fclose($output);
-                exit();
-            } else {
-                // New logic for multiple files (ZIP archive)
-                $zip = new \ZipArchive();
-                $zipFileName = url_title($unitKerjaName, '_', true) . '.zip';
-                $tempZipPath = WRITEPATH . 'uploads/' . $zipFileName;
-
-                if ($zip->open($tempZipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== TRUE) {
-                    throw new Exception('Cannot create ZIP archive.');
-                }
-
-                $chunks = array_chunk($emails, $limit);
-                $fileCount = 1;
-
-                foreach ($chunks as $chunk) {
-                    $csvFileName = url_title($unitKerjaName, '_', true) . '_part_' . $fileCount . '.csv';
-
-                    // Using memory stream to avoid creating temporary CSV files on disk
-                    $stream = fopen('php://memory', 'w+');
-                    fputcsv($stream, ['nama', 'emailAddress'], ',');
-                    foreach ($chunk as $email) {
-                        fputcsv($stream, [$email['name'], $email['email']], ',');
-                    }
-                    rewind($stream);
-                    $csvContent = stream_get_contents($stream);
-                    fclose($stream);
-
-                    $zip->addFromString($csvFileName, $csvContent);
-                    $fileCount++;
-                }
-
-                $zip->close();
-
-                header('Content-Type: application/zip');
-                header('Content-Disposition: attachment; filename="' . $zipFileName . '"');
-                header('Content-Length: ' . filesize($tempZipPath));
-
-                readfile($tempZipPath);
-
-                // Clean up the temporary zip file
-                unlink($tempZipPath);
-
-                exit();
-            }
-        } catch (Exception $e) {
-            $data['error'] = $e->getMessage();
-            return view('templates/header') .
-                view('email/error', $data) .
-                view('templates/footer');
-        }
-    }
 
     public function export_unit_kerja_pdf($unitKerjaId)
     {
