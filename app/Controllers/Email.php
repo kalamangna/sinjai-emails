@@ -291,27 +291,31 @@ class Email extends BaseController
     public function detail($username)
     {
         try {
-            // The beforeFind callback in EmailModel automatically joins unit_kerja
-                        $email_detail = $this->emailModel->allowCallbacks(false)->where('user', $username)->first();
-            
-                        if (!$email_detail) {
-                            throw new Exception('Email tidak ditemukan di database lokal.');
-                        }
-            
-                        $data['email'] = $email_detail;
-                        $data['unit_kerja_options'] = $this->unitKerjaModel->where('parent_id IS NULL')->findAll();
-                        $data['back_url'] = site_url('email');
-            
-                        // Rely on the beforeFind callback to populate unit_kerja_name and parent_unit_kerja_name
-                        // If unit_kerja_id is null, these will be null.
-                        $data['current_unit_kerja'] = [
-                            'id' => $email_detail['unit_kerja_id'] ?? null,
-                            'nama_unit_kerja' => $email_detail['unit_kerja_name'] ?? null
-                        ];
-                        $data['parent_unit_kerja'] = [
-                            'id' => null, // Not directly available from the join without another query
-                            'nama_unit_kerja' => $email_detail['parent_unit_kerja_name'] ?? null
-                        ];                    return view('email/detail', $data);        } catch (Exception $e) {
+            $email_detail = $this->emailModel->allowCallbacks(false)->where('user', $username)->first();
+
+            if (!$email_detail) {
+                throw new Exception('Email tidak ditemukan di database lokal.');
+            }
+
+            $data['email'] = $email_detail;
+            $data['unit_kerja_options'] = $this->unitKerjaModel->where('parent_id IS NULL')->findAll();
+            $data['back_url'] = site_url('email');
+
+            $current_unit_kerja = null;
+            if (!empty($email_detail['unit_kerja_id'])) {
+                $current_unit_kerja = $this->unitKerjaModel->find($email_detail['unit_kerja_id']);
+            }
+
+            $parent_unit_kerja = null;
+            if (!empty($current_unit_kerja['parent_id'])) {
+                $parent_unit_kerja = $this->unitKerjaModel->find($current_unit_kerja['parent_id']);
+            }
+
+            $data['current_unit_kerja'] = $current_unit_kerja;
+            $data['parent_unit_kerja'] = $parent_unit_kerja;
+
+            return view('email/detail', $data);
+        } catch (Exception $e) {
             $data['error'] = $e->getMessage();
             $data['back_url'] = site_url('email');
             return view('email/error', $data);
