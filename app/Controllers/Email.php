@@ -762,14 +762,14 @@ class Email extends BaseController
             // Delete from local database
             $this->emailModel->delete($id);
 
-            return redirect()->to('email')->with('success', 'Email account ' . $email['email'] . ' has been deleted successfully.');
+            return redirect()->back()->with('success', 'Email account ' . $email['email'] . ' has been deleted successfully.');
         } catch (Exception $e) {
             // If cPanel deletion fails, we still might want to delete from local DB or handle differently
             // For now, just log the error and redirect with a generic error message.
             log_message('error', 'Failed to delete email: ' . $e->getMessage());
             // Optionally, attempt to delete from local DB even if cPanel fails
             $this->emailModel->delete($id);
-            return redirect()->to('email')->with('error', 'Failed to delete email account from cPanel, but removed from local list. Please check cPanel manually.');
+            return redirect()->back()->with('error', 'Failed to delete email account from cPanel, but removed from local list. Please check cPanel manually.');
         }
     }
 
