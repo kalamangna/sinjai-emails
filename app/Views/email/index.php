@@ -183,6 +183,9 @@
                             <a href="<?= current_url() ?>" class="btn btn-outline-secondary">
                                 <i class="fas fa-sync-alt me-2"></i>Reset
                             </a>
+                            <a href="<?= site_url('email/export_csv') ?>" class="btn btn-outline-success">
+                                <i class="fas fa-file-csv me-2"></i>Export to CSV
+                            </a>
 
                         </div>
                     </div>

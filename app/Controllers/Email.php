@@ -437,6 +437,85 @@ class Email extends BaseController
 
 
 
+    public function export_unit_kerja_csv($unitKerjaId)
+    {
+        try {
+            $unitKerja = $this->unitKerjaModel->find($unitKerjaId);
+
+            if (!$unitKerja) {
+                throw new Exception('Unit Kerja not found.');
+            }
+
+            $unitKerjaName = $unitKerja['nama_unit_kerja'];
+            $emails = $this->emailModel->where('unit_kerja', $unitKerjaName)->findAll();
+            $totalEmails = count($emails);
+            $limit = 50;
+
+            if ($totalEmails <= $limit) {
+                // Original logic for a single file
+                $filename = url_title($unitKerjaName, '_', true) . '.csv';
+
+                header('Content-Type: text/csv');
+                header('Content-Disposition: attachment; filename="' . $filename . '"');
+
+                $output = fopen('php://output', 'w');
+                fputcsv($output, ['nama', 'emailAddress'], ',');
+                foreach ($emails as $email) {
+                    fputcsv($output, [$email['name'], $email['email']], ',');
+                }
+                fclose($output);
+                exit();
+            } else {
+                // New logic for multiple files (ZIP archive)
+                $zip = new \ZipArchive();
+                $zipFileName = url_title($unitKerjaName, '_', true) . '.zip';
+                $tempZipPath = WRITEPATH . 'uploads/' . $zipFileName;
+
+                if ($zip->open($tempZipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== TRUE) {
+                    throw new Exception('Cannot create ZIP archive.');
+                }
+
+                $chunks = array_chunk($emails, $limit);
+                $fileCount = 1;
+
+                foreach ($chunks as $chunk) {
+                    $csvFileName = url_title($unitKerjaName, '_', true) . '_part_' . $fileCount . '.csv';
+
+                    // Using memory stream to avoid creating temporary CSV files on disk
+                    $stream = fopen('php://memory', 'w+');
+                    fputcsv($stream, ['nama', 'emailAddress'], ',');
+                    foreach ($chunk as $email) {
+                        fputcsv($stream, [$email['name'], $email['email']], ',');
+                    }
+                    rewind($stream);
+                    $csvContent = stream_get_contents($stream);
+                    fclose($stream);
+
+                    $zip->addFromString($csvFileName, $csvContent);
+                    $fileCount++;
+                }
+
+                $zip->close();
+
+                header('Content-Type: application/zip');
+                header('Content-Disposition: attachment; filename="' . $zipFileName . '"');
+                header('Content-Length: ' . filesize($tempZipPath));
+
+                readfile($tempZipPath);
+
+                // Clean up the temporary zip file
+                unlink($tempZipPath);
+
+                exit();
+            }
+        } catch (Exception $e) {
+            $data['error'] = $e->getMessage();
+            return view('templates/header') .
+                view('email/error', $data) .
+                view('templates/footer');
+        }
+    }
+
     public function export_unit_kerja_pdf($unitKerjaId)
     {
         try {

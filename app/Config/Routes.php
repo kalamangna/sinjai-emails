@@ -21,7 +21,8 @@ $routes->get('email/batch_update', 'Email::batch_update');
 $routes->post('email/batch_update_process', 'Email::batch_update_process');
 $routes->post('email/batch_create', 'Email::batch_create');
 $routes->post('email/delete/(:num)', 'Email::delete/$1');
-$routes->get('email/export_csv', 'Email::export_csv');
+
+
 $routes->get('email/export_unit_kerja_csv/(:num)', 'Email::export_unit_kerja_csv/$1');
 $routes->get('email/export_unit_kerja_pdf/(:num)', 'Email::export_unit_kerja_pdf/$1');
 $routes->post('/user/check_email', 'User::checkEmailAvailability');
