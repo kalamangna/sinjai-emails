@@ -20,7 +20,7 @@ class CpanelApi
 
         $client = Services::curlrequest([
             'baseURI' => $url,
-            'timeout' => 120,
+            'timeout' => 30,
             'http_errors' => false, // Allow handling of non-200 responses
         ]);
 
@@ -52,11 +52,6 @@ class CpanelApi
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             throw new Exception('JSON parse error: ' . json_last_error_msg());
-        }
-
-        if (isset($data['errors']) && !empty($data['errors'])) {
-            $error_message = $data['errors'][0] ?? 'Unknown error';
-            throw new Exception('API error: ' . $error_message);
         }
 
         return $data;
@@ -100,7 +95,8 @@ class CpanelApi
 
             return [
                 'success' => true,
-                                    'message' => 'cPanel API Email Module connection successful!',                'data' => [
+                'message' => 'cPanel API Email Module connection successful!',
+                'data' => [
                     'total_emails' => count($emails),
                     'api_module' => 'Email',
                     'timestamp' => date('Y-m-d H:i:s')
@@ -109,7 +105,8 @@ class CpanelApi
         } catch (Exception $e) {
             return [
                 'success' => false,
-                                    'message' => 'cPanel API connection failed: ' . $e->getMessage(),                'timestamp' => date('Y-m-d H:i:s')
+                'message' => 'cPanel API connection failed: ' . $e->getMessage(),
+                'timestamp' => date('Y-m-d H:i:s')
             ];
         }
     }
@@ -145,7 +142,13 @@ class CpanelApi
             ];
 
             $response = $this->make_request('Email', 'delete_pop', 'POST', $parameters);
-            return $response;
+
+            if (isset($response['status']) && $response['status'] == 1) {
+                return $response;
+            } else {
+                $error_message = $response['errors'][0] ?? 'Unknown error during email deletion.';
+                throw new Exception($error_message);
+            }
         } catch (Exception $e) {
             log_message('error', 'Failed to delete email account: ' . $e->getMessage());
             throw new Exception('Failed to delete email account: ' . $e->getMessage());

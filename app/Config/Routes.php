@@ -11,6 +11,8 @@ $routes->get('email/sync', 'Email::sync');
 $routes->get('email/detail/(:any)', 'Email::detail/$1');
 $routes->get('/email/unit_kerja/(:num)', 'Email::unit_kerja_detail/$1');
 $routes->post('/email/update_name/(:any)', 'Email::update_name/$1');
+$routes->post('/email/update_email/(:any)', 'Email::update_email/$1');
+$routes->post('/email/update_niknip/(:any)', 'Email::update_niknip/$1');
 $routes->post('/email/delete/(:num)', 'Email::delete/$1');
 $routes->post('/email/create_single', 'Email::create_single_email');
 $routes->post('/user/check_email', 'User::checkEmailAvailability');
@@ -27,6 +29,7 @@ $routes->get('email/export_unit_kerja_csv/(:num)', 'Email::export_unit_kerja_csv
 $routes->get('email/export_unit_kerja_pdf/(:num)', 'Email::export_unit_kerja_pdf/$1');
 $routes->post('/user/check_email', 'User::checkEmailAvailability');
 $routes->post('/user/check_niknip', 'User::check_niknip');
+$routes->post('/bsre/check', 'Bsre::check');
 
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.

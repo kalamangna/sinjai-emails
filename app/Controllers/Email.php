@@ -53,6 +53,14 @@ class Email extends BaseController
             $emails = $builder->paginate($perPage);
             $pager = $builder->pager;
 
+            // WARNING: This will make the page load very slowly as it makes an API call for each email.
+            // A better approach would be to load the status asynchronously with JavaScript.
+            $bsreApi = new \App\Libraries\BsreApi();
+            foreach ($emails as &$email) {
+                $status = $bsreApi->checkStatusByEmail($email['email']);
+                $email['se_status'] = $status['data']['status'] ?? 'N/A';
+            }
+
             $counts = $this->emailModel->allowCallbacks(false)->select('COUNT(*) as total_emails, SUM(CASE WHEN suspended_login = 0 THEN 1 ELSE 0 END) as active_count, SUM(CASE WHEN suspended_login = 1 THEN 1 ELSE 0 END) as suspended_count')->first();
 
             $lastSync = $this->appSettingModel->where('key', 'last_sync_time')->first();
@@ -298,7 +306,7 @@ class Email extends BaseController
             }
 
             $data['email'] = $email_detail;
-            $data['unit_kerja_options'] = $this->unitKerjaModel->where('parent_id IS NULL')->findAll();
+            $data['unit_kerja_options'] = $this->unitKerjaModel->where('parent_id IS NULL')->orderBy('nama_unit_kerja', 'ASC')->findAll();
             $data['back_url'] = site_url('email');
 
             $current_unit_kerja = null;
@@ -382,6 +390,78 @@ class Email extends BaseController
 
         return redirect()->to('email/detail/' . $username);
     }
+
+    public function update_email($username)
+    {
+        if (strtolower($this->request->getMethod()) === 'post') {
+            $newEmail = $this->request->getPost('email');
+
+            $email = $this->emailModel->where('user', $username)->first();
+            if (!$email) {
+                return redirect()->to('email/detail/' . $username)->with('error', 'Email account not found.');
+            }
+
+            if ($newEmail === $email['email']) {
+                return redirect()->to('email/detail/' . $username)->with('info', 'No changes detected. Email is already up to date.');
+            }
+
+            if (empty($newEmail)) {
+                return redirect()->to('email/detail/' . $username)->with('error', 'Email cannot be empty.');
+            }
+
+            try {
+                $updated = $this->emailModel->update($email['id'], ['email' => $newEmail]);
+
+                if ($updated) {
+                    return redirect()->to('email/detail/' . $username)->with('success', 'Email has been updated successfully.');
+                } else {
+                    return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update email. The database did not report any changes.');
+                }
+            } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
+                log_message('error', 'Database error during email update: ' . $e->getMessage());
+                return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update email due to a database error: ' . $e->getMessage());
+            }
+        }
+
+        return redirect()->to('email/detail/' . $username);
+    }
+
+    public function update_niknip($username)
+    {
+        if (strtolower($this->request->getMethod()) === 'post') {
+            $newNiknip = $this->request->getPost('nik_nip');
+
+            $email = $this->emailModel->where('user', $username)->first();
+            if (!$email) {
+                return redirect()->to('email/detail/' . $username)->with('error', 'Email account not found.');
+            }
+
+            if ($newNiknip === $email['nik_nip']) {
+                return redirect()->to('email/detail/' . $username)->with('info', 'No changes detected. NIK/NIP is already up to date.');
+            }
+
+            if (empty($newNiknip)) {
+                return redirect()->to('email/detail/' . $username)->with('error', 'NIK/NIP cannot be empty.');
+            }
+
+            try {
+                $updated = $this->emailModel->update($email['id'], ['nik_nip' => $newNiknip]);
+
+                if ($updated) {
+                    return redirect()->to('email/detail/' . $username)->with('success', 'NIK/NIP has been updated successfully.');
+                } else {
+                    return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update NIK/NIP. The database did not report any changes.');
+                }
+            } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
+                log_message('error', 'Database error during NIK/NIP update: ' . $e->getMessage());
+                return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update NIK/NIP due to a database error: ' . $e->getMessage());
+            }
+        }
+
+        return redirect()->to('email/detail/' . $username);
+    }
+
+
 
     public function unit_kerja_detail($unitKerjaId)
     {

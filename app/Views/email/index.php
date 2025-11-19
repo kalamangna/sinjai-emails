@@ -183,9 +183,7 @@
                             <a href="<?= current_url() ?>" class="btn btn-outline-secondary">
                                 <i class="fas fa-sync-alt me-2"></i>Reset
                             </a>
-                            <a href="<?= site_url('email/export_csv') ?>" class="btn btn-outline-success">
-                                <i class="fas fa-file-csv me-2"></i>Export to CSV
-                            </a>
+
 
                         </div>
                     </div>
@@ -222,6 +220,7 @@
                                             <i class="fas fa-sort-<?= $sort == 'email_asc' ? 'down' : 'up' ?> text-primary"></i>
                                         <?php endif; ?>
                                     </th>
+                                    <th class="text-center">SE Status</th>
 
                                     <th class="text-center">
                                         <i class="fas fa-chart-pie me-2"></i>Disk Usage
@@ -267,6 +266,9 @@
                                                     <small class="text-muted"><?= esc($email['domain']) ?></small>
                                                 </div>
                                             </div>
+                                        </td>
+                                        <td class="text-center align-middle">
+                                            <?= esc($email['se_status']) ?>
                                         </td>
 
                                         <td class="text-center align-middle">

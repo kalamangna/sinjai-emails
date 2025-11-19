@@ -216,7 +216,14 @@
                 <strong class="text-muted">Email:</strong>
               </div>
               <div class="col-6">
-                <?= esc($email['email']) ?>
+                <form action="<?= site_url('email/update_email/' . $email['user']) ?>" method="post" id="email-form">
+                    <div class="input-group">
+                        <input type="text" name="email" id="email-input" value="<?= esc($email['email']) ?>" class="form-control" readonly>
+                        <button type="button" id="edit-email-btn" class="btn btn-outline-secondary"><i class="fas fa-pencil-alt"></i></button>
+                        <button type="submit" id="save-email-btn" class="btn btn-primary d-none"><i class="fas fa-save"></i></button>
+                        <button type="button" id="cancel-email-btn" class="btn btn-outline-secondary d-none"><i class="fas fa-times"></i></button>
+                    </div>
+                </form>
               </div>
             </div>
             <div class="row mb-3">
@@ -232,7 +239,14 @@
                 <strong class="text-muted">NIK/NIP:</strong>
               </div>
               <div class="col-6">
-                <?= esc($email['nik_nip']) ?>
+                <form action="<?= site_url('email/update_niknip/' . $email['user']) ?>" method="post" id="niknip-form">
+                    <div class="input-group">
+                        <input type="text" name="nik_nip" id="niknip-input" value="<?= esc($email['nik_nip']) ?>" class="form-control" readonly>
+                        <button type="button" id="edit-niknip-btn" class="btn btn-outline-secondary"><i class="fas fa-pencil-alt"></i></button>
+                        <button type="submit" id="save-niknip-btn" class="btn btn-primary d-none"><i class="fas fa-save"></i></button>
+                        <button type="button" id="cancel-niknip-btn" class="btn btn-outline-secondary d-none"><i class="fas fa-times"></i></button>
+                    </div>
+                </form>
               </div>
             </div>
             <div class="row mb-3">
@@ -382,27 +396,37 @@
 </script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const editBtn = document.getElementById('edit-name-btn');
-    const saveBtn = document.getElementById('save-name-btn');
-    const cancelBtn = document.getElementById('cancel-name-btn');
-    const nameInput = document.getElementById('name-input');
-    const originalName = nameInput.value;
+    function setupEditInPlace(editBtnId, saveBtnId, cancelBtnId, inputId) {
+        const editBtn = document.getElementById(editBtnId);
+        const saveBtn = document.getElementById(saveBtnId);
+        const cancelBtn = document.getElementById(cancelBtnId);
+        const input = document.getElementById(inputId);
+        const originalValue = input.value;
 
-    editBtn.addEventListener('click', function() {
-        nameInput.removeAttribute('readonly');
-        nameInput.focus();
-        editBtn.classList.add('d-none');
-        saveBtn.classList.remove('d-none');
-        cancelBtn.classList.remove('d-none');
-    });
+        if (editBtn) {
+            editBtn.addEventListener('click', function() {
+                input.removeAttribute('readonly');
+                input.focus();
+                editBtn.classList.add('d-none');
+                saveBtn.classList.remove('d-none');
+                cancelBtn.classList.remove('d-none');
+            });
+        }
 
-    cancelBtn.addEventListener('click', function() {
-        nameInput.setAttribute('readonly', true);
-        nameInput.value = originalName;
-        editBtn.classList.remove('d-none');
-        saveBtn.classList.add('d-none');
-        cancelBtn.classList.add('d-none');
-    });
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', function() {
+                input.setAttribute('readonly', true);
+                input.value = originalValue;
+                editBtn.classList.remove('d-none');
+                saveBtn.classList.add('d-none');
+                cancelBtn.classList.add('d-none');
+            });
+        }
+    }
+
+    setupEditInPlace('edit-name-btn', 'save-name-btn', 'cancel-name-btn', 'name-input');
+    setupEditInPlace('edit-email-btn', 'save-email-btn', 'cancel-email-btn', 'email-input');
+    setupEditInPlace('edit-niknip-btn', 'save-niknip-btn', 'cancel-niknip-btn', 'niknip-input');
 });
 </script>
 <?= $this->endSection() ?>
