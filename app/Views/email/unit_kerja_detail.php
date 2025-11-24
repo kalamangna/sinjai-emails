@@ -15,6 +15,9 @@
         <a href="<?= site_url('email/export_unit_kerja_pdf/' . $unit_kerja['id']) ?>" class="btn btn-danger">
           <i class="fas fa-file-pdf me-2"></i>Export PDF
         </a>
+        <a href="<?= site_url('email/export_perjanjian_kerja_pdf/' . $unit_kerja['id']) ?>" class="btn btn-info">
+          <i class="fas fa-file-contract me-2"></i>Export Perjanjian Kerja PDF
+        </a>
       </div>
     </div>
 
@@ -66,19 +69,28 @@
 
     <!-- Search Form -->
     <div class="card shadow-sm mb-4">
-        <div class="card-body">
-            <form action="<?= current_url() ?>" method="get" class="row g-3 align-items-center">
-                <div class="col-md-10">
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="fas fa-search"></i></span>
-                        <input type="text" class="form-control" name="search" placeholder="Search by email or name..." value="<?= esc($search ?? '') ?>">
-                    </div>
-                </div>
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary w-100">Search</button>
-                </div>
-            </form>
-        </div>
+      <div class="card-body">
+        <form action="<?= current_url() ?>" method="get" class="row g-3 align-items-center">
+          <div class="col-md-6">
+            <div class="input-group">
+              <span class="input-group-text"><i class="fas fa-search"></i></span>
+              <input type="text" class="form-control" name="search" placeholder="Search by email or name..." value="<?= esc($search ?? '') ?>">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="input-group">
+              <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+              <input type="text" class="form-control" id="nik_nip" name="nik_nip" placeholder="Enter NIK/NIP..." value="<?= esc($nik_nip ?? '') ?>">
+            </div>
+          </div>
+          <div class="col-md-12 mt-3 d-flex gap-2">
+            <button type="submit" class="btn btn-primary">Search</button>
+            <a href="<?= current_url() ?>" class="btn btn-outline-secondary">
+              <i class="fas fa-sync-alt me-2"></i>Reset
+            </a>
+          </div>
+        </form>
+      </div>
     </div>
 
     <!-- Email List for Unit Kerja -->
@@ -101,6 +113,7 @@
                 <tr>
                   <th class="ps-4"><i class="fas fa-envelope me-2"></i>Email Address</th>
                   <th><i class="fas fa-user me-2"></i>Name</th>
+                  <th><i class="fas fa-id-card me-2"></i>NIK/NIP</th>
                   <?php if (!empty($child_units)): ?>
                     <th><i class="fas fa-building me-2"></i>Unit Kerja</th>
                   <?php endif; ?>
@@ -133,17 +146,18 @@
                       </div>
                     </td>
                     <td class="align-middle"><?= esc($email['name']) ?></td>
+                    <td class="align-middle"><?= esc($email['nik_nip']) ?></td>
                     <?php if (!empty($child_units)): ?>
                       <td class="align-middle">
                         <?php if (!empty($email['parent_unit_kerja_name'])): ?>
-                            <small class="d-block"><?= esc(strtoupper($email['parent_unit_kerja_name'])) ?></small>
-                            <small class="d-block text-muted">
-                                (<?= esc(strtoupper($email['unit_kerja_name'])) ?>)
-                            </small>
+                          <small class="d-block"><?= esc(strtoupper($email['parent_unit_kerja_name'])) ?></small>
+                          <small class="d-block text-muted">
+                            (<?= esc(strtoupper($email['unit_kerja_name'])) ?>)
+                          </small>
                         <?php else: ?>
-                            <small>
-                                <?= esc(strtoupper($email['unit_kerja_name'])) ?>
-                            </small>
+                          <small>
+                            <?= esc(strtoupper($email['unit_kerja_name'])) ?>
+                          </small>
                         <?php endif; ?>
                       </td>
                     <?php endif; ?>
@@ -181,7 +195,7 @@
                       </a>
                       <form action="<?= site_url('email/delete/' . $email['id']) ?>" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this email?');">
                         <button type="submit" class="btn btn-sm btn-outline-danger">
-                            <i class="fas fa-trash"></i>
+                          <i class="fas fa-trash"></i>
                         </button>
                       </form>
                     </td>
@@ -193,22 +207,22 @@
 
           <!-- Pagination -->
           <?php if ($pagination): ?>
-              <nav class="d-flex flex-column flex-md-row justify-content-between align-items-center p-3" aria-label="Page navigation">
-                  <div class="mb-2 mb-md-0">
-                      <?php
-                      $currentPage = $pagination->getCurrentPage();
-                      $perPage = $pagination->getPerPage();
-                      $total = $total_emails;
+            <nav class="d-flex flex-column flex-md-row justify-content-between align-items-center p-3" aria-label="Page navigation">
+              <div class="mb-2 mb-md-0">
+                <?php
+                $currentPage = $pagination->getCurrentPage();
+                $perPage = $pagination->getPerPage();
+                $total = $total_emails;
 
-                      $start_entry = ($currentPage - 1) * $perPage + 1;
-                      $end_entry = min($currentPage * $perPage, $total);
-                      ?>
-                      <span class="text-muted">
-                          Showing <strong><?= $start_entry ?></strong> to <strong><?= $end_entry ?></strong> of <strong><?= $total ?></strong> entries
-                      </span>
-                  </div>
-                  <?= $pagination->links() ?>
-              </nav>
+                $start_entry = ($currentPage - 1) * $perPage + 1;
+                $end_entry = min($currentPage * $perPage, $total);
+                ?>
+                <span class="text-muted">
+                  Showing <strong><?= $start_entry ?></strong> to <strong><?= $end_entry ?></strong> of <strong><?= $total ?></strong> entries
+                </span>
+              </div>
+              <?= $pagination->links() ?>
+            </nav>
           <?php endif; ?>
 
         <?php else: ?>

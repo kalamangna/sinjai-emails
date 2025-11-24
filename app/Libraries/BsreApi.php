@@ -2,69 +2,70 @@
 
 namespace App\Libraries;
 
+use CodeIgniter\HTTP\CURLRequest;
 use Config\Services;
-use Exception;
 
 class BsreApi
 {
-    private string $base_url;
-    private string $username;
-    private string $password;
+    protected $client;
+    protected $baseUrl;
+    protected $username;
+    protected $password;
 
     public function __construct()
     {
-        $this->base_url = getenv('BSRE_BASE_URL');
+        // Pastikan konfigurasi ini ada di .env Anda
+        $this->baseUrl  = getenv('BSRE_BASE_URL');
         $this->username = getenv('BSRE_USERNAME');
         $this->password = getenv('BSRE_PASSWORD');
+
+        $this->client = Services::curlrequest([
+            'base_uri' => $this->baseUrl,
+            'timeout'  => 30,
+            'verify'   => false, // Set true di production jika SSL valid
+        ]);
     }
 
-    public function checkStatusByEmail(string $email): array
+    /**
+     * Cek Status User (API V2)
+     * Referensi Dokumen: Halaman 34, Poin 6.7 
+     * Endpoint: /api/v2/user/check/status [cite: 548]
+     * * @param string $identifier NIK atau Email pengguna
+     * @param string $type 'nik' atau 'email'
+     */
+    public function checkStatus($identifier, $type = 'email')
     {
+        // Tentukan payload JSON berdasarkan tipe input (NIK atau Email)
+        // [cite: 550, 554]
+        $payload = [];
+        if ($type === 'nik') {
+            $payload['nik'] = $identifier;
+        } else {
+            $payload['email'] = $identifier;
+        }
+
         try {
-            $client = Services::curlrequest([
-                'baseURI' => $this->base_url,
-                'timeout' => 30,
-                'http_errors' => false,
-            ]);
-
-            $response = $client->post('/api/v2/user/check/status', [
-                'auth' => [$this->username, $this->password],
+            $response = $this->client->request('POST', '/api/v2/user/check/status', [
+                'auth' => [$this->username, $this->password], // Basic Auth [cite: 309]
+                'json' => $payload,
                 'headers' => [
-                    'Content-Type' => 'application/json',
-                ],
-                'json' => [
-                    'email' => $email,
-                ],
+                    'Content-Type' => 'application/json'
+                ]
             ]);
 
-            if ($response->getStatusCode() !== 200) {
-                return [
-                    'success' => false,
-                    'message' => 'HTTP Error: ' . $response->getStatusCode() . ' - ' . $response->getReasonPhrase(),
-                    'data' => null,
-                ];
-            }
+            // Decode response JSON
+            $body = json_decode($response->getBody(), true);
 
-            $data = json_decode($response->getBody(), true);
-
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                return [
-                    'success' => false,
-                    'message' => 'JSON parse error: ' . json_last_error_msg(),
-                    'data' => null,
-                ];
-            }
-
+            // Kembalikan data mentah untuk diproses controller
             return [
                 'success' => true,
-                'data' => $data,
-                'message' => 'Successfully checked user status.',
+                'data'    => $body,
+                'code'    => $response->getStatusCode()
             ];
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return [
                 'success' => false,
-                'message' => 'An unexpected error occurred: ' . $e->getMessage(),
-                'data' => null,
+                'message' => $e->getMessage()
             ];
         }
     }

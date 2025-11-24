@@ -33,6 +33,7 @@ class Email extends BaseController
 
         try {
             $search = $this->request->getGet('search');
+            $nik_nip = $this->request->getGet('nik_nip');
 
             $perPage = $this->request->getGet('per_page') ?? 100;
             $sort = $this->request->getGet('sort') ?? 'newest'; // Default to 'newest' (mtime DESC)
@@ -46,20 +47,16 @@ class Email extends BaseController
                     ->groupEnd();
             }
 
+            if (!empty($nik_nip)) {
+                $builder->like('nik_nip', $nik_nip);
+            }
+
 
 
             $this->apply_sorting($builder, $sort);
 
             $emails = $builder->paginate($perPage);
             $pager = $builder->pager;
-
-            // WARNING: This will make the page load very slowly as it makes an API call for each email.
-            // A better approach would be to load the status asynchronously with JavaScript.
-            $bsreApi = new \App\Libraries\BsreApi();
-            foreach ($emails as &$email) {
-                $status = $bsreApi->checkStatusByEmail($email['email']);
-                $email['se_status'] = $status['data']['status'] ?? 'N/A';
-            }
 
             $counts = $this->emailModel->allowCallbacks(false)->select('COUNT(*) as total_emails, SUM(CASE WHEN suspended_login = 0 THEN 1 ELSE 0 END) as active_count, SUM(CASE WHEN suspended_login = 1 THEN 1 ELSE 0 END) as suspended_count')->first();
 
@@ -91,6 +88,7 @@ class Email extends BaseController
                 'sort' => $sort,
                 'pagination' => $pager,
                 'search' => $search,
+                'nik_nip' => $nik_nip,
 
                 'last_sync_time' => $lastSync['value'] ?? null,
                 'unit_kerja_list' => $unitKerjaList,
@@ -242,59 +240,51 @@ class Email extends BaseController
         }
     }
 
-        public function sync()
+    public function sync()
 
-        {
+    {
 
-            try {
+        try {
 
-                $all_emails = $this->cpanelApi->get_email_accounts_detailed();
+            $all_emails = $this->cpanelApi->get_email_accounts_detailed();
 
-                $this->emailModel->upsertBatch($all_emails);
+            $this->emailModel->upsertBatch($all_emails);
 
-    
 
-                // Save last sync time
 
-                $this->appSettingModel->where('key', 'last_sync_time')->set(['value' => date('Y-m-d H:i:s')])->update();
+            // Save last sync time
 
-                if ($this->appSettingModel->affectedRows() == 0) {
+            $this->appSettingModel->where('key', 'last_sync_time')->set(['value' => date('Y-m-d H:i:s')])->update();
 
-                    $this->appSettingModel->insert(['key' => 'last_sync_time', 'value' => date('Y-m-d H:i:s')]);
+            if ($this->appSettingModel->affectedRows() == 0) {
 
-                }
-
-    
-
-                $result = ['success' => true, 'message' => 'Email data synchronization from cPanel was successful.'];
-
-    
-
-                if (is_cli()) {
-
-                    return $result;
-
-                }
-
-                return $this->response->setJSON($result);
-
-    
-
-            } catch (Exception $e) {
-
-                $result = ['success' => false, 'message' => 'Failed to synchronize: ' . $e->getMessage()];
-
-                if (is_cli()) {
-
-                    return $result;
-
-                }
-
-                return $this->response->setStatusCode(500)->setJSON($result);
-
+                $this->appSettingModel->insert(['key' => 'last_sync_time', 'value' => date('Y-m-d H:i:s')]);
             }
 
+
+
+            $result = ['success' => true, 'message' => 'Email data synchronization from cPanel was successful.'];
+
+
+
+            if (is_cli()) {
+
+                return $result;
+            }
+
+            return $this->response->setJSON($result);
+        } catch (Exception $e) {
+
+            $result = ['success' => false, 'message' => 'Failed to synchronize: ' . $e->getMessage()];
+
+            if (is_cli()) {
+
+                return $result;
+            }
+
+            return $this->response->setStatusCode(500)->setJSON($result);
         }
+    }
 
     public function detail($username)
     {
@@ -480,6 +470,7 @@ class Email extends BaseController
 
             $perPage = $this->request->getGet('per_page') ?? 100;
             $search = $this->request->getGet('search');
+            $nik_nip = $this->request->getGet('nik_nip');
 
             $emailBuilder = $this->emailModel->whereIn('unit_kerja_id', $allUnitIds);
 
@@ -488,6 +479,10 @@ class Email extends BaseController
                     ->like('email', $search)
                     ->orLike('name', $search)
                     ->groupEnd();
+            }
+
+            if ($nik_nip) {
+                $emailBuilder->like('nik_nip', $nik_nip);
             }
 
             $emails = $emailBuilder->orderBy('unit_kerja_name', 'ASC')
@@ -504,6 +499,7 @@ class Email extends BaseController
                 'pagination' => $pager,
                 'per_page' => $perPage,
                 'search' => $search,
+                'nik_nip' => $nik_nip,
                 'back_url' => site_url('email'),
             ];
 
@@ -596,6 +592,134 @@ class Email extends BaseController
         }
     }
 
+    public function export_single_perjanjian_kerja_pdf($username)
+    {
+        try {
+            $email = $this->emailModel->where('user', $username)->first();
+
+            if (!$email) {
+                throw new Exception('Email account not found.');
+            }
+
+            $unitKerja = null;
+            if (!empty($email['unit_kerja_id'])) {
+                $unitKerja = $this->unitKerjaModel->find($email['unit_kerja_id']);
+            }
+
+            if (!$unitKerja) {
+                throw new Exception('Unit Kerja not found for this email account.');
+            }
+
+            $options = new Options();
+            $options->set('isHtml5ParserEnabled', true);
+            $options->set('isRemoteEnabled', true);
+
+            $dompdf = new Dompdf($options);
+
+            $logoPath = FCPATH . 'garuda.png';
+            $logoData = base64_encode(file_get_contents($logoPath));
+            $logoSrc = 'data:image/png;base64,' . $logoData;
+
+            $data = [
+                'email' => $email,
+                'unit_kerja' => $unitKerja,
+                'logoSrc' => $logoSrc,
+            ];
+
+            $html = view('email/perjanjian_kerja_template', $data);
+
+            $dompdf->loadHtml($html);
+            $dompdf->setPaper('A4', 'portrait');
+            $dompdf->render();
+
+            $filename = 'perjanjian_kerja_' . url_title($email['name'], '_', true) . '.pdf';
+            $dompdf->stream($filename, ["Attachment" => true]);
+            exit();
+        } catch (Exception $e) {
+            $data['error'] = $e->getMessage();
+            return view('templates/header') .
+                view('email/error', $data) .
+                view('templates/footer');
+        }
+    }
+
+    public function export_perjanjian_kerja_pdf($unitKerjaId)
+    {
+        try {
+            $unitKerja = $this->unitKerjaModel->find($unitKerjaId);
+
+            if (!$unitKerja) {
+                throw new Exception('Unit Kerja not found.');
+            }
+
+            // Find children of the current unit
+            $children = $this->unitKerjaModel->where('parent_id', $unitKerjaId)->findAll();
+            $childrenIds = array_column($children, 'id');
+
+            // Find all emails belonging to this unit AND all its children, sorted by name
+            $allUnitIds = array_merge([$unitKerjaId], $childrenIds);
+            $emails = $this->emailModel
+                ->whereIn('unit_kerja_id', $allUnitIds)
+                ->orderBy('unit_kerja_name', 'ASC')
+                ->orderBy('name', 'ASC')
+                ->findAll();
+
+            if (empty($emails)) {
+                throw new Exception('No email accounts found for this Unit Kerja.');
+            }
+
+            $options = new Options();
+            $options->set('isHtml5ParserEnabled', true);
+            $options->set('isRemoteEnabled', true);
+
+            $zip = new \ZipArchive();
+            $zipFileName = 'perjanjian_kerja_' . url_title($unitKerja['nama_unit_kerja'], '_', true) . '.zip';
+            $tempZipPath = WRITEPATH . 'uploads/' . $zipFileName;
+
+            if ($zip->open($tempZipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== TRUE) {
+                throw new Exception('Cannot create ZIP archive.');
+            }
+
+            foreach ($emails as $email) {
+                $dompdf = new Dompdf($options);
+
+                $data = [
+                    'email' => $email,
+                    'unit_kerja' => $unitKerja,
+                ];
+
+                $html = view('email/perjanjian_kerja_template', $data);
+
+                $dompdf->loadHtml($html);
+                $dompdf->setPaper('A4', 'portrait');
+                $dompdf->render();
+
+                $pdfOutput = $dompdf->output();
+                $pdfFileName = 'perjanjian_kerja_' . url_title($email['name'], '_', true) . '.pdf';
+
+                $zip->addFromString($pdfFileName, $pdfOutput);
+            }
+
+            $zip->close();
+
+            header('Content-Type: application/zip');
+            header('Content-Disposition: attachment; filename="' . $zipFileName . '"');
+            header('Content-Length: ' . filesize($tempZipPath));
+
+            readfile($tempZipPath);
+
+            // Clean up the temporary zip file
+            unlink($tempZipPath);
+
+            exit();
+        } catch (Exception $e) {
+            $data['error'] = $e->getMessage();
+            return view('templates/header') .
+                view('email/error', $data) .
+                view('templates/footer');
+        }
+    }
+
     public function export_unit_kerja_pdf($unitKerjaId)
     {
         try {
@@ -639,147 +763,14 @@ class Email extends BaseController
             $logoData = base64_encode(file_get_contents($logoPath));
             $logoSrc = 'data:image/png;base64,' . $logoData;
 
-            $html = '<!DOCTYPE html>
-                <html>
-                <head>
-                    <title>Akun Email - ' . esc($unitKerja['nama_unit_kerja']) . '</title>
-                    <style>
-                        @page {
-                            margin: 10px 25px;
-                        }
-                        body { 
-                            font-family: Arial, sans-serif; 
-                            margin: 10px; 
-                            font-size: 10px; 
-                        }
-                        h1 { 
-                            color: #333; 
-                            text-align: center; 
-                            font-size: 14px;
-                        }
-                        h2 { 
-                            color: #555; 
-                            text-align: center; 
-                            font-size: 12px;
-                            margin-top: -10px;
-                            margin-bottom: 20px;
-                        }
-                        table { 
-                            width: 100%; 
-                            border-collapse: collapse; 
-                            margin-bottom: 20px; 
-                        }
-                        th, td { 
-                            border: 1px solid #ddd; 
-                            padding: 5px; 
-                            text-align: left; 
-                            word-wrap: break-word;
-                            overflow-wrap: break-word;
-                        }
-                        th { 
-                            background-color: #f2f2f2; 
-                        }
-                        
-                        /* Kolom No. */
-                        th:nth-child(1), td:nth-child(1) { 
-                            text-align: center;
-                            width: 5%;
-                        } 
-                        
-                        /* Kolom NIK/NIP */
-                        th:nth-child(2), td:nth-child(2) { width: 15%; }
-                        
-                        /* Kolom Nama */
-                        th:nth-child(3), td:nth-child(3) { width: 20%; } 
-                        
-                        /* Kolom Unit Kerja */
-                        ' . ($showUnitKerjaColumn ? 'th:nth-child(4), td:nth-child(4) { width: 20%; }' : '') . '
-                        
-                        /* Kolom Email */
-                        th:nth-child(' . ($showUnitKerjaColumn ? '5' : '4') . '), td:nth-child(' . ($showUnitKerjaColumn ? '5' : '4') . ') { width: 20%; }
-                        
-                        /* Kolom Password */
-                        th:nth-child(' . ($showUnitKerjaColumn ? '6' : '5') . '), td:nth-child(' . ($showUnitKerjaColumn ? '6' : '5') . ') { width: 15%; }
+            $data = [
+                'unit_kerja' => $unitKerja,
+                'emails' => $emails,
+                'showUnitKerjaColumn' => $showUnitKerjaColumn,
+                'logoSrc' => $logoSrc,
+            ];
 
-                        .footer { 
-                            text-align: center;
-                            font-size: 9px; 
-                            color: #777; 
-                            position: fixed; 
-                            bottom: 10px; 
-                            right: 20px; 
-                            left: 20px;
-                            line-height: 1.2; 
-                        }
-                        
-                        .instruction {
-                            text-align: center;
-                            font-weight: bold;
-                            font-size: 1.1em;
-                            margin-bottom: 15px;
-                            padding: 8px;
-                            border: 1px solid #ddd;
-                            background-color: #f9f9f9;
-                        }
-                        .header {
-                            text-align: center;
-                            margin-bottom: 15px;
-                        }
-                        .logo {
-                            max-width: 80px;
-                            max-height: 80px;
-                            margin-bottom: 10px;
-                        }
-                    </style>
-                </head>
-                <body>
-                    <div class="header">
-                        <img src="' . $logoSrc . '" alt="Logo" class="logo"/>
-                        <h1>DAFTAR AKUN EMAIL</h1>
-                        <h2>' . esc($unitKerja['nama_unit_kerja']) . '</h2>
-                    </div>
-
-                    <p class="instruction">
-                        Untuk AKTIVASI AKUN, login menggunakan EMAIL dan PASSWORD melalui halaman sinjaikab.go.id/webmail
-                    </p>
-
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>No.</th>
-                                <th>NIK/NIP</th>
-                                <th>Nama</th>
-                                ' . ($showUnitKerjaColumn ? '<th>Unit Kerja</th>' : '') . '
-                                <th>Email</th>
-                                <th>Password</th>
-                            </tr>
-                        </thead>
-                        <tbody>';
-
-            // MODIFIKASI PHP: Inisialisasi nomor
-            $nomor = 1;
-            foreach ($emails as $email) {
-                $html .= '<tr>
-                                <td>' . $nomor . '</td> 
-                                <td>' . esc($email['nik_nip'] ?? 'N/A') . '</td>
-                                <td>' . esc($email['name'] ?? 'N/A') . '</td>
-                                ' . ($showUnitKerjaColumn ? '<td>' . esc($email['unit_kerja_name'] ?? 'N/A') . '</td>' : '') . '
-                                <td>' . esc($email['email'] ?? 'N/A') . '</td>
-                                <td>' . esc($email['password'] ?? 'N/A') . '</td>
-                            </tr>';
-                // MODIFIKASI PHP: Increment nomor
-                $nomor++;
-            }
-
-            $html .= '</tbody>
-                    </table>
-                    
-                    <div class="footer">
-                        Bidang Aplikasi dan Informatika - Dinas Komunikasi Informatika dan Persandian Kabupaten Sinjai<br>
-                        Dibuat pada ' . date('d-m-Y H:i:s') . '
-                    </div>
-                </body>
-                </html>';
+            $html = view('email/unit_kerja_pdf', $data);
 
             $dompdf->loadHtml($html);
             $dompdf->setPaper('A4', 'portrait');
@@ -811,18 +802,19 @@ class Email extends BaseController
             case 'email_desc':
                 $builder->orderBy('email', 'DESC');
                 break;
-            case 'unit_kerja_asc':
-                $builder->orderBy('unit_kerja.nama_unit_kerja', 'ASC');
+            case 'nik_nip_asc':
+                $builder->orderBy('nik_nip', 'ASC');
                 break;
-            case 'unit_kerja_desc':
-                $builder->orderBy('unit_kerja.nama_unit_kerja', 'DESC');
+            case 'nik_nip_desc':
+                $builder->orderBy('nik_nip', 'DESC');
                 break;
-            case 'usage_asc':
-                $builder->orderBy('diskusedpercent_float', 'ASC');
+            case 'name_asc':
+                $builder->orderBy('name', 'ASC');
                 break;
-            case 'usage_desc':
-                $builder->orderBy('diskusedpercent_float', 'DESC');
+            case 'name_desc':
+                $builder->orderBy('name', 'DESC');
                 break;
+
             default:
                 $builder->orderBy('mtime', 'DESC');
                 break;

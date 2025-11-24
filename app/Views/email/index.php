@@ -138,12 +138,22 @@
             <div class="card-body">
                 <form method="GET" action="" class="row g-3 align-items-end">
                     <!-- Search Input -->
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label for="search" class="form-label">Search Email</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="fas fa-search"></i></span>
                             <input type="text" class="form-control" id="search" name="search"
-                                placeholder="Enter email..." value="<?= isset($search) ? esc($search) : '' ?>">
+                                placeholder="Search by email or name..." value="<?= isset($search) ? esc($search) : '' ?>">
+                        </div>
+                    </div>
+
+                    <!-- NIK/NIP Search Input -->
+                    <div class="col-md-3">
+                        <label for="nik_nip" class="form-label">Search by NIK/NIP</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+                            <input type="text" class="form-control" id="nik_nip" name="nik_nip"
+                                placeholder="Enter NIK/NIP..." value="<?= isset($nik_nip) ? esc($nik_nip) : '' ?>">
                         </div>
                     </div>
 
@@ -156,10 +166,12 @@
                             <option value="oldest" <?= (isset($sort) && $sort == 'oldest') ? 'selected' : '' ?>>Oldest</option>
                             <option value="email_asc" <?= (isset($sort) && $sort == 'email_asc') ? 'selected' : '' ?>>A-Z Email</option>
                             <option value="email_desc" <?= (isset($sort) && $sort == 'email_desc') ? 'selected' : '' ?>>Z-A Email</option>
-                            <option value="unit_kerja_asc" <?= (isset($sort) && $sort == 'unit_kerja_asc') ? 'selected' : '' ?>>A-Z Unit Kerja</option>
-                            <option value="unit_kerja_desc" <?= (isset($sort) && $sort == 'unit_kerja_desc') ? 'selected' : '' ?>>Z-A Unit Kerja</option>
-                            <option value="usage_asc" <?= (isset($sort) && $sort == 'usage_asc') ? 'selected' : '' ?>>Usage Asc</option>
-                            <option value="usage_desc" <?= (isset($sort) && $sort == 'usage_desc') ? 'selected' : '' ?>>Usage Desc</option>
+                            <option value="nik_nip_asc" <?= (isset($sort) && $sort == 'nik_nip_asc') ? 'selected' : '' ?>>A-Z NIK/NIP</option>
+                            <option value="nik_nip_desc" <?= (isset($sort) && $sort == 'nik_nip_desc') ? 'selected' : '' ?>>Z-A NIK/NIP</option>
+                            <option value="name_asc" <?= (isset($sort) && $sort == 'name_asc') ? 'selected' : '' ?>>A-Z Name</option>
+                            <option value="name_desc" <?= (isset($sort) && $sort == 'name_desc') ? 'selected' : '' ?>>Z-A Name</option>
+
+
                         </select>
                     </div>
 
@@ -175,7 +187,7 @@
                     </div>
 
                     <!-- Action Buttons -->
-                    <div class="col-md-4">
+                    <div class="col-md-2">
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-primary">
                                 <i class="fas fa-filter me-2"></i>Apply Filter
@@ -220,7 +232,18 @@
                                             <i class="fas fa-sort-<?= $sort == 'email_asc' ? 'down' : 'up' ?> text-primary"></i>
                                         <?php endif; ?>
                                     </th>
-                                    <th class="text-center">SE Status</th>
+                                    <th>
+                                        <i class="fas fa-id-card me-2"></i>NIK/NIP
+                                        <?php if (isset($sort) && in_array($sort, ['nik_nip_asc', 'nik_nip_desc'])): ?>
+                                            <i class="fas fa-sort-<?= $sort == 'nik_nip_asc' ? 'down' : 'up' ?> text-primary"></i>
+                                        <?php endif; ?>
+                                    </th>
+                                    <th>
+                                        <i class="fas fa-user me-2"></i>Name
+                                        <?php if (isset($sort) && in_array($sort, ['name_asc', 'name_desc'])): ?>
+                                            <i class="fas fa-sort-<?= $sort == 'name_asc' ? 'down' : 'up' ?> text-primary"></i>
+                                        <?php endif; ?>
+                                    </th>
 
                                     <th class="text-center">
                                         <i class="fas fa-chart-pie me-2"></i>Disk Usage
@@ -267,9 +290,8 @@
                                                 </div>
                                             </div>
                                         </td>
-                                        <td class="text-center align-middle">
-                                            <?= esc($email['se_status']) ?>
-                                        </td>
+                                        <td class="align-middle"><?= esc($email['nik_nip']) ?></td>
+                                        <td class="align-middle"><?= esc($email['name']) ?></td>
 
                                         <td class="text-center align-middle">
                                             <div class="d-flex flex-column align-items-center">

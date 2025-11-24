@@ -14,8 +14,14 @@
         h1 { 
             color: #333; 
             text-align: center; 
-            margin-bottom: 20px;
             font-size: 14px;
+        }
+        h2 { 
+            color: #555; 
+            text-align: center; 
+            font-size: 12px;
+            margin-top: -10px;
+            margin-bottom: 20px;
         }
         table { 
             width: 100%; 
@@ -45,16 +51,14 @@
         /* Kolom Nama */
         th:nth-child(3), td:nth-child(3) { width: 20%; } 
         
-        <?php if ($show_unit_kerja_column): ?>
         /* Kolom Unit Kerja */
-        th:nth-child(4), td:nth-child(4) { width: 20%; }
-        <?php endif; ?>
+        <?= ($showUnitKerjaColumn ? 'th:nth-child(4), td:nth-child(4) { width: 20%; }' : '') ?>
         
         /* Kolom Email */
-        th:nth-child(<?= $show_unit_kerja_column ? 5 : 4 ?>), td:nth-child(<?= $show_unit_kerja_column ? 5 : 4 ?>) { width: 20%; }
+        th:nth-child(<?= ($showUnitKerjaColumn ? '5' : '4') ?>), td:nth-child(<?= ($showUnitKerjaColumn ? '5' : '4') ?>) { width: 20%; }
         
         /* Kolom Password */
-        th:nth-child(<?= $show_unit_kerja_column ? 6 : 5 ?>), td:nth-child(<?= $show_unit_kerja_column ? 6 : 5 ?>) { width: 15%; }
+        th:nth-child(<?= ($showUnitKerjaColumn ? '6' : '5') ?>), td:nth-child(<?= ($showUnitKerjaColumn ? '6' : '5') ?>) { width: 15%; }
 
         .footer { 
             text-align: center;
@@ -89,8 +93,9 @@
 </head>
 <body>
     <div class="header">
-        <img src="<?= $logo_src ?>" alt="Logo" class="logo"/>
-        <h1>Daftar Akun Email<br><?= esc($unit_kerja['nama_unit_kerja']) ?></h1>
+        <img src="<?= $logoSrc ?>" alt="Logo" class="logo"/>
+        <h1>DAFTAR AKUN EMAIL</h1>
+        <h2><?= esc($unit_kerja['nama_unit_kerja']) ?></h2>
     </div>
 
     <p class="instruction">
@@ -103,31 +108,25 @@
                 <th>No.</th>
                 <th>NIK/NIP</th>
                 <th>Nama</th>
-                <?php if ($show_unit_kerja_column): ?>
-                <th>Unit Kerja</th>
-                <?php endif; ?>
+                <?= ($showUnitKerjaColumn ? '<th>Unit Kerja</th>' : '') ?>
                 <th>Email</th>
                 <th>Password</th>
             </tr>
         </thead>
         <tbody>
-            <?php
+            <?php 
             $nomor = 1;
-            foreach ($emails as $email):
-            ?>
-                <tr>
-                    <td><?= $nomor ?></td> 
-                    <td><?= esc($email['nik_nip'] ?? 'N/A') ?></td>
-                    <td><?= esc($email['name'] ?? 'N/A') ?></td>
-                    <?php if ($show_unit_kerja_column): ?>
-                    <td><?= esc($email['unit_kerja_name'] ?? 'N/A') ?></td>
-                    <?php endif; ?>
-                    <td><?= esc($email['email'] ?? 'N/A') ?></td>
-                    <td><?= esc($email['password'] ?? 'N/A') ?></td>
-                </tr>
-            <?php
+            foreach ($emails as $email) {
+                echo '<tr>
+                        <td>' . $nomor . '</td> 
+                        <td>' . esc($email['nik_nip'] ?? 'N/A') . '</td>
+                        <td>' . esc($email['name'] ?? 'N/A') . '</td>
+                        ' . ($showUnitKerjaColumn ? '<td>' . esc($email['unit_kerja_name'] ?? 'N/A') . '</td>' : '') . '
+                        <td>' . esc($email['email'] ?? 'N/A') . '</td>
+                        <td>' . esc($email['password'] ?? 'N/A') . '</td>
+                    </tr>';
                 $nomor++;
-            endforeach;
+            }
             ?>
         </tbody>
     </table>

@@ -269,6 +269,7 @@
                 <?php endif; ?>
               </div>
             </div>
+
             <div class="row mb-3">
               <div class="col-6">
                 <strong class="text-muted">Unit Kerja:</strong>
@@ -362,6 +363,11 @@
                 </a>
               </div>
               <div class="col-md-3 col-sm-6">
+                <a href="<?= site_url('email/export_single_perjanjian_kerja_pdf/' . $email['user']) ?>" class="btn btn-outline-info w-100">
+                  <i class="fas fa-file-contract me-2"></i>Export Perjanjian Kerja PDF
+                </a>
+              </div>
+              <div class="col-md-3 col-sm-6">
                 <a href="<?= $back_url ?>" class="btn btn-outline-secondary w-100">
                   <i class="fas fa-arrow-left me-2"></i>Back
                 </a>
@@ -427,6 +433,8 @@ document.addEventListener('DOMContentLoaded', function() {
     setupEditInPlace('edit-name-btn', 'save-name-btn', 'cancel-name-btn', 'name-input');
     setupEditInPlace('edit-email-btn', 'save-email-btn', 'cancel-email-btn', 'email-input');
     setupEditInPlace('edit-niknip-btn', 'save-niknip-btn', 'cancel-niknip-btn', 'niknip-input');
+
+
 });
 </script>
 <?= $this->endSection() ?>
