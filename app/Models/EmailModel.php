@@ -24,8 +24,15 @@ class EmailModel extends Model
         'diskusedpercent_float',
         'user',
         'password',
-        'nik_nip',
+        'nik',
         'name',
+        'gelar_depan',
+        'gelar_belakang',
+        'nip',
+        'tempat_lahir',
+        'tanggal_lahir',
+        'pendidikan',
+        'jabatan',
     ];
     protected $useTimestamps = true;
     protected $beforeFind = ['joinUnitKerja'];

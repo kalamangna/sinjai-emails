@@ -8,6 +8,7 @@ use App\Models\AppSettingModel;
 use App\Models\UnitKerjaModel;
 use CodeIgniter\Controller;
 use Dompdf\Dompdf;
+use App\Models\PkModel;
 use Dompdf\Options;
 use Exception;
 
@@ -17,6 +18,7 @@ class Email extends BaseController
     private $emailModel;
     private $appSettingModel;
     private $unitKerjaModel;
+    private $pkModel; // Add this
 
     public function __construct()
     {
@@ -24,6 +26,7 @@ class Email extends BaseController
         $this->emailModel = new EmailModel();
         $this->appSettingModel = new AppSettingModel();
         $this->unitKerjaModel = new UnitKerjaModel();
+        $this->pkModel = new PkModel(); // Add this
     }
 
     public function index()
@@ -32,10 +35,9 @@ class Email extends BaseController
         helper('time');
 
         try {
-            $search = $this->request->getGet('search');
-            $nik_nip = $this->request->getGet('nik_nip');
-
             $perPage = $this->request->getGet('per_page') ?? 100;
+            $search = $this->request->getGet('search');
+            $nik = $this->request->getGet('nik');
             $sort = $this->request->getGet('sort') ?? 'newest'; // Default to 'newest' (mtime DESC)
 
             $builder = $this->emailModel;
@@ -47,8 +49,8 @@ class Email extends BaseController
                     ->groupEnd();
             }
 
-            if (!empty($nik_nip)) {
-                $builder->like('nik_nip', $nik_nip);
+            if (!empty($nik)) {
+                $builder->like('nik', $nik);
             }
 
 
@@ -86,11 +88,10 @@ class Email extends BaseController
                 'suspended_count' => $counts['suspended_count'],
                 'per_page' => $perPage,
                 'sort' => $sort,
-                'pagination' => $pager,
-                'search' => $search,
-                'nik_nip' => $nik_nip,
-
-                'last_sync_time' => $lastSync['value'] ?? null,
+                                'pagination' => $pager,
+                                'search' => $search,
+                                'nik' => $nik,
+                                    'last_sync_time' => $lastSync['value'] ?? null,
                 'unit_kerja_list' => $unitKerjaList,
             ];
 
@@ -128,7 +129,19 @@ class Email extends BaseController
         $identifiers = $data['identifiers'];
         $newNames = $data['names'] ?? [];
         $newPasswords = $data['passwords'] ?? [];
-        $newNikNips = $data['nik_nips'] ?? [];
+        $newNiks = $data['niks'] ?? [];
+        $newNips = $data['nips'] ?? [];
+        $newGelarDepans = $data['gelar_depans'] ?? []; // Added
+        $newGelarBelakangs = $data['gelar_belakangs'] ?? []; // Added
+        $newNomors = $data['nomors'] ?? [];
+        $newGajiNominals = $data['gaji_nominals'] ?? []; // Modified
+        $newGajiTerbilangs = $data['gaji_terbilangs'] ?? []; // Added
+        $newTanggalKontrakAwals = $data['tanggal_kontrak_awals'] ?? []; // Added
+        $newTanggalKontrakAkhirs = $data['tanggal_kontrak_akhirs'] ?? []; // Added
+        $newTempatLahirs = $data['tempat_lahirs'] ?? [];
+        $newTanggalLahirs = $data['tanggal_lahirs'] ?? [];
+        $newPendidikans = $data['pendidikans'] ?? [];
+        $newJabatans = $data['jabatans'] ?? [];
         $newUnitKerja = $data['unit_kerja'] ?? null;
         $newSubUnitKerja = $data['sub_unit_kerja'] ?? [];
 
@@ -137,8 +150,8 @@ class Email extends BaseController
             $emailRecord = null;
             if ($mode === 'email') {
                 $emailRecord = $this->emailModel->where('email', $identifier)->first();
-            } else { // nik_nip mode
-                $emailRecord = $this->emailModel->where('nik_nip', $identifier)->first();
+            } else { // nik mode
+                $emailRecord = $this->emailModel->where('nik', $identifier)->first();
             }
 
             if (!$emailRecord) {
@@ -146,37 +159,92 @@ class Email extends BaseController
                 continue;
             }
 
-            $updateData = [];
+            $emailUpdateData = []; // For EmailModel
             if (isset($newNames[$index]) && !empty($newNames[$index])) {
-                $updateData['name'] = $newNames[$index];
+                $emailUpdateData['name'] = $newNames[$index];
+            }
+            if (isset($newGelarDepans[$index]) && !empty($newGelarDepans[$index])) {
+                $emailUpdateData['gelar_depan'] = $newGelarDepans[$index];
+            }
+            if (isset($newGelarBelakangs[$index]) && !empty($newGelarBelakangs[$index])) {
+                $emailUpdateData['gelar_belakang'] = $newGelarBelakangs[$index];
             }
             if (isset($newPasswords[$index]) && !empty($newPasswords[$index])) {
-                $updateData['password'] = $newPasswords[$index];
+                $emailUpdateData['password'] = $newPasswords[$index];
             }
-            if (isset($newNikNips[$index]) && !empty($newNikNips[$index])) {
-                $updateData['nik_nip'] = $newNikNips[$index];
+            if (isset($newNiks[$index]) && !empty($newNiks[$index])) {
+                $emailUpdateData['nik'] = $newNiks[$index];
+            }
+            if (isset($newNips[$index]) && !empty($newNips[$index])) {
+                $emailUpdateData['nip'] = $newNips[$index];
+            }
+            if (isset($newTempatLahirs[$index]) && !empty($newTempatLahirs[$index])) {
+                $emailUpdateData['tempat_lahir'] = $newTempatLahirs[$index];
+            }
+            if (isset($newTanggalLahirs[$index]) && !empty($newTanggalLahirs[$index])) {
+                $emailUpdateData['tanggal_lahir'] = $newTanggalLahirs[$index];
+            }
+            if (isset($newPendidikans[$index]) && !empty($newPendidikans[$index])) {
+                $emailUpdateData['pendidikan'] = $newPendidikans[$index];
+            }
+            if (isset($newJabatans[$index]) && !empty($newJabatans[$index])) {
+                $emailUpdateData['jabatan'] = $newJabatans[$index];
             }
             if (!empty($newUnitKerja)) {
-                $updateData['unit_kerja'] = $newUnitKerja;
+                $emailUpdateData['unit_kerja'] = $newUnitKerja; // Assuming unit_kerja is in EmailModel
             }
             if (isset($newSubUnitKerja[$index]) && !empty($newSubUnitKerja[$index])) {
-                $updateData['sub_unit_kerja'] = $newSubUnitKerja[$index];
+                $emailUpdateData['sub_unit_kerja'] = $newSubUnitKerja[$index]; // Assuming sub_unit_kerja is in EmailModel
             }
 
-            if (empty($updateData)) {
-                $results[] = ['identifier' => $identifier, 'success' => true, 'message' => 'No update data provided, skipped.'];
-                continue;
+            $pkUpdateData = []; // For PkModel
+            if (isset($newNomors[$index]) && !empty($newNomors[$index])) {
+                $pkUpdateData['nomor'] = $newNomors[$index];
+            }
+            if (isset($newGajiNominals[$index]) && !empty($newGajiNominals[$index])) {
+                $pkUpdateData['gaji_nominal'] = $newGajiNominals[$index];
+            }
+            if (isset($newGajiTerbilangs[$index]) && !empty($newGajiTerbilangs[$index])) {
+                $pkUpdateData['gaji_terbilang'] = $newGajiTerbilangs[$index];
+            }
+            if (isset($newTanggalKontrakAwals[$index]) && !empty($newTanggalKontrakAwals[$index])) {
+                $pkUpdateData['tanggal_kontrak_awal'] = $newTanggalKontrakAwals[$index];
+            }
+            if (isset($newTanggalKontrakAkhirs[$index]) && !empty($newTanggalKontrakAkhirs[$index])) {
+                $pkUpdateData['tanggal_kontrak_akhir'] = $newTanggalKontrakAkhirs[$index];
             }
 
-            try {
-                $updated = $this->emailModel->update($emailRecord['id'], $updateData);
-                if ($updated) {
-                    $results[] = ['identifier' => $identifier, 'success' => true, 'message' => 'Successfully updated.'];
-                } else {
-                    $results[] = ['identifier' => $identifier, 'success' => false, 'message' => 'Failed to update (no changes or database error).'];
+            $updatedEmail = false;
+            $updatedPk = false;
+
+            if (!empty($emailUpdateData)) {
+                try {
+                    $updatedEmail = $this->emailModel->update($emailRecord['id'], $emailUpdateData);
+                } catch (Exception $e) {
+                    // Log error but continue to try and update PK data
+                    log_message('error', 'Error updating EmailModel for ' . $identifier . ': ' . $e->getMessage());
                 }
-            } catch (Exception $e) {
-                $results[] = ['identifier' => $identifier, 'success' => false, 'message' => 'Database error: ' . $e->getMessage()];
+            }
+            
+            if (!empty($pkUpdateData)) {
+                try {
+                    $pkRecord = $this->pkModel->where('email', $emailRecord['email'])->first();
+                    if ($pkRecord) {
+                        $updatedPk = $this->pkModel->update($pkRecord['id'], $pkUpdateData);
+                    } else {
+                        // Insert new PK record if it doesn't exist
+                        $pkUpdateData['email'] = $emailRecord['email'];
+                        $updatedPk = $this->pkModel->insert($pkUpdateData);
+                    }
+                } catch (Exception $e) {
+                    log_message('error', 'Error updating PkModel for ' . $identifier . ': ' . $e->getMessage());
+                }
+            }
+
+            if ($updatedEmail || $updatedPk) {
+                $results[] = ['identifier' => $identifier, 'success' => true, 'message' => 'Successfully updated.'];
+            } else {
+                $results[] = ['identifier' => $identifier, 'success' => false, 'message' => 'Failed to update (no changes or database error).'];
             }
         }
 
@@ -218,7 +286,7 @@ class Email extends BaseController
                         'domain'     => explode('@', $item->email)[1],
                         'unit_kerja' => $item->unitKerja ?? null,
                         'password'   => $item->password ?? null,
-                        'nik_nip'    => $item->nikNip ?? null,
+                        'nik'    => $item->nik ?? null,
                         'name'       => $item->name ?? null,
                     ]);
 
@@ -416,26 +484,26 @@ class Email extends BaseController
         return redirect()->to('email/detail/' . $username);
     }
 
-    public function update_niknip($username)
+    public function update_nik($username)
     {
         if (strtolower($this->request->getMethod()) === 'post') {
-            $newNiknip = $this->request->getPost('nik_nip');
+            $newNik = $this->request->getPost('nik');
 
             $email = $this->emailModel->where('user', $username)->first();
             if (!$email) {
                 return redirect()->to('email/detail/' . $username)->with('error', 'Email account not found.');
             }
 
-            if ($newNiknip === $email['nik_nip']) {
-                return redirect()->to('email/detail/' . $username)->with('info', 'No changes detected. NIK/NIP is already up to date.');
+            if ($newNik === $email['nik']) {
+                return redirect()->to('email/detail/' . $username)->with('info', 'No changes detected. NIK is already up to date.');
             }
 
-            if (empty($newNiknip)) {
-                return redirect()->to('email/detail/' . $username)->with('error', 'NIK/NIP cannot be empty.');
+            if (empty($newNik)) {
+                return redirect()->to('email/detail/' . $username)->with('error', 'NIK cannot be empty.');
             }
 
             try {
-                $updated = $this->emailModel->update($email['id'], ['nik_nip' => $newNiknip]);
+                $updated = $this->emailModel->update($email['id'], ['nik' => $newNik]);
 
                 if ($updated) {
                     return redirect()->to('email/detail/' . $username)->with('success', 'NIK/NIP has been updated successfully.');
@@ -443,15 +511,173 @@ class Email extends BaseController
                     return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update NIK/NIP. The database did not report any changes.');
                 }
             } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
-                log_message('error', 'Database error during NIK/NIP update: ' . $e->getMessage());
-                return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update NIK/NIP due to a database error: ' . $e->getMessage());
+                log_message('error', 'Database error during NIK update: ' . $e->getMessage());
+                return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update NIK due to a database error.');
             }
         }
 
         return redirect()->to('email/detail/' . $username);
     }
 
+    public function update_nip($username)
+    {
+        if (strtolower($this->request->getMethod()) === 'post') {
+            $newNip = $this->request->getPost('nip');
 
+            $email = $this->emailModel->where('user', $username)->first();
+            if (!$email) {
+                return redirect()->to('email/detail/' . $username)->with('error', 'Email account not found.');
+            }
+
+            if ($newNip === $email['nip']) {
+                return redirect()->to('email/detail/' . $username)->with('info', 'No changes detected. NIP is already up to date.');
+            }
+
+            // NIP can be empty
+            // if (empty($newNip)) {
+            //     return redirect()->to('email/detail/' . $username)->with('error', 'NIP cannot be empty.');
+            // }
+
+            try {
+                $updated = $this->emailModel->update($email['id'], ['nip' => $newNip]);
+
+                if ($updated) {
+                    return redirect()->to('email/detail/' . $username)->with('success', 'NIP has been updated successfully.');
+                } else {
+                    return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update NIP. The database did not report any changes.');
+                }
+            } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
+                log_message('error', 'Database error during NIP update: ' . $e->getMessage());
+                return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update NIP due to a database error.');
+            }
+        }
+
+        return redirect()->to('email/detail/' . $username);
+    }
+
+    public function update_tempat_lahir($username)
+    {
+        if (strtolower($this->request->getMethod()) === 'post') {
+            $newTempatLahir = $this->request->getPost('tempat_lahir');
+
+            $email = $this->emailModel->where('user', $username)->first();
+            if (!$email) {
+                return redirect()->to('email/detail/' . $username)->with('error', 'Email account not found.');
+            }
+
+            if ($newTempatLahir === $email['tempat_lahir']) {
+                return redirect()->to('email/detail/' . $username)->with('info', 'No changes detected. Tempat Lahir is already up to date.');
+            }
+
+            try {
+                $updated = $this->emailModel->update($email['id'], ['tempat_lahir' => $newTempatLahir]);
+
+                if ($updated) {
+                    return redirect()->to('email/detail/' . $username)->with('success', 'Tempat Lahir has been updated successfully.');
+                } else {
+                    return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update Tempat Lahir. The database did not report any changes.');
+                }
+            } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
+                log_message('error', 'Database error during Tempat Lahir update: ' . $e->getMessage());
+                return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update Tempat Lahir due to a database error.');
+            }
+        }
+
+        return redirect()->to('email/detail/' . $username);
+    }
+
+    public function update_tanggal_lahir($username)
+    {
+        if (strtolower($this->request->getMethod()) === 'post') {
+            $newTanggalLahir = $this->request->getPost('tanggal_lahir');
+
+            $email = $this->emailModel->where('user', $username)->first();
+            if (!$email) {
+                return redirect()->to('email/detail/' . $username)->with('error', 'Email account not found.');
+            }
+
+            if ($newTanggalLahir === $email['tanggal_lahir']) {
+                return redirect()->to('email/detail/' . $username)->with('info', 'No changes detected. Tanggal Lahir is already up to date.');
+            }
+
+            try {
+                $updated = $this->emailModel->update($email['id'], ['tanggal_lahir' => $newTanggalLahir]);
+
+                if ($updated) {
+                    return redirect()->to('email/detail/' . $username)->with('success', 'Tanggal Lahir has been updated successfully.');
+                } else {
+                    return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update Tanggal Lahir. The database did not report any changes.');
+                }
+            } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
+                log_message('error', 'Database error during Tanggal Lahir update: ' . $e->getMessage());
+                return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update Tanggal Lahir due to a database error.');
+            }
+        }
+
+        return redirect()->to('email/detail/' . $username);
+    }
+
+    public function update_pendidikan($username)
+    {
+        if (strtolower($this->request->getMethod()) === 'post') {
+            $newPendidikan = $this->request->getPost('pendidikan');
+
+            $email = $this->emailModel->where('user', $username)->first();
+            if (!$email) {
+                return redirect()->to('email/detail/' . $username)->with('error', 'Email account not found.');
+            }
+
+            if ($newPendidikan === $email['pendidikan']) {
+                return redirect()->to('email/detail/' . $username)->with('info', 'No changes detected. Pendidikan is already up to date.');
+            }
+
+            try {
+                $updated = $this->emailModel->update($email['id'], ['pendidikan' => $newPendidikan]);
+
+                if ($updated) {
+                    return redirect()->to('email/detail/' . $username)->with('success', 'Pendidikan has been updated successfully.');
+                } else {
+                    return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update Pendidikan. The database did not report any changes.');
+                }
+            } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
+                log_message('error', 'Database error during Pendidikan update: ' . $e->getMessage());
+                return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update Pendidikan due to a database error.');
+            }
+        }
+
+        return redirect()->to('email/detail/' . $username);
+    }
+
+    public function update_jabatan($username)
+    {
+        if (strtolower($this->request->getMethod()) === 'post') {
+            $newJabatan = $this->request->getPost('jabatan');
+
+            $email = $this->emailModel->where('user', $username)->first();
+            if (!$email) {
+                return redirect()->to('email/detail/' . $username)->with('error', 'Email account not found.');
+            }
+
+            if ($newJabatan === $email['jabatan']) {
+                return redirect()->to('email/detail/' . $username)->with('info', 'No changes detected. Jabatan is already up to date.');
+            }
+
+            try {
+                $updated = $this->emailModel->update($email['id'], ['jabatan' => $newJabatan]);
+
+                if ($updated) {
+                    return redirect()->to('email/detail/' . $username)->with('success', 'Jabatan has been updated successfully.');
+                } else {
+                    return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update Jabatan. The database did not report any changes.');
+                }
+            } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
+                log_message('error', 'Database error during Jabatan update: ' . $e->getMessage());
+                return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update Jabatan due to a database error.');
+            }
+        }
+
+        return redirect()->to('email/detail/' . $username);
+    }
 
     public function unit_kerja_detail($unitKerjaId)
     {
@@ -470,7 +696,7 @@ class Email extends BaseController
 
             $perPage = $this->request->getGet('per_page') ?? 100;
             $search = $this->request->getGet('search');
-            $nik_nip = $this->request->getGet('nik_nip');
+            $nik = $this->request->getGet('nik');
 
             $emailBuilder = $this->emailModel->whereIn('unit_kerja_id', $allUnitIds);
 
@@ -481,8 +707,8 @@ class Email extends BaseController
                     ->groupEnd();
             }
 
-            if ($nik_nip) {
-                $emailBuilder->like('nik_nip', $nik_nip);
+            if ($nik) {
+                $emailBuilder->like('nik', $nik);
             }
 
             $emails = $emailBuilder->orderBy('unit_kerja_name', 'ASC')
@@ -499,7 +725,7 @@ class Email extends BaseController
                 'pagination' => $pager,
                 'per_page' => $perPage,
                 'search' => $search,
-                'nik_nip' => $nik_nip,
+                'nik' => $nik,
                 'back_url' => site_url('email'),
             ];
 
@@ -620,10 +846,14 @@ class Email extends BaseController
             $logoData = base64_encode(file_get_contents($logoPath));
             $logoSrc = 'data:image/png;base64,' . $logoData;
 
+            // Fetch data from pk table using email
+            $pk_data = $this->pkModel->where('email', $email['email'])->first();
+
             $data = [
                 'email' => $email,
                 'unit_kerja' => $unitKerja,
                 'logoSrc' => $logoSrc,
+                'pk_data' => $pk_data, // Pass pk_data to the view
             ];
 
             $html = view('email/perjanjian_kerja_template', $data);
@@ -802,12 +1032,6 @@ class Email extends BaseController
             case 'email_desc':
                 $builder->orderBy('email', 'DESC');
                 break;
-            case 'nik_nip_asc':
-                $builder->orderBy('nik_nip', 'ASC');
-                break;
-            case 'nik_nip_desc':
-                $builder->orderBy('nik_nip', 'DESC');
-                break;
             case 'name_asc':
                 $builder->orderBy('name', 'ASC');
                 break;
@@ -875,7 +1099,7 @@ class Email extends BaseController
                 'domain'     => explode('@', $data['email'])[1],
                 'unit_kerja' => $data['unitKerja'] ?? null,
                 'password'   => $data['password'] ?? null,
-                'nik_nip'    => $data['nikNip'] ?? null,
+                'nik'    => $data['nik'] ?? null,
                 'name'       => $data['name'] ?? null,
             ]);
 
@@ -888,5 +1112,37 @@ class Email extends BaseController
             }
             return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => $errorMessage]);
         }
+    }
+
+    public function test_perjanjian_kerja()
+    {
+        $dummy_email = [
+            'name' => 'Nama Pegawai Contoh',
+            'nik' => '1234567890123456',
+            'tempat_lahir' => 'Sinjai',
+            'tanggal_lahir' => '01-01-1990',
+            'pendidikan' => 'S1 Teknik Informatika',
+            'jabatan' => 'Ahli Pertama - Pranata Komputer',
+        ];
+
+        $dummy_unit_kerja = [
+            'nama_unit_kerja' => 'Dinas Komunikasi, Informatika dan Persandian'
+        ];
+
+        $logoPath = FCPATH . 'garuda.png';
+        if (file_exists($logoPath)) {
+            $logoData = base64_encode(file_get_contents($logoPath));
+            $logoSrc = 'data:image/png;base64,' . $logoData;
+        } else {
+            $logoSrc = ''; // Fallback if logo not found
+        }
+        
+        $data = [
+            'email' => $dummy_email,
+            'unit_kerja' => $dummy_unit_kerja,
+            'logoSrc' => $logoSrc,
+        ];
+
+        return view('email/perjanjian_kerja_template', $data);
     }
 }

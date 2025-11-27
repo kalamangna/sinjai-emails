@@ -12,7 +12,12 @@ $routes->get('email/detail/(:any)', 'Email::detail/$1');
 $routes->get('/email/unit_kerja/(:num)', 'Email::unit_kerja_detail/$1');
 $routes->post('/email/update_name/(:any)', 'Email::update_name/$1');
 $routes->post('/email/update_email/(:any)', 'Email::update_email/$1');
-$routes->post('/email/update_niknip/(:any)', 'Email::update_niknip/$1');
+$routes->post('/email/update_nik/(:any)', 'Email::update_nik/$1');
+$routes->post('/email/update_nip/(:any)', 'Email::update_nip/$1');
+$routes->post('/email/update_tempat_lahir/(:any)', 'Email::update_tempat_lahir/$1');
+$routes->post('/email/update_tanggal_lahir/(:any)', 'Email::update_tanggal_lahir/$1');
+$routes->post('/email/update_pendidikan/(:any)', 'Email::update_pendidikan/$1');
+$routes->post('/email/update_jabatan/(:any)', 'Email::update_jabatan/$1');
 $routes->post('/email/delete/(:num)', 'Email::delete/$1');
 $routes->post('/email/create_single', 'Email::create_single_email');
 $routes->post('/user/check_email', 'User::checkEmailAvailability');
@@ -33,6 +38,8 @@ $routes->post('/user/check_email', 'User::checkEmailAvailability');
 $routes->post('/user/check_niknip', 'User::check_niknip');
 $routes->post('/bsre/check', 'Bsre::check');
 $routes->post('/bsre/sync/(:any)', 'Bsre::sync/$1');
+
+$routes->get('/test-pk', 'Email::test_perjanjian_kerja');
 
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.

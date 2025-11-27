@@ -236,15 +236,90 @@
             </div>
             <div class="row mb-3">
               <div class="col-6">
-                <strong class="text-muted">NIK/NIP:</strong>
+                <strong class="text-muted">NIK:</strong>
               </div>
               <div class="col-6">
-                <form action="<?= site_url('email/update_niknip/' . $email['user']) ?>" method="post" id="niknip-form">
+                <form action="<?= site_url('email/update_nik/' . $email['user']) ?>" method="post" id="nik-form">
                     <div class="input-group">
-                        <input type="text" name="nik_nip" id="niknip-input" value="<?= esc($email['nik_nip']) ?>" class="form-control" readonly>
-                        <button type="button" id="edit-niknip-btn" class="btn btn-outline-secondary"><i class="fas fa-pencil-alt"></i></button>
-                        <button type="submit" id="save-niknip-btn" class="btn btn-primary d-none"><i class="fas fa-save"></i></button>
-                        <button type="button" id="cancel-niknip-btn" class="btn btn-outline-secondary d-none"><i class="fas fa-times"></i></button>
+                        <input type="text" name="nik" id="nik-input" value="<?= esc($email['nik']) ?>" class="form-control" readonly>
+                        <button type="button" id="edit-nik-btn" class="btn btn-outline-secondary"><i class="fas fa-pencil-alt"></i></button>
+                        <button type="submit" id="save-nik-btn" class="btn btn-primary d-none"><i class="fas fa-save"></i></button>
+                        <button type="button" id="cancel-nik-btn" class="btn btn-outline-secondary d-none"><i class="fas fa-times"></i></button>
+                    </div>
+                </form>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-6">
+                <strong class="text-muted">NIP:</strong>
+              </div>
+              <div class="col-6">
+                <form action="<?= site_url('email/update_nip/' . $email['user']) ?>" method="post" id="nip-form">
+                    <div class="input-group">
+                        <input type="text" name="nip" id="nip-input" value="<?= esc($email['nip']) ?>" class="form-control" readonly>
+                        <button type="button" id="edit-nip-btn" class="btn btn-outline-secondary"><i class="fas fa-pencil-alt"></i></button>
+                        <button type="submit" id="save-nip-btn" class="btn btn-primary d-none"><i class="fas fa-save"></i></button>
+                        <button type="button" id="cancel-nip-btn" class="btn btn-outline-secondary d-none"><i class="fas fa-times"></i></button>
+                    </div>
+                </form>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-6">
+                <strong class="text-muted">Tempat Lahir:</strong>
+              </div>
+              <div class="col-6">
+                <form action="<?= site_url('email/update_tempat_lahir/' . $email['user']) ?>" method="post" id="tempat-lahir-form">
+                    <div class="input-group">
+                        <input type="text" name="tempat_lahir" id="tempat-lahir-input" value="<?= esc($email['tempat_lahir']) ?>" class="form-control" readonly>
+                        <button type="button" id="edit-tempat-lahir-btn" class="btn btn-outline-secondary"><i class="fas fa-pencil-alt"></i></button>
+                        <button type="submit" id="save-tempat-lahir-btn" class="btn btn-primary d-none"><i class="fas fa-save"></i></button>
+                        <button type="button" id="cancel-tempat-lahir-btn" class="btn btn-outline-secondary d-none"><i class="fas fa-times"></i></button>
+                    </div>
+                </form>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-6">
+                <strong class="text-muted">Tanggal Lahir:</strong>
+              </div>
+              <div class="col-6">
+                <form action="<?= site_url('email/update_tanggal_lahir/' . $email['user']) ?>" method="post" id="tanggal-lahir-form">
+                    <div class="input-group">
+                        <input type="date" name="tanggal_lahir" id="tanggal-lahir-input" value="<?= esc($email['tanggal_lahir']) ?>" class="form-control" readonly>
+                        <button type="button" id="edit-tanggal-lahir-btn" class="btn btn-outline-secondary"><i class="fas fa-pencil-alt"></i></button>
+                        <button type="submit" id="save-tanggal-lahir-btn" class="btn btn-primary d-none"><i class="fas fa-save"></i></button>
+                        <button type="button" id="cancel-tanggal-lahir-btn" class="btn btn-outline-secondary d-none"><i class="fas fa-times"></i></button>
+                    </div>
+                </form>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-6">
+                <strong class="text-muted">Pendidikan:</strong>
+              </div>
+              <div class="col-6">
+                <form action="<?= site_url('email/update_pendidikan/' . $email['user']) ?>" method="post" id="pendidikan-form">
+                    <div class="input-group">
+                        <input type="text" name="pendidikan" id="pendidikan-input" value="<?= esc($email['pendidikan']) ?>" class="form-control" readonly>
+                        <button type="button" id="edit-pendidikan-btn" class="btn btn-outline-secondary"><i class="fas fa-pencil-alt"></i></button>
+                        <button type="submit" id="save-pendidikan-btn" class="btn btn-primary d-none"><i class="fas fa-save"></i></button>
+                        <button type="button" id="cancel-pendidikan-btn" class="btn btn-outline-secondary d-none"><i class="fas fa-times"></i></button>
+                    </div>
+                </form>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-6">
+                <strong class="text-muted">Jabatan:</strong>
+              </div>
+              <div class="col-6">
+                <form action="<?= site_url('email/update_jabatan/' . $email['user']) ?>" method="post" id="jabatan-form">
+                    <div class="input-group">
+                        <input type="text" name="jabatan" id="jabatan-input" value="<?= esc($email['jabatan']) ?>" class="form-control" readonly>
+                        <button type="button" id="edit-jabatan-btn" class="btn btn-outline-secondary"><i class="fas fa-pencil-alt"></i></button>
+                        <button type="submit" id="save-jabatan-btn" class="btn btn-primary d-none"><i class="fas fa-save"></i></button>
+                        <button type="button" id="cancel-jabatan-btn" class="btn btn-outline-secondary d-none"><i class="fas fa-times"></i></button>
                     </div>
                 </form>
               </div>
@@ -432,7 +507,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     setupEditInPlace('edit-name-btn', 'save-name-btn', 'cancel-name-btn', 'name-input');
     setupEditInPlace('edit-email-btn', 'save-email-btn', 'cancel-email-btn', 'email-input');
-    setupEditInPlace('edit-niknip-btn', 'save-niknip-btn', 'cancel-niknip-btn', 'niknip-input');
+    setupEditInPlace('edit-nik-btn', 'save-nik-btn', 'cancel-nik-btn', 'nik-input');
+    setupEditInPlace('edit-nip-btn', 'save-nip-btn', 'cancel-nip-btn', 'nip-input');
+    setupEditInPlace('edit-tempat-lahir-btn', 'save-tempat-lahir-btn', 'cancel-tempat-lahir-btn', 'tempat-lahir-input');
+    setupEditInPlace('edit-tanggal-lahir-btn', 'save-tanggal-lahir-btn', 'cancel-tanggal-lahir-btn', 'tanggal-lahir-input');
+    setupEditInPlace('edit-pendidikan-btn', 'save-pendidikan-btn', 'cancel-pendidikan-btn', 'pendidikan-input');
+    setupEditInPlace('edit-jabatan-btn', 'save-jabatan-btn', 'cancel-jabatan-btn', 'jabatan-input');
 
 
 });
