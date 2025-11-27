@@ -142,6 +142,7 @@ class Email extends BaseController
         $newTanggalLahirs = $data['tanggal_lahirs'] ?? [];
         $newPendidikans = $data['pendidikans'] ?? [];
         $newJabatans = $data['jabatans'] ?? [];
+        $newJenisFormasi = $data['jenis_formasi'] ?? null; // Added
         $newUnitKerja = $data['unit_kerja'] ?? null;
         $newSubUnitKerja = $data['sub_unit_kerja'] ?? [];
 
@@ -189,6 +190,9 @@ class Email extends BaseController
             }
             if (isset($newJabatans[$index]) && !empty($newJabatans[$index])) {
                 $emailUpdateData['jabatan'] = $newJabatans[$index];
+            }
+            if (!empty($newJenisFormasi)) { // Added
+                $emailUpdateData['jenis_formasi'] = $newJenisFormasi;
             }
             if (!empty($newUnitKerja)) {
                 $emailUpdateData['unit_kerja'] = $newUnitKerja; // Assuming unit_kerja is in EmailModel
@@ -478,6 +482,41 @@ class Email extends BaseController
             } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
                 log_message('error', 'Database error during email update: ' . $e->getMessage());
                 return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update email due to a database error: ' . $e->getMessage());
+            }
+        }
+
+        return redirect()->to('email/detail/' . $username);
+    }
+
+    public function update_password($username)
+    {
+        if (strtolower($this->request->getMethod()) === 'post') {
+            $newPassword = $this->request->getPost('password');
+
+            if (empty($newPassword)) {
+                return redirect()->to('email/detail/' . $username)->with('error', 'Password cannot be empty.');
+            }
+
+            $email = $this->emailModel->where('user', $username)->first();
+            if (!$email) {
+                return redirect()->to('email/detail/' . $username)->with('error', 'Email account not found.');
+            }
+
+            try {
+                // 1. Update in cPanel
+                $this->cpanelApi->change_password($email['email'], $newPassword);
+
+                // 2. Update in local DB
+                $updated = $this->emailModel->update($email['id'], ['password' => $newPassword]);
+
+                if ($updated) {
+                    return redirect()->to('email/detail/' . $username)->with('success', 'Password has been updated successfully locally and on server.');
+                } else {
+                    return redirect()->to('email/detail/' . $username)->with('warning', 'Password updated on server but failed to update locally.');
+                }
+            } catch (Exception $e) {
+                log_message('error', 'Error updating password: ' . $e->getMessage());
+                return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update password: ' . $e->getMessage());
             }
         }
 

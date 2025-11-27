@@ -12,6 +12,7 @@ $routes->get('email/detail/(:any)', 'Email::detail/$1');
 $routes->get('/email/unit_kerja/(:num)', 'Email::unit_kerja_detail/$1');
 $routes->post('/email/update_name/(:any)', 'Email::update_name/$1');
 $routes->post('/email/update_email/(:any)', 'Email::update_email/$1');
+$routes->post('/email/update_password/(:any)', 'Email::update_password/$1');
 $routes->post('/email/update_nik/(:any)', 'Email::update_nik/$1');
 $routes->post('/email/update_nip/(:any)', 'Email::update_nip/$1');
 $routes->post('/email/update_tempat_lahir/(:any)', 'Email::update_tempat_lahir/$1');

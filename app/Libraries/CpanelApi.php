@@ -131,6 +131,31 @@ class CpanelApi
         }
     }
 
+    public function change_password($email, $new_password)
+    {
+        try {
+            list($user, $domain) = explode('@', $email);
+
+            $parameters = [
+                'email' => $user,
+                'password' => $new_password,
+                'domain' => $domain,
+            ];
+
+            $response = $this->make_request('Email', 'passwd_pop', 'POST', $parameters);
+
+            if (isset($response['status']) && $response['status'] == 1) {
+                return $response;
+            } else {
+                $error_message = $response['errors'][0] ?? 'Unknown error during password change.';
+                throw new Exception($error_message);
+            }
+        } catch (Exception $e) {
+            log_message('error', 'Failed to change password: ' . $e->getMessage());
+            throw new Exception('Failed to change password: ' . $e->getMessage());
+        }
+    }
+
     public function delete_email_account($email)
     {
         try {

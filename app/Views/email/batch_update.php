@@ -94,6 +94,15 @@ M.Si"></textarea>
                                     <textarea class="form-control" id="jabatan_input" rows="4" placeholder="e.g. Pranata Komputer Ahli Pertama"></textarea>
                                 </div>
                                 <div class="mb-3">
+                                    <label for="jenis_formasi_input" class="form-label">New Jenis Formasi</label>
+                                    <select class="form-select" id="jenis_formasi_input">
+                                        <option value="">Do not change</option>
+                                        <option value="PNS">PNS</option>
+                                        <option value="PPPK">PPPK</option>
+                                        <option value="PPPK PARUH WAKTU">PPPK PARUH WAKTU</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
                                     <label for="unit_kerja_input" class="form-label">New Unit Kerja (All)</label>
                                     <select class="form-select" id="unit_kerja_input">
                                         <option selected value="">Do not change</option>
@@ -198,6 +207,7 @@ M.Si"></textarea>
         const tanggalLahirInput = document.getElementById('tanggal_lahir_input');
         const pendidikanInput = document.getElementById('pendidikan_input');
         const jabatanInput = document.getElementById('jabatan_input');
+        const jenisFormasiInput = document.getElementById('jenis_formasi_input'); // Added
         const unitKerjaInput = document.getElementById('unit_kerja_input');
         const subUnitKerjaInput = document.getElementById('sub_unit_kerja_input');
         const updateBtn = document.getElementById('update_btn');
@@ -219,93 +229,71 @@ M.Si"></textarea>
             e.preventDefault();
 
             const updateMode = document.querySelector('input[name="update_mode"]:checked').value;
-            const identifiers = identifierInput.value.trim().split('\n').filter(id => id.trim() !== '');
-            const newNames = nameInput.value.trim().split('\n').filter(name => name.trim() !== '');
-            const newGelarDepans = gelarDepanInput.value.trim().split('\n').filter(gd => gd.trim() !== ''); // Added
-            const newGelarBelakangs = gelarBelakangInput.value.trim().split('\n').filter(gb => gb.trim() !== ''); // Added
-            const newPasswords = passwordInput.value.split('\n').filter(password => password.trim() !== '');
-            const newNiks = nikInput.value.trim().split('\n').filter(nik => nik.trim() !== '');
-            const newNips = nipInput.value.trim().split('\n').filter(nip => nip.trim() !== '');
-            const newNomors = nomorInput.value.trim().split('\n').filter(nomor => nomor.trim() !== '');
-            const newGajiNominals = gajiNominalInput.value.trim().split('\n').filter(gn => gn.trim() !== '');
-            const newGajiTerbilangs = gajiTerbilangInput.value.trim().split('\n').filter(gt => gt.trim() !== '');
-            const newTanggalKontrakAwals = tanggalKontrakAwalInput.value.trim().split('\n').filter(tka => tka.trim() !== ''); // Added
-            const newTanggalKontrakAkhirs = tanggalKontrakAkhirInput.value.trim().split('\n').filter(tkk => tkk.trim() !== ''); // Added
-            const newTempatLahirs = tempatLahirInput.value.trim().split('\n').filter(tl => tl.trim() !== '');
-            const newTanggalLahirs = tanggalLahirInput.value.trim().split('\n').filter(tgl => tgl.trim() !== '');
-            const newPendidikans = pendidikanInput.value.trim().split('\n').filter(p => p.trim() !== '');
-            const newJabatans = jabatanInput.value.trim().split('\n').filter(j => j.trim() !== '');
+
+            const rawIdentifiers = identifierInput.value.split('\n');
+            const rawNames = nameInput.value.split('\n');
+            const rawGelarDepans = gelarDepanInput.value.split('\n');
+            const rawGelarBelakangs = gelarBelakangInput.value.split('\n');
+            const rawPasswords = passwordInput.value.split('\n');
+            const rawNiks = nikInput.value.split('\n');
+            const rawNips = nipInput.value.split('\n');
+            const rawNomors = nomorInput.value.split('\n');
+            const rawGajiNominals = gajiNominalInput.value.split('\n');
+            const rawGajiTerbilangs = gajiTerbilangInput.value.split('\n');
+            const rawTanggalKontrakAwals = tanggalKontrakAwalInput.value.split('\n');
+            const rawTanggalKontrakAkhirs = tanggalKontrakAkhirInput.value.split('\n');
+            const rawTempatLahirs = tempatLahirInput.value.split('\n');
+            const rawTanggalLahirs = tanggalLahirInput.value.split('\n');
+            const rawPendidikans = pendidikanInput.value.split('\n');
+            const rawJabatans = jabatanInput.value.split('\n');
+            const rawSubUnitKerja = subUnitKerjaInput.value.split('\n');
+
+            const identifiers = [];
+            const newNames = [];
+            const newGelarDepans = [];
+            const newGelarBelakangs = [];
+            const newPasswords = [];
+            const newNiks = [];
+            const newNips = [];
+            const newNomors = [];
+            const newGajiNominals = [];
+            const newGajiTerbilangs = [];
+            const newTanggalKontrakAwals = [];
+            const newTanggalKontrakAkhirs = [];
+            const newTempatLahirs = [];
+            const newTanggalLahirs = [];
+            const newPendidikans = [];
+            const newJabatans = [];
+            const newSubUnitKerja = [];
+
+            for (let i = 0; i < rawIdentifiers.length; i++) {
+                const id = rawIdentifiers[i].trim();
+                if (id) {
+                    identifiers.push(id);
+                    newNames.push((rawNames[i] !== undefined) ? rawNames[i].trim() : '');
+                    newGelarDepans.push((rawGelarDepans[i] !== undefined) ? rawGelarDepans[i].trim() : '');
+                    newGelarBelakangs.push((rawGelarBelakangs[i] !== undefined) ? rawGelarBelakangs[i].trim() : '');
+                    newPasswords.push((rawPasswords[i] !== undefined) ? rawPasswords[i].trim() : '');
+                    newNiks.push((rawNiks[i] !== undefined) ? rawNiks[i].trim() : '');
+                    newNips.push((rawNips[i] !== undefined) ? rawNips[i].trim() : '');
+                    newNomors.push((rawNomors[i] !== undefined) ? rawNomors[i].trim() : '');
+                    newGajiNominals.push((rawGajiNominals[i] !== undefined) ? rawGajiNominals[i].trim() : '');
+                    newGajiTerbilangs.push((rawGajiTerbilangs[i] !== undefined) ? rawGajiTerbilangs[i].trim() : '');
+                    newTanggalKontrakAwals.push((rawTanggalKontrakAwals[i] !== undefined) ? rawTanggalKontrakAwals[i].trim() : '');
+                    newTanggalKontrakAkhirs.push((rawTanggalKontrakAkhirs[i] !== undefined) ? rawTanggalKontrakAkhirs[i].trim() : '');
+                    newTempatLahirs.push((rawTempatLahirs[i] !== undefined) ? rawTempatLahirs[i].trim() : '');
+                    newTanggalLahirs.push((rawTanggalLahirs[i] !== undefined) ? rawTanggalLahirs[i].trim() : '');
+                    newPendidikans.push((rawPendidikans[i] !== undefined) ? rawPendidikans[i].trim() : '');
+                    newJabatans.push((rawJabatans[i] !== undefined) ? rawJabatans[i].trim() : '');
+                    newSubUnitKerja.push((rawSubUnitKerja[i] !== undefined) ? rawSubUnitKerja[i].trim() : '');
+                }
+            }
+
             const newUnitKerja = unitKerjaInput.value;
-            const newSubUnitKerja = subUnitKerjaInput.value.trim().split('\n').filter(sub => sub.trim() !== '');
+            const newJenisFormasi = jenisFormasiInput.value; // Added
 
             if (identifiers.length === 0) {
                 alert('Please enter at least one identifier to update.');
-                return;
-            }
-
-            // Validate counts if optional fields are provided
-            if (newNames.length > 0 && newNames.length !== identifiers.length) {
-                alert('The number of new names must match the number of identifiers.');
-                return;
-            }
-            if (newGelarDepans.length > 0 && newGelarDepans.length !== identifiers.length) { // Added
-                alert('The number of new Gelar Depan entries must match the number of identifiers.');
-                return;
-            }
-            if (newGelarBelakangs.length > 0 && newGelarBelakangs.length !== identifiers.length) { // Added
-                alert('The number of new Gelar Belakang entries must match the number of identifiers.');
-                return;
-            }
-            if (newPasswords.length > 0 && newPasswords.length !== identifiers.length) {
-                alert('The number of new passwords must match the number of identifiers.');
-                return;
-            }
-            if (newNiks.length > 0 && newNiks.length !== identifiers.length) {
-                alert('The number of new NIKs must match the number of identifiers.');
-                return;
-            }
-            if (newNips.length > 0 && newNips.length !== identifiers.length) {
-                alert('The number of new NIPs must match the number of identifiers.');
-                return;
-            }
-            if (newNomors.length > 0 && newNomors.length !== identifiers.length) {
-                alert('The number of new Nomor SK entries must match the number of identifiers.');
-                return;
-            }
-            if (newGajiNominals.length > 0 && newGajiNominals.length !== identifiers.length) {
-                alert('The number of new Gaji Nominal entries must match the number of identifiers.');
-                return;
-            }
-            if (newGajiTerbilangs.length > 0 && newGajiTerbilangs.length !== identifiers.length) {
-                alert('The number of new Gaji Terbilang entries must match the number of identifiers.');
-                return;
-            }
-            if (newTanggalKontrakAwals.length > 0 && newTanggalKontrakAwals.length !== identifiers.length) { // Added
-                alert('The number of new Tanggal Kontrak Awal entries must match the number of identifiers.');
-                return;
-            }
-            if (newTanggalKontrakAkhirs.length > 0 && newTanggalKontrakAkhirs.length !== identifiers.length) { // Added
-                alert('The number of new Tanggal Kontrak Akhir entries must match the number of identifiers.');
-                return;
-            }
-            if (newTempatLahirs.length > 0 && newTempatLahirs.length !== identifiers.length) {
-                alert('The number of new Tempat Lahir entries must match the number of identifiers.');
-                return;
-            }
-            if (newTanggalLahirs.length > 0 && newTanggalLahirs.length !== identifiers.length) {
-                alert('The number of new Tanggal Lahir entries must match the number of identifiers.');
-                return;
-            }
-            if (newPendidikans.length > 0 && newPendidikans.length !== identifiers.length) {
-                alert('The number of new Pendidikan entries must match the number of identifiers.');
-                return;
-            }
-            if (newJabatans.length > 0 && newJabatans.length !== identifiers.length) {
-                alert('The number of new Jabatan entries must match the number of identifiers.');
-                return;
-            }
-            if (newSubUnitKerja.length > 0 && newSubUnitKerja.length !== identifiers.length) {
-                alert('The number of new Sub Unit Kerja entries must match the number of identifiers.');
                 return;
             }
 
@@ -338,6 +326,7 @@ M.Si"></textarea>
                         tanggal_lahirs: newTanggalLahirs,
                         pendidikans: newPendidikans,
                         jabatans: newJabatans,
+                        jenis_formasi: newJenisFormasi, // Added
                         unit_kerja: newUnitKerja,
                         sub_unit_kerja: newSubUnitKerja
                     })

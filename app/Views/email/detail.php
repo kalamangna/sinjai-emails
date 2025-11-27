@@ -231,7 +231,14 @@
                 <strong class="text-muted">Password:</strong>
               </div>
               <div class="col-6">
-                <?= esc($email['password']) ?>
+                <form action="<?= site_url('email/update_password/' . $email['user']) ?>" method="post" id="password-form">
+                    <div class="input-group">
+                        <input type="text" name="password" id="password-input" value="<?= esc($email['password']) ?>" class="form-control" readonly>
+                        <button type="button" id="edit-password-btn" class="btn btn-outline-secondary"><i class="fas fa-pencil-alt"></i></button>
+                        <button type="submit" id="save-password-btn" class="btn btn-primary d-none"><i class="fas fa-save"></i></button>
+                        <button type="button" id="cancel-password-btn" class="btn btn-outline-secondary d-none"><i class="fas fa-times"></i></button>
+                    </div>
+                </form>
               </div>
             </div>
             <div class="row mb-3">
@@ -507,6 +514,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     setupEditInPlace('edit-name-btn', 'save-name-btn', 'cancel-name-btn', 'name-input');
     setupEditInPlace('edit-email-btn', 'save-email-btn', 'cancel-email-btn', 'email-input');
+    setupEditInPlace('edit-password-btn', 'save-password-btn', 'cancel-password-btn', 'password-input');
     setupEditInPlace('edit-nik-btn', 'save-nik-btn', 'cancel-nik-btn', 'nik-input');
     setupEditInPlace('edit-nip-btn', 'save-nip-btn', 'cancel-nip-btn', 'nip-input');
     setupEditInPlace('edit-tempat-lahir-btn', 'save-tempat-lahir-btn', 'cancel-tempat-lahir-btn', 'tempat-lahir-input');

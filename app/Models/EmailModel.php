@@ -33,6 +33,7 @@ class EmailModel extends Model
         'tanggal_lahir',
         'pendidikan',
         'jabatan',
+        'jenis_formasi',
     ];
     protected $useTimestamps = true;
     protected $beforeFind = ['joinUnitKerja'];
