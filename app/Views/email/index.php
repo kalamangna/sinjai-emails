@@ -241,12 +241,6 @@
                                     </th>
 
                                     <th class="text-center">
-                                        <i class="fas fa-chart-pie me-2"></i>Disk Usage
-                                        <?php if (isset($sort) && in_array($sort, ['usage_asc', 'usage_desc'])): ?>
-                                            <i class="fas fa-sort-<?= $sort == 'usage_asc' ? 'down' : 'up' ?> text-primary"></i>
-                                        <?php endif; ?>
-                                    </th>
-                                    <th class="text-center">
                                         <i class="fas fa-calendar me-2"></i>Modified
                                         <?php if (isset($sort) && in_array($sort, ['newest', 'oldest'])): ?>
                                             <i class="fas fa-sort-<?= $sort == 'newest' ? 'down' : 'up' ?> text-primary"></i>
@@ -260,21 +254,6 @@
 
                             <tbody>
                                 <?php foreach ($emails as $email): ?>
-                                    <?php
-                                    // Cek apakah kuota unlimited/tidak terbatas
-                                    $is_unlimited = ($email['diskquota'] ?? 0) == 0 || ($email['humandiskquota'] ?? '') == 'none' || ($email['humandiskquota'] ?? '') == 'unlimited';
-                                    $disk_used = $email['humandiskused'] ?? '0 KB';
-                                    $disk_quota = $is_unlimited ? '<i class="fas fa-infinity text-info"></i>' : ($email['humandiskquota'] ?? '0 GB');
-                                    $usage_percent = $email['diskusedpercent_float'] ?? 0;
-
-                                    // Tentukan warna progress bar
-                                    if ($is_unlimited) {
-                                        $progress_class = 'bg-info';
-                                    } else {
-                                        $progress_class = ($usage_percent > 80) ? 'bg-danger' : (($usage_percent > 60) ? 'bg-warning' : 'bg-success');
-                                    }
-                                    ?>
-
                                     <tr>
                                         <td class="ps-4 align-middle">
                                             <div class="d-flex align-items-center">
@@ -290,37 +269,6 @@
                                         <td class="align-middle"><?= esc($email['nik']) ?></td>
                                         <td class="align-middle"><?= esc($email['name']) ?></td>
 
-                                        <td class="text-center align-middle">
-                                            <div class="d-flex flex-column align-items-center">
-                                                <?php if ($is_unlimited): ?>
-                                                    <!-- Tampilan untuk kuota unlimited -->
-                                                    <div class="progress w-100 mb-1" style="height: 8px; max-width: 120px;">
-                                                        <div class="progress-bar <?= $progress_class ?> progress-bar-striped progress-bar-animated"
-                                                            role="progressbar"
-                                                            style="width: 100%">
-                                                        </div>
-                                                    </div>
-                                                    <small class="text-muted">
-                                                        <?= $disk_used ?> / <span class="text-success fw-bold"><?= $disk_quota ?></span>
-                                                        <br>
-                                                        <span class="fw-bold text-info">Unlimited</span>
-                                                    </small>
-                                                <?php else: ?>
-                                                    <!-- Tampilan untuk kuota terbatas -->
-                                                    <div class="progress w-100 mb-1" style="height: 8px; max-width: 120px;">
-                                                        <div class="progress-bar <?= $progress_class ?>"
-                                                            role="progressbar"
-                                                            style="width: <?= $usage_percent ?>%">
-                                                        </div>
-                                                    </div>
-                                                    <small class="text-muted">
-                                                        <?= $disk_used ?> / <?= $disk_quota ?>
-                                                        <br>
-                                                        <span class="fw-bold"><?= round($usage_percent, 2) ?>%</span>
-                                                    </small>
-                                                <?php endif; ?>
-                                            </div>
-                                        </td>
                                         <td class="text-center align-middle">
                                             <small class="text-muted">
                                                 <?php if (isset($email['mtime']) && $email['mtime'] > 0): ?>

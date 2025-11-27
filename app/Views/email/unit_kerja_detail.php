@@ -117,24 +117,11 @@
                   <?php if (!empty($child_units)): ?>
                     <th><i class="fas fa-building me-2"></i>Unit Kerja</th>
                   <?php endif; ?>
-                  <th class="text-center"><i class="fas fa-chart-pie me-2"></i>Disk Usage</th>
                   <th class="text-center"><i class="fas fa-cog me-2"></i>Action</th>
                 </tr>
               </thead>
               <tbody>
                 <?php foreach ($emails as $email): ?>
-                  <?php
-                  $is_unlimited = ($email['diskquota'] ?? 0) == 0 || ($email['humandiskquota'] ?? '') == 'none' || ($email['humandiskquota'] ?? '') == 'unlimited';
-                  $disk_used = $email['humandiskused'] ?? '0 KB';
-                  $disk_quota = $is_unlimited ? '<i class="fas fa-infinity text-info"></i>' : ($email['humandiskquota'] ?? '0 GB');
-                  $usage_percent = $email['diskusedpercent_float'] ?? 0;
-
-                  if ($is_unlimited) {
-                    $progress_class = 'bg-info';
-                  } else {
-                    $progress_class = ($usage_percent > 80) ? 'bg-danger' : (($usage_percent > 60) ? 'bg-warning' : 'bg-success');
-                  }
-                  ?>
                   <tr>
                     <td class="ps-4 align-middle">
                       <div class="d-flex align-items-center">
@@ -161,33 +148,6 @@
                         <?php endif; ?>
                       </td>
                     <?php endif; ?>
-                    <td class="text-center align-middle">
-                      <div class="d-flex flex-column align-items-center">
-                        <?php if ($is_unlimited): ?>
-                          <div class="progress w-100 mb-1" style="height: 8px; max-width: 120px;">
-                            <div class="progress-bar <?= $progress_class ?> progress-bar-striped progress-bar-animated"
-                              role="progressbar" style="width: 100%">
-                            </div>
-                          </div>
-                          <small class="text-muted">
-                            <?= $disk_used ?> / <span class="text-success fw-bold"><?= $disk_quota ?></span>
-                            <br>
-                            <span class="fw-bold text-info">Unlimited</span>
-                          </small>
-                        <?php else: ?>
-                          <div class="progress w-100 mb-1" style="height: 8px; max-width: 120px;">
-                            <div class="progress-bar <?= $progress_class ?>" role="progressbar"
-                              style="width: <?= $usage_percent ?>%">
-                            </div>
-                          </div>
-                          <small class="text-muted">
-                            <?= $disk_used ?> / <?= $disk_quota ?>
-                            <br>
-                            <span class="fw-bold"><?= round($usage_percent, 2) ?>%</span>
-                          </small>
-                        <?php endif; ?>
-                      </div>
-                    </td>
                     <td class="text-center align-middle">
                       <a href="<?= site_url('email/detail/' . $email['user']) ?>"
                         class="btn btn-sm btn-outline-primary">
