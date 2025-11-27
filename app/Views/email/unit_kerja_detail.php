@@ -80,7 +80,7 @@
           <div class="col-md-6">
             <div class="input-group">
               <span class="input-group-text"><i class="fas fa-id-card"></i></span>
-              <input type="text" class="form-control" id="nik_nip" name="nik_nip" placeholder="Enter NIK/NIP..." value="<?= esc($nik_nip ?? '') ?>">
+              <input type="text" class="form-control" id="nik" name="nik" placeholder="Enter NIK..." value="<?= esc($nik ?? '') ?>">
             </div>
           </div>
           <div class="col-md-12 mt-3 d-flex gap-2">
@@ -113,7 +113,7 @@
                 <tr>
                   <th class="ps-4"><i class="fas fa-envelope me-2"></i>Email Address</th>
                   <th><i class="fas fa-user me-2"></i>Name</th>
-                  <th><i class="fas fa-id-card me-2"></i>NIK/NIP</th>
+                  <th><i class="fas fa-id-card me-2"></i>NIK</th>
                   <?php if (!empty($child_units)): ?>
                     <th><i class="fas fa-building me-2"></i>Unit Kerja</th>
                   <?php endif; ?>
@@ -146,7 +146,7 @@
                       </div>
                     </td>
                     <td class="align-middle"><?= esc($email['name']) ?></td>
-                    <td class="align-middle"><?= esc($email['nik_nip']) ?></td>
+                    <td class="align-middle"><?= esc($email['nik']) ?></td>
                     <?php if (!empty($child_units)): ?>
                       <td class="align-middle">
                         <?php if (!empty($email['parent_unit_kerja_name'])): ?>

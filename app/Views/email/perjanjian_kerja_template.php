@@ -108,26 +108,36 @@
             line-height: 1.5;
         }
     </style>
-<?php
-// Function to format date to Indonesian format
-if (!function_exists('formatIndonesianDate')) {
-    function formatIndonesianDate($dateString) {
-        if (empty($dateString) || $dateString == '0000-00-00') {
-            return 'N/A';
+    <?php
+    // Function to format date to Indonesian format
+    if (!function_exists('formatIndonesianDate')) {
+        function formatIndonesianDate($dateString)
+        {
+            if (empty($dateString) || $dateString == '0000-00-00') {
+                return 'N/A';
+            }
+            $months = [
+                '01' => 'JANUARI',
+                '02' => 'FEBRUARI',
+                '03' => 'MARET',
+                '04' => 'APRIL',
+                '05' => 'MEI',
+                '06' => 'JUNI',
+                '07' => 'JULI',
+                '08' => 'AGUSTUS',
+                '09' => 'SEPTEMBER',
+                '10' => 'OKTOBER',
+                '11' => 'NOVEMBER',
+                '12' => 'DESEMBER'
+            ];
+            $timestamp = strtotime($dateString);
+            $day = date('d', $timestamp);
+            $month = $months[date('m', $timestamp)];
+            $year = date('Y', $timestamp);
+            return "$day $month $year";
         }
-        $months = [
-            '01' => 'JANUARI', '02' => 'FEBRUARI', '03' => 'MARET', '04' => 'APRIL',
-            '05' => 'MEI', '06' => 'JUNI', '07' => 'JULI', '08' => 'AGUSTUS',
-            '09' => 'SEPTEMBER', '10' => 'OKTOBER', '11' => 'NOVEMBER', '12' => 'DESEMBER'
-        ];
-        $timestamp = strtotime($dateString);
-        $day = date('d', $timestamp);
-        $month = $months[date('m', $timestamp)];
-        $year = date('Y', $timestamp);
-        return "$day $month $year";
     }
-}
-?>
+    ?>
 </head>
 
 <body>
@@ -156,10 +166,8 @@ if (!function_exists('formatIndonesianDate')) {
                                 <?php if (!empty($email['gelar_depan'])): ?>
                                     <?= esc($email['gelar_depan']) ?>
                                 <?php endif; ?>
-                                <?= esc($email['name']) ?>
-                                <?php if (!empty($email['gelar_belakang'])): ?>
-                                    , <?= esc($email['gelar_belakang']) ?>
-                                <?php endif; ?>
+                                <?= esc($email['name']) ?><?php if (!empty($email['gelar_belakang'])): ?>, <?= esc($email['gelar_belakang']) ?>
+                            <?php endif; ?>
                             </td>
                         </tr>
                         <tr>

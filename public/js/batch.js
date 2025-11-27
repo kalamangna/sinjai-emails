@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
   const nameInput = document.getElementById("name_input");
-  const nikNipInput = document.getElementById("nik_nip_input");
+  const nikInput = document.getElementById("nik_input");
 
   const modeSingleRadio = document.getElementById("mode_single");
   const modeMultipleRadio = document.getElementById("mode_multiple");
@@ -44,14 +44,14 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   generateBtn.addEventListener("click", async function () {
-    const names = nameInput.value
+    const names = nameInput
       .trim()
       .split("\n")
       .filter((name) => name.trim() !== "");
-    const nikNips = nikNipInput.value
+    const niks = nikInput
       .trim()
       .split("\n")
-      .filter((nikNip) => nikNip.trim() !== "");
+      .filter((nik) => nik.trim() !== "");
     const mode = document.querySelector(
       'input[name="unitKerjaMode"]:checked'
     ).value;
@@ -60,10 +60,10 @@ document.addEventListener("DOMContentLoaded", function () {
     let validationError = "";
 
     if (names.length === 0) validationError = "Please enter at least one name.";
-    else if (nikNips.length === 0)
-      validationError = "Please enter at least one NIK/NIP.";
-    else if (names.length !== nikNips.length)
-      validationError = "The number of names and NIK/NIPs must match.";
+    else if (niks.length === 0)
+      validationError = "Please enter at least one NIK.";
+    else if (names.length !== niks.length)
+      validationError = "The number of names and NIKs must match.";
 
     if (mode === "single") {
       const singleUnitKerja = unitKerjaInputSingle.value;
@@ -100,10 +100,10 @@ document.addEventListener("DOMContentLoaded", function () {
     resultsTableBody.innerHTML =
       '<tr><td colspan="7" class="text-center">Generating and checking emails...</td></tr>';
 
-    const trimmedNikNips = nikNips.map((n) => n.trim());
-    const nikNipCounts = {};
-    for (const nikNip of trimmedNikNips) {
-      nikNipCounts[nikNip] = (nikNipCounts[nikNip] || 0) + 1;
+    const trimmedNiks = niks.map((n) => n.trim());
+    const nikCounts = {};
+    for (const nik of trimmedNiks) {
+      nikCounts[nik] = (nikCounts[nik] || 0) + 1;
     }
 
     const generatedEmails = new Set();
@@ -111,7 +111,7 @@ document.addEventListener("DOMContentLoaded", function () {
     for (let i = 0; i < names.length; i++) {
       const name = names[i];
       const cleanedName = name.replace(/[,.']/g, "");
-      const nikNip = trimmedNikNips[i];
+      const nik = trimmedNiks[i];
       const unitKerja = unitKerjaValues[i];
       const password = generatePassword(cleanedName);
       const { username: originalUsername, email: originalEmail } =
@@ -126,8 +126,8 @@ document.addEventListener("DOMContentLoaded", function () {
       while (attempts < maxAttempts) {
         attempts++;
         if (generatedEmails.has(currentEmail)) {
-          const nikNipPart = getNikNipPart(nikNip);
-          currentUsername = `${originalUsername}${nikNipPart}`;
+          const nikPart = getNikPart(nik);
+          currentUsername = `${originalUsername}${nikPart}`;
           currentEmail = `${currentUsername}@sinjaikab.go.id`;
           continue;
         }
@@ -137,8 +137,8 @@ document.addEventListener("DOMContentLoaded", function () {
           isAvailable = true;
           break;
         } else {
-          const nikNipPart = getNikNipPart(nikNip);
-          currentUsername = `${originalUsername}${nikNipPart}`;
+          const nikPart = getNikPart(nik);
+          currentUsername = `${originalUsername}${nikPart}`;
           currentEmail = `${currentUsername}@sinjaikab.go.id`;
         }
       }
@@ -146,21 +146,21 @@ document.addEventListener("DOMContentLoaded", function () {
       const isDuplicate = generatedEmails.has(currentEmail);
       if (isDuplicate) isAvailable = false;
 
-      const isNikNipDuplicate = nikNipCounts[nikNip] > 1;
-      const nikNipCheckResult = await checkNikNipOnServer(nikNip);
-      const isNikNipInDb = nikNipCheckResult.exists;
+      const isNikDuplicate = nikCounts[nik] > 1;
+      const nikCheckResult = await checkNikOnServer(nik);
+      const isNikInDb = nikCheckResult.exists;
 
       userBatch.push({
         name: cleanedName.trim(),
-        nikNip: nikNip,
+        nik: nik,
         unitKerja: unitKerja.trim(),
         generatedUsername: currentUsername,
         email: currentEmail,
         password: password,
         quota: 1024,
         isDuplicate: isDuplicate,
-        isNikNipDuplicate: isNikNipDuplicate,
-        isNikNipInDb: isNikNipInDb,
+        isNikDuplicate: isNikDuplicate,
+        isNikInDb: isNikInDb,
         isAvailable: isAvailable,
         status: "pending",
       });
@@ -291,27 +291,27 @@ document.addEventListener("DOMContentLoaded", function () {
     return `${capitalizedNamePart}@${day}#`;
   }
 
-  function getNikNipPart(nikNip) {
-    if (typeof nikNip !== "string" || nikNip.length < 8) return "";
-    return nikNip.substring(10, 12);
+  function getNikPart(nik) {
+    if (typeof nik !== "string" || nik.length < 8) return "";
+    return nik.substring(10, 12);
   }
 
-  async function checkNikNipOnServer(nikNip) {
-    if (!nikNip) return { exists: false };
+  async function checkNikOnServer(nik) {
+    if (!nik) return { exists: false };
     try {
-      const response = await fetch("/user/check_niknip", {
+      const response = await fetch("/user/check_nik", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "X-Requested-With": "XMLHttpRequest",
         },
-        body: JSON.stringify({ nik_nip: nikNip }),
+        body: JSON.stringify({ nik: nik }),
       });
       if (!response.ok)
         return { exists: true, message: "Server error during check." };
       return await response.json();
     } catch (error) {
-      console.error("Error checking NIK/NIP on server:", error);
+      console.error("Error checking NIK on server:", error);
       return { exists: true, message: "Network error." };
     }
   }
@@ -379,18 +379,18 @@ document.addEventListener("DOMContentLoaded", function () {
       const passwordCellContent = `<span contenteditable="true" class="editable-password" data-password-index="${index}">${user.password}</span>`;
       const unitKerjaCellContent = `<span contenteditable="true" class="editable-unit-kerja" data-unit-kerja-index="${index}">${user.unitKerja}</span>`;
 
-      let nikNipDisplay = user.nikNip;
-      if (user.isNikNipInDb) {
-        nikNipDisplay += ` <span class="badge bg-danger" title="NIK/NIP already exists in the database">In DB</span>`;
+      let nikDisplay = user.nik;
+      if (user.isNikInDb) {
+        nikDisplay += ` <span class="badge bg-danger" title="NIK already exists in the database">In DB</span>`;
       }
-      if (user.isNikNipDuplicate) {
-        nikNipDisplay += ` <span class="badge bg-warning text-dark" title="Duplicate NIK/NIP in this batch">Duplicate</span>`;
+      if (user.isNikDuplicate) {
+        nikDisplay += ` <span class="badge bg-warning text-dark" title="Duplicate NIK in this batch">Duplicate</span>`;
       }
 
       const row = `
         <tr>
             <td>${index + 1}</td>
-            <td>${nikNipDisplay}</td>
+            <td>${nikDisplay}</td>
             <td>${nameCellContent}</td>
             <td class="${unitKerjaCellClass}" title="${unitKerjaTitle}">${unitKerjaCellContent}</td>
             <td>${emailCellContent}</td>
@@ -495,18 +495,18 @@ document.addEventListener("DOMContentLoaded", function () {
         !validUnitKerjaNames.has(user.unitKerja.toLowerCase())
     );
 
-    const hasNikNipDuplicates = userBatch.some(
-      (user) => user.status !== "created" && user.isNikNipDuplicate
+    const hasNikDuplicates = userBatch.some(
+      (user) => user.status !== "created" && user.isNikDuplicate
     );
-    const hasNikNipInDb = userBatch.some(
-      (user) => user.status !== "created" && user.isNikNipInDb
+    const hasNikInDb = userBatch.some(
+      (user) => user.status !== "created" && user.isNikInDb
     );
 
     validUserBatch = userBatch.filter(
       (user) =>
         !user.isDuplicate &&
-        !user.isNikNipDuplicate &&
-        !user.isNikNipInDb &&
+        !user.isNikDuplicate &&
+        !user.isNikInDb &&
         user.isAvailable &&
         user.status !== "created" &&
         validUnitKerjaNames.has(user.unitKerja.toLowerCase())
@@ -521,7 +521,7 @@ document.addEventListener("DOMContentLoaded", function () {
       validUserBatch.length === 0 ||
       hasProblematicPendingEmails ||
       hasInvalidUnitKerja ||
-      hasNikNipDuplicates ||
-      hasNikNipInDb;
+      hasNikDuplicates ||
+      hasNikInDb;
   }
 });
