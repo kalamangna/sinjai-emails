@@ -128,11 +128,11 @@ M.Si"></textarea>
                             <div class="card-body">
                                 <div class="mb-3">
                                     <label for="nomor_input" class="form-label">New Nomor SK</label>
-                                    <textarea class="form-control" id="nomor_input" rows="4" placeholder="e.g. 800.1.2.5/29.881/BKPSDMA"></textarea>
+                                    <textarea class="form-control" id="nomor_input" rows="4" placeholder="e.g. 881"></textarea>
                                 </div>
                                 <div class="mb-3">
                                     <label for="gaji_nominal_input" class="form-label">New Gaji Nominal</label>
-                                    <textarea class="form-control" id="gaji_nominal_input" rows="4" placeholder="e.g. Rp. 3.203.600"></textarea>
+                                    <textarea class="form-control" id="gaji_nominal_input" rows="4" placeholder="e.g. 3203600"></textarea>
                                 </div>
                                 <div class="mb-3">
                                     <label for="gaji_terbilang_input" class="form-label">New Gaji Terbilang</label>
@@ -189,7 +189,7 @@ M.Si"></textarea>
 
 <?= $this->section('scripts'); ?>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         const identifierInput = document.getElementById('identifier_input');
         const identifierLabel = document.getElementById('identifier_label');
         const nameInput = document.getElementById('name_input');
@@ -225,7 +225,7 @@ M.Si"></textarea>
             });
         });
 
-        updateBtn.addEventListener('click', async function (e) {
+        updateBtn.addEventListener('click', async function(e) {
             e.preventDefault();
 
             const updateMode = document.querySelector('input[name="update_mode"]:checked').value;
@@ -357,10 +357,10 @@ M.Si"></textarea>
             }
 
             results.forEach((res, index) => {
-                const statusBadge = res.success
-                    ? '<span class="badge bg-success">Success</span>'
-                    : `<span class="badge bg-danger">Failed</span>`;
-                
+                const statusBadge = res.success ?
+                    '<span class="badge bg-success">Success</span>' :
+                    `<span class="badge bg-danger">Failed</span>`;
+
                 const row = `
                     <tr>
                         <td>${index + 1}</td>

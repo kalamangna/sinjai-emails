@@ -213,6 +213,36 @@
             </div>
             <div class="row mb-3">
               <div class="col-6">
+                <strong class="text-muted">Gelar Depan:</strong>
+              </div>
+              <div class="col-6">
+                <form action="<?= site_url('email/update_gelar_depan/' . $email['user']) ?>" method="post" id="gelar-depan-form">
+                    <div class="input-group">
+                        <input type="text" name="gelar_depan" id="gelar-depan-input" value="<?= esc($email['gelar_depan'] ?? '') ?>" class="form-control" readonly>
+                        <button type="button" id="edit-gelar-depan-btn" class="btn btn-outline-secondary"><i class="fas fa-pencil-alt"></i></button>
+                        <button type="submit" id="save-gelar-depan-btn" class="btn btn-primary d-none"><i class="fas fa-save"></i></button>
+                        <button type="button" id="cancel-gelar-depan-btn" class="btn btn-outline-secondary d-none"><i class="fas fa-times"></i></button>
+                    </div>
+                </form>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-6">
+                <strong class="text-muted">Gelar Belakang:</strong>
+              </div>
+              <div class="col-6">
+                <form action="<?= site_url('email/update_gelar_belakang/' . $email['user']) ?>" method="post" id="gelar-belakang-form">
+                    <div class="input-group">
+                        <input type="text" name="gelar_belakang" id="gelar-belakang-input" value="<?= esc($email['gelar_belakang'] ?? '') ?>" class="form-control" readonly>
+                        <button type="button" id="edit-gelar-belakang-btn" class="btn btn-outline-secondary"><i class="fas fa-pencil-alt"></i></button>
+                        <button type="submit" id="save-gelar-belakang-btn" class="btn btn-primary d-none"><i class="fas fa-save"></i></button>
+                        <button type="button" id="cancel-gelar-belakang-btn" class="btn btn-outline-secondary d-none"><i class="fas fa-times"></i></button>
+                    </div>
+                </form>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-6">
                 <strong class="text-muted">Email:</strong>
               </div>
               <div class="col-6">
@@ -327,6 +357,26 @@
                         <button type="button" id="edit-jabatan-btn" class="btn btn-outline-secondary"><i class="fas fa-pencil-alt"></i></button>
                         <button type="submit" id="save-jabatan-btn" class="btn btn-primary d-none"><i class="fas fa-save"></i></button>
                         <button type="button" id="cancel-jabatan-btn" class="btn btn-outline-secondary d-none"><i class="fas fa-times"></i></button>
+                    </div>
+                </form>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-6">
+                <strong class="text-muted">Jenis Formasi:</strong>
+              </div>
+              <div class="col-6">
+                <form action="<?= site_url('email/update_jenis_formasi/' . $email['user']) ?>" method="post" id="jenis-formasi-form">
+                    <div class="input-group">
+                        <select name="jenis_formasi" id="jenis-formasi-input" class="form-select" disabled>
+                            <option value="" <?= empty($email['jenis_formasi']) ? 'selected' : '' ?>>Select...</option>
+                            <option value="PNS" <?= ($email['jenis_formasi'] ?? '') === 'PNS' ? 'selected' : '' ?>>PNS</option>
+                            <option value="PPPK" <?= ($email['jenis_formasi'] ?? '') === 'PPPK' ? 'selected' : '' ?>>PPPK</option>
+                            <option value="PPPK PARUH WAKTU" <?= ($email['jenis_formasi'] ?? '') === 'PPPK PARUH WAKTU' ? 'selected' : '' ?>>PPPK PARUH WAKTU</option>
+                        </select>
+                        <button type="button" id="edit-jenis-formasi-btn" class="btn btn-outline-secondary"><i class="fas fa-pencil-alt"></i></button>
+                        <button type="submit" id="save-jenis-formasi-btn" class="btn btn-primary d-none"><i class="fas fa-save"></i></button>
+                        <button type="button" id="cancel-jenis-formasi-btn" class="btn btn-outline-secondary d-none"><i class="fas fa-times"></i></button>
                     </div>
                 </form>
               </div>
@@ -489,11 +539,19 @@ document.addEventListener('DOMContentLoaded', function() {
         const saveBtn = document.getElementById(saveBtnId);
         const cancelBtn = document.getElementById(cancelBtnId);
         const input = document.getElementById(inputId);
+        
+        if (!input) return; // Guard clause if element doesn't exist
+
         const originalValue = input.value;
+        const isSelect = input.tagName.toLowerCase() === 'select';
 
         if (editBtn) {
             editBtn.addEventListener('click', function() {
-                input.removeAttribute('readonly');
+                if (isSelect) {
+                    input.removeAttribute('disabled');
+                } else {
+                    input.removeAttribute('readonly');
+                }
                 input.focus();
                 editBtn.classList.add('d-none');
                 saveBtn.classList.remove('d-none');
@@ -503,7 +561,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (cancelBtn) {
             cancelBtn.addEventListener('click', function() {
-                input.setAttribute('readonly', true);
+                if (isSelect) {
+                    input.setAttribute('disabled', true);
+                } else {
+                    input.setAttribute('readonly', true);
+                }
                 input.value = originalValue;
                 editBtn.classList.remove('d-none');
                 saveBtn.classList.add('d-none');
@@ -513,6 +575,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     setupEditInPlace('edit-name-btn', 'save-name-btn', 'cancel-name-btn', 'name-input');
+    setupEditInPlace('edit-gelar-depan-btn', 'save-gelar-depan-btn', 'cancel-gelar-depan-btn', 'gelar-depan-input');
+    setupEditInPlace('edit-gelar-belakang-btn', 'save-gelar-belakang-btn', 'cancel-gelar-belakang-btn', 'gelar-belakang-input');
     setupEditInPlace('edit-email-btn', 'save-email-btn', 'cancel-email-btn', 'email-input');
     setupEditInPlace('edit-password-btn', 'save-password-btn', 'cancel-password-btn', 'password-input');
     setupEditInPlace('edit-nik-btn', 'save-nik-btn', 'cancel-nik-btn', 'nik-input');
@@ -521,6 +585,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setupEditInPlace('edit-tanggal-lahir-btn', 'save-tanggal-lahir-btn', 'cancel-tanggal-lahir-btn', 'tanggal-lahir-input');
     setupEditInPlace('edit-pendidikan-btn', 'save-pendidikan-btn', 'cancel-pendidikan-btn', 'pendidikan-input');
     setupEditInPlace('edit-jabatan-btn', 'save-jabatan-btn', 'cancel-jabatan-btn', 'jabatan-input');
+    setupEditInPlace('edit-jenis-formasi-btn', 'save-jenis-formasi-btn', 'cancel-jenis-formasi-btn', 'jenis-formasi-input');
 
 
 });

@@ -38,7 +38,7 @@ class Email extends BaseController
             $perPage = $this->request->getGet('per_page') ?? 100;
             $search = $this->request->getGet('search');
             $nik = $this->request->getGet('nik');
-            $sort = $this->request->getGet('sort') ?? 'newest'; // Default to 'newest' (mtime DESC)
+            $nip = $this->request->getGet('nip');
 
             $builder = $this->emailModel;
 
@@ -53,9 +53,12 @@ class Email extends BaseController
                 $builder->like('nik', $nik);
             }
 
+            if (!empty($nip)) {
+                $builder->like('nip', $nip);
+            }
 
-
-            $this->apply_sorting($builder, $sort);
+            // Default sorting
+            $builder->orderBy('mtime', 'DESC');
 
             $emails = $builder->paginate($perPage);
             $pager = $builder->pager;
@@ -87,11 +90,11 @@ class Email extends BaseController
                 'active_count' => $counts['active_count'],
                 'suspended_count' => $counts['suspended_count'],
                 'per_page' => $perPage,
-                'sort' => $sort,
-                                'pagination' => $pager,
-                                'search' => $search,
-                                'nik' => $nik,
-                                    'last_sync_time' => $lastSync['value'] ?? null,
+                'pagination' => $pager,
+                'search' => $search,
+                'nik' => $nik,
+                'nip' => $nip,
+                'last_sync_time' => $lastSync['value'] ?? null,
                 'unit_kerja_list' => $unitKerjaList,
             ];
 
@@ -718,6 +721,99 @@ class Email extends BaseController
         return redirect()->to('email/detail/' . $username);
     }
 
+    public function update_gelar_depan($username)
+    {
+        if (strtolower($this->request->getMethod()) === 'post') {
+            $newGelarDepan = $this->request->getPost('gelar_depan');
+
+            $email = $this->emailModel->where('user', $username)->first();
+            if (!$email) {
+                return redirect()->to('email/detail/' . $username)->with('error', 'Email account not found.');
+            }
+
+            if ($newGelarDepan === $email['gelar_depan']) {
+                return redirect()->to('email/detail/' . $username)->with('info', 'No changes detected. Gelar Depan is already up to date.');
+            }
+
+            try {
+                $updated = $this->emailModel->update($email['id'], ['gelar_depan' => $newGelarDepan]);
+
+                if ($updated) {
+                    return redirect()->to('email/detail/' . $username)->with('success', 'Gelar Depan has been updated successfully.');
+                } else {
+                    return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update Gelar Depan. The database did not report any changes.');
+                }
+            } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
+                log_message('error', 'Database error during Gelar Depan update: ' . $e->getMessage());
+                return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update Gelar Depan due to a database error.');
+            }
+        }
+
+        return redirect()->to('email/detail/' . $username);
+    }
+
+    public function update_gelar_belakang($username)
+    {
+        if (strtolower($this->request->getMethod()) === 'post') {
+            $newGelarBelakang = $this->request->getPost('gelar_belakang');
+
+            $email = $this->emailModel->where('user', $username)->first();
+            if (!$email) {
+                return redirect()->to('email/detail/' . $username)->with('error', 'Email account not found.');
+            }
+
+            if ($newGelarBelakang === $email['gelar_belakang']) {
+                return redirect()->to('email/detail/' . $username)->with('info', 'No changes detected. Gelar Belakang is already up to date.');
+            }
+
+            try {
+                $updated = $this->emailModel->update($email['id'], ['gelar_belakang' => $newGelarBelakang]);
+
+                if ($updated) {
+                    return redirect()->to('email/detail/' . $username)->with('success', 'Gelar Belakang has been updated successfully.');
+                } else {
+                    return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update Gelar Belakang. The database did not report any changes.');
+                }
+            } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
+                log_message('error', 'Database error during Gelar Belakang update: ' . $e->getMessage());
+                return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update Gelar Belakang due to a database error.');
+            }
+        }
+
+        return redirect()->to('email/detail/' . $username);
+    }
+
+    public function update_jenis_formasi($username)
+    {
+        if (strtolower($this->request->getMethod()) === 'post') {
+            $newJenisFormasi = $this->request->getPost('jenis_formasi');
+
+            $email = $this->emailModel->where('user', $username)->first();
+            if (!$email) {
+                return redirect()->to('email/detail/' . $username)->with('error', 'Email account not found.');
+            }
+
+            if ($newJenisFormasi === $email['jenis_formasi']) {
+                return redirect()->to('email/detail/' . $username)->with('info', 'No changes detected. Jenis Formasi is already up to date.');
+            }
+
+            try {
+                $updated = $this->emailModel->update($email['id'], ['jenis_formasi' => $newJenisFormasi]);
+
+                if ($updated) {
+                    return redirect()->to('email/detail/' . $username)->with('success', 'Jenis Formasi has been updated successfully.');
+                } else {
+                    return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update Jenis Formasi. The database did not report any changes.');
+                }
+            } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
+                log_message('error', 'Database error during Jenis Formasi update: ' . $e->getMessage());
+                return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update Jenis Formasi due to a database error.');
+            }
+        }
+
+        return redirect()->to('email/detail/' . $username);
+    }
+
     public function unit_kerja_detail($unitKerjaId)
     {
         try {
@@ -736,6 +832,8 @@ class Email extends BaseController
             $perPage = $this->request->getGet('per_page') ?? 100;
             $search = $this->request->getGet('search');
             $nik = $this->request->getGet('nik');
+            $nip = $this->request->getGet('nip');
+            $jenis_formasi = $this->request->getGet('jenis_formasi');
 
             $emailBuilder = $this->emailModel->whereIn('unit_kerja_id', $allUnitIds);
 
@@ -748,6 +846,14 @@ class Email extends BaseController
 
             if ($nik) {
                 $emailBuilder->like('nik', $nik);
+            }
+
+            if ($nip) {
+                $emailBuilder->like('nip', $nip);
+            }
+
+            if ($jenis_formasi) {
+                $emailBuilder->where('jenis_formasi', $jenis_formasi);
             }
 
             $emails = $emailBuilder->orderBy('unit_kerja_name', 'ASC')
@@ -765,6 +871,8 @@ class Email extends BaseController
                 'per_page' => $perPage,
                 'search' => $search,
                 'nik' => $nik,
+                'nip' => $nip,
+                'jenis_formasi' => $jenis_formasi,
                 'back_url' => site_url('email'),
             ];
 

@@ -137,9 +137,9 @@
             </div>
             <div class="card-body">
                 <form method="GET" action="" class="row g-3 align-items-end">
-                    <!-- Search Input -->
-                    <div class="col-md-3">
-                        <label for="search" class="form-label">Search Email</label>
+                    <!-- Search Input Row -->
+                    <div class="col-md-4">
+                        <label for="search" class="form-label">Search by Email or Name</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="fas fa-search"></i></span>
                             <input type="text" class="form-control" id="search" name="search"
@@ -148,7 +148,7 @@
                     </div>
 
                     <!-- NIK Search Input -->
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <label for="nik" class="form-label">Search by NIK</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="fas fa-id-card"></i></span>
@@ -157,24 +157,18 @@
                         </div>
                     </div>
 
-
-                    <!-- Sorting -->
-                    <div class="col-md-2">
-                        <label for="sort" class="form-label">Sort by</label>
-                        <select class="form-select" id="sort" name="sort">
-                            <option value="newest" <?= (isset($sort) && $sort == 'newest') ? 'selected' : '' ?>>Newest</option>
-                            <option value="oldest" <?= (isset($sort) && $sort == 'oldest') ? 'selected' : '' ?>>Oldest</option>
-                            <option value="email_asc" <?= (isset($sort) && $sort == 'email_asc') ? 'selected' : '' ?>>A-Z Email</option>
-                            <option value="email_desc" <?= (isset($sort) && $sort == 'email_desc') ? 'selected' : '' ?>>Z-A Email</option>
-                            <option value="name_asc" <?= (isset($sort) && $sort == 'name_asc') ? 'selected' : '' ?>>A-Z Name</option>
-                            <option value="name_desc" <?= (isset($sort) && $sort == 'name_desc') ? 'selected' : '' ?>>Z-A Name</option>
-
-
-                        </select>
+                    <!-- NIP Search Input -->
+                    <div class="col-md-4">
+                        <label for="nip" class="form-label">Search by NIP</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-id-badge"></i></span>
+                            <input type="text" class="form-control" id="nip" name="nip"
+                                placeholder="Enter NIP..." value="<?= isset($nip) ? esc($nip) : '' ?>">
+                        </div>
                     </div>
 
-                    <!-- Items Per Page -->
-                    <div class="col-md-2">
+                    <!-- Sorting and Items Per Page Row -->
+                    <div class="col-md-3">
                         <label for="per_page" class="form-label">Items per Page</label>
                         <select class="form-select" id="per_page" name="per_page">
                             <option value="50" <?= (isset($per_page) && $per_page == 50) ? 'selected' : '' ?>>50</option>
@@ -185,16 +179,14 @@
                     </div>
 
                     <!-- Action Buttons -->
-                    <div class="col-md-2">
-                        <div class="d-grid gap-2">
+                    <div class="col-md-9">
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                             <button type="submit" class="btn btn-primary">
                                 <i class="fas fa-filter me-2"></i>Apply Filter
                             </button>
                             <a href="<?= current_url() ?>" class="btn btn-outline-secondary">
                                 <i class="fas fa-sync-alt me-2"></i>Reset
                             </a>
-
-
                         </div>
                     </div>
                 </form>
@@ -226,25 +218,15 @@
                                 <tr>
                                     <th class="ps-4">
                                         <i class="fas fa-envelope me-2"></i>Email Address
-                                        <?php if (isset($sort) && in_array($sort, ['email_asc', 'email_desc'])): ?>
-                                            <i class="fas fa-sort-<?= $sort == 'email_asc' ? 'down' : 'up' ?> text-primary"></i>
-                                        <?php endif; ?>
                                     </th>
                                     <th>
                                         <i class="fas fa-id-card me-2"></i>NIK
                                     </th>
                                     <th>
-                                        <i class="fas fa-user me-2"></i>Name
-                                        <?php if (isset($sort) && in_array($sort, ['name_asc', 'name_desc'])): ?>
-                                            <i class="fas fa-sort-<?= $sort == 'name_asc' ? 'down' : 'up' ?> text-primary"></i>
-                                        <?php endif; ?>
+                                        <i class="fas fa-id-badge me-2"></i>NIP
                                     </th>
-
-                                    <th class="text-center">
-                                        <i class="fas fa-calendar me-2"></i>Modified
-                                        <?php if (isset($sort) && in_array($sort, ['newest', 'oldest'])): ?>
-                                            <i class="fas fa-sort-<?= $sort == 'newest' ? 'down' : 'up' ?> text-primary"></i>
-                                        <?php endif; ?>
+                                    <th>
+                                        <i class="fas fa-building me-2"></i>Unit Kerja
                                     </th>
                                     <th class="text-center">
                                         <i class="fas fa-cog me-2"></i>Action
@@ -253,46 +235,61 @@
                             </thead>
 
                             <tbody>
+
                                 <?php foreach ($emails as $email): ?>
+
                                     <tr>
+
                                         <td class="ps-4 align-middle">
+
                                             <div class="d-flex align-items-center">
+
                                                 <i class="fas fa-envelope text-primary me-3"></i>
+
                                                 <div>
+
                                                     <div class="fw-bold"><?= esc($email['email']) ?></div>
-                                                    <small class="text-muted">
-                                                        <?= esc($email['unit_kerja_name']) ?>
+
+                                                    <small class="d-block text-muted">
+
+                                                        <?= esc($email['name']) ?>
+
                                                     </small>
+
                                                 </div>
+
                                             </div>
+
                                         </td>
+
                                         <td class="align-middle"><?= esc($email['nik']) ?></td>
-                                        <td class="align-middle"><?= esc($email['name']) ?></td>
+
+                                        <td class="align-middle"><?= esc($email['nip']) ?></td>
+
+                                        <td class="align-middle"><?= esc($email['unit_kerja_name']) ?></td>
 
                                         <td class="text-center align-middle">
-                                            <small class="text-muted">
-                                                <?php if (isset($email['mtime']) && $email['mtime'] > 0): ?>
-                                                    <?= get_local_date($email['mtime']) ?>
-                                                    <br>
-                                                    <small><?= get_local_time($email['mtime']) ?></small>
-                                                    <br>
-                                                    <small class="text-info"><?= relative_local_time($email['mtime']) ?></small>
-                                                <?php else: ?>
-                                                    -
-                                                <?php endif; ?>
-                                            </small>
-                                        </td>
-                                        <td class="text-center align-middle">
+
                                             <a href="<?= site_url('email/detail/' . $email['user']) ?>"
+
                                                 class="btn btn-sm btn-outline-primary">
+
                                                 <i class="fas fa-eye"></i>
+
                                             </a>
+
                                             <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" data-email-id="<?= $email['id'] ?>" data-email-address="<?= esc($email['email']) ?>">
+
                                                 <i class="fas fa-trash-alt"></i>
+
                                             </button>
+
                                         </td>
+
                                     </tr>
+
                                 <?php endforeach; ?>
+
                             </tbody>
                         </table>
                     </div>

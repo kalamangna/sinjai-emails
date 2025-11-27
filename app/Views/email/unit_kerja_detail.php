@@ -71,16 +71,33 @@
     <div class="card shadow-sm mb-4">
       <div class="card-body">
         <form action="<?= current_url() ?>" method="get" class="row g-3 align-items-center">
-          <div class="col-md-6">
+          <div class="col-md-3">
             <div class="input-group">
               <span class="input-group-text"><i class="fas fa-search"></i></span>
               <input type="text" class="form-control" name="search" placeholder="Search by email or name..." value="<?= esc($search ?? '') ?>">
             </div>
           </div>
-          <div class="col-md-6">
+          <div class="col-md-3">
             <div class="input-group">
               <span class="input-group-text"><i class="fas fa-id-card"></i></span>
               <input type="text" class="form-control" id="nik" name="nik" placeholder="Enter NIK..." value="<?= esc($nik ?? '') ?>">
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="input-group">
+              <span class="input-group-text"><i class="fas fa-id-badge"></i></span>
+              <input type="text" class="form-control" id="nip" name="nip" placeholder="Enter NIP..." value="<?= esc($nip ?? '') ?>">
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-users-cog"></i></span>
+                <select name="jenis_formasi" class="form-select">
+                    <option value="" <?= empty($jenis_formasi) ? 'selected' : '' ?>>All Jenis Formasi</option>
+                    <option value="PNS" <?= ($jenis_formasi ?? '') === 'PNS' ? 'selected' : '' ?>>PNS</option>
+                    <option value="PPPK" <?= ($jenis_formasi ?? '') === 'PPPK' ? 'selected' : '' ?>>PPPK</option>
+                    <option value="PPPK PARUH WAKTU" <?= ($jenis_formasi ?? '') === 'PPPK PARUH WAKTU' ? 'selected' : '' ?>>PPPK PARUH WAKTU</option>
+                </select>
             </div>
           </div>
           <div class="col-md-12 mt-3 d-flex gap-2">
@@ -112,8 +129,9 @@
               <thead class="table-light">
                 <tr>
                   <th class="ps-4"><i class="fas fa-envelope me-2"></i>Email Address</th>
-                  <th><i class="fas fa-user me-2"></i>Name</th>
                   <th><i class="fas fa-id-card me-2"></i>NIK</th>
+                  <th><i class="fas fa-id-badge me-2"></i>NIP</th>
+                  <th><i class="fas fa-user-tag me-2"></i>Jenis Formasi</th>
                   <?php if (!empty($child_units)): ?>
                     <th><i class="fas fa-building me-2"></i>Unit Kerja</th>
                   <?php endif; ?>
@@ -128,12 +146,13 @@
                         <i class="fas fa-envelope text-primary me-3"></i>
                         <div>
                           <div class="fw-bold"><?= esc($email['email']) ?></div>
-                          <small class="text-muted"><?= esc($email['domain']) ?></small>
+                          <small class="d-block text-muted"><?= esc($email['name']) ?></small>
                         </div>
                       </div>
                     </td>
-                    <td class="align-middle"><?= esc($email['name']) ?></td>
                     <td class="align-middle"><?= esc($email['nik']) ?></td>
+                    <td class="align-middle"><?= esc($email['nip']) ?></td>
+                    <td class="align-middle"><?= esc($email['jenis_formasi']) ?></td>
                     <?php if (!empty($child_units)): ?>
                       <td class="align-middle">
                         <?php if (!empty($email['parent_unit_kerja_name'])): ?>

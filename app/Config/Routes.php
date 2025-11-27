@@ -19,6 +19,9 @@ $routes->post('/email/update_tempat_lahir/(:any)', 'Email::update_tempat_lahir/$
 $routes->post('/email/update_tanggal_lahir/(:any)', 'Email::update_tanggal_lahir/$1');
 $routes->post('/email/update_pendidikan/(:any)', 'Email::update_pendidikan/$1');
 $routes->post('/email/update_jabatan/(:any)', 'Email::update_jabatan/$1');
+$routes->post('/email/update_gelar_depan/(:any)', 'Email::update_gelar_depan/$1');
+$routes->post('/email/update_gelar_belakang/(:any)', 'Email::update_gelar_belakang/$1');
+$routes->post('/email/update_jenis_formasi/(:any)', 'Email::update_jenis_formasi/$1');
 $routes->post('/email/delete/(:num)', 'Email::delete/$1');
 $routes->post('/email/create_single', 'Email::create_single_email');
 $routes->post('/user/check_email', 'User::checkEmailAvailability');
