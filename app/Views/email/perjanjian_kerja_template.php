@@ -108,7 +108,8 @@
             text-align: justify;
             line-height: 1.5;
         }
-
+    </style>
+    <?php
     // Function to format date to Indonesian format
     if (!function_exists('formatIndonesianDate')) {
         function formatIndonesianDate($dateString)

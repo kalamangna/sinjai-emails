@@ -1,6 +1,8 @@
 document.addEventListener("DOMContentLoaded", function () {
   const nameInput = document.getElementById("name_input");
   const nikInput = document.getElementById("nik_input");
+  const nipInput = document.getElementById("nip_input"); // New
+  const jabatanInput = document.getElementById("jabatan_input"); // New
 
   const modeSingleRadio = document.getElementById("mode_single");
   const modeMultipleRadio = document.getElementById("mode_multiple");
@@ -45,13 +47,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
   generateBtn.addEventListener("click", async function () {
     const names = nameInput
-      .trim()
+      .value.trim()
       .split("\n")
       .filter((name) => name.trim() !== "");
     const niks = nikInput
-      .trim()
+      .value.trim()
       .split("\n")
       .filter((nik) => nik.trim() !== "");
+    const nips = nipInput // New
+      .value.trim()
+      .split("\n")
+      .filter((nip) => nip.trim() !== "");
+    const jabatans = jabatanInput // New
+      .value.trim()
+      .split("\n")
+      .filter((jabatan) => jabatan.trim() !== "");
+
     const mode = document.querySelector(
       'input[name="unitKerjaMode"]:checked'
     ).value;
@@ -64,6 +75,11 @@ document.addEventListener("DOMContentLoaded", function () {
       validationError = "Please enter at least one NIK.";
     else if (names.length !== niks.length)
       validationError = "The number of names and NIKs must match.";
+    else if (nips.length > 0 && nips.length !== names.length) // New validation
+      validationError = "The number of NIPs must match the number of names and NIKs.";
+    else if (jabatans.length > 0 && jabatans.length !== names.length) // New validation
+      validationError = "The number of Jabatans must match the number of names and NIKs.";
+
 
     if (mode === "single") {
       const singleUnitKerja = unitKerjaInputSingle.value;
@@ -98,13 +114,21 @@ document.addEventListener("DOMContentLoaded", function () {
     generateBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generating...`;
     submitBtn.disabled = true;
     resultsTableBody.innerHTML =
-      '<tr><td colspan="7" class="text-center">Generating and checking emails...</td></tr>';
+      '<tr><td colspan="9" class="text-center">Generating and checking emails...</td></tr>'; // Updated colspan
 
     const trimmedNiks = niks.map((n) => n.trim());
+    const trimmedNips = nips.map((n) => n.trim()); // New
+    const trimmedJabatans = jabatans.map((j) => j.trim()); // New
+
     const nikCounts = {};
     for (const nik of trimmedNiks) {
       nikCounts[nik] = (nikCounts[nik] || 0) + 1;
     }
+    const nipCounts = {}; // New
+    for (const nip of trimmedNips) { // New
+      nipCounts[nip] = (nipCounts[nip] || 0) + 1;
+    }
+
 
     const generatedEmails = new Set();
     userBatch = [];
@@ -112,6 +136,8 @@ document.addEventListener("DOMContentLoaded", function () {
       const name = names[i];
       const cleanedName = name.replace(/[,.']/g, "");
       const nik = trimmedNiks[i];
+      const nip = trimmedNips[i] || ""; // New
+      const jabatan = trimmedJabatans[i] || ""; // New
       const unitKerja = unitKerjaValues[i];
       const password = generatePassword(cleanedName);
       const { username: originalUsername, email: originalEmail } =
@@ -150,9 +176,16 @@ document.addEventListener("DOMContentLoaded", function () {
       const nikCheckResult = await checkNikOnServer(nik);
       const isNikInDb = nikCheckResult.exists;
 
+      const isNipDuplicate = nipCounts[nip] > 1; // New
+      const nipCheckResult = await checkNipOnServer(nip); // New
+      const isNipInDb = nipCheckResult.exists; // New
+
+
       userBatch.push({
         name: cleanedName.trim(),
         nik: nik,
+        nip: nip, // New
+        jabatan: jabatan, // New
         unitKerja: unitKerja.trim(),
         generatedUsername: currentUsername,
         email: currentEmail,
@@ -161,6 +194,8 @@ document.addEventListener("DOMContentLoaded", function () {
         isDuplicate: isDuplicate,
         isNikDuplicate: isNikDuplicate,
         isNikInDb: isNikInDb,
+        isNipDuplicate: isNipDuplicate, // New
+        isNipInDb: isNipInDb, // New
         isAvailable: isAvailable,
         status: "pending",
       });
@@ -299,7 +334,7 @@ document.addEventListener("DOMContentLoaded", function () {
   async function checkNikOnServer(nik) {
     if (!nik) return { exists: false };
     try {
-      const response = await fetch("/user/check_nik", {
+      const response = await fetch("/user/check_niknip", { // Updated endpoint
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -312,6 +347,26 @@ document.addEventListener("DOMContentLoaded", function () {
       return await response.json();
     } catch (error) {
       console.error("Error checking NIK on server:", error);
+      return { exists: true, message: "Network error." };
+    }
+  }
+
+  async function checkNipOnServer(nip) { // New function for NIP check
+    if (!nip) return { exists: false };
+    try {
+      const response = await fetch("/user/check_niknip", { // Using the same endpoint, backend needs to handle both
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Requested-With": "XMLHttpRequest",
+        },
+        body: JSON.stringify({ nip: nip }),
+      });
+      if (!response.ok)
+        return { exists: true, message: "Server error during check." };
+      return await response.json();
+    } catch (error) {
+      console.error("Error checking NIP on server:", error);
       return { exists: true, message: "Network error." };
     }
   }
@@ -339,7 +394,7 @@ document.addEventListener("DOMContentLoaded", function () {
     resultsTableBody.innerHTML = "";
     if (userBatch.length === 0) {
       resultsTableBody.innerHTML =
-        '<tr><td colspan="7" class="text-center">No names entered.</td></tr>';
+        '<tr><td colspan="9" class="text-center">No names entered.</td></tr>'; // Updated colspan
       return;
     }
 
@@ -371,7 +426,8 @@ document.addEventListener("DOMContentLoaded", function () {
           : "";
 
       const nameCellContent = `<span contenteditable="true" class="editable-name" data-name-index="${index}">${user.name.toUpperCase()}</span>`;
-
+      const jabatanCellContent = `<span contenteditable="true" class="editable-jabatan" data-jabatan-index="${index}">${user.jabatan}</span>`; // New
+      
       const domain = "@sinjaikab.go.id";
       const username = user.email.substring(0, user.email.indexOf(domain));
       const emailCellContent = `<span contenteditable="true" class="editable-username" data-username-index="${index}">${username}</span><span class="text-muted">${domain}</span>`;
@@ -387,11 +443,22 @@ document.addEventListener("DOMContentLoaded", function () {
         nikDisplay += ` <span class="badge bg-warning text-dark" title="Duplicate NIK in this batch">Duplicate</span>`;
       }
 
+      let nipDisplay = user.nip; // New
+      if (user.isNipInDb) { // New
+        nipDisplay += ` <span class="badge bg-danger" title="NIP already exists in the database">In DB</span>`;
+      }
+      if (user.isNipDuplicate) { // New
+        nipDisplay += ` <span class="badge bg-warning text-dark" title="Duplicate NIP in this batch">Duplicate</span>`;
+      }
+
+
       const row = `
         <tr>
             <td>${index + 1}</td>
             <td>${nikDisplay}</td>
+            <td>${nipDisplay}</td> <!-- New -->
             <td>${nameCellContent}</td>
+            <td>${jabatanCellContent}</td> <!-- New -->
             <td class="${unitKerjaCellClass}" title="${unitKerjaTitle}">${unitKerjaCellContent}</td>
             <td>${emailCellContent}</td>
             <td>${passwordCellContent}</td>
@@ -402,7 +469,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (user.status === "failed" && user.errorMessage) {
         const errorRow = `
           <tr class="error-row" data-index="${index}">
-              <td colspan="7" class="py-0">
+              <td colspan="9" class="py-0"> <!-- Updated colspan -->
                   <div class="alert alert-danger mb-0 py-1 px-2 border-0 rounded-0">
                       <i class="fas fa-exclamation-circle me-2"></i>
                       <small>${user.errorMessage}</small>
@@ -419,7 +486,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function addEditableListeners() {
     document
       .querySelectorAll(
-        ".editable-name, .editable-username, .editable-password, .editable-unit-kerja"
+        ".editable-name, .editable-username, .editable-password, .editable-unit-kerja, .editable-jabatan, .editable-nip" // Updated
       )
       .forEach((cell) => {
         cell.addEventListener("blur", handleCellEdit);
@@ -438,7 +505,9 @@ document.addEventListener("DOMContentLoaded", function () {
       editedCell.dataset.nameIndex ||
         editedCell.dataset.usernameIndex ||
         editedCell.dataset.passwordIndex ||
-        editedCell.dataset.unitKerjaIndex
+        editedCell.dataset.unitKerjaIndex ||
+        editedCell.dataset.jabatanIndex || // New
+        editedCell.dataset.nipIndex // New
     );
     const user = userBatch[index];
     const newContent = editedCell.textContent.trim();
@@ -450,6 +519,19 @@ document.addEventListener("DOMContentLoaded", function () {
       user.generatedUsername = username;
       user.email = email;
       user.password = generatePassword(newContent);
+    } else if (editedCell.classList.contains("editable-nip")) { // New
+      if (newContent === user.nip) return;
+      user.nip = newContent;
+      renderResults(userBatch); // Re-render to update NIP status badges
+      updateSubmitButtonState();
+      return;
+    } else if (editedCell.classList.contains("editable-jabatan")) { // New
+      if (newContent === user.jabatan) return;
+      user.jabatan = newContent;
+      user.status = "pending";
+      renderResults(userBatch);
+      updateSubmitButtonState();
+      return;
     } else if (editedCell.classList.contains("editable-username")) {
       const domain = "@sinjaikab.go.id";
       const newEmail = newContent + domain;
@@ -471,7 +553,7 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    const statusCell = editedCell.closest("tr").cells[6];
+    const statusCell = editedCell.closest("tr").cells[8]; // Updated index
     statusCell.innerHTML = '<span class="badge bg-info">Re-checking...</span>';
     const result = await checkEmailAvailability(user.email);
     user.isAvailable = result.available;
@@ -501,12 +583,21 @@ document.addEventListener("DOMContentLoaded", function () {
     const hasNikInDb = userBatch.some(
       (user) => user.status !== "created" && user.isNikInDb
     );
+    const hasNipDuplicates = userBatch.some( // New
+      (user) => user.status !== "created" && user.isNipDuplicate
+    );
+    const hasNipInDb = userBatch.some( // New
+      (user) => user.status !== "created" && user.isNipInDb
+    );
+
 
     validUserBatch = userBatch.filter(
       (user) =>
         !user.isDuplicate &&
         !user.isNikDuplicate &&
         !user.isNikInDb &&
+        !user.isNipDuplicate && // New
+        !user.isNipInDb && // New
         user.isAvailable &&
         user.status !== "created" &&
         validUnitKerjaNames.has(user.unitKerja.toLowerCase())
@@ -522,6 +613,8 @@ document.addEventListener("DOMContentLoaded", function () {
       hasProblematicPendingEmails ||
       hasInvalidUnitKerja ||
       hasNikDuplicates ||
-      hasNikInDb;
+      hasNikInDb ||
+      hasNipDuplicates || // New
+      hasNipInDb; // New
   }
 });

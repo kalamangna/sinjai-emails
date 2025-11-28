@@ -1,7 +1,6 @@
 <?= $this->extend('templates/layout') ?>
 
 <?= $this->section('content') ?>
-<div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1 class="h3 mb-0">Batch Email Update</h1>
         <a href="javascript:void(0);" onclick="history.back();" class="btn btn-outline-primary">
@@ -184,7 +183,6 @@ M.Si"></textarea>
             </div>
         </div>
     </div>
-</div>
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts'); ?>

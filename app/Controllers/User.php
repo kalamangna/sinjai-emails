@@ -58,21 +58,38 @@ class User extends BaseController
             return $this->response->setStatusCode(405)->setJSON(['exists' => false, 'message' => 'Method not allowed.']);
         }
 
-        $nikNip = $this->request->getJSON()->nik_nip ?? null;
+        $input = $this->request->getJSON();
+        $nik = $input->nik ?? null;
+        $nip = $input->nip ?? null;
 
-        if (empty($nikNip)) {
-            return $this->response->setStatusCode(400)->setJSON(['exists' => false, 'message' => 'A NIK/NIP is required.']);
+        if (empty($nik) && empty($nip)) {
+            return $this->response->setStatusCode(400)->setJSON(['exists' => false, 'message' => 'A NIK or NIP is required.']);
         }
 
         try {
             $emailModel = new EmailModel();
-            $existingNikNip = $emailModel->where('nik_nip', $nikNip)->first();
+            $exists = false;
+            $message = '';
 
-            if ($existingNikNip) {
-                return $this->response->setJSON(['exists' => true, 'message' => 'NIK/NIP already exists in the database.']);
+            if (!empty($nik)) {
+                $existingNik = $emailModel->where('nik', $nik)->first();
+                if ($existingNik) {
+                    $exists = true;
+                    $message = 'NIK already exists in the database.';
+                } else {
+                    $message = 'NIK is available.';
+                }
+            } elseif (!empty($nip)) {
+                $existingNip = $emailModel->where('nip', $nip)->first();
+                if ($existingNip) {
+                    $exists = true;
+                    $message = 'NIP already exists in the database.';
+                } else {
+                    $message = 'NIP is available.';
+                }
             }
 
-            return $this->response->setJSON(['exists' => false, 'message' => 'NIK/NIP is available.']);
+            return $this->response->setJSON(['exists' => $exists, 'message' => $message]);
 
         } catch (Exception $e) {
             log_message('error', '[User Controller] Check NIK/NIP availability failed: ' . $e->getMessage());

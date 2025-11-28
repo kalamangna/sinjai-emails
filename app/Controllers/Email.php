@@ -107,13 +107,13 @@ class Email extends BaseController
 
     public function batch()
     {
-        $data['unit_kerja'] = $this->unitKerjaModel->findAll();
+        $data['unit_kerja'] = $this->unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->findAll();
         return view('email/batch', $data);
     }
 
     public function batch_update()
     {
-        $data['unit_kerja'] = $this->unitKerjaModel->findAll();
+        $data['unit_kerja'] = $this->unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->findAll();
         return view('email/batch_update', $data);
     }
 
@@ -286,15 +286,17 @@ class Email extends BaseController
                 try {
                     $this->cpanelApi->create_email_account($item->email, $item->password, $item->quota);
 
-                    // Save the new email with its unit_kerja to the local DB
+                    // Save the new email with its unit_kerja, nip, and jabatan to the local DB
                     $this->emailModel->insert([
                         'email'      => $item->email,
                         'user'       => explode('@', $item->email)[0],
                         'domain'     => explode('@', $item->email)[1],
                         'unit_kerja' => $item->unitKerja ?? null,
                         'password'   => $item->password ?? null,
-                        'nik'    => $item->nik ?? null,
+                        'nik'        => $item->nik ?? null,
+                        'nip'        => $item->nip ?? null, // Added
                         'name'       => $item->name ?? null,
+                        'jabatan'    => $item->jabatan ?? null, // Added
                     ]);
 
                     $results[] = ['email' => $item->email, 'success' => true];

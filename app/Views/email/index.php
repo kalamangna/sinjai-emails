@@ -19,6 +19,23 @@
     <?php endif; ?>
 </div>
 
+<!-- Action Buttons Section -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex flex-column align-items-end gap-2">
+            <a href="<?= site_url('email/sync') ?>" class="btn btn-primary" id="syncButton">
+                <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                <i class="fas fa-sync-alt me-2"></i>
+                <span class="button-text">Sync from cPanel</span>
+            </a>
+            <small class="text-muted">
+                <i class="fas fa-sync-alt me-1"></i>
+                Last updated: <?php echo isset($last_sync_time) ? get_local_datetime(strtotime($last_sync_time)) : 'N/A'; ?>
+            </small>
+        </div>
+    </div>
+</div>
+
 <!-- Statistics Section -->
 <div class="row mb-4">
     <div class="col-12">
@@ -61,34 +78,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-</div>
-
-<!-- Action Buttons Section -->
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="d-flex flex-wrap gap-2 justify-content-end">
-            <a href="<?= site_url('email/sync') ?>" class="btn btn-primary" id="syncButton">
-                <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
-                <i class="fas fa-sync-alt me-2"></i>
-                <span class="button-text">Sync from cPanel</span>
-            </a>
-            <a href="<?= site_url('email/batch') ?>" class="btn btn-info">
-                <i class="fas fa-plus-circle me-2"></i>Batch Create Emails
-            </a>
-            <a href="<?= site_url('email/batch_update') ?>" class="btn btn-warning">
-                <i class="fas fa-edit me-2"></i>Batch Update Emails
-            </a>
-            <a href="<?= site_url('unit_kerja/manage') ?>" class="btn btn-secondary">
-                <i class="fas fa-building me-2"></i>Manage Unit Kerja
-            </a>
-        </div>
-        <div class="text-end mt-2">
-            <small class="text-muted">
-                <i class="fas fa-sync-alt me-1"></i>
-                Last updated: <?php echo isset($last_sync_time) ? get_local_datetime(strtotime($last_sync_time)) : 'N/A'; ?>
-            </small>
         </div>
     </div>
 </div>
@@ -228,7 +217,7 @@
                                     <th>
                                         <i class="fas fa-building me-2"></i>Unit Kerja
                                     </th>
-                                    <th class="text-center">
+                                    <th class="text-center" style="width: 100px;">
                                         <i class="fas fa-cog me-2"></i>Action
                                     </th>
                                 </tr>
@@ -266,7 +255,7 @@
 
                                         <td class="align-middle"><?= esc($email['nip']) ?></td>
 
-                                        <td class="align-middle">
+                                        <td class="align-middle small">
                                             <?php if (!empty($email['parent_unit_kerja_name'])): ?>
                                                 <?= esc(strtoupper($email['parent_unit_kerja_name'])) ?>
                                                 <br>

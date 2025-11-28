@@ -28,9 +28,17 @@
                 <p class="text-muted mb-0">sinjaikab.go.id</p>
             </div>
             <div class="col-md-6 text-md-end">
-                <span class="badge bg-info">
-                    <i class="fas fa-check-circle me-1"></i>CURL Installed
-                </span>
+                <div class="d-flex flex-wrap gap-2 justify-content-end mb-2">
+                    <a href="<?= site_url('email/batch') ?>" class="btn btn-info btn-sm">
+                        <i class="fas fa-plus-circle me-2"></i>Batch Create Emails
+                    </a>
+                    <a href="<?= site_url('email/batch_update') ?>" class="btn btn-warning btn-sm">
+                        <i class="fas fa-edit me-2"></i>Batch Update Emails
+                    </a>
+                    <a href="<?= site_url('unit_kerja/manage') ?>" class="btn btn-secondary btn-sm">
+                        <i class="fas fa-building me-2"></i>Manage Unit Kerja
+                    </a>
+                </div>
             </div>
         </div>
     </div>
