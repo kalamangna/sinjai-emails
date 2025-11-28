@@ -15,23 +15,23 @@
             font-family: "Times New Roman", serif;
         }
 
-        .header {
+        .kop-surat {
             text-align: center;
         }
 
-        .header img {
+        .kop-surat img {
             width: 80px;
             height: auto;
         }
 
-        .header h1 {
+        .kop-surat h1 {
             font-size: 14pt;
             font-weight: bold;
             text-transform: uppercase;
             margin: 0;
         }
 
-        .header h2 {
+        .kop-surat h2 {
             font-size: 12pt;
             font-weight: bold;
             text-transform: uppercase;
@@ -39,65 +39,66 @@
             margin: 1rem 0 0;
         }
 
-        .header p {
+        .kop-surat p {
             font-size: 11pt;
             margin: 0;
         }
 
-        .content {
+        .isi-dokumen {
             margin-top: 2rem;
             font-size: 10pt;
             text-align: justify;
             line-height: 1.5;
         }
 
-        .content table {
+        .isi-dokumen table {
             width: 100%;
             border-collapse: collapse;
         }
 
-        .content td {
+        .isi-dokumen td {
             vertical-align: top;
         }
 
-        .pasal {
+        .bab {
             margin-top: 1.5rem;
         }
 
-        .pasal-title {
+        .judul-bab {
             font-weight: bold;
             text-align: center;
             text-transform: uppercase;
         }
 
-        .pasal-content {
+        .isi-bab {
             margin-top: 0.5rem;
             text-align: justify;
+            line-height: 1.5;
         }
 
-        .ttd {
+        .area-ttd {
             margin-top: 2rem;
             width: 100%;
         }
 
-        .ttd table {
+        .area-ttd table {
             width: 100%;
             border-collapse: collapse;
         }
 
-        .ttd .pihak {
+        .area-ttd .pihak {
             text-align: center;
             font-weight: bold;
             width: 50%;
         }
 
-        .ttd .space {
+        .area-ttd .spasi-ttd {
             text-align: center;
             height: 100px;
             vertical-align: middle;
         }
 
-        .ttd .nama {
+        .area-ttd .nama-penandatangan {
             text-align: center;
             font-weight: bold;
         }
@@ -107,14 +108,13 @@
             text-align: justify;
             line-height: 1.5;
         }
-    </style>
-    <?php
+
     // Function to format date to Indonesian format
     if (!function_exists('formatIndonesianDate')) {
         function formatIndonesianDate($dateString)
         {
             if (empty($dateString) || $dateString == '0000-00-00') {
-                return 'N/A';
+                return '-';
             }
             $months = [
                 '01' => 'JANUARI',
@@ -141,14 +141,14 @@
 </head>
 
 <body>
-    <div class="header">
+    <div class="kop-surat">
         <img src="<?= $logoSrc ?>" alt="Garuda Pancasila">
         <h1>BUPATI SINJAI</h1>
         <h2>PERJANJIAN KERJA</h2>
         <p>Nomor : 800.1.2.5/29.<?= esc($pk_data['nomor'] ?? 'N/A') ?>/BKPSDMA</p>
     </div>
 
-    <div class="content">
+    <div class="isi-dokumen">
         Pada hari ini <strong>KAMIS</strong> tanggal <strong>DUA</strong> bulan <strong>MEI</strong> tahun <strong>DUA RIBU DUA PULUH EMPAT</strong> yang bertandatangan di bawah ini:
         <table>
             <tr>
@@ -198,13 +198,13 @@
             Pihak Kesatu dan Pihak Kedua sepakat untuk mengikatkan diri satu sama lain dalam Perjanjian Kerja dengan ketentuan sebagaimana dituangkan dalam Pasal-Pasal sebagai berikut:
         </div>
 
-        <div class="pasal">
-            <h3 class="pasal-title">
+        <div class="bab">
+            <h3 class="judul-bab">
                 Pasal 1 <br>
                 MASA PERJANJIAN KERJA, JABATAN, DAN UNIT KERJA
             </h3>
 
-            <div class="pasal-content">
+            <div class="isi-bab">
                 Pihak Kesatu menerima dan mempekerjakan Pihak Kedua sebagai Pegawai Pemerintah dengan Perjanjian Kerja dengan ketentuan sebagai berikut:
                 <table>
                     <tr>
@@ -239,13 +239,13 @@
             </div>
         </div>
 
-        <div class="pasal">
-            <h3 class="pasal-title">
+        <div class="bab">
+            <h3 class="judul-bab">
                 Pasal 2 <br>
                 TUGAS PEKERJAAN
             </h3>
 
-            <div class="pasal-content">
+            <div class="isi-bab">
                 <table>
                     <tr>
                         <td style="width: 25px;">(1)</td>
@@ -259,13 +259,13 @@
             </div>
         </div>
 
-        <div class="pasal">
-            <h3 class="pasal-title">
+        <div class="bab">
+            <h3 class="judul-bab">
                 Pasal 3 <br>
                 TARGET KINERJA
             </h3>
 
-            <div class="pasal-content">
+            <div class="isi-bab">
                 <table>
                     <tr>
                         <td style="width: 25px;">(1)</td>
@@ -283,24 +283,24 @@
             </div>
         </div>
 
-        <div class="pasal">
-            <h3 class="pasal-title">
+        <div class="bab">
+            <h3 class="judul-bab">
                 Pasal 4 <br>
                 HARI KERJA DAN JAM KERJA
             </h3>
 
-            <div class="pasal-content">
+            <div class="isi-bab">
                 Pihak Kedua wajib bekerja sesuai dengan hari kerja dan jam kerja yang berlaku di instansi Pihak Kesatu.
             </div>
         </div>
 
-        <div class="pasal">
-            <h3 class="pasal-title">
+        <div class="bab">
+            <h3 class="judul-bab">
                 Pasal 5 <br>
                 DISIPLIN
             </h3>
 
-            <div class="pasal-content">
+            <div class="isi-bab">
                 <table>
                     <tr>
                         <td style="width: 25px;">(1)</td>
@@ -594,13 +594,13 @@
             </div>
         </div>
 
-        <div class="pasal">
-            <h3 class="pasal-title">
+        <div class="bab">
+            <h3 class="judul-bab">
                 Pasal 6 <br>
                 GAJI DAN TUNJANGAN
             </h3>
 
-            <div class="pasal-content">
+            <div class="isi-bab">
                 <table>
                     <tr>
                         <td style="width: 25px;">(1)</td>
@@ -666,13 +666,13 @@
             </div>
         </div>
 
-        <div class="pasal">
-            <h3 class="pasal-title">
+        <div class="bab">
+            <h3 class="judul-bab">
                 Pasal 7 <br>
                 CUTI
             </h3>
 
-            <div class="pasal-content">
+            <div class="isi-bab">
                 <table>
                     <tr>
                         <td style="width: 25px;">(1)</td>
@@ -686,13 +686,13 @@
             </div>
         </div>
 
-        <div class="pasal">
-            <h3 class="pasal-title">
+        <div class="bab">
+            <h3 class="judul-bab">
                 Pasal 8 <br>
                 PENGEMBANGAN KOMPETENSI
             </h3>
 
-            <div class="pasal-content">
+            <div class="isi-bab">
                 <table>
                     <tr>
                         <td style="width: 25px;">(1)</td>
@@ -706,13 +706,13 @@
             </div>
         </div>
 
-        <div class="pasal">
-            <h3 class="pasal-title">
+        <div class="bab">
+            <h3 class="judul-bab">
                 Pasal 9 <br>
                 PENGHARGAAN
             </h3>
 
-            <div class="pasal-content">
+            <div class="isi-bab">
                 <table>
                     <tr>
                         <td style="width: 25px;">(1)</td>
@@ -750,13 +750,13 @@
             </div>
         </div>
 
-        <div class="pasal">
-            <h3 class="pasal-title">
+        <div class="bab">
+            <h3 class="judul-bab">
                 Pasal 10 <br>
                 PERLINDUNGAN
             </h3>
 
-            <div class="pasal-content">
+            <div class="isi-bab">
                 <table>
                     <tr>
                         <td style="width: 25px;">(1)</td>
@@ -802,13 +802,13 @@
             </div>
         </div>
 
-        <div class="pasal">
-            <h3 class="pasal-title">
+        <div class="bab">
+            <h3 class="judul-bab">
                 Pasal 11 <br>
                 PEMUTUSAN HUBUNGAN PERJANJIAN KERJA
             </h3>
 
-            <div class="pasal-content">
+            <div class="isi-bab">
                 Pihak Kesatu dan Pihak Kedua dapat melakukan pemutusan hubungan Perjanjian Kerja dengan ketentuan sebagai berikut:
                 <table>
                     <tr>
@@ -883,24 +883,24 @@
             </div>
         </div>
 
-        <div class="pasal">
-            <h3 class="pasal-title">
+        <div class="bab">
+            <h3 class="judul-bab">
                 Pasal 12 <br>
                 PENYELESAIAN PERSELISIHAN
             </h3>
 
-            <div class="pasal-content">
+            <div class="isi-bab">
                 Apabila dalam pelaksanaan Perjanjian Kerja ini terjadi perselisihan, maka Pihak Kesatu dan Pihak Kedua sepakat menyelesaikan perselisihan tersebut sesuai dengan ketentuan peraturan perundang-undangan.
             </div>
         </div>
 
-        <div class="pasal">
-            <h3 class="pasal-title">
+        <div class="bab">
+            <h3 class="judul-bab">
                 Pasal 13 <br>
                 LAIN-LAIN
             </h3>
 
-            <div class="pasal-content">
+            <div class="isi-bab">
                 <table>
                     <tr>
                         <td style="width: 25px;">(1)</td>
@@ -922,7 +922,7 @@
             Demikian Perjanjian Kerja ini dibuat dalam rangkap 2 (dua) oleh Pihak Kesatu dan Pihak Kedua dalam keadaan sehat dan sadar serta tanpa pengaruh ataupun paksaan dari pihak mana pun, masing-masing bermaterai cukup dan mempunyai kekuatan hukum yang sama.
         </div>
 
-        <div class="ttd">
+        <div class="area-ttd">
             <table>
                 <tr>
                     <td class="pihak">
@@ -933,18 +933,18 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="space">
+                    <td class="spasi-ttd">
                         ${ttd_pengirim2}
                     </td>
-                    <td class="space">
+                    <td class="spasi-ttd">
                         ${ttd_pengirim1}
                     </td>
                 </tr>
                 <tr>
-                    <td class="nama">
+                    <td class="nama-penandatangan">
                         Dra. Hj. RATNAWATI ARIF, M.Si.
                     </td>
-                    <td class="nama">
+                    <td class="nama-penandatangan">
                         <?= esc($email['name']) ?>
                     </td>
                 </tr>

@@ -266,7 +266,15 @@
 
                                         <td class="align-middle"><?= esc($email['nip']) ?></td>
 
-                                        <td class="align-middle"><?= esc($email['unit_kerja_name']) ?></td>
+                                        <td class="align-middle">
+                                            <?php if (!empty($email['parent_unit_kerja_name'])): ?>
+                                                <?= esc(strtoupper($email['parent_unit_kerja_name'])) ?>
+                                                <br>
+                                                <small class="text-muted">(<?= esc(strtoupper($email['unit_kerja_name'])) ?>)</small>
+                                            <?php else: ?>
+                                                <?= esc(strtoupper($email['unit_kerja_name'])) ?>
+                                            <?php endif; ?>
+                                        </td>
 
                                         <td class="text-center align-middle">
 
