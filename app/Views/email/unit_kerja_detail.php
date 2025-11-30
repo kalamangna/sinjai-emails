@@ -9,15 +9,20 @@
         <i class="fas fa-arrow-left me-2"></i>Back
       </a>
       <div class="d-flex gap-2">
-        <a href="<?= site_url('email/export_unit_kerja_csv/' . $unit_kerja['id']) ?>" class="btn btn-success">
+        <?php
+            $queryString = \Config\Services::request()->getUri()->getQuery();
+            $csvUrl = site_url('email/export_unit_kerja_csv/' . $unit_kerja['id']) . ($queryString ? '?' . $queryString : '');
+            $pdfUrl = site_url('email/export_unit_kerja_pdf/' . $unit_kerja['id']) . ($queryString ? '?' . $queryString : '');
+        ?>
+        <a href="<?= $csvUrl ?>" class="btn btn-success">
           <i class="fas fa-file-csv me-2"></i>Export CSV
         </a>
-        <a href="<?= site_url('email/export_unit_kerja_pdf/' . $unit_kerja['id']) ?>" class="btn btn-danger">
+        <a href="<?= $pdfUrl ?>" class="btn btn-danger">
           <i class="fas fa-file-pdf me-2"></i>Export PDF
         </a>
-        <a href="<?= site_url('email/export_perjanjian_kerja_pdf/' . $unit_kerja['id']) ?>" class="btn btn-info">
+        <button onclick="openExportModal(<?= $unit_kerja['id'] ?>)" class="btn btn-info">
           <i class="fas fa-file-contract me-2"></i>Export Perjanjian Kerja PDF
-        </a>
+        </button>
       </div>
     </div>
 
@@ -94,9 +99,11 @@
                 <span class="input-group-text"><i class="fas fa-users-cog"></i></span>
                 <select name="jenis_formasi" class="form-select">
                     <option value="" <?= empty($jenis_formasi) ? 'selected' : '' ?>>All Jenis Formasi</option>
-                    <option value="PNS" <?= ($jenis_formasi ?? '') === 'PNS' ? 'selected' : '' ?>>PNS</option>
-                    <option value="PPPK" <?= ($jenis_formasi ?? '') === 'PPPK' ? 'selected' : '' ?>>PPPK</option>
-                    <option value="PPPK PARUH WAKTU" <?= ($jenis_formasi ?? '') === 'PPPK PARUH WAKTU' ? 'selected' : '' ?>>PPPK PARUH WAKTU</option>
+                    <?php foreach ($jenis_formasi_options as $option): ?>
+                        <option value="<?= esc($option['id']) ?>" <?= ($jenis_formasi == $option['id']) ? 'selected' : '' ?>>
+                            <?= esc($option['nama_jenis_formasi']) ?>
+                        </option>
+                    <?php endforeach; ?>
                 </select>
             </div>
           </div>
@@ -215,4 +222,92 @@
     </div>
   </div>
 </div>
+
+<!-- Export Progress Modal -->
+<div class="modal fade" id="exportProgressModal" tabindex="-1" aria-labelledby="exportProgressModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exportProgressModalLabel">Generating PDFs...</h5>
+            </div>
+            <div class="modal-body">
+                <div class="progress mb-3">
+                    <div id="exportProgressBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%">0%</div>
+                </div>
+                <p id="exportStatusText" class="text-center">Starting...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    async function openExportModal(unitId) {
+        const modalElement = document.getElementById('exportProgressModal');
+        const modal = new bootstrap.Modal(modalElement);
+        const progressBar = document.getElementById('exportProgressBar');
+        const statusText = document.getElementById('exportStatusText');
+
+        modal.show();
+        progressBar.style.width = '0%';
+        progressBar.textContent = '0%';
+        statusText.textContent = 'Fetching email list...';
+
+        try {
+            // 1. Fetch emails with current filters
+            const currentParams = new URLSearchParams(window.location.search).toString();
+            const response = await fetch(`<?= site_url('email/api/unit_emails/') ?>${unitId}?${currentParams}`);
+            const data = await response.json();
+
+            if (!data.success) {
+                throw new Error(data.message || 'Failed to fetch emails.');
+            }
+
+            const emails = data.emails;
+            const total = emails.length;
+
+            if (total === 0) {
+                alert('No emails found for this unit.');
+                modal.hide();
+                return;
+            }
+
+            // 2. Generate PDFs one by one
+            for (let i = 0; i < total; i++) {
+                const email = emails[i];
+                const percent = Math.round(((i + 1) / total) * 100);
+                
+                progressBar.style.width = `${percent}%`;
+                progressBar.textContent = `${percent}%`;
+                statusText.textContent = `Generating PDF for ${email.name} (${i + 1}/${total})...`;
+
+                const genResponse = await fetch(`<?= site_url('email/api/generate_pdf') ?>`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: `unit_id=${unitId}&email_id=${email.id}`
+                });
+                
+                const genData = await genResponse.json();
+                if (!genData.success) {
+                    console.error(`Failed for ${email.email}: ${genData.message}`);
+                }
+            }
+
+            // 3. Download ZIP
+            statusText.textContent = 'Zipping and downloading...';
+            window.location.href = `<?= site_url('email/api/download_zip/') ?>${unitId}`;
+
+            // Close modal after a short delay
+            setTimeout(() => {
+                modal.hide();
+            }, 3000);
+
+        } catch (error) {
+            alert('Error: ' + error.message);
+            modal.hide();
+        }
+    }
+</script>
 <?= $this->endSection() ?>

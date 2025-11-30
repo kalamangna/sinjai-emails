@@ -369,10 +369,12 @@
                 <form action="<?= site_url('email/update_jenis_formasi/' . $email['user']) ?>" method="post" id="jenis-formasi-form">
                     <div class="input-group">
                         <select name="jenis_formasi" id="jenis-formasi-input" class="form-select" disabled>
-                            <option value="" <?= empty($email['jenis_formasi']) ? 'selected' : '' ?>>Select...</option>
-                            <option value="PNS" <?= ($email['jenis_formasi'] ?? '') === 'PNS' ? 'selected' : '' ?>>PNS</option>
-                            <option value="PPPK" <?= ($email['jenis_formasi'] ?? '') === 'PPPK' ? 'selected' : '' ?>>PPPK</option>
-                            <option value="PPPK PARUH WAKTU" <?= ($email['jenis_formasi'] ?? '') === 'PPPK PARUH WAKTU' ? 'selected' : '' ?>>PPPK PARUH WAKTU</option>
+                            <option value="" <?= empty($email['jenis_formasi_id']) ? 'selected' : '' ?>>Select...</option>
+                            <?php foreach ($jenis_formasi_options as $option): ?>
+                                <option value="<?= esc($option['id']) ?>" <?= ($email['jenis_formasi_id'] == $option['id']) ? 'selected' : '' ?>>
+                                    <?= esc($option['nama_jenis_formasi']) ?>
+                                </option>
+                            <?php endforeach; ?>
                         </select>
                         <button type="button" id="edit-jenis-formasi-btn" class="btn btn-outline-secondary"><i class="fas fa-pencil-alt"></i></button>
                         <button type="submit" id="save-jenis-formasi-btn" class="btn btn-primary d-none"><i class="fas fa-save"></i></button>

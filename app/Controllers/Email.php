@@ -6,6 +6,7 @@ use App\Libraries\CpanelApi;
 use App\Models\EmailModel;
 use App\Models\AppSettingModel;
 use App\Models\UnitKerjaModel;
+use App\Models\JenisFormasiModel;
 use CodeIgniter\Controller;
 use Dompdf\Dompdf;
 use App\Models\PkModel;
@@ -19,6 +20,7 @@ class Email extends BaseController
     private $appSettingModel;
     private $unitKerjaModel;
     private $pkModel; // Add this
+    private $jenisFormasiModel;
 
     public function __construct()
     {
@@ -27,6 +29,7 @@ class Email extends BaseController
         $this->appSettingModel = new AppSettingModel();
         $this->unitKerjaModel = new UnitKerjaModel();
         $this->pkModel = new PkModel(); // Add this
+        $this->jenisFormasiModel = new JenisFormasiModel();
     }
 
     public function index()
@@ -195,13 +198,19 @@ class Email extends BaseController
                 $emailUpdateData['jabatan'] = $newJabatans[$index];
             }
             if (!empty($newJenisFormasi)) { // Added
-                $emailUpdateData['jenis_formasi'] = $newJenisFormasi;
+                $emailUpdateData['jenis_formasi_id'] = $newJenisFormasi;
             }
             if (!empty($newUnitKerja)) {
-                $emailUpdateData['unit_kerja'] = $newUnitKerja; // Assuming unit_kerja is in EmailModel
+                $unit = $this->unitKerjaModel->where('nama_unit_kerja', $newUnitKerja)->first();
+                if ($unit) {
+                    $emailUpdateData['unit_kerja_id'] = $unit['id'];
+                }
             }
             if (isset($newSubUnitKerja[$index]) && !empty($newSubUnitKerja[$index])) {
-                $emailUpdateData['sub_unit_kerja'] = $newSubUnitKerja[$index]; // Assuming sub_unit_kerja is in EmailModel
+                $subUnit = $this->unitKerjaModel->where('nama_unit_kerja', $newSubUnitKerja[$index])->first();
+                if ($subUnit) {
+                    $emailUpdateData['unit_kerja_id'] = $subUnit['id'];
+                }
             }
 
             $pkUpdateData = []; // For PkModel
@@ -286,17 +295,27 @@ class Email extends BaseController
                 try {
                     $this->cpanelApi->create_email_account($item->email, $item->password, $item->quota);
 
+                    // Resolve Unit Kerja ID
+                    $unitKerjaId = null;
+                    if (!empty($item->unitKerja)) {
+                        $unit = $this->unitKerjaModel->where('nama_unit_kerja', $item->unitKerja)->first();
+                        if ($unit) {
+                            $unitKerjaId = $unit['id'];
+                        }
+                    }
+
                     // Save the new email with its unit_kerja, nip, and jabatan to the local DB
                     $this->emailModel->insert([
                         'email'      => $item->email,
                         'user'       => explode('@', $item->email)[0],
                         'domain'     => explode('@', $item->email)[1],
-                        'unit_kerja' => $item->unitKerja ?? null,
+                        'unit_kerja_id' => $unitKerjaId,
                         'password'   => $item->password ?? null,
                         'nik'        => $item->nik ?? null,
                         'nip'        => $item->nip ?? null, // Added
                         'name'       => $item->name ?? null,
                         'jabatan'    => $item->jabatan ?? null, // Added
+                        'jenis_formasi_id' => $item->jenisFormasi ?? null,
                     ]);
 
                     $results[] = ['email' => $item->email, 'success' => true];
@@ -788,19 +807,21 @@ class Email extends BaseController
     public function update_jenis_formasi($username)
     {
         if (strtolower($this->request->getMethod()) === 'post') {
-            $newJenisFormasi = $this->request->getPost('jenis_formasi');
+            $newJenisFormasiId = $this->request->getPost('jenis_formasi');
 
             $email = $this->emailModel->where('user', $username)->first();
             if (!$email) {
                 return redirect()->to('email/detail/' . $username)->with('error', 'Email account not found.');
             }
 
-            if ($newJenisFormasi === $email['jenis_formasi']) {
+            // If ID matches current, no change
+            if ($newJenisFormasiId == $email['jenis_formasi_id']) {
                 return redirect()->to('email/detail/' . $username)->with('info', 'No changes detected. Jenis Formasi is already up to date.');
             }
 
             try {
-                $updated = $this->emailModel->update($email['id'], ['jenis_formasi' => $newJenisFormasi]);
+                $data = ['jenis_formasi_id' => !empty($newJenisFormasiId) ? $newJenisFormasiId : null];
+                $updated = $this->emailModel->update($email['id'], $data);
 
                 if ($updated) {
                     return redirect()->to('email/detail/' . $username)->with('success', 'Jenis Formasi has been updated successfully.');
@@ -888,8 +909,164 @@ class Email extends BaseController
 
 
 
+    public function api_unit_emails($unitKerjaId)
+    {
+        $unitKerja = $this->unitKerjaModel->find($unitKerjaId);
+        if (!$unitKerja) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Unit Kerja not found']);
+        }
+
+        // Find children
+        $children = $this->unitKerjaModel->where('parent_id', $unitKerjaId)->findAll();
+        $childrenIds = array_column($children, 'id');
+        $allUnitIds = array_merge([$unitKerjaId], $childrenIds);
+
+        $search = $this->request->getGet('search');
+        $nik = $this->request->getGet('nik');
+        $nip = $this->request->getGet('nip');
+        $jenis_formasi = $this->request->getGet('jenis_formasi');
+
+        $builder = $this->emailModel->whereIn('unit_kerja_id', $allUnitIds);
+
+        if ($search) {
+            $builder->groupStart()
+                ->like('email', $search)
+                ->orLike('name', $search)
+                ->groupEnd();
+        }
+
+        if ($nik) {
+            $builder->like('nik', $nik);
+        }
+
+        if ($nip) {
+            $builder->like('nip', $nip);
+        }
+
+                    if ($jenis_formasi) {
+                        $builder->where('emails.jenis_formasi_id', $jenis_formasi);
+                    }
+        $emails = $builder
+            ->orderBy('unit_kerja_name', 'ASC')
+            ->orderBy('name', 'ASC')
+            ->select('emails.id, emails.email, emails.name')
+            ->findAll();
+
+        return $this->response->setJSON(['success' => true, 'emails' => $emails]);
+    }
+
+    public function api_generate_pdf()
+    {
+        $unitId = $this->request->getPost('unit_id');
+        $emailId = $this->request->getPost('email_id');
+
+        if (!$unitId || !$emailId) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Invalid parameters']);
+        }
+
+        try {
+            $email = $this->emailModel->find($emailId);
+            if (!$email) {
+                throw new Exception('Email not found');
+            }
+
+            $unitKerja = $this->unitKerjaModel->find($unitId); // Main unit for the export context
+            // Ideally, we should use the email's actual unit for the template display?
+            // The original logic passed $unitKerja (the filter unit) to the view.
+            // But the email might belong to a sub-unit. 
+            // Let's stick to the original logic: passing the requested Unit Kerja object.
+            
+            $options = new Options();
+            $options->set('isHtml5ParserEnabled', true);
+            $options->set('isRemoteEnabled', true);
+
+            $dompdf = new Dompdf($options);
+
+            $logoPath = FCPATH . 'garuda.png';
+            $logoData = base64_encode(file_get_contents($logoPath));
+            $logoSrc = 'data:image/png;base64,' . $logoData;
+
+            $pk_data = $this->pkModel->where('email', $email['email'])->first();
+
+            $data = [
+                'email' => $email,
+                'unit_kerja' => $unitKerja,
+                'logoSrc' => $logoSrc,
+                'pk_data' => $pk_data,
+            ];
+
+            $html = view('email/perjanjian_kerja_template', $data);
+
+            $dompdf->loadHtml($html);
+            $dompdf->setPaper('A4', 'portrait');
+            $dompdf->render();
+
+            $output = $dompdf->output();
+            
+            $tempDir = WRITEPATH . 'uploads/temp_export_' . $unitId;
+            if (!is_dir($tempDir)) {
+                mkdir($tempDir, 0775, true);
+            }
+
+            $filename = 'perjanjian_kerja_' . url_title($email['name'], '_', true) . '.pdf';
+            file_put_contents($tempDir . '/' . $filename, $output);
+
+            return $this->response->setJSON(['success' => true]);
+
+        } catch (Exception $e) {
+            return $this->response->setJSON(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+    public function api_download_zip($unitId)
+    {
+        $unitKerja = $this->unitKerjaModel->find($unitId);
+        if (!$unitKerja) {
+            return redirect()->back()->with('error', 'Unit Kerja not found');
+        }
+
+        $tempDir = WRITEPATH . 'uploads/temp_export_' . $unitId;
+        if (!is_dir($tempDir)) {
+             return redirect()->back()->with('error', 'No files generated to zip.');
+        }
+
+        $zip = new \ZipArchive();
+        $zipFileName = 'perjanjian_kerja_' . url_title($unitKerja['nama_unit_kerja'], '_', true) . '.zip';
+        $zipFilePath = WRITEPATH . 'uploads/' . $zipFileName;
+
+        if ($zip->open($zipFilePath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== TRUE) {
+             return redirect()->back()->with('error', 'Cannot create ZIP archive.');
+        }
+
+        $files = scandir($tempDir);
+        foreach ($files as $file) {
+            if ($file == '.' || $file == '..') continue;
+            $filePath = $tempDir . '/' . $file;
+            $zip->addFile($filePath, $file);
+        }
+
+        $zip->close();
+
+        // Cleanup temp files
+        foreach ($files as $file) {
+            if ($file == '.' || $file == '..') continue;
+            unlink($tempDir . '/' . $file);
+        }
+        rmdir($tempDir);
+
+        header('Content-Type: application/zip');
+        header('Content-Disposition: attachment; filename="' . $zipFileName . '"');
+        header('Content-Length: ' . filesize($zipFilePath));
+        readfile($zipFilePath);
+        unlink($zipFilePath);
+        exit();
+    }
+
     public function export_unit_kerja_csv($unitKerjaId)
     {
+        set_time_limit(0);
+        ini_set('memory_limit', '-1');
+
         try {
             $unitKerja = $this->unitKerjaModel->find($unitKerjaId);
 
@@ -897,10 +1074,42 @@ class Email extends BaseController
                 throw new Exception('Unit Kerja not found.');
             }
 
-            $unitKerjaName = $unitKerja['nama_unit_kerja'];
-            $emails = $this->emailModel->where('unit_kerja', $unitKerjaName)->findAll();
+            // Find children of the current unit
+            $children = $this->unitKerjaModel->where('parent_id', $unitKerjaId)->findAll();
+            $childrenIds = array_column($children, 'id');
+            $allUnitIds = array_merge([$unitKerjaId], $childrenIds);
+
+            $search = $this->request->getGet('search');
+            $nik = $this->request->getGet('nik');
+            $nip = $this->request->getGet('nip');
+            $jenis_formasi = $this->request->getGet('jenis_formasi');
+
+            $builder = $this->emailModel->whereIn('unit_kerja_id', $allUnitIds);
+
+            if ($search) {
+                $builder->groupStart()
+                    ->like('email', $search)
+                    ->orLike('name', $search)
+                    ->groupEnd();
+            }
+
+            if ($nik) {
+                $builder->like('nik', $nik);
+            }
+
+            if ($nip) {
+                $builder->like('nip', $nip);
+            }
+
+            if ($jenis_formasi) {
+                $builder->where('emails.jenis_formasi_id', $jenis_formasi);
+            }
+
+            $emails = $builder->findAll();
             $totalEmails = count($emails);
             $limit = 50;
+
+            $unitKerjaName = $unitKerja['nama_unit_kerja'];
 
             if ($totalEmails <= $limit) {
                 // Original logic for a single file
@@ -1024,6 +1233,9 @@ class Email extends BaseController
 
     public function export_perjanjian_kerja_pdf($unitKerjaId)
     {
+        set_time_limit(0);
+        ini_set('memory_limit', '-1');
+
         try {
             $unitKerja = $this->unitKerjaModel->find($unitKerjaId);
 
@@ -1059,12 +1271,21 @@ class Email extends BaseController
                 throw new Exception('Cannot create ZIP archive.');
             }
 
+            $logoPath = FCPATH . 'garuda.png';
+            $logoData = base64_encode(file_get_contents($logoPath));
+            $logoSrc = 'data:image/png;base64,' . $logoData;
+
             foreach ($emails as $email) {
                 $dompdf = new Dompdf($options);
+
+                // Fetch data from pk table using email
+                $pk_data = $this->pkModel->where('email', $email['email'])->first();
 
                 $data = [
                     'email' => $email,
                     'unit_kerja' => $unitKerja,
+                    'logoSrc' => $logoSrc,
+                    'pk_data' => $pk_data,
                 ];
 
                 $html = view('email/perjanjian_kerja_template', $data);
@@ -1101,6 +1322,9 @@ class Email extends BaseController
 
     public function export_unit_kerja_pdf($unitKerjaId)
     {
+        set_time_limit(0);
+        ini_set('memory_limit', '-1');
+
         try {
             $unitKerja = $this->unitKerjaModel->find($unitKerjaId);
 
@@ -1114,11 +1338,37 @@ class Email extends BaseController
 
             // Find all emails belonging to this unit AND all its children, sorted by name
             $allUnitIds = array_merge([$unitKerjaId], $childrenIds);
-            $emails = $this->emailModel
+
+            $search = $this->request->getGet('search');
+            $nik = $this->request->getGet('nik');
+            $nip = $this->request->getGet('nip');
+            $jenis_formasi = $this->request->getGet('jenis_formasi');
+
+            $builder = $this->emailModel
                 ->whereIn('unit_kerja_id', $allUnitIds)
                 ->orderBy('unit_kerja_name', 'ASC')
-                ->orderBy('name', 'ASC')
-                ->findAll();
+                ->orderBy('name', 'ASC');
+
+            if ($search) {
+                $builder->groupStart()
+                    ->like('email', $search)
+                    ->orLike('name', $search)
+                    ->groupEnd();
+            }
+
+            if ($nik) {
+                $builder->like('nik', $nik);
+            }
+
+            if ($nip) {
+                $builder->like('nip', $nip);
+            }
+
+            if ($jenis_formasi) {
+                $builder->where('emails.jenis_formasi_id', $jenis_formasi);
+            }
+
+            $emails = $builder->findAll();
 
             // Determine if the "Unit Kerja" column should be shown
             $uniqueUnitKerjaIds = array_unique(array_column($emails, 'unit_kerja_id'));
@@ -1241,15 +1491,26 @@ class Email extends BaseController
             // Create on cPanel
             $this->cpanelApi->create_email_account($data['email'], $data['password'], $data['quota'] ?? 1024);
 
+            // Resolve Unit Kerja ID
+            $unitKerjaId = null;
+            if (!empty($data['unitKerja'])) {
+                $unit = $this->unitKerjaModel->where('nama_unit_kerja', $data['unitKerja'])->first();
+                if ($unit) {
+                    $unitKerjaId = $unit['id'];
+                }
+            }
+
             // Save to local DB
             $this->emailModel->insert([
                 'email'      => $data['email'],
                 'user'       => explode('@', $data['email'])[0],
                 'domain'     => explode('@', $data['email'])[1],
-                'unit_kerja' => $data['unitKerja'] ?? null,
+                'unit_kerja_id' => $unitKerjaId,
                 'password'   => $data['password'] ?? null,
-                'nik'    => $data['nik'] ?? null,
+                'nik'        => $data['nik'] ?? null,
+                'nip'        => $data['nip'] ?? null,
                 'name'       => $data['name'] ?? null,
+                'jabatan'    => $data['jabatan'] ?? null,
             ]);
 
             return $this->response->setJSON(['success' => true, 'email' => $data['email']]);
