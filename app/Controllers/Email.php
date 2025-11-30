@@ -111,12 +111,14 @@ class Email extends BaseController
     public function batch()
     {
         $data['unit_kerja'] = $this->unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->findAll();
+        $data['jenis_formasi_options'] = $this->jenisFormasiModel->orderBy('nama_jenis_formasi', 'ASC')->findAll();
         return view('email/batch', $data);
     }
 
     public function batch_update()
     {
         $data['unit_kerja'] = $this->unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->findAll();
+        $data['jenis_formasi_options'] = $this->jenisFormasiModel->orderBy('nama_jenis_formasi', 'ASC')->findAll();
         return view('email/batch_update', $data);
     }
 
@@ -407,6 +409,7 @@ class Email extends BaseController
 
             $data['current_unit_kerja'] = $current_unit_kerja;
             $data['parent_unit_kerja'] = $parent_unit_kerja;
+            $data['jenis_formasi_options'] = $this->jenisFormasiModel->orderBy('nama_jenis_formasi', 'ASC')->findAll();
 
             return view('email/detail', $data);
         } catch (Exception $e) {
@@ -896,6 +899,7 @@ class Email extends BaseController
                 'nik' => $nik,
                 'nip' => $nip,
                 'jenis_formasi' => $jenis_formasi,
+                'jenis_formasi_options' => $this->jenisFormasiModel->orderBy('nama_jenis_formasi', 'ASC')->findAll(),
                 'back_url' => site_url('email'),
             ];
 

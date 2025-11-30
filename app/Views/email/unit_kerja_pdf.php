@@ -145,6 +145,7 @@
                 <th>Nama</th>
                 <th>NIK</th>
                 <th>NIP</th>
+                <th>Status ASN</th>
                 <?= ($showUnitKerjaColumn ? '<th>Unit Kerja</th>' : '') ?>
                 <th>Email</th>
                 <th>Password</th>

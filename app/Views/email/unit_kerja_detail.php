@@ -98,7 +98,7 @@
             <div class="input-group">
                 <span class="input-group-text"><i class="fas fa-users-cog"></i></span>
                 <select name="jenis_formasi" class="form-select">
-                    <option value="" <?= empty($jenis_formasi) ? 'selected' : '' ?>>All Jenis Formasi</option>
+                    <option value="" <?= empty($jenis_formasi) ? 'selected' : '' ?>>All Status ASN</option>
                     <?php foreach ($jenis_formasi_options as $option): ?>
                         <option value="<?= esc($option['id']) ?>" <?= ($jenis_formasi == $option['id']) ? 'selected' : '' ?>>
                             <?= esc($option['nama_jenis_formasi']) ?>
@@ -136,9 +136,9 @@
               <thead class="table-light">
                 <tr>
                   <th class="ps-4"><i class="fas fa-envelope me-2"></i>Email Address</th>
-                  <th><i class="fas fa-id-card me-2"></i>NIK</th>
-                  <th><i class="fas fa-id-badge me-2"></i>NIP</th>
-                  <th><i class="fas fa-user-tag me-2"></i>Jenis Formasi</th>
+                  <th><i class="fas fa-id-card me-2"></i>NIK / NIP</th>
+                  <th><i class="fas fa-user-tag me-2"></i>Status ASN</th>
+                  <th><i class="fas fa-briefcase me-2"></i>Jabatan</th>
                   <?php if (!empty($child_units)): ?>
                     <th><i class="fas fa-building me-2"></i>Unit Kerja</th>
                   <?php endif; ?>
@@ -157,9 +157,16 @@
                         </div>
                       </div>
                     </td>
-                    <td class="align-middle"><?= esc($email['nik']) ?></td>
-                    <td class="align-middle"><?= esc($email['nip']) ?></td>
+                    <td class="align-middle">
+                        <?php if (!empty($email['nik'])): ?>
+                            <div><?= esc($email['nik']) ?></div>
+                        <?php endif; ?>
+                        <?php if (!empty($email['nip'])): ?>
+                            <small class="text-muted"><?= esc($email['nip']) ?></small>
+                        <?php endif; ?>
+                    </td>
                     <td class="align-middle"><?= esc($email['jenis_formasi']) ?></td>
+                    <td class="align-middle"><?= esc($email['jabatan']) ?></td>
                     <?php if (!empty($child_units)): ?>
                       <td class="align-middle">
                         <?php if (!empty($email['parent_unit_kerja_name'])): ?>

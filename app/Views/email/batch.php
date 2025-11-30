@@ -16,6 +16,20 @@
             </h5>
         </div>
         <div class="card-body">
+            <div class="mb-4 border-bottom pb-3">
+                <label class="form-label fw-bold">Import Data:</label>
+                <div class="d-flex gap-2">
+                    <button type="button" id="import_csv_btn" class="btn btn-outline-success">
+                        <i class="fas fa-file-csv me-2"></i>Import from CSV
+                    </button>
+                    <input type="file" id="csv_file_input" accept=".csv" style="display: none;">
+                    <a href="#" id="download_template_btn" class="btn btn-link text-decoration-none">Download Template</a>
+                </div>
+                <small class="text-muted d-block mt-1">
+                    Supported columns: name, nik, nip, jabatan, unit_kerja.
+                </small>
+            </div>
+
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
@@ -43,6 +57,16 @@
                         <textarea class="form-control" id="jabatan_input" rows="8" placeholder="e.g.&#10;Pranata Komputer Ahli Pertama"></textarea>
                     </div>
                 </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="jenis_formasi_input" class="form-label">Status ASN (for all)</label>
+                <select class="form-select" id="jenis_formasi_input">
+                    <option selected disabled value="">Choose...</option>
+                    <?php foreach ($jenis_formasi_options as $option): ?>
+                        <option value="<?= esc($option['id']) ?>"><?= esc($option['nama_jenis_formasi']) ?></option>
+                    <?php endforeach; ?>
+                </select>
             </div>
 
             <div class="mb-3">

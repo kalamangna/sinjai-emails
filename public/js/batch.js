@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const nikInput = document.getElementById("nik_input");
   const nipInput = document.getElementById("nip_input"); // New
   const jabatanInput = document.getElementById("jabatan_input"); // New
+  const jenisFormasiInput = document.getElementById("jenis_formasi_input"); // New
 
   const modeSingleRadio = document.getElementById("mode_single");
   const modeMultipleRadio = document.getElementById("mode_multiple");
@@ -27,6 +28,125 @@ document.addEventListener("DOMContentLoaded", function () {
   const progressBar = document.getElementById("progress_bar");
   const progressText = document.getElementById("progress_text");
   const resultsLog = document.getElementById("results_log");
+
+  // CSV Import Elements
+  const importCsvBtn = document.getElementById('import_csv_btn');
+  const csvFileInput = document.getElementById('csv_file_input');
+  const downloadTemplateBtn = document.getElementById('download_template_btn');
+
+  if (importCsvBtn && csvFileInput && downloadTemplateBtn) {
+      importCsvBtn.addEventListener('click', () => csvFileInput.click());
+
+      downloadTemplateBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const headers = ['name', 'nik', 'nip', 'jabatan', 'unit_kerja', 'status_asn'];
+          const csvContent = headers.join(',') + '\n';
+          const blob = new Blob([csvContent], { type: 'text/csv' });
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'batch_create_template.csv';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+      });
+
+      csvFileInput.addEventListener('change', (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+
+          const reader = new FileReader();
+          reader.onload = (event) => {
+              const text = event.target.result;
+              const data = parseCSV(text);
+              populateFields(data);
+              csvFileInput.value = ''; // Reset
+          };
+          reader.readAsText(file);
+      });
+  }
+
+  function parseCSV(text) {
+      // Normalize line endings
+      const normalizedText = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+      const lines = normalizedText.split('\n').filter(l => l.trim() !== '');
+      if (lines.length < 2) return []; // No data
+
+      // Detect delimiter
+      const firstLine = lines[0];
+      const commaCount = (firstLine.match(/,/g) || []).length;
+      const semicolonCount = (firstLine.match(/;/g) || []).length;
+      const delimiter = semicolonCount > commaCount ? ';' : ',';
+
+      const headers = lines[0].split(delimiter).map(h => h.trim().toLowerCase().replace(/^"|"$/g, ''));
+      const result = [];
+
+      for (let i = 1; i < lines.length; i++) {
+          // Simple CSV split (doesn't handle complex quoted strings with delimiters inside)
+          const currentLine = lines[i].split(delimiter); 
+          const obj = {};
+          
+          headers.forEach((header, index) => {
+              let value = currentLine[index] ? currentLine[index].trim().replace(/^"|"$/g, '') : '';
+              obj[header] = value;
+          });
+          result.push(obj);
+      }
+      return result;
+  }
+
+  function populateFields(data) {
+      if (data.length === 0) return;
+
+      const inputs = [
+          { input: nameInput, keys: ['name', 'nama'] },
+          { input: nikInput, keys: ['nik'] },
+          { input: nipInput, keys: ['nip'] },
+          { input: jabatanInput, keys: ['jabatan'] },
+          { input: jenisFormasiInput, keys: ['jenis_formasi', 'status_asn'] }
+      ];
+
+      // Reset inputs
+      inputs.forEach(item => item.input.value = '');
+
+      const values = {};
+      inputs.forEach(item => values[item.input.id] = []);
+
+      let unitKerjaFound = false;
+
+      data.forEach(row => {
+          inputs.forEach(item => {
+              let val = '';
+              for (const key of item.keys) {
+                  if (row[key] !== undefined) {
+                      val = row[key];
+                      break;
+                  }
+              }
+              values[item.input.id].push(val);
+              if (item.keys.includes('unit_kerja') && val) {
+                  unitKerjaFound = true;
+              }
+          });
+      });
+
+      inputs.forEach(item => {
+          item.input.value = values[item.input.id].join('\n');
+      });
+
+      // Special handling for select inputs like jenisFormasiInput
+      const jenisFormasiValue = values[jenisFormasiInput.id].length > 0 ? values[jenisFormasiInput.id][0] : '';
+      if (jenisFormasiInput && jenisFormasiValue) {
+          jenisFormasiInput.value = jenisFormasiValue;
+      }
+
+      if (unitKerjaFound) {
+          document.getElementById('mode_multiple').checked = true;
+          document.getElementById('mode_multiple').dispatchEvent(new Event('change'));
+      }
+
+      alert(`Imported ${data.length} rows successfully.`);
+  }
 
   let validUserBatch = [];
   let userBatch = [];
@@ -138,6 +258,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const nik = trimmedNiks[i];
       const nip = trimmedNips[i] || ""; // New
       const jabatan = trimmedJabatans[i] || ""; // New
+      const jenisFormasi = jenisFormasiInput.value; // New
       const unitKerja = unitKerjaValues[i];
       const password = generatePassword(cleanedName);
       const { username: originalUsername, email: originalEmail } =
@@ -186,6 +307,7 @@ document.addEventListener("DOMContentLoaded", function () {
         nik: nik,
         nip: nip, // New
         jabatan: jabatan, // New
+        jenisFormasi: jenisFormasi, // New
         unitKerja: unitKerja.trim(),
         generatedUsername: currentUsername,
         email: currentEmail,

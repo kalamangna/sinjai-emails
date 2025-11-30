@@ -27,7 +27,7 @@
                         <a href="#" id="download_template_btn" class="btn btn-link text-decoration-none">Download Template</a>
                     </div>
                     <small class="text-muted d-block mt-1">
-                        Supported columns: identifier, name, nik, nip, gelar_depan, gelar_belakang, password, tempat_lahir, tanggal_lahir, pendidikan, jabatan, sub_unit_kerja, nomor_sk, gaji_nominal, gaji_terbilang, tanggal_kontrak_awal, tanggal_kontrak_akhir.
+                        Supported columns: identifier, name, nik, nip, gelar_depan, gelar_belakang, password, tempat_lahir, tanggal_lahir, pendidikan, jabatan, sub_unit_kerja, nomor_sk, gaji_nominal, gaji_terbilang, tanggal_kontrak_awal, tanggal_kontrak_akhir, status_asn.
                     </small>
                 </div>
 
@@ -107,7 +107,7 @@ M.Si"></textarea>
                                     <textarea class="form-control" id="jabatan_input" rows="4" placeholder="e.g. Pranata Komputer Ahli Pertama"></textarea>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="jenis_formasi_input" class="form-label">New Jenis Formasi</label>
+                                    <label for="jenis_formasi_input" class="form-label">New Status ASN</label>
                                     <select class="form-select" id="jenis_formasi_input">
                                         <option value="">Do not change</option>
                                         <?php foreach ($jenis_formasi_options as $option): ?>

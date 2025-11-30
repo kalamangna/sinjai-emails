@@ -363,7 +363,7 @@
             </div>
             <div class="row mb-3">
               <div class="col-6">
-                <strong class="text-muted">Jenis Formasi:</strong>
+                <strong class="text-muted">Status ASN:</strong>
               </div>
               <div class="col-6">
                 <form action="<?= site_url('email/update_jenis_formasi/' . $email['user']) ?>" method="post" id="jenis-formasi-form">
