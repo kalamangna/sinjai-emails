@@ -366,19 +366,19 @@
                 <strong class="text-muted">Status ASN:</strong>
               </div>
               <div class="col-6">
-                <form action="<?= site_url('email/update_jenis_formasi/' . $email['user']) ?>" method="post" id="jenis-formasi-form">
+                <form action="<?= site_url('email/update_status_asn/' . $email['user']) ?>" method="post" id="status-asn-form">
                     <div class="input-group">
-                        <select name="jenis_formasi" id="jenis-formasi-input" class="form-select" disabled>
-                            <option value="" <?= empty($email['jenis_formasi_id']) ? 'selected' : '' ?>>Select...</option>
-                            <?php foreach ($jenis_formasi_options as $option): ?>
-                                <option value="<?= esc($option['id']) ?>" <?= ($email['jenis_formasi_id'] == $option['id']) ? 'selected' : '' ?>>
-                                    <?= esc($option['nama_jenis_formasi']) ?>
+                        <select name="status_asn" id="status-asn-input" class="form-select" disabled>
+                            <option value="" <?= empty($email['status_asn_id']) ? 'selected' : '' ?>>Select...</option>
+                            <?php foreach ($status_asn_options as $option): ?>
+                                <option value="<?= esc($option['id']) ?>" <?= ($email['status_asn_id'] == $option['id']) ? 'selected' : '' ?>>
+                                    <?= esc($option['nama_status_asn']) ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
-                        <button type="button" id="edit-jenis-formasi-btn" class="btn btn-outline-secondary"><i class="fas fa-pencil-alt"></i></button>
-                        <button type="submit" id="save-jenis-formasi-btn" class="btn btn-primary d-none"><i class="fas fa-save"></i></button>
-                        <button type="button" id="cancel-jenis-formasi-btn" class="btn btn-outline-secondary d-none"><i class="fas fa-times"></i></button>
+                        <button type="button" id="edit-status-asn-btn" class="btn btn-outline-secondary"><i class="fas fa-pencil-alt"></i></button>
+                        <button type="submit" id="save-status-asn-btn" class="btn btn-primary d-none"><i class="fas fa-save"></i></button>
+                        <button type="button" id="cancel-status-asn-btn" class="btn btn-outline-secondary d-none"><i class="fas fa-times"></i></button>
                     </div>
                 </form>
               </div>
@@ -587,7 +587,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setupEditInPlace('edit-tanggal-lahir-btn', 'save-tanggal-lahir-btn', 'cancel-tanggal-lahir-btn', 'tanggal-lahir-input');
     setupEditInPlace('edit-pendidikan-btn', 'save-pendidikan-btn', 'cancel-pendidikan-btn', 'pendidikan-input');
     setupEditInPlace('edit-jabatan-btn', 'save-jabatan-btn', 'cancel-jabatan-btn', 'jabatan-input');
-    setupEditInPlace('edit-jenis-formasi-btn', 'save-jenis-formasi-btn', 'cancel-jenis-formasi-btn', 'jenis-formasi-input');
+    setupEditInPlace('edit-status-asn-btn', 'save-status-asn-btn', 'cancel-status-asn-btn', 'status-asn-input');
 
 
 });

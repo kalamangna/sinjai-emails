@@ -33,17 +33,17 @@ class EmailModel extends Model
         'tanggal_lahir',
         'pendidikan',
         'jabatan',
-        'jenis_formasi_id',
+        'status_asn_id',
     ];
     protected $useTimestamps = true;
     protected $beforeFind = ['joinUnitKerja'];
 
     protected function joinUnitKerja(array $data)
     {
-        $this->select('emails.*, unit_kerja.nama_unit_kerja as unit_kerja_name, parent_unit_kerja.nama_unit_kerja as parent_unit_kerja_name, jenis_formasi.nama_jenis_formasi as jenis_formasi');
+        $this->select('emails.*, unit_kerja.nama_unit_kerja as unit_kerja_name, parent_unit_kerja.nama_unit_kerja as parent_unit_kerja_name, status_asn.nama_status_asn as status_asn');
         $this->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left');
         $this->join('unit_kerja as parent_unit_kerja', 'parent_unit_kerja.id = unit_kerja.parent_id', 'left');
-        $this->join('jenis_formasi', 'jenis_formasi.id = emails.jenis_formasi_id', 'left');
+        $this->join('status_asn', 'status_asn.id = emails.status_asn_id', 'left');
         return $data;
     }
 

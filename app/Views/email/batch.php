@@ -60,11 +60,11 @@
             </div>
 
             <div class="mb-3">
-                <label for="jenis_formasi_input" class="form-label">Status ASN (for all)</label>
-                <select class="form-select" id="jenis_formasi_input">
+                <label for="status_asn_input" class="form-label">Status ASN (for all)</label>
+                <select class="form-select" id="status_asn_input">
                     <option selected disabled value="">Choose...</option>
-                    <?php foreach ($jenis_formasi_options as $option): ?>
-                        <option value="<?= esc($option['id']) ?>"><?= esc($option['nama_jenis_formasi']) ?></option>
+                    <?php foreach ($status_asn_options as $option): ?>
+                        <option value="<?= esc($option['id']) ?>"><?= esc($option['nama_status_asn']) ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>

@@ -6,7 +6,7 @@ use App\Libraries\CpanelApi;
 use App\Models\EmailModel;
 use App\Models\AppSettingModel;
 use App\Models\UnitKerjaModel;
-use App\Models\JenisFormasiModel;
+use App\Models\StatusAsnModel;
 use CodeIgniter\Controller;
 use Dompdf\Dompdf;
 use App\Models\PkModel;
@@ -20,7 +20,7 @@ class Email extends BaseController
     private $appSettingModel;
     private $unitKerjaModel;
     private $pkModel; // Add this
-    private $jenisFormasiModel;
+    private $statusAsnModel;
 
     public function __construct()
     {
@@ -29,7 +29,7 @@ class Email extends BaseController
         $this->appSettingModel = new AppSettingModel();
         $this->unitKerjaModel = new UnitKerjaModel();
         $this->pkModel = new PkModel(); // Add this
-        $this->jenisFormasiModel = new JenisFormasiModel();
+        $this->statusAsnModel = new StatusAsnModel();
     }
 
     public function index()
@@ -40,8 +40,6 @@ class Email extends BaseController
         try {
             $perPage = $this->request->getGet('per_page') ?? 100;
             $search = $this->request->getGet('search');
-            $nik = $this->request->getGet('nik');
-            $nip = $this->request->getGet('nip');
 
             $builder = $this->emailModel;
 
@@ -49,15 +47,9 @@ class Email extends BaseController
                 $builder->groupStart()
                     ->like('email', $search)
                     ->orLike('name', $search)
+                    ->orLike('nik', $search)
+                    ->orLike('nip', $search)
                     ->groupEnd();
-            }
-
-            if (!empty($nik)) {
-                $builder->like('nik', $nik);
-            }
-
-            if (!empty($nip)) {
-                $builder->like('nip', $nip);
             }
 
             // Default sorting
@@ -95,8 +87,6 @@ class Email extends BaseController
                 'per_page' => $perPage,
                 'pagination' => $pager,
                 'search' => $search,
-                'nik' => $nik,
-                'nip' => $nip,
                 'last_sync_time' => $lastSync['value'] ?? null,
                 'unit_kerja_list' => $unitKerjaList,
             ];
@@ -111,14 +101,14 @@ class Email extends BaseController
     public function batch()
     {
         $data['unit_kerja'] = $this->unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->findAll();
-        $data['jenis_formasi_options'] = $this->jenisFormasiModel->orderBy('nama_jenis_formasi', 'ASC')->findAll();
+        $data['status_asn_options'] = $this->statusAsnModel->orderBy('nama_status_asn', 'ASC')->findAll();
         return view('email/batch', $data);
     }
 
     public function batch_update()
     {
         $data['unit_kerja'] = $this->unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->findAll();
-        $data['jenis_formasi_options'] = $this->jenisFormasiModel->orderBy('nama_jenis_formasi', 'ASC')->findAll();
+        $data['status_asn_options'] = $this->statusAsnModel->orderBy('nama_status_asn', 'ASC')->findAll();
         return view('email/batch_update', $data);
     }
 
@@ -150,7 +140,7 @@ class Email extends BaseController
         $newTanggalLahirs = $data['tanggal_lahirs'] ?? [];
         $newPendidikans = $data['pendidikans'] ?? [];
         $newJabatans = $data['jabatans'] ?? [];
-        $newJenisFormasi = $data['jenis_formasi'] ?? null; // Added
+        $newStatusAsn = $data['status_asn'] ?? null; // Added
         $newUnitKerja = $data['unit_kerja'] ?? null;
         $newSubUnitKerja = $data['sub_unit_kerja'] ?? [];
 
@@ -199,8 +189,8 @@ class Email extends BaseController
             if (isset($newJabatans[$index]) && !empty($newJabatans[$index])) {
                 $emailUpdateData['jabatan'] = $newJabatans[$index];
             }
-            if (!empty($newJenisFormasi)) { // Added
-                $emailUpdateData['jenis_formasi_id'] = $newJenisFormasi;
+            if (!empty($newStatusAsn)) { // Added
+                $emailUpdateData['status_asn_id'] = $newStatusAsn;
             }
             if (!empty($newUnitKerja)) {
                 $unit = $this->unitKerjaModel->where('nama_unit_kerja', $newUnitKerja)->first();
@@ -317,7 +307,7 @@ class Email extends BaseController
                         'nip'        => $item->nip ?? null, // Added
                         'name'       => $item->name ?? null,
                         'jabatan'    => $item->jabatan ?? null, // Added
-                        'jenis_formasi_id' => $item->jenisFormasi ?? null,
+                        'status_asn_id' => $item->statusAsn ?? null,
                     ]);
 
                     $results[] = ['email' => $item->email, 'success' => true];
@@ -409,7 +399,7 @@ class Email extends BaseController
 
             $data['current_unit_kerja'] = $current_unit_kerja;
             $data['parent_unit_kerja'] = $parent_unit_kerja;
-            $data['jenis_formasi_options'] = $this->jenisFormasiModel->orderBy('nama_jenis_formasi', 'ASC')->findAll();
+            $data['status_asn_options'] = $this->statusAsnModel->orderBy('nama_status_asn', 'ASC')->findAll();
 
             return view('email/detail', $data);
         } catch (Exception $e) {
@@ -807,10 +797,10 @@ class Email extends BaseController
         return redirect()->to('email/detail/' . $username);
     }
 
-    public function update_jenis_formasi($username)
+    public function update_status_asn($username)
     {
         if (strtolower($this->request->getMethod()) === 'post') {
-            $newJenisFormasiId = $this->request->getPost('jenis_formasi');
+            $newStatusAsnId = $this->request->getPost('status_asn');
 
             $email = $this->emailModel->where('user', $username)->first();
             if (!$email) {
@@ -818,22 +808,22 @@ class Email extends BaseController
             }
 
             // If ID matches current, no change
-            if ($newJenisFormasiId == $email['jenis_formasi_id']) {
-                return redirect()->to('email/detail/' . $username)->with('info', 'No changes detected. Jenis Formasi is already up to date.');
+            if ($newStatusAsnId == $email['status_asn_id']) {
+                return redirect()->to('email/detail/' . $username)->with('info', 'No changes detected. Status ASN is already up to date.');
             }
 
             try {
-                $data = ['jenis_formasi_id' => !empty($newJenisFormasiId) ? $newJenisFormasiId : null];
+                $data = ['status_asn_id' => !empty($newStatusAsnId) ? $newStatusAsnId : null];
                 $updated = $this->emailModel->update($email['id'], $data);
 
                 if ($updated) {
-                    return redirect()->to('email/detail/' . $username)->with('success', 'Jenis Formasi has been updated successfully.');
+                    return redirect()->to('email/detail/' . $username)->with('success', 'Status ASN has been updated successfully.');
                 } else {
-                    return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update Jenis Formasi. The database did not report any changes.');
+                    return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update Status ASN. The database did not report any changes.');
                 }
             } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
-                log_message('error', 'Database error during Jenis Formasi update: ' . $e->getMessage());
-                return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update Jenis Formasi due to a database error.');
+                log_message('error', 'Database error during Status ASN update: ' . $e->getMessage());
+                return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update Status ASN due to a database error.');
             }
         }
 
@@ -857,9 +847,10 @@ class Email extends BaseController
 
             $perPage = $this->request->getGet('per_page') ?? 100;
             $search = $this->request->getGet('search');
-            $nik = $this->request->getGet('nik');
-            $nip = $this->request->getGet('nip');
-            $jenis_formasi = $this->request->getGet('jenis_formasi');
+            $jenis_formasi = $this->request->getGet('jenis_formasi'); // This is effectively 'status_asn' now in view, but controller param might still be this name? 
+            // Wait, I updated the view input name to 'status_asn' in previous turn.
+            // So I should retrieve 'status_asn'.
+            $status_asn = $this->request->getGet('status_asn');
 
             $emailBuilder = $this->emailModel->whereIn('unit_kerja_id', $allUnitIds);
 
@@ -867,19 +858,13 @@ class Email extends BaseController
                 $emailBuilder->groupStart()
                     ->like('email', $search)
                     ->orLike('name', $search)
+                    ->orLike('nik', $search)
+                    ->orLike('nip', $search)
                     ->groupEnd();
             }
 
-            if ($nik) {
-                $emailBuilder->like('nik', $nik);
-            }
-
-            if ($nip) {
-                $emailBuilder->like('nip', $nip);
-            }
-
-            if ($jenis_formasi) {
-                $emailBuilder->where('jenis_formasi', $jenis_formasi);
+            if ($status_asn) {
+                $emailBuilder->where('emails.status_asn_id', $status_asn);
             }
 
             $emails = $emailBuilder->orderBy('unit_kerja_name', 'ASC')
@@ -896,10 +881,8 @@ class Email extends BaseController
                 'pagination' => $pager,
                 'per_page' => $perPage,
                 'search' => $search,
-                'nik' => $nik,
-                'nip' => $nip,
-                'jenis_formasi' => $jenis_formasi,
-                'jenis_formasi_options' => $this->jenisFormasiModel->orderBy('nama_jenis_formasi', 'ASC')->findAll(),
+                'status_asn' => $status_asn,
+                'status_asn_options' => $this->statusAsnModel->orderBy('nama_status_asn', 'ASC')->findAll(),
                 'back_url' => site_url('email'),
             ];
 
@@ -926,9 +909,7 @@ class Email extends BaseController
         $allUnitIds = array_merge([$unitKerjaId], $childrenIds);
 
         $search = $this->request->getGet('search');
-        $nik = $this->request->getGet('nik');
-        $nip = $this->request->getGet('nip');
-        $jenis_formasi = $this->request->getGet('jenis_formasi');
+        $status_asn = $this->request->getGet('status_asn');
 
         $builder = $this->emailModel->whereIn('unit_kerja_id', $allUnitIds);
 
@@ -936,20 +917,14 @@ class Email extends BaseController
             $builder->groupStart()
                 ->like('email', $search)
                 ->orLike('name', $search)
+                ->orLike('nik', $search)
+                ->orLike('nip', $search)
                 ->groupEnd();
         }
 
-        if ($nik) {
-            $builder->like('nik', $nik);
+        if ($status_asn) {
+            $builder->where('emails.status_asn_id', $status_asn);
         }
-
-        if ($nip) {
-            $builder->like('nip', $nip);
-        }
-
-                    if ($jenis_formasi) {
-                        $builder->where('emails.jenis_formasi_id', $jenis_formasi);
-                    }
         $emails = $builder
             ->orderBy('unit_kerja_name', 'ASC')
             ->orderBy('name', 'ASC')
@@ -1084,9 +1059,7 @@ class Email extends BaseController
             $allUnitIds = array_merge([$unitKerjaId], $childrenIds);
 
             $search = $this->request->getGet('search');
-            $nik = $this->request->getGet('nik');
-            $nip = $this->request->getGet('nip');
-            $jenis_formasi = $this->request->getGet('jenis_formasi');
+            $status_asn = $this->request->getGet('status_asn');
 
             $builder = $this->emailModel->whereIn('unit_kerja_id', $allUnitIds);
 
@@ -1094,19 +1067,13 @@ class Email extends BaseController
                 $builder->groupStart()
                     ->like('email', $search)
                     ->orLike('name', $search)
+                    ->orLike('nik', $search)
+                    ->orLike('nip', $search)
                     ->groupEnd();
             }
 
-            if ($nik) {
-                $builder->like('nik', $nik);
-            }
-
-            if ($nip) {
-                $builder->like('nip', $nip);
-            }
-
-            if ($jenis_formasi) {
-                $builder->where('emails.jenis_formasi_id', $jenis_formasi);
+            if ($status_asn) {
+                $builder->where('emails.status_asn_id', $status_asn);
             }
 
             $emails = $builder->findAll();
@@ -1344,9 +1311,7 @@ class Email extends BaseController
             $allUnitIds = array_merge([$unitKerjaId], $childrenIds);
 
             $search = $this->request->getGet('search');
-            $nik = $this->request->getGet('nik');
-            $nip = $this->request->getGet('nip');
-            $jenis_formasi = $this->request->getGet('jenis_formasi');
+            $status_asn = $this->request->getGet('status_asn');
 
             $builder = $this->emailModel
                 ->whereIn('unit_kerja_id', $allUnitIds)
@@ -1357,19 +1322,13 @@ class Email extends BaseController
                 $builder->groupStart()
                     ->like('email', $search)
                     ->orLike('name', $search)
+                    ->orLike('nik', $search)
+                    ->orLike('nip', $search)
                     ->groupEnd();
             }
 
-            if ($nik) {
-                $builder->like('nik', $nik);
-            }
-
-            if ($nip) {
-                $builder->like('nip', $nip);
-            }
-
-            if ($jenis_formasi) {
-                $builder->where('emails.jenis_formasi_id', $jenis_formasi);
+            if ($status_asn) {
+                $builder->where('emails.status_asn_id', $status_asn);
             }
 
             $emails = $builder->findAll();

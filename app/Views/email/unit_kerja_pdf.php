@@ -160,6 +160,7 @@
                         <td>' . esc($email['name'] ?? 'N/A') . '</td>
                         <td>' . esc($email['nik'] ?? 'N/A') . '</td>
                         <td>' . esc($email['nip'] ?? 'N/A') . '</td>
+                        <td>' . esc($email['status_asn'] ?? 'N/A') . '</td>
                         ' . ($showUnitKerjaColumn ? '<td>' . esc($email['unit_kerja_name'] ?? 'N/A') . '</td>' : '') . '
                         <td>' . esc($email['email'] ?? 'N/A') . '</td>
                         <td>' . esc($email['password'] ?? 'N/A') . '</td>

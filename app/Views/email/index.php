@@ -126,38 +126,18 @@
             </div>
             <div class="card-body">
                 <form method="GET" action="" class="row g-3 align-items-end">
-                    <!-- Search Input Row -->
-                    <div class="col-md-4">
-                        <label for="search" class="form-label">Search by Email or Name</label>
+                    <!-- Search Input -->
+                    <div class="col-md-6">
+                        <label for="search" class="form-label">Search</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="fas fa-search"></i></span>
                             <input type="text" class="form-control" id="search" name="search"
-                                placeholder="Search by email or name..." value="<?= isset($search) ? esc($search) : '' ?>">
+                                placeholder="Search by Email, Name, NIK, or NIP..." value="<?= isset($search) ? esc($search) : '' ?>">
                         </div>
                     </div>
 
-                    <!-- NIK Search Input -->
-                    <div class="col-md-4">
-                        <label for="nik" class="form-label">Search by NIK</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="fas fa-id-card"></i></span>
-                            <input type="text" class="form-control" id="nik" name="nik"
-                                placeholder="Enter NIK..." value="<?= isset($nik) ? esc($nik) : '' ?>">
-                        </div>
-                    </div>
-
-                    <!-- NIP Search Input -->
-                    <div class="col-md-4">
-                        <label for="nip" class="form-label">Search by NIP</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="fas fa-id-badge"></i></span>
-                            <input type="text" class="form-control" id="nip" name="nip"
-                                placeholder="Enter NIP..." value="<?= isset($nip) ? esc($nip) : '' ?>">
-                        </div>
-                    </div>
-
-                    <!-- Sorting and Items Per Page Row -->
-                    <div class="col-md-3">
+                    <!-- Items Per Page -->
+                    <div class="col-md-2">
                         <label for="per_page" class="form-label">Items per Page</label>
                         <select class="form-select" id="per_page" name="per_page">
                             <option value="50" <?= (isset($per_page) && $per_page == 50) ? 'selected' : '' ?>>50</option>
@@ -168,12 +148,12 @@
                     </div>
 
                     <!-- Action Buttons -->
-                    <div class="col-md-9">
+                    <div class="col-md-4">
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-filter me-2"></i>Apply Filter
+                            <button type="submit" class="btn btn-primary flex-grow-1">
+                                <i class="fas fa-filter me-2"></i>Apply
                             </button>
-                            <a href="<?= current_url() ?>" class="btn btn-outline-secondary">
+                            <a href="<?= current_url() ?>" class="btn btn-outline-secondary flex-grow-1">
                                 <i class="fas fa-sync-alt me-2"></i>Reset
                             </a>
                         </div>
@@ -209,15 +189,12 @@
                                         <i class="fas fa-envelope me-2"></i>Email Address
                                     </th>
                                     <th>
-                                        <i class="fas fa-id-card me-2"></i>NIK
-                                    </th>
-                                    <th>
-                                        <i class="fas fa-id-badge me-2"></i>NIP
+                                        <i class="fas fa-id-card me-2"></i>NIK / NIP
                                     </th>
                                     <th>
                                         <i class="fas fa-building me-2"></i>Unit Kerja
                                     </th>
-                                    <th class="text-center" style="width: 100px;">
+                                    <th class="text-center">
                                         <i class="fas fa-cog me-2"></i>Action
                                     </th>
                                 </tr>
@@ -251,9 +228,14 @@
 
                                         </td>
 
-                                        <td class="align-middle"><?= esc($email['nik']) ?></td>
-
-                                        <td class="align-middle"><?= esc($email['nip']) ?></td>
+                                        <td class="align-middle">
+                                            <?php if (!empty($email['nik'])): ?>
+                                                <div><?= esc($email['nik']) ?></div>
+                                            <?php endif; ?>
+                                            <?php if (!empty($email['nip'])): ?>
+                                                <small class="text-muted"><?= esc($email['nip']) ?></small>
+                                            <?php endif; ?>
+                                        </td>
 
                                         <td class="align-middle small">
                                             <?php if (!empty($email['parent_unit_kerja_name'])): ?>

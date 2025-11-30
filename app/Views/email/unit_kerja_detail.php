@@ -10,9 +10,9 @@
       </a>
       <div class="d-flex gap-2">
         <?php
-            $queryString = \Config\Services::request()->getUri()->getQuery();
-            $csvUrl = site_url('email/export_unit_kerja_csv/' . $unit_kerja['id']) . ($queryString ? '?' . $queryString : '');
-            $pdfUrl = site_url('email/export_unit_kerja_pdf/' . $unit_kerja['id']) . ($queryString ? '?' . $queryString : '');
+        $queryString = \Config\Services::request()->getUri()->getQuery();
+        $csvUrl = site_url('email/export_unit_kerja_csv/' . $unit_kerja['id']) . ($queryString ? '?' . $queryString : '');
+        $pdfUrl = site_url('email/export_unit_kerja_pdf/' . $unit_kerja['id']) . ($queryString ? '?' . $queryString : '');
         ?>
         <a href="<?= $csvUrl ?>" class="btn btn-success">
           <i class="fas fa-file-csv me-2"></i>Export CSV
@@ -76,42 +76,34 @@
     <div class="card shadow-sm mb-4">
       <div class="card-body">
         <form action="<?= current_url() ?>" method="get" class="row g-3 align-items-center">
-          <div class="col-md-3">
+          <div class="col-md-5">
             <div class="input-group">
               <span class="input-group-text"><i class="fas fa-search"></i></span>
-              <input type="text" class="form-control" name="search" placeholder="Search by email or name..." value="<?= esc($search ?? '') ?>">
+              <input type="text" class="form-control" name="search" placeholder="Search by Email, Name, NIK, or NIP..." value="<?= esc($search ?? '') ?>">
             </div>
           </div>
           <div class="col-md-3">
             <div class="input-group">
-              <span class="input-group-text"><i class="fas fa-id-card"></i></span>
-              <input type="text" class="form-control" id="nik" name="nik" placeholder="Enter NIK..." value="<?= esc($nik ?? '') ?>">
+              <span class="input-group-text"><i class="fas fa-users-cog"></i></span>
+              <select name="status_asn" class="form-select">
+                <option value="" <?= empty($status_asn) ? 'selected' : '' ?>>All Status ASN</option>
+                <?php foreach ($status_asn_options as $option): ?>
+                  <option value="<?= esc($option['id']) ?>" <?= ($status_asn == $option['id']) ? 'selected' : '' ?>>
+                    <?= esc($option['nama_status_asn']) ?>
+                  </option>
+                <?php endforeach; ?>
+              </select>
             </div>
           </div>
-          <div class="col-md-3">
-            <div class="input-group">
-              <span class="input-group-text"><i class="fas fa-id-badge"></i></span>
-              <input type="text" class="form-control" id="nip" name="nip" placeholder="Enter NIP..." value="<?= esc($nip ?? '') ?>">
+          <div class="col-md-4">
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                              <button type="submit" class="btn btn-primary flex-grow-1">
+                                  <i class="fas fa-search me-2"></i>Search
+                              </button>
+              <a href="<?= current_url() ?>" class="btn btn-outline-secondary flex-grow-1">
+                <i class="fas fa-sync-alt me-2"></i>Reset
+              </a>
             </div>
-          </div>
-          <div class="col-md-3">
-            <div class="input-group">
-                <span class="input-group-text"><i class="fas fa-users-cog"></i></span>
-                <select name="jenis_formasi" class="form-select">
-                    <option value="" <?= empty($jenis_formasi) ? 'selected' : '' ?>>All Status ASN</option>
-                    <?php foreach ($jenis_formasi_options as $option): ?>
-                        <option value="<?= esc($option['id']) ?>" <?= ($jenis_formasi == $option['id']) ? 'selected' : '' ?>>
-                            <?= esc($option['nama_jenis_formasi']) ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-          </div>
-          <div class="col-md-12 mt-3 d-flex gap-2">
-            <button type="submit" class="btn btn-primary">Search</button>
-            <a href="<?= current_url() ?>" class="btn btn-outline-secondary">
-              <i class="fas fa-sync-alt me-2"></i>Reset
-            </a>
           </div>
         </form>
       </div>
@@ -137,8 +129,7 @@
                 <tr>
                   <th class="ps-4"><i class="fas fa-envelope me-2"></i>Email Address</th>
                   <th><i class="fas fa-id-card me-2"></i>NIK / NIP</th>
-                  <th><i class="fas fa-user-tag me-2"></i>Status ASN</th>
-                  <th><i class="fas fa-briefcase me-2"></i>Jabatan</th>
+                  <th><i class="fas fa-user-tag me-2"></i>Status ASN / Jabatan</th>
                   <?php if (!empty($child_units)): ?>
                     <th><i class="fas fa-building me-2"></i>Unit Kerja</th>
                   <?php endif; ?>
@@ -158,14 +149,14 @@
                       </div>
                     </td>
                     <td class="align-middle">
-                        <?php if (!empty($email['nik'])): ?>
-                            <div><?= esc($email['nik']) ?></div>
-                        <?php endif; ?>
-                        <?php if (!empty($email['nip'])): ?>
-                            <small class="text-muted"><?= esc($email['nip']) ?></small>
-                        <?php endif; ?>
+                      <?php if (!empty($email['nik'])): ?>
+                        <div><?= esc($email['nik']) ?></div>
+                      <?php endif; ?>
+                      <?php if (!empty($email['nip'])): ?>
+                        <small class="text-muted"><?= esc($email['nip']) ?></small>
+                      <?php endif; ?>
                     </td>
-                    <td class="align-middle"><?= esc($email['jenis_formasi']) ?></td>
+                    <td class="align-middle"><?= esc($email['status_asn']) ?></td>
                     <td class="align-middle"><?= esc($email['jabatan']) ?></td>
                     <?php if (!empty($child_units)): ?>
                       <td class="align-middle">
@@ -232,89 +223,89 @@
 
 <!-- Export Progress Modal -->
 <div class="modal fade" id="exportProgressModal" tabindex="-1" aria-labelledby="exportProgressModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exportProgressModalLabel">Generating PDFs...</h5>
-            </div>
-            <div class="modal-body">
-                <div class="progress mb-3">
-                    <div id="exportProgressBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%">0%</div>
-                </div>
-                <p id="exportStatusText" class="text-center">Starting...</p>
-            </div>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exportProgressModalLabel">Generating PDFs...</h5>
+      </div>
+      <div class="modal-body">
+        <div class="progress mb-3">
+          <div id="exportProgressBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%">0%</div>
         </div>
+        <p id="exportStatusText" class="text-center">Starting...</p>
+      </div>
     </div>
+  </div>
 </div>
 
 <script>
-    async function openExportModal(unitId) {
-        const modalElement = document.getElementById('exportProgressModal');
-        const modal = new bootstrap.Modal(modalElement);
-        const progressBar = document.getElementById('exportProgressBar');
-        const statusText = document.getElementById('exportStatusText');
+  async function openExportModal(unitId) {
+    const modalElement = document.getElementById('exportProgressModal');
+    const modal = new bootstrap.Modal(modalElement);
+    const progressBar = document.getElementById('exportProgressBar');
+    const statusText = document.getElementById('exportStatusText');
 
-        modal.show();
-        progressBar.style.width = '0%';
-        progressBar.textContent = '0%';
-        statusText.textContent = 'Fetching email list...';
+    modal.show();
+    progressBar.style.width = '0%';
+    progressBar.textContent = '0%';
+    statusText.textContent = 'Fetching email list...';
 
-        try {
-            // 1. Fetch emails with current filters
-            const currentParams = new URLSearchParams(window.location.search).toString();
-            const response = await fetch(`<?= site_url('email/api/unit_emails/') ?>${unitId}?${currentParams}`);
-            const data = await response.json();
+    try {
+      // 1. Fetch emails with current filters
+      const currentParams = new URLSearchParams(window.location.search).toString();
+      const response = await fetch(`<?= site_url('email/api/unit_emails/') ?>${unitId}?${currentParams}`);
+      const data = await response.json();
 
-            if (!data.success) {
-                throw new Error(data.message || 'Failed to fetch emails.');
-            }
+      if (!data.success) {
+        throw new Error(data.message || 'Failed to fetch emails.');
+      }
 
-            const emails = data.emails;
-            const total = emails.length;
+      const emails = data.emails;
+      const total = emails.length;
 
-            if (total === 0) {
-                alert('No emails found for this unit.');
-                modal.hide();
-                return;
-            }
+      if (total === 0) {
+        alert('No emails found for this unit.');
+        modal.hide();
+        return;
+      }
 
-            // 2. Generate PDFs one by one
-            for (let i = 0; i < total; i++) {
-                const email = emails[i];
-                const percent = Math.round(((i + 1) / total) * 100);
-                
-                progressBar.style.width = `${percent}%`;
-                progressBar.textContent = `${percent}%`;
-                statusText.textContent = `Generating PDF for ${email.name} (${i + 1}/${total})...`;
+      // 2. Generate PDFs one by one
+      for (let i = 0; i < total; i++) {
+        const email = emails[i];
+        const percent = Math.round(((i + 1) / total) * 100);
 
-                const genResponse = await fetch(`<?= site_url('email/api/generate_pdf') ?>`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    },
-                    body: `unit_id=${unitId}&email_id=${email.id}`
-                });
-                
-                const genData = await genResponse.json();
-                if (!genData.success) {
-                    console.error(`Failed for ${email.email}: ${genData.message}`);
-                }
-            }
+        progressBar.style.width = `${percent}%`;
+        progressBar.textContent = `${percent}%`;
+        statusText.textContent = `Generating PDF for ${email.name} (${i + 1}/${total})...`;
 
-            // 3. Download ZIP
-            statusText.textContent = 'Zipping and downloading...';
-            window.location.href = `<?= site_url('email/api/download_zip/') ?>${unitId}`;
+        const genResponse = await fetch(`<?= site_url('email/api/generate_pdf') ?>`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-Requested-With': 'XMLHttpRequest'
+          },
+          body: `unit_id=${unitId}&email_id=${email.id}`
+        });
 
-            // Close modal after a short delay
-            setTimeout(() => {
-                modal.hide();
-            }, 3000);
-
-        } catch (error) {
-            alert('Error: ' + error.message);
-            modal.hide();
+        const genData = await genResponse.json();
+        if (!genData.success) {
+          console.error(`Failed for ${email.email}: ${genData.message}`);
         }
+      }
+
+      // 3. Download ZIP
+      statusText.textContent = 'Zipping and downloading...';
+      window.location.href = `<?= site_url('email/api/download_zip/') ?>${unitId}`;
+
+      // Close modal after a short delay
+      setTimeout(() => {
+        modal.hide();
+      }, 3000);
+
+    } catch (error) {
+      alert('Error: ' + error.message);
+      modal.hide();
     }
+  }
 </script>
 <?= $this->endSection() ?>

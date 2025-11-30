@@ -107,11 +107,11 @@ M.Si"></textarea>
                                     <textarea class="form-control" id="jabatan_input" rows="4" placeholder="e.g. Pranata Komputer Ahli Pertama"></textarea>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="jenis_formasi_input" class="form-label">New Status ASN</label>
-                                    <select class="form-select" id="jenis_formasi_input">
+                                    <label for="status_asn_input" class="form-label">New Status ASN</label>
+                                    <select class="form-select" id="status_asn_input">
                                         <option value="">Do not change</option>
-                                        <?php foreach ($jenis_formasi_options as $option): ?>
-                                            <option value="<?= esc($option['id']) ?>"><?= esc($option['nama_jenis_formasi']) ?></option>
+                                        <?php foreach ($status_asn_options as $option): ?>
+                                            <option value="<?= esc($option['id']) ?>"><?= esc($option['nama_status_asn']) ?></option>
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
