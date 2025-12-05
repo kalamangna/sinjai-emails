@@ -840,6 +840,12 @@ class Email extends BaseController
 
             // Find children of the current unit
             $children = $this->unitKerjaModel->where('parent_id', $unitKerjaId)->findAll();
+
+            // Sort children using natural sort
+            usort($children, function ($a, $b) {
+                return strnatcasecmp($a['nama_unit_kerja'], $b['nama_unit_kerja']);
+            });
+
             $childrenIds = array_column($children, 'id');
 
             // Find all emails belonging to this unit AND all its children

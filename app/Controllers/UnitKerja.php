@@ -12,11 +12,17 @@ class UnitKerja extends BaseController
         $search = $this->request->getGet('search');
 
         if ($search) {
-            $data['unit_kerja_list'] = $unitKerjaModel->like('nama_unit_kerja', $search)->orderBy('nama_unit_kerja', 'ASC')->findAll();
+            $unit_kerja_list = $unitKerjaModel->like('nama_unit_kerja', $search)->findAll();
         } else {
-            $data['unit_kerja_list'] = $unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->findAll();
+            $unit_kerja_list = $unitKerjaModel->findAll();
         }
 
+        // Sort using PHP's natural sort algorithm (case-insensitive)
+        usort($unit_kerja_list, function ($a, $b) {
+            return strnatcasecmp($a['nama_unit_kerja'], $b['nama_unit_kerja']);
+        });
+
+        $data['unit_kerja_list'] = $unit_kerja_list;
         $data['search'] = $search;
         $data['title'] = 'Manage Unit Kerja';
 

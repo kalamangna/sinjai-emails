@@ -156,8 +156,14 @@
                         <small class="text-muted"><?= esc($email['nip']) ?></small>
                       <?php endif; ?>
                     </td>
-                    <td class="align-middle"><?= esc($email['status_asn']) ?></td>
-                    <td class="align-middle"><?= esc($email['jabatan']) ?></td>
+                    <td class="align-middle">
+                        <?php if (!empty($email['status_asn'])): ?>
+                            <div><?= esc($email['status_asn']) ?></div>
+                        <?php endif; ?>
+                        <?php if (!empty($email['jabatan'])): ?>
+                            <small class="text-muted"><?= esc($email['jabatan']) ?></small>
+                        <?php endif; ?>
+                    </td>
                     <?php if (!empty($child_units)): ?>
                       <td class="align-middle">
                         <?php if (!empty($email['parent_unit_kerja_name'])): ?>
