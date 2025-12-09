@@ -1,80 +1,41 @@
-# Sinjai Emails Management
+# Sinjai Emails Management System
 
-This application is a tool for managing email accounts on a cPanel server. It is built with CodeIgniter 4 and provides the following features:
+This application is a specialized employee and email management system tailored for the Sinjai Regency Government. It serves as a central hub for managing official email accounts hosted on a cPanel server, linking them to comprehensive employee data.
 
-*   **Email Account Management:** View, create, and delete email accounts.
-*   **cPanel Integration:** Sync email accounts from a cPanel server.
-*   **Batch Operations:** Perform batch creation and updates of email accounts.
-*   **Unit Kerja Management:** Organize email accounts by "unit kerja" (work units) and sub-units.
-*   **PDF and CSV Export:** Export email account lists to PDF and CSV formats.
+## Key Features
 
----
+### 1. Email & Employee Management
 
-# CodeIgniter 4 Application Starter
+The core of the system is managing email accounts that serve as unique identifiers for employees.
 
-## What is CodeIgniter?
+- **CRUD Operations:** Create, Read, Update, and Delete email accounts.
+- **Rich Employee Data:** Stores detailed information including NIK (National ID), NIP (Civil Servant ID), full name with academic degrees, job titles, and status (ASN/Non-ASN).
+- **Batch Processing:** Supports batch creation and updates of email accounts to handle bulk changes efficiently.
 
-CodeIgniter is a PHP full-stack web framework that is light, fast, flexible and secure.
-More information can be found at the [official site](https://codeigniter.com).
+### 2. cPanel Integration
 
-This repository holds a composer-installable app starter.
-It has been built from the
-[development repository](https://github.com/codeigniter4/CodeIgniter4).
+Tightly integrated with the cPanel API to manage the mail server directly.
 
-More information about the plans for version 4 can be found in [CodeIgniter 4](https://forum.codeigniter.com/forumdisplay.php?fid=28) on the forums.
+- **Real-time Actions:** Create, delete, and change passwords for email accounts directly on the cPanel server.
+- **Synchronization:** Sync functionality to fetch current server-side data (disk usage, suspension status) and ensure the local database matches the mail server.
 
-You can read the [user guide](https://codeigniter.com/user_guide/)
-corresponding to the latest version of the framework.
+### 3. Work Unit (Unit Kerja) Organization
 
-## Installation & updates
+Employees are organized into a hierarchical structure of Work Units.
 
-`composer create-project codeigniter4/appstarter` then `composer update` whenever
-there is a new release of the framework.
+- **Hierarchy:** Supports departments and sub-departments (parent-child relationships).
+- **Filtering & Reporting:** Use work units to filter employee lists and generate specific reports.
 
-When updating, check the release notes to see if there are any changes you might need to apply
-to your `app` folder. The affected files can be copied or merged from
-`vendor/codeigniter4/framework/app`.
+### 4. BSrE Integration
 
-## Setup
+Integrates with the Balai Sertifikasi Elektronik (BSrE) API.
 
-Copy `env` to `.env` and tailor for your app, specifically the baseURL
-and any database settings.
+- **Digital Certificate Check:** Verifies the status of an employee's digital certificate (issued/not issued), which is crucial for digital signature workflows.
 
-## Important Change with index.php
+### 5. Document Generation & Export
 
-`index.php` is no longer in the root of the project! It has been moved inside the *public* folder,
-for better security and separation of components.
+Automates the creation of administrative documents.
 
-This means that you should configure your web server to "point" to your project's *public* folder, and
-not to the project root. A better practice would be to configure a virtual host to point there. A poor practice would be to point your web server to the project root and expect to enter *public/...*, as the rest of your logic and the
-framework are exposed.
-
-**Please** read the user guide for a better explanation of how CI4 works!
-
-## Repository Management
-
-We use GitHub issues, in our main repository, to track **BUGS** and to track approved **DEVELOPMENT** work packages.
-We use our [forum](http://forum.codeigniter.com) to provide SUPPORT and to discuss
-FEATURE REQUESTS.
-
-This repository is a "distribution" one, built by our release preparation script.
-Problems with it can be raised on our forum, or as issues in the main repository.
-
-## Server Requirements
-
-PHP version 8.1 or higher is required, with the following extensions installed:
-
-- [intl](http://php.net/manual/en/intl.requirements.php)
-- [mbstring](http://php.net/manual/en/mbstring.installation.php)
-
-> [!WARNING]
-> - The end of life date for PHP 7.4 was November 28, 2022.
-> - The end of life date for PHP 8.0 was November 26, 2023.
-> - If you are still using PHP 7.4 or 8.0, you should upgrade immediately.
-> - The end of life date for PHP 8.1 will be December 31, 2025.
-
-Additionally, make sure that the following extensions are enabled in your PHP:
-
-- json (enabled by default - don't turn it off)
-- [mysqlnd](http://php.net/manual/en/mysqlnd.install.php) if you plan to use MySQL
-- [libcurl](http://php.net/manual/en/curl.requirements.php) if you plan to use the HTTP\CURLRequest library
+- **Work Agreements:** Generates "Perjanjian Kerja" (Work Agreements) in PDF format for employees.
+- **Exports:** Export employee lists per work unit to PDF and CSV formats.
+- **Bulk Export:** Automatically creates ZIP archives for large batch exports.
