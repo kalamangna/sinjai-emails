@@ -21,7 +21,7 @@ $routes->post('/email/update_pendidikan/(:any)', 'Email::update_pendidikan/$1');
 $routes->post('/email/update_jabatan/(:any)', 'Email::update_jabatan/$1');
 $routes->post('/email/update_gelar_depan/(:any)', 'Email::update_gelar_depan/$1');
 $routes->post('/email/update_gelar_belakang/(:any)', 'Email::update_gelar_belakang/$1');
-$routes->post('/email/update_jenis_formasi/(:any)', 'Email::update_jenis_formasi/$1');
+$routes->post('/email/update_status_asn/(:any)', 'Email::update_status_asn/$1');
 $routes->post('/email/delete/(:num)', 'Email::delete/$1');
 $routes->post('/email/create_single', 'Email::create_single_email');
 $routes->post('/user/check_email', 'User::checkEmailAvailability');
@@ -46,8 +46,8 @@ $routes->get('email/api/download_zip/(:num)', 'Email::api_download_zip/$1');
 
 $routes->post('/user/check_email', 'User::checkEmailAvailability');
 $routes->post('/user/check_niknip', 'User::check_niknip');
-$routes->post('/bsre/check', 'Bsre::check');
-$routes->post('/bsre/sync/(:any)', 'Bsre::sync/$1');
+$routes->get('/bsre/check-status', 'Bsre::checkStatus');
+$routes->get('/simpegnas/check/(:any)', 'Simpegnas::check/$1');
 
 $routes->get('/test-pk', 'Email::test_perjanjian_kerja');
 

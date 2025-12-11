@@ -21,19 +21,20 @@ class Bsre extends BaseController
 
         $bsreApi = new BsreApi();
 
-        // Panggil fungsi checkStatus via Email
+        // Panggil fungsi checkStatus (yang sudah digabung)
         $result = $bsreApi->checkStatus($email, 'email');
 
         if ($result['success']) {
             // Ambil status string dari response BSrE (misal: "ISSUE", "EXPIRED")
             // Struktur response biasanya langsung string atau object, sesuaikan dengan hasil dump real-nya
-            // Berdasarkan dokumen, ini mengembalikan JSON status.
-
-            $statusUser = $result['data'];
+            // Mengambil status dari key yang tepat di dalam $result['data']
+            // Seringkali API BSrE mengembalikan status di dalam key 'status' atau 'message'
+            $responseBody = $result['data'];
+            $statusUser = $responseBody['status'] ?? ($responseBody['data']['status'] ?? 'UNKNOWN');
 
             // Logika bisnis aplikasi Anda berdasarkan status 
             $pesan = '';
-            switch ($statusUser) { // Asumsi response langsung string status, atau sesuaikan key-nya (misal $result['data']['status'])
+            switch ($statusUser) { 
                 case 'ISSUE':
                     $pesan = 'User Aktif. Siap Tanda Tangan.';
                     break;
@@ -47,7 +48,7 @@ class Bsre extends BaseController
                     $pesan = 'Sertifikat telah dicabut.';
                     break;
                 default:
-                    $pesan = 'Status: ' . json_encode($statusUser);
+                    $pesan = 'Status: ' . (is_string($statusUser) ? $statusUser : json_encode($statusUser));
             }
 
             return $this->response->setJSON([

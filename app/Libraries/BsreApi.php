@@ -15,28 +15,30 @@ class BsreApi
     public function __construct()
     {
         // Pastikan konfigurasi ini ada di .env Anda
-        $this->baseUrl  = getenv('BSRE_BASE_URL');
-        $this->username = getenv('BSRE_USERNAME');
-        $this->password = getenv('BSRE_PASSWORD');
+        $this->baseUrl  = env('BSRE_BASE_URL');
+        $this->username = env('BSRE_USERNAME');
+        $this->password = env('BSRE_PASSWORD');
+
+        if (empty($this->baseUrl)) {
+            throw new \RuntimeException('BSRE_BASE_URL is not set in .env');
+        }
 
         $this->client = Services::curlrequest([
-            'base_uri' => $this->baseUrl,
             'timeout'  => 30,
             'verify'   => false, // Set true di production jika SSL valid
-        ]);
+        ], null, null, false);
     }
 
     /**
-     * Cek Status User (API V2)
-     * Referensi Dokumen: Halaman 34, Poin 6.7 
-     * Endpoint: /api/v2/user/check/status [cite: 548]
-     * * @param string $identifier NIK atau Email pengguna
-     * @param string $type 'nik' atau 'email'
+     * Check Status User (API V2)
+     * Endpoint: /api/v2/user/check/status
+     * 
+     * @param string $identifier NIK or Email
+     * @param string $type 'nik' or 'email'
+     * @return array
      */
-    public function checkStatus($identifier, $type = 'email')
+    public function checkStatus(string $identifier, string $type = 'email'): array
     {
-        // Tentukan payload JSON berdasarkan tipe input (NIK atau Email)
-        // [cite: 550, 554]
         $payload = [];
         if ($type === 'nik') {
             $payload['nik'] = $identifier;
@@ -45,27 +47,37 @@ class BsreApi
         }
 
         try {
-            $response = $this->client->request('POST', '/api/v2/user/check/status', [
-                'auth' => [$this->username, $this->password], // Basic Auth [cite: 309]
+            // Manual URL construction
+            $fullUrl = rtrim($this->baseUrl, '/') . '/api/v2/user/check/status';
+            
+            // Logging for debug purposes (can be removed in production)
+            log_message('info', 'BSRE API Request URL: ' . $fullUrl);
+
+            $response = $this->client->request('POST', $fullUrl, [
+                'auth' => [$this->username, $this->password],
                 'json' => $payload,
                 'headers' => [
                     'Content-Type' => 'application/json'
                 ]
             ]);
 
-            // Decode response JSON
             $body = json_decode($response->getBody(), true);
+            $statusCode = $response->getStatusCode();
 
-            // Kembalikan data mentah untuk diproses controller
             return [
                 'success' => true,
                 'data'    => $body,
-                'code'    => $response->getStatusCode()
+                'code'    => $statusCode
             ];
+
         } catch (\Exception $e) {
+            $errorMsg = "BSrE API Error. URL: [{$fullUrl}]. Message: " . $e->getMessage();
+            log_message('error', $errorMsg);
+            
             return [
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $errorMsg,
+                'code'    => 500
             ];
         }
     }

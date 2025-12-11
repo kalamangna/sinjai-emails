@@ -17,20 +17,6 @@
         </div>
         <div class="card-body">
             <form id="batch_update_form">
-                <div class="mb-4 border-bottom pb-3">
-                    <label class="form-label fw-bold">Import Data:</label>
-                    <div class="d-flex gap-2">
-                        <button type="button" id="import_csv_btn" class="btn btn-outline-success">
-                            <i class="fas fa-file-csv me-2"></i>Import from CSV
-                        </button>
-                        <input type="file" id="csv_file_input" accept=".csv" style="display: none;">
-                        <a href="#" id="download_template_btn" class="btn btn-link text-decoration-none">Download Template</a>
-                    </div>
-                    <small class="text-muted d-block mt-1">
-                        Supported columns: identifier, name, nik, nip, gelar_depan, gelar_belakang, password, tempat_lahir, tanggal_lahir, pendidikan, jabatan, sub_unit_kerja, nomor_sk, gaji_nominal, gaji_terbilang, tanggal_kontrak_awal, tanggal_kontrak_akhir, status_asn.
-                    </small>
-                </div>
-
                 <div class="mb-3">
                     <label class="form-label">Update By:</label>
                     <div class="form-check">
@@ -219,205 +205,11 @@ M.Si"></textarea>
         const tanggalLahirInput = document.getElementById('tanggal_lahir_input');
         const pendidikanInput = document.getElementById('pendidikan_input');
         const jabatanInput = document.getElementById('jabatan_input');
-        const jenisFormasiInput = document.getElementById('jenis_formasi_input'); // Added
+        const statusAsnInput = document.getElementById('status_asn_input'); 
         const unitKerjaInput = document.getElementById('unit_kerja_input');
         const subUnitKerjaInput = document.getElementById('sub_unit_kerja_input');
         const updateBtn = document.getElementById('update_btn');
         const resultsTableBody = document.querySelector('#results_table tbody');
-
-        // CSV Import Elements
-        const importCsvBtn = document.getElementById('import_csv_btn');
-        const csvFileInput = document.getElementById('csv_file_input');
-        const downloadTemplateBtn = document.getElementById('download_template_btn');
-
-        importCsvBtn.addEventListener('click', () => csvFileInput.click());
-
-        downloadTemplateBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            const headers = [
-                'identifier', 'name', 'nik', 'nip', 'gelar_depan', 'gelar_belakang', 
-                'password', 'tempat_lahir', 'tanggal_lahir', 'pendidikan', 
-                'jabatan', 'sub_unit_kerja', 'nomor_sk', 'gaji_nominal', 
-                'gaji_terbilang', 'tanggal_kontrak_awal', 'tanggal_kontrak_akhir'
-            ];
-            const csvContent = headers.join(',') + '\n';
-            const blob = new Blob([csvContent], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'batch_update_template.csv';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-        });
-
-        csvFileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                const text = event.target.result;
-                const data = parseCSV(text);
-                populateFields(data);
-                csvFileInput.value = ''; // Reset
-            };
-            reader.readAsText(file);
-        });
-
-        function parseCSV(text) {
-            // Normalize line endings
-            const normalizedText = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-            const lines = normalizedText.split('\n').filter(l => l.trim() !== '');
-            if (lines.length < 2) return []; // No data
-
-            // Detect delimiter
-            const firstLine = lines[0];
-            const commaCount = (firstLine.match(/,/g) || []).length;
-            const semicolonCount = (firstLine.match(/;/g) || []).length;
-            const delimiter = semicolonCount > commaCount ? ';' : ',';
-
-            const headers = lines[0].split(delimiter).map(h => h.trim().toLowerCase().replace(/^"|"$/g, ''));
-            const result = [];
-
-            for (let i = 1; i < lines.length; i++) {
-                // Simple CSV split (doesn't handle complex quoted strings with delimiters inside)
-                const currentLine = lines[i].split(delimiter); 
-                const obj = {};
-                
-                headers.forEach((header, index) => {
-                    let value = currentLine[index] ? currentLine[index].trim().replace(/^"|"$/g, '') : '';
-                    obj[header] = value;
-                });
-                result.push(obj);
-            }
-            return result;
-        }
-
-        function populateFields(data) {
-            if (data.length === 0) return;
-
-            const fieldMap = {
-                'identifier': identifierInput,
-                'email': identifierInput, // Alias
-                'old_email': identifierInput, // Alias
-                'old_nik': identifierInput, // Alias if in nik mode
-                'name': nameInput,
-                'nama': nameInput, // Alias
-                'nik': nikInput,
-                'new_nik': nikInput,
-                'nip': nipInput,
-                'new_nip': nipInput,
-                'gelar_depan': gelarDepanInput,
-                'gelar_belakang': gelarBelakangInput,
-                'password': passwordInput,
-                'tempat_lahir': tempatLahirInput,
-                'tanggal_lahir': tanggalLahirInput,
-                'pendidikan': pendidikanInput,
-                'jabatan': jabatanInput,
-                'sub_unit_kerja': subUnitKerjaInput,
-                'nomor_sk': nomorInput,
-                'nomor': nomorInput,
-                'gaji_nominal': gajiNominalInput,
-                'gaji_terbilang': gajiTerbilangInput,
-                'tanggal_kontrak_awal': tanggalKontrakAwalInput,
-                'tanggal_kontrak_akhir': tanggalKontrakAkhirInput
-            };
-
-            // Clear existing (or append? Usually import replaces or we can append. Let's replace for simplicity or check if empty)
-            // Let's just overwrite for a clean import flow.
-            
-            // Initialize arrays for each mapped field
-            const values = {};
-            Object.values(fieldMap).forEach(input => values[input.id] = []);
-
-            data.forEach(row => {
-                // Identifier is required for alignment
-                // Find the identifier column
-                let idVal = row['identifier'] || row['email'] || row['old_email'] || row['old_nik'] || '';
-                if (!idVal) return; // Skip rows without identifier
-
-                // Push identifier
-                values[identifierInput.id].push(idVal);
-
-                // Push other fields
-                Object.keys(row).forEach(header => {
-                    if (fieldMap[header] && fieldMap[header] !== identifierInput) {
-                        const inputId = fieldMap[header].id;
-                        // If we have multiple aliases mapping to same input (e.g. nik and new_nik), 
-                        // only one should be present in a row ideally. 
-                        // But if present, last one wins in this loop logic or we check.
-                        // Since we iterate row keys, let's just use what we find.
-                        // Ideally we push to the array corresponding to the row.
-                    }
-                });
-            });
-
-            // Actually, we need to iterate the *targets* and find *source* in row to ensure alignment
-            const inputs = [
-                { input: nameInput, keys: ['name', 'nama'] },
-                { input: nikInput, keys: ['nik', 'new_nik'] },
-                { input: nipInput, keys: ['nip', 'new_nip'] },
-                { input: gelarDepanInput, keys: ['gelar_depan'] },
-                { input: gelarBelakangInput, keys: ['gelar_belakang'] },
-                { input: passwordInput, keys: ['password'] },
-                { input: tempatLahirInput, keys: ['tempat_lahir'] },
-                { input: tanggalLahirInput, keys: ['tanggal_lahir'] },
-                { input: pendidikanInput, keys: ['pendidikan'] },
-                { input: jabatanInput, keys: ['jabatan'] },
-                { input: subUnitKerjaInput, keys: ['sub_unit_kerja'] },
-                { input: nomorInput, keys: ['nomor_sk', 'nomor'] },
-                { input: gajiNominalInput, keys: ['gaji_nominal'] },
-                { input: gajiTerbilangInput, keys: ['gaji_terbilang'] },
-                { input: tanggalKontrakAwalInput, keys: ['tanggal_kontrak_awal'] },
-                { input: tanggalKontrakAkhirInput, keys: ['tanggal_kontrak_akhir'] }
-            ];
-
-            // Reset all inputs
-            identifierInput.value = '';
-            inputs.forEach(item => item.input.value = '');
-
-            const newIdValues = [];
-            const otherValues = {};
-            inputs.forEach(item => otherValues[item.input.id] = []);
-
-            data.forEach(row => {
-                let idVal = row['identifier'] || row['email'] || row['old_email'] || row['old_nik'] || '';
-                if (!idVal) return; // Skip empty identifiers
-
-                // Auto-detect mode if not set by user (or override?)
-                // Let's override based on first valid identifier found
-                if (newIdValues.length === 0) {
-                    if (idVal.includes('@')) {
-                        document.getElementById('mode_email').checked = true;
-                        document.getElementById('mode_email').dispatchEvent(new Event('change'));
-                    } else if (/^\d+$/.test(idVal)) { // Simple NIK check
-                        document.getElementById('mode_nik').checked = true;
-                        document.getElementById('mode_nik').dispatchEvent(new Event('change'));
-                    }
-                }
-
-                newIdValues.push(idVal);
-
-                inputs.forEach(item => {
-                    let val = '';
-                    for (const key of item.keys) {
-                        if (row[key] !== undefined) {
-                            val = row[key];
-                            break;
-                        }
-                    }
-                    otherValues[item.input.id].push(val);
-                });
-            });
-
-            identifierInput.value = newIdValues.join('\n');
-            inputs.forEach(item => {
-                item.input.value = otherValues[item.input.id].join('\n');
-            });
-
-            alert(`Imported ${newIdValues.length} rows successfully.`);
-        }
 
         document.querySelectorAll('input[name="update_mode"]').forEach(radio => {
             radio.addEventListener('change', function() {
@@ -496,7 +288,7 @@ M.Si"></textarea>
             }
 
             const newUnitKerja = unitKerjaInput.value;
-            const newJenisFormasi = jenisFormasiInput.value; // Added
+            const newStatusAsn = statusAsnInput.value;
 
             if (identifiers.length === 0) {
                 alert('Please enter at least one identifier to update.');
@@ -532,7 +324,7 @@ M.Si"></textarea>
                         tanggal_lahirs: newTanggalLahirs,
                         pendidikans: newPendidikans,
                         jabatans: newJabatans,
-                        jenis_formasi: newJenisFormasi, // Added
+                        status_asn: newStatusAsn,
                         unit_kerja: newUnitKerja,
                         sub_unit_kerja: newSubUnitKerja
                     })

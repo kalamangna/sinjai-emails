@@ -207,25 +207,18 @@
                                     <tr>
 
                                         <td class="ps-4 align-middle">
-
                                             <div class="d-flex align-items-center">
-
                                                 <i class="fas fa-envelope text-primary me-3"></i>
-
                                                 <div>
-
                                                     <div class="fw-bold"><?= esc($email['email']) ?></div>
-
                                                     <small class="d-block text-muted">
-
                                                         <?= esc($email['name']) ?>
-
                                                     </small>
-
+                                                    <small class="text-info" style="font-size: 12px;">
+                                                        Last Modified: <?= get_local_datetime($email['mtime']) ?>
+                                                    </small>
                                                 </div>
-
                                             </div>
-
                                         </td>
 
                                         <td class="align-middle">
