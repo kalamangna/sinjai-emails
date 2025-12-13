@@ -23,6 +23,9 @@
         <button onclick="openExportModal(<?= $unit_kerja['id'] ?>)" class="btn btn-info">
           <i class="fas fa-file-contract me-2"></i>Export Perjanjian Kerja PDF
         </button>
+        <button onclick="syncAllBsreStatus()" class="btn btn-warning">
+          <i class="fas fa-sync-alt me-2"></i>Batch Sync Status TTE
+        </button>
       </div>
     </div>
 
@@ -76,10 +79,10 @@
     <div class="card shadow-sm mb-4">
       <div class="card-body">
         <form action="<?= current_url() ?>" method="get" class="row g-3 align-items-center">
-          <div class="col-md-5">
+          <div class="col-md-3">
             <div class="input-group">
               <span class="input-group-text"><i class="fas fa-search"></i></span>
-              <input type="text" class="form-control" name="search" placeholder="Search by Email, Name, NIK, or NIP..." value="<?= esc($search ?? '') ?>">
+              <input type="text" class="form-control" name="search" placeholder="Search..." value="<?= esc($search ?? '') ?>">
             </div>
           </div>
           <div class="col-md-3">
@@ -95,11 +98,24 @@
               </select>
             </div>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-3">
+            <div class="input-group">
+              <span class="input-group-text"><i class="fas fa-fingerprint"></i></span>
+              <select name="bsre_status" class="form-select">
+                <option value="" <?= empty($bsre_status) ? 'selected' : '' ?>>All Status TTE</option>
+                <?php foreach ($bsre_status_options as $key => $label): ?>
+                  <option value="<?= esc($key) ?>" <?= ($bsre_status === $key) ? 'selected' : '' ?>>
+                    <?= esc($key === 'not_synced' ? $label : $key) ?>
+                  </option>
+                <?php endforeach; ?>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-3">
             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                              <button type="submit" class="btn btn-primary flex-grow-1">
-                                  <i class="fas fa-search me-2"></i>Search
-                              </button>
+              <button type="submit" class="btn btn-primary flex-grow-1">
+                <i class="fas fa-search me-2"></i>Search
+              </button>
               <a href="<?= current_url() ?>" class="btn btn-outline-secondary flex-grow-1">
                 <i class="fas fa-sync-alt me-2"></i>Reset
               </a>
@@ -130,6 +146,7 @@
                   <th class="ps-4"><i class="fas fa-envelope me-2"></i>Email Address</th>
                   <th><i class="fas fa-id-card me-2"></i>NIK / NIP</th>
                   <th><i class="fas fa-user-tag me-2"></i>Status ASN / Jabatan</th>
+                  <th><i class="fas fa-fingerprint me-2"></i>Status TTE</th>
                   <?php if (!empty($child_units)): ?>
                     <th><i class="fas fa-building me-2"></i>Unit Kerja</th>
                   <?php endif; ?>
@@ -157,12 +174,35 @@
                       <?php endif; ?>
                     </td>
                     <td class="align-middle">
-                        <?php if (!empty($email['status_asn'])): ?>
-                            <div><?= esc($email['status_asn']) ?></div>
-                        <?php endif; ?>
-                        <?php if (!empty($email['jabatan'])): ?>
-                            <small class="text-muted"><?= esc($email['jabatan']) ?></small>
-                        <?php endif; ?>
+                      <?php if (!empty($email['status_asn'])): ?>
+                        <div><?= esc($email['status_asn']) ?></div>
+                      <?php endif; ?>
+                      <?php if (!empty($email['jabatan'])): ?>
+                        <small class="text-muted"><?= esc($email['jabatan']) ?></small>
+                      <?php endif; ?>
+                    </td>
+                    <td class="align-middle">
+                        <div id="bsre-status-<?= esc($email['user']) ?>" 
+                             data-user="<?= esc($email['user']) ?>" 
+                             data-email="<?= esc($email['email']) ?>"
+                             class="bsre-status-container d-flex align-items-center">
+                            <?php
+                                $status = $email['bsre_status'] ?? '';
+                                $badgeClass = 'bg-secondary';
+                                $badgeText = $status ?: 'Not Synced';
+                                
+                                if ($status === 'ISSUE') {
+                                    $badgeClass = 'bg-success';
+                                } else if (in_array($status, ['EXPIRED', 'REVOKE', 'SUSPEND'])) {
+                                    $badgeClass = 'bg-danger';
+                                } else if (in_array($status, ['RENEW', 'WAITING_FOR_VERIFICATION', 'NEW'])) {
+                                    $badgeClass = 'bg-info text-dark';
+                                } else if (in_array($status, ['NO_CERTIFICATE', 'NOT_REGISTERED', 'UNKNOWN'])) {
+                                    $badgeClass = 'bg-warning text-dark';
+                                }
+                            ?>
+                            <span class="badge <?= $badgeClass ?>"><?= esc($badgeText) ?></span>
+                        </div>
                     </td>
                     <?php if (!empty($child_units)): ?>
                       <td class="align-middle">
@@ -245,73 +285,112 @@
 </div>
 
 <script>
-  async function openExportModal(unitId) {
-    const modalElement = document.getElementById('exportProgressModal');
-    const modal = new bootstrap.Modal(modalElement);
-    const progressBar = document.getElementById('exportProgressBar');
-    const statusText = document.getElementById('exportStatusText');
+  // Helper function to render status (reused by sync functions)
+  function displayBsreStatus(status, keterangan = '', fromDb = false) {
+      // Find the container based on context - wait, this helper was inside a loop before.
+      // Now it needs to be generic or the sync function handles DOM update directly.
+      // The previous implementation of syncBsreStatus updated the DOM directly.
+      // Let's just keep the helper for the sync functions to use if they want,
+      // OR easier: let syncBsreStatus handle the rendering update since it knows which element to target.
+      
+      // Actually, syncBsreStatus needs to update the DOM. It was using a helper inside fetchBsreStatus before?
+      // No, syncBsreStatus had its own logic or called fetchBsreStatus.
+      // Let's check the previous code of syncBsreStatus.
+      // It was calling `displayBsreStatus` which was defined inside `fetchBsreStatus` scope? No, that was unit_kerja_detail.php previous turn.
+      // Wait, in the previous turn I moved `displayBsreStatus` INSIDE `fetchBsreStatus`.
+      // So `syncBsreStatus` couldn't access it unless I moved it out.
+      
+      // Let's just define a global helper `updateBsreStatusElement` that sync functions can use.
+  }
 
-    modal.show();
-    progressBar.style.width = '0%';
-    progressBar.textContent = '0%';
-    statusText.textContent = 'Fetching email list...';
+  function updateBsreStatusElement(emailUser, status, keterangan) {
+      const bsreStatusDiv = document.getElementById(`bsre-status-${emailUser}`);
+      if (!bsreStatusDiv) return;
 
-    try {
-      // 1. Fetch emails with current filters
-      const currentParams = new URLSearchParams(window.location.search).toString();
-      const response = await fetch(`<?= site_url('email/api/unit_emails/') ?>${unitId}?${currentParams}`);
-      const data = await response.json();
+      const statusMapping = {
+          'ISSUE': 'Sertifikat Aktif / Siap TTE',
+          'EXPIRED': 'Masa Berlaku Habis',
+          'RENEW': 'Proses Pembaruan',
+          'WAITING_FOR_VERIFICATION': 'Menunggu Verifikasi',
+          'NEW': 'Belum Aktivasi',
+          'NO_CERTIFICATE': 'Belum Ada Sertifikat',
+          'NOT_REGISTERED': 'Pengguna Tidak Terdaftar',
+          'SUSPEND': 'Akun Ditangguhkan',
+          'REVOKE': 'Sertifikat Dicabut'
+      };
 
-      if (!data.success) {
-        throw new Error(data.message || 'Failed to fetch emails.');
+      let badgeClass = 'bg-secondary';
+      let badgeText = status || 'UNKNOWN';
+      let descriptionText = statusMapping[status] || 'Status Tidak Dikenali';
+      let sourceText = ''; // Removed fromDb text
+
+      if (status === 'ISSUE') {
+          badgeClass = 'bg-success';
+      } else if (status === 'EXPIRED' || status === 'REVOKE' || status === 'SUSPEND') {
+          badgeClass = 'bg-danger';
+      } else if (status === 'RENEW' || status === 'WAITING_FOR_VERIFICATION' || status === 'NEW') {
+          badgeClass = 'bg-info text-dark';
+      } else if (status === 'NO_CERTIFICATE' || status === 'NOT_REGISTERED' || status === 'UNKNOWN' || !status) {
+          badgeClass = 'bg-warning text-dark';
       }
+      
+      bsreStatusDiv.innerHTML = `<span class="badge ${badgeClass}">${badgeText}</span>${sourceText}`;
+  }
 
-      const emails = data.emails;
-      const total = emails.length;
+  function syncBsreStatus(emailUser, emailAddress) {
+      const bsreStatusDiv = document.getElementById(`bsre-status-${emailUser}`);
+      if (!bsreStatusDiv) return;
 
-      if (total === 0) {
-        alert('No emails found for this unit.');
-        modal.hide();
-        return;
-      }
+      // Show syncing state
+      bsreStatusDiv.innerHTML = '<span class="spinner-border spinner-border-sm text-info" role="status" aria-hidden="true"></span><small class="text-muted ms-1">Syncing...</small>';
 
-      // 2. Generate PDFs one by one
-      for (let i = 0; i < total; i++) {
-        const email = emails[i];
-        const percent = Math.round(((i + 1) / total) * 100);
-
-        progressBar.style.width = `${percent}%`;
-        progressBar.textContent = `${percent}%`;
-        statusText.textContent = `Generating PDF for ${email.name} (${i + 1}/${total})...`;
-
-        const genResponse = await fetch(`<?= site_url('email/api/generate_pdf') ?>`, {
+      fetch('<?= site_url('bsre/sync-status') ?>', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'X-Requested-With': 'XMLHttpRequest'
+              'Content-Type': 'application/x-www-form-urlencoded',
+              'X-Requested-With': 'XMLHttpRequest'
           },
-          body: `unit_id=${unitId}&email_id=${email.id}`
-        });
+          body: 'email=' + encodeURIComponent(emailAddress)
+      })
+      .then(response => response.json())
+      .then(data => {
+          if (data.status === 'success') {
+              // Update display with new status
+              updateBsreStatusElement(emailUser, data.bsre_status, '');
+          } else {
+              bsreStatusDiv.innerHTML = `<span class="badge bg-danger">Sync Error</span><br><small class="d-block text-danger mt-1">${data.message}</small>`;
+              console.error(`Error syncing Status TTE for ${emailAddress}:`, data.message);
+          }
+      })
+      .catch(error => {
+          bsreStatusDiv.innerHTML = `<span class="badge bg-danger">Network Error</span>`;
+          console.error(`Network error syncing Status TTE for ${emailAddress}:`, error);
+      });
+  }
 
-        const genData = await genResponse.json();
-        if (!genData.success) {
-          console.error(`Failed for ${email.email}: ${genData.message}`);
-        }
+  function syncAllBsreStatus() {
+      // Logic to find all sync buttons or rows and trigger syncBsreStatus
+      // We can iterate over IDs starting with bsre-status-
+      const statusContainers = document.querySelectorAll('[id^="bsre-status-"]');
+      
+      if (statusContainers.length === 0) {
+          alert('No emails to sync.');
+          return;
       }
 
-      // 3. Download ZIP
-      statusText.textContent = 'Zipping and downloading...';
-      window.location.href = `<?= site_url('email/api/download_zip/') ?>${unitId}`;
+      if (!confirm(`Are you sure you want to sync Status TTE for ${statusContainers.length} displayed emails? This might take a moment.`)) {
+          return;
+      }
 
-      // Close modal after a short delay
-      setTimeout(() => {
-        modal.hide();
-      }, 3000);
-
-    } catch (error) {
-      alert('Error: ' + error.message);
-      modal.hide();
-    }
-  }
+            statusContainers.forEach((container, index) => {
+                const emailUser = container.id.replace('bsre-status-', '');
+                const emailAddress = container.getAttribute('data-email'); // Get email from data attribute
+      
+                if (emailUser && emailAddress) {
+                    setTimeout(() => {
+                        syncBsreStatus(emailUser, emailAddress);
+                    }, index * 200); // 200ms delay per request
+                }
+            });  }
 </script>
 <?= $this->endSection() ?>

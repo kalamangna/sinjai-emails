@@ -47,6 +47,7 @@ $routes->get('email/api/download_zip/(:num)', 'Email::api_download_zip/$1');
 $routes->post('/user/check_email', 'User::checkEmailAvailability');
 $routes->post('/user/check_niknip', 'User::check_niknip');
 $routes->get('/bsre/check-status', 'Bsre::checkStatus');
+$routes->post('/bsre/sync-status', 'Bsre::syncStatus');
 $routes->get('/simpegnas/check/(:any)', 'Simpegnas::check/$1');
 
 $routes->get('/test-pk', 'Email::test_perjanjian_kerja');

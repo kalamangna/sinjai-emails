@@ -34,6 +34,7 @@ class EmailModel extends Model
         'pendidikan',
         'jabatan',
         'status_asn_id',
+        'bsre_status',
     ];
     protected $useTimestamps = true;
     protected $beforeFind = ['joinUnitKerja'];

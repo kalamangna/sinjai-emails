@@ -233,7 +233,7 @@ class Email extends BaseController
                     log_message('error', 'Error updating EmailModel for ' . $identifier . ': ' . $e->getMessage());
                 }
             }
-            
+
             if (!empty($pkUpdateData)) {
                 try {
                     $pkRecord = $this->pkModel->where('email', $emailRecord['email'])->first();
@@ -843,7 +843,7 @@ class Email extends BaseController
 
             // Sort children using natural sort
             usort($children, function ($a, $b) {
-                return strnatcasecmp($a['nama_unit_kerja'], $b['nama_unit_kerja']);
+                return strnatcasecmp($a['nama_unit_kerja'] ?? '', $b['nama_unit_kerja'] ?? '');
             });
 
             $childrenIds = array_column($children, 'id');
@@ -857,6 +857,7 @@ class Email extends BaseController
             // Wait, I updated the view input name to 'status_asn' in previous turn.
             // So I should retrieve 'status_asn'.
             $status_asn = $this->request->getGet('status_asn');
+            $bsre_status = $this->request->getGet('bsre_status');
 
             $emailBuilder = $this->emailModel->whereIn('unit_kerja_id', $allUnitIds);
 
@@ -873,10 +874,35 @@ class Email extends BaseController
                 $emailBuilder->where('emails.status_asn_id', $status_asn);
             }
 
+            if ($bsre_status) {
+                if ($bsre_status === 'not_synced') {
+                    $emailBuilder->groupStart()
+                        ->where('emails.bsre_status', null)
+                        ->orWhere('emails.bsre_status', '')
+                        ->groupEnd();
+                } else {
+                    $emailBuilder->where('emails.bsre_status', $bsre_status);
+                }
+            }
+
             $emails = $emailBuilder->orderBy('unit_kerja_name', 'ASC')
                 ->orderBy('name', 'ASC')
                 ->paginate($perPage);
             $pager = $this->emailModel->pager;
+
+            // Define BSrE status options
+            $bsre_status_options = [
+                'ISSUE' => 'Sertifikat Aktif / Siap TTE',
+                'EXPIRED' => 'Masa Berlaku Habis',
+                'RENEW' => 'Proses Pembaruan',
+                'WAITING_FOR_VERIFICATION' => 'Menunggu Verifikasi',
+                'NEW' => 'Belum Aktivasi',
+                'NO_CERTIFICATE' => 'Belum Ada Sertifikat',
+                'NOT_REGISTERED' => 'Pengguna Tidak Terdaftar',
+                'SUSPEND' => 'Akun Ditangguhkan',
+                'REVOKE' => 'Sertifikat Dicabut',
+                'not_synced' => 'Not Synced'
+            ];
 
             $data = [
                 'unit_kerja' => $unitKerja,
@@ -889,6 +915,8 @@ class Email extends BaseController
                 'search' => $search,
                 'status_asn' => $status_asn,
                 'status_asn_options' => $this->statusAsnModel->orderBy('nama_status_asn', 'ASC')->findAll(),
+                'bsre_status' => $bsre_status,
+                'bsre_status_options' => $bsre_status_options,
                 'back_url' => site_url('email'),
             ];
 
@@ -932,7 +960,7 @@ class Email extends BaseController
             $builder->where('emails.status_asn_id', $status_asn);
         }
         $emails = $builder
-            ->orderBy('unit_kerja_name', 'ASC')
+            ->orderBy('LENGTH(unit_kerja_name)', 'ASC', false)->orderBy('unit_kerja_name', 'ASC')
             ->orderBy('name', 'ASC')
             ->select('emails.id, emails.email, emails.name')
             ->findAll();
@@ -960,7 +988,7 @@ class Email extends BaseController
             // The original logic passed $unitKerja (the filter unit) to the view.
             // But the email might belong to a sub-unit. 
             // Let's stick to the original logic: passing the requested Unit Kerja object.
-            
+
             $options = new Options();
             $options->set('isHtml5ParserEnabled', true);
             $options->set('isRemoteEnabled', true);
@@ -987,7 +1015,7 @@ class Email extends BaseController
             $dompdf->render();
 
             $output = $dompdf->output();
-            
+
             $tempDir = WRITEPATH . 'uploads/temp_export_' . $unitId;
             if (!is_dir($tempDir)) {
                 mkdir($tempDir, 0775, true);
@@ -997,7 +1025,6 @@ class Email extends BaseController
             file_put_contents($tempDir . '/' . $filename, $output);
 
             return $this->response->setJSON(['success' => true]);
-
         } catch (Exception $e) {
             return $this->response->setJSON(['success' => false, 'message' => $e->getMessage()]);
         }
@@ -1012,7 +1039,7 @@ class Email extends BaseController
 
         $tempDir = WRITEPATH . 'uploads/temp_export_' . $unitId;
         if (!is_dir($tempDir)) {
-             return redirect()->back()->with('error', 'No files generated to zip.');
+            return redirect()->back()->with('error', 'No files generated to zip.');
         }
 
         $zip = new \ZipArchive();
@@ -1020,7 +1047,7 @@ class Email extends BaseController
         $zipFilePath = WRITEPATH . 'uploads/' . $zipFileName;
 
         if ($zip->open($zipFilePath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== TRUE) {
-             return redirect()->back()->with('error', 'Cannot create ZIP archive.');
+            return redirect()->back()->with('error', 'Cannot create ZIP archive.');
         }
 
         $files = scandir($tempDir);
@@ -1228,7 +1255,7 @@ class Email extends BaseController
             $allUnitIds = array_merge([$unitKerjaId], $childrenIds);
             $emails = $this->emailModel
                 ->whereIn('unit_kerja_id', $allUnitIds)
-                ->orderBy('unit_kerja_name', 'ASC')
+                ->orderBy('LENGTH(unit_kerja_name)', 'ASC', false)->orderBy('unit_kerja_name', 'ASC')
                 ->orderBy('name', 'ASC')
                 ->findAll();
 
@@ -1321,7 +1348,7 @@ class Email extends BaseController
 
             $builder = $this->emailModel
                 ->whereIn('unit_kerja_id', $allUnitIds)
-                ->orderBy('unit_kerja_name', 'ASC')
+                ->orderBy('LENGTH(unit_kerja_name)', 'ASC', false)->orderBy('unit_kerja_name', 'ASC')
                 ->orderBy('name', 'ASC');
 
             if ($search) {
@@ -1515,7 +1542,7 @@ class Email extends BaseController
         } else {
             $logoSrc = ''; // Fallback if logo not found
         }
-        
+
         $data = [
             'email' => $dummy_email,
             'unit_kerja' => $dummy_unit_kerja,

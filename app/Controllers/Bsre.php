@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Libraries\BsreApi;
+use App\Models\UserModel;
 
 class Bsre extends BaseController
 {
@@ -36,19 +37,34 @@ class Bsre extends BaseController
             $pesan = '';
             switch ($statusUser) { 
                 case 'ISSUE':
-                    $pesan = 'User Aktif. Siap Tanda Tangan.';
+                    $pesan = 'Sertifikat Aktif / Siap TTE';
                     break;
                 case 'EXPIRED':
-                    $pesan = 'Sertifikat kadaluarsa. Silakan perbarui.';
+                    $pesan = 'Masa Berlaku Habis';
+                    break;
+                case 'RENEW':
+                    $pesan = 'Proses Pembaruan';
+                    break;
+                case 'WAITING_FOR_VERIFICATION':
+                    $pesan = 'Menunggu Verifikasi';
+                    break;
+                case 'NEW':
+                    $pesan = 'Belum Aktivasi';
+                    break;
+                case 'NO_CERTIFICATE':
+                    $pesan = 'Belum Ada Sertifikat';
                     break;
                 case 'NOT_REGISTERED':
-                    $pesan = 'User belum terdaftar di BSrE.';
+                    $pesan = 'Pengguna Tidak Terdaftar';
+                    break;
+                case 'SUSPEND':
+                    $pesan = 'Akun Ditangguhkan';
                     break;
                 case 'REVOKE':
-                    $pesan = 'Sertifikat telah dicabut.';
+                    $pesan = 'Sertifikat Dicabut';
                     break;
                 default:
-                    $pesan = 'Status: ' . (is_string($statusUser) ? $statusUser : json_encode($statusUser));
+                    $pesan = 'Status Tidak Dikenali: ' . (is_string($statusUser) ? $statusUser : json_encode($statusUser));
             }
 
             return $this->response->setJSON([
@@ -60,6 +76,53 @@ class Bsre extends BaseController
             return $this->response->setJSON([
                 'status' => 'error',
                 'message' => 'Gagal menghubungi server BSrE: ' . $result['message']
+            ]);
+        }
+    }
+
+    public function syncStatus()
+    {
+        $emailAddress = $this->request->getVar('email');
+
+        if (!$emailAddress) {
+            return $this->response->setJSON([
+                'status' => 'error',
+                'message' => 'Email address required'
+            ]);
+        }
+
+        $bsreApi = new BsreApi();
+        $emailModel = new \App\Models\EmailModel(); // Use EmailModel
+
+        // Call the BSrE API
+        $result = $bsreApi->checkStatus($emailAddress, 'email');
+
+        if ($result['success']) {
+            $responseBody = $result['data'];
+            $statusFromBsre = $responseBody['status'] ?? ($responseBody['data']['status'] ?? 'UNKNOWN');
+
+            // Find the email in the database
+            $emailRecord = $emailModel->where('email', $emailAddress)->first();
+
+            if ($emailRecord) {
+                // Update the bsre_status in the emails table
+                $emailModel->update($emailRecord['id'], ['bsre_status' => $statusFromBsre]);
+                
+                return $this->response->setJSON([
+                    'status' => 'success',
+                    'message' => 'Status synced successfully',
+                    'bsre_status' => $statusFromBsre
+                ]);
+            } else {
+                return $this->response->setJSON([
+                    'status' => 'error',
+                    'message' => 'Email not found in local database, cannot sync status.'
+                ]);
+            }
+        } else {
+            return $this->response->setJSON([
+                'status' => 'error',
+                'message' => 'Failed to fetch status from BSrE: ' . $result['message']
             ]);
         }
     }

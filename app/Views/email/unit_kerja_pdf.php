@@ -51,57 +51,59 @@
         th:nth-child(1),
         td:nth-child(1) {
             text-align: center;
-            width: 4%;
+            width: 5%;
         }
 
         /* Kolom Nama */
         th:nth-child(2),
         td:nth-child(2) {
-            width: 15%;
+            width: 25%;
         }
 
         /* Kolom NIK */
         th:nth-child(3),
         td:nth-child(3) {
-            width: 12%;
-        }
-
-        /* Kolom NIP */
-        th:nth-child(4),
-        td:nth-child(4) {
-            width: 12%;
-        }
-
-        /* Kolom Jenis Formasi */
-        th:nth-child(5),
-        td:nth-child(5) {
-            width: 10%;
+            width: 15%;
         }
 
         /* Kolom Unit Kerja */
-        <?= ($showUnitKerjaColumn ? 'th:nth-child(6), td:nth-child(6) { width: 15%; }' : '') ?>
+        <?= ($showUnitKerjaColumn ? 'th:nth-child(4), td:nth-child(4) { width: 20%; }' : '') ?>
 
         /* Kolom Email */
-        th:nth-child(<?= ($showUnitKerjaColumn ? '7' : '6') ?>),
-        td:nth-child(<?= ($showUnitKerjaColumn ? '7' : '6') ?>) {
-            width: 17%;
+        th:nth-child(<?= ($showUnitKerjaColumn ? '5' : '4') ?>),
+        td:nth-child(<?= ($showUnitKerjaColumn ? '5' : '4') ?>) {
+            width: 20%;
         }
 
-        /* Kolom Password */
-        th:nth-child(<?= ($showUnitKerjaColumn ? '8' : '7') ?>),
-        td:nth-child(<?= ($showUnitKerjaColumn ? '8' : '7') ?>) {
-            width: <?= ($showUnitKerjaColumn ? '15%' : '30%') ?>;
+        /* Kolom Status TTE */
+        th:nth-child(<?= ($showUnitKerjaColumn ? '6' : '5') ?>),
+        td:nth-child(<?= ($showUnitKerjaColumn ? '6' : '5') ?>) {
+            width: 15%;
         }
 
-        .footer {
-            text-align: center;
+        .tte-description {
             font-size: 9px;
-            color: #777;
-            position: fixed;
-            bottom: 10px;
-            right: 20px;
-            left: 20px;
-            line-height: 1.2;
+            margin-top: 10px;
+            color: #555;
+            width: 100%;
+        }
+
+        .tte-description ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            width: 100%;
+        }
+
+        .tte-description li {
+            margin-bottom: 2px;
+            width: 100%;
+        }
+
+        .tte-description strong {
+            display: inline-block;
+            width: 140px;
+            vertical-align: top;
         }
 
         .instruction {
@@ -144,26 +146,36 @@
                 <th>No.</th>
                 <th>Nama</th>
                 <th>NIK</th>
-                <th>NIP</th>
-                <th>Status ASN</th>
                 <?= ($showUnitKerjaColumn ? '<th>Unit Kerja</th>' : '') ?>
                 <th>Email</th>
-                <th>Password</th>
+                <th>Status TTE</th>
             </tr>
         </thead>
         <tbody>
             <?php
             $nomor = 1;
             foreach ($emails as $email) {
+                $statusTte = !empty($email['bsre_status']) ? $email['bsre_status'] : 'NOT SYNCED';
+
+                // Color logic
+                $color = '#000000'; // Default black
+                if ($statusTte === 'ISSUE') {
+                    $color = '#198754'; // Green
+                } elseif (in_array($statusTte, ['EXPIRED', 'REVOKE', 'SUSPEND'])) {
+                    $color = '#dc3545'; // Red
+                } elseif (in_array($statusTte, ['RENEW', 'WAITING_FOR_VERIFICATION', 'NEW'])) {
+                    $color = '#0dcaf0'; // Cyan/Info
+                } elseif (in_array($statusTte, ['NO_CERTIFICATE', 'NOT_REGISTERED', 'NOT SYNCED'])) {
+                    $color = '#d39e00'; // Yellow/Orange
+                }
+
                 echo '<tr>
                         <td>' . $nomor . '</td> 
                         <td>' . esc($email['name'] ?? 'N/A') . '</td>
                         <td>' . esc($email['nik'] ?? 'N/A') . '</td>
-                        <td>' . esc($email['nip'] ?? 'N/A') . '</td>
-                        <td>' . esc($email['status_asn'] ?? 'N/A') . '</td>
                         ' . ($showUnitKerjaColumn ? '<td>' . esc($email['unit_kerja_name'] ?? 'N/A') . '</td>' : '') . '
                         <td>' . esc($email['email'] ?? 'N/A') . '</td>
-                        <td>' . esc($email['password'] ?? 'N/A') . '</td>
+                        <td style="color: ' . $color . '; font-weight: bold;">' . esc($statusTte) . '</td>
                     </tr>';
                 $nomor++;
             }
@@ -171,9 +183,20 @@
         </tbody>
     </table>
 
-    <div class="footer">
-        Bidang Aplikasi dan Informatika - Dinas Komunikasi Informatika dan Persandian Kabupaten Sinjai<br>
-        Dibuat pada <?= date('d-m-Y H:i:s') ?>
+    <div class="tte-description">
+        <p><strong>Keterangan Status TTE:</strong></p>
+        <ul>
+            <li><strong>ISSUE</strong> : Sertifikat Aktif / Siap TTE</li>
+            <li><strong>EXPIRED</strong> : Masa Berlaku Habis</li>
+            <li><strong>RENEW</strong> : Proses Pembaruan</li>
+            <li><strong>WAITING_FOR_VERIFICATION</strong> : Menunggu Verifikasi</li>
+            <li><strong>NEW</strong> : Belum Aktivasi</li>
+            <li><strong>NO_CERTIFICATE</strong> : Belum Ada Sertifikat</li>
+            <li><strong>NOT_REGISTERED</strong> : Pengguna Tidak Terdaftar</li>
+            <li><strong>SUSPEND</strong> : Akun Ditangguhkan</li>
+            <li><strong>REVOKE</strong> : Sertifikat Dicabut</li>
+            <li><strong>NOT SYNCED</strong> : Belum dilakukan sinkronisasi data dengan BSrE</li>
+        </ul>
     </div>
 </body>
 

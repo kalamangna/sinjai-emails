@@ -49,16 +49,22 @@
         </div>
       </div>
       <div class="card-body py-4">
-        <div class="row align-items-center">
-          <div class="col-md-8">
-            <h3 class="text-primary mb-2"><?= esc($email['email']) ?></h3>
-            <?php if (isset($email['mtime']) && $email['mtime'] > 0): ?>
-              <p class="text-muted mb-0">
-                <i class="fas fa-fw fa-calendar me-2"></i><small>Last Modified: <?= get_local_datetime($email['mtime']) ?> (<?= relative_local_time($email['mtime']) ?>)</small>
-              </p>
-            <?php endif; ?>
-          </div>
-          <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                    <div class="row align-items-center">
+                      <div class="col-md-8">
+                        <h3 class="text-primary mb-2"><?= esc($email['email']) ?></h3>
+                        <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                                                <div id="bsre-status-container">
+                                                    <span class="badge bg-secondary">Not Synced</span>
+                                                </div>                            <button class="btn btn-sm btn-outline-secondary ms-2" onclick="syncBsreStatus('<?= esc($email['email'], 'js') ?>')" title="Sync Status to Database">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                        <?php if (isset($email['mtime']) && $email['mtime'] > 0): ?>
+                          <p class="text-muted mb-0">
+                            <i class="fas fa-fw fa-calendar me-2"></i><small>Last Modified: <?= get_local_datetime($email['mtime']) ?> (<?= relative_local_time($email['mtime']) ?>)</small>
+                          </p>
+                        <?php endif; ?>
+                      </div>          <div class="col-md-4 text-md-end mt-3 mt-md-0">
             <a href="https://<?= config('Cpanel')->cpanel_host ?>:2096" target="_blank" class="btn btn-primary">
               <i class="fas fa-fw fa-sign-in-alt me-2"></i>Login Webmail
             </a>
@@ -383,24 +389,13 @@
                 </form>
               </div>
             </div>
+            
             <div class="row mb-3">
               <div class="col-6">
                 <strong class="text-muted">Domain:</strong>
               </div>
               <div class="col-6">
                 <?= esc($email['domain']) ?>
-              </div>
-            </div>
-            <div class="row mb-3">
-              <div class="col-6">
-                <strong class="text-muted">Status:</strong>
-              </div>
-              <div class="col-6">
-                <?php if (($email['suspended_login'] ?? 0) == 0): ?>
-                  <span class="badge bg-success">Active</span>
-                <?php else: ?>
-                  <span class="badge bg-danger">Suspended</span>
-                <?php endif; ?>
               </div>
             </div>
 
@@ -533,6 +528,78 @@
       alert('Failed to copy email: ' + err);
     });
   }
+
+  // Helper function to render status (Global Scope)
+  function renderBsreStatus(status, keterangan = '', fromDb = false) {
+      const bsreContainer = document.getElementById('bsre-status-container');
+      if (!bsreContainer) return;
+
+      const statusMapping = {
+          'ISSUE': 'Sertifikat Aktif / Siap TTE',
+          'EXPIRED': 'Masa Berlaku Habis',
+          'RENEW': 'Proses Pembaruan',
+          'WAITING_FOR_VERIFICATION': 'Menunggu Verifikasi',
+          'NEW': 'Belum Aktivasi',
+          'NO_CERTIFICATE': 'Belum Ada Sertifikat',
+          'NOT_REGISTERED': 'Pengguna Tidak Terdaftar',
+          'SUSPEND': 'Akun Ditangguhkan',
+          'REVOKE': 'Sertifikat Dicabut'
+      };
+
+      let badgeClass = 'bg-secondary';
+      let badgeText = status || 'UNKNOWN';
+      let descriptionText = statusMapping[status] || 'Status Tidak Dikenali';
+      let sourceText = '';
+
+      if (status === 'ISSUE') {
+          badgeClass = 'bg-success';
+      } else if (status === 'EXPIRED' || status === 'REVOKE' || status === 'SUSPEND') {
+          badgeClass = 'bg-danger';
+      } else if (status === 'RENEW' || status === 'WAITING_FOR_VERIFICATION' || status === 'NEW') {
+          badgeClass = 'bg-info text-dark';
+      } else if (status === 'NO_CERTIFICATE' || status === 'NOT_REGISTERED' || status === 'UNKNOWN' || !status) {
+          badgeClass = 'bg-warning text-dark';
+      }
+      
+      bsreContainer.innerHTML = `
+          <span class="badge ${badgeClass}">${badgeText}</span>${sourceText}
+          ${descriptionText ? `<small class="text-muted d-block mt-1">${descriptionText}</small>` : ''}
+          ${keterangan && keterangan !== descriptionText ? `<small class="text-muted d-block mt-1">${keterangan}</small>` : ''}
+      `;
+  }
+
+  function syncBsreStatus(email) {
+      const bsreContainer = document.getElementById('bsre-status-container');
+      if (bsreContainer) {
+          bsreContainer.innerHTML = '<span class="spinner-border spinner-border-sm text-secondary" role="status" aria-hidden="true"></span><span class="text-muted ms-2">Syncing...</span>';
+      }
+
+      fetch('<?= site_url('bsre/sync-status') ?>', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+              'X-Requested-With': 'XMLHttpRequest'
+          },
+          body: 'email=' + encodeURIComponent(email)
+      })
+      .then(response => response.json())
+      .then(data => {
+          if (data.status === 'success') {
+              renderBsreStatus(data.bsre_status, '', true); 
+          } else {
+              if (bsreContainer) {
+                  bsreContainer.innerHTML = `<span class="text-danger"><i class="fas fa-exclamation-circle me-1"></i>Sync Failed: ${data.message}</span>`;
+              }
+              console.error('Sync Error:', data.message);
+          }
+      })
+      .catch(error => {
+          if (bsreContainer) {
+              bsreContainer.innerHTML = `<span class="text-danger"><i class="fas fa-exclamation-circle me-1"></i>Network Error</span>`;
+          }
+          console.error('Sync Error:', error);
+      });
+  }
 </script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -542,7 +609,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const cancelBtn = document.getElementById(cancelBtnId);
         const input = document.getElementById(inputId);
         
-        if (!input) return; // Guard clause if element doesn't exist
+        if (!input) return; 
 
         const originalValue = input.value;
         const isSelect = input.tagName.toLowerCase() === 'select';
@@ -590,6 +657,20 @@ document.addEventListener('DOMContentLoaded', function() {
     setupEditInPlace('edit-status-asn-btn', 'save-status-asn-btn', 'cancel-status-asn-btn', 'status-asn-input');
 
 
+    // Fetch Status TTE Logic
+    const bsreContainer = document.getElementById('bsre-status-container');
+    const emailAddress = '<?= esc($email['email'], 'js') ?>';
+
+    // Initial load logic
+    if (bsreContainer && emailAddress) {
+        const initialBsreStatus = '<?= esc($email['bsre_status'] ?? '', 'js') ?>';
+        if (initialBsreStatus) {
+            renderBsreStatus(initialBsreStatus, '', true); 
+        } else {
+            bsreContainer.innerHTML = `<span class="badge bg-secondary">Not Synced</span>`;
+        }
+    }
 });
+</script>
 </script>
 <?= $this->endSection() ?>
