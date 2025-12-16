@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perjanjian Kerja - <?= esc($email['name']) ?></title>
+    <title>Perjanjian Kerja - <?= esc(strtoupper($email['name'])) ?></title>
     <style>
         @page {
             margin: 15px 25px;
@@ -167,7 +167,7 @@
                                 <?php if (!empty($email['gelar_depan'])): ?>
                                     <?= esc($email['gelar_depan']) ?>
                                 <?php endif; ?>
-                                <?= esc($email['name']) ?><?php if (!empty($email['gelar_belakang'])): ?>, <?= esc($email['gelar_belakang']) ?>
+                                <?= esc(strtoupper($email['name'])) ?><?php if (!empty($email['gelar_belakang'])): ?>, <?= esc($email['gelar_belakang']) ?>
                             <?php endif; ?>
                             </td>
                         </tr>
@@ -946,7 +946,7 @@
                         Dra. Hj. RATNAWATI ARIF, M.Si.
                     </td>
                     <td class="nama-penandatangan">
-                        <?= esc($email['name']) ?>
+                        <?= esc(strtoupper($email['name'])) ?>
                     </td>
                 </tr>
             </table>

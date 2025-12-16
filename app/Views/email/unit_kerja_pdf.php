@@ -148,6 +148,7 @@
                 <th>NIK</th>
                 <?= ($showUnitKerjaColumn ? '<th>Unit Kerja</th>' : '') ?>
                 <th>Email</th>
+                <th>Password</th>
                 <th>Status TTE</th>
             </tr>
         </thead>
@@ -171,12 +172,12 @@
 
                 echo '<tr>
                         <td>' . $nomor . '</td> 
-                        <td>' . esc($email['name'] ?? 'N/A') . '</td>
+                        <td>' . esc(strtoupper($email['name'] ?? 'N/A')) . '</td>
                         <td>' . esc($email['nik'] ?? 'N/A') . '</td>
                         ' . ($showUnitKerjaColumn ? '<td>' . esc($email['unit_kerja_name'] ?? 'N/A') . '</td>' : '') . '
-                        <td>' . esc($email['email'] ?? 'N/A') . '</td>
-                        <td style="color: ' . $color . '; font-weight: bold;">' . esc($statusTte) . '</td>
-                    </tr>';
+                                                                        <td>' . esc($email['email'] ?? 'N/A') . '</td>
+                                                                        <td>' . esc($email['password'] ?? 'N/A') . '</td>
+                                                                        <td style="color: ' . $color . '; font-weight: bold;">' . esc($statusTte) . '</td>                    </tr>';
                 $nomor++;
             }
             ?>

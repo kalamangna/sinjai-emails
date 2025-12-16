@@ -48,6 +48,7 @@ $routes->post('/user/check_email', 'User::checkEmailAvailability');
 $routes->post('/user/check_niknip', 'User::check_niknip');
 $routes->get('/bsre/check-status', 'Bsre::checkStatus');
 $routes->post('/bsre/sync-status', 'Bsre::syncStatus');
+$routes->post('/email/batch-update-status-asn', 'Email::batchUpdateStatusAsn');
 $routes->get('/simpegnas/check/(:any)', 'Simpegnas::check/$1');
 
 $routes->get('/test-pk', 'Email::test_perjanjian_kerja');

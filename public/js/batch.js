@@ -2,7 +2,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const nameInput = document.getElementById("name_input");
   const nikInput = document.getElementById("nik_input");
   const nipInput = document.getElementById("nip_input"); // New
-  const jabatanInput = document.getElementById("jabatan_input"); // New
   const jenisFormasiInput = document.getElementById("jenis_formasi_input"); // New
 
   const modeSingleRadio = document.getElementById("mode_single");
@@ -39,7 +38,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       downloadTemplateBtn.addEventListener('click', (e) => {
           e.preventDefault();
-          const headers = ['name', 'nik', 'nip', 'jabatan', 'unit_kerja', 'status_asn'];
+          const headers = ['name', 'nik', 'nip', 'unit_kerja', 'status_asn'];
           const csvContent = headers.join(',') + '\n';
           const blob = new Blob([csvContent], { type: 'text/csv' });
           const url = window.URL.createObjectURL(blob);
@@ -182,6 +181,7 @@ document.addEventListener("DOMContentLoaded", function () {
       .value.trim()
       .split("\n")
       .filter((jabatan) => jabatan.trim() !== "");
+    
 
     const mode = document.querySelector(
       'input[name="unitKerjaMode"]:checked'
@@ -199,6 +199,7 @@ document.addEventListener("DOMContentLoaded", function () {
       validationError = "The number of NIPs must match the number of names and NIKs.";
     else if (jabatans.length > 0 && jabatans.length !== names.length) // New validation
       validationError = "The number of Jabatans must match the number of names and NIKs.";
+    
 
 
     if (mode === "single") {
@@ -234,11 +235,12 @@ document.addEventListener("DOMContentLoaded", function () {
     generateBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generating...`;
     submitBtn.disabled = true;
     resultsTableBody.innerHTML =
-      '<tr><td colspan="9" class="text-center">Generating and checking emails...</td></tr>'; // Updated colspan
+      '<tr><td colspan="8" class="text-center">Generating and checking emails...</td></tr>'; // Updated colspan
 
     const trimmedNiks = niks.map((n) => n.trim());
     const trimmedNips = nips.map((n) => n.trim()); // New
     const trimmedJabatans = jabatans.map((j) => j.trim()); // New
+    
 
     const nikCounts = {};
     for (const nik of trimmedNiks) {

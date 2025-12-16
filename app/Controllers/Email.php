@@ -78,6 +78,61 @@ class Email extends BaseController
                 $unitKerjaList[] = $parentUnit;
             }
 
+            // --- Status ASN Statistics ---
+            $allStatusAsnOptions = $this->statusAsnModel->orderBy('nama_status_asn', 'ASC')->findAll();
+            $statusAsnCounts = [];
+            foreach ($allStatusAsnOptions as $option) {
+                $count = $this->emailModel->allowCallbacks(false)
+                                        ->where('status_asn_id', $option['id'])
+                                        ->countAllResults();
+                $statusAsnCounts[] = [
+                    'id' => $option['id'],
+                    'name' => $option['nama_status_asn'],
+                    'count' => $count
+                ];
+            }
+
+            // --- BSrE Status Statistics ---
+            $bsreStatusCounts = [];
+            $rawBsreCounts = $this->emailModel->allowCallbacks(false)
+                                            ->select('bsre_status, COUNT(*) as count')
+                                            ->groupBy('bsre_status')
+                                            ->findAll();
+            
+            // Define BSrE status labels for display
+            $bsre_status_labels = [
+                'ISSUE' => 'Sertifikat Aktif / Siap TTE',
+                'EXPIRED' => 'Masa Berlaku Habis',
+                'RENEW' => 'Proses Pembaruan',
+                'WAITING_FOR_VERIFICATION' => 'Menunggu Verifikasi',
+                'NEW' => 'Belum Aktivasi',
+                'NO_CERTIFICATE' => 'Belum Ada Sertifikat',
+                'NOT_REGISTERED' => 'Pengguna Tidak Terdaftar',
+                'SUSPEND' => 'Akun Ditangguhkan',
+                'REVOKE' => 'Sertifikat Dicabut'
+            ];
+
+            $notSyncedCount = 0;
+            foreach ($rawBsreCounts as $row) {
+                if (empty($row['bsre_status'])) {
+                    $notSyncedCount += $row['count'];
+                } else {
+                    $bsreStatusCounts[] = [
+                        'status' => $row['bsre_status'],
+                        'label' => $bsre_status_labels[$row['bsre_status']] ?? $row['bsre_status'],
+                        'count' => $row['count']
+                    ];
+                }
+            }
+            if ($notSyncedCount > 0) {
+                $bsreStatusCounts[] = [
+                    'status' => 'not_synced',
+                    'label' => 'Not Synced',
+                    'count' => $notSyncedCount
+                ];
+            }
+
+
             $data = [
                 'emails' => $emails,
                 'total_emails' => $counts['total_emails'],
@@ -89,6 +144,8 @@ class Email extends BaseController
                 'search' => $search,
                 'last_sync_time' => $lastSync['value'] ?? null,
                 'unit_kerja_list' => $unitKerjaList,
+                'status_asn_counts' => $statusAsnCounts, // New data
+                'bsre_status_counts' => $bsreStatusCounts, // New data
             ];
 
             return view('email/index', $data);
@@ -830,6 +887,37 @@ class Email extends BaseController
         return redirect()->to('email/detail/' . $username);
     }
 
+    public function batchUpdateStatusAsn()
+    {
+        if (!$this->request->isAJAX()) {
+            return $this->response->setStatusCode(405)->setJSON(['status' => 'error', 'message' => 'Invalid request method.']);
+        }
+
+        $emailIds = $this->request->getPost('email_ids');
+        $statusAsnId = $this->request->getPost('status_asn_id');
+
+        if (empty($emailIds) || !is_array($emailIds) || empty($statusAsnId)) {
+            return $this->response->setStatusCode(400)->setJSON(['status' => 'error', 'message' => 'Email IDs and Status ASN ID are required.']);
+        }
+
+        $data = ['status_asn_id' => $statusAsnId];
+
+        try {
+            $updated = $this->emailModel->whereIn('id', $emailIds)->set($data)->update();
+
+            if ($updated) {
+                return $this->response->setJSON(['status' => 'success', 'message' => 'Status ASN has been updated successfully for ' . $updated . ' emails.']);
+            } else {
+                return $this->response->setJSON(['status' => 'error', 'message' => 'Failed to update Status ASN. No changes were detected or an error occurred.']);
+            }
+        } catch (\Exception $e) {
+            log_message('error', '[ERROR] {file}:{line} - {message}', ['file' => __FILE__, 'line' => __LINE__, 'message' => $e->getMessage()]);
+            return $this->response->setStatusCode(500)->setJSON(['status' => 'error', 'message' => 'An internal error occurred.']);
+        }
+    }
+
+
+
     public function unit_kerja_detail($unitKerjaId)
     {
         try {
@@ -1125,7 +1213,7 @@ class Email extends BaseController
                 $output = fopen('php://output', 'w');
                 fputcsv($output, ['nama', 'emailAddress'], ',');
                 foreach ($emails as $email) {
-                    fputcsv($output, [$email['name'], $email['email']], ',');
+                    fputcsv($output, [strtoupper($email['name']), $email['email']], ',');
                 }
                 fclose($output);
                 exit();
@@ -1149,7 +1237,7 @@ class Email extends BaseController
                     $stream = fopen('php://memory', 'w+');
                     fputcsv($stream, ['nama', 'emailAddress'], ',');
                     foreach ($chunk as $email) {
-                        fputcsv($stream, [$email['name'], $email['email']], ',');
+                        fputcsv($stream, [strtoupper($email['name']), $email['email']], ',');
                     }
                     rewind($stream);
                     $csvContent = stream_get_contents($stream);
@@ -1507,6 +1595,7 @@ class Email extends BaseController
                 'nip'        => $data['nip'] ?? null,
                 'name'       => $data['name'] ?? null,
                 'jabatan'    => $data['jabatan'] ?? null,
+                'status_asn_id' => $data['jenisFormasi'] ?? null,
             ]);
 
             return $this->response->setJSON(['success' => true, 'email' => $data['email']]);

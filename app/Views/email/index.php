@@ -82,6 +82,60 @@
     </div>
 </div>
 
+<!-- New Row for Status ASN and Status TTE Statistics -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="row g-3 row-cols-1 row-cols-md-2">
+            <!-- Status ASN Statistics Card -->
+            <div class="col">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-light py-3">
+                        <h6 class="card-title mb-0"><i class="fas fa-user-tag me-2 text-primary"></i>Status ASN Statistics</h6>
+                    </div>
+                    <div class="card-body">
+                        <?php if (!empty($status_asn_counts)): ?>
+                            <ul class="list-group list-group-flush">
+                                <?php foreach ($status_asn_counts as $status): ?>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <?= esc($status['name']) ?>
+                                        <span class="badge bg-secondary rounded-pill"><?= $status['count'] ?></span>
+                                    </li>
+                                <?php endforeach; ?>
+                            </ul>
+                        <?php else: ?>
+                            <p class="text-muted text-center mb-0">No Status ASN data available.</p>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status TTE Statistics Card -->
+            <div class="col">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-light py-3">
+                        <h6 class="card-title mb-0"><i class="fas fa-fingerprint me-2 text-primary"></i>Status TTE Statistics</h6>
+                    </div>
+                    <div class="card-body">
+                        <?php if (!empty($bsre_status_counts)): ?>
+                            <ul class="list-group list-group-flush">
+                                <?php foreach ($bsre_status_counts as $status): ?>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <?= esc($status['label']) ?> (<?= esc($status['status']) ?>)
+                                        <span class="badge bg-secondary rounded-pill"><?= $status['count'] ?></span>
+                                    </li>
+                                <?php endforeach; ?>
+                            </ul>
+                        <?php else: ?>
+                            <p class="text-muted text-center mb-0">No Status TTE data available.</p>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <!-- Unit Kerja List Section -->
 <div class="row mb-4">
     <div class="col-12">
@@ -212,7 +266,7 @@
                                                 <div>
                                                     <div class="fw-bold"><?= esc($email['email']) ?></div>
                                                     <small class="d-block text-muted">
-                                                        <?= esc($email['name']) ?>
+                                                        <?= esc(strtoupper($email['name'])) ?>
                                                     </small>
                                                     <small class="text-info" style="font-size: 12px;">
                                                         Last Modified: <?= get_local_datetime($email['mtime']) ?>

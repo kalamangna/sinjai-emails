@@ -209,7 +209,7 @@
               <div class="col-6">
                 <form action="<?= site_url('email/update_name/' . $email['user']) ?>" method="post" id="name-form">
                     <div class="input-group">
-                        <input type="text" name="name" id="name-input" value="<?= esc($email['name']) ?>" class="form-control" readonly>
+                        <input type="text" name="name" id="name-input" value="<?= esc(strtoupper($email['name'])) ?>" class="form-control" readonly>
                         <button type="button" id="edit-name-btn" class="btn btn-outline-secondary"><i class="fas fa-pencil-alt"></i></button>
                         <button type="submit" id="save-name-btn" class="btn btn-primary d-none"><i class="fas fa-save"></i></button>
                         <button type="button" id="cancel-name-btn" class="btn btn-outline-secondary d-none"><i class="fas fa-times"></i></button>
@@ -491,12 +491,13 @@
                   <i class="fas fa-inbox me-2"></i>Open Webmail
                 </a>
               </div>
+              <?php if ($email['status_asn_id'] == 3): ?>
               <div class="col-md-3 col-sm-6">
-                <a href="<?= site_url('email/export_single_perjanjian_kerja_pdf/' . $email['user']) ?>" class="btn btn-outline-info w-100">
-                  <i class="fas fa-file-contract me-2"></i>Export Perjanjian Kerja PDF
-                </a>
+                  <a href="<?= site_url('email/export_single_perjanjian_kerja_pdf/' . $email['user']) ?>" class="btn btn-outline-info w-100">
+                      <i class="fas fa-file-contract me-2"></i>Export Perjanjian Kerja PDF
+                  </a>
               </div>
-              <div class="col-md-3 col-sm-6">
+              <?php endif; ?>              <div class="col-md-3 col-sm-6">
                 <a href="<?= $back_url ?>" class="btn btn-outline-secondary w-100">
                   <i class="fas fa-arrow-left me-2"></i>Back
                 </a>

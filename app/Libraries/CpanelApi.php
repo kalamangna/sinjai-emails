@@ -168,12 +168,17 @@ class CpanelApi
 
             $response = $this->make_request('Email', 'delete_pop', 'POST', $parameters);
 
-            if (isset($response['status']) && $response['status'] == 1) {
-                return $response;
-            } else {
-                $error_message = $response['errors'][0] ?? 'Unknown error during email deletion.';
-                throw new Exception($error_message);
-            }
+                                    if (isset($response['status']) && $response['status'] == 0) {
+
+                                        $error_message = $response['errors'][0] ?? 'Unknown error during email deletion.';
+
+                                        throw new Exception($error_message);
+
+                                    }
+
+                                    return $response;
+
+            
         } catch (Exception $e) {
             log_message('error', 'Failed to delete email account: ' . $e->getMessage());
             throw new Exception('Failed to delete email account: ' . $e->getMessage());

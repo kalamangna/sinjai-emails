@@ -45,19 +45,13 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        <label for="nip_input" class="form-label">Enter one NIP per line.</label>
-                        <textarea class="form-control" id="nip_input" rows="8" placeholder="e.g.&#10;199001012020011001"></textarea>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        <label for="jabatan_input" class="form-label">Enter one Jabatan per line.</label>
-                        <textarea class="form-control" id="jabatan_input" rows="8" placeholder="e.g.&#10;Pranata Komputer Ahli Pertama"></textarea>
-                    </div>
-                </div>
-            </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="nip_input" class="form-label">Enter one NIP per line.</label>
+                                        <textarea class="form-control" id="nip_input" rows="8" placeholder="e.g.&#10;199001012020011001"></textarea>
+                                    </div>
+                                </div>
+                            </div>
 
             <div class="mb-3">
                 <label for="status_asn_input" class="form-label">Status ASN (for all)</label>
@@ -118,7 +112,6 @@
                             <th scope="col">NIK</th>
                             <th scope="col">NIP</th>
                             <th scope="col">Name</th>
-                            <th scope="col">Jabatan</th>
                             <th scope="col">Unit Kerja</th>
                             <th scope="col">Generated Email</th>
                             <th scope="col">Password</th>
