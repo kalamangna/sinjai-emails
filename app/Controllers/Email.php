@@ -7,6 +7,7 @@ use App\Models\EmailModel;
 use App\Models\AppSettingModel;
 use App\Models\UnitKerjaModel;
 use App\Models\StatusAsnModel;
+use App\Models\EselonModel;
 use CodeIgniter\Controller;
 use Dompdf\Dompdf;
 use App\Models\PkModel;
@@ -21,6 +22,7 @@ class Email extends BaseController
     private $unitKerjaModel;
     private $pkModel; // Add this
     private $statusAsnModel;
+    private $eselonModel;
 
     public function __construct()
     {
@@ -30,6 +32,7 @@ class Email extends BaseController
         $this->unitKerjaModel = new UnitKerjaModel();
         $this->pkModel = new PkModel(); // Add this
         $this->statusAsnModel = new StatusAsnModel();
+        $this->eselonModel = new EselonModel();
     }
 
     public function index()
@@ -92,6 +95,20 @@ class Email extends BaseController
                 ];
             }
 
+            // --- Eselon Statistics ---
+            $allEselonOptions = $this->eselonModel->orderBy('nama_eselon', 'ASC')->findAll();
+            $eselonCounts = [];
+            foreach ($allEselonOptions as $option) {
+                $count = $this->emailModel->allowCallbacks(false)
+                                        ->where('eselon_id', $option['id'])
+                                        ->countAllResults();
+                $eselonCounts[] = [
+                    'id' => $option['id'],
+                    'name' => $option['nama_eselon'],
+                    'count' => $count
+                ];
+            }
+
             // --- BSrE Status Statistics ---
             $bsreStatusCounts = [];
             $rawBsreCounts = $this->emailModel->allowCallbacks(false)
@@ -145,6 +162,7 @@ class Email extends BaseController
                 'last_sync_time' => $lastSync['value'] ?? null,
                 'unit_kerja_list' => $unitKerjaList,
                 'status_asn_counts' => $statusAsnCounts, // New data
+                'eselon_counts' => $eselonCounts, // New data
                 'bsre_status_counts' => $bsreStatusCounts, // New data
             ];
 
@@ -199,7 +217,6 @@ class Email extends BaseController
         $newJabatans = $data['jabatans'] ?? [];
         $newStatusAsn = $data['status_asn'] ?? null; // Added
         $newUnitKerja = $data['unit_kerja'] ?? null;
-        $newSubUnitKerja = $data['sub_unit_kerja'] ?? [];
 
         $results = [];
         foreach ($identifiers as $index => $identifier) {
@@ -255,12 +272,7 @@ class Email extends BaseController
                     $emailUpdateData['unit_kerja_id'] = $unit['id'];
                 }
             }
-            if (isset($newSubUnitKerja[$index]) && !empty($newSubUnitKerja[$index])) {
-                $subUnit = $this->unitKerjaModel->where('nama_unit_kerja', $newSubUnitKerja[$index])->first();
-                if ($subUnit) {
-                    $emailUpdateData['unit_kerja_id'] = $subUnit['id'];
-                }
-            }
+
 
             $pkUpdateData = []; // For PkModel
             if (isset($newNomors[$index]) && !empty($newNomors[$index])) {
@@ -441,7 +453,7 @@ class Email extends BaseController
             }
 
             $data['email'] = $email_detail;
-            $data['unit_kerja_options'] = $this->unitKerjaModel->where('parent_id IS NULL')->orderBy('nama_unit_kerja', 'ASC')->findAll();
+            $data['unit_kerja_options'] = $this->unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->findAll();
             $data['back_url'] = site_url('email');
 
             $current_unit_kerja = null;
@@ -457,6 +469,7 @@ class Email extends BaseController
             $data['current_unit_kerja'] = $current_unit_kerja;
             $data['parent_unit_kerja'] = $parent_unit_kerja;
             $data['status_asn_options'] = $this->statusAsnModel->orderBy('nama_status_asn', 'ASC')->findAll();
+            $data['eselon_options'] = $this->eselonModel->orderBy('nama_eselon', 'ASC')->findAll();
 
             return view('email/detail', $data);
         } catch (Exception $e) {
@@ -466,458 +479,69 @@ class Email extends BaseController
         }
     }
 
-    public function update_unit_kerja($username)
+    public function update_details($username)
     {
-        if ($this->request->getMethod() === 'POST') {
-            $unitKerjaId = $this->request->getPost('unit_kerja_id');
-
-            $email = $this->emailModel->where('user', $username)->first();
-            if (!$email) {
-                return redirect()->to('email')->with('error', 'Email account not found.');
-            }
-
-            $updated = $this->emailModel->update($email['id'], ['unit_kerja_id' => $unitKerjaId]);
-
-            if ($updated) {
-                return redirect()->to('email/detail/' . $username)->with('success', 'Unit Kerja has been updated successfully.');
-            } else {
-                return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update Unit Kerja. No changes were detected.');
-            }
+        if (strtolower($this->request->getMethod()) !== 'post') {
+            return redirect()->to('email/detail/' . $username)->with('error', 'Invalid request method.');
         }
 
-        return redirect()->to('email');
-    }
-
-    public function update_name($username)
-    {
-        if (strtolower($this->request->getMethod()) === 'post') {
-            $newName = $this->request->getPost('name');
-
-            $email = $this->emailModel->where('user', $username)->first();
-            if (!$email) {
-                return redirect()->to('email/detail/' . $username)->with('error', 'Email account not found.');
-            }
-
-            // Check if the new name is actually different from the current name
-            if ($newName === $email['name']) {
-                return redirect()->to('email/detail/' . $username)->with('info', 'No changes detected. Name is already up to date.');
-            }
-
-            // Validate newName (e.g., not empty)
-            if (empty($newName)) {
-                return redirect()->to('email/detail/' . $username)->with('error', 'Name cannot be empty.');
-            }
-
-            try {
-                $updated = $this->emailModel->update($email['id'], ['name' => $newName]);
-
-                if ($updated) {
-                    return redirect()->to('email/detail/' . $username)->with('success', 'Name has been updated successfully.');
-                } else {
-                    // This case might not be reachable if the name check above is thorough,
-                    // but it's good for robustness.
-                    return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update name. The database did not report any changes.');
-                }
-            } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
-                log_message('error', 'Database error during name update: ' . $e->getMessage());
-                return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update name due to a database error: ' . $e->getMessage());
-            }
+        $email = $this->emailModel->where('user', $username)->first();
+        if (!$email) {
+            return redirect()->to('email')->with('error', 'Email account not found.');
         }
 
-        return redirect()->to('email/detail/' . $username);
-    }
+        $updateData = [
+            'name' => $this->request->getPost('name'),
+            'email' => $this->request->getPost('email'),
+            'gelar_depan' => $this->request->getPost('gelar_depan'),
+            'gelar_belakang' => $this->request->getPost('gelar_belakang'),
+            'nik' => $this->request->getPost('nik'),
+            'nip' => $this->request->getPost('nip'),
+            'tempat_lahir' => $this->request->getPost('tempat_lahir'),
+            // Only update tanggal_lahir if it's not empty
+            'pendidikan' => $this->request->getPost('pendidikan'),
+            'jabatan' => $this->request->getPost('jabatan'),
+            'status_asn_id' => $this->request->getPost('status_asn'),
+            'eselon_id' => $this->request->getPost('eselon'),
+            'unit_kerja_id' => $this->request->getPost('unit_kerja_id'),
+        ];
 
-    public function update_email($username)
-    {
-        if (strtolower($this->request->getMethod()) === 'post') {
-            $newEmail = $this->request->getPost('email');
-
-            $email = $this->emailModel->where('user', $username)->first();
-            if (!$email) {
-                return redirect()->to('email/detail/' . $username)->with('error', 'Email account not found.');
-            }
-
-            if ($newEmail === $email['email']) {
-                return redirect()->to('email/detail/' . $username)->with('info', 'No changes detected. Email is already up to date.');
-            }
-
-            if (empty($newEmail)) {
-                return redirect()->to('email/detail/' . $username)->with('error', 'Email cannot be empty.');
-            }
-
-            try {
-                $updated = $this->emailModel->update($email['id'], ['email' => $newEmail]);
-
-                if ($updated) {
-                    return redirect()->to('email/detail/' . $username)->with('success', 'Email has been updated successfully.');
-                } else {
-                    return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update email. The database did not report any changes.');
-                }
-            } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
-                log_message('error', 'Database error during email update: ' . $e->getMessage());
-                return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update email due to a database error: ' . $e->getMessage());
-            }
+        $tanggalLahir = $this->request->getPost('tanggal_lahir');
+        if (!empty($tanggalLahir)) {
+            $updateData['tanggal_lahir'] = $tanggalLahir;
+        } else {
+            // If tanggal_lahir is empty, set it to NULL to clear it in DB
+            // or if the column doesn't allow NULL, you might want to handle it differently
+            $updateData['tanggal_lahir'] = null;
         }
 
-        return redirect()->to('email/detail/' . $username);
-    }
 
-    public function update_password($username)
-    {
-        if (strtolower($this->request->getMethod()) === 'post') {
-            $newPassword = $this->request->getPost('password');
-
-            if (empty($newPassword)) {
-                return redirect()->to('email/detail/' . $username)->with('error', 'Password cannot be empty.');
-            }
-
-            $email = $this->emailModel->where('user', $username)->first();
-            if (!$email) {
-                return redirect()->to('email/detail/' . $username)->with('error', 'Email account not found.');
-            }
-
+        // Handle password update separately
+        $newPassword = $this->request->getPost('password');
+        if (!empty($newPassword) && $newPassword !== $email['password']) {
             try {
-                // 1. Update in cPanel
                 $this->cpanelApi->change_password($email['email'], $newPassword);
-
-                // 2. Update in local DB
-                $updated = $this->emailModel->update($email['id'], ['password' => $newPassword]);
-
-                if ($updated) {
-                    return redirect()->to('email/detail/' . $username)->with('success', 'Password has been updated successfully locally and on server.');
-                } else {
-                    return redirect()->to('email/detail/' . $username)->with('warning', 'Password updated on server but failed to update locally.');
-                }
+                $updateData['password'] = $newPassword;
             } catch (Exception $e) {
-                log_message('error', 'Error updating password: ' . $e->getMessage());
-                return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update password: ' . $e->getMessage());
+                log_message('error', 'Error updating password on cPanel: ' . $e->getMessage());
+                return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update password on cPanel: ' . $e->getMessage());
             }
         }
-
-        return redirect()->to('email/detail/' . $username);
-    }
-
-    public function update_nik($username)
-    {
-        if (strtolower($this->request->getMethod()) === 'post') {
-            $newNik = $this->request->getPost('nik');
-
-            $email = $this->emailModel->where('user', $username)->first();
-            if (!$email) {
-                return redirect()->to('email/detail/' . $username)->with('error', 'Email account not found.');
-            }
-
-            if ($newNik === $email['nik']) {
-                return redirect()->to('email/detail/' . $username)->with('info', 'No changes detected. NIK is already up to date.');
-            }
-
-            if (empty($newNik)) {
-                return redirect()->to('email/detail/' . $username)->with('error', 'NIK cannot be empty.');
-            }
-
-            try {
-                $updated = $this->emailModel->update($email['id'], ['nik' => $newNik]);
-
-                if ($updated) {
-                    return redirect()->to('email/detail/' . $username)->with('success', 'NIK/NIP has been updated successfully.');
-                } else {
-                    return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update NIK/NIP. The database did not report any changes.');
-                }
-            } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
-                log_message('error', 'Database error during NIK update: ' . $e->getMessage());
-                return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update NIK due to a database error.');
-            }
-        }
-
-        return redirect()->to('email/detail/' . $username);
-    }
-
-    public function update_nip($username)
-    {
-        if (strtolower($this->request->getMethod()) === 'post') {
-            $newNip = $this->request->getPost('nip');
-
-            $email = $this->emailModel->where('user', $username)->first();
-            if (!$email) {
-                return redirect()->to('email/detail/' . $username)->with('error', 'Email account not found.');
-            }
-
-            if ($newNip === $email['nip']) {
-                return redirect()->to('email/detail/' . $username)->with('info', 'No changes detected. NIP is already up to date.');
-            }
-
-            // NIP can be empty
-            // if (empty($newNip)) {
-            //     return redirect()->to('email/detail/' . $username)->with('error', 'NIP cannot be empty.');
-            // }
-
-            try {
-                $updated = $this->emailModel->update($email['id'], ['nip' => $newNip]);
-
-                if ($updated) {
-                    return redirect()->to('email/detail/' . $username)->with('success', 'NIP has been updated successfully.');
-                } else {
-                    return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update NIP. The database did not report any changes.');
-                }
-            } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
-                log_message('error', 'Database error during NIP update: ' . $e->getMessage());
-                return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update NIP due to a database error.');
-            }
-        }
-
-        return redirect()->to('email/detail/' . $username);
-    }
-
-    public function update_tempat_lahir($username)
-    {
-        if (strtolower($this->request->getMethod()) === 'post') {
-            $newTempatLahir = $this->request->getPost('tempat_lahir');
-
-            $email = $this->emailModel->where('user', $username)->first();
-            if (!$email) {
-                return redirect()->to('email/detail/' . $username)->with('error', 'Email account not found.');
-            }
-
-            if ($newTempatLahir === $email['tempat_lahir']) {
-                return redirect()->to('email/detail/' . $username)->with('info', 'No changes detected. Tempat Lahir is already up to date.');
-            }
-
-            try {
-                $updated = $this->emailModel->update($email['id'], ['tempat_lahir' => $newTempatLahir]);
-
-                if ($updated) {
-                    return redirect()->to('email/detail/' . $username)->with('success', 'Tempat Lahir has been updated successfully.');
-                } else {
-                    return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update Tempat Lahir. The database did not report any changes.');
-                }
-            } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
-                log_message('error', 'Database error during Tempat Lahir update: ' . $e->getMessage());
-                return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update Tempat Lahir due to a database error.');
-            }
-        }
-
-        return redirect()->to('email/detail/' . $username);
-    }
-
-    public function update_tanggal_lahir($username)
-    {
-        if (strtolower($this->request->getMethod()) === 'post') {
-            $newTanggalLahir = $this->request->getPost('tanggal_lahir');
-
-            $email = $this->emailModel->where('user', $username)->first();
-            if (!$email) {
-                return redirect()->to('email/detail/' . $username)->with('error', 'Email account not found.');
-            }
-
-            if ($newTanggalLahir === $email['tanggal_lahir']) {
-                return redirect()->to('email/detail/' . $username)->with('info', 'No changes detected. Tanggal Lahir is already up to date.');
-            }
-
-            try {
-                $updated = $this->emailModel->update($email['id'], ['tanggal_lahir' => $newTanggalLahir]);
-
-                if ($updated) {
-                    return redirect()->to('email/detail/' . $username)->with('success', 'Tanggal Lahir has been updated successfully.');
-                } else {
-                    return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update Tanggal Lahir. The database did not report any changes.');
-                }
-            } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
-                log_message('error', 'Database error during Tanggal Lahir update: ' . $e->getMessage());
-                return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update Tanggal Lahir due to a database error.');
-            }
-        }
-
-        return redirect()->to('email/detail/' . $username);
-    }
-
-    public function update_pendidikan($username)
-    {
-        if (strtolower($this->request->getMethod()) === 'post') {
-            $newPendidikan = $this->request->getPost('pendidikan');
-
-            $email = $this->emailModel->where('user', $username)->first();
-            if (!$email) {
-                return redirect()->to('email/detail/' . $username)->with('error', 'Email account not found.');
-            }
-
-            if ($newPendidikan === $email['pendidikan']) {
-                return redirect()->to('email/detail/' . $username)->with('info', 'No changes detected. Pendidikan is already up to date.');
-            }
-
-            try {
-                $updated = $this->emailModel->update($email['id'], ['pendidikan' => $newPendidikan]);
-
-                if ($updated) {
-                    return redirect()->to('email/detail/' . $username)->with('success', 'Pendidikan has been updated successfully.');
-                } else {
-                    return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update Pendidikan. The database did not report any changes.');
-                }
-            } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
-                log_message('error', 'Database error during Pendidikan update: ' . $e->getMessage());
-                return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update Pendidikan due to a database error.');
-            }
-        }
-
-        return redirect()->to('email/detail/' . $username);
-    }
-
-    public function update_jabatan($username)
-    {
-        if (strtolower($this->request->getMethod()) === 'post') {
-            $newJabatan = $this->request->getPost('jabatan');
-
-            $email = $this->emailModel->where('user', $username)->first();
-            if (!$email) {
-                return redirect()->to('email/detail/' . $username)->with('error', 'Email account not found.');
-            }
-
-            if ($newJabatan === $email['jabatan']) {
-                return redirect()->to('email/detail/' . $username)->with('info', 'No changes detected. Jabatan is already up to date.');
-            }
-
-            try {
-                $updated = $this->emailModel->update($email['id'], ['jabatan' => $newJabatan]);
-
-                if ($updated) {
-                    return redirect()->to('email/detail/' . $username)->with('success', 'Jabatan has been updated successfully.');
-                } else {
-                    return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update Jabatan. The database did not report any changes.');
-                }
-            } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
-                log_message('error', 'Database error during Jabatan update: ' . $e->getMessage());
-                return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update Jabatan due to a database error.');
-            }
-        }
-
-        return redirect()->to('email/detail/' . $username);
-    }
-
-    public function update_gelar_depan($username)
-    {
-        if (strtolower($this->request->getMethod()) === 'post') {
-            $newGelarDepan = $this->request->getPost('gelar_depan');
-
-            $email = $this->emailModel->where('user', $username)->first();
-            if (!$email) {
-                return redirect()->to('email/detail/' . $username)->with('error', 'Email account not found.');
-            }
-
-            if ($newGelarDepan === $email['gelar_depan']) {
-                return redirect()->to('email/detail/' . $username)->with('info', 'No changes detected. Gelar Depan is already up to date.');
-            }
-
-            try {
-                $updated = $this->emailModel->update($email['id'], ['gelar_depan' => $newGelarDepan]);
-
-                if ($updated) {
-                    return redirect()->to('email/detail/' . $username)->with('success', 'Gelar Depan has been updated successfully.');
-                } else {
-                    return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update Gelar Depan. The database did not report any changes.');
-                }
-            } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
-                log_message('error', 'Database error during Gelar Depan update: ' . $e->getMessage());
-                return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update Gelar Depan due to a database error.');
-            }
-        }
-
-        return redirect()->to('email/detail/' . $username);
-    }
-
-    public function update_gelar_belakang($username)
-    {
-        if (strtolower($this->request->getMethod()) === 'post') {
-            $newGelarBelakang = $this->request->getPost('gelar_belakang');
-
-            $email = $this->emailModel->where('user', $username)->first();
-            if (!$email) {
-                return redirect()->to('email/detail/' . $username)->with('error', 'Email account not found.');
-            }
-
-            if ($newGelarBelakang === $email['gelar_belakang']) {
-                return redirect()->to('email/detail/' . $username)->with('info', 'No changes detected. Gelar Belakang is already up to date.');
-            }
-
-            try {
-                $updated = $this->emailModel->update($email['id'], ['gelar_belakang' => $newGelarBelakang]);
-
-                if ($updated) {
-                    return redirect()->to('email/detail/' . $username)->with('success', 'Gelar Belakang has been updated successfully.');
-                } else {
-                    return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update Gelar Belakang. The database did not report any changes.');
-                }
-            } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
-                log_message('error', 'Database error during Gelar Belakang update: ' . $e->getMessage());
-                return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update Gelar Belakang due to a database error.');
-            }
-        }
-
-        return redirect()->to('email/detail/' . $username);
-    }
-
-    public function update_status_asn($username)
-    {
-        if (strtolower($this->request->getMethod()) === 'post') {
-            $newStatusAsnId = $this->request->getPost('status_asn');
-
-            $email = $this->emailModel->where('user', $username)->first();
-            if (!$email) {
-                return redirect()->to('email/detail/' . $username)->with('error', 'Email account not found.');
-            }
-
-            // If ID matches current, no change
-            if ($newStatusAsnId == $email['status_asn_id']) {
-                return redirect()->to('email/detail/' . $username)->with('info', 'No changes detected. Status ASN is already up to date.');
-            }
-
-            try {
-                $data = ['status_asn_id' => !empty($newStatusAsnId) ? $newStatusAsnId : null];
-                $updated = $this->emailModel->update($email['id'], $data);
-
-                if ($updated) {
-                    return redirect()->to('email/detail/' . $username)->with('success', 'Status ASN has been updated successfully.');
-                } else {
-                    return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update Status ASN. The database did not report any changes.');
-                }
-            } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
-                log_message('error', 'Database error during Status ASN update: ' . $e->getMessage());
-                return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update Status ASN due to a database error.');
-            }
-        }
-
-        return redirect()->to('email/detail/' . $username);
-    }
-
-    public function batchUpdateStatusAsn()
-    {
-        if (!$this->request->isAJAX()) {
-            return $this->response->setStatusCode(405)->setJSON(['status' => 'error', 'message' => 'Invalid request method.']);
-        }
-
-        $emailIds = $this->request->getPost('email_ids');
-        $statusAsnId = $this->request->getPost('status_asn_id');
-
-        if (empty($emailIds) || !is_array($emailIds) || empty($statusAsnId)) {
-            return $this->response->setStatusCode(400)->setJSON(['status' => 'error', 'message' => 'Email IDs and Status ASN ID are required.']);
-        }
-
-        $data = ['status_asn_id' => $statusAsnId];
 
         try {
-            $updated = $this->emailModel->whereIn('id', $emailIds)->set($data)->update();
+            $updated = $this->emailModel->update($email['id'], $updateData);
 
             if ($updated) {
-                return $this->response->setJSON(['status' => 'success', 'message' => 'Status ASN has been updated successfully for ' . $updated . ' emails.']);
+                return redirect()->to('email/detail/' . $username)->with('success', 'Email details have been updated successfully.');
             } else {
-                return $this->response->setJSON(['status' => 'error', 'message' => 'Failed to update Status ASN. No changes were detected or an error occurred.']);
+                return redirect()->to('email/detail/' . $username)->with('info', 'No changes were detected.');
             }
-        } catch (\Exception $e) {
-            log_message('error', '[ERROR] {file}:{line} - {message}', ['file' => __FILE__, 'line' => __LINE__, 'message' => $e->getMessage()]);
-            return $this->response->setStatusCode(500)->setJSON(['status' => 'error', 'message' => 'An internal error occurred.']);
+        } catch (Exception $e) {
+            log_message('error', 'Database error during email details update: ' . $e->getMessage());
+            return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update email details due to a database error.');
         }
     }
-
-
-
+    
     public function unit_kerja_detail($unitKerjaId)
     {
         try {
@@ -1009,6 +633,82 @@ class Email extends BaseController
             ];
 
             return view('email/unit_kerja_detail', $data);
+        } catch (Exception $e) {
+            $data['error'] = $e->getMessage();
+            $data['back_url'] = site_url('email');
+            return view('email/error', $data);
+        }
+    }
+
+    public function eselon_detail($eselonId)
+    {
+        try {
+            $eselon = $this->eselonModel->find($eselonId);
+            if (!$eselon) {
+                throw new Exception('Eselon not found.');
+            }
+
+            $perPage = $this->request->getGet('per_page') ?? 100;
+            $search = $this->request->getGet('search');
+            $bsre_status = $this->request->getGet('bsre_status');
+
+            $emailBuilder = $this->emailModel
+                ->select('emails.*, uk.nama_unit_kerja as unit_kerja_name, parent_uk.nama_unit_kerja as parent_unit_kerja_name')
+                ->join('unit_kerja as uk', 'uk.id = emails.unit_kerja_id', 'left')
+                ->join('unit_kerja as parent_uk', 'parent_uk.id = uk.parent_id', 'left')
+                ->where('eselon_id', $eselonId);
+
+            if ($search) {
+                $emailBuilder->groupStart()
+                    ->like('email', $search)
+                    ->orLike('name', $search)
+                    ->orLike('nik', $search)
+                    ->orLike('nip', $search)
+                    ->groupEnd();
+            }
+
+            if ($bsre_status) {
+                if ($bsre_status === 'not_synced') {
+                    $emailBuilder->groupStart()
+                        ->where('emails.bsre_status', null)
+                        ->orWhere('emails.bsre_status', '')
+                        ->groupEnd();
+                } else {
+                    $emailBuilder->where('emails.bsre_status', $bsre_status);
+                }
+            }
+
+            $emails = $emailBuilder->orderBy('name', 'ASC')
+                ->paginate($perPage);
+            $pager = $this->emailModel->pager;
+
+            // Define BSrE status options
+            $bsre_status_options = [
+                'ISSUE' => 'Sertifikat Aktif / Siap TTE',
+                'EXPIRED' => 'Masa Berlaku Habis',
+                'RENEW' => 'Proses Pembaruan',
+                'WAITING_FOR_VERIFICATION' => 'Menunggu Verifikasi',
+                'NEW' => 'Belum Aktivasi',
+                'NO_CERTIFICATE' => 'Belum Ada Sertifikat',
+                'NOT_REGISTERED' => 'Pengguna Tidak Terdaftar',
+                'SUSPEND' => 'Akun Ditangguhkan',
+                'REVOKE' => 'Sertifikat Dicabut',
+                'not_synced' => 'Not Synced'
+            ];
+
+            $data = [
+                'eselon' => $eselon,
+                'emails' => $emails,
+                'total_emails' => $pager->getTotal(),
+                'pagination' => $pager,
+                'per_page' => $perPage,
+                'search' => $search,
+                'bsre_status' => $bsre_status,
+                'bsre_status_options' => $bsre_status_options,
+                'back_url' => site_url('email'),
+            ];
+
+            return view('email/eselon_detail', $data);
         } catch (Exception $e) {
             $data['error'] = $e->getMessage();
             $data['back_url'] = site_url('email');

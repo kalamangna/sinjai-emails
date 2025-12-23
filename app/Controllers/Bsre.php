@@ -35,7 +35,7 @@ class Bsre extends BaseController
 
             // Logika bisnis aplikasi Anda berdasarkan status 
             $pesan = '';
-            switch ($statusUser) { 
+            switch ($statusUser) {
                 case 'ISSUE':
                     $pesan = 'Sertifikat Aktif / Siap TTE';
                     break;
@@ -107,7 +107,7 @@ class Bsre extends BaseController
             if ($emailRecord) {
                 // Update the bsre_status in the emails table
                 $emailModel->update($emailRecord['id'], ['bsre_status' => $statusFromBsre]);
-                
+
                 return $this->response->setJSON([
                     'status' => 'success',
                     'message' => 'Status synced successfully',

@@ -26,9 +26,6 @@
         <button onclick="syncAllBsreStatus()" class="btn btn-warning">
           <i class="fas fa-sync-alt me-2"></i>Batch Sync Status TTE
         </button>
-        <button onclick="openBatchUpdateStatusModal()" class="btn btn-primary">
-          <i class="fas fa-user-tag me-2"></i>Batch Update Status ASN
-        </button>
       </div>
     </div>
 
@@ -143,12 +140,9 @@
       <div class="card-body p-0">
         <?php if (!empty($emails)): ?>
           <div class="table-responsive">
-            <table class="table table-hover mb-0" id="email-table">
+            <table class="table table-hover mb-0">
               <thead class="table-light">
                 <tr>
-                  <th class="ps-3" style="width: 1%;">
-                    <input class="form-check-input" type="checkbox" id="select-all-checkbox">
-                  </th>
                   <th class="ps-4"><i class="fas fa-envelope me-2"></i>Email Address</th>
                   <th><i class="fas fa-id-card me-2"></i>NIK / NIP</th>
                   <th><i class="fas fa-user-tag me-2"></i>Status ASN / Jabatan</th>
@@ -156,15 +150,12 @@
                   <?php if (!empty($child_units)): ?>
                     <th><i class="fas fa-building me-2"></i>Unit Kerja</th>
                   <?php endif; ?>
-                  <th class="text-center"><i class="fas fa-cog me-2"></i>Action</th>
+                  <th class="text-center" style="width: 120px;"><i class="fas fa-cog me-2"></i>Action</th>
                 </tr>
               </thead>
               <tbody>
                 <?php foreach ($emails as $email): ?>
                   <tr>
-                    <td class="ps-3 align-middle">
-                      <input class="form-check-input email-checkbox" type="checkbox" value="<?= $email['id'] ?>">
-                    </td>
                     <td class="ps-4 align-middle">
                       <div class="d-flex align-items-center">
                         <i class="fas fa-envelope text-primary me-3"></i>
@@ -293,123 +284,77 @@
   </div>
 </div>
 
-<!-- Update Status ASN Modal -->
-<div class="modal fade" id="updateStatusModal" tabindex="-1" aria-labelledby="updateStatusModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="updateStatusModalLabel">Batch Update Status ASN</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <p><span id="selected-count"></span> email(s) selected.</p>
-        <form id="updateStatusForm">
-          <div class="mb-3">
-            <label for="modal_status_asn_id" class="form-label">New Status ASN</label>
-            <select name="status_asn_id" id="modal_status_asn_id" class="form-select">
-              <?php foreach ($status_asn_options as $option): ?>
-                <option value="<?= esc($option['id']) ?>"><?= esc($option['nama_status_asn']) ?></option>
-              <?php endforeach; ?>
-            </select>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" onclick="submitBatchUpdateStatus()">Update Status</button>
-      </div>
-    </div>
-  </div>
-</div>
-
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-      const selectAllCheckbox = document.getElementById('select-all-checkbox');
-      const emailCheckboxes = document.querySelectorAll('.email-checkbox');
+  function openExportModal(unitId) {
+    const exportModal = new bootstrap.Modal(document.getElementById('exportProgressModal'));
+    const progressBar = document.getElementById('exportProgressBar');
+    const statusText = document.getElementById('exportStatusText');
 
-      if(selectAllCheckbox) {
-          selectAllCheckbox.addEventListener('change', function () {
-              emailCheckboxes.forEach(checkbox => {
-                  checkbox.checked = this.checked;
-              });
-          });
-      }
-  });
+    exportModal.show();
+    progressBar.style.width = '0%';
+    progressBar.innerText = '0%';
+    statusText.innerText = 'Fetching email list...';
 
-  function openBatchUpdateStatusModal() {
-    const selectedEmails = Array.from(document.querySelectorAll('.email-checkbox:checked')).map(cb => cb.value);
-    if (selectedEmails.length === 0) {
-        alert('Please select at least one email to update.');
-        return;
-    }
-    document.getElementById('selected-count').textContent = selectedEmails.length;
-    var myModal = new bootstrap.Modal(document.getElementById('updateStatusModal'), {});
-    myModal.show();
-  }
-
-  function submitBatchUpdateStatus() {
-      const selectedEmails = Array.from(document.querySelectorAll('.email-checkbox:checked')).map(cb => cb.value);
-      if (selectedEmails.length === 0) {
-          alert('No emails selected.');
-          return;
-      }
-
-      const statusSelect = document.getElementById('modal_status_asn_id');
-      const statusAsnId = statusSelect.value;
-      const submitButton = document.querySelector('#updateStatusModal .btn-primary');
-      submitButton.disabled = true;
-      submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...';
-
-      const formData = new FormData();
-      formData.append('status_asn_id', statusAsnId);
-      selectedEmails.forEach(emailId => {
-          formData.append('email_ids[]', emailId);
-      });
-
-      fetch('<?= site_url('email/batch-update-status-asn') ?>', {
-          method: 'POST',
-          headers: {
-              'X-Requested-With': 'XMLHttpRequest',
-          },
-          body: formData
-      })
+    // First, get the list of emails to export
+    fetch(`<?= site_url('email/api_unit_emails/') ?>${unitId}`)
       .then(response => response.json())
       .then(data => {
-          if (data.status === 'success') {
-              location.reload();
-          } else {
-              alert('Error updating status: ' + (data.message || 'Unknown error'));
+        if (!data.success || data.emails.length === 0) {
+          statusText.innerText = 'No emails to export.';
+          return;
+        }
+
+        const emails = data.emails;
+        const totalEmails = emails.length;
+        let processedCount = 0;
+
+        statusText.innerText = `Found ${totalEmails} emails. Starting PDF generation...`;
+
+        // Process each email
+        const processNext = () => {
+          if (processedCount >= totalEmails) {
+            statusText.innerText = 'All PDFs generated. Creating ZIP file...';
+            // All PDFs are generated, now create the zip
+            window.location.href = `<?= site_url('email/api_download_zip/') ?>${unitId}`;
+            setTimeout(() => exportModal.hide(), 2000);
+            return;
           }
+
+          const email = emails[processedCount];
+          const formData = new FormData();
+          formData.append('unit_id', unitId);
+          formData.append('email_id', email.id);
+
+
+          fetch(`<?= site_url('email/api_generate_pdf') ?>`, {
+            method: 'POST',
+            body: new URLSearchParams(formData)
+          })
+          .then(response => response.json())
+          .then(result => {
+            processedCount++;
+            const progress = Math.round((processedCount / totalEmails) * 100);
+            progressBar.style.width = `${progress}%`;
+            progressBar.innerText = `${progress}%`;
+            statusText.innerText = `Generated PDF for ${email.name}... (${processedCount}/${totalEmails})`;
+            
+            // Process the next email
+            setTimeout(processNext, 100); // Small delay
+          })
+          .catch(error => {
+            console.error('Error generating PDF for:', email, error);
+            statusText.innerText = `Error generating PDF for ${email.name}.`;
+            // Decide if you want to stop or continue
+            setTimeout(processNext, 100);
+          });
+        };
+
+        processNext();
       })
       .catch(error => {
-          console.error('Error:', error);
-          alert('An error occurred while updating statuses.');
-      })
-      .finally(() => {
-          var myModalEl = document.getElementById('updateStatusModal');
-          var modal = bootstrap.Modal.getInstance(myModalEl);
-          if(modal) modal.hide();
-          submitButton.disabled = false;
-          submitButton.innerHTML = 'Save changes';
+        console.error('Error fetching email list:', error);
+        statusText.innerText = 'Error fetching email list.';
       });
-  }
-
-  // Helper function to render status (reused by sync functions)
-  function displayBsreStatus(status, keterangan = '', fromDb = false) {
-      // Find the container based on context - wait, this helper was inside a loop before.
-      // Now it needs to be generic or the sync function handles DOM update directly.
-      // The previous implementation of syncBsreStatus updated the DOM directly.
-      // Let's just keep the helper for the sync functions to use if they want,
-      // OR easier: let syncBsreStatus handle the rendering update since it knows which element to target.
-      
-      // Actually, syncBsreStatus needs to update the DOM. It was using a helper inside fetchBsreStatus before?
-      // No, syncBsreStatus had its own logic or called fetchBsreStatus.
-      // Let's check the previous code of syncBsreStatus.
-      // It was calling `displayBsreStatus` which was defined inside `fetchBsreStatus` scope? No, that was unit_kerja_detail.php previous turn.
-      // Wait, in the previous turn I moved `displayBsreStatus` INSIDE `fetchBsreStatus`.
-      // So `syncBsreStatus` couldn't access it unless I moved it out.
-      
-      // Let's just define a global helper `updateBsreStatusElement` that sync functions can use.
   }
 
   function updateBsreStatusElement(emailUser, status, keterangan) {
@@ -491,15 +436,17 @@
           return;
       }
 
-            statusContainers.forEach((container, index) => {
-                const emailUser = container.id.replace('bsre-status-', '');
-                const emailAddress = container.getAttribute('data-email'); // Get email from data attribute
-      
-                if (emailUser && emailAddress) {
-                    setTimeout(() => {
-                        syncBsreStatus(emailUser, emailAddress);
-                    }, index * 200); // 200ms delay per request
-                }
-            });  }
+      statusContainers.forEach((container, index) => {
+          const emailUser = container.id.replace('bsre-status-', '');
+          const emailAddress = container.getAttribute('data-email'); // Get email from data attribute
+
+          if (emailUser && emailAddress) {
+              setTimeout(() => {
+                  syncBsreStatus(emailUser, emailAddress);
+              }, index * 200); // 200ms delay per request
+          }
+      });
+  }
 </script>
+
 <?= $this->endSection() ?>

@@ -49,9 +49,6 @@ class BsreApi
         try {
             // Manual URL construction
             $fullUrl = rtrim($this->baseUrl, '/') . '/api/v2/user/check/status';
-            
-            // Logging for debug purposes (can be removed in production)
-            log_message('info', 'BSRE API Request URL: ' . $fullUrl);
 
             $response = $this->client->request('POST', $fullUrl, [
                 'auth' => [$this->username, $this->password],
@@ -64,16 +61,18 @@ class BsreApi
             $body = json_decode($response->getBody(), true);
             $statusCode = $response->getStatusCode();
 
+            // log hasil response untuk debugging
+            log_message('info', 'BSrE API Response: ' . print_r($body, true));
+
             return [
                 'success' => true,
                 'data'    => $body,
                 'code'    => $statusCode
             ];
-
         } catch (\Exception $e) {
             $errorMsg = "BSrE API Error. URL: [{$fullUrl}]. Message: " . $e->getMessage();
             log_message('error', $errorMsg);
-            
+
             return [
                 'success' => false,
                 'message' => $errorMsg,

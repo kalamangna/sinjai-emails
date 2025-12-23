@@ -34,6 +34,7 @@ class EmailModel extends Model
         'pendidikan',
         'jabatan',
         'status_asn_id',
+        'eselon_id',
         'bsre_status',
     ];
     protected $useTimestamps = true;

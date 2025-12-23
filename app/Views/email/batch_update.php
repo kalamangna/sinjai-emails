@@ -110,10 +110,7 @@ M.Si"></textarea>
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
-                                <div class="mb-3">
-                                    <label for="sub_unit_kerja_input" class="form-label">New Sub Unit Kerja</label>
-                                    <textarea class="form-control" id="sub_unit_kerja_input" rows="4" placeholder="Enter a new sub unit kerja per line"></textarea>
-                                </div>
+
                             </div>
                         </div>
                     </div>
@@ -207,7 +204,6 @@ M.Si"></textarea>
         const jabatanInput = document.getElementById('jabatan_input');
         const statusAsnInput = document.getElementById('status_asn_input'); 
         const unitKerjaInput = document.getElementById('unit_kerja_input');
-        const subUnitKerjaInput = document.getElementById('sub_unit_kerja_input');
         const updateBtn = document.getElementById('update_btn');
         const resultsTableBody = document.querySelector('#results_table tbody');
 
@@ -244,7 +240,6 @@ M.Si"></textarea>
             const rawTanggalLahirs = tanggalLahirInput.value.split('\n');
             const rawPendidikans = pendidikanInput.value.split('\n');
             const rawJabatans = jabatanInput.value.split('\n');
-            const rawSubUnitKerja = subUnitKerjaInput.value.split('\n');
 
             const identifiers = [];
             const newNames = [];
@@ -262,7 +257,6 @@ M.Si"></textarea>
             const newTanggalLahirs = [];
             const newPendidikans = [];
             const newJabatans = [];
-            const newSubUnitKerja = [];
 
             for (let i = 0; i < rawIdentifiers.length; i++) {
                 const id = rawIdentifiers[i].trim();
@@ -283,7 +277,6 @@ M.Si"></textarea>
                     newTanggalLahirs.push((rawTanggalLahirs[i] !== undefined) ? rawTanggalLahirs[i].trim() : '');
                     newPendidikans.push((rawPendidikans[i] !== undefined) ? rawPendidikans[i].trim() : '');
                     newJabatans.push((rawJabatans[i] !== undefined) ? rawJabatans[i].trim() : '');
-                    newSubUnitKerja.push((rawSubUnitKerja[i] !== undefined) ? rawSubUnitKerja[i].trim() : '');
                 }
             }
 
@@ -325,8 +318,7 @@ M.Si"></textarea>
                         pendidikans: newPendidikans,
                         jabatans: newJabatans,
                         status_asn: newStatusAsn,
-                        unit_kerja: newUnitKerja,
-                        sub_unit_kerja: newSubUnitKerja
+                        unit_kerja: newUnitKerja
                     })
                 });
 

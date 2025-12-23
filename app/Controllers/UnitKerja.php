@@ -11,11 +11,17 @@ class UnitKerja extends BaseController
         $unitKerjaModel = new UnitKerjaModel();
         $search = $this->request->getGet('search');
 
+        $unitKerjaModel->select('unit_kerja.*, parent.nama_unit_kerja as parent_name')
+            ->join('unit_kerja as parent', 'parent.id = unit_kerja.parent_id', 'left');
+
         if ($search) {
-            $unit_kerja_list = $unitKerjaModel->like('nama_unit_kerja', $search)->findAll();
-        } else {
-            $unit_kerja_list = $unitKerjaModel->findAll();
+            $unitKerjaModel->groupStart()
+                ->like('unit_kerja.nama_unit_kerja', $search)
+                ->orLike('parent.nama_unit_kerja', $search)
+                ->groupEnd();
         }
+
+        $unit_kerja_list = $unitKerjaModel->findAll();
 
         // Sort using PHP's natural sort algorithm (case-insensitive)
         usort($unit_kerja_list, function ($a, $b) {
@@ -32,8 +38,19 @@ class UnitKerja extends BaseController
     public function add()
     {
         $unitKerjaModel = new UnitKerjaModel();
+        $data['parent_options'] = $unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->findAll();
+        $data['title'] = 'Add Unit Kerja';
+
+        return view('unit_kerja/add', $data);
+    }
+
+    public function store()
+    {
+        $unitKerjaModel = new UnitKerjaModel();
+        $parentId = $this->request->getPost('parent_id');
         $data = [
-            'nama_unit_kerja' => $this->request->getPost('nama_unit_kerja')
+            'nama_unit_kerja' => $this->request->getPost('nama_unit_kerja'),
+            'parent_id' => !empty($parentId) ? $parentId : null,
         ];
         $unitKerjaModel->insert($data);
         return redirect()->to('unit_kerja/manage');
@@ -43,6 +60,7 @@ class UnitKerja extends BaseController
     {
         $unitKerjaModel = new UnitKerjaModel();
         $data['unit_kerja'] = $unitKerjaModel->find($id);
+        $data['parent_options'] = $unitKerjaModel->where('id !=', $id)->orderBy('nama_unit_kerja', 'ASC')->findAll();
         $data['title'] = 'Edit Unit Kerja';
 
         return view('unit_kerja/edit', $data);
@@ -51,8 +69,10 @@ class UnitKerja extends BaseController
     public function update($id)
     {
         $unitKerjaModel = new UnitKerjaModel();
+        $parentId = $this->request->getPost('parent_id');
         $data = [
-            'nama_unit_kerja' => $this->request->getPost('nama_unit_kerja')
+            'nama_unit_kerja' => $this->request->getPost('nama_unit_kerja'),
+            'parent_id' => !empty($parentId) ? $parentId : null,
         ];
         $unitKerjaModel->update($id, $data);
         return redirect()->to('unit_kerja/manage');

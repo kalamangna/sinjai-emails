@@ -136,9 +136,9 @@
 </div>
 
 
-<!-- Unit Kerja List Section -->
+<!-- Unit Kerja and Eselon Lists Section -->
 <div class="row mb-4">
-    <div class="col-12">
+    <div class="col-12 mb-4">
         <div class="accordion shadow-sm" id="unitKerjaAccordion">
             <div class="accordion-item">
                 <h2 class="accordion-header" id="headingOne">
@@ -165,6 +165,34 @@
             </div>
         </div>
     </div>
+    <div class="col-12">
+        <div class="accordion shadow-sm" id="eselonAccordion">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingTwo">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                        <i class="fas fa-layer-group me-2 text-primary"></i>Eselon List
+                    </button>
+                </h2>
+                <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#eselonAccordion">
+                    <div class="accordion-body">
+                        <?php if (!empty($eselon_counts)): ?>
+                            <div class="list-group">
+                                <?php foreach ($eselon_counts as $eselon): ?>
+                                    <a href="<?= site_url('email/eselon/' . $eselon['id']) ?>" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                        <?= esc(strtoupper($eselon['name'])) ?>
+                                        <span class="badge bg-primary rounded-pill"><?= $eselon['count'] ?></span>
+                                    </a>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php else: ?>
+                            <p class="text-muted">No Eselon data found.</p>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 </div>
 
 <!-- Filter and Search Section -->
@@ -205,7 +233,7 @@
                     <div class="col-md-4">
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                             <button type="submit" class="btn btn-primary flex-grow-1">
-                                <i class="fas fa-filter me-2"></i>Apply
+                                <i class="fas fa-search me-2"></i>Search
                             </button>
                             <a href="<?= current_url() ?>" class="btn btn-outline-secondary flex-grow-1">
                                 <i class="fas fa-sync-alt me-2"></i>Reset
@@ -248,7 +276,7 @@
                                     <th>
                                         <i class="fas fa-building me-2"></i>Unit Kerja
                                     </th>
-                                    <th class="text-center">
+                                    <th class="text-center" style="width: 120px;">
                                         <i class="fas fa-cog me-2"></i>Action
                                     </th>
                                 </tr>
