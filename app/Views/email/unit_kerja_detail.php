@@ -144,7 +144,6 @@
               <thead class="table-light">
                 <tr>
                   <th class="ps-4"><i class="fas fa-envelope me-2"></i>Email Address</th>
-                  <th><i class="fas fa-id-card me-2"></i>NIK / NIP</th>
                   <th><i class="fas fa-user-tag me-2"></i>Status ASN / Jabatan</th>
                   <th><i class="fas fa-fingerprint me-2"></i>Status TTE</th>
                   <?php if (!empty($child_units)): ?>
@@ -164,14 +163,6 @@
                           <small class="d-block text-muted"><?= esc(strtoupper($email['name'])) ?></small>
                         </div>
                       </div>
-                    </td>
-                    <td class="align-middle">
-                      <?php if (!empty($email['nik'])): ?>
-                        <div><?= esc($email['nik']) ?></div>
-                      <?php endif; ?>
-                      <?php if (!empty($email['nip'])): ?>
-                        <small class="text-muted"><?= esc($email['nip']) ?></small>
-                      <?php endif; ?>
                     </td>
                     <td class="align-middle">
                       <?php if (!empty($email['status_asn'])): ?>

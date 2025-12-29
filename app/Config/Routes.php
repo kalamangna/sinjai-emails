@@ -29,6 +29,10 @@ $routes->get('email/export_unit_kerja_pdf/(:num)', 'Email::export_unit_kerja_pdf
 $routes->get('email/export_perjanjian_kerja_pdf/(:num)', 'Email::export_perjanjian_kerja_pdf/$1');
 $routes->get('email/export_single_perjanjian_kerja_pdf/(:any)', 'Email::export_single_perjanjian_kerja_pdf/$1');
 
+// Monthly Report Routes
+$routes->get('email/monthly_report', 'Email::monthly_report');
+$routes->get('email/export_monthly_report_pdf', 'Email::export_monthly_report_pdf');
+
 // Batch Export PDF Routes
 $routes->get('email/api/unit_emails/(:num)', 'Email::api_unit_emails/$1');
 $routes->post('email/api/generate_pdf', 'Email::api_generate_pdf');

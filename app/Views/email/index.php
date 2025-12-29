@@ -271,9 +271,6 @@
                                         <i class="fas fa-envelope me-2"></i>Email Address
                                     </th>
                                     <th>
-                                        <i class="fas fa-id-card me-2"></i>NIK / NIP
-                                    </th>
-                                    <th>
                                         <i class="fas fa-building me-2"></i>Unit Kerja
                                     </th>
                                     <th class="text-center" style="width: 120px;">
@@ -301,15 +298,6 @@
                                                     </small>
                                                 </div>
                                             </div>
-                                        </td>
-
-                                        <td class="align-middle">
-                                            <?php if (!empty($email['nik'])): ?>
-                                                <div><?= esc($email['nik']) ?></div>
-                                            <?php endif; ?>
-                                            <?php if (!empty($email['nip'])): ?>
-                                                <small class="text-muted"><?= esc($email['nip']) ?></small>
-                                            <?php endif; ?>
                                         </td>
 
                                         <td class="align-middle small">

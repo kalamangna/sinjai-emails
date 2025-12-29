@@ -1,22 +1,11 @@
 document.addEventListener("DOMContentLoaded", function () {
   const nameInput = document.getElementById("name_input");
   const nikInput = document.getElementById("nik_input");
-  const nipInput = document.getElementById("nip_input"); // New
-  const jenisFormasiInput = document.getElementById("jenis_formasi_input"); // New
+  const nipInput = document.getElementById("nip_input");
+  const jenisFormasiInput = document.getElementById("status_asn_input");
 
-  const modeSingleRadio = document.getElementById("mode_single");
-  const modeMultipleRadio = document.getElementById("mode_multiple");
-  const singleUnitKerjaWrapper = document.getElementById(
-    "single_unit_kerja_wrapper"
-  );
-  const multipleUnitKerjaWrapper = document.getElementById(
-    "multiple_unit_kerja_wrapper"
-  );
   const unitKerjaInputSingle = document.getElementById(
     "unit_kerja_input_single"
-  );
-  const unitKerjaInputMultiple = document.getElementById(
-    "unit_kerja_input_multiple"
   );
 
   const generateBtn = document.getElementById("generate_btn");
@@ -28,125 +17,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const progressText = document.getElementById("progress_text");
   const resultsLog = document.getElementById("results_log");
 
-  // CSV Import Elements
-  const importCsvBtn = document.getElementById('import_csv_btn');
-  const csvFileInput = document.getElementById('csv_file_input');
-  const downloadTemplateBtn = document.getElementById('download_template_btn');
-
-  if (importCsvBtn && csvFileInput && downloadTemplateBtn) {
-      importCsvBtn.addEventListener('click', () => csvFileInput.click());
-
-      downloadTemplateBtn.addEventListener('click', (e) => {
-          e.preventDefault();
-          const headers = ['name', 'nik', 'nip', 'unit_kerja', 'status_asn'];
-          const csvContent = headers.join(',') + '\n';
-          const blob = new Blob([csvContent], { type: 'text/csv' });
-          const url = window.URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = 'batch_create_template.csv';
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-      });
-
-      csvFileInput.addEventListener('change', (e) => {
-          const file = e.target.files[0];
-          if (!file) return;
-
-          const reader = new FileReader();
-          reader.onload = (event) => {
-              const text = event.target.result;
-              const data = parseCSV(text);
-              populateFields(data);
-              csvFileInput.value = ''; // Reset
-          };
-          reader.readAsText(file);
-      });
-  }
-
-  function parseCSV(text) {
-      // Normalize line endings
-      const normalizedText = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-      const lines = normalizedText.split('\n').filter(l => l.trim() !== '');
-      if (lines.length < 2) return []; // No data
-
-      // Detect delimiter
-      const firstLine = lines[0];
-      const commaCount = (firstLine.match(/,/g) || []).length;
-      const semicolonCount = (firstLine.match(/;/g) || []).length;
-      const delimiter = semicolonCount > commaCount ? ';' : ',';
-
-      const headers = lines[0].split(delimiter).map(h => h.trim().toLowerCase().replace(/^"|"$/g, ''));
-      const result = [];
-
-      for (let i = 1; i < lines.length; i++) {
-          // Simple CSV split (doesn't handle complex quoted strings with delimiters inside)
-          const currentLine = lines[i].split(delimiter); 
-          const obj = {};
-          
-          headers.forEach((header, index) => {
-              let value = currentLine[index] ? currentLine[index].trim().replace(/^"|"$/g, '') : '';
-              obj[header] = value;
-          });
-          result.push(obj);
-      }
-      return result;
-  }
-
-  function populateFields(data) {
-      if (data.length === 0) return;
-
-      const inputs = [
-          { input: nameInput, keys: ['name', 'nama'] },
-          { input: nikInput, keys: ['nik'] },
-          { input: nipInput, keys: ['nip'] },
-          { input: jabatanInput, keys: ['jabatan'] },
-          { input: jenisFormasiInput, keys: ['jenis_formasi', 'status_asn'] }
-      ];
-
-      // Reset inputs
-      inputs.forEach(item => item.input.value = '');
-
-      const values = {};
-      inputs.forEach(item => values[item.input.id] = []);
-
-      let unitKerjaFound = false;
-
-      data.forEach(row => {
-          inputs.forEach(item => {
-              let val = '';
-              for (const key of item.keys) {
-                  if (row[key] !== undefined) {
-                      val = row[key];
-                      break;
-                  }
-              }
-              values[item.input.id].push(val);
-              if (item.keys.includes('unit_kerja') && val) {
-                  unitKerjaFound = true;
-              }
-          });
-      });
-
-      inputs.forEach(item => {
-          item.input.value = values[item.input.id].join('\n');
-      });
-
-      // Special handling for select inputs like jenisFormasiInput
-      const jenisFormasiValue = values[jenisFormasiInput.id].length > 0 ? values[jenisFormasiInput.id][0] : '';
-      if (jenisFormasiInput && jenisFormasiValue) {
-          jenisFormasiInput.value = jenisFormasiValue;
-      }
-
-      if (unitKerjaFound) {
-          document.getElementById('mode_multiple').checked = true;
-          document.getElementById('mode_multiple').dispatchEvent(new Event('change'));
-      }
-
-      alert(`Imported ${data.length} rows successfully.`);
-  }
-
   let validUserBatch = [];
   let userBatch = [];
 
@@ -154,75 +24,41 @@ document.addEventListener("DOMContentLoaded", function () {
     unitKerjaOptions.map((option) => option.nama_unit_kerja.toLowerCase())
   );
 
-  modeSingleRadio.addEventListener("change", () => {
-    singleUnitKerjaWrapper.style.display = "block";
-    multipleUnitKerjaWrapper.style.display = "none";
-  });
-
-  modeMultipleRadio.addEventListener("change", () => {
-    singleUnitKerjaWrapper.style.display = "none";
-    multipleUnitKerjaWrapper.style.display = "block";
-  });
-
   generateBtn.addEventListener("click", async function () {
-    const names = nameInput
-      .value.trim()
+    const names = nameInput.value
+      .trim()
       .split("\n")
       .filter((name) => name.trim() !== "");
-    const niks = nikInput
-      .value.trim()
+    const niks = nikInput.value
+      .trim()
       .split("\n")
       .filter((nik) => nik.trim() !== "");
-    const nips = nipInput // New
-      .value.trim()
+    const nips = nipInput.value // New
+      .trim()
       .split("\n")
       .filter((nip) => nip.trim() !== "");
-    const jabatans = jabatanInput // New
-      .value.trim()
-      .split("\n")
-      .filter((jabatan) => jabatan.trim() !== "");
-    
-
-    const mode = document.querySelector(
-      'input[name="unitKerjaMode"]:checked'
-    ).value;
 
     let unitKerjaValues = [];
     let validationError = "";
 
+    const singleUnitKerja = unitKerjaInputSingle.value;
+
     if (names.length === 0) validationError = "Please enter at least one name.";
     else if (niks.length === 0)
       validationError = "Please enter at least one NIK.";
+    else if (nips.length === 0)
+      validationError = "Please enter at least one NIP.";
     else if (names.length !== niks.length)
       validationError = "The number of names and NIKs must match.";
-    else if (nips.length > 0 && nips.length !== names.length) // New validation
-      validationError = "The number of NIPs must match the number of names and NIKs.";
-    else if (jabatans.length > 0 && jabatans.length !== names.length) // New validation
-      validationError = "The number of Jabatans must match the number of names and NIKs.";
-    
+    else if (names.length !== nips.length)
+      validationError = "The number of names and NIPs must match.";
+    else if (!jenisFormasiInput.value)
+      validationError = "Please select a Status ASN.";
+    else if (!singleUnitKerja) validationError = "Please select a Unit Kerja.";
 
-
-    if (mode === "single") {
-      const singleUnitKerja = unitKerjaInputSingle.value;
-      if (!singleUnitKerja) validationError = "Please select a Unit Kerja.";
-      else {
-        for (let i = 0; i < names.length; i++)
-          unitKerjaValues.push(singleUnitKerja);
-      }
-    } else {
-      unitKerjaValues = unitKerjaInputMultiple.value
-        .trim()
-        .split("\n")
-        .filter((uk) => uk.trim() !== "");
-      if (
-        unitKerjaValues.length > 0 &&
-        unitKerjaValues.length !== names.length
-      ) {
-        validationError =
-          "The number of Unit Kerja entries must match the number of names and NIK/NIPs.";
-      }
-      if (unitKerjaValues.length === 0) {
-        for (let i = 0; i < names.length; i++) unitKerjaValues.push("");
+    if (!validationError) {
+      for (let i = 0; i < names.length; i++) {
+        unitKerjaValues.push(singleUnitKerja);
       }
     }
 
@@ -235,22 +71,20 @@ document.addEventListener("DOMContentLoaded", function () {
     generateBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generating...`;
     submitBtn.disabled = true;
     resultsTableBody.innerHTML =
-      '<tr><td colspan="8" class="text-center">Generating and checking emails...</td></tr>'; // Updated colspan
+      '<tr><td colspan="7" class="text-center">Generating and checking emails...</td></tr>'; // Updated colspan
 
     const trimmedNiks = niks.map((n) => n.trim());
     const trimmedNips = nips.map((n) => n.trim()); // New
-    const trimmedJabatans = jabatans.map((j) => j.trim()); // New
-    
 
     const nikCounts = {};
     for (const nik of trimmedNiks) {
       nikCounts[nik] = (nikCounts[nik] || 0) + 1;
     }
     const nipCounts = {}; // New
-    for (const nip of trimmedNips) { // New
+    for (const nip of trimmedNips) {
+      // New
       nipCounts[nip] = (nipCounts[nip] || 0) + 1;
     }
-
 
     const generatedEmails = new Set();
     userBatch = [];
@@ -259,10 +93,9 @@ document.addEventListener("DOMContentLoaded", function () {
       const cleanedName = name.replace(/[,.']/g, "");
       const nik = trimmedNiks[i];
       const nip = trimmedNips[i] || ""; // New
-      const jabatan = trimmedJabatans[i] || ""; // New
       const jenisFormasi = jenisFormasiInput.value; // New
       const unitKerja = unitKerjaValues[i];
-      const password = generatePassword(cleanedName);
+      const password = generatePassword(cleanedName, nip);
       const { username: originalUsername, email: originalEmail } =
         generateEmail(cleanedName);
 
@@ -303,12 +136,11 @@ document.addEventListener("DOMContentLoaded", function () {
       const nipCheckResult = await checkNipOnServer(nip); // New
       const isNipInDb = nipCheckResult.exists; // New
 
-
       userBatch.push({
         name: cleanedName.trim(),
         nik: nik,
         nip: nip, // New
-        jabatan: jabatan, // New
+        jabatan: "", // Removed from input but kept in object for model safety if needed
         jenisFormasi: jenisFormasi, // New
         unitKerja: unitKerja.trim(),
         generatedUsername: currentUsername,
@@ -441,13 +273,16 @@ document.addEventListener("DOMContentLoaded", function () {
     return { username: username, email: `${username}${domain}` };
   }
 
-  function generatePassword(name) {
-    const day = new Date().getDate();
+  function generatePassword(name, nip) {
+    let suffix = new Date().getDate();
+    if (nip && nip.length >= 8) {
+        suffix = nip.substring(6, 8);
+    }
     const namePart = name.replace(/\s+/g, "").substring(0, 5).toLowerCase();
-    if (!namePart) return `@${day}#`;
+    if (!namePart) return `@${suffix}#`;
     const capitalizedNamePart =
       namePart.charAt(0).toUpperCase() + namePart.slice(1);
-    return `${capitalizedNamePart}@${day}#`;
+    return `${capitalizedNamePart}@${suffix}#`;
   }
 
   function getNikPart(nik) {
@@ -458,7 +293,8 @@ document.addEventListener("DOMContentLoaded", function () {
   async function checkNikOnServer(nik) {
     if (!nik) return { exists: false };
     try {
-      const response = await fetch("/user/check_niknip", { // Updated endpoint
+      const response = await fetch("/user/check_niknip", {
+        // Updated endpoint
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -475,10 +311,12 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  async function checkNipOnServer(nip) { // New function for NIP check
+  async function checkNipOnServer(nip) {
+    // New function for NIP check
     if (!nip) return { exists: false };
     try {
-      const response = await fetch("/user/check_niknip", { // Using the same endpoint, backend needs to handle both
+      const response = await fetch("/user/check_niknip", {
+        // Using the same endpoint, backend needs to handle both
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -518,7 +356,7 @@ document.addEventListener("DOMContentLoaded", function () {
     resultsTableBody.innerHTML = "";
     if (userBatch.length === 0) {
       resultsTableBody.innerHTML =
-        '<tr><td colspan="9" class="text-center">No names entered.</td></tr>'; // Updated colspan
+        '<tr><td colspan="8" class="text-center">No names entered.</td></tr>';
       return;
     }
 
@@ -539,25 +377,14 @@ document.addEventListener("DOMContentLoaded", function () {
         statusBadge = '<span class="badge bg-danger">Used</span>';
       }
 
-      const isUnitKerjaValid = validUnitKerjaNames.has(
-        user.unitKerja.toLowerCase()
-      );
-      const unitKerjaCellClass =
-        !isUnitKerjaValid && user.unitKerja !== "" ? "table-danger" : "";
-      const unitKerjaTitle =
-        !isUnitKerjaValid && user.unitKerja !== ""
-          ? "This Unit Kerja does not exist."
-          : "";
-
       const nameCellContent = `<span contenteditable="true" class="editable-name" data-name-index="${index}">${user.name.toUpperCase()}</span>`;
-      const jabatanCellContent = `<span contenteditable="true" class="editable-jabatan" data-jabatan-index="${index}">${user.jabatan}</span>`; // New
       
       const domain = "@sinjaikab.go.id";
       const username = user.email.substring(0, user.email.indexOf(domain));
       const emailCellContent = `<span contenteditable="true" class="editable-username" data-username-index="${index}">${username}</span><span class="text-muted">${domain}</span>`;
 
       const passwordCellContent = `<span contenteditable="true" class="editable-password" data-password-index="${index}">${user.password}</span>`;
-      const unitKerjaCellContent = `<span contenteditable="true" class="editable-unit-kerja" data-unit-kerja-index="${index}">${user.unitKerja}</span>`;
+      const unitKerjaCellContent = `<span class="editable-unit-kerja" data-unit-kerja-index="${index}">${user.unitKerja}</span>`;
 
       let nikDisplay = user.nik;
       if (user.isNikInDb) {
@@ -567,23 +394,21 @@ document.addEventListener("DOMContentLoaded", function () {
         nikDisplay += ` <span class="badge bg-warning text-dark" title="Duplicate NIK in this batch">Duplicate</span>`;
       }
 
-      let nipDisplay = user.nip; // New
-      if (user.isNipInDb) { // New
+      let nipDisplay = user.nip;
+      if (user.isNipInDb) {
         nipDisplay += ` <span class="badge bg-danger" title="NIP already exists in the database">In DB</span>`;
       }
-      if (user.isNipDuplicate) { // New
+      if (user.isNipDuplicate) {
         nipDisplay += ` <span class="badge bg-warning text-dark" title="Duplicate NIP in this batch">Duplicate</span>`;
       }
-
 
       const row = `
         <tr>
             <td>${index + 1}</td>
             <td>${nikDisplay}</td>
-            <td>${nipDisplay}</td> <!-- New -->
+            <td>${nipDisplay}</td>
             <td>${nameCellContent}</td>
-            <td>${jabatanCellContent}</td> <!-- New -->
-            <td class="${unitKerjaCellClass}" title="${unitKerjaTitle}">${unitKerjaCellContent}</td>
+            <td>${unitKerjaCellContent}</td>
             <td>${emailCellContent}</td>
             <td>${passwordCellContent}</td>
             <td class="text-center">${statusBadge}</td>
@@ -593,7 +418,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (user.status === "failed" && user.errorMessage) {
         const errorRow = `
           <tr class="error-row" data-index="${index}">
-              <td colspan="9" class="py-0"> <!-- Updated colspan -->
+              <td colspan="8" class="py-0">
                   <div class="alert alert-danger mb-0 py-1 px-2 border-0 rounded-0">
                       <i class="fas fa-exclamation-circle me-2"></i>
                       <small>${user.errorMessage}</small>
@@ -610,7 +435,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function addEditableListeners() {
     document
       .querySelectorAll(
-        ".editable-name, .editable-username, .editable-password, .editable-unit-kerja, .editable-jabatan, .editable-nip" // Updated
+        ".editable-name, .editable-username, .editable-password, .editable-nip"
       )
       .forEach((cell) => {
         cell.addEventListener("blur", handleCellEdit);
@@ -629,9 +454,7 @@ document.addEventListener("DOMContentLoaded", function () {
       editedCell.dataset.nameIndex ||
         editedCell.dataset.usernameIndex ||
         editedCell.dataset.passwordIndex ||
-        editedCell.dataset.unitKerjaIndex ||
-        editedCell.dataset.jabatanIndex || // New
-        editedCell.dataset.nipIndex // New
+        editedCell.dataset.nipIndex
     );
     const user = userBatch[index];
     const newContent = editedCell.textContent.trim();
@@ -642,17 +465,10 @@ document.addEventListener("DOMContentLoaded", function () {
       const { username, email } = generateEmail(newContent);
       user.generatedUsername = username;
       user.email = email;
-      user.password = generatePassword(newContent);
-    } else if (editedCell.classList.contains("editable-nip")) { // New
+      user.password = generatePassword(newContent, user.nip);
+    } else if (editedCell.classList.contains("editable-nip")) {
       if (newContent === user.nip) return;
       user.nip = newContent;
-      renderResults(userBatch); // Re-render to update NIP status badges
-      updateSubmitButtonState();
-      return;
-    } else if (editedCell.classList.contains("editable-jabatan")) { // New
-      if (newContent === user.jabatan) return;
-      user.jabatan = newContent;
-      user.status = "pending";
       renderResults(userBatch);
       updateSubmitButtonState();
       return;
@@ -669,15 +485,9 @@ document.addEventListener("DOMContentLoaded", function () {
       renderResults(userBatch);
       updateSubmitButtonState();
       return;
-    } else if (editedCell.classList.contains("editable-unit-kerja")) {
-      if (newContent === user.unitKerja) return;
-      user.unitKerja = newContent;
-      renderResults(userBatch);
-      updateSubmitButtonState();
-      return;
     }
 
-    const statusCell = editedCell.closest("tr").cells[8]; // Updated index
+    const statusCell = editedCell.closest("tr").cells[7];
     statusCell.innerHTML = '<span class="badge bg-info">Re-checking...</span>';
     const result = await checkEmailAvailability(user.email);
     user.isAvailable = result.available;
@@ -695,25 +505,20 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function updateSubmitButtonState() {
-    const hasInvalidUnitKerja = userBatch.some(
-      (user) =>
-        user.status !== "created" &&
-        !validUnitKerjaNames.has(user.unitKerja.toLowerCase())
-    );
-
     const hasNikDuplicates = userBatch.some(
       (user) => user.status !== "created" && user.isNikDuplicate
     );
     const hasNikInDb = userBatch.some(
       (user) => user.status !== "created" && user.isNikInDb
     );
-    const hasNipDuplicates = userBatch.some( // New
+    const hasNipDuplicates = userBatch.some(
+      // New
       (user) => user.status !== "created" && user.isNipDuplicate
     );
-    const hasNipInDb = userBatch.some( // New
+    const hasNipInDb = userBatch.some(
+      // New
       (user) => user.status !== "created" && user.isNipInDb
     );
-
 
     validUserBatch = userBatch.filter(
       (user) =>
@@ -723,8 +528,7 @@ document.addEventListener("DOMContentLoaded", function () {
         !user.isNipDuplicate && // New
         !user.isNipInDb && // New
         user.isAvailable &&
-        user.status !== "created" &&
-        validUnitKerjaNames.has(user.unitKerja.toLowerCase())
+        user.status !== "created"
     );
 
     const hasProblematicPendingEmails = userBatch.some(
@@ -735,7 +539,6 @@ document.addEventListener("DOMContentLoaded", function () {
     submitBtn.disabled =
       validUserBatch.length === 0 ||
       hasProblematicPendingEmails ||
-      hasInvalidUnitKerja ||
       hasNikDuplicates ||
       hasNikInDb ||
       hasNipDuplicates || // New

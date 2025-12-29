@@ -86,8 +86,8 @@ class Email extends BaseController
             $statusAsnCounts = [];
             foreach ($allStatusAsnOptions as $option) {
                 $count = $this->emailModel->allowCallbacks(false)
-                                        ->where('status_asn_id', $option['id'])
-                                        ->countAllResults();
+                    ->where('status_asn_id', $option['id'])
+                    ->countAllResults();
                 $statusAsnCounts[] = [
                     'id' => $option['id'],
                     'name' => $option['nama_status_asn'],
@@ -100,8 +100,8 @@ class Email extends BaseController
             $eselonCounts = [];
             foreach ($allEselonOptions as $option) {
                 $count = $this->emailModel->allowCallbacks(false)
-                                        ->where('eselon_id', $option['id'])
-                                        ->countAllResults();
+                    ->where('eselon_id', $option['id'])
+                    ->countAllResults();
                 $eselonCounts[] = [
                     'id' => $option['id'],
                     'name' => $option['nama_eselon'],
@@ -112,10 +112,10 @@ class Email extends BaseController
             // --- BSrE Status Statistics ---
             $bsreStatusCounts = [];
             $rawBsreCounts = $this->emailModel->allowCallbacks(false)
-                                            ->select('bsre_status, COUNT(*) as count')
-                                            ->groupBy('bsre_status')
-                                            ->findAll();
-            
+                ->select('bsre_status, COUNT(*) as count')
+                ->groupBy('bsre_status')
+                ->findAll();
+
             // Define BSrE status labels for display
             $bsre_status_labels = [
                 'ISSUE' => 'Sertifikat Aktif / Siap TTE',
@@ -490,6 +490,10 @@ class Email extends BaseController
             return redirect()->to('email')->with('error', 'Email account not found.');
         }
 
+        $statusAsnId = $this->request->getPost('status_asn');
+        $eselonId = $this->request->getPost('eselon');
+        $unitKerjaId = $this->request->getPost('unit_kerja_id');
+
         $updateData = [
             'name' => $this->request->getPost('name'),
             'email' => $this->request->getPost('email'),
@@ -501,9 +505,9 @@ class Email extends BaseController
             // Only update tanggal_lahir if it's not empty
             'pendidikan' => $this->request->getPost('pendidikan'),
             'jabatan' => $this->request->getPost('jabatan'),
-            'status_asn_id' => $this->request->getPost('status_asn'),
-            'eselon_id' => $this->request->getPost('eselon'),
-            'unit_kerja_id' => $this->request->getPost('unit_kerja_id'),
+            'status_asn_id' => !empty($statusAsnId) ? $statusAsnId : null,
+            'eselon_id' => !empty($eselonId) ? $eselonId : null,
+            'unit_kerja_id' => !empty($unitKerjaId) ? $unitKerjaId : null,
         ];
 
         $tanggalLahir = $this->request->getPost('tanggal_lahir');
@@ -541,7 +545,7 @@ class Email extends BaseController
             return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update email details due to a database error.');
         }
     }
-    
+
     public function unit_kerja_detail($unitKerjaId)
     {
         try {
@@ -597,8 +601,12 @@ class Email extends BaseController
                 }
             }
 
-            $emails = $emailBuilder->orderBy('unit_kerja_name', 'ASC')
-                ->orderBy('name', 'ASC')
+            $emails = $emailBuilder->orderBy('emails.eselon_id IS NULL', 'ASC', false)
+                ->orderBy('emails.eselon_id', 'ASC')
+                ->orderBy('emails.status_asn_id IS NULL', 'ASC', false)
+                ->orderBy('emails.status_asn_id', 'ASC')
+                ->orderBy('emails.jabatan', 'ASC')
+                ->orderBy('emails.name', 'ASC')
                 ->paginate($perPage);
             $pager = $this->emailModel->pager;
 
@@ -678,7 +686,9 @@ class Email extends BaseController
                 }
             }
 
-            $emails = $emailBuilder->orderBy('name', 'ASC')
+            $emails = $emailBuilder->orderBy('uk.nama_unit_kerja', 'ASC')
+                ->orderBy('jabatan', 'ASC')
+                ->orderBy('name', 'ASC')
                 ->paginate($perPage);
             $pager = $this->emailModel->pager;
 
@@ -1339,5 +1349,153 @@ class Email extends BaseController
         ];
 
         return view('email/perjanjian_kerja_template', $data);
+    }    public function monthly_report()
+    {
+        $month = $this->request->getGet('month') ?? date('m');
+        $year = $this->request->getGet('year') ?? date('Y');
+
+        $data['month'] = $month;
+        $data['year'] = $year;
+
+        // Statistics
+        $data['total_emails'] = $this->emailModel->allowCallbacks(false)->countAllResults();
+        $data['active_emails'] = $this->emailModel->allowCallbacks(false)->where('suspended_login', 0)->countAllResults();
+        $data['suspended_emails'] = $this->emailModel->allowCallbacks(false)->where('suspended_login', 1)->countAllResults();
+
+        // BSrE Stats
+        $bsreStatsRaw = $this->emailModel->allowCallbacks(false)->select('bsre_status, COUNT(*) as count')->groupBy('bsre_status')->findAll();
+        $data['bsre_stats'] = [];
+        $bsre_status_labels = [
+            'ISSUE' => 'Aktif / Siap TTE',
+            'EXPIRED' => 'Expired',
+            'RENEW' => 'Pembaruan',
+            'WAITING_FOR_VERIFICATION' => 'Menunggu Verif',
+            'NEW' => 'Belum Aktivasi',
+            'NO_CERTIFICATE' => 'Belum Ada Sertifikat',
+            'NOT_REGISTERED' => 'Tidak Terdaftar',
+            'SUSPEND' => 'Suspend',
+            'REVOKE' => 'Dicabut',
+            'not_synced' => 'Not Synced'
+        ];
+        
+        foreach ($bsreStatsRaw as $row) {
+            $status = $row['bsre_status'] ?: 'not_synced';
+            $label = $bsre_status_labels[$status] ?? $status;
+            $data['bsre_stats'][$label] = $row['count'];
+        }
+
+        // Status ASN Stats
+        $data['status_asn_stats'] = $this->emailModel
+            ->allowCallbacks(false)
+            ->select('status_asn.nama_status_asn, COUNT(emails.id) as count')
+            ->join('status_asn', 'status_asn.id = emails.status_asn_id', 'left')
+            ->groupBy('status_asn.nama_status_asn')
+            ->findAll();
+
+        // New Emails in this month
+        $data['new_emails'] = $this->emailModel
+            ->allowCallbacks(false)
+            ->where('MONTH(created_at)', $month)
+            ->where('YEAR(created_at)', $year)
+            ->orderBy('created_at', 'DESC')
+            ->findAll();
+
+        // Unit Kerja Stats (Top 10)
+        $data['unit_kerja_stats'] = $this->emailModel
+            ->allowCallbacks(false)
+            ->select('unit_kerja.nama_unit_kerja, COUNT(emails.id) as count')
+            ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
+            ->groupBy('unit_kerja.nama_unit_kerja')
+            ->orderBy('count', 'DESC')
+            ->limit(10)
+            ->findAll();
+
+        return view('email/monthly_report', $data);
+    }
+
+    public function export_monthly_report_pdf()
+    {
+        $month = $this->request->getGet('month') ?? date('m');
+        $year = $this->request->getGet('year') ?? date('Y');
+
+        // Re-fetch data
+        $data['month'] = $month;
+        $data['year'] = $year;
+        $data['total_emails'] = $this->emailModel->allowCallbacks(false)->countAllResults();
+        $data['active_emails'] = $this->emailModel->allowCallbacks(false)->where('suspended_login', 0)->countAllResults();
+        $data['suspended_emails'] = $this->emailModel->allowCallbacks(false)->where('suspended_login', 1)->countAllResults();
+
+        // BSrE Stats
+        $bsreStatsRaw = $this->emailModel->allowCallbacks(false)->select('bsre_status, COUNT(*) as count')->groupBy('bsre_status')->findAll();
+        $data['bsre_stats'] = [];
+        $bsre_status_labels = [
+            'ISSUE' => 'Aktif / Siap TTE',
+            'EXPIRED' => 'Expired',
+            'RENEW' => 'Pembaruan',
+            'WAITING_FOR_VERIFICATION' => 'Menunggu Verif',
+            'NEW' => 'Belum Aktivasi',
+            'NO_CERTIFICATE' => 'Belum Ada Sertifikat',
+            'NOT_REGISTERED' => 'Tidak Terdaftar',
+            'SUSPEND' => 'Suspend',
+            'REVOKE' => 'Dicabut',
+            'not_synced' => 'Not Synced'
+        ];
+        
+        foreach ($bsreStatsRaw as $row) {
+            $status = $row['bsre_status'] ?: 'not_synced';
+            $label = $bsre_status_labels[$status] ?? $status;
+            $data['bsre_stats'][$label] = $row['count'];
+        }
+
+        // Status ASN Stats
+        $data['status_asn_stats'] = $this->emailModel
+            ->allowCallbacks(false)
+            ->select('status_asn.nama_status_asn, COUNT(emails.id) as count')
+            ->join('status_asn', 'status_asn.id = emails.status_asn_id', 'left')
+            ->groupBy('status_asn.nama_status_asn')
+            ->findAll();
+
+        // New Emails
+        $data['new_emails'] = $this->emailModel
+            ->allowCallbacks(false)
+            ->where('MONTH(created_at)', $month)
+            ->where('YEAR(created_at)', $year)
+            ->orderBy('created_at', 'DESC')
+            ->findAll();
+
+        // Unit Kerja Stats (Top 10)
+        $data['unit_kerja_stats'] = $this->emailModel
+            ->allowCallbacks(false)
+            ->select('unit_kerja.nama_unit_kerja, COUNT(emails.id) as count')
+            ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
+            ->groupBy('unit_kerja.nama_unit_kerja')
+            ->orderBy('count', 'DESC')
+            ->limit(10)
+            ->findAll();
+
+        $options = new Options();
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isRemoteEnabled', true);
+
+        $dompdf = new Dompdf($options);
+
+        // Logo
+        $logoPath = FCPATH . 'garuda.png';
+        if (file_exists($logoPath)) {
+            $logoData = base64_encode(file_get_contents($logoPath));
+            $data['logoSrc'] = 'data:image/png;base64,' . $logoData;
+        } else {
+            $data['logoSrc'] = '';
+        }
+
+        $html = view('email/monthly_report_pdf', $data);
+
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        $filename = 'monthly_report_' . $month . '_' . $year . '.pdf';
+        $dompdf->stream($filename, ["Attachment" => true]);
+        exit();
     }
 }

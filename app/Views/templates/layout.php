@@ -35,6 +35,9 @@
                     <a href="<?= site_url('email/batch_update') ?>" class="btn btn-warning btn-sm">
                         <i class="fas fa-edit me-2"></i>Batch Update Emails
                     </a>
+                    <a href="<?= site_url('email/monthly_report') ?>" class="btn btn-success btn-sm">
+                        <i class="fas fa-chart-bar me-2"></i>Monthly Report
+                    </a>
                     <a href="<?= site_url('unit_kerja/manage') ?>" class="btn btn-secondary btn-sm">
                         <i class="fas fa-building me-2"></i>Manage Unit Kerja
                     </a>

@@ -57,27 +57,21 @@
         /* Kolom Nama */
         th:nth-child(2),
         td:nth-child(2) {
-            width: 25%;
-        }
-
-        /* Kolom NIK */
-        th:nth-child(3),
-        td:nth-child(3) {
-            width: 15%;
+            width: 30%;
         }
 
         /* Kolom Unit Kerja */
-        <?= ($showUnitKerjaColumn ? 'th:nth-child(4), td:nth-child(4) { width: 20%; }' : '') ?>
+        <?= ($showUnitKerjaColumn ? 'th:nth-child(3), td:nth-child(3) { width: 25%; }' : '') ?>
 
         /* Kolom Email */
-        th:nth-child(<?= ($showUnitKerjaColumn ? '5' : '4') ?>),
-        td:nth-child(<?= ($showUnitKerjaColumn ? '5' : '4') ?>) {
-            width: 20%;
+        th:nth-child(<?= ($showUnitKerjaColumn ? '4' : '3') ?>),
+        td:nth-child(<?= ($showUnitKerjaColumn ? '4' : '3') ?>) {
+            width: 25%;
         }
 
         /* Kolom Status TTE */
-        th:nth-child(<?= ($showUnitKerjaColumn ? '6' : '5') ?>),
-        td:nth-child(<?= ($showUnitKerjaColumn ? '6' : '5') ?>) {
+        th:nth-child(<?= ($showUnitKerjaColumn ? '5' : '4') ?>),
+        td:nth-child(<?= ($showUnitKerjaColumn ? '5' : '4') ?>) {
             width: 15%;
         }
 
@@ -145,7 +139,6 @@
             <tr>
                 <th>No.</th>
                 <th>Nama</th>
-                <th>NIK</th>
                 <?= ($showUnitKerjaColumn ? '<th>Unit Kerja</th>' : '') ?>
                 <th>Email</th>
                 <th>Password</th>
@@ -173,7 +166,6 @@
                 echo '<tr>
                         <td>' . $nomor . '</td> 
                         <td>' . esc(strtoupper($email['name'] ?? 'N/A')) . '</td>
-                        <td>' . esc($email['nik'] ?? 'N/A') . '</td>
                         ' . ($showUnitKerjaColumn ? '<td>' . esc($email['unit_kerja_name'] ?? 'N/A') . '</td>' : '') . '
                                                                         <td>' . esc($email['email'] ?? 'N/A') . '</td>
                                                                         <td>' . esc($email['password'] ?? 'N/A') . '</td>
