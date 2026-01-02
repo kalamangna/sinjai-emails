@@ -9,21 +9,28 @@
         <i class="fas fa-arrow-left me-2"></i>Back
       </a>
       <div class="d-flex gap-2">
+        <?php
+        $queryString = \Config\Services::request()->getUri()->getQuery();
+        $pdfUrl = site_url('email/export_pimpinan_pdf') . ($queryString ? '?' . $queryString : '');
+        ?>
+        <a href="<?= $pdfUrl ?>" class="btn btn-danger">
+          <i class="fas fa-file-pdf me-2"></i>Export PDF
+        </a>
         <button onclick="syncAllBsreStatus()" class="btn btn-warning">
           <i class="fas fa-sync-alt me-2"></i>Batch Sync Status TTE
         </button>
       </div>
     </div>
 
-    <!-- Eselon Header -->
+    <!-- Header -->
     <div class="card shadow-sm mb-4">
       <div class="card-header bg-light py-3">
         <h5 class="card-title mb-0">
-          <i class="fas fa-layer-group me-2 text-primary"></i>Eselon: <?= esc(strtoupper($eselon['nama_eselon'])) ?>
+          <i class="fas fa-user-tie me-2 text-primary"></i>Daftar Email Pimpinan
         </h5>
       </div>
       <div class="card-body">
-        <p class="card-text">Daftar akun email yang terkait dengan eselon ini.</p>
+        <p class="card-text">Daftar semua akun email yang ditandai sebagai Pimpinan.</p>
       </div>
     </div>
 
@@ -40,7 +47,7 @@
           <div class="col-md-4">
             <div class="input-group">
               <span class="input-group-text"><i class="fas fa-fingerprint"></i></span>
-              <select name="bsre_status" id="bsre_status" class="form-select">
+              <select name="bsre_status" class="form-select">
                 <option value="" <?= empty($bsre_status) ? 'selected' : '' ?>>All Status TTE</option>
                 <?php foreach ($bsre_status_options as $key => $label): ?>
                   <option value="<?= esc($key) ?>" <?= ($bsre_status === $key) ? 'selected' : '' ?>>
@@ -64,7 +71,7 @@
       </div>
     </div>
 
-    <!-- Email List for Eselon -->
+    <!-- Email List -->
     <div class="card shadow-sm">
       <div class="card-header bg-light py-3">
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
@@ -83,7 +90,7 @@
               <thead class="table-light">
                 <tr>
                   <th class="ps-4"><i class="fas fa-envelope me-2"></i>Email Address</th>
-                  <th><i class="fas fa-user-tie me-2"></i>Jabatan</th>
+                  <th><i class="fas fa-briefcase me-2"></i>Jabatan</th>
                   <th><i class="fas fa-building me-2"></i>Unit Kerja</th>
                   <th><i class="fas fa-fingerprint me-2"></i>Status TTE</th>
                   <th class="text-center" style="width: 120px;"><i class="fas fa-cog me-2"></i>Action</th>
@@ -103,21 +110,21 @@
                     </td>
                     <td class="align-middle">
                       <?php if (!empty($email['jabatan'])): ?>
-                        <div><?= esc($email['jabatan']) ?></div>
+                        <div class="text-dark"><?= esc($email['jabatan']) ?></div>
+                      <?php else: ?>
+                        <span class="text-muted">-</span>
                       <?php endif; ?>
                     </td>
                     <td class="align-middle">
                       <?php if (!empty($email['parent_unit_kerja_name'])): ?>
                         <small class="d-block"><?= esc(strtoupper($email['parent_unit_kerja_name'])) ?></small>
                         <small class="d-block text-muted">
-                          (<?= esc(strtoupper($email['unit_kerja_name'])) ?>)
-                        </small>
-                      <?php elseif (!empty($email['unit_kerja_name'])): ?>
-                        <small>
                           <?= esc(strtoupper($email['unit_kerja_name'])) ?>
                         </small>
                       <?php else: ?>
-                        N/A
+                        <small>
+                          <?= esc(strtoupper($email['unit_kerja_name'])) ?>
+                        </small>
                       <?php endif; ?>
                     </td>
                     <td class="align-middle">
@@ -183,14 +190,17 @@
         <?php else: ?>
           <div class="text-center py-5">
             <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-            <h5 class="text-muted">No email accounts found for this Eselon.</h5>
-            <p class="text-muted">There are no email accounts currently assigned to "<?= esc(strtoupper($eselon['nama_eselon'])) ?>".</p>
+            <h5 class="text-muted">No pimpinan email accounts found.</h5>
           </div>
         <?php endif; ?>
       </div>
     </div>
   </div>
 </div>
+
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
 <script>
   function updateBsreStatusElement(emailUser, status, keterangan) {
     const bsreStatusDiv = document.getElementById(`bsre-status-${emailUser}`);
@@ -211,7 +221,7 @@
     let badgeClass = 'bg-secondary';
     let badgeText = status || 'UNKNOWN';
     let descriptionText = statusMapping[status] || 'Status Tidak Dikenali';
-    let sourceText = ''; // Removed fromDb text
+    let sourceText = '';
 
     if (status === 'ISSUE') {
       badgeClass = 'bg-success';

@@ -36,6 +36,8 @@ class EmailModel extends Model
         'status_asn_id',
         'eselon_id',
         'bsre_status',
+        'pimpinan',
+        'pimpinan_desa',
     ];
     protected $useTimestamps = true;
     protected $beforeFind = ['joinUnitKerja'];

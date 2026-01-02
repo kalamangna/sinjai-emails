@@ -23,15 +23,15 @@ $routes->post('email/batch_update_process', 'Email::batch_update_process');
 $routes->post('email/batch_create', 'Email::batch_create');
 $routes->post('email/delete/(:num)', 'Email::delete/$1');
 
+$routes->get('email/pimpinan', 'Email::pimpinan');
+$routes->get('email/pimpinan_desa', 'Email::pimpinan_desa');
+$routes->get('email/export_pimpinan_pdf', 'Email::export_pimpinan_pdf');
+$routes->get('email/export_pimpinan_desa_pdf', 'Email::export_pimpinan_desa_pdf');
 
 $routes->get('email/export_unit_kerja_csv/(:num)', 'Email::export_unit_kerja_csv/$1');
 $routes->get('email/export_unit_kerja_pdf/(:num)', 'Email::export_unit_kerja_pdf/$1');
 $routes->get('email/export_perjanjian_kerja_pdf/(:num)', 'Email::export_perjanjian_kerja_pdf/$1');
 $routes->get('email/export_single_perjanjian_kerja_pdf/(:any)', 'Email::export_single_perjanjian_kerja_pdf/$1');
-
-// Monthly Report Routes
-$routes->get('email/monthly_report', 'Email::monthly_report');
-$routes->get('email/export_monthly_report_pdf', 'Email::export_monthly_report_pdf');
 
 // Batch Export PDF Routes
 $routes->get('email/api/unit_emails/(:num)', 'Email::api_unit_emails/$1');
@@ -52,6 +52,8 @@ $routes->get('/', 'Home::index');
 $routes->get('unit_kerja/manage', 'UnitKerja::manage');
 $routes->get('unit_kerja/add', 'UnitKerja::add');
 $routes->post('unit_kerja/store', 'UnitKerja::store');
+$routes->get('unit_kerja/batch_create', 'UnitKerja::batch_create');
+$routes->post('unit_kerja/batch_store', 'UnitKerja::batch_store');
 $routes->get('unit_kerja/edit/(:num)', 'UnitKerja::edit/$1');
 $routes->post('unit_kerja/update/(:num)', 'UnitKerja::update/$1');
 $routes->get('unit_kerja/delete/(:num)', 'UnitKerja::delete/$1');

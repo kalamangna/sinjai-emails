@@ -8,9 +8,14 @@
                 <h5 class="card-title mb-0">
                     <i class="fas fa-building me-2"></i>Manage Unit Kerja
                 </h5>
-                <a href="<?= site_url('unit_kerja/add') ?>" class="btn btn-primary">
-                    <i class="fas fa-plus me-2"></i>Add Unit Kerja
-                </a>
+                <div>
+                    <a href="<?= site_url('unit_kerja/batch_create') ?>" class="btn btn-success me-2">
+                        <i class="fas fa-file-csv me-2"></i>Batch Create
+                    </a>
+                    <a href="<?= site_url('unit_kerja/add') ?>" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Add Unit Kerja
+                    </a>
+                </div>
             </div>
             <div class="card-body">
                 <!-- Search Form -->
@@ -34,7 +39,7 @@
                                 <tr>
                                     <th>ID</th>
                                     <th>Name</th>
-                                    <th>Parent</th>
+                                    <th class="text-nowrap">Parent</th>
                                     <th class="text-center" style="width: 120px;">Action</th>
                                 </tr>
                             </thead>
@@ -50,7 +55,7 @@
                                                 </div>
                                             </div>
                                         </td>
-                                        <td>
+                                        <td class="text-nowrap">
                                             <?= !empty($unit['parent_name']) ? strtoupper(esc($unit['parent_name'])) : '<span class="text-muted">-</span>' ?>
                                         </td>
                                         <td class="text-center">

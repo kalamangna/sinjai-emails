@@ -43,6 +43,7 @@ class Email extends BaseController
         try {
             $perPage = $this->request->getGet('per_page') ?? 100;
             $search = $this->request->getGet('search');
+            $bsre_status = $this->request->getGet('bsre_status');
 
             $builder = $this->emailModel;
 
@@ -53,6 +54,17 @@ class Email extends BaseController
                     ->orLike('nik', $search)
                     ->orLike('nip', $search)
                     ->groupEnd();
+            }
+
+            if ($bsre_status) {
+                if ($bsre_status === 'not_synced') {
+                    $builder->groupStart()
+                        ->where('bsre_status', null)
+                        ->orWhere('bsre_status', '')
+                        ->groupEnd();
+                } else {
+                    $builder->where('bsre_status', $bsre_status);
+                }
             }
 
             // Default sorting
@@ -149,6 +161,12 @@ class Email extends BaseController
                 ];
             }
 
+            // --- Pimpinan Statistics ---
+            $pimpinanCount = $this->emailModel->allowCallbacks(false)->where('pimpinan', 1)->countAllResults();
+
+            // --- Pimpinan Desa Statistics ---
+            $pimpinanDesaCount = $this->emailModel->allowCallbacks(false)->where('pimpinan_desa', 1)->countAllResults();
+
 
             $data = [
                 'emails' => $emails,
@@ -159,6 +177,8 @@ class Email extends BaseController
                 'per_page' => $perPage,
                 'pagination' => $pager,
                 'search' => $search,
+                'bsre_status' => $bsre_status,
+                'bsre_status_options' => $bsre_status_labels,
                 'last_sync_time' => $lastSync['value'] ?? null,
                 'unit_kerja_list' => $unitKerjaList,
                 'status_asn_counts' => $statusAsnCounts, // New data
@@ -216,6 +236,8 @@ class Email extends BaseController
         $newPendidikans = $data['pendidikans'] ?? [];
         $newJabatans = $data['jabatans'] ?? [];
         $newStatusAsn = $data['status_asn'] ?? null; // Added
+        $newPimpinan = $data['pimpinan'] ?? null;
+        $newPimpinanDesa = $data['pimpinan_desa'] ?? null;
         $newUnitKerja = $data['unit_kerja'] ?? null;
 
         $results = [];
@@ -265,6 +287,12 @@ class Email extends BaseController
             }
             if (!empty($newStatusAsn)) { // Added
                 $emailUpdateData['status_asn_id'] = $newStatusAsn;
+            }
+            if (isset($newPimpinan) && $newPimpinan !== '') {
+                $emailUpdateData['pimpinan'] = $newPimpinan;
+            }
+            if (isset($newPimpinanDesa) && $newPimpinanDesa !== '') {
+                $emailUpdateData['pimpinan_desa'] = $newPimpinanDesa;
             }
             if (!empty($newUnitKerja)) {
                 $unit = $this->unitKerjaModel->where('nama_unit_kerja', $newUnitKerja)->first();
@@ -493,6 +521,8 @@ class Email extends BaseController
         $statusAsnId = $this->request->getPost('status_asn');
         $eselonId = $this->request->getPost('eselon');
         $unitKerjaId = $this->request->getPost('unit_kerja_id');
+        $pimpinan = $this->request->getPost('pimpinan');
+        $pimpinanDesa = $this->request->getPost('pimpinan_desa');
 
         $updateData = [
             'name' => $this->request->getPost('name'),
@@ -508,6 +538,8 @@ class Email extends BaseController
             'status_asn_id' => !empty($statusAsnId) ? $statusAsnId : null,
             'eselon_id' => !empty($eselonId) ? $eselonId : null,
             'unit_kerja_id' => !empty($unitKerjaId) ? $unitKerjaId : null,
+            'pimpinan' => $pimpinan,
+            'pimpinan_desa' => $pimpinanDesa,
         ];
 
         $tanggalLahir = $this->request->getPost('tanggal_lahir');
@@ -601,10 +633,12 @@ class Email extends BaseController
                 }
             }
 
-            $emails = $emailBuilder->orderBy('emails.eselon_id IS NULL', 'ASC', false)
+            $emails = $emailBuilder
+                ->orderBy('emails.eselon_id IS NULL', 'ASC', false)
                 ->orderBy('emails.eselon_id', 'ASC')
                 ->orderBy('emails.status_asn_id IS NULL', 'ASC', false)
                 ->orderBy('emails.status_asn_id', 'ASC')
+                ->orderBy('emails.jabatan IS NULL', 'ASC', false)
                 ->orderBy('emails.jabatan', 'ASC')
                 ->orderBy('emails.name', 'ASC')
                 ->paginate($perPage);
@@ -726,7 +760,317 @@ class Email extends BaseController
         }
     }
 
+    public function pimpinan()
+    {
+        try {
+            $perPage = $this->request->getGet('per_page') ?? 100;
+            $search = $this->request->getGet('search');
+            $bsre_status = $this->request->getGet('bsre_status');
 
+            $emailBuilder = $this->emailModel->where('pimpinan', 1);
+
+            if ($search) {
+                $emailBuilder->groupStart()
+                    ->like('email', $search)
+                    ->orLike('name', $search)
+                    ->orLike('nik', $search)
+                    ->orLike('nip', $search)
+                    ->groupEnd();
+            }
+
+            if ($bsre_status) {
+                if ($bsre_status === 'not_synced') {
+                    $emailBuilder->groupStart()
+                        ->where('emails.bsre_status', null)
+                        ->orWhere('emails.bsre_status', '')
+                        ->groupEnd();
+                } else {
+                    $emailBuilder->where('emails.bsre_status', $bsre_status);
+                }
+            }
+
+            $emails = $emailBuilder
+                ->orderBy('emails.eselon_id', 'ASC')
+                ->orderBy('COALESCE(parent_unit_kerja.nama_unit_kerja, unit_kerja.nama_unit_kerja)', 'ASC', false)
+                ->orderBy('unit_kerja.parent_id IS NOT NULL', 'ASC', false)
+                ->orderBy('unit_kerja.nama_unit_kerja', 'ASC')
+                ->orderBy('emails.jabatan', 'ASC')
+                ->orderBy('emails.name', 'ASC')
+                ->paginate($perPage);
+
+            $pager = $this->emailModel->pager;
+
+            $bsre_status_options = [
+                'ISSUE' => 'Sertifikat Aktif / Siap TTE',
+                'EXPIRED' => 'Masa Berlaku Habis',
+                'RENEW' => 'Proses Pembaruan',
+                'WAITING_FOR_VERIFICATION' => 'Menunggu Verifikasi',
+                'NEW' => 'Belum Aktivasi',
+                'NO_CERTIFICATE' => 'Belum Ada Sertifikat',
+                'NOT_REGISTERED' => 'Pengguna Tidak Terdaftar',
+                'SUSPEND' => 'Akun Ditangguhkan',
+                'REVOKE' => 'Sertifikat Dicabut',
+                'not_synced' => 'Not Synced'
+            ];
+
+            $data = [
+                'title' => 'Daftar Email Pimpinan',
+                'emails' => $emails,
+                'total_emails' => $pager->getTotal(),
+                'pagination' => $pager,
+                'per_page' => $perPage,
+                'search' => $search,
+                'bsre_status' => $bsre_status,
+                'bsre_status_options' => $bsre_status_options,
+                'back_url' => site_url('email'),
+            ];
+
+            return view('email/pimpinan', $data);
+        } catch (Exception $e) {
+            $data['error'] = $e->getMessage();
+            $data['back_url'] = site_url('email');
+            return view('email/error', $data);
+        }
+    }
+
+    public function pimpinan_desa()
+    {
+        try {
+            $perPage = $this->request->getGet('per_page') ?? 100;
+            $search = $this->request->getGet('search');
+            $bsre_status = $this->request->getGet('bsre_status');
+
+            $emailBuilder = $this->emailModel->where('pimpinan_desa', 1);
+
+            if ($search) {
+                $emailBuilder->groupStart()
+                    ->like('email', $search)
+                    ->orLike('name', $search)
+                    ->orLike('nik', $search)
+                    ->orLike('nip', $search)
+                    ->groupEnd();
+            }
+
+            if ($bsre_status) {
+                if ($bsre_status === 'not_synced') {
+                    $emailBuilder->groupStart()
+                        ->where('emails.bsre_status', null)
+                        ->orWhere('emails.bsre_status', '')
+                        ->groupEnd();
+                } else {
+                    $emailBuilder->where('emails.bsre_status', $bsre_status);
+                }
+            }
+
+            $emails = $emailBuilder
+                ->orderBy('emails.eselon_id', 'ASC')
+                ->orderBy('COALESCE(parent_unit_kerja.nama_unit_kerja, unit_kerja.nama_unit_kerja)', 'ASC', false)
+                ->orderBy('unit_kerja.parent_id IS NOT NULL', 'ASC', false)
+                ->orderBy('unit_kerja.nama_unit_kerja', 'ASC')
+                ->orderBy('emails.jabatan', 'ASC')
+                ->orderBy('emails.name', 'ASC')
+                ->paginate($perPage);
+
+            $pager = $this->emailModel->pager;
+
+            $bsre_status_options = [
+                'ISSUE' => 'Sertifikat Aktif / Siap TTE',
+                'EXPIRED' => 'Masa Berlaku Habis',
+                'RENEW' => 'Proses Pembaruan',
+                'WAITING_FOR_VERIFICATION' => 'Menunggu Verifikasi',
+                'NEW' => 'Belum Aktivasi',
+                'NO_CERTIFICATE' => 'Belum Ada Sertifikat',
+                'NOT_REGISTERED' => 'Pengguna Tidak Terdaftar',
+                'SUSPEND' => 'Akun Ditangguhkan',
+                'REVOKE' => 'Sertifikat Dicabut',
+                'not_synced' => 'Not Synced'
+            ];
+
+            $data = [
+                'title' => 'Daftar Email Pimpinan Desa',
+                'emails' => $emails,
+                'total_emails' => $pager->getTotal(),
+                'pagination' => $pager,
+                'per_page' => $perPage,
+                'search' => $search,
+                'bsre_status' => $bsre_status,
+                'bsre_status_options' => $bsre_status_options,
+                'back_url' => site_url('email'),
+            ];
+
+            return view('email/pimpinan_desa', $data);
+        } catch (Exception $e) {
+            $data['error'] = $e->getMessage();
+            $data['back_url'] = site_url('email');
+            return view('email/error', $data);
+        }
+    }
+
+    public function export_pimpinan_pdf()
+    {
+        set_time_limit(0);
+        ini_set('memory_limit', '-1');
+
+        try {
+            $search = $this->request->getGet('search');
+            $bsre_status = $this->request->getGet('bsre_status');
+
+            $builder = $this->emailModel->where('pimpinan', 1);
+
+            if ($search) {
+                $builder->groupStart()
+                    ->like('email', $search)
+                    ->orLike('name', $search)
+                    ->orLike('nik', $search)
+                    ->orLike('nip', $search)
+                    ->groupEnd();
+            }
+
+            if ($bsre_status) {
+                if ($bsre_status === 'not_synced') {
+                    $builder->groupStart()
+                        ->where('emails.bsre_status', null)
+                        ->orWhere('emails.bsre_status', '')
+                        ->groupEnd();
+                } else {
+                    $builder->where('emails.bsre_status', $bsre_status);
+                }
+            }
+
+            $emails = $builder
+                ->orderBy('emails.eselon_id', 'ASC')
+                ->orderBy('COALESCE(parent_unit_kerja.nama_unit_kerja, unit_kerja.nama_unit_kerja)', 'ASC', false)
+                ->orderBy('unit_kerja.parent_id IS NOT NULL', 'ASC', false)
+                ->orderBy('unit_kerja.nama_unit_kerja', 'ASC')
+                ->orderBy('emails.jabatan', 'ASC')
+                ->orderBy('emails.name', 'ASC')
+                ->findAll();
+
+            $options = new Options();
+            $options->set('isHtml5ParserEnabled', true);
+            $options->set('isRemoteEnabled', true);
+
+            $dompdf = new Dompdf($options);
+
+            if (!function_exists('esc')) {
+                function esc($str)
+                {
+                    return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
+                }
+            }
+
+            $logoPath = FCPATH . 'logo.png';
+            $logoData = base64_encode(file_get_contents($logoPath));
+            $logoSrc = 'data:image/png;base64,' . $logoData;
+
+            $data = [
+                'title' => 'DAFTAR EMAIL & TTE PIMPINAN',
+                'subtitle' => 'PEMERINTAH KABUPATEN SINJAI',
+                'emails' => $emails,
+                'showUnitKerjaColumn' => true,
+                'logoSrc' => $logoSrc,
+                'current_date' => format_indo_date(date('Y-m-d')),
+            ];
+
+            $html = view('email/pimpinan_pdf', $data);
+
+            $dompdf->loadHtml($html);
+            $dompdf->setPaper('A4', 'portrait');
+            $dompdf->render();
+
+            $filename = 'Email & TTE Pimpinan - ' . format_indo_date(date('Y-m-d'), true) . '.pdf';
+            $dompdf->stream($filename, ["Attachment" => true]);
+            exit();
+        } catch (Exception $e) {
+            $data['error'] = $e->getMessage();
+            return view('templates/header') .
+                view('email/error', $data) .
+                view('templates/footer');
+        }
+    }
+
+    public function export_pimpinan_desa_pdf()
+    {
+        set_time_limit(0);
+        ini_set('memory_limit', '-1');
+
+        try {
+            $search = $this->request->getGet('search');
+            $bsre_status = $this->request->getGet('bsre_status');
+
+            $builder = $this->emailModel->where('pimpinan_desa', 1);
+
+            if ($search) {
+                $builder->groupStart()
+                    ->like('email', $search)
+                    ->orLike('name', $search)
+                    ->orLike('nik', '' . $search . '%')
+                    ->orLike('nip', '' . $search . '%')
+                    ->groupEnd();
+            }
+
+            if ($bsre_status) {
+                if ($bsre_status === 'not_synced') {
+                    $builder->groupStart()
+                        ->where('emails.bsre_status', null)
+                        ->orWhere('emails.bsre_status', '')
+                        ->groupEnd();
+                } else {
+                    $builder->where('emails.bsre_status', $bsre_status);
+                }
+            }
+
+            $emails = $builder
+                ->orderBy('emails.eselon_id', 'ASC')
+                ->orderBy('COALESCE(parent_unit_kerja.nama_unit_kerja, unit_kerja.nama_unit_kerja)', 'ASC', false)
+                ->orderBy('unit_kerja.parent_id IS NOT NULL', 'ASC', false)
+                ->orderBy('unit_kerja.nama_unit_kerja', 'ASC')
+                ->orderBy('emails.jabatan', 'ASC')
+                ->orderBy('emails.name', 'ASC')
+                ->findAll();
+
+            $options = new Options();
+            $options->set('isHtml5ParserEnabled', true);
+            $options->set('isRemoteEnabled', true);
+
+            $dompdf = new Dompdf($options);
+
+            if (!function_exists('esc')) {
+                function esc($str)
+                {
+                    return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
+                }
+            }
+
+            $logoPath = FCPATH . 'logo.png';
+            $logoData = base64_encode(file_get_contents($logoPath));
+            $logoSrc = 'data:image/png;base64,' . $logoData;
+
+            $data = [
+                'title' => 'DAFTAR EMAIL & TTE PIMPINAN DESA',
+                'subtitle' => 'PEMERINTAH KABUPATEN SINJAI',
+                'emails' => $emails,
+                'showUnitKerjaColumn' => true,
+                'logoSrc' => $logoSrc,
+                'current_date' => format_indo_date(date('Y-m-d')),
+            ];
+
+            $html = view('email/pimpinan_desa_pdf', $data);
+
+            $dompdf->loadHtml($html);
+            $dompdf->setPaper('A4', 'portrait');
+            $dompdf->render();
+
+            $filename = 'Email & TTE Pimpinan Desa - ' . format_indo_date(date('Y-m-d'), true) . '.pdf';
+            $dompdf->stream($filename, ["Attachment" => true]);
+            exit();
+        } catch (Exception $e) {
+            $data['error'] = $e->getMessage();
+            return view('templates/header') .
+                view('email/error', $data) .
+                view('templates/footer');
+        }
+    }
 
     public function api_unit_emails($unitKerjaId)
     {
@@ -1143,11 +1487,16 @@ class Email extends BaseController
 
             $search = $this->request->getGet('search');
             $status_asn = $this->request->getGet('status_asn');
+            $bsre_status = $this->request->getGet('bsre_status');
 
             $builder = $this->emailModel
                 ->whereIn('unit_kerja_id', $allUnitIds)
-                ->orderBy('LENGTH(unit_kerja_name)', 'ASC', false)->orderBy('unit_kerja_name', 'ASC')
-                ->orderBy('name', 'ASC');
+                ->orderBy('emails.eselon_id IS NULL', 'ASC', false)
+                ->orderBy('emails.eselon_id', 'ASC')
+                ->orderBy('emails.status_asn_id IS NULL', 'ASC', false)
+                ->orderBy('emails.status_asn_id', 'ASC')
+                ->orderBy('emails.jabatan', 'ASC')
+                ->orderBy('emails.name', 'ASC');
 
             if ($search) {
                 $builder->groupStart()
@@ -1160,6 +1509,17 @@ class Email extends BaseController
 
             if ($status_asn) {
                 $builder->where('emails.status_asn_id', $status_asn);
+            }
+
+            if ($bsre_status) {
+                if ($bsre_status === 'not_synced') {
+                    $builder->groupStart()
+                        ->where('emails.bsre_status', null)
+                        ->orWhere('emails.bsre_status', '')
+                        ->groupEnd();
+                } else {
+                    $builder->where('emails.bsre_status', $bsre_status);
+                }
             }
 
             $emails = $builder->findAll();
@@ -1191,6 +1551,7 @@ class Email extends BaseController
                 'emails' => $emails,
                 'showUnitKerjaColumn' => $showUnitKerjaColumn,
                 'logoSrc' => $logoSrc,
+                'current_date' => format_indo_date(date('Y-m-d')), // Add current date and time
             ];
 
             $html = view('email/unit_kerja_pdf', $data);
@@ -1349,153 +1710,5 @@ class Email extends BaseController
         ];
 
         return view('email/perjanjian_kerja_template', $data);
-    }    public function monthly_report()
-    {
-        $month = $this->request->getGet('month') ?? date('m');
-        $year = $this->request->getGet('year') ?? date('Y');
-
-        $data['month'] = $month;
-        $data['year'] = $year;
-
-        // Statistics
-        $data['total_emails'] = $this->emailModel->allowCallbacks(false)->countAllResults();
-        $data['active_emails'] = $this->emailModel->allowCallbacks(false)->where('suspended_login', 0)->countAllResults();
-        $data['suspended_emails'] = $this->emailModel->allowCallbacks(false)->where('suspended_login', 1)->countAllResults();
-
-        // BSrE Stats
-        $bsreStatsRaw = $this->emailModel->allowCallbacks(false)->select('bsre_status, COUNT(*) as count')->groupBy('bsre_status')->findAll();
-        $data['bsre_stats'] = [];
-        $bsre_status_labels = [
-            'ISSUE' => 'Aktif / Siap TTE',
-            'EXPIRED' => 'Expired',
-            'RENEW' => 'Pembaruan',
-            'WAITING_FOR_VERIFICATION' => 'Menunggu Verif',
-            'NEW' => 'Belum Aktivasi',
-            'NO_CERTIFICATE' => 'Belum Ada Sertifikat',
-            'NOT_REGISTERED' => 'Tidak Terdaftar',
-            'SUSPEND' => 'Suspend',
-            'REVOKE' => 'Dicabut',
-            'not_synced' => 'Not Synced'
-        ];
-        
-        foreach ($bsreStatsRaw as $row) {
-            $status = $row['bsre_status'] ?: 'not_synced';
-            $label = $bsre_status_labels[$status] ?? $status;
-            $data['bsre_stats'][$label] = $row['count'];
-        }
-
-        // Status ASN Stats
-        $data['status_asn_stats'] = $this->emailModel
-            ->allowCallbacks(false)
-            ->select('status_asn.nama_status_asn, COUNT(emails.id) as count')
-            ->join('status_asn', 'status_asn.id = emails.status_asn_id', 'left')
-            ->groupBy('status_asn.nama_status_asn')
-            ->findAll();
-
-        // New Emails in this month
-        $data['new_emails'] = $this->emailModel
-            ->allowCallbacks(false)
-            ->where('MONTH(created_at)', $month)
-            ->where('YEAR(created_at)', $year)
-            ->orderBy('created_at', 'DESC')
-            ->findAll();
-
-        // Unit Kerja Stats (Top 10)
-        $data['unit_kerja_stats'] = $this->emailModel
-            ->allowCallbacks(false)
-            ->select('unit_kerja.nama_unit_kerja, COUNT(emails.id) as count')
-            ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
-            ->groupBy('unit_kerja.nama_unit_kerja')
-            ->orderBy('count', 'DESC')
-            ->limit(10)
-            ->findAll();
-
-        return view('email/monthly_report', $data);
-    }
-
-    public function export_monthly_report_pdf()
-    {
-        $month = $this->request->getGet('month') ?? date('m');
-        $year = $this->request->getGet('year') ?? date('Y');
-
-        // Re-fetch data
-        $data['month'] = $month;
-        $data['year'] = $year;
-        $data['total_emails'] = $this->emailModel->allowCallbacks(false)->countAllResults();
-        $data['active_emails'] = $this->emailModel->allowCallbacks(false)->where('suspended_login', 0)->countAllResults();
-        $data['suspended_emails'] = $this->emailModel->allowCallbacks(false)->where('suspended_login', 1)->countAllResults();
-
-        // BSrE Stats
-        $bsreStatsRaw = $this->emailModel->allowCallbacks(false)->select('bsre_status, COUNT(*) as count')->groupBy('bsre_status')->findAll();
-        $data['bsre_stats'] = [];
-        $bsre_status_labels = [
-            'ISSUE' => 'Aktif / Siap TTE',
-            'EXPIRED' => 'Expired',
-            'RENEW' => 'Pembaruan',
-            'WAITING_FOR_VERIFICATION' => 'Menunggu Verif',
-            'NEW' => 'Belum Aktivasi',
-            'NO_CERTIFICATE' => 'Belum Ada Sertifikat',
-            'NOT_REGISTERED' => 'Tidak Terdaftar',
-            'SUSPEND' => 'Suspend',
-            'REVOKE' => 'Dicabut',
-            'not_synced' => 'Not Synced'
-        ];
-        
-        foreach ($bsreStatsRaw as $row) {
-            $status = $row['bsre_status'] ?: 'not_synced';
-            $label = $bsre_status_labels[$status] ?? $status;
-            $data['bsre_stats'][$label] = $row['count'];
-        }
-
-        // Status ASN Stats
-        $data['status_asn_stats'] = $this->emailModel
-            ->allowCallbacks(false)
-            ->select('status_asn.nama_status_asn, COUNT(emails.id) as count')
-            ->join('status_asn', 'status_asn.id = emails.status_asn_id', 'left')
-            ->groupBy('status_asn.nama_status_asn')
-            ->findAll();
-
-        // New Emails
-        $data['new_emails'] = $this->emailModel
-            ->allowCallbacks(false)
-            ->where('MONTH(created_at)', $month)
-            ->where('YEAR(created_at)', $year)
-            ->orderBy('created_at', 'DESC')
-            ->findAll();
-
-        // Unit Kerja Stats (Top 10)
-        $data['unit_kerja_stats'] = $this->emailModel
-            ->allowCallbacks(false)
-            ->select('unit_kerja.nama_unit_kerja, COUNT(emails.id) as count')
-            ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
-            ->groupBy('unit_kerja.nama_unit_kerja')
-            ->orderBy('count', 'DESC')
-            ->limit(10)
-            ->findAll();
-
-        $options = new Options();
-        $options->set('isHtml5ParserEnabled', true);
-        $options->set('isRemoteEnabled', true);
-
-        $dompdf = new Dompdf($options);
-
-        // Logo
-        $logoPath = FCPATH . 'garuda.png';
-        if (file_exists($logoPath)) {
-            $logoData = base64_encode(file_get_contents($logoPath));
-            $data['logoSrc'] = 'data:image/png;base64,' . $logoData;
-        } else {
-            $data['logoSrc'] = '';
-        }
-
-        $html = view('email/monthly_report_pdf', $data);
-
-        $dompdf->loadHtml($html);
-        $dompdf->setPaper('A4', 'portrait');
-        $dompdf->render();
-
-        $filename = 'monthly_report_' . $month . '_' . $year . '.pdf';
-        $dompdf->stream($filename, ["Attachment" => true]);
-        exit();
     }
 }

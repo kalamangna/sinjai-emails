@@ -270,6 +270,14 @@
                   <?php endforeach; ?>
               </div>
               <div class="col-md-6 mb-3">
+                  <strong class="text-muted d-block">Pimpinan:</strong>
+                  <?= ($email['pimpinan'] ?? 0) == 1 ? '<span class="badge bg-primary">Yes</span>' : '<span class="badge bg-secondary">No</span>' ?>
+              </div>
+              <div class="col-md-6 mb-3">
+                  <strong class="text-muted d-block">Pimpinan Desa:</strong>
+                  <?= ($email['pimpinan_desa'] ?? 0) == 1 ? '<span class="badge bg-primary">Yes</span>' : '<span class="badge bg-secondary">No</span>' ?>
+              </div>
+              <div class="col-md-6 mb-3">
                 <strong class="text-muted d-block">Unit Kerja:</strong>
                 <?php if (!empty($parent_unit_kerja)): ?>
                   <a href="<?= site_url('email/unit_kerja/' . $parent_unit_kerja['id']) ?>" class="btn btn-sm btn-outline-info">

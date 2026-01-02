@@ -56,6 +56,42 @@ class UnitKerja extends BaseController
         return redirect()->to('unit_kerja/manage');
     }
 
+    public function batch_create()
+    {
+        $unitKerjaModel = new UnitKerjaModel();
+        $data['parent_options'] = $unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->findAll();
+        $data['title'] = 'Batch Create Unit Kerja';
+
+        return view('unit_kerja/batch_create', $data);
+    }
+
+    public function batch_store()
+    {
+        $unitKerjaModel = new UnitKerjaModel();
+        $parentId = $this->request->getPost('parent_id');
+        $names = $this->request->getPost('unit_kerja_names');
+
+        if (!empty($names)) {
+            $namesArray = explode("\n", $names);
+            $data = [];
+            foreach ($namesArray as $name) {
+                $trimmedName = trim($name);
+                if (!empty($trimmedName)) {
+                    $data[] = [
+                        'nama_unit_kerja' => $trimmedName,
+                        'parent_id' => !empty($parentId) ? $parentId : null,
+                    ];
+                }
+            }
+
+            if (!empty($data)) {
+                $unitKerjaModel->insertBatch($data);
+            }
+        }
+
+        return redirect()->to('unit_kerja/manage');
+    }
+
     public function edit($id)
     {
         $unitKerjaModel = new UnitKerjaModel();

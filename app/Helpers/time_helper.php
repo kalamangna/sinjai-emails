@@ -28,3 +28,29 @@ if (!function_exists('get_local_datetime')) {
         return date('d M Y, H:i:s', $timestamp);
     }
 }
+
+if (!function_exists('format_indo_date')) {
+    function format_indo_date($date_string)
+    {
+        $months = [
+            'January' => 'Januari',
+            'February' => 'Februari',
+            'March' => 'Maret',
+            'April' => 'April',
+            'May' => 'Mei',
+            'June' => 'Juni',
+            'July' => 'Juli',
+            'August' => 'Agustus',
+            'September' => 'September',
+            'October' => 'Oktober',
+            'November' => 'November',
+            'December' => 'Desember'
+        ];
+        
+        $date = date('d F Y', strtotime($date_string));
+        foreach ($months as $en => $id) {
+            $date = str_replace($en, $id, $date);
+        }
+        return $date;
+    }
+}

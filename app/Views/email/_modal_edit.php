@@ -91,7 +91,7 @@
                         </div>
                     </div>
                     <div class="row mb-3">
-                        <div class="col-md-6">
+                        <div class="col-md-12">
                             <label for="unit_kerja_id" class="form-label">Unit Kerja</label>
                             <select class="form-select" id="unit_kerja_id" name="unit_kerja_id">
                                 <option value="">--Pilih Unit Kerja--</option>
@@ -100,6 +100,22 @@
                                         <?= esc(strtoupper($unit['nama_unit_kerja'])) ?>
                                     </option>
                                 <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="pimpinan" class="form-label">Pimpinan</label>
+                            <select name="pimpinan" id="pimpinan" class="form-select">
+                                <option value="0" <?= ($email['pimpinan'] ?? 0) == 0 ? 'selected' : '' ?>>No</option>
+                                <option value="1" <?= ($email['pimpinan'] ?? 0) == 1 ? 'selected' : '' ?>>Yes</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="pimpinan_desa" class="form-label">Pimpinan Desa</label>
+                            <select name="pimpinan_desa" id="pimpinan_desa" class="form-select">
+                                <option value="0" <?= ($email['pimpinan_desa'] ?? 0) == 0 ? 'selected' : '' ?>>No</option>
+                                <option value="1" <?= ($email['pimpinan_desa'] ?? 0) == 1 ? 'selected' : '' ?>>Yes</option>
                             </select>
                         </div>
                     </div>

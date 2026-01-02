@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Daftar Email & TTE - <?= esc($unit_kerja['nama_unit_kerja']) ?></title>
+    <title><?= esc($title ?? 'Daftar Email & TTE Pimpinan') ?></title>
     <style>
         @page {
             margin: 10px 25px;
@@ -55,25 +55,20 @@
             width: 5%;
         }
 
-        /* Kolom Nama */
+        /* Kolom Nama / Email */
         th:nth-child(2),
         td:nth-child(2) {
-            width: <?= ($showUnitKerjaColumn ? '30%' : '45%') ?>;
-        }
-
-        /* Kolom Email */
-        th:nth-child(3),
-        td:nth-child(3) {
-            width: <?= ($showUnitKerjaColumn ? '25%' : '40%') ?>;
-        }
-
-        /* Kolom Unit Kerja */
-        <?php if ($showUnitKerjaColumn): ?>th:nth-child(4),
-        td:nth-child(4) {
             width: 30%;
         }
 
-        <?php endif; ?>
+        /* Kolom Jabatan */
+        th:nth-child(3),
+        td:nth-child(3) {
+            width: 20%;
+        }
+
+        /* Kolom Unit Kerja */
+        <?= ($showUnitKerjaColumn ? 'th:nth-child(4), td:nth-child(4) { width: 35%; }' : '') ?>
 
         /* Kolom Status TTE */
         th:nth-child(<?= ($showUnitKerjaColumn ? '5' : '4') ?>),
@@ -135,8 +130,8 @@
 <body>
     <div class="header">
         <img src="<?= $logoSrc ?>" alt="Logo" class="logo" />
-        <h1>DAFTAR EMAIL & TTE</h1>
-        <h2><?= esc($unit_kerja['nama_unit_kerja']) ?></h2>
+        <h1><?= esc($title ?? 'DAFTAR EMAIL & TTE PIMPINAN') ?></h1>
+        <h2><?= esc($subtitle ?? 'PEMERINTAH KABUPATEN SINJAI') ?></h2>
         <p style="text-align: center; font-size: 10px; color: #666; margin-top: -10px;">UPDATE PER: <?= strtoupper(esc($current_date)) ?></p>
     </div>
 
@@ -144,8 +139,8 @@
         <thead>
             <tr>
                 <th>No.</th>
-                <th>Nama</th>
-                <th>Email</th>
+                <th>Nama / Email</th>
+                <th>Jabatan</th>
                 <?= ($showUnitKerjaColumn ? '<th>Unit Kerja</th>' : '') ?>
                 <th>Status TTE</th>
             </tr>
@@ -171,17 +166,16 @@
                 // Prepare Unit Kerja content
                 $unitKerjaContent = '';
                 if ($showUnitKerjaColumn) {
-                    if (!empty($email['parent_unit_kerja_name'])) {
-                        $unitKerjaContent = esc(strtoupper($email['parent_unit_kerja_name'])) . '<br><small style="color: #666;">' . esc(strtoupper($email['unit_kerja_name'] ?? '')) . '</small>';
-                    } else {
-                        $unitKerjaContent = esc(strtoupper($email['unit_kerja_name'] ?? 'N/A'));
-                    }
+                    $unitKerjaContent = esc(strtoupper($email['unit_kerja_name'] ?? 'N/A'));
                 }
 
                 echo '<tr>
                         <td>' . $nomor . '</td> 
-                        <td><strong>' . esc(strtoupper($email['name'] ?? 'N/A')) . '</strong></td>
-                        <td>' . esc($email['email'] ?? 'N/A') . '</td>
+                        <td>
+                            <strong>' . esc(strtoupper($email['name'] ?? 'N/A')) . '</strong><br>
+                            <span style="color: #555;">' . esc($email['email'] ?? 'N/A') . '</span>
+                        </td>
+                        <td>' . esc($email['jabatan'] ?? '-') . '</td>
                         ' . ($showUnitKerjaColumn ? '<td>' . $unitKerjaContent . '</td>' : '') . '
                         <td style="color: ' . $color . '; font-weight: bold;">' . esc($statusTte) . '</td>
                     </tr>';

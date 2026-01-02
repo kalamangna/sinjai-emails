@@ -18,28 +18,31 @@
     <!-- Header Section -->
 <header class="bg-white shadow-sm py-3">
     <div class="container">
-        <div class="row align-items-center">
-            <div class="col-md-6">
+        <div class="row align-items-center gy-3">
+            <div class="col-md-4 text-center text-md-start">
                 <h1 class="h3 text-primary mb-1">
                     <a href="<?= site_url('/') ?>" class="text-primary text-decoration-none">
                         <i class="fas fa-envelope me-2"></i>Sinjai Emails
                     </a>
                 </h1>
-                <p class="text-muted mb-0">sinjaikab.go.id</p>
+                <p class="text-muted mb-0 small">sinjaikab.go.id</p>
             </div>
-            <div class="col-md-6 text-md-end">
-                <div class="d-flex flex-wrap gap-2 justify-content-end mb-2">
-                    <a href="<?= site_url('email/batch') ?>" class="btn btn-info btn-sm">
-                        <i class="fas fa-plus-circle me-2"></i>Batch Create Emails
+            <div class="col-md-8">
+                <div class="d-flex flex-wrap gap-2 justify-content-center justify-content-md-end">
+                    <a href="<?= site_url('email/batch') ?>" class="btn btn-info btn-sm text-white">
+                        <i class="fas fa-plus-circle me-1"></i>Batch Create
                     </a>
-                    <a href="<?= site_url('email/batch_update') ?>" class="btn btn-warning btn-sm">
-                        <i class="fas fa-edit me-2"></i>Batch Update Emails
+                    <a href="<?= site_url('email/batch_update') ?>" class="btn btn-warning btn-sm text-dark">
+                        <i class="fas fa-edit me-1"></i>Batch Update
                     </a>
-                    <a href="<?= site_url('email/monthly_report') ?>" class="btn btn-success btn-sm">
-                        <i class="fas fa-chart-bar me-2"></i>Monthly Report
+                    <a href="<?= site_url('email/pimpinan') ?>" class="btn btn-success btn-sm text-white">
+                        <i class="fas fa-user-tie me-1"></i>Pimpinan
                     </a>
-                    <a href="<?= site_url('unit_kerja/manage') ?>" class="btn btn-secondary btn-sm">
-                        <i class="fas fa-building me-2"></i>Manage Unit Kerja
+                    <a href="<?= site_url('email/pimpinan_desa') ?>" class="btn btn-success btn-sm text-white">
+                        <i class="fas fa-users me-1"></i>Pimpinan Desa
+                    </a>
+                    <a href="<?= site_url('unit_kerja/manage') ?>" class="btn btn-secondary btn-sm text-white">
+                        <i class="fas fa-building me-1"></i>Unit Kerja
                     </a>
                 </div>
             </div>

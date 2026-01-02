@@ -102,6 +102,22 @@ M.Si"></textarea>
                                     </select>
                                 </div>
                                 <div class="mb-3">
+                                    <label for="pimpinan_input" class="form-label">New Pimpinan Status</label>
+                                    <select class="form-select" id="pimpinan_input">
+                                        <option value="">Do not change</option>
+                                        <option value="0">No</option>
+                                        <option value="1">Yes</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="pimpinan_desa_input" class="form-label">New Pimpinan Desa Status</label>
+                                    <select class="form-select" id="pimpinan_desa_input">
+                                        <option value="">Do not change</option>
+                                        <option value="0">No</option>
+                                        <option value="1">Yes</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
                                     <label for="unit_kerja_input" class="form-label">New Unit Kerja (All)</label>
                                     <select class="form-select" id="unit_kerja_input">
                                         <option selected value="">Do not change</option>
@@ -203,6 +219,8 @@ M.Si"></textarea>
         const pendidikanInput = document.getElementById('pendidikan_input');
         const jabatanInput = document.getElementById('jabatan_input');
         const statusAsnInput = document.getElementById('status_asn_input'); 
+        const pimpinanInput = document.getElementById('pimpinan_input');
+        const pimpinanDesaInput = document.getElementById('pimpinan_desa_input');
         const unitKerjaInput = document.getElementById('unit_kerja_input');
         const updateBtn = document.getElementById('update_btn');
         const resultsTableBody = document.querySelector('#results_table tbody');
@@ -282,6 +300,8 @@ M.Si"></textarea>
 
             const newUnitKerja = unitKerjaInput.value;
             const newStatusAsn = statusAsnInput.value;
+            const newPimpinan = pimpinanInput.value;
+            const newPimpinanDesa = pimpinanDesaInput.value;
 
             if (identifiers.length === 0) {
                 alert('Please enter at least one identifier to update.');
@@ -318,6 +338,8 @@ M.Si"></textarea>
                         pendidikans: newPendidikans,
                         jabatans: newJabatans,
                         status_asn: newStatusAsn,
+                        pimpinan: newPimpinan,
+                        pimpinan_desa: newPimpinanDesa,
                         unit_kerja: newUnitKerja
                     })
                 });

@@ -23,11 +23,16 @@
 <div class="row mb-4">
     <div class="col-12">
         <div class="d-flex flex-column align-items-end gap-2">
-            <a href="<?= site_url('email/sync') ?>" class="btn btn-primary" id="syncButton">
-                <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
-                <i class="fas fa-sync-alt me-2"></i>
-                <span class="button-text">Sync from cPanel</span>
-            </a>
+            <div class="d-flex gap-2">
+                <button onclick="syncAllBsreStatus()" class="btn btn-warning">
+                    <i class="fas fa-sync-alt me-2"></i>Batch Sync Status TTE
+                </button>
+                <a href="<?= site_url('email/sync') ?>" class="btn btn-primary" id="syncButton">
+                    <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                    <i class="fas fa-sync-alt me-2"></i>
+                    <span class="button-text">Sync from cPanel</span>
+                </a>
+            </div>
             <small class="text-muted">
                 <i class="fas fa-sync-alt me-1"></i>
                 Last updated: <?php echo isset($last_sync_time) ? get_local_datetime(strtotime($last_sync_time)) : 'N/A'; ?>
@@ -135,7 +140,6 @@
     </div>
 </div>
 
-
 <!-- Unit Kerja and Eselon Lists Section -->
 <div class="row mb-4">
     <div class="col-12 mb-4">
@@ -209,13 +213,27 @@
             <div class="card-body">
                 <form method="GET" action="" class="row g-3 align-items-end">
                     <!-- Search Input -->
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <label for="search" class="form-label">Search</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="fas fa-search"></i></span>
                             <input type="text" class="form-control" id="search" name="search"
                                 placeholder="Search by Email, Name, NIK, or NIP..." value="<?= isset($search) ? esc($search) : '' ?>">
                         </div>
+                    </div>
+
+                    <!-- Status TTE Filter -->
+                    <div class="col-md-3">
+                        <label for="bsre_status" class="form-label">Status TTE</label>
+                        <select class="form-select" id="bsre_status" name="bsre_status">
+                            <option value="" <?= empty($bsre_status) ? 'selected' : '' ?>>All Status</option>
+                            <?php foreach ($bsre_status_options as $key => $label): ?>
+                                <option value="<?= esc($key) ?>" <?= ($bsre_status === $key) ? 'selected' : '' ?>>
+                                    <?= esc($key === 'not_synced' ? $label : $key) ?>
+                                </option>
+                            <?php endforeach; ?>
+                            <option value="not_synced" <?= ($bsre_status === 'not_synced') ? 'selected' : '' ?>>Not Synced</option>
+                        </select>
                     </div>
 
                     <!-- Items Per Page -->
@@ -230,7 +248,7 @@
                     </div>
 
                     <!-- Action Buttons -->
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                             <button type="submit" class="btn btn-primary flex-grow-1">
                                 <i class="fas fa-search me-2"></i>Search
@@ -273,6 +291,9 @@
                                     <th>
                                         <i class="fas fa-building me-2"></i>Unit Kerja
                                     </th>
+                                    <th>
+                                        <i class="fas fa-fingerprint me-2"></i>Status TTE
+                                    </th>
                                     <th class="text-center" style="width: 120px;">
                                         <i class="fas fa-cog me-2"></i>Action
                                     </th>
@@ -300,14 +321,37 @@
                                             </div>
                                         </td>
 
-                                        <td class="align-middle small">
+                                        <td class="align-middle">
                                             <?php if (!empty($email['parent_unit_kerja_name'])): ?>
-                                                <?= esc(strtoupper($email['parent_unit_kerja_name'])) ?>
-                                                <br>
-                                                <small class="text-muted">(<?= esc(strtoupper($email['unit_kerja_name'])) ?>)</small>
+                                                <small class="d-block"><?= esc(strtoupper($email['parent_unit_kerja_name'])) ?></small>
+                                                <small class="d-block text-muted"><?= esc(strtoupper($email['unit_kerja_name'])) ?></small>
                                             <?php else: ?>
-                                                <?= esc(strtoupper($email['unit_kerja_name'])) ?>
+                                                <small><?= esc(strtoupper($email['unit_kerja_name'])) ?></small>
                                             <?php endif; ?>
+                                        </td>
+
+                                        <td class="align-middle">
+                                            <div id="bsre-status-<?= esc($email['user']) ?>" 
+                                                 data-user="<?= esc($email['user']) ?>" 
+                                                 data-email="<?= esc($email['email']) ?>"
+                                                 class="bsre-status-container d-flex align-items-center">
+                                                <?php
+                                                    $status = $email['bsre_status'] ?? '';
+                                                    $badgeClass = 'bg-secondary';
+                                                    $badgeText = $status ?: 'Not Synced';
+                                                    
+                                                    if ($status === 'ISSUE') {
+                                                        $badgeClass = 'bg-success';
+                                                    } else if (in_array($status, ['EXPIRED', 'REVOKE', 'SUSPEND'])) {
+                                                        $badgeClass = 'bg-danger';
+                                                    } else if (in_array($status, ['RENEW', 'WAITING_FOR_VERIFICATION', 'NEW'])) {
+                                                        $badgeClass = 'bg-info text-dark';
+                                                    } else if (in_array($status, ['NO_CERTIFICATE', 'NOT_REGISTERED', 'UNKNOWN'])) {
+                                                        $badgeClass = 'bg-warning text-dark';
+                                                    }
+                                                ?>
+                                                <span class="badge <?= $badgeClass ?>"><?= esc($badgeText) ?></span>
+                                            </div>
                                         </td>
 
                                         <td class="text-center align-middle">
@@ -506,5 +550,95 @@
             text.textContent = 'Sync from cPanel';
         }
     });
+
+  function updateBsreStatusElement(emailUser, status, keterangan) {
+      const bsreStatusDiv = document.getElementById(`bsre-status-${emailUser}`);
+      if (!bsreStatusDiv) return;
+
+      const statusMapping = {
+          'ISSUE': 'Sertifikat Aktif / Siap TTE',
+          'EXPIRED': 'Masa Berlaku Habis',
+          'RENEW': 'Proses Pembaruan',
+          'WAITING_FOR_VERIFICATION': 'Menunggu Verifikasi',
+          'NEW': 'Belum Aktivasi',
+          'NO_CERTIFICATE': 'Belum Ada Sertifikat',
+          'NOT_REGISTERED': 'Pengguna Tidak Terdaftar',
+          'SUSPEND': 'Akun Ditangguhkan',
+          'REVOKE': 'Sertifikat Dicabut'
+      };
+
+      let badgeClass = 'bg-secondary';
+      let badgeText = status || 'UNKNOWN';
+      let descriptionText = statusMapping[status] || 'Status Tidak Dikenali';
+
+      if (status === 'ISSUE') {
+          badgeClass = 'bg-success';
+      } else if (status === 'EXPIRED' || status === 'REVOKE' || status === 'SUSPEND') {
+          badgeClass = 'bg-danger';
+      } else if (status === 'RENEW' || status === 'WAITING_FOR_VERIFICATION' || status === 'NEW') {
+          badgeClass = 'bg-info text-dark';
+      } else if (status === 'NO_CERTIFICATE' || status === 'NOT_REGISTERED' || status === 'UNKNOWN' || !status) {
+          badgeClass = 'bg-warning text-dark';
+      }
+      
+      bsreStatusDiv.innerHTML = `<span class="badge ${badgeClass}">${badgeText}</span>`;
+  }
+
+  function syncBsreStatus(emailUser, emailAddress) {
+      const bsreStatusDiv = document.getElementById(`bsre-status-${emailUser}`);
+      if (!bsreStatusDiv) return;
+
+      // Show syncing state
+      bsreStatusDiv.innerHTML = '<span class="spinner-border spinner-border-sm text-info" role="status" aria-hidden="true"></span><small class="text-muted ms-1">Syncing...</small>';
+
+      fetch('<?= site_url('bsre/sync-status') ?>', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+              'X-Requested-With': 'XMLHttpRequest'
+          },
+          body: 'email=' + encodeURIComponent(emailAddress)
+      })
+      .then(response => response.json())
+      .then(data => {
+          if (data.status === 'success') {
+              // Update display with new status
+              updateBsreStatusElement(emailUser, data.bsre_status, '');
+          } else {
+              bsreStatusDiv.innerHTML = `<span class="badge bg-danger">Sync Error</span><br><small class="d-block text-danger mt-1">${data.message}</small>`;
+              console.error(`Error syncing Status TTE for ${emailAddress}:`, data.message);
+          }
+      })
+      .catch(error => {
+          bsreStatusDiv.innerHTML = `<span class="badge bg-danger">Network Error</span>`;
+          console.error(`Network error syncing Status TTE for ${emailAddress}:`, error);
+      });
+  }
+
+  function syncAllBsreStatus() {
+      // Logic to find all sync buttons or rows and trigger syncBsreStatus
+      // We can iterate over IDs starting with bsre-status-
+      const statusContainers = document.querySelectorAll('[id^="bsre-status-"]');
+      
+      if (statusContainers.length === 0) {
+          alert('No emails to sync.');
+          return;
+      }
+
+      if (!confirm(`Are you sure you want to sync Status TTE for ${statusContainers.length} displayed emails? This might take a moment.`)) {
+          return;
+      }
+
+      statusContainers.forEach((container, index) => {
+          const emailUser = container.id.replace('bsre-status-', '');
+          const emailAddress = container.getAttribute('data-email'); // Get email from data attribute
+
+          if (emailUser && emailAddress) {
+              setTimeout(() => {
+                  syncBsreStatus(emailUser, emailAddress);
+              }, index * 200); // 200ms delay per request
+          }
+      });
+  }
 </script>
 <?= $this->endSection() ?>
