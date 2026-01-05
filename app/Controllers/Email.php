@@ -1612,16 +1612,21 @@ class Email extends BaseController
             $data['input_niks'] = $niksInput;
 
             if (!empty($niksInput)) {
-                $niks = explode("\n", $niksInput);
+                // Split by newlines (handle Windows/Mac/Linux)
+                $niks = preg_split('/\r\n|\r|\n/', $niksInput);
                 $results = [];
 
                 foreach ($niks as $nik) {
+                    // Remove control characters and whitespace
+                    $nik = preg_replace('/[\x00-\x1F\x7F]/', '', $nik);
                     $nik = trim($nik);
+                    
                     if (empty($nik)) {
                         continue;
                     }
 
-                    $foundEmails = $this->emailModel->like('nik', $nik)->findAll();
+                    // Use exact match for NIK
+                    $foundEmails = $this->emailModel->where('nik', $nik)->findAll();
 
                     $results[] = [
                         'searched_nik' => $nik,
