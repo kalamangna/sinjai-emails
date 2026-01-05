@@ -16,6 +16,7 @@
                 </div>
                 <div class="card-body">
                     <form action="<?= site_url('email/check_nik') ?>" method="post">
+                        <?= csrf_field() ?>
                         <div class="mb-3">
                             <label for="nik_list" class="form-label">Enter NIKs (one per line)</label>
                             <textarea class="form-control" id="nik_list" name="nik_list" rows="15" placeholder="Enter NIK list here..."><?= esc($input_niks) ?></textarea>

@@ -1607,7 +1607,9 @@ class Email extends BaseController
             'input_niks' => ''
         ];
 
-        if ($this->request->getMethod() === 'post') {
+        $method = strtolower($this->request->getMethod());
+        
+        if ($method === 'post') {
             $niksInput = $this->request->getPost('nik_list');
             $data['input_niks'] = $niksInput;
 
