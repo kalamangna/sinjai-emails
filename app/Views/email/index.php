@@ -24,6 +24,9 @@
     <div class="col-12">
         <div class="d-flex flex-column align-items-end gap-2">
             <div class="d-flex gap-2">
+                <a href="<?= site_url('email/check_nik') ?>" class="btn btn-info text-white">
+                    <i class="fas fa-search me-2"></i>Check NIK
+                </a>
                 <button onclick="syncAllBsreStatus()" class="btn btn-warning">
                     <i class="fas fa-sync-alt me-2"></i>Batch Sync Status TTE
                 </button>

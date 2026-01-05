@@ -1599,6 +1599,44 @@ class Email extends BaseController
         }
     }
 
+    public function check_nik()
+    {
+        $data = [
+            'title' => 'Check NIK Association',
+            'results' => [],
+            'input_niks' => ''
+        ];
+
+        if ($this->request->getMethod() === 'post') {
+            $niksInput = $this->request->getPost('nik_list');
+            $data['input_niks'] = $niksInput;
+
+            if (!empty($niksInput)) {
+                $niks = explode("\n", $niksInput);
+                $results = [];
+
+                foreach ($niks as $nik) {
+                    $nik = trim($nik);
+                    if (empty($nik)) {
+                        continue;
+                    }
+
+                    $foundEmails = $this->emailModel->like('nik', $nik)->findAll();
+
+                    $results[] = [
+                        'searched_nik' => $nik,
+                        'found' => !empty($foundEmails),
+                        'emails' => $foundEmails
+                    ];
+                }
+
+                $data['results'] = $results;
+            }
+        }
+
+        return view('email/check_nik', $data);
+    }
+
     public function delete($id)
     {
         try {
