@@ -319,6 +319,11 @@ class Email extends BaseController
                 $pkUpdateData['tanggal_kontrak_akhir'] = $newTanggalKontrakAkhirs[$index];
             }
 
+            if (empty($emailUpdateData) && empty($pkUpdateData)) {
+                $results[] = ['identifier' => $identifier, 'success' => true, 'message' => 'Skipped (no data to update).'];
+                continue;
+            }
+
             $updatedEmail = false;
             $updatedPk = false;
 
