@@ -222,7 +222,7 @@
                         <td>b.</td>
                         <td>Jabatan</td>
                         <td>:</td>
-                        <td><?= esc($email['jabatan'] ?? 'N/A') ?></td>
+                        <td><?= esc(strtoupper($email['jabatan'] ?? 'N/A')) ?></td>
                     </tr>
                     <tr>
                         <td>c.</td>
@@ -234,7 +234,7 @@
                         <td>d.</td>
                         <td>Unit Kerja</td>
                         <td>:</td>
-                        <td><?= esc($unit_kerja['nama_unit_kerja']) ?> - PEMERINTAH KABUPATEN SINJAI / SINJAI</td>
+                        <td><?= esc(strtoupper($unit_kerja['nama_unit_kerja'])) ?> - PEMERINTAH KABUPATEN SINJAI / SINJAI</td>
                     </tr>
                 </table>
             </div>
