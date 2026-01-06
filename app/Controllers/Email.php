@@ -1131,6 +1131,14 @@ class Email extends BaseController
             }
 
             $unitKerja = $this->unitKerjaModel->find($unitId); // Main unit for the export context
+            
+            if ($unitKerja && !empty($unitKerja['parent_id'])) {
+                $parentUnit = $this->unitKerjaModel->find($unitKerja['parent_id']);
+                if ($parentUnit) {
+                    $unitKerja['nama_unit_kerja'] = $unitKerja['nama_unit_kerja'] . ', ' . $parentUnit['nama_unit_kerja'];
+                }
+            }
+            
             // Ideally, we should use the email's actual unit for the template display?
             // The original logic passed $unitKerja (the filter unit) to the view.
             // But the email might belong to a sub-unit. 
@@ -1339,6 +1347,12 @@ class Email extends BaseController
             $unitKerja = null;
             if (!empty($email['unit_kerja_id'])) {
                 $unitKerja = $this->unitKerjaModel->find($email['unit_kerja_id']);
+                if ($unitKerja && !empty($unitKerja['parent_id'])) {
+                    $parentUnit = $this->unitKerjaModel->find($unitKerja['parent_id']);
+                    if ($parentUnit) {
+                        $unitKerja['nama_unit_kerja'] = $unitKerja['nama_unit_kerja'] . ', ' . $parentUnit['nama_unit_kerja'];
+                    }
+                }
             }
 
             if (!$unitKerja) {
@@ -1389,6 +1403,13 @@ class Email extends BaseController
 
         try {
             $unitKerja = $this->unitKerjaModel->find($unitKerjaId);
+
+            if ($unitKerja && !empty($unitKerja['parent_id'])) {
+                $parentUnit = $this->unitKerjaModel->find($unitKerja['parent_id']);
+                if ($parentUnit) {
+                    $unitKerja['nama_unit_kerja'] = $unitKerja['nama_unit_kerja'] . ', ' . $parentUnit['nama_unit_kerja'];
+                }
+            }
 
             if (!$unitKerja) {
                 throw new Exception('Unit Kerja not found.');
