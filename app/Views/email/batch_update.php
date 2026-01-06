@@ -1,201 +1,201 @@
 <?= $this->extend('templates/layout') ?>
 
 <?= $this->section('content') ?>
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h1 class="h3 mb-0">Batch Email Update</h1>
-        <a href="javascript:void(0);" onclick="history.back();" class="btn btn-outline-primary">
-            <i class="fas fa-arrow-left me-2"></i>Back
-        </a>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">Batch Email Update</h1>
+    <a href="javascript:void(0);" onclick="history.back();" class="btn btn-outline-primary">
+        <i class="fas fa-arrow-left me-2"></i>Back
+    </a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-light py-3">
+        <h5 class="card-title mb-0">
+            <i class="fas fa-edit me-2 text-primary"></i>
+            Update Emails
+        </h5>
     </div>
-
-    <div class="card shadow-sm">
-        <div class="card-header bg-light py-3">
-            <h5 class="card-title mb-0">
-                <i class="fas fa-edit me-2 text-primary"></i>
-                Update Emails
-            </h5>
-        </div>
-        <div class="card-body">
-            <form id="batch_update_form">
-                <div class="mb-3">
-                    <label class="form-label">Update By:</label>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="update_mode" id="mode_email" value="email" checked>
-                        <label class="form-check-label" for="mode_email">Email Address</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="update_mode" id="mode_nik" value="nik">
-                        <label class="form-check-label" for="mode_nik">NIK</label>
-                    </div>
+    <div class="card-body">
+        <form id="batch_update_form">
+            <div class="mb-3">
+                <label class="form-label">Update By:</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="update_mode" id="mode_email" value="email" checked>
+                    <label class="form-check-label" for="mode_email">Email Address</label>
                 </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="update_mode" id="mode_nik" value="nik">
+                    <label class="form-check-label" for="mode_nik">NIK</label>
+                </div>
+            </div>
 
-                <div class="mb-3">
-                    <label for="identifier_input" id="identifier_label" class="form-label">Enter one email address per line to update.</label>
-                    <textarea class="form-control" id="identifier_input" rows="8" placeholder="e.g.
+            <div class="mb-3">
+                <label for="identifier_input" id="identifier_label" class="form-label">Enter one email address per line to update.</label>
+                <textarea class="form-control" id="identifier_input" rows="8" placeholder="e.g.
 john.doe@example.com
 jane.smith@example.com"></textarea>
-                </div>
-
-                <div class="row">
-                    <!-- Email Table Column -->
-                    <div class="col-md-6">
-                        <div class="card h-100">
-                            <div class="card-header bg-light fw-bold">
-                                <i class="fas fa-user me-2"></i>Email Account & Personal Info
-                            </div>
-                            <div class="card-body">
-                                <div class="mb-3">
-                                    <label for="name_input" class="form-label">New Names</label>
-                                    <textarea class="form-control" id="name_input" rows="4" placeholder="e.g. John Doe
-Jane Smith"></textarea>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-6 mb-3">
-                                        <label for="gelar_depan_input" class="form-label">New Gelar Depan</label>
-                                        <textarea class="form-control" id="gelar_depan_input" rows="4" placeholder="e.g. Dr.
-H."></textarea>
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label for="gelar_belakang_input" class="form-label">New Gelar Belakang</label>
-                                        <textarea class="form-control" id="gelar_belakang_input" rows="4" placeholder="e.g. S.Kom
-M.Si"></textarea>
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="password_input" class="form-label">New Passwords</label>
-                                    <textarea class="form-control" id="password_input" rows="4" placeholder="Leave blank to keep current password"></textarea>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-6 mb-3">
-                                        <label for="nik_input" class="form-label">New NIKs</label>
-                                        <textarea class="form-control" id="nik_input" rows="4" placeholder="e.g. 1234567890123456
-0987654321098765"></textarea>
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label for="nip_input" class="form-label">New NIPs</label>
-                                        <textarea class="form-control" id="nip_input" rows="4" placeholder="e.g. 199001012020011001"></textarea>
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="tempat_lahir_input" class="form-label">New Tempat Lahir</label>
-                                    <textarea class="form-control" id="tempat_lahir_input" rows="4" placeholder="e.g. Sinjai"></textarea>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="tanggal_lahir_input" class="form-label">New Tanggal Lahir (YYYY-MM-DD)</label>
-                                    <textarea class="form-control" id="tanggal_lahir_input" rows="4" placeholder="e.g. 1990-01-01"></textarea>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="pendidikan_input" class="form-label">New Pendidikan</label>
-                                    <textarea class="form-control" id="pendidikan_input" rows="4" placeholder="e.g. S1 Teknik Informatika"></textarea>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="jabatan_input" class="form-label">New Jabatan</label>
-                                    <textarea class="form-control" id="jabatan_input" rows="4" placeholder="e.g. Pranata Komputer Ahli Pertama"></textarea>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="status_asn_input" class="form-label">New Status ASN</label>
-                                    <select class="form-select" id="status_asn_input">
-                                        <option value="">Do not change</option>
-                                        <?php foreach ($status_asn_options as $option): ?>
-                                            <option value="<?= esc($option['id']) ?>"><?= esc($option['nama_status_asn']) ?></option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="pimpinan_input" class="form-label">New Pimpinan Status</label>
-                                    <select class="form-select" id="pimpinan_input">
-                                        <option value="">Do not change</option>
-                                        <option value="0">No</option>
-                                        <option value="1">Yes</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="pimpinan_desa_input" class="form-label">New Pimpinan Desa Status</label>
-                                    <select class="form-select" id="pimpinan_desa_input">
-                                        <option value="">Do not change</option>
-                                        <option value="0">No</option>
-                                        <option value="1">Yes</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="unit_kerja_input" class="form-label">New Unit Kerja (All)</label>
-                                    <select class="form-select" id="unit_kerja_input">
-                                        <option selected value="">Do not change</option>
-                                        <?php foreach ($unit_kerja as $unit) : ?>
-                                            <option value="<?= esc($unit['nama_unit_kerja']); ?>"><?= esc(strtoupper($unit['nama_unit_kerja'])); ?></option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- PK Table Column -->
-                    <div class="col-md-6">
-                        <div class="card h-100">
-                            <div class="card-header bg-light fw-bold">
-                                <i class="fas fa-file-contract me-2"></i>Perjanjian Kerja (PK) Details
-                            </div>
-                            <div class="card-body">
-                                <div class="mb-3">
-                                    <label for="nomor_input" class="form-label">New Nomor SK</label>
-                                    <textarea class="form-control" id="nomor_input" rows="4" placeholder="e.g. 881"></textarea>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="gaji_nominal_input" class="form-label">New Gaji Nominal</label>
-                                    <textarea class="form-control" id="gaji_nominal_input" rows="4" placeholder="e.g. 3203600"></textarea>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="gaji_terbilang_input" class="form-label">New Gaji Terbilang</label>
-                                    <textarea class="form-control" id="gaji_terbilang_input" rows="4" placeholder="e.g. Tiga Juta Dua Ratus Tiga Ribu Enam Ratus Rupiah"></textarea>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="tanggal_kontrak_awal_input" class="form-label">New Tanggal Kontrak Awal (YYYY-MM-DD)</label>
-                                    <textarea class="form-control" id="tanggal_kontrak_awal_input" rows="4" placeholder="e.g. 2024-01-01"></textarea>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="tanggal_kontrak_akhir_input" class="form-label">New Tanggal Kontrak Akhir (YYYY-MM-DD)</label>
-                                    <textarea class="form-control" id="tanggal_kontrak_akhir_input" rows="4" placeholder="e.g. 2024-12-31"></textarea>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="mt-4 text-end">
-                    <button type="submit" id="update_btn" class="btn btn-primary">
-                        <i class="fas fa-sync-alt me-2"></i>Update Selected Emails
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div class="card shadow-sm mt-4">
-        <div class="card-header bg-light py-3">
-            <h5 class="card-title mb-0">
-                <i class="fas fa-list-alt me-2 text-primary"></i>
-                Update Results
-            </h5>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table id="results_table" class="table table-striped table-hover">
-                    <thead class="table-light">
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Identifier</th>
-                            <th scope="col">Status</th>
-                            <th scope="col">Message</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Results will be populated here by JavaScript -->
-                    </tbody>
-                </table>
             </div>
+
+            <div class="row">
+                <!-- Email Table Column -->
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header bg-light fw-bold">
+                            <i class="fas fa-user me-2"></i>Email Account & Personal Info
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="name_input" class="form-label">New Names</label>
+                                <textarea class="form-control" id="name_input" rows="4" placeholder="e.g. John Doe
+Jane Smith"></textarea>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="gelar_depan_input" class="form-label">New Gelar Depan</label>
+                                    <textarea class="form-control" id="gelar_depan_input" rows="4" placeholder="e.g. Dr.
+H."></textarea>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="gelar_belakang_input" class="form-label">New Gelar Belakang</label>
+                                    <textarea class="form-control" id="gelar_belakang_input" rows="4" placeholder="e.g. S.Kom
+M.Si"></textarea>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="password_input" class="form-label">New Passwords</label>
+                                <textarea class="form-control" id="password_input" rows="4" placeholder="Leave blank to keep current password"></textarea>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="nik_input" class="form-label">New NIKs</label>
+                                    <textarea class="form-control" id="nik_input" rows="4" placeholder="e.g. 1234567890123456
+0987654321098765"></textarea>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="nip_input" class="form-label">New NIPs</label>
+                                    <textarea class="form-control" id="nip_input" rows="4" placeholder="e.g. 199001012020011001"></textarea>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="tempat_lahir_input" class="form-label">New Tempat Lahir</label>
+                                <textarea class="form-control" id="tempat_lahir_input" rows="4" placeholder="e.g. Sinjai"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="tanggal_lahir_input" class="form-label">New Tanggal Lahir (YYYY-MM-DD)</label>
+                                <textarea class="form-control" id="tanggal_lahir_input" rows="4" placeholder="e.g. 1990-01-01"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="pendidikan_input" class="form-label">New Pendidikan</label>
+                                <textarea class="form-control" id="pendidikan_input" rows="4" placeholder="e.g. S1 Teknik Informatika"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="jabatan_input" class="form-label">New Jabatan</label>
+                                <textarea class="form-control" id="jabatan_input" rows="4" placeholder="e.g. Pranata Komputer Ahli Pertama"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="status_asn_input" class="form-label">New Status ASN</label>
+                                <select class="form-select" id="status_asn_input">
+                                    <option value="">Do not change</option>
+                                    <?php foreach ($status_asn_options as $option): ?>
+                                        <option value="<?= esc($option['id']) ?>"><?= esc($option['nama_status_asn']) ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="pimpinan_input" class="form-label">New Pimpinan Status</label>
+                                <select class="form-select" id="pimpinan_input">
+                                    <option value="">Do not change</option>
+                                    <option value="0">No</option>
+                                    <option value="1">Yes</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="pimpinan_desa_input" class="form-label">New Pimpinan Desa Status</label>
+                                <select class="form-select" id="pimpinan_desa_input">
+                                    <option value="">Do not change</option>
+                                    <option value="0">No</option>
+                                    <option value="1">Yes</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="unit_kerja_input" class="form-label">New Unit Kerja (All)</label>
+                                <select class="form-select" id="unit_kerja_input">
+                                    <option selected value="">Do not change</option>
+                                    <?php foreach ($unit_kerja as $unit) : ?>
+                                        <option value="<?= esc($unit['nama_unit_kerja']); ?>"><?= esc(strtoupper($unit['nama_unit_kerja'])); ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PK Table Column -->
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header bg-light fw-bold">
+                            <i class="fas fa-file-contract me-2"></i>Perjanjian Kerja (PK) Details
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="nomor_input" class="form-label">New Nomor SK</label>
+                                <textarea class="form-control" id="nomor_input" rows="4" placeholder="e.g. 881"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="gaji_nominal_input" class="form-label">New Gaji Nominal</label>
+                                <textarea class="form-control" id="gaji_nominal_input" rows="4" placeholder="e.g. 3203600"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="gaji_terbilang_input" class="form-label">New Gaji Terbilang</label>
+                                <textarea class="form-control" id="gaji_terbilang_input" rows="4" placeholder="e.g. Tiga Juta Dua Ratus Tiga Ribu Enam Ratus"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="tanggal_kontrak_awal_input" class="form-label">New Tanggal Kontrak Awal (YYYY-MM-DD)</label>
+                                <textarea class="form-control" id="tanggal_kontrak_awal_input" rows="4" placeholder="e.g. 2024-01-01"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="tanggal_kontrak_akhir_input" class="form-label">New Tanggal Kontrak Akhir (YYYY-MM-DD)</label>
+                                <textarea class="form-control" id="tanggal_kontrak_akhir_input" rows="4" placeholder="e.g. 2024-12-31"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-4 text-end">
+                <button type="submit" id="update_btn" class="btn btn-primary">
+                    <i class="fas fa-sync-alt me-2"></i>Update Selected Emails
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card shadow-sm mt-4">
+    <div class="card-header bg-light py-3">
+        <h5 class="card-title mb-0">
+            <i class="fas fa-list-alt me-2 text-primary"></i>
+            Update Results
+        </h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table id="results_table" class="table table-striped table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Identifier</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Message</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Results will be populated here by JavaScript -->
+                </tbody>
+            </table>
         </div>
     </div>
+</div>
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts'); ?>
@@ -218,7 +218,7 @@ M.Si"></textarea>
         const tanggalLahirInput = document.getElementById('tanggal_lahir_input');
         const pendidikanInput = document.getElementById('pendidikan_input');
         const jabatanInput = document.getElementById('jabatan_input');
-        const statusAsnInput = document.getElementById('status_asn_input'); 
+        const statusAsnInput = document.getElementById('status_asn_input');
         const pimpinanInput = document.getElementById('pimpinan_input');
         const pimpinanDesaInput = document.getElementById('pimpinan_desa_input');
         const unitKerjaInput = document.getElementById('unit_kerja_input');

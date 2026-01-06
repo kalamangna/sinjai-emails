@@ -1131,14 +1131,14 @@ class Email extends BaseController
             }
 
             $unitKerja = $this->unitKerjaModel->find($unitId); // Main unit for the export context
-            
+
             if ($unitKerja && !empty($unitKerja['parent_id'])) {
                 $parentUnit = $this->unitKerjaModel->find($unitKerja['parent_id']);
                 if ($parentUnit) {
-                    $unitKerja['nama_unit_kerja'] = $unitKerja['nama_unit_kerja'] . ', ' . $parentUnit['nama_unit_kerja'];
+                    $unitKerja['nama_unit_kerja'] = $unitKerja['nama_unit_kerja'] . '-' . $parentUnit['nama_unit_kerja'];
                 }
             }
-            
+
             // Ideally, we should use the email's actual unit for the template display?
             // The original logic passed $unitKerja (the filter unit) to the view.
             // But the email might belong to a sub-unit. 
@@ -1350,7 +1350,7 @@ class Email extends BaseController
                 if ($unitKerja && !empty($unitKerja['parent_id'])) {
                     $parentUnit = $this->unitKerjaModel->find($unitKerja['parent_id']);
                     if ($parentUnit) {
-                        $unitKerja['nama_unit_kerja'] = $unitKerja['nama_unit_kerja'] . ', ' . $parentUnit['nama_unit_kerja'];
+                        $unitKerja['nama_unit_kerja'] = $unitKerja['nama_unit_kerja'] . ' - ' . $parentUnit['nama_unit_kerja'];
                     }
                 }
             }
@@ -1634,7 +1634,7 @@ class Email extends BaseController
         ];
 
         $method = strtolower($this->request->getMethod());
-        
+
         if ($method === 'post') {
             $niksInput = $this->request->getPost('nik_list');
             $data['input_niks'] = $niksInput;
@@ -1648,7 +1648,7 @@ class Email extends BaseController
                     // Remove control characters and whitespace
                     $nik = preg_replace('/[\x00-\x1F\x7F]/', '', $nik);
                     $nik = trim($nik);
-                    
+
                     if (empty($nik)) {
                         continue;
                     }
