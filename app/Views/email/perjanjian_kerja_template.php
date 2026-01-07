@@ -7,7 +7,7 @@
     <title>Perjanjian Kerja - <?= esc(strtoupper($email['name'])) ?></title>
     <style>
         @page {
-            margin: 1cm 2cm 1cm 2cm;
+            margin: 2cm 2cm 2.5cm 2cm;
         }
 
         @font-face {
