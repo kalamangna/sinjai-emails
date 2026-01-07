@@ -7,7 +7,7 @@
     <title>Perjanjian Kerja - <?= esc(strtoupper($email['name'])) ?></title>
     <style>
         @page {
-            margin: 1cm 2cm 2cm 2cm;
+            margin: 2cm 2cm 3cm 3cm;
         }
 
         @font-face {
@@ -86,7 +86,7 @@
         }
 
         /* Allow main table rows to break across pages */
-        .isi-bab > table > tbody > tr {
+        .isi-bab>table>tbody>tr {
             page-break-inside: auto;
         }
 
