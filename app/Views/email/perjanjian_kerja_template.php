@@ -7,7 +7,7 @@
     <title>Perjanjian Kerja - <?= esc(strtoupper($email['name'])) ?></title>
     <style>
         @page {
-            margin: 2cm 2cm 2.5cm 2cm;
+            margin: 2cm 2cm 3cm 2cm;
         }
 
         @font-face {
@@ -24,6 +24,7 @@
 
         .kop-surat {
             text-align: center;
+            margin-bottom: 30px;
         }
 
         .kop-surat img {
@@ -52,7 +53,7 @@
         }
 
         .isi-dokumen {
-            margin-top: 2rem;
+            margin-top: 1rem;
             font-size: 10pt;
             text-align: justify;
             line-height: 1.5;
@@ -69,6 +70,7 @@
 
         .bab {
             margin-top: 1.5rem;
+            page-break-inside: avoid;
         }
 
         .judul-bab {
@@ -84,8 +86,9 @@
         }
 
         .area-ttd {
-            margin-top: 2rem;
+            margin-top: 3rem;
             width: 100%;
+            page-break-inside: avoid;
         }
 
         .area-ttd table {
