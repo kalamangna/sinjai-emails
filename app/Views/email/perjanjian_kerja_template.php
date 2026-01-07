@@ -66,6 +66,7 @@
 
         .isi-dokumen td {
             vertical-align: top;
+            padding-bottom: 3px;
         }
 
         .bab {
@@ -333,7 +334,7 @@
                             Kewajiban bagi Pihak Kedua sebagaimana dimaksud pada ayat (1) meliputi:
                             <table>
                                 <tr>
-                                    <td style="width: 20px;">a.</td>
+                                    <td style="width: 25px;">a.</td>
                                     <td>setia dan taat pada Pancasila, Undang-Undang Dasar Negara Republik Indonesia Tahun 1945, Negara Kesatuan Republik Indonesia, dan Pemerintah yang sah;</td>
                                 </tr>
                                 <tr>
@@ -373,7 +374,7 @@
                             Selain memenuhi kewajiban sebagaimana dimaksud dalam Pasal 5 ayat (2), Pihak Kedua wajib:
                             <table>
                                 <tr>
-                                    <td style="width: 20px;">a.</td>
+                                    <td style="width: 25px;">a.</td>
                                     <td>mengucapkan sumpah/janji PPPK;</td>
                                 </tr>
                                 <tr>
@@ -441,7 +442,7 @@
                             Larangan bagi Pihak Kedua sebagaimana dimaksud pada ayat (1) meliputi:
                             <table>
                                 <tr>
-                                    <td style="width: 20px;">a.</td>
+                                    <td style="width: 25px;">a.</td>
                                     <td>menyalahgunakan wewenang;</td>
                                 </tr>
                                 <tr>
@@ -490,7 +491,7 @@
                                         memberikan dukungan kepada calon Presiden/Wakil Presiden, Dewan Perwakilan Rakyat, Dewan Perwakilan Daerah, atau Dewan Perwakilan Rakyat Daerah dengan cara:
                                         <table>
                                             <tr>
-                                                <td style="width: 20px;">1)</td>
+                                                <td style="width: 25px;">1)</td>
                                                 <td>ikut serta sebagai pelaksana kampanye;</td>
                                             </tr>
                                             <tr>
@@ -514,7 +515,7 @@
                                         memberikan dukungan kepada calon Presiden/Wakil Presiden dengan cara:
                                         <table>
                                             <tr>
-                                                <td style="width: 20px;">1)</td>
+                                                <td style="width: 25px;">1)</td>
                                                 <td>membuat keputusan dan/atau tindakan yang menguntungkan atau merugikan salah satu pasangan calon selama masa kampanye; dan/atau</td>
                                             </tr>
                                             <tr>
@@ -534,7 +535,7 @@
                                         memberikan dukungan kepada calon Kepala Daerah/Wakil Kepala Daerah, dengan cara:
                                         <table>
                                             <tr>
-                                                <td style="width: 20px;">1)</td>
+                                                <td style="width: 25px;">1)</td>
                                                 <td>terlibat dalam kegiatan kampanye untuk mendukung calon Kepala Daerah/Wakil Kepala Daerah;</td>
                                             </tr>
                                             <tr>
@@ -560,7 +561,7 @@
                         <td>Selain larangan sebagaimana dimaksud pada ayat (4), Pihak Kedua dilarang:
                             <table>
                                 <tr>
-                                    <td style="width: 20px;">a.</td>
+                                    <td style="width: 25px;">a.</td>
                                     <td>melakukan hal-hal yang dapat menurunkan kehormatan atau martabat Negara dan Pemerintah;</td>
                                 </tr>
                                 <tr>
@@ -624,12 +625,12 @@
                             Pihak Kedua yang tidak mematuhi kewajiban dan/atau melanggar larangan sebagaimana dimaksud pada ayat (2), ayat (3), ayat (4) dan ayat (5) dikenakan sanksi berupa:
                             <table>
                                 <tr>
-                                    <td style="width: 20px;">a.</td>
+                                    <td style="width: 25px;">a.</td>
                                     <td>
                                         Sanksi ringan:
                                         <table>
                                             <tr>
-                                                <td style="width: 20px;">1)</td>
+                                                <td style="width: 25px;">1)</td>
                                                 <td>teguran lisan.</td>
                                             </tr>
                                         </table>
@@ -641,11 +642,11 @@
                                         Sanksi sedang:
                                         <table>
                                             <tr>
-                                                <td style="width: 20px;">1)</td>
+                                                <td style="width: 25px;">1)</td>
                                                 <td>teguran tertulis.</td>
                                             </tr>
                                             <tr>
-                                                <td style="width: 20px;">2)</td>
+                                                <td style="width: 25px;">2)</td>
                                                 <td>pernyataan tidak puas secara tertulis.</td>
                                             </tr>
                                         </table>
@@ -657,7 +658,7 @@
                                         Sanksi berat:
                                         <table>
                                             <tr>
-                                                <td style="width: 20px;">1)</td>
+                                                <td style="width: 25px;">1)</td>
                                                 <td>pemutusan hubungan Perjanjian Kerja dengan hormat;</td>
                                             </tr>
                                             <tr>
@@ -784,7 +785,7 @@
                             Pihak Kesatu memberikan penghargaan kepada Pihak Kedua berupa:
                             <table>
                                 <tr>
-                                    <td style="width: 20px;">a.</td>
+                                    <td style="width: 25px;">a.</td>
                                     <td>tanda kehormatan;</td>
                                 </tr>
                                 <tr>
@@ -828,7 +829,7 @@
                             Pihak Kesatu wajib memberikan perlindungan bagi Pihak Kedua berupa:
                             <table>
                                 <tr>
-                                    <td style="width: 20px;">a.</td>
+                                    <td style="width: 25px;">a.</td>
                                     <td>jaminan kesehatan;</td>
                                 </tr>
                                 <tr>
@@ -921,7 +922,7 @@
                             Pemutusan Hubungan Perjanjian Kerja dengan hormat dilakukan apabila:
                             <table>
                                 <tr>
-                                    <td style="width: 20px;">a.</td>
+                                    <td style="width: 25px;">a.</td>
                                     <td>jangka waktu Perjanjian Kerja berakhir;</td>
                                 </tr>
                                 <tr>
@@ -945,7 +946,7 @@
                             Pemutusan Hubungan Perjanjian Kerja dengan hormat tidak atas permintaan sendiri dilakukan apabila:
                             <table>
                                 <tr>
-                                    <td style="width: 20px;">a.</td>
+                                    <td style="width: 25px;">a.</td>
                                     <td>Pihak Kedua dihukum penjara berdasarkan putusan pengadilan yang telah memiliki kekuatan hukum tetap karena melakukan tindak pidana penjara paling singkat 2 (dua) tahun dan tindak pidana dilakukan dengan tidak berencana;</td>
                                 </tr>
                                 <tr>
@@ -965,7 +966,7 @@
                             Pemutusan Hubungan Perjanjian Kerja tidak dengan hormat dilakukan apabila:
                             <table>
                                 <tr>
-                                    <td style="width: 20px;">a.</td>
+                                    <td style="width: 25px;">a.</td>
                                     <td>melakukan penyelewengan terhadap Pancasila dan/atau Undang-Undang Dasar Negara Republik Indonesia Tahun 1945;</td>
                                 </tr>
                                 <tr>
