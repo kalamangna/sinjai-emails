@@ -7,7 +7,7 @@
     <title>Perjanjian Kerja - <?= esc(strtoupper($email['name'])) ?></title>
     <style>
         @page {
-            margin: 2cm 2cm 3cm 3cm;
+            margin: 1.5cm 2cm 2cm 2cm;
         }
 
         @font-face {
@@ -77,7 +77,6 @@
             font-weight: bold;
             text-align: center;
             text-transform: uppercase;
-            page-break-after: avoid;
         }
 
         .isi-bab {
@@ -86,47 +85,87 @@
             line-height: 1.5;
         }
 
-        /* Allow main table rows to break across pages */
-        .isi-bab>table>tbody>tr {
-            page-break-inside: auto;
-        }
-
-        /* Keep individual list items (inner table rows) together */
-        .isi-bab table table tr {
-            page-break-inside: avoid;
-        }
-
         .area-ttd {
-            margin-top: 3rem;
+            display: table;
             width: 100%;
+            margin-top: 50px;
             page-break-inside: avoid;
         }
 
-        .area-ttd table {
-            width: 100%;
-            border-collapse: collapse;
+        .signature-row {
+            display: table-row;
         }
 
-        .area-ttd .pihak {
-            text-align: center;
-            font-weight: bold;
+        .signature-cell {
+            display: table-cell;
             width: 50%;
+            text-align: center;
+            vertical-align: top;
         }
 
-        .area-ttd .spasi-ttd {
-            text-align: center;
-            height: 100px;
+        .pihak {
+            font-weight: bold;
+        }
+
+        .spasi-ttd {
+            padding-left: 70px;
+            height: 140px;
             vertical-align: middle;
         }
 
-        .area-ttd .nama-penandatangan {
-            text-align: center;
+        .nama-penandatangan {
             font-weight: bold;
         }
 
         .paragraf {
             margin-top: 0.5rem;
             text-align: justify;
+            line-height: 1.5;
+        }
+
+        /* Semantic List Structure */
+        .list-container {
+            display: table;
+            width: 100%;
+            margin-bottom: 3px; /* Consistent spacing */
+            page-break-inside: avoid; /* Prevent item splitting */
+        }
+
+        .list-number {
+            display: table-cell;
+            width: 25px;
+            vertical-align: top;
+        }
+
+        .list-content {
+            display: table-cell;
+            vertical-align: top;
+            text-align: justify;
+            line-height: 1.5;
+        }
+
+        /* Semantic Info Row Structure (Label : Value) */
+        .info-row {
+            display: table;
+            width: 100%;
+            margin-bottom: 3px;
+        }
+
+        .info-label {
+            display: table-cell;
+            width: 160px;
+            vertical-align: top;
+        }
+
+        .info-separator {
+            display: table-cell;
+            width: 10px;
+            vertical-align: top;
+        }
+
+        .info-value {
+            display: table-cell;
+            vertical-align: top;
             line-height: 1.5;
         }
     </style>
@@ -172,49 +211,48 @@
 
     <div class="isi-dokumen">
         Pada hari ini <strong>JUMAT</strong> tanggal <strong>DUA</strong> bulan <strong>JANUARI</strong> tahun <strong>DUA RIBU DUA PULUH ENAM</strong> yang bertandatangan di bawah ini:
-        <table>
-            <tr>
-                <td style="width: 25px;">I.</td>
-                <td><strong>BUPATI SINJAI</strong> untuk selanjutnya disebut Pihak Kesatu.</td>
-            </tr>
-            <tr>
-                <td>II.</td>
-                <td>
-                    <table>
-                        <tr>
-                            <td style="width: 160px;">Nama</td>
-                            <td style="width: 10px;">:</td>
-                            <td>
-                                <?php if (!empty($email['gelar_depan'])): ?>
-                                    <?= esc($email['gelar_depan']) ?>
-                                <?php endif; ?>
-                                <?= esc(strtoupper($email['name'])) ?><?php if (!empty($email['gelar_belakang'])): ?>, <?= esc($email['gelar_belakang']) ?>
-                            <?php endif; ?>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Nomor Induk PPPK-PW</td>
-                            <td>:</td>
-                            <td><?= esc($email['nip'] ?? 'N/A') ?></td>
-                        </tr>
-                        <tr>
-                            <td>Tempat/Tanggal Lahir</td>
-                            <td>:</td>
-                            <td><?= esc($email['tempat_lahir'] ?? 'N/A') ?> / <?= (isset($email['tanggal_lahir']) && $email['tanggal_lahir'] != '0000-00-00' && !empty($email['tanggal_lahir'])) ? date('d-m-Y', strtotime($email['tanggal_lahir'])) : 'N/A' ?></td>
-                        </tr>
-                        <tr>
-                            <td>Pendidikan</td>
-                            <td>:</td>
-                            <td><?= esc($email['pendidikan'] ?? 'N/A') ?></td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-            <tr>
-                <td></td>
-                <td>dalam hal ini bertindak untuk dan atas nama diri sendiri, untuk selanjutnya disebut Pihak Kedua.</td>
-            </tr>
-        </table>
+        
+        <div class="list-container">
+            <div class="list-number">I.</div>
+            <div class="list-content"><strong>BUPATI SINJAI</strong> untuk selanjutnya disebut Pihak Kesatu.</div>
+        </div>
+        
+        <div class="list-container">
+            <div class="list-number">II.</div>
+            <div class="list-content">
+                <div class="info-row">
+                    <div class="info-label">Nama</div>
+                    <div class="info-separator">:</div>
+                    <div class="info-value">
+                        <?php if (!empty($email['gelar_depan'])): ?>
+                            <?= esc($email['gelar_depan']) ?>
+                        <?php endif; ?>
+                        <?= esc(strtoupper($email['name'])) ?><?php if (!empty($email['gelar_belakang'])): ?>, <?= esc($email['gelar_belakang']) ?>
+                    <?php endif; ?>
+                    </div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Nomor Induk PPPK-PW</div>
+                    <div class="info-separator">:</div>
+                    <div class="info-value"><?= esc($email['nip'] ?? 'N/A') ?></div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Tempat/Tanggal Lahir</div>
+                    <div class="info-separator">:</div>
+                    <div class="info-value"><?= esc($email['tempat_lahir'] ?? 'N/A') ?> / <?= (isset($email['tanggal_lahir']) && $email['tanggal_lahir'] != '0000-00-00' && !empty($email['tanggal_lahir'])) ? date('d-m-Y', strtotime($email['tanggal_lahir'])) : 'N/A' ?></div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Pendidikan</div>
+                    <div class="info-separator">:</div>
+                    <div class="info-value"><?= esc($email['pendidikan'] ?? 'N/A') ?></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="list-container">
+            <div class="list-number"></div>
+            <div class="list-content">dalam hal ini bertindak untuk dan atas nama diri sendiri, untuk selanjutnya disebut Pihak Kedua.</div>
+        </div>
 
         <div class="paragraf">
             Pihak Kesatu dan Pihak Kedua sepakat untuk mengikatkan diri satu sama lain dalam Perjanjian Kerja dengan ketentuan sebagaimana dituangkan dalam Pasal-Pasal sebagai berikut:
@@ -228,36 +266,50 @@
 
             <div class="isi-bab">
                 Pihak Kesatu menerima dan mempekerjakan Pihak Kedua sebagai Pegawai Pemerintah dengan Perjanjian Kerja Paruh Waktu dengan ketentuan sebagai berikut:
-                <table>
-                    <tr>
-                        <td style="width: 25px;">a.</td>
-                        <td style="width: 160px;">Masa Perjanjian Kerja</td>
-                        <td style="width: 10px;">:</td>
-                        <td>
-                            <?= formatIndonesianDate($pk_data['tanggal_kontrak_awal'] ?? '0000-00-00') ?>
-                            s/d
-                            <?= formatIndonesianDate($pk_data['tanggal_kontrak_akhir'] ?? '0000-00-00') ?>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>b.</td>
-                        <td>Jabatan</td>
-                        <td>:</td>
-                        <td><?= esc(strtoupper($email['jabatan'] ?? 'N/A')) ?></td>
-                    </tr>
-                    <tr>
-                        <td>c.</td>
-                        <td>Masa Kerja Sebelumnya</td>
-                        <td>:</td>
-                        <td>0 Tahun 0 Bulan</td>
-                    </tr>
-                    <tr>
-                        <td>d.</td>
-                        <td>Unit Kerja</td>
-                        <td>:</td>
-                        <td><?= esc(strtoupper($unit_kerja['nama_unit_kerja'])) ?> - PEMERINTAH KABUPATEN SINJAI</td>
-                    </tr>
-                </table>
+                <div class="list-container">
+                    <div class="list-number">a.</div>
+                    <div class="list-content">
+                        <div class="info-row">
+                            <div class="info-label">Masa Perjanjian Kerja</div>
+                            <div class="info-separator">:</div>
+                            <div class="info-value">
+                                <?= formatIndonesianDate($pk_data['tanggal_kontrak_awal'] ?? '0000-00-00') ?>
+                                s/d
+                                <?= formatIndonesianDate($pk_data['tanggal_kontrak_akhir'] ?? '0000-00-00') ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="list-container">
+                    <div class="list-number">b.</div>
+                    <div class="list-content">
+                        <div class="info-row">
+                            <div class="info-label">Jabatan</div>
+                            <div class="info-separator">:</div>
+                            <div class="info-value"><?= esc(strtoupper($email['jabatan'] ?? 'N/A')) ?></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="list-container">
+                    <div class="list-number">c.</div>
+                    <div class="list-content">
+                        <div class="info-row">
+                            <div class="info-label">Masa Kerja Sebelumnya</div>
+                            <div class="info-separator">:</div>
+                            <div class="info-value">0 Tahun 0 Bulan</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="list-container">
+                    <div class="list-number">d.</div>
+                    <div class="list-content">
+                        <div class="info-row">
+                            <div class="info-label">Unit Kerja</div>
+                            <div class="info-separator">:</div>
+                            <div class="info-value"><?= esc(strtoupper($unit_kerja['nama_unit_kerja'])) ?> - PEMERINTAH KABUPATEN SINJAI</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -268,16 +320,14 @@
             </h3>
 
             <div class="isi-bab">
-                <table>
-                    <tr>
-                        <td style="width: 25px;">(1)</td>
-                        <td>Pihak Kesatu membuat dan menetapkan tugas pekerjaan yang harus dilaksanakan oleh Pihak Kedua.</td>
-                    </tr>
-                    <tr>
-                        <td>(2)</td>
-                        <td>Pihak Kedua wajib melaksanakan tugas pekerjaan yang diberikan Pihak Kesatu dengan sebaik-baiknya dengan rasa tanggung jawab.</td>
-                    </tr>
-                </table>
+                <div class="list-container">
+                    <div class="list-number">(1)</div>
+                    <div class="list-content">Pihak Kesatu membuat dan menetapkan tugas pekerjaan yang harus dilaksanakan oleh Pihak Kedua.</div>
+                </div>
+                <div class="list-container">
+                    <div class="list-number">(2)</div>
+                    <div class="list-content">Pihak Kedua wajib melaksanakan tugas pekerjaan yang diberikan Pihak Kesatu dengan sebaik-baiknya dengan rasa tanggung jawab.</div>
+                </div>
             </div>
         </div>
 
@@ -288,20 +338,18 @@
             </h3>
 
             <div class="isi-bab">
-                <table>
-                    <tr>
-                        <td style="width: 25px;">(1)</td>
-                        <td>Pihak Kesatu membuat dan menetapkan target kinerja bagi Pihak Kedua selama masa Perjanjian Kerja.</td>
-                    </tr>
-                    <tr>
-                        <td>(2)</td>
-                        <td>Pihak Kedua wajib memenuhi target kinerja yang telah ditetapkan oleh Pihak Kesatu.</td>
-                    </tr>
-                    <tr>
-                        <td>(3)</td>
-                        <td>Pihak Kesatu dan Pihak Kedua menandatangani target perjanjian kinerja sesuai peraturan perundang-undangan.</td>
-                    </tr>
-                </table>
+                <div class="list-container">
+                    <div class="list-number">(1)</div>
+                    <div class="list-content">Pihak Kesatu membuat dan menetapkan target kinerja bagi Pihak Kedua selama masa Perjanjian Kerja.</div>
+                </div>
+                <div class="list-container">
+                    <div class="list-number">(2)</div>
+                    <div class="list-content">Pihak Kedua wajib memenuhi target kinerja yang telah ditetapkan oleh Pihak Kesatu.</div>
+                </div>
+                <div class="list-container">
+                    <div class="list-number">(3)</div>
+                    <div class="list-content">Pihak Kesatu dan Pihak Kedua menandatangani target perjanjian kinerja sesuai peraturan perundang-undangan.</div>
+                </div>
             </div>
         </div>
 
@@ -323,359 +371,129 @@
             </h3>
 
             <div class="isi-bab">
-                <table>
-                    <tr>
-                        <td style="width: 25px;">(1)</td>
-                        <td>Pihak Kedua wajib mematuhi semua kewajiban dan larangan.</td>
-                    </tr>
-                    <tr>
-                        <td>(2)</td>
-                        <td>
+                
+                    <div class="list-container"><div class="list-number">(1)</div><div class="list-content">Pihak Kedua wajib mematuhi semua kewajiban dan larangan.</div></div>
+                    <div class="list-container"><div class="list-number">(2)</div><div class="list-content">
                             Kewajiban bagi Pihak Kedua sebagaimana dimaksud pada ayat (1) meliputi:
-                            <table>
-                                <tr>
-                                    <td style="width: 25px;">a.</td>
-                                    <td>setia dan taat pada Pancasila, Undang-Undang Dasar Negara Republik Indonesia Tahun 1945, Negara Kesatuan Republik Indonesia, dan Pemerintah yang sah;</td>
-                                </tr>
-                                <tr>
-                                    <td>b.</td>
-                                    <td>menjaga persatuan dan kesatuan bangsa;</td>
-                                </tr>
-                                <tr>
-                                    <td>c.</td>
-                                    <td>melaksanakan kebijakan yang dirumuskan pejabat pemerintah yang berwenang;</td>
-                                </tr>
-                                <tr>
-                                    <td>d.</td>
-                                    <td>menaati ketentuan peraturan perundang-undangan;</td>
-                                </tr>
-                                <tr>
-                                    <td>e.</td>
-                                    <td>melaksanakan tugas kedinasan dengan penuh pengabdian, kejujuran, kesadaran, dan tanggung jawab;</td>
-                                </tr>
-                                <tr>
-                                    <td>f.</td>
-                                    <td>menunjukkan integritas dan keteladanan dalam sikap, perilaku, ucapan, dan tindakan kepada setiap orang, baik di dalam maupun di luar kedinasan;</td>
-                                </tr>
-                                <tr>
-                                    <td>g.</td>
-                                    <td>menyimpan rahasia jabatan dan hanya dapat mengemukakan rahasia jabatan sesuai dengan ketentuan peraturan perundang-undangan; dan</td>
-                                </tr>
-                                <tr>
-                                    <td>h.</td>
-                                    <td>bersedia ditempatkan di seluruh wilayah Negara Kesatuan Republik Indonesia.</td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="width: 25px;">(3)</td>
-                        <td>
+                            
+                                <div class="list-container"><div class="list-number">a.</div><div class="list-content">setia dan taat pada Pancasila, Undang-Undang Dasar Negara Republik Indonesia Tahun 1945, Negara Kesatuan Republik Indonesia, dan Pemerintah yang sah;</div></div>
+                                <div class="list-container"><div class="list-number">b.</div><div class="list-content">menjaga persatuan dan kesatuan bangsa;</div></div>
+                                <div class="list-container"><div class="list-number">c.</div><div class="list-content">melaksanakan kebijakan yang dirumuskan pejabat pemerintah yang berwenang;</div></div>
+                                <div class="list-container"><div class="list-number">d.</div><div class="list-content">menaati ketentuan peraturan perundang-undangan;</div></div>
+                                <div class="list-container"><div class="list-number">e.</div><div class="list-content">melaksanakan tugas kedinasan dengan penuh pengabdian, kejujuran, kesadaran, dan tanggung jawab;</div></div>
+                                <div class="list-container"><div class="list-number">f.</div><div class="list-content">menunjukkan integritas dan keteladanan dalam sikap, perilaku, ucapan, dan tindakan kepada setiap orang, baik di dalam maupun di luar kedinasan;</div></div>
+                                <div class="list-container"><div class="list-number">g.</div><div class="list-content">menyimpan rahasia jabatan dan hanya dapat mengemukakan rahasia jabatan sesuai dengan ketentuan peraturan perundang-undangan; dan</div></div>
+                                <div class="list-container"><div class="list-number">h.</div><div class="list-content">bersedia ditempatkan di seluruh wilayah Negara Kesatuan Republik Indonesia.</div></div>
+                            
+                        </div></div>
+                    <div class="list-container"><div class="list-number">(3)</div><div class="list-content">
                             Selain memenuhi kewajiban sebagaimana dimaksud dalam Pasal 5 ayat (2), Pihak Kedua wajib:
-                            <table>
-                                <tr>
-                                    <td style="width: 25px;">a.</td>
-                                    <td>mengucapkan sumpah/janji PPPK;</td>
-                                </tr>
-                                <tr>
-                                    <td>b.</td>
-                                    <td>mengucapkan sumpah/janji jabatan;</td>
-                                </tr>
-                                <tr>
-                                    <td>c.</td>
-                                    <td>setia dan taat sepenuhnya kepada Pancasila, Undang-Undang Dasar Negara Republik Indonesia Tahun 1945, Negara Kesatuan Republik Indonesia, dan Pemerintah;</td>
-                                </tr>
-                                <tr>
-                                    <td>d.</td>
-                                    <td>menaati segala ketentuan peraturan perundang-undangan;</td>
-                                </tr>
-                                <tr>
-                                    <td>e.</td>
-                                    <td>melaksanakan tugas kedinasan yang dipercayakan kepada PPPK dengan penuh pengabdian, kesadaran, dan tanggung jawab;</td>
-                                </tr>
-                                <tr>
-                                    <td>f.</td>
-                                    <td>menjunjung tinggi kehormatan negara, Pemerintah, dan martabat PPPK;</td>
-                                </tr>
-                                <tr>
-                                    <td>g.</td>
-                                    <td>mengutamakan kepentingan negara daripada kepentingan sendiri, seseorang, dan/atau golongan;</td>
-                                </tr>
-                                <tr>
-                                    <td>h.</td>
-                                    <td>memegang rahasia jabatan yang menurut sifatnya atau menurut perintah harus dirahasiakan;</td>
-                                </tr>
-                                <tr>
-                                    <td>i.</td>
-                                    <td>bekerja dengan jujur, tertib, cermat, dan bersemangat untuk kepentingan negara;</td>
-                                </tr>
-                                <tr>
-                                    <td>j.</td>
-                                    <td>melaporkan dengan segera kepada atasannya apabila mengetahui ada hal yang dapat membahayakan atau merugikan negara atau Pemerintah terutama di bidang keamanan, keuangan, dan materiil;</td>
-                                </tr>
-                                <tr>
-                                    <td>k.</td>
-                                    <td>masuk kerja dan menaati ketentuan jam kerja;</td>
-                                </tr>
-                                <tr>
-                                    <td>l.</td>
-                                    <td>mencapai sasaran kerja pegawai yang ditetapkan;</td>
-                                </tr>
-                                <tr>
-                                    <td>m.</td>
-                                    <td>menggunakan dan memelihara barang-barang milik negara dengan sebaik-baiknya;</td>
-                                </tr>
-                                <tr>
-                                    <td>n.</td>
-                                    <td>memberikan pelayanan sebaik-baiknya kepada masyarakat; dan</td>
-                                </tr>
-                                <tr>
-                                    <td>o.</td>
-                                    <td>menaati peraturan kedinasan yang ditetapkan oleh pejabat yang berwenang.</td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="width: 25px;">(4)</td>
-                        <td>
+                            
+                                <div class="list-container"><div class="list-number">a.</div><div class="list-content">mengucapkan sumpah/janji PPPK;</div></div>
+                                <div class="list-container"><div class="list-number">b.</div><div class="list-content">mengucapkan sumpah/janji jabatan;</div></div>
+                                <div class="list-container"><div class="list-number">c.</div><div class="list-content">setia dan taat sepenuhnya kepada Pancasila, Undang-Undang Dasar Negara Republik Indonesia Tahun 1945, Negara Kesatuan Republik Indonesia, dan Pemerintah;</div></div>
+                                <div class="list-container"><div class="list-number">d.</div><div class="list-content">menaati segala ketentuan peraturan perundang-undangan;</div></div>
+                                <div class="list-container"><div class="list-number">e.</div><div class="list-content">melaksanakan tugas kedinasan yang dipercayakan kepada PPPK dengan penuh pengabdian, kesadaran, dan tanggung jawab;</div></div>
+                                <div class="list-container"><div class="list-number">f.</div><div class="list-content">menjunjung tinggi kehormatan negara, Pemerintah, dan martabat PPPK;</div></div>
+                                <div class="list-container"><div class="list-number">g.</div><div class="list-content">mengutamakan kepentingan negara daripada kepentingan sendiri, seseorang, dan/atau golongan;</div></div>
+                                <div class="list-container"><div class="list-number">h.</div><div class="list-content">memegang rahasia jabatan yang menurut sifatnya atau menurut perintah harus dirahasiakan;</div></div>
+                                <div class="list-container"><div class="list-number">i.</div><div class="list-content">bekerja dengan jujur, tertib, cermat, dan bersemangat untuk kepentingan negara;</div></div>
+                                <div class="list-container"><div class="list-number">j.</div><div class="list-content">melaporkan dengan segera kepada atasannya apabila mengetahui ada hal yang dapat membahayakan atau merugikan negara atau Pemerintah terutama di bidang keamanan, keuangan, dan materiil;</div></div>
+                                <div class="list-container"><div class="list-number">k.</div><div class="list-content">masuk kerja dan menaati ketentuan jam kerja;</div></div>
+                                <div class="list-container"><div class="list-number">l.</div><div class="list-content">mencapai sasaran kerja pegawai yang ditetapkan;</div></div>
+                                <div class="list-container"><div class="list-number">m.</div><div class="list-content">menggunakan dan memelihara barang-barang milik negara dengan sebaik-baiknya;</div></div>
+                                <div class="list-container"><div class="list-number">n.</div><div class="list-content">memberikan pelayanan sebaik-baiknya kepada masyarakat; dan</div></div>
+                                <div class="list-container"><div class="list-number">o.</div><div class="list-content">menaati peraturan kedinasan yang ditetapkan oleh pejabat yang berwenang.</div></div>
+                            
+                        </div></div>
+                    <div class="list-container"><div class="list-number">(4)</div><div class="list-content">
                             Larangan bagi Pihak Kedua sebagaimana dimaksud pada ayat (1) meliputi:
-                            <table>
-                                <tr>
-                                    <td style="width: 25px;">a.</td>
-                                    <td>menyalahgunakan wewenang;</td>
-                                </tr>
-                                <tr>
-                                    <td>b.</td>
-                                    <td>menjadi perantara untuk mendapatkan keuntungan pribadi dan/atau orang lain dengan menggunakan kewenangan orang lain;</td>
-                                </tr>
-                                <tr>
-                                    <td>c.</td>
-                                    <td>tanpa izin Pemerintah menjadi pegawai atau bekerja untuk negara lain dan/atau lembaga atau organisasi internasional;</td>
-                                </tr>
-                                <tr>
-                                    <td>d.</td>
-                                    <td>bekerja pada perusahaan asing, konsultan asing, atau lembaga swadaya masyarakat asing;</td>
-                                </tr>
-                                <tr>
-                                    <td>e.</td>
-                                    <td>memiliki, menjual, membeli, menggadaikan, menyewakan, atau meminjamkan barang-barang baik bergerak atau tidak bergerak, dokumen atau surat berharga milik negara secara tidak sah;</td>
-                                </tr>
-                                <tr>
-                                    <td>f.</td>
-                                    <td>melakukan kegiatan bersama dengan atasan, teman sejawat, bawahan, atau orang lain di dalam maupun di luar lingkungan kerjanya dengan tujuan untuk keuntungan pribadi, golongan, atau pihak lain yang secara langsung atau tidak langsung merugikan negara;</td>
-                                </tr>
-                                <tr>
-                                    <td>g.</td>
-                                    <td>memberikan atau menyanggupi akan memberi sesuatu kepada siapa pun baik secara langsung atau tidak langsung dengan dalih apa pun untuk diangkat dalam jabatan;</td>
-                                </tr>
-                                <tr>
-                                    <td>h.</td>
-                                    <td>menerima hadiah atau sesuatu pemberian apa saja dari siapa pun juga yang berhubungan dengan jabatan dan/atau pekerjaannya;</td>
-                                </tr>
-                                <tr>
-                                    <td>i.</td>
-                                    <td>bertindak sewenang-wenang terhadap bawahannya;</td>
-                                </tr>
-                                <tr>
-                                    <td>j.</td>
-                                    <td>melakukan suatu tindakan atau tidak melakukan suatu tindakan yang dapat menghalangi atau mempersulit salah satu pihak yang dilayani sehingga mengakibatkan kerugian bagi yang dilayani;</td>
-                                </tr>
-                                <tr>
-                                    <td>k.</td>
-                                    <td>menghalangi berjalannya tugas kedinasan;</td>
-                                </tr>
-                                <tr>
-                                    <td>l.</td>
-                                    <td>
+                            
+                                <div class="list-container"><div class="list-number">a.</div><div class="list-content">menyalahgunakan wewenang;</div></div>
+                                <div class="list-container"><div class="list-number">b.</div><div class="list-content">menjadi perantara untuk mendapatkan keuntungan pribadi dan/atau orang lain dengan menggunakan kewenangan orang lain;</div></div>
+                                <div class="list-container"><div class="list-number">c.</div><div class="list-content">tanpa izin Pemerintah menjadi pegawai atau bekerja untuk negara lain dan/atau lembaga atau organisasi internasional;</div></div>
+                                <div class="list-container"><div class="list-number">d.</div><div class="list-content">bekerja pada perusahaan asing, konsultan asing, atau lembaga swadaya masyarakat asing;</div></div>
+                                <div class="list-container"><div class="list-number">e.</div><div class="list-content">memiliki, menjual, membeli, menggadaikan, menyewakan, atau meminjamkan barang-barang baik bergerak atau tidak bergerak, dokumen atau surat berharga milik negara secara tidak sah;</div></div>
+                                <div class="list-container"><div class="list-number">f.</div><div class="list-content">melakukan kegiatan bersama dengan atasan, teman sejawat, bawahan, atau orang lain di dalam maupun di luar lingkungan kerjanya dengan tujuan untuk keuntungan pribadi, golongan, atau pihak lain yang secara langsung atau tidak langsung merugikan negara;</div></div>
+                                <div class="list-container"><div class="list-number">g.</div><div class="list-content">memberikan atau menyanggupi akan memberi sesuatu kepada siapa pun baik secara langsung atau tidak langsung dengan dalih apa pun untuk diangkat dalam jabatan;</div></div>
+                                <div class="list-container"><div class="list-number">h.</div><div class="list-content">menerima hadiah atau sesuatu pemberian apa saja dari siapa pun juga yang berhubungan dengan jabatan dan/atau pekerjaannya;</div></div>
+                                <div class="list-container"><div class="list-number">i.</div><div class="list-content">bertindak sewenang-wenang terhadap bawahannya;</div></div>
+                                <div class="list-container"><div class="list-number">j.</div><div class="list-content">melakukan suatu tindakan atau tidak melakukan suatu tindakan yang dapat menghalangi atau mempersulit salah satu pihak yang dilayani sehingga mengakibatkan kerugian bagi yang dilayani;</div></div>
+                                <div class="list-container"><div class="list-number">k.</div><div class="list-content">menghalangi berjalannya tugas kedinasan;</div></div>
+                                <div class="list-container"><div class="list-number">l.</div><div class="list-content">
                                         memberikan dukungan kepada calon Presiden/Wakil Presiden, Dewan Perwakilan Rakyat, Dewan Perwakilan Daerah, atau Dewan Perwakilan Rakyat Daerah dengan cara:
-                                        <table>
-                                            <tr>
-                                                <td style="width: 25px;">1)</td>
-                                                <td>ikut serta sebagai pelaksana kampanye;</td>
-                                            </tr>
-                                            <tr>
-                                                <td>2)</td>
-                                                <td>menjadi peserta kampanye dengan menggunakan atribut partai atau atribut Aparatur Sipil Negara;</td>
-                                            </tr>
-                                            <tr>
-                                                <td>3)</td>
-                                                <td>sebagai peserta kampanye dengan mengerahkan Aparatur Sipil Negara lain; dan/atau</td>
-                                            </tr>
-                                            <tr>
-                                                <td>4)</td>
-                                                <td>sebagai peserta kampanye dengan menggunakan fasilitas negara.</td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>m.</td>
-                                    <td>
+                                        
+                                            <div class="list-container"><div class="list-number">1)</div><div class="list-content">ikut serta sebagai pelaksana kampanye;</div></div>
+                                            <div class="list-container"><div class="list-number">2)</div><div class="list-content">menjadi peserta kampanye dengan menggunakan atribut partai atau atribut Aparatur Sipil Negara;</div></div>
+                                            <div class="list-container"><div class="list-number">3)</div><div class="list-content">sebagai peserta kampanye dengan mengerahkan Aparatur Sipil Negara lain; dan/atau</div></div>
+                                            <div class="list-container"><div class="list-number">4)</div><div class="list-content">sebagai peserta kampanye dengan menggunakan fasilitas negara.</div></div>
+                                        
+                                    </div></div>
+
+                                <div class="list-container"><div class="list-number">m.</div><div class="list-content">
                                         memberikan dukungan kepada calon Presiden/Wakil Presiden dengan cara:
-                                        <table>
-                                            <tr>
-                                                <td style="width: 25px;">1)</td>
-                                                <td>membuat keputusan dan/atau tindakan yang menguntungkan atau merugikan salah satu pasangan calon selama masa kampanye; dan/atau</td>
-                                            </tr>
-                                            <tr>
-                                                <td>2)</td>
-                                                <td>mengadakan kegiatan yang mengarah kepada keberpihakan terhadap pasangan calon yang menjadi peserta pemilu sebelum, selama, dan/atau sesudah masa kampanye meliputi pertemuan, ajakan, imbauan, seruan, atau pemberian barang kepada Aparatur Sipil Negara dalam lingkungan unit kerjanya, anggota keluarga, dan masyarakat.</td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>n.</td>
-                                    <td>memberikan dukungan kepada calon anggota Dewan Perwakilan Daerah atau calon Kepala Daerah/Wakil Kepala Daerah dengan memberikan surat dukungan disertai fotokopi Kartu Tanda Penduduk atau Surat Keterangan Tanda Penduduk sesuai peraturan perundang-undangan; dan</td>
-                                </tr>
-                                <tr>
-                                    <td>o.</td>
-                                    <td>
+                                        
+                                            <div class="list-container"><div class="list-number">1)</div><div class="list-content">membuat keputusan dan/atau tindakan yang menguntungkan atau merugikan salah satu pasangan calon selama masa kampanye; dan/atau</div></div>
+                                            <div class="list-container"><div class="list-number">2)</div><div class="list-content">mengadakan kegiatan yang mengarah kepada keberpihakan terhadap pasangan calon yang menjadi peserta pemilu sebelum, selama, dan/atau sesudah masa kampanye meliputi pertemuan, ajakan, imbauan, seruan, atau pemberian barang kepada Aparatur Sipil Negara dalam lingkungan unit kerjanya, anggota keluarga, dan masyarakat.</div></div>
+                                        
+                                    </div></div>
+                                <div class="list-container"><div class="list-number">n.</div><div class="list-content">memberikan dukungan kepada calon anggota Dewan Perwakilan Daerah atau calon Kepala Daerah/Wakil Kepala Daerah dengan memberikan surat dukungan disertai fotokopi Kartu Tanda Penduduk atau Surat Keterangan Tanda Penduduk sesuai peraturan perundang-undangan; dan</div></div>
+                                <div class="list-container"><div class="list-number">o.</div><div class="list-content">
                                         memberikan dukungan kepada calon Kepala Daerah/Wakil Kepala Daerah, dengan cara:
-                                        <table>
-                                            <tr>
-                                                <td style="width: 25px;">1)</td>
-                                                <td>terlibat dalam kegiatan kampanye untuk mendukung calon Kepala Daerah/Wakil Kepala Daerah;</td>
-                                            </tr>
-                                            <tr>
-                                                <td>2)</td>
-                                                <td>menggunakan fasilitas yang terkait dengan jabatan dalam kegiatan kampanye;</td>
-                                            </tr>
-                                            <tr>
-                                                <td>3)</td>
-                                                <td>membuat keputusan dan/atau tindakan yang menguntungkan atau merugikan salah satu pasangan calon selama masa kampanye; dan/atau</td>
-                                            </tr>
-                                            <tr>
-                                                <td>4)</td>
-                                                <td>mengadakan kegiatan yang mengarah kepada keberpihakan terhadap pasangan calon yang menjadi peserta pemilu sebelum, selama, dan/atau sesudah masa kampanye meliputi pertemuan, ajakan, imbauan, seruan, atau pemberian barang kepada Aparatur Sipil Negara dalam lingkungan unit kerjanya, anggota keluarga, dan masyarakat.</td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="width: 25px;">(5)</td>
-                        <td>Selain larangan sebagaimana dimaksud pada ayat (4), Pihak Kedua dilarang:
-                            <table>
-                                <tr>
-                                    <td style="width: 25px;">a.</td>
-                                    <td>melakukan hal-hal yang dapat menurunkan kehormatan atau martabat Negara dan Pemerintah;</td>
-                                </tr>
-                                <tr>
-                                    <td>b.</td>
-                                    <td>menyalahgunakan wewenangnya;</td>
-                                </tr>
-                                <tr>
-                                    <td>c.</td>
-                                    <td>tanpa izin Pemerintah Kabupaten Sinjai menjadi pegawai atau bekerja di tempat lain;</td>
-                                </tr>
-                                <tr>
-                                    <td>d.</td>
-                                    <td>melakukan pernikahan kedua, ketiga, dan bagi wanita tidak menjadi atau berkedudukan sebagai istri kedua, ketiga, dan seterusnya;</td>
-                                </tr>
-                                <tr>
-                                    <td>e.</td>
-                                    <td>menyalahgunakan barang-barang, uang, atau surat-surat berharga milik Negara dan Pemerintah;</td>
-                                </tr>
-                                <tr>
-                                    <td>f.</td>
-                                    <td>memiliki, menjual, membeli, menggadaikan, menyewakan, atau meminjamkan barang-barang, dokumen, atau surat-surat berharga milik Negara dan Pemerintah secara tidak sah;</td>
-                                </tr>
-                                <tr>
-                                    <td>g.</td>
-                                    <td>melakukan kegiatan bersama dengan atasan, teman sejawat, bawahan, atau orang lain di dalam maupun di luar lingkungan kerjanya dengan tujuan untuk keuntungan pribadi, golongan, atau pihak lain yang secara langsung atau tidak langsung merugikan Negara;</td>
-                                </tr>
-                                <tr>
-                                    <td>h.</td>
-                                    <td>menerima hadiah atau sesuatu pemberian berupa apa saja dari siapa pun juga yang diketahui atau patut dapat diduga bahwa pemberian itu bersangkutan atau mungkin bersangkutan dengan pekerjaan pegawai;</td>
-                                </tr>
-                                <tr>
-                                    <td>i.</td>
-                                    <td>memasuki tempat-tempat yang dapat mencemarkan kehormatan, kecuali untuk kepentingan tugas;</td>
-                                </tr>
-                                <tr>
-                                    <td>j.</td>
-                                    <td>melakukan suatu tindakan atau sengaja tidak melakukan suatu tindakan yang dapat berakibat menghalangi atau mempersulit salah satu pihak yang dilayaninya sehingga mengakibatkan kerugian bagi pihak yang dilayani;</td>
-                                </tr>
-                                <tr>
-                                    <td>k.</td>
-                                    <td>menghalangi berjalannya tugas kedinasan;</td>
-                                </tr>
-                                <tr>
-                                    <td>l.</td>
-                                    <td>membocorkan dan/atau memanfaatkan rahasia Negara yang diketahui karena kedudukan jabatan untuk kepentingan pribadi, golongan, atau pihak lain;</td>
-                                </tr>
-                                <tr>
-                                    <td>m.</td>
-                                    <td>bertindak selaku perantara bagi sesuatu pengusaha atau golongan untuk mendapatkan pekerjaan atau pesanan dari kantor/instansi Pemerintah; dan</td>
-                                </tr>
-                                <tr>
-                                    <td>n.</td>
-                                    <td>melakukan pungutan tidak sah dalam bentuk apa pun juga dalam melaksanakan tugasnya untuk kepentingan pribadi, golongan, atau pihak lain.</td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="width: 25px;">(6)</td>
-                        <td>
+                                        
+                                            <div class="list-container"><div class="list-number">1)</div><div class="list-content">terlibat dalam kegiatan kampanye untuk mendukung calon Kepala Daerah/Wakil Kepala Daerah;</div></div>
+                                            <div class="list-container"><div class="list-number">2)</div><div class="list-content">menggunakan fasilitas yang terkait dengan jabatan dalam kegiatan kampanye;</div></div>
+                                            <div class="list-container"><div class="list-number">3)</div><div class="list-content">membuat keputusan dan/atau tindakan yang menguntungkan atau merugikan salah satu pasangan calon selama masa kampanye; dan/atau</div></div>
+                                            <div class="list-container"><div class="list-number">4)</div><div class="list-content">mengadakan kegiatan yang mengarah kepada keberpihakan terhadap pasangan calon yang menjadi peserta pemilu sebelum, selama, dan/atau sesudah masa kampanye meliputi pertemuan, ajakan, imbauan, seruan, atau pemberian barang kepada Aparatur Sipil Negara dalam lingkungan unit kerjanya, anggota keluarga, dan masyarakat.</div></div>
+                                        
+                                    </div></div>
+                            
+                        </div></div>
+                    <div class="list-container"><div class="list-number">(5)</div><div class="list-content">Selain larangan sebagaimana dimaksud pada ayat (4), Pihak Kedua dilarang:
+                            
+                                <div class="list-container"><div class="list-number">a.</div><div class="list-content">melakukan hal-hal yang dapat menurunkan kehormatan atau martabat Negara dan Pemerintah;</div></div>
+                                <div class="list-container"><div class="list-number">b.</div><div class="list-content">menyalahgunakan wewenangnya;</div></div>
+                                <div class="list-container"><div class="list-number">c.</div><div class="list-content">tanpa izin Pemerintah Kabupaten Sinjai menjadi pegawai atau bekerja di tempat lain;</div></div>
+                                <div class="list-container"><div class="list-number">d.</div><div class="list-content">melakukan pernikahan kedua, ketiga, dan bagi wanita tidak menjadi atau berkedudukan sebagai istri kedua, ketiga, dan seterusnya;</div></div>
+                                <div class="list-container"><div class="list-number">e.</div><div class="list-content">menyalahgunakan barang-barang, uang, atau surat-surat berharga milik Negara dan Pemerintah;</div></div>
+                                <div class="list-container"><div class="list-number">f.</div><div class="list-content">memiliki, menjual, membeli, menggadaikan, menyewakan, atau meminjamkan barang-barang, dokumen, atau surat-surat berharga milik Negara dan Pemerintah secara tidak sah;</div></div>
+                                <div class="list-container"><div class="list-number">g.</div><div class="list-content">melakukan kegiatan bersama dengan atasan, teman sejawat, bawahan, atau orang lain di dalam maupun di luar lingkungan kerjanya dengan tujuan untuk keuntungan pribadi, golongan, atau pihak lain yang secara langsung atau tidak langsung merugikan Negara;</div></div>
+                                <div class="list-container"><div class="list-number">h.</div><div class="list-content">menerima hadiah atau sesuatu pemberian berupa apa saja dari siapa pun juga yang diketahui atau patut dapat diduga bahwa pemberian itu bersangkutan atau mungkin bersangkutan dengan pekerjaan pegawai;</div></div>
+                                <div class="list-container"><div class="list-number">i.</div><div class="list-content">memasuki tempat-tempat yang dapat mencemarkan kehormatan, kecuali untuk kepentingan tugas;</div></div>
+                                <div class="list-container"><div class="list-number">j.</div><div class="list-content">melakukan suatu tindakan atau sengaja tidak melakukan suatu tindakan yang dapat berakibat menghalangi atau mempersulit salah satu pihak yang dilayaninya sehingga mengakibatkan kerugian bagi pihak yang dilayani;</div></div>
+                                <div class="list-container"><div class="list-number">k.</div><div class="list-content">menghalangi berjalannya tugas kedinasan;</div></div>
+                                <div class="list-container"><div class="list-number">l.</div><div class="list-content">membocorkan dan/atau memanfaatkan rahasia Negara yang diketahui karena kedudukan jabatan untuk kepentingan pribadi, golongan, atau pihak lain;</div></div>
+                                <div class="list-container"><div class="list-number">m.</div><div class="list-content">bertindak selaku perantara bagi sesuatu pengusaha atau golongan untuk mendapatkan pekerjaan atau pesanan dari kantor/instansi Pemerintah; dan</div></div>
+                                <div class="list-container"><div class="list-number">n.</div><div class="list-content">melakukan pungutan tidak sah dalam bentuk apa pun juga dalam melaksanakan tugasnya untuk kepentingan pribadi, golongan, atau pihak lain.</div></div>
+                            
+                        </div></div>
+                    <div class="list-container"><div class="list-number">(6)</div><div class="list-content">
                             Pihak Kedua yang tidak mematuhi kewajiban dan/atau melanggar larangan sebagaimana dimaksud pada ayat (2), ayat (3), ayat (4) dan ayat (5) dikenakan sanksi berupa:
-                            <table>
-                                <tr>
-                                    <td style="width: 25px;">a.</td>
-                                    <td>
+                            
+                                <div class="list-container"><div class="list-number">a.</div><div class="list-content">
                                         Sanksi ringan:
-                                        <table>
-                                            <tr>
-                                                <td style="width: 25px;">1)</td>
-                                                <td>teguran lisan.</td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>b.</td>
-                                    <td>
+                                        
+                                            <div class="list-container"><div class="list-number">1)</div><div class="list-content">teguran lisan.</div></div>
+                                        
+                                    </div></div>
+                                <div class="list-container"><div class="list-number">b.</div><div class="list-content">
                                         Sanksi sedang:
-                                        <table>
-                                            <tr>
-                                                <td style="width: 25px;">1)</td>
-                                                <td>teguran tertulis.</td>
-                                            </tr>
-                                            <tr>
-                                                <td style="width: 25px;">2)</td>
-                                                <td>pernyataan tidak puas secara tertulis.</td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>c.</td>
-                                    <td>
+                                        
+                                            <div class="list-container"><div class="list-number">1)</div><div class="list-content">teguran tertulis.</div></div>
+                                            <div class="list-container"><div class="list-number">2)</div><div class="list-content">pernyataan tidak puas secara tertulis.</div></div>
+                                        
+                                    </div></div>
+                                <div class="list-container"><div class="list-number">c.</div><div class="list-content">
                                         Sanksi berat:
-                                        <table>
-                                            <tr>
-                                                <td style="width: 25px;">1)</td>
-                                                <td>pemutusan hubungan Perjanjian Kerja dengan hormat;</td>
-                                            </tr>
-                                            <tr>
-                                                <td>2)</td>
-                                                <td>pemutusan hubungan Perjanjian Kerja dengan hormat tidak atas permintaan sendiri; atau</td>
-                                            </tr>
-                                            <tr>
-                                                <td>3)</td>
-                                                <td>pemutusan hubungan Perjanjian Kerja tidak dengan hormat.</td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                </table>
+                                        
+                                            <div class="list-container"><div class="list-number">1)</div><div class="list-content">pemutusan hubungan Perjanjian Kerja dengan hormat;</div></div>
+                                            <div class="list-container"><div class="list-number">2)</div><div class="list-content">pemutusan hubungan Perjanjian Kerja dengan hormat tidak atas permintaan sendiri; atau</div></div>
+                                            <div class="list-container"><div class="list-number">3)</div><div class="list-content">pemutusan hubungan Perjanjian Kerja tidak dengan hormat.</div></div>
+                                        
+                                    </div></div>
+                            
+                        </div></div>
+                
             </div>
         </div>
 
@@ -686,48 +504,46 @@
             </h3>
 
             <div class="isi-bab">
-                <table>
-                    <tr>
-                        <td style="width: 25px;">(1)</td>
-                        <td>Pihak Kedua berhak mendapat gaji sesuai dengan ketentuan peraturan perundang-undangan dan berdasarkan kemampuan keuangan daerah.</td>
-                    </tr>
-                    <tr>
-                        <td>(2)</td>
-                        <td>Pihak Kedua berhak menerima gaji sebagai PPPK Paruh Waktu sebesar <?= (isset($pk_data['gaji_nominal']) && !empty($pk_data['gaji_nominal'])) ? "Rp. " . number_format($pk_data['gaji_nominal'], 0, ',', '.') : 'N/A' ?> (<?= esc($pk_data['gaji_terbilang'] ?? 'N/A') ?> Rupiah).</td>
-                    </tr>
-                    <tr>
-                        <td>(3)</td>
-                        <td>Besaran gaji Pihak Kedua sebagaimana dimaksud pada ayat (2) diberikan sesuai dengan ketentuan peraturan perundang-undangan dan berdasarkan kemampuan keuangan daerah.</td>
-                    </tr>
-                    <tr>
-                        <td>(4)</td>
-                        <td>Pembayaran gaji sebagaimana dimaksud pada ayat (2) dilakukan sejak Pihak Kedua melaksanakan tugas yang dibuktikan dengan Surat Pernyataan Melaksanakan Tugas dari pimpinan unit kerja penempatan Pihak Kedua.</td>
-                    </tr>
-                    <tr>
-                        <td>(5)</td>
-                        <td>Apabila Pihak Kedua melaksanakan tugas pada tanggal hari kerja pertama bulan berkenaan, gaji sebagaimana dimaksud pada ayat (2) dibayarkan mulai bulan berkenaan.</td>
-                    </tr>
-                    <tr>
-                        <td>(6)</td>
-                        <td>Apabila Pihak Kedua melaksanakan tugas pada tanggal hari kerja kedua dan seterusnya pada bulan berkenaan, gaji sebagaimana dimaksud pada ayat (2) dibayarkan mulai bulan berikutnya.</td>
-                    </tr>
-                    <tr>
-                        <td>(7)</td>
-                        <td>Pemberian gaji Pihak Kedua dilaksanakan sesuai dengan ketentuan peraturan perundang-undangan.</td>
-                    </tr>
-                    <tr>
-                        <td>(8)</td>
-                        <td>Penerimaan gaji sebagaimana dimaksud pada ayat (2) dapat dilakukan pemotongan pada saat pembayaran sesuai ketentuan peraturan perundang-undangan.</td>
-                    </tr>
-                    <tr>
-                        <td>(9)</td>
-                        <td>Pembayaran gaji sebagaimana dimaksud pada ayat (2) diberikan sesuai dengan kemampuan keuangan daerah.</td>
-                    </tr>
-                    <tr>
-                        <td>(10)</td>
-                        <td>Pihak Kedua mendapatkan fasilitas dan pendapatan lain yang sah sesuai dengan ketentuan peraturan perundang-undangan dan kemampuan keuangan daerah.</td>
-                    </tr>
-                </table>
+                <div class="list-container">
+                    <div class="list-number">(1)</div>
+                    <div class="list-content">Pihak Kedua berhak mendapat gaji sesuai dengan ketentuan peraturan perundang-undangan dan berdasarkan kemampuan keuangan daerah.</div>
+                </div>
+                <div class="list-container">
+                    <div class="list-number">(2)</div>
+                    <div class="list-content">Pihak Kedua berhak menerima gaji sebagai PPPK Paruh Waktu sebesar <?= (isset($pk_data['gaji_nominal']) && !empty($pk_data['gaji_nominal'])) ? "Rp. " . number_format($pk_data['gaji_nominal'], 0, ',', '.') : 'N/A' ?> (<?= esc($pk_data['gaji_terbilang'] ?? 'N/A') ?> Rupiah).</div>
+                </div>
+                <div class="list-container">
+                    <div class="list-number">(3)</div>
+                    <div class="list-content">Besaran gaji Pihak Kedua sebagaimana dimaksud pada ayat (2) diberikan sesuai dengan ketentuan peraturan perundang-undangan dan berdasarkan kemampuan keuangan daerah.</div>
+                </div>
+                <div class="list-container">
+                    <div class="list-number">(4)</div>
+                    <div class="list-content">Pembayaran gaji sebagaimana dimaksud pada ayat (2) dilakukan sejak Pihak Kedua melaksanakan tugas yang dibuktikan dengan Surat Pernyataan Melaksanakan Tugas dari pimpinan unit kerja penempatan Pihak Kedua.</div>
+                </div>
+                <div class="list-container">
+                    <div class="list-number">(5)</div>
+                    <div class="list-content">Apabila Pihak Kedua melaksanakan tugas pada tanggal hari kerja pertama bulan berkenaan, gaji sebagaimana dimaksud pada ayat (2) dibayarkan mulai bulan berkenaan.</div>
+                </div>
+                <div class="list-container">
+                    <div class="list-number">(6)</div>
+                    <div class="list-content">Apabila Pihak Kedua melaksanakan tugas pada tanggal hari kerja kedua dan seterusnya pada bulan berkenaan, gaji sebagaimana dimaksud pada ayat (2) dibayarkan mulai bulan berikutnya.</div>
+                </div>
+                <div class="list-container">
+                    <div class="list-number">(7)</div>
+                    <div class="list-content">Pemberian gaji Pihak Kedua dilaksanakan sesuai dengan ketentuan peraturan perundang-undangan.</div>
+                </div>
+                <div class="list-container">
+                    <div class="list-number">(8)</div>
+                    <div class="list-content">Penerimaan gaji sebagaimana dimaksud pada ayat (2) dapat dilakukan pemotongan pada saat pembayaran sesuai ketentuan peraturan perundang-undangan.</div>
+                </div>
+                <div class="list-container">
+                    <div class="list-number">(9)</div>
+                    <div class="list-content">Pembayaran gaji sebagaimana dimaksud pada ayat (2) diberikan sesuai dengan kemampuan keuangan daerah.</div>
+                </div>
+                <div class="list-container">
+                    <div class="list-number">(10)</div>
+                    <div class="list-content">Pihak Kedua mendapatkan fasilitas dan pendapatan lain yang sah sesuai dengan ketentuan peraturan perundang-undangan dan kemampuan keuangan daerah.</div>
+                </div>
             </div>
         </div>
 
@@ -738,16 +554,14 @@
             </h3>
 
             <div class="isi-bab">
-                <table>
-                    <tr>
-                        <td style="width: 25px;">(1)</td>
-                        <td>Pihak Kedua berhak mendapatkan cuti tahunan, cuti sakit, cuti melahirkan, dan cuti bersama selama masa perjanjian kerja.</td>
-                    </tr>
-                    <tr>
-                        <td>(2)</td>
-                        <td>Cuti sebagaimana dimaksud pada ayat (1) dilaksanakan sesuai dengan ketentuan peraturan perundang-undangan.</td>
-                    </tr>
-                </table>
+                <div class="list-container">
+                    <div class="list-number">(1)</div>
+                    <div class="list-content">Pihak Kedua berhak mendapatkan cuti tahunan, cuti sakit, cuti melahirkan, dan cuti bersama selama masa perjanjian kerja.</div>
+                </div>
+                <div class="list-container">
+                    <div class="list-number">(2)</div>
+                    <div class="list-content">Cuti sebagaimana dimaksud pada ayat (1) dilaksanakan sesuai dengan ketentuan peraturan perundang-undangan.</div>
+                </div>
             </div>
         </div>
 
@@ -758,16 +572,14 @@
             </h3>
 
             <div class="isi-bab">
-                <table>
-                    <tr>
-                        <td style="width: 25px;">(1)</td>
-                        <td>Pihak Kesatu memberikan pengembangan kompetensi kepada Pihak Kedua untuk mendukung pelaksanaan tugas selama masa Perjanjian Kerja dengan memperhatikan hasil penilaian kinerja Pihak Kedua.</td>
-                    </tr>
-                    <tr>
-                        <td>(2)</td>
-                        <td>Pelaksanaan pengembangan kompetensi sebagaimana dimaksud pada ayat (1) dilaksanakan sesuai dengan peraturan perundang-undangan.</td>
-                    </tr>
-                </table>
+                <div class="list-container">
+                    <div class="list-number">(1)</div>
+                    <div class="list-content">Pihak Kesatu memberikan pengembangan kompetensi kepada Pihak Kedua untuk mendukung pelaksanaan tugas selama masa Perjanjian Kerja dengan memperhatikan hasil penilaian kinerja Pihak Kedua.</div>
+                </div>
+                <div class="list-container">
+                    <div class="list-number">(2)</div>
+                    <div class="list-content">Pelaksanaan pengembangan kompetensi sebagaimana dimaksud pada ayat (1) dilaksanakan sesuai dengan peraturan perundang-undangan.</div>
+                </div>
             </div>
         </div>
 
@@ -778,40 +590,36 @@
             </h3>
 
             <div class="isi-bab">
-                <table>
-                    <tr>
-                        <td style="width: 25px;">(1)</td>
-                        <td>
-                            Pihak Kesatu memberikan penghargaan kepada Pihak Kedua berupa:
-                            <table>
-                                <tr>
-                                    <td style="width: 25px;">a.</td>
-                                    <td>tanda kehormatan;</td>
-                                </tr>
-                                <tr>
-                                    <td>b.</td>
-                                    <td>kesempatan prioritas untuk pengembangan kompetensi; dan/atau</td>
-                                </tr>
-                                <tr>
-                                    <td>c.</td>
-                                    <td>kesempatan menghadiri secara resmi dan/atau acara kenegaraan.</td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>(2)</td>
-                        <td>Pemberian penghargaan kepada Pihak Kedua sebagaimana dimaksud pada ayat (1) huruf a dilaksanakan sesuai dengan ketentuan peraturan perundang-undangan.</td>
-                    </tr>
-                    <tr>
-                        <td>(3)</td>
-                        <td>Pemberian penghargaan kepada Pihak Kedua sebagaimana dimaksud pada ayat (1) huruf b diberikan kepada Pihak Kedua apabila mempunyai penilaian kinerja yang paling baik.</td>
-                    </tr>
-                    <tr>
-                        <td>(4)</td>
-                        <td>Pemberian penghargaan kepada Pihak Kedua sebagaimana dimaksud pada ayat (1) huruf c diberikan kepada Pihak Kedua setelah mendapatkan pertimbangan dari Tim Penilai Kinerja Pegawai Pemerintah dengan Perjanjian Kerja yang ada pada Pihak Kesatu.</td>
-                    </tr>
-                </table>
+                <div class="list-container">
+                    <div class="list-number">(1)</div>
+                    <div class="list-content">
+                        Pihak Kesatu memberikan penghargaan kepada Pihak Kedua berupa:
+                        <div class="list-container">
+                            <div class="list-number">a.</div>
+                            <div class="list-content">tanda kehormatan;</div>
+                        </div>
+                        <div class="list-container">
+                            <div class="list-number">b.</div>
+                            <div class="list-content">kesempatan prioritas untuk pengembangan kompetensi; dan/atau</div>
+                        </div>
+                        <div class="list-container">
+                            <div class="list-number">c.</div>
+                            <div class="list-content">kesempatan menghadiri secara resmi dan/atau acara kenegaraan.</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="list-container">
+                    <div class="list-number">(2)</div>
+                    <div class="list-content">Pemberian penghargaan kepada Pihak Kedua sebagaimana dimaksud pada ayat (1) huruf a dilaksanakan sesuai dengan ketentuan peraturan perundang-undangan.</div>
+                </div>
+                <div class="list-container">
+                    <div class="list-number">(3)</div>
+                    <div class="list-content">Pemberian penghargaan kepada Pihak Kedua sebagaimana dimaksud pada ayat (1) huruf b diberikan kepada Pihak Kedua apabila mempunyai penilaian kinerja yang paling baik.</div>
+                </div>
+                <div class="list-container">
+                    <div class="list-number">(4)</div>
+                    <div class="list-content">Pemberian penghargaan kepada Pihak Kedua sebagaimana dimaksud pada ayat (1) huruf c diberikan kepada Pihak Kedua setelah mendapatkan pertimbangan dari Tim Penilai Kinerja Pegawai Pemerintah dengan Perjanjian Kerja yang ada pada Pihak Kesatu.</div>
+                </div>
             </div>
         </div>
 
@@ -822,36 +630,32 @@
             </h3>
 
             <div class="isi-bab">
-                <table>
-                    <tr>
-                        <td style="width: 25px;">(1)</td>
-                        <td>
-                            Pihak Kesatu wajib memberikan perlindungan bagi Pihak Kedua berupa:
-                            <table>
-                                <tr>
-                                    <td style="width: 25px;">a.</td>
-                                    <td>jaminan kesehatan;</td>
-                                </tr>
-                                <tr>
-                                    <td>b.</td>
-                                    <td>jaminan kecelakaan kerja; dan</td>
-                                </tr>
-                                <tr>
-                                    <td>c.</td>
-                                    <td>jaminan kematian;</td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>(2)</td>
-                        <td>Perlindungan sebagaimana dimaksud pada ayat (1) huruf a, huruf b, dan huruf c dilakukan dengan mengikutsertakan Pihak Kedua dalam program sistem jaminan sosial nasional.</td>
-                    </tr>
-                    <tr>
-                        <td>(3)</td>
-                        <td>Pemberian perlindungan kepada Pihak Kedua sebagaimana dimaksud pada ayat (1) dilaksanakan sesuai dengan ketentuan peraturan perundang-undangan.</td>
-                    </tr>
-                </table>
+                <div class="list-container">
+                    <div class="list-number">(1)</div>
+                    <div class="list-content">
+                        Pihak Kesatu wajib memberikan perlindungan bagi Pihak Kedua berupa:
+                        <div class="list-container">
+                            <div class="list-number">a.</div>
+                            <div class="list-content">jaminan kesehatan;</div>
+                        </div>
+                        <div class="list-container">
+                            <div class="list-number">b.</div>
+                            <div class="list-content">jaminan kecelakaan kerja; dan</div>
+                        </div>
+                        <div class="list-container">
+                            <div class="list-number">c.</div>
+                            <div class="list-content">jaminan kematian;</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="list-container">
+                    <div class="list-number">(2)</div>
+                    <div class="list-content">Perlindungan sebagaimana dimaksud pada ayat (1) huruf a, huruf b, dan huruf c dilakukan dengan mengikutsertakan Pihak Kedua dalam program sistem jaminan sosial nasional.</div>
+                </div>
+                <div class="list-container">
+                    <div class="list-number">(3)</div>
+                    <div class="list-content">Pemberian perlindungan kepada Pihak Kedua sebagaimana dimaksud pada ayat (1) dilaksanakan sesuai dengan ketentuan peraturan perundang-undangan.</div>
+                </div>
             </div>
         </div>
 
@@ -863,128 +667,120 @@
 
             <div class="isi-bab">
                 Pihak Kesatu dan Pihak Kedua dapat melakukan pemutusan hubungan Perjanjian Kerja dengan ketentuan sebagai berikut:
-                <table>
-                    <tr>
-                        <td style="width: 25px;">(1)</td>
-                        <td>Diangkat menjadi PPPK atau CPNS;</td>
-                    </tr>
-                    <tr>
-                        <td>(2)</td>
-                        <td>Mengundurkan diri;</td>
-                    </tr>
-                    <tr>
-                        <td>(3)</td>
-                        <td>Meninggal dunia;</td>
-                    </tr>
-                    <tr>
-                        <td>(4)</td>
-                        <td>Melakukan penyelewangan terhadap Pancasila dan Undang-Undang Dasar Negara Republik Indonesia Tahun 1945;</td>
-                    </tr>
-                    <tr>
-                        <td>(5)</td>
-                        <td>Mencapai Batas Usia Pensiun (BUP) jabatan;</td>
-                    </tr>
-                    <tr>
-                        <td>(6)</td>
-                        <td>Berakhirnya masa perjanjian kerja;</td>
-                    </tr>
-                    <tr>
-                        <td>(7)</td>
-                        <td>Terdampak perampingan organisasi atau kebijkan pemerintah;</td>
-                    </tr>
-                    <tr>
-                        <td>(8)</td>
-                        <td>Tidak cakap jasmani dan/atau Rohani, sehingga tidak dapat menjalankan tugas dan kewajiban;</td>
-                    </tr>
-                    <tr>
-                        <td>(9)</td>
-                        <td>Tidak berkinerja;</td>
-                    </tr>
-                    <tr>
-                        <td>(10)</td>
-                        <td>Melakukan pelanggaran disiplin tingkat berat;</td>
-                    </tr>
-                    <tr>
-                        <td>(11)</td>
-                        <td>Dipidana dengan pidana penjara berdasarkan putusan pengadilan yang telah memiliki kekuatan hukum tetap karena melakukan tindak pidana dengan pidana penjara paling singkat 2 (dua) tahun;</td>
-                    </tr>
-                    <tr>
-                        <td>(12)</td>
-                        <td>Dipidana dengan pidana penjara atau kurungan berdasarkan putusan pengadilan yang telah memiliki kekuatan hukum tetap kerena tetap melakukan tindak pidana kejahatan yang ada hubungannya dengan jabatan; dan/atau</td>
-                    </tr>
-                    <tr>
-                        <td>(13)</td>
-                        <td>Menjadi anggota dan/atau pengurus partai politik.</td>
-                    </tr>
-                    <tr>
-                        <td>(14)</td>
-                        <td>
-                            Pemutusan Hubungan Perjanjian Kerja dengan hormat dilakukan apabila:
-                            <table>
-                                <tr>
-                                    <td style="width: 25px;">a.</td>
-                                    <td>jangka waktu Perjanjian Kerja berakhir;</td>
-                                </tr>
-                                <tr>
-                                    <td>b.</td>
-                                    <td>Pihak Kedua meninggal dunia;</td>
-                                </tr>
-                                <tr>
-                                    <td>c.</td>
-                                    <td>Pihak Kedua mengajukan permohonan berhenti sebagai Pegawai Pemerintah dengan Perjanjian Kerja; atau</td>
-                                </tr>
-                                <tr>
-                                    <td>d.</td>
-                                    <td>terjadi perampingan organisasi atau kebijakan Pemerintah yang mengakibatkan pengurangan Pegawai Pemerintah dengan Perjanjian Kerja pada Pihak Kesatu.</td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>(15)</td>
-                        <td>
-                            Pemutusan Hubungan Perjanjian Kerja dengan hormat tidak atas permintaan sendiri dilakukan apabila:
-                            <table>
-                                <tr>
-                                    <td style="width: 25px;">a.</td>
-                                    <td>Pihak Kedua dihukum penjara berdasarkan putusan pengadilan yang telah memiliki kekuatan hukum tetap karena melakukan tindak pidana penjara paling singkat 2 (dua) tahun dan tindak pidana dilakukan dengan tidak berencana;</td>
-                                </tr>
-                                <tr>
-                                    <td>b.</td>
-                                    <td>Pihak Kedua melakukan pelanggaran kewajiban dan/atau larangan sebagaimana dimaksud dalam Pasal 5; atau</td>
-                                </tr>
-                                <tr>
-                                    <td>c.</td>
-                                    <td>Pihak Kedua tidak dapat memenuhi target kinerja yang telah disepakati sesuai dengan Perjanjian Kerja.</td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>(16)</td>
-                        <td>
-                            Pemutusan Hubungan Perjanjian Kerja tidak dengan hormat dilakukan apabila:
-                            <table>
-                                <tr>
-                                    <td style="width: 25px;">a.</td>
-                                    <td>melakukan penyelewengan terhadap Pancasila dan/atau Undang-Undang Dasar Negara Republik Indonesia Tahun 1945;</td>
-                                </tr>
-                                <tr>
-                                    <td>b.</td>
-                                    <td>dihukum penjara atau kurungan berdasarkan putusan pengadilan yang telah memiliki kekuatan hukum tetap karena melakukan tindak pidana kejahatan jabatan atau tindak pidana yang ada hubungannya dengan jabatan;</td>
-                                </tr>
-                                <tr>
-                                    <td>c.</td>
-                                    <td>menjadi anggota dan/atau pengurus partai politik; atau</td>
-                                </tr>
-                                <tr>
-                                    <td>d.</td>
-                                    <td>dihukum penjara berdasarkan putusan pengadilan yang telah memiliki kekuatan hukum tetap karena melakukan tindak pidana yang diancam pidana penjara paling singkat 2 (dua) tahun atau lebih dan tindak pidana tersebut dilakukan dengan berencana.</td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                </table>
+                <div class="list-container">
+                    <div class="list-number">(1)</div>
+                    <div class="list-content">Diangkat menjadi PPPK atau CPNS;</div>
+                </div>
+                <div class="list-container">
+                    <div class="list-number">(2)</div>
+                    <div class="list-content">Mengundurkan diri;</div>
+                </div>
+                <div class="list-container">
+                    <div class="list-number">(3)</div>
+                    <div class="list-content">Meninggal dunia;</div>
+                </div>
+                <div class="list-container">
+                    <div class="list-number">(4)</div>
+                    <div class="list-content">Melakukan penyelewangan terhadap Pancasila dan Undang-Undang Dasar Negara Republik Indonesia Tahun 1945;</div>
+                </div>
+                <div class="list-container">
+                    <div class="list-number">(5)</div>
+                    <div class="list-content">Mencapai Batas Usia Pensiun (BUP) jabatan;</div>
+                </div>
+                <div class="list-container">
+                    <div class="list-number">(6)</div>
+                    <div class="list-content">Berakhirnya masa perjanjian kerja;</div>
+                </div>
+                <div class="list-container">
+                    <div class="list-number">(7)</div>
+                    <div class="list-content">Terdampak perampingan organisasi atau kebijkan pemerintah;</div>
+                </div>
+                <div class="list-container">
+                    <div class="list-number">(8)</div>
+                    <div class="list-content">Tidak cakap jasmani dan/atau Rohani, sehingga tidak dapat menjalankan tugas dan kewajiban;</div>
+                </div>
+                <div class="list-container">
+                    <div class="list-number">(9)</div>
+                    <div class="list-content">Tidak berkinerja;</div>
+                </div>
+                <div class="list-container">
+                    <div class="list-number">(10)</div>
+                    <div class="list-content">Melakukan pelanggaran disiplin tingkat berat;</div>
+                </div>
+                <div class="list-container">
+                    <div class="list-number">(11)</div>
+                    <div class="list-content">Dipidana dengan pidana penjara berdasarkan putusan pengadilan yang telah memiliki kekuatan hukum tetap karena melakukan tindak pidana dengan pidana penjara paling singkat 2 (dua) tahun;</div>
+                </div>
+                <div class="list-container">
+                    <div class="list-number">(12)</div>
+                    <div class="list-content">Dipidana dengan pidana penjara atau kurungan berdasarkan putusan pengadilan yang telah memiliki kekuatan hukum tetap kerena tetap melakukan tindak pidana kejahatan yang ada hubungannya dengan jabatan; dan/atau</div>
+                </div>
+                <div class="list-container">
+                    <div class="list-number">(13)</div>
+                    <div class="list-content">Menjadi anggota dan/atau pengurus partai politik.</div>
+                </div>
+                <div class="list-container">
+                    <div class="list-number">(14)</div>
+                    <div class="list-content">
+                        Pemutusan Hubungan Perjanjian Kerja dengan hormat dilakukan apabila:
+                        <div class="list-container">
+                            <div class="list-number">a.</div>
+                            <div class="list-content">jangka waktu Perjanjian Kerja berakhir;</div>
+                        </div>
+                        <div class="list-container">
+                            <div class="list-number">b.</div>
+                            <div class="list-content">Pihak Kedua meninggal dunia;</div>
+                        </div>
+                        <div class="list-container">
+                            <div class="list-number">c.</div>
+                            <div class="list-content">Pihak Kedua mengajukan permohonan berhenti sebagai Pegawai Pemerintah dengan Perjanjian Kerja; atau</div>
+                        </div>
+                        <div class="list-container">
+                            <div class="list-number">d.</div>
+                            <div class="list-content">terjadi perampingan organisasi atau kebijakan Pemerintah yang mengakibatkan pengurangan Pegawai Pemerintah dengan Perjanjian Kerja pada Pihak Kesatu.</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="list-container">
+                    <div class="list-number">(15)</div>
+                    <div class="list-content">
+                        Pemutusan Hubungan Perjanjian Kerja dengan hormat tidak atas permintaan sendiri dilakukan apabila:
+                        <div class="list-container">
+                            <div class="list-number">a.</div>
+                            <div class="list-content">Pihak Kedua dihukum penjara berdasarkan putusan pengadilan yang telah memiliki kekuatan hukum tetap karena melakukan tindak pidana penjara paling singkat 2 (dua) tahun dan tindak pidana dilakukan dengan tidak berencana;</div>
+                        </div>
+                        <div class="list-container">
+                            <div class="list-number">b.</div>
+                            <div class="list-content">Pihak Kedua melakukan pelanggaran kewajiban dan/atau larangan sebagaimana dimaksud dalam Pasal 5; atau</div>
+                        </div>
+                        <div class="list-container">
+                            <div class="list-number">c.</div>
+                            <div class="list-content">Pihak Kedua tidak dapat memenuhi target kinerja yang telah disepakati sesuai dengan Perjanjian Kerja.</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="list-container">
+                    <div class="list-number">(16)</div>
+                    <div class="list-content">
+                        Pemutusan Hubungan Perjanjian Kerja tidak dengan hormat dilakukan apabila:
+                        <div class="list-container">
+                            <div class="list-number">a.</div>
+                            <div class="list-content">melakukan penyelewengan terhadap Pancasila dan/atau Undang-Undang Dasar Negara Republik Indonesia Tahun 1945;</div>
+                        </div>
+                        <div class="list-container">
+                            <div class="list-number">b.</div>
+                            <div class="list-content">dihukum penjara atau kurungan berdasarkan putusan pengadilan yang telah memiliki kekuatan hukum tetap karena melakukan tindak pidana kejahatan jabatan atau tindak pidana yang ada hubungannya dengan jabatan;</div>
+                        </div>
+                        <div class="list-container">
+                            <div class="list-number">c.</div>
+                            <div class="list-content">menjadi anggota dan/atau pengurus partai politik; atau</div>
+                        </div>
+                        <div class="list-container">
+                            <div class="list-number">d.</div>
+                            <div class="list-content">dihukum penjara berdasarkan putusan pengadilan yang telah memiliki kekuatan hukum tetap karena melakukan tindak pidana yang diancam pidana penjara paling singkat 2 (dua) tahun atau lebih dan tindak pidana tersebut dilakukan dengan berencana.</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -1006,20 +802,18 @@
             </h3>
 
             <div class="isi-bab">
-                <table>
-                    <tr>
-                        <td style="width: 25px;">(1)</td>
-                        <td>Pihak Kedua bersedia melaksanakan seluruh ketentuan yang telah diatur dalam peraturan kedinasan dan peraturan lainnya yang berlaku di Pihak Kesatu.</td>
-                    </tr>
-                    <tr>
-                        <td>(2)</td>
-                        <td>Pihak Kedua wajib menyimpan dan menjaga kerahasiaan baik dokumen maupun informasi milik Pihak Kesatu sesuai dengan ketentuan peraturan perundang-undangan.</td>
-                    </tr>
-                    <tr>
-                        <td>(3)</td>
-                        <td>Pihak Kesatu dapat memperpanjang masa Perjanjian Kerja yang dilaksanakan sesuai dengan peraturan perundang-undangan.</td>
-                    </tr>
-                </table>
+                <div class="list-container">
+                    <div class="list-number">(1)</div>
+                    <div class="list-content">Pihak Kedua bersedia melaksanakan seluruh ketentuan yang telah diatur dalam peraturan kedinasan dan peraturan lainnya yang berlaku di Pihak Kesatu.</div>
+                </div>
+                <div class="list-container">
+                    <div class="list-number">(2)</div>
+                    <div class="list-content">Pihak Kedua wajib menyimpan dan menjaga kerahasiaan baik dokumen maupun informasi milik Pihak Kesatu sesuai dengan ketentuan peraturan perundang-undangan.</div>
+                </div>
+                <div class="list-container">
+                    <div class="list-number">(3)</div>
+                    <div class="list-content">Pihak Kesatu dapat memperpanjang masa Perjanjian Kerja yang dilaksanakan sesuai dengan peraturan perundang-undangan.</div>
+                </div>
             </div>
         </div>
 
@@ -1028,35 +822,33 @@
         </div>
 
         <div class="area-ttd">
-            <table>
-                <tr>
-                    <td class="pihak">
-                        PIHAK KESATU
-                    </td>
-                    <td class="pihak">
-                        PIHAK KEDUA
-                    </td>
-                </tr>
-                <tr>
-                    <td class="spasi-ttd">
-                        ${ttd_pengirim2}
-                    </td>
-                    <td class="spasi-ttd">
-                        ${ttd_pengirim1}
-                    </td>
-                </tr>
-                <tr>
-                    <td class="nama-penandatangan">
-                        Dra. Hj. RATNAWATI ARIF, M.Si.
-                    </td>
-                    <td class="nama-penandatangan">
-                        <?php if (!empty($email['gelar_depan'])): ?>
-                            <?= esc($email['gelar_depan']) ?>
-                        <?php endif; ?>
-                        <?= esc(strtoupper($email['name'])) ?><?php if (!empty($email['gelar_belakang'])): ?>, <?= esc($email['gelar_belakang']) ?><?php endif; ?>
-                    </td>
-                </tr>
-            </table>
+            <div class="signature-row">
+                <div class="signature-cell pihak">
+                    PIHAK KESATU
+                </div>
+                <div class="signature-cell pihak">
+                    PIHAK KEDUA
+                </div>
+            </div>
+            <div class="signature-row">
+                <div class="signature-cell spasi-ttd">
+                    ${ttd_pengirim2}
+                </div>
+                <div class="signature-cell spasi-ttd">
+                    ${ttd_pengirim1}
+                </div>
+            </div>
+            <div class="signature-row">
+                <div class="signature-cell nama-penandatangan">
+                    Dra. Hj. RATNAWATI ARIF, M.Si.
+                </div>
+                <div class="signature-cell nama-penandatangan">
+                    <?php if (!empty($email['gelar_depan'])): ?>
+                        <?= esc($email['gelar_depan']) ?>
+                    <?php endif; ?>
+                    <?= esc(strtoupper($email['name'])) ?><?php if (!empty($email['gelar_belakang'])): ?>, <?= esc($email['gelar_belakang']) ?><?php endif; ?>
+                </div>
+            </div>
         </div>
     </div>
 
