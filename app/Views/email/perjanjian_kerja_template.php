@@ -7,7 +7,7 @@
     <title>Perjanjian Kerja - <?= esc(strtoupper($email['name'])) ?></title>
     <style>
         @page {
-            margin: 2cm 2cm 3cm 2cm;
+            margin: 1cm 2cm 2cm 2cm;
         }
 
         @font-face {
@@ -70,19 +70,29 @@
 
         .bab {
             margin-top: 1.5rem;
-            page-break-inside: avoid;
         }
 
         .judul-bab {
             font-weight: bold;
             text-align: center;
             text-transform: uppercase;
+            page-break-after: avoid;
         }
 
         .isi-bab {
             margin-top: 0.5rem;
             text-align: justify;
             line-height: 1.5;
+        }
+
+        /* Allow main table rows to break across pages */
+        .isi-bab > table > tbody > tr {
+            page-break-inside: auto;
+        }
+
+        /* Keep individual list items (inner table rows) together */
+        .isi-bab table table tr {
+            page-break-inside: avoid;
         }
 
         .area-ttd {
