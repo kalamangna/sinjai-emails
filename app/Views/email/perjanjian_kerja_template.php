@@ -234,7 +234,7 @@
                         <td>d.</td>
                         <td>Unit Kerja</td>
                         <td>:</td>
-                        <td><?= esc(strtoupper($unit_kerja['nama_unit_kerja'])) ?> - PEMERINTAH KABUPATEN SINJAI / SINJAI</td>
+                        <td><?= esc(strtoupper($unit_kerja['nama_unit_kerja'])) ?> - PEMERINTAH KABUPATEN SINJAI</td>
                     </tr>
                 </table>
             </div>
@@ -668,7 +668,7 @@
                 <table>
                     <tr>
                         <td style="width: 25px;">(1)</td>
-                        <td>Pihak Kedua berhak mendapat gaji dan tunjangan sesuai dengan ketentuan peraturan perundang-undangan dan berdasarkan kemampuan keuangan daerah.</td>
+                        <td>Pihak Kedua berhak mendapat gaji sesuai dengan ketentuan peraturan perundang-undangan dan berdasarkan kemampuan keuangan daerah.</td>
                     </tr>
                     <tr>
                         <td>(2)</td>
