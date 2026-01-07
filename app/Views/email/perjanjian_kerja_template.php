@@ -128,7 +128,7 @@
             display: table;
             width: 100%;
             margin-bottom: 3px; /* Consistent spacing */
-            page-break-inside: avoid; /* Prevent item splitting */
+            page-break-inside: auto; /* Allow item splitting for long lists */
         }
 
         .list-number {
