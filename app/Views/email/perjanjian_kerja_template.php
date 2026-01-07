@@ -7,7 +7,7 @@
     <title>Perjanjian Kerja - <?= esc(strtoupper($email['name'])) ?></title>
     <style>
         @page {
-            margin: 15px 25px;
+            margin: 1cm 2cm 1cm 2cm;
         }
 
         @font-face {
@@ -18,7 +18,7 @@
         }
 
         body {
-            margin: 15px 25px;
+            margin: 0;
             font-family: "Bookman Old Style", serif;
         }
 
@@ -168,7 +168,7 @@
                 <td>
                     <table>
                         <tr>
-                            <td style="width: 150px;">Nama</td>
+                            <td style="width: 160px;">Nama</td>
                             <td style="width: 10px;">:</td>
                             <td>
                                 <?php if (!empty($email['gelar_depan'])): ?>
@@ -217,7 +217,7 @@
                 <table>
                     <tr>
                         <td style="width: 25px;">a.</td>
-                        <td style="width: 150px;">Masa Perjanjian Kerja</td>
+                        <td style="width: 160px;">Masa Perjanjian Kerja</td>
                         <td style="width: 10px;">:</td>
                         <td>
                             <?= formatIndonesianDate($pk_data['tanggal_kontrak_awal'] ?? '0000-00-00') ?>
