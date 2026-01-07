@@ -10,9 +10,16 @@
             margin: 15px 25px;
         }
 
+        @font-face {
+            font-family: 'Bookman Old Style';
+            src: url(data:font/truetype;charset=utf-8;base64,<?= base64_encode(file_get_contents(FCPATH . 'fonts/BOOKOS.TTF')) ?>) format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
         body {
             margin: 15px 25px;
-            font-family: "Times New Roman", serif;
+            font-family: "Bookman Old Style", serif;
         }
 
         .kop-surat {
