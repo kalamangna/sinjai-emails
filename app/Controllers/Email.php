@@ -1084,6 +1084,12 @@ class Email extends BaseController
             return $this->response->setJSON(['success' => false, 'message' => 'Unit Kerja not found']);
         }
 
+        // Find the specific status ID for 'PPPK PARUH WAKTU'
+        $statusParuhWaktu = $this->statusAsnModel->where('nama_status_asn', 'PPPK PARUH WAKTU')->first();
+        if (!$statusParuhWaktu) {
+            return $this->response->setJSON(['success' => true, 'emails' => [], 'message' => 'Status PPPK PARUH WAKTU not configured.']);
+        }
+
         // Find children
         $children = $this->unitKerjaModel->where('parent_id', $unitKerjaId)->findAll();
         $childrenIds = array_column($children, 'id');
@@ -1091,8 +1097,12 @@ class Email extends BaseController
 
         $search = $this->request->getGet('search');
         $status_asn = $this->request->getGet('status_asn');
+        $bsre_status = $this->request->getGet('bsre_status');
 
         $builder = $this->emailModel->whereIn('unit_kerja_id', $allUnitIds);
+
+        // Force restriction to PPPK PARUH WAKTU
+        $builder->where('emails.status_asn_id', $statusParuhWaktu['id']);
 
         if ($search) {
             $builder->groupStart()
@@ -1103,13 +1113,25 @@ class Email extends BaseController
                 ->groupEnd();
         }
 
-        if ($status_asn) {
-            $builder->where('emails.status_asn_id', $status_asn);
+        if ($bsre_status) {
+            if ($bsre_status === 'not_synced') {
+                $builder->groupStart()
+                    ->where('emails.bsre_status', null)
+                    ->orWhere('emails.bsre_status', '')
+                    ->groupEnd();
+            } else {
+                $builder->where('emails.bsre_status', $bsre_status);
+            }
         }
+
         $emails = $builder
-            ->orderBy('LENGTH(unit_kerja_name)', 'ASC', false)->orderBy('unit_kerja_name', 'ASC')
-            ->orderBy('name', 'ASC')
-            ->select('emails.id, emails.email, emails.name')
+            ->orderBy('emails.eselon_id IS NULL', 'ASC', false)
+            ->orderBy('emails.eselon_id', 'ASC')
+            ->orderBy('emails.status_asn_id IS NULL', 'ASC', false)
+            ->orderBy('emails.status_asn_id', 'ASC')
+            ->orderBy('emails.jabatan IS NULL', 'ASC', false)
+            ->orderBy('emails.jabatan', 'ASC')
+            ->orderBy('emails.name', 'ASC')
             ->findAll();
 
         return $this->response->setJSON(['success' => true, 'emails' => $emails]);
@@ -1128,6 +1150,12 @@ class Email extends BaseController
             $email = $this->emailModel->find($emailId);
             if (!$email) {
                 throw new Exception('Email not found');
+            }
+
+            // Restrict to PPPK PARUH WAKTU
+            $statusParuhWaktu = $this->statusAsnModel->where('nama_status_asn', 'PPPK PARUH WAKTU')->first();
+            if (!$statusParuhWaktu || $email['status_asn_id'] != $statusParuhWaktu['id']) {
+                throw new Exception('Perjanjian Kerja hanya tersedia untuk PPPK PARUH WAKTU.');
             }
 
             $unitKerja = $this->unitKerjaModel->find($unitId); // Main unit for the export context
@@ -1176,7 +1204,7 @@ class Email extends BaseController
                 mkdir($tempDir, 0775, true);
             }
 
-            $filename = 'perjanjian_kerja_' . url_title($email['name'], '_', true) . '.pdf';
+            $filename = 'perjanjian_kerja_' . url_title($email['name'], '_', true) . '_' . $email['user'] . '.pdf';
             file_put_contents($tempDir . '/' . $filename, $output);
 
             return $this->response->setJSON(['success' => true]);
@@ -1187,6 +1215,7 @@ class Email extends BaseController
 
     public function api_download_zip($unitId)
     {
+        set_time_limit(0); // Ensure script doesn't time out during zipping
         $unitKerja = $this->unitKerjaModel->find($unitId);
         if (!$unitKerja) {
             return redirect()->back()->with('error', 'Unit Kerja not found');
@@ -1206,27 +1235,55 @@ class Email extends BaseController
         }
 
         $files = scandir($tempDir);
+        $fileCount = 0;
+        $addedUsers = [];
+
         foreach ($files as $file) {
             if ($file == '.' || $file == '..') continue;
+            
+            // Deduplicate based on username in filename: perjanjian_kerja_NAME_USERNAME.pdf
+            // Extract username (last part before .pdf)
+            if (preg_match('/_([^_]+)\.pdf$/', $file, $matches)) {
+                $username = $matches[1];
+                if (in_array($username, $addedUsers)) {
+                    continue; 
+                }
+                $addedUsers[] = $username;
+            }
+
             $filePath = $tempDir . '/' . $file;
             $zip->addFile($filePath, $file);
+            $fileCount++;
         }
 
         $zip->close();
 
-        // Cleanup temp files
+        if ($fileCount === 0) {
+             unlink($zipFilePath);
+             rmdir($tempDir);
+             return redirect()->back()->with('error', 'Temp folder was empty.');
+        }
+
+        // Cleanup temp files immediately after zipping
         foreach ($files as $file) {
             if ($file == '.' || $file == '..') continue;
             unlink($tempDir . '/' . $file);
         }
         rmdir($tempDir);
 
-        header('Content-Type: application/zip');
-        header('Content-Disposition: attachment; filename="' . $zipFileName . '"');
-        header('Content-Length: ' . filesize($zipFilePath));
-        readfile($zipFilePath);
-        unlink($zipFilePath);
-        exit();
+        if (file_exists($zipFilePath)) {
+            header('Content-Type: application/zip');
+            header('Content-Disposition: attachment; filename="' . $zipFileName . '"');
+            header('Content-Length: ' . filesize($zipFilePath));
+            header('Pragma: no-cache');
+            header('Expires: 0');
+            flush();
+            readfile($zipFilePath);
+            unlink($zipFilePath); // Delete zip after download
+            exit();
+        } else {
+            return redirect()->back()->with('error', 'Failed to generate ZIP file.');
+        }
     }
 
     public function export_unit_kerja_csv($unitKerjaId)
@@ -1344,6 +1401,12 @@ class Email extends BaseController
                 throw new Exception('Email account not found.');
             }
 
+            // Restrict to PPPK PARUH WAKTU
+            $statusParuhWaktu = $this->statusAsnModel->where('nama_status_asn', 'PPPK PARUH WAKTU')->first();
+            if (!$statusParuhWaktu || $email['status_asn_id'] != $statusParuhWaktu['id']) {
+                throw new Exception('Perjanjian Kerja hanya tersedia untuk PPPK PARUH WAKTU.');
+            }
+
             $unitKerja = null;
             if (!empty($email['unit_kerja_id'])) {
                 $unitKerja = $this->unitKerjaModel->find($email['unit_kerja_id']);
@@ -1419,10 +1482,17 @@ class Email extends BaseController
             $children = $this->unitKerjaModel->where('parent_id', $unitKerjaId)->findAll();
             $childrenIds = array_column($children, 'id');
 
+            // Find the specific status ID for 'PPPK PARUH WAKTU'
+            $statusParuhWaktu = $this->statusAsnModel->where('nama_status_asn', 'PPPK PARUH WAKTU')->first();
+            if (!$statusParuhWaktu) {
+                throw new Exception('Status PPPK PARUH WAKTU not configured.');
+            }
+
             // Find all emails belonging to this unit AND all its children, sorted by name
             $allUnitIds = array_merge([$unitKerjaId], $childrenIds);
             $emails = $this->emailModel
                 ->whereIn('unit_kerja_id', $allUnitIds)
+                ->where('emails.status_asn_id', $statusParuhWaktu['id'])
                 ->orderBy('LENGTH(unit_kerja_name)', 'ASC', false)->orderBy('unit_kerja_name', 'ASC')
                 ->orderBy('name', 'ASC')
                 ->findAll();
@@ -1447,7 +1517,16 @@ class Email extends BaseController
             $logoData = base64_encode(file_get_contents($logoPath));
             $logoSrc = 'data:image/png;base64,' . $logoData;
 
+            $addedFiles = [];
             foreach ($emails as $email) {
+                // Ensure unique filename base
+                $uniqueKey = $email['user'];
+                
+                // Skip if we already processed this user
+                if (in_array($uniqueKey, $addedFiles)) {
+                    continue;
+                }
+                
                 $dompdf = new Dompdf($options);
 
                 // Fetch data from pk table using email
@@ -1467,9 +1546,10 @@ class Email extends BaseController
                 $dompdf->render();
 
                 $pdfOutput = $dompdf->output();
-                $pdfFileName = 'perjanjian_kerja_' . url_title($email['name'], '_', true) . '.pdf';
+                $pdfFileName = 'perjanjian_kerja_' . url_title($email['name'], '_', true) . '_' . $email['user'] . '.pdf';
 
                 $zip->addFromString($pdfFileName, $pdfOutput);
+                $addedFiles[] = $uniqueKey;
             }
 
             $zip->close();

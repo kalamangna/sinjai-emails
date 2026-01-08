@@ -35,9 +35,9 @@ $routes->get('email/export_perjanjian_kerja_pdf/(:num)', 'Email::export_perjanji
 $routes->get('email/export_single_perjanjian_kerja_pdf/(:any)', 'Email::export_single_perjanjian_kerja_pdf/$1');
 
 // Batch Export PDF Routes
-$routes->get('email/api/unit_emails/(:num)', 'Email::api_unit_emails/$1');
-$routes->post('email/api/generate_pdf', 'Email::api_generate_pdf');
-$routes->get('email/api/download_zip/(:num)', 'Email::api_download_zip/$1');
+$routes->get('email/api_unit_emails/(:num)', 'Email::api_unit_emails/$1');
+$routes->post('email/api_generate_pdf', 'Email::api_generate_pdf');
+$routes->get('email/api_download_zip/(:num)', 'Email::api_download_zip/$1');
 
 $routes->post('/user/check_email', 'User::checkEmailAvailability');
 $routes->post('/user/check_niknip', 'User::check_niknip');

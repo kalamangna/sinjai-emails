@@ -286,12 +286,18 @@
     progressBar.innerText = '0%';
     statusText.innerText = 'Fetching email list...';
 
-    // First, get the list of emails to export
-    fetch(`<?= site_url('email/api_unit_emails/') ?>${unitId}`)
+    // First, get the list of emails to export, passing current filters
+    const currentQuery = window.location.search;
+    fetch(`<?= site_url('email/api_unit_emails/') ?>${unitId}${currentQuery}`)
       .then(response => response.json())
       .then(data => {
-        if (!data.success || data.emails.length === 0) {
-          statusText.innerText = 'No emails to export.';
+        if (!data.success) {
+          statusText.innerText = 'Error: ' + (data.message || 'Failed to fetch emails.');
+          return;
+        }
+        
+        if (data.emails.length === 0) {
+          statusText.innerText = 'No emails found matching the current filters.';
           return;
         }
 
