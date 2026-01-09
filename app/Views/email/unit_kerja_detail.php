@@ -310,10 +310,34 @@
         // Process each email
         const processNext = () => {
           if (processedCount >= totalEmails) {
-            statusText.innerText = 'All PDFs generated. Creating ZIP file...';
-            // All PDFs are generated, now create the zip
-            window.location.href = `<?= site_url('email/api_download_zip/') ?>${unitId}`;
-            setTimeout(() => exportModal.hide(), 2000);
+            statusText.innerText = 'All PDFs generated. Creating ZIP files...';
+            
+            fetch(`<?= site_url('email/api_download_zip/') ?>${unitId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.files.length > 0) {
+                        statusText.innerText = `Created ${data.files.length} ZIP file(s). Downloading...`;
+                        
+                        data.files.forEach((filename, index) => {
+                            setTimeout(() => {
+                                const link = document.createElement('a');
+                                link.href = `<?= site_url('email/download_zip_file/') ?>${filename}`;
+                                link.style.display = 'none';
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                            }, index * 2500); // 2.5 second delay between downloads
+                        });
+
+                        setTimeout(() => exportModal.hide(), (data.files.length * 2500) + 1000);
+                    } else {
+                        statusText.innerText = 'Error creating ZIP: ' + (data.message || 'Unknown error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error zipping:', error);
+                    statusText.innerText = 'Error creating ZIP file.';
+                });
             return;
           }
 

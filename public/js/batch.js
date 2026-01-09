@@ -44,11 +44,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const singleUnitKerja = unitKerjaInputSingle.value;
 
     if (names.length === 0) validationError = "Please enter at least one name.";
-    else if (niks.length === 0)
-      validationError = "Please enter at least one NIK.";
     else if (nips.length === 0)
       validationError = "Please enter at least one NIP.";
-    else if (names.length !== niks.length)
+    else if (niks.length > 0 && names.length !== niks.length)
       validationError = "The number of names and NIKs must match.";
     else if (names.length !== nips.length)
       validationError = "The number of names and NIPs must match.";
@@ -71,14 +69,14 @@ document.addEventListener("DOMContentLoaded", function () {
     generateBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generating...`;
     submitBtn.disabled = true;
     resultsTableBody.innerHTML =
-      '<tr><td colspan="7" class="text-center">Generating and checking emails...</td></tr>'; // Updated colspan
+      '<tr><td colspan="8" class="text-center">Generating and checking emails...</td></tr>'; // Updated colspan
 
     const trimmedNiks = niks.map((n) => n.trim());
     const trimmedNips = nips.map((n) => n.trim()); // New
 
     const nikCounts = {};
     for (const nik of trimmedNiks) {
-      nikCounts[nik] = (nikCounts[nik] || 0) + 1;
+      if (nik) nikCounts[nik] = (nikCounts[nik] || 0) + 1;
     }
     const nipCounts = {}; // New
     for (const nip of trimmedNips) {
@@ -91,7 +89,7 @@ document.addEventListener("DOMContentLoaded", function () {
     for (let i = 0; i < names.length; i++) {
       const name = names[i];
       const cleanedName = name.replace(/[,.']/g, "");
-      const nik = trimmedNiks[i];
+      const nik = trimmedNiks[i] || "";
       const nip = trimmedNips[i] || ""; // New
       const jenisFormasi = jenisFormasiInput.value; // New
       const unitKerja = unitKerjaValues[i];
@@ -108,8 +106,9 @@ document.addEventListener("DOMContentLoaded", function () {
       while (attempts < maxAttempts) {
         attempts++;
         if (generatedEmails.has(currentEmail)) {
-          const nikPart = getNikPart(nik);
-          currentUsername = `${originalUsername}${nikPart}`;
+          let suffix = getNikPart(nik);
+          if (!suffix) suffix = attempts;
+          currentUsername = `${originalUsername}${suffix}`;
           currentEmail = `${currentUsername}@sinjaikab.go.id`;
           continue;
         }
@@ -119,8 +118,9 @@ document.addEventListener("DOMContentLoaded", function () {
           isAvailable = true;
           break;
         } else {
-          const nikPart = getNikPart(nik);
-          currentUsername = `${originalUsername}${nikPart}`;
+          let suffix = getNikPart(nik);
+          if (!suffix) suffix = attempts;
+          currentUsername = `${originalUsername}${suffix}`;
           currentEmail = `${currentUsername}@sinjaikab.go.id`;
         }
       }

@@ -38,6 +38,7 @@ $routes->get('email/export_single_perjanjian_kerja_pdf/(:any)', 'Email::export_s
 $routes->get('email/api_unit_emails/(:num)', 'Email::api_unit_emails/$1');
 $routes->post('email/api_generate_pdf', 'Email::api_generate_pdf');
 $routes->get('email/api_download_zip/(:num)', 'Email::api_download_zip/$1');
+$routes->get('email/download_zip_file/(:any)', 'Email::download_zip_file/$1');
 
 $routes->post('/user/check_email', 'User::checkEmailAvailability');
 $routes->post('/user/check_niknip', 'User::check_niknip');

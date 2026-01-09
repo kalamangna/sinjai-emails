@@ -27,7 +27,7 @@
         <div class="row">
             <div class="col-md-6">
                 <div class="mb-3">
-                    <label for="nik_input" class="form-label">Enter one NIK per line.</label>
+                    <label for="nik_input" class="form-label">Enter one NIK per line (optional).</label>
                     <textarea class="form-control" id="nik_input" rows="8" placeholder="e.g.&#10;1234567890123456&#10;0987654321098765"></textarea>
                 </div>
             </div>

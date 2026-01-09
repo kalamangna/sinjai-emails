@@ -1215,34 +1215,25 @@ class Email extends BaseController
 
     public function api_download_zip($unitId)
     {
-        set_time_limit(0); // Ensure script doesn't time out during zipping
+        set_time_limit(0);
         $unitKerja = $this->unitKerjaModel->find($unitId);
         if (!$unitKerja) {
-            return redirect()->back()->with('error', 'Unit Kerja not found');
+            return $this->response->setJSON(['success' => false, 'message' => 'Unit Kerja not found']);
         }
 
         $tempDir = WRITEPATH . 'uploads/temp_export_' . $unitId;
         if (!is_dir($tempDir)) {
-            return redirect()->back()->with('error', 'No files generated to zip.');
-        }
-
-        $zip = new \ZipArchive();
-        $zipFileName = 'perjanjian_kerja_' . url_title($unitKerja['nama_unit_kerja'], '_', true) . '.zip';
-        $zipFilePath = WRITEPATH . 'uploads/' . $zipFileName;
-
-        if ($zip->open($zipFilePath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== TRUE) {
-            return redirect()->back()->with('error', 'Cannot create ZIP archive.');
+            return $this->response->setJSON(['success' => false, 'message' => 'No files generated to zip.']);
         }
 
         $files = scandir($tempDir);
-        $fileCount = 0;
+        $pdfFiles = [];
         $addedUsers = [];
 
         foreach ($files as $file) {
             if ($file == '.' || $file == '..') continue;
             
             // Deduplicate based on username in filename: perjanjian_kerja_NAME_USERNAME.pdf
-            // Extract username (last part before .pdf)
             if (preg_match('/_([^_]+)\.pdf$/', $file, $matches)) {
                 $username = $matches[1];
                 if (in_array($username, $addedUsers)) {
@@ -1250,39 +1241,60 @@ class Email extends BaseController
                 }
                 $addedUsers[] = $username;
             }
-
-            $filePath = $tempDir . '/' . $file;
-            $zip->addFile($filePath, $file);
-            $fileCount++;
+            
+            $pdfFiles[] = $file;
         }
 
-        $zip->close();
-
-        if ($fileCount === 0) {
-             unlink($zipFilePath);
-             rmdir($tempDir);
-             return redirect()->back()->with('error', 'Temp folder was empty.');
+        if (empty($pdfFiles)) {
+             return $this->response->setJSON(['success' => false, 'message' => 'Temp folder is empty.']);
         }
 
-        // Cleanup temp files immediately after zipping
+        $limit = 250; // Chunk limit
+        $chunks = array_chunk($pdfFiles, $limit);
+        $generatedZips = [];
+        $baseName = url_title($unitKerja['nama_unit_kerja'], '_', true);
+
+        foreach ($chunks as $index => $chunk) {
+            $zip = new \ZipArchive();
+            // If chunks > 1, add suffix. If single chunk, keep original name (existing config)
+            $partSuffix = (count($chunks) > 1) ? '_part_' . ($index + 1) : '';
+            $zipFileName = 'perjanjian_kerja_' . $baseName . $partSuffix . '.zip';
+            $zipFilePath = WRITEPATH . 'uploads/' . $zipFileName;
+
+            if ($zip->open($zipFilePath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== TRUE) {
+                log_message('error', 'Failed to create zip: ' . $zipFileName);
+                continue;
+            }
+
+            foreach ($chunk as $file) {
+                $zip->addFile($tempDir . '/' . $file, $file);
+            }
+            $zip->close();
+            $generatedZips[] = $zipFileName;
+        }
+
+        // Cleanup PDFs and Temp Dir
         foreach ($files as $file) {
             if ($file == '.' || $file == '..') continue;
             unlink($tempDir . '/' . $file);
         }
         rmdir($tempDir);
 
-        if (file_exists($zipFilePath)) {
-            header('Content-Type: application/zip');
-            header('Content-Disposition: attachment; filename="' . $zipFileName . '"');
-            header('Content-Length: ' . filesize($zipFilePath));
-            header('Pragma: no-cache');
-            header('Expires: 0');
-            flush();
-            readfile($zipFilePath);
-            unlink($zipFilePath); // Delete zip after download
-            exit();
+        return $this->response->setJSON(['success' => true, 'files' => $generatedZips]);
+    }
+
+    public function download_zip_file($filename)
+    {
+        // Basic security check: prevent directory traversal
+        if (strpos($filename, '..') !== false || strpos($filename, '/') !== false || strpos($filename, '\\') !== false) {
+            throw new \Exception('Invalid filename');
+        }
+
+        $path = WRITEPATH . 'uploads/' . $filename;
+        if (file_exists($path)) {
+            return $this->response->download($path, null);
         } else {
-            return redirect()->back()->with('error', 'Failed to generate ZIP file.');
+            throw new \CodeIgniter\Exceptions\PageNotFoundException($filename . ' not found');
         }
     }
 
