@@ -27,14 +27,14 @@
         <div class="row">
             <div class="col-md-6">
                 <div class="mb-3">
-                    <label for="nik_input" class="form-label">Enter one NIK per line (optional).</label>
-                    <textarea class="form-control" id="nik_input" rows="8" placeholder="e.g.&#10;1234567890123456&#10;0987654321098765"></textarea>
+                    <label for="nip_input" class="form-label">Enter one NIP per line.</label>
+                    <textarea class="form-control" id="nip_input" rows="8" placeholder="e.g.&#10;199001012020011001"></textarea>
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="mb-3">
-                    <label for="nip_input" class="form-label">Enter one NIP per line.</label>
-                    <textarea class="form-control" id="nip_input" rows="8" placeholder="e.g.&#10;199001012020011001"></textarea>
+                    <label for="nik_input" class="form-label">Enter one NIK per line (optional).</label>
+                    <textarea class="form-control" id="nik_input" rows="8" placeholder="e.g.&#10;1234567890123456&#10;0987654321098765"></textarea>
                 </div>
             </div>
         </div>
@@ -81,8 +81,8 @@
                 <thead class="table-light">
                     <tr>
                         <th scope="col">#</th>
-                        <th scope="col">NIK</th>
                         <th scope="col">NIP</th>
+                        <th scope="col">NIK</th>
                         <th scope="col">Name</th>
                         <th scope="col">Unit Kerja</th>
                         <th scope="col">Generated Email</th>

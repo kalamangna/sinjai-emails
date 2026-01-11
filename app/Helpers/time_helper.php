@@ -30,7 +30,7 @@ if (!function_exists('get_local_datetime')) {
 }
 
 if (!function_exists('format_indo_date')) {
-    function format_indo_date($date_string)
+    function format_indo_date($date_string, $include_day = true)
     {
         $months = [
             'January' => 'Januari',
@@ -47,7 +47,8 @@ if (!function_exists('format_indo_date')) {
             'December' => 'Desember'
         ];
         
-        $date = date('d F Y', strtotime($date_string));
+        $format = $include_day ? 'd F Y' : 'F Y';
+        $date = date($format, strtotime($date_string));
         foreach ($months as $en => $id) {
             $date = str_replace($en, $id, $date);
         }

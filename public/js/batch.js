@@ -405,8 +405,8 @@ document.addEventListener("DOMContentLoaded", function () {
       const row = `
         <tr>
             <td>${index + 1}</td>
-            <td>${nikDisplay}</td>
             <td>${nipDisplay}</td>
+            <td>${nikDisplay}</td>
             <td>${nameCellContent}</td>
             <td>${unitKerjaCellContent}</td>
             <td>${emailCellContent}</td>

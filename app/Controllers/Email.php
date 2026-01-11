@@ -1678,7 +1678,7 @@ class Email extends BaseController
             $dompdf->setPaper('A4', 'portrait');
             $dompdf->render();
 
-            $filename = url_title($unitKerja['nama_unit_kerja'], '_', true) . '.pdf';
+            $filename = url_title($unitKerja['nama_unit_kerja'] . ' ' . format_indo_date(date('Y-m-d'), false), '_', true) . '.pdf';
             $dompdf->stream($filename, ["Attachment" => true]);
             exit();
         } catch (Exception $e) {
