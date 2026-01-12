@@ -1317,6 +1317,7 @@ class Email extends BaseController
 
             $search = $this->request->getGet('search');
             $status_asn = $this->request->getGet('status_asn');
+            $bsre_status = $this->request->getGet('bsre_status');
 
             $builder = $this->emailModel->whereIn('unit_kerja_id', $allUnitIds);
 
@@ -1331,6 +1332,17 @@ class Email extends BaseController
 
             if ($status_asn) {
                 $builder->where('emails.status_asn_id', $status_asn);
+            }
+
+            if ($bsre_status) {
+                if ($bsre_status === 'not_synced') {
+                    $builder->groupStart()
+                        ->where('emails.bsre_status', null)
+                        ->orWhere('emails.bsre_status', '')
+                        ->groupEnd();
+                } else {
+                    $builder->where('emails.bsre_status', $bsre_status);
+                }
             }
 
             $emails = $builder->findAll();
