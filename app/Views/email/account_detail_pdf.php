@@ -136,8 +136,10 @@
         <h1>DAFTAR AKUN EMAIL & TTE</h1>
         <h2><?= esc($unit_kerja['nama_unit_kerja']) ?></h2>
         <p style="text-align: center; font-size: 10px; color: #666; margin-top: -10px;">UPDATE PER: <?= strtoupper(esc($current_date)) ?></p>
-        <p style="text-align: center; font-size: 10px; color: #ff0000; font-weight: bold; margin-top: 10px;">
-            Untuk aktivasi akun, silakan masukkan email dan password di halaman sinjaikab.go.id/webmail
+        <p style="text-align: center; font-size: 11px; color: #cc0000; font-weight: bold; margin-top: 15px; margin-bottom: 20px; line-height: 1.4;">
+            Untuk aktivasi akun, silakan akses <span style="text-decoration: underline;">webmail.sinjaikab.go.id</span>,<br>
+            masukkan email dan password, lalu ikuti petunjuk selanjutnya.<br>
+            <span style="font-weight: normal; color: #555; font-size: 10px;">Hubungi admin jika ada kendala.</span>
         </p>
     </div>
 
