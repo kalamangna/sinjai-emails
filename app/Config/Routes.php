@@ -31,6 +31,7 @@ $routes->get('email/export_pimpinan_desa_pdf', 'Email::export_pimpinan_desa_pdf'
 
 $routes->get('email/export_unit_kerja_csv/(:num)', 'Email::export_unit_kerja_csv/$1');
 $routes->get('email/export_unit_kerja_pdf/(:num)', 'Email::export_unit_kerja_pdf/$1');
+$routes->get('email/export_account_detail_pdf/(:num)', 'Email::export_account_detail_pdf/$1');
 $routes->get('email/export_perjanjian_kerja_pdf/(:num)', 'Email::export_perjanjian_kerja_pdf/$1');
 $routes->get('email/export_single_perjanjian_kerja_pdf/(:any)', 'Email::export_single_perjanjian_kerja_pdf/$1');
 
