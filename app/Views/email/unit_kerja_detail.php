@@ -20,6 +20,9 @@
         <a href="<?= $pdfUrl ?>" class="btn btn-danger">
           <i class="fas fa-file-pdf me-2"></i>Export PDF
         </a>
+        <a href="<?= site_url('email/export_account_detail_pdf/' . $unit_kerja['id']) . ($queryString ? '?' . $queryString : '') ?>" class="btn btn-dark">
+          <i class="fas fa-file-pdf me-2"></i>Export Akun PDF
+        </a>
         <button onclick="openExportModal(<?= $unit_kerja['id'] ?>)" class="btn btn-info">
           <i class="fas fa-file-contract me-2"></i>Export Perjanjian Kerja PDF
         </button>

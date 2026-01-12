@@ -1689,6 +1689,106 @@ class Email extends BaseController
         }
     }
 
+    public function export_account_detail_pdf($unitKerjaId)
+    {
+        set_time_limit(0);
+        ini_set('memory_limit', '-1');
+
+        try {
+            $unitKerja = $this->unitKerjaModel->find($unitKerjaId);
+
+            if (!$unitKerja) {
+                throw new Exception('Unit Kerja not found.');
+            }
+
+            // Find children of the current unit
+            $children = $this->unitKerjaModel->where('parent_id', $unitKerjaId)->findAll();
+            $childrenIds = array_column($children, 'id');
+
+            // Find all emails belonging to this unit AND all its children, sorted by name
+            $allUnitIds = array_merge([$unitKerjaId], $childrenIds);
+
+            $search = $this->request->getGet('search');
+            $status_asn = $this->request->getGet('status_asn');
+            $bsre_status = $this->request->getGet('bsre_status');
+
+            $builder = $this->emailModel
+                ->whereIn('unit_kerja_id', $allUnitIds)
+                ->orderBy('emails.eselon_id IS NULL', 'ASC', false)
+                ->orderBy('emails.eselon_id', 'ASC')
+                ->orderBy('emails.status_asn_id IS NULL', 'ASC', false)
+                ->orderBy('emails.status_asn_id', 'ASC')
+                ->orderBy('emails.jabatan', 'ASC')
+                ->orderBy('emails.name', 'ASC');
+
+            if ($search) {
+                $builder->groupStart()
+                    ->like('email', $search)
+                    ->orLike('name', $search)
+                    ->orLike('nik', $search)
+                    ->orLike('nip', $search)
+                    ->groupEnd();
+            }
+
+            if ($status_asn) {
+                $builder->where('emails.status_asn_id', $status_asn);
+            }
+
+            if ($bsre_status) {
+                if ($bsre_status === 'not_synced') {
+                    $builder->groupStart()
+                        ->where('emails.bsre_status', null)
+                        ->orWhere('emails.bsre_status', '')
+                        ->groupEnd();
+                } else {
+                    $builder->where('emails.bsre_status', $bsre_status);
+                }
+            }
+
+            $emails = $builder->findAll();
+
+            $options = new Options();
+            $options->set('isHtml5ParserEnabled', true);
+            $options->set('isRemoteEnabled', true);
+
+            $dompdf = new Dompdf($options);
+
+            // Fungsi esc() untuk keamanan
+            if (!function_exists('esc')) {
+                function esc($str)
+                {
+                    return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
+                }
+            }
+
+            $logoPath = FCPATH . 'logo.png';
+            $logoData = base64_encode(file_get_contents($logoPath));
+            $logoSrc = 'data:image/png;base64,' . $logoData;
+
+            $data = [
+                'unit_kerja' => $unitKerja,
+                'emails' => $emails,
+                'logoSrc' => $logoSrc,
+                'current_date' => format_indo_date(date('Y-m-d')), // Add current date and time
+            ];
+
+            $html = view('email/account_detail_pdf', $data);
+
+            $dompdf->loadHtml($html);
+            $dompdf->setPaper('A4', 'portrait');
+            $dompdf->render();
+
+            $filename = url_title($unitKerja['nama_unit_kerja'] . ' Detail Akun ' . format_indo_date(date('Y-m-d'), false), '_', true) . '.pdf';
+            $dompdf->stream($filename, ["Attachment" => true]);
+            exit();
+        } catch (Exception $e) {
+            $data['error'] = $e->getMessage();
+            return view('templates/header') .
+                view('email/error', $data) .
+                view('templates/footer');
+        }
+    }
+
     private function apply_sorting($builder, $sort_type)
     {
         switch ($sort_type) {
