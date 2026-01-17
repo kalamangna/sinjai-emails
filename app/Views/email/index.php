@@ -24,12 +24,6 @@
     <div class="col-12">
         <div class="d-flex flex-column align-items-end gap-2">
             <div class="d-flex gap-2">
-                <a href="<?= site_url('email/check_nik') ?>" class="btn btn-info text-white">
-                    <i class="fas fa-search me-2"></i>Check NIK
-                </a>
-                <button onclick="syncAllBsreStatus()" class="btn btn-warning">
-                    <i class="fas fa-sync-alt me-2"></i>Batch Sync Status TTE
-                </button>
                 <a href="<?= site_url('email/sync') ?>" class="btn btn-primary" id="syncButton">
                     <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
                     <i class="fas fa-sync-alt me-2"></i>
@@ -615,32 +609,6 @@
       .catch(error => {
           bsreStatusDiv.innerHTML = `<span class="badge bg-danger">Network Error</span>`;
           console.error(`Network error syncing Status TTE for ${emailAddress}:`, error);
-      });
-  }
-
-  function syncAllBsreStatus() {
-      // Logic to find all sync buttons or rows and trigger syncBsreStatus
-      // We can iterate over IDs starting with bsre-status-
-      const statusContainers = document.querySelectorAll('[id^="bsre-status-"]');
-      
-      if (statusContainers.length === 0) {
-          alert('No emails to sync.');
-          return;
-      }
-
-      if (!confirm(`Are you sure you want to sync Status TTE for ${statusContainers.length} displayed emails? This might take a moment.`)) {
-          return;
-      }
-
-      statusContainers.forEach((container, index) => {
-          const emailUser = container.id.replace('bsre-status-', '');
-          const emailAddress = container.getAttribute('data-email'); // Get email from data attribute
-
-          if (emailUser && emailAddress) {
-              setTimeout(() => {
-                  syncBsreStatus(emailUser, emailAddress);
-              }, index * 200); // 200ms delay per request
-          }
       });
   }
 </script>

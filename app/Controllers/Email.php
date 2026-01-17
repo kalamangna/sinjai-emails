@@ -1829,50 +1829,7 @@ class Email extends BaseController
         }
     }
 
-    public function check_nik()
-    {
-        $data = [
-            'title' => 'Check NIK Association',
-            'results' => [],
-            'input_niks' => ''
-        ];
 
-        $method = strtolower($this->request->getMethod());
-
-        if ($method === 'post') {
-            $niksInput = $this->request->getPost('nik_list');
-            $data['input_niks'] = $niksInput;
-
-            if (!empty($niksInput)) {
-                // Split by newlines (handle Windows/Mac/Linux)
-                $niks = preg_split('/\r\n|\r|\n/', $niksInput);
-                $results = [];
-
-                foreach ($niks as $nik) {
-                    // Remove control characters and whitespace
-                    $nik = preg_replace('/[\x00-\x1F\x7F]/', '', $nik);
-                    $nik = trim($nik);
-
-                    if (empty($nik)) {
-                        continue;
-                    }
-
-                    // Use exact match for NIK
-                    $foundEmails = $this->emailModel->where('nik', $nik)->findAll();
-
-                    $results[] = [
-                        'searched_nik' => $nik,
-                        'found' => !empty($foundEmails),
-                        'emails' => $foundEmails
-                    ];
-                }
-
-                $data['results'] = $results;
-            }
-        }
-
-        return view('email/check_nik', $data);
-    }
 
     public function delete($id)
     {

@@ -137,8 +137,8 @@
         <h2><?= esc($unit_kerja['nama_unit_kerja']) ?></h2>
         <p style="text-align: center; font-size: 10px; color: #666; margin-top: -10px;">UPDATE PER: <?= strtoupper(esc($current_date)) ?></p>
         <p style="text-align: center; font-size: 11px; color: #cc0000; font-weight: bold; margin-top: 15px; margin-bottom: 20px; line-height: 1.4;">
-            Untuk aktivasi akun, silakan akses <span style="text-decoration: underline;">webmail.sinjaikab.go.id</span>,<br>
-            masukkan email dan password, lalu ikuti petunjuk selanjutnya.<br>
+            Untuk aktivasi akun, masukkan email dan password di halaman<span style="text-decoration: underline;">sinjaikab.go.id/webmail</span>
+            <br>
             <span style="font-weight: normal; color: #555; font-size: 10px;">Hubungi admin jika ada kendala.</span>
         </p>
     </div>
@@ -175,7 +175,7 @@
                         <td>' . $nomor . '</td> 
                         <td><strong>' . esc(strtoupper($email['name'] ?? 'N/A')) . '</strong></td>
                         <td>' . esc($email['email'] ?? 'N/A') . '</td>
-                        <td>' . esc($email['password'] ?? 'N/A') . '</td>
+                        <td>' . esc($email['password'] ?? '') . '</td>
                         <td style="color: ' . $color . '; font-weight: bold;">' . esc($statusTte) . '</td>
                     </tr>';
                 $nomor++;

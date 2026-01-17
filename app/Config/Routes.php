@@ -21,7 +21,6 @@ $routes->post('email/create_single', 'Email::create_single_email');
 $routes->get('email/batch_update', 'Email::batch_update');
 $routes->post('email/batch_update_process', 'Email::batch_update_process');
 $routes->post('email/batch_create', 'Email::batch_create');
-$routes->match(['GET', 'POST'], 'email/check_nik', 'Email::check_nik');
 $routes->post('email/delete/(:num)', 'Email::delete/$1');
 
 $routes->get('email/pimpinan', 'Email::pimpinan');
