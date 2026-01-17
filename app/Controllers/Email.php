@@ -988,9 +988,7 @@ class Email extends BaseController
             exit();
         } catch (Exception $e) {
             $data['error'] = $e->getMessage();
-            return view('templates/header') .
-                view('email/error', $data) .
-                view('templates/footer');
+            return view('email/error', $data);
         }
     }
 
@@ -1071,9 +1069,7 @@ class Email extends BaseController
             exit();
         } catch (Exception $e) {
             $data['error'] = $e->getMessage();
-            return view('templates/header') .
-                view('email/error', $data) .
-                view('templates/footer');
+            return view('email/error', $data);
         }
     }
 
@@ -1410,9 +1406,7 @@ class Email extends BaseController
             }
         } catch (Exception $e) {
             $data['error'] = $e->getMessage();
-            return view('templates/header') .
-                view('email/error', $data) .
-                view('templates/footer');
+            return view('email/error', $data);
         }
     }
 
@@ -1477,9 +1471,7 @@ class Email extends BaseController
             exit();
         } catch (Exception $e) {
             $data['error'] = $e->getMessage();
-            return view('templates/header') .
-                view('email/error', $data) .
-                view('templates/footer');
+            return view('email/error', $data);
         }
     }
 
@@ -1590,9 +1582,7 @@ class Email extends BaseController
             exit();
         } catch (Exception $e) {
             $data['error'] = $e->getMessage();
-            return view('templates/header') .
-                view('email/error', $data) .
-                view('templates/footer');
+            return view('email/error', $data);
         }
     }
 
@@ -1695,9 +1685,7 @@ class Email extends BaseController
             exit();
         } catch (Exception $e) {
             $data['error'] = $e->getMessage();
-            return view('templates/header') .
-                view('email/error', $data) .
-                view('templates/footer');
+            return view('email/error', $data);
         }
     }
 
@@ -1795,9 +1783,7 @@ class Email extends BaseController
             exit();
         } catch (Exception $e) {
             $data['error'] = $e->getMessage();
-            return view('templates/header') .
-                view('email/error', $data) .
-                view('templates/footer');
+            return view('email/error', $data);
         }
     }
 
