@@ -105,11 +105,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
       while (attempts < maxAttempts) {
         attempts++;
-        if (generatedEmails.has(currentEmail)) {
-          let suffix = getNipPart(nip);
-          if (!suffix) suffix = getNikPart(nik);
-          if (attempts > 1 || !suffix) suffix = (suffix || "") + attempts;
 
+        let suffix = "";
+        if (attempts === 1) suffix = getNipPart(nip);
+        else if (attempts === 2) suffix = getSecondNipPart(nip);
+        else if (attempts === 3) suffix = getNikPart(nik);
+        else {
+          let base = getNipPart(nip) || getNikPart(nik);
+          suffix = (base || "") + attempts;
+        }
+        if (!suffix) suffix = attempts;
+
+        if (generatedEmails.has(currentEmail)) {
           currentUsername = `${originalUsername}${suffix}`;
           currentEmail = `${currentUsername}@sinjaikab.go.id`;
           continue;
@@ -120,10 +127,6 @@ document.addEventListener("DOMContentLoaded", function () {
           isAvailable = true;
           break;
         } else {
-          let suffix = getNipPart(nip);
-          if (!suffix) suffix = getNikPart(nik);
-          if (attempts > 1 || !suffix) suffix = (suffix || "") + attempts;
-
           currentUsername = `${originalUsername}${suffix}`;
           currentEmail = `${currentUsername}@sinjaikab.go.id`;
         }
@@ -287,6 +290,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const capitalizedNamePart =
       namePart.charAt(0).toUpperCase() + namePart.slice(1);
     return `${capitalizedNamePart}@${suffix}#`;
+  }
+
+  function getSecondNipPart(nip) {
+    if (typeof nip !== "string" || nip.length < 8) return "";
+    return nip.substring(6, 8);
   }
 
   function getNipPart(nip) {
