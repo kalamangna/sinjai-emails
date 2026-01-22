@@ -51,7 +51,12 @@
       <div class="card-body py-4">
         <div class="row align-items-center">
           <div class="col-md-8">
-            <h3 class="text-primary mb-2"><?= esc($email['email']) ?></h3>
+            <div class="d-flex align-items-center mb-2">
+              <h3 class="text-primary mb-0 me-3"><?= esc($email['email']) ?></h3>
+              <button class="btn btn-sm btn-outline-primary" onclick="copyToClipboard('<?= esc($email['email'], 'js') ?>', this)">
+                <i class="fas fa-copy me-1"></i>Copy
+              </button>
+            </div>
             <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
               <div id="bsre-status-container">
                 <span class="badge bg-secondary">Not Synced</span>
@@ -317,11 +322,6 @@
           <div class="card-body py-4">
             <div class="row g-3">
               <div class="col-md-4 col-sm-6">
-                <button class="btn btn-outline-primary w-100" onclick="copyToClipboard('<?= esc($email['email'], 'js') ?>')">
-                  <i class="fas fa-copy me-2"></i>Copy Email
-                </button>
-              </div>
-              <div class="col-md-4 col-sm-6">
                 <a href="mailto:<?= esc($email['email']) ?>" class="btn btn-outline-success w-100">
                   <i class="fas fa-paper-plane me-2"></i>Send Email
                 </a>
@@ -348,17 +348,17 @@
 
 <?= $this->section('scripts') ?>
 <script>
-  function copyToClipboard(text) {
+  function copyToClipboard(text, btn) {
     navigator.clipboard.writeText(text).then(function() {
-      const originalText = event.target.innerHTML;
-      event.target.innerHTML = '<i class="fas fa-check me-2"></i>Copied!';
-      event.target.classList.remove('btn-outline-primary');
-      event.target.classList.add('btn-success');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '<i class="fas fa-check me-2"></i>Copied!';
+      btn.classList.remove('btn-outline-primary');
+      btn.classList.add('btn-success');
 
       setTimeout(function() {
-        event.target.innerHTML = originalText;
-        event.target.classList.remove('btn-success');
-        event.target.classList.add('btn-outline-primary');
+        btn.innerHTML = originalText;
+        btn.classList.remove('btn-success');
+        btn.classList.add('btn-outline-primary');
       }, 2000);
     }).catch(function(err) {
       alert('Failed to copy email: ' + err);

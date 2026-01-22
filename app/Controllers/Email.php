@@ -611,8 +611,17 @@ class Email extends BaseController
             // So I should retrieve 'status_asn'.
             $status_asn = $this->request->getGet('status_asn');
             $bsre_status = $this->request->getGet('bsre_status');
+            
+            // Pimpinan Desa Filter (Default True)
+            $isKecamatan = stripos($unitKerja['nama_unit_kerja'], 'Kecamatan') !== false;
+            $pimpinan_desa = $this->request->getGet('pimpinan_desa') ?? 1;
 
             $emailBuilder = $this->emailModel->whereIn('unit_kerja_id', $allUnitIds);
+
+            // Apply Pimpinan Desa filter only for Kecamatan and if unchecked (value 0)
+            if ($isKecamatan && $pimpinan_desa == 0) {
+                $emailBuilder->where('pimpinan_desa', 0);
+            }
 
             if ($search) {
                 $emailBuilder->groupStart()
@@ -676,6 +685,7 @@ class Email extends BaseController
                 'status_asn_options' => $this->statusAsnModel->orderBy('nama_status_asn', 'ASC')->findAll(),
                 'bsre_status' => $bsre_status,
                 'bsre_status_options' => $bsre_status_options,
+                'pimpinan_desa' => $pimpinan_desa,
                 'back_url' => site_url('email'),
             ];
 
@@ -1609,6 +1619,10 @@ class Email extends BaseController
             $status_asn = $this->request->getGet('status_asn');
             $bsre_status = $this->request->getGet('bsre_status');
 
+            // Pimpinan Desa Filter (Default True)
+            $isKecamatan = stripos($unitKerja['nama_unit_kerja'], 'Kecamatan') !== false;
+            $pimpinan_desa = $this->request->getGet('pimpinan_desa') ?? 1;
+
             $builder = $this->emailModel
                 ->whereIn('unit_kerja_id', $allUnitIds)
                 ->orderBy('emails.eselon_id IS NULL', 'ASC', false)
@@ -1617,6 +1631,11 @@ class Email extends BaseController
                 ->orderBy('emails.status_asn_id', 'ASC')
                 ->orderBy('emails.jabatan', 'ASC')
                 ->orderBy('emails.name', 'ASC');
+
+            // Apply Pimpinan Desa filter only for Kecamatan and if unchecked (value 0)
+            if ($isKecamatan && $pimpinan_desa == 0) {
+                $builder->where('pimpinan_desa', 0);
+            }
 
             if ($search) {
                 $builder->groupStart()
@@ -1712,6 +1731,10 @@ class Email extends BaseController
             $status_asn = $this->request->getGet('status_asn');
             $bsre_status = $this->request->getGet('bsre_status');
 
+            // Pimpinan Desa Filter (Default True)
+            $isKecamatan = stripos($unitKerja['nama_unit_kerja'], 'Kecamatan') !== false;
+            $pimpinan_desa = $this->request->getGet('pimpinan_desa') ?? 1;
+
             $builder = $this->emailModel
                 ->whereIn('unit_kerja_id', $allUnitIds)
                 ->orderBy('emails.eselon_id IS NULL', 'ASC', false)
@@ -1720,6 +1743,11 @@ class Email extends BaseController
                 ->orderBy('emails.status_asn_id', 'ASC')
                 ->orderBy('emails.jabatan', 'ASC')
                 ->orderBy('emails.name', 'ASC');
+
+            // Apply Pimpinan Desa filter only for Kecamatan and if unchecked (value 0)
+            if ($isKecamatan && $pimpinan_desa == 0) {
+                $builder->where('pimpinan_desa', 0);
+            }
 
             if ($search) {
                 $builder->groupStart()

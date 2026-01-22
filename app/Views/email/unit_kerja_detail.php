@@ -82,13 +82,17 @@
     <div class="card shadow-sm mb-4">
       <div class="card-body">
         <form action="<?= current_url() ?>" method="get" class="row g-3 align-items-center">
+          <?php 
+            $isKecamatan = stripos($unit_kerja['nama_unit_kerja'], 'Kecamatan') !== false;
+            $middleColClass = $isKecamatan ? 'col-md-2' : 'col-md-3';
+          ?>
           <div class="col-md-3">
             <div class="input-group">
               <span class="input-group-text"><i class="fas fa-search"></i></span>
               <input type="text" class="form-control" name="search" placeholder="Search..." value="<?= esc($search ?? '') ?>">
             </div>
           </div>
-          <div class="col-md-3">
+          <div class="<?= $middleColClass ?>">
             <div class="input-group">
               <span class="input-group-text"><i class="fas fa-users-cog"></i></span>
               <select name="status_asn" class="form-select">
@@ -101,7 +105,7 @@
               </select>
             </div>
           </div>
-          <div class="col-md-3">
+          <div class="<?= $middleColClass ?>">
             <div class="input-group">
               <span class="input-group-text"><i class="fas fa-fingerprint"></i></span>
               <select name="bsre_status" class="form-select">
@@ -114,6 +118,19 @@
               </select>
             </div>
           </div>
+          
+          <?php if ($isKecamatan): ?>
+            <div class="col-md-2">
+                <div class="form-check bg-light rounded p-2 border d-flex align-items-center justify-content-center">
+                    <input type="hidden" name="pimpinan_desa" value="0">
+                    <input class="form-check-input me-2 mt-0" type="checkbox" name="pimpinan_desa" value="1" id="pimpinanDesaCheck" <?= ($pimpinan_desa ?? 1) ? 'checked' : '' ?>>
+                    <label class="form-check-label user-select-none" for="pimpinanDesaCheck">
+                        Pimpinan Desa
+                    </label>
+                </div>
+            </div>
+          <?php endif; ?>
+
           <div class="col-md-3">
             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
               <button type="submit" class="btn btn-primary flex-grow-1">
