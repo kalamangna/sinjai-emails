@@ -30,6 +30,12 @@ A centralized platform for managing official employee email accounts for the Gov
 - **Analytics Dashboard:** Visual tracking of website status (Active/Inactive) with percentage-based statistics and platform distribution (SIDEKA-NG, OpenSID, etc.).
 - **Indonesian PDF Reports:** Generate professional reports with Indonesian month names, color-coded rows (Desa vs Kelurahan), and comprehensive platform statistics.
 
+### 🏢 Website OPD Tracking
+- **Agency Website Management:** Centralized tracking for all official websites of local government agencies (OPD).
+- **Domain Expiration Monitoring:** Automated fetching of expiration data from PANDI RDAP.
+- **Platform Analytics:** Track the technology stack used by each agency (Custom CMS, Pihak Ketiga, etc.).
+- **Professional Exports:** Specialized PDF reports for OPD websites with Indonesian formatting and status visualization.
+
 ### 📄 Reporting & Documents
 - **PDF Exports:** Generate formatted lists of emails, leadership directories, and individual account detail sheets.
 - **CSV Exports:** Export Unit Kerja data in CSV format for bulk processing or external use.

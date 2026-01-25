@@ -35,6 +35,9 @@
                     <a href="<?= site_url('email/batch_update') ?>" class="btn btn-warning btn-sm text-dark">
                         <i class="fas fa-edit me-1"></i>Batch Update
                     </a>
+                    <a href="<?= site_url('email/batch_perjanjian_kerja') ?>" class="btn btn-warning btn-sm text-dark">
+                        <i class="fas fa-file-contract me-1"></i>Batch Update PK
+                    </a>
                     <a href="<?= site_url('email/pimpinan') ?>" class="btn btn-success btn-sm text-white">
                         <i class="fas fa-user-tie me-1"></i>Pimpinan
                     </a>
@@ -43,6 +46,9 @@
                     </a>
                     <a href="<?= site_url('web_desa_kelurahan') ?>" class="btn btn-primary btn-sm text-white">
                         <i class="fas fa-globe me-1"></i>Website Desa
+                    </a>
+                    <a href="<?= site_url('web_opd') ?>" class="btn btn-primary btn-sm text-white">
+                        <i class="fas fa-building me-1"></i>Website OPD
                     </a>
                     <a href="<?= site_url('unit_kerja/manage') ?>" class="btn btn-secondary btn-sm text-white">
                         <i class="fas fa-building me-1"></i>Unit Kerja

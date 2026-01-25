@@ -19,6 +19,7 @@ $routes->post('/user/check_niknip', 'User::check_niknip');
 $routes->get('email/batch', 'Email::batch');
 $routes->post('email/create_single', 'Email::create_single_email');
 $routes->get('email/batch_update', 'Email::batch_update');
+$routes->get('email/batch_perjanjian_kerja', 'Email::batch_perjanjian_kerja');
 $routes->post('email/batch_update_process', 'Email::batch_update_process');
 $routes->post('email/batch_create', 'Email::batch_create');
 $routes->post('email/delete/(:num)', 'Email::delete/$1');
@@ -67,4 +68,12 @@ $routes->post('web_desa_kelurahan/store', 'WebDesaKelurahan::store');
 $routes->get('web_desa_kelurahan/edit/(:num)', 'WebDesaKelurahan::edit/$1');
 $routes->post('web_desa_kelurahan/update/(:num)', 'WebDesaKelurahan::update/$1');
 $routes->get('web_desa_kelurahan/sync_expiration/(:num)', 'WebDesaKelurahan::sync_expiration/$1');
+
+$routes->get('web_opd', 'WebOpd::index');
+$routes->get('web_opd/export_pdf', 'WebOpd::export_pdf');
+$routes->get('web_opd/create', 'WebOpd::create');
+$routes->post('web_opd/store', 'WebOpd::store');
+$routes->get('web_opd/edit/(:num)', 'WebOpd::edit/$1');
+$routes->post('web_opd/update/(:num)', 'WebOpd::update/$1');
+$routes->get('web_opd/sync_expiration/(:num)', 'WebOpd::sync_expiration/$1');
 
