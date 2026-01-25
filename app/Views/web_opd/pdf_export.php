@@ -90,12 +90,6 @@
             font-weight: bold;
             color: #333;
         }
-        
-        /* Platform column text colors */
-        .platform-sideka-ng-text { color: #0d6efd; font-weight: bold; } /* Bootstrap Primary */
-        .platform-opensid-text { color: #0dcaf0; font-weight: bold; } /* Bootstrap Info */
-        .platform-pihak-ketiga-text { color: #ffc107; font-weight: bold; } /* Bootstrap Warning */
-        .platform-default-text { color: #6c757d; font-weight: bold; } /* Bootstrap Secondary */
 
         .footer-info {
             margin-top: 20px;
@@ -136,9 +130,8 @@
         <thead>
             <tr>
                 <th style="width: 3%;">No.</th>
-                <th style="width: 30%;">Unit Kerja (OPD)</th>
-                <th style="width: 22%;">Domain</th>
-                <th style="width: 15%;">Platform</th>
+                <th style="width: 40%;">Unit Kerja (OPD)</th>
+                <th style="width: 27%;">Domain</th>
                 <th style="width: 10%;">Status</th>
                 <th style="width: 20%;">Keterangan</th>
             </tr>
@@ -148,23 +141,11 @@
             $nomor = 1;
             foreach ($websites as $website) :
                 $status_color = (strtoupper($website['status'] ?? '') === 'AKTIF') ? '#198754' : '#dc3545';
-
-                $platform_name = $website['platform_name'] ?? '';
-                $platform_name_slug = strtolower(str_replace(' ', '-', $platform_name));
-                $platform_text_class = 'platform-default-text';
-                if ($platform_name_slug === 'sideka-ng') {
-                    $platform_text_class = 'platform-sideka-ng-text';
-                } elseif ($platform_name_slug === 'opensid') {
-                    $platform_text_class = 'platform-opensid-text';
-                } elseif ($platform_name_slug === 'pihak-ketiga') {
-                    $platform_text_class = 'platform-pihak-ketiga-text';
-                }
             ?>
                 <tr>
                     <td style="text-align: center;"><?= $nomor++ ?></td>
                     <td><strong><?= esc(strtoupper($website['nama_unit_kerja'] ?? '-')) ?></strong></td>
                     <td><?= esc($website['domain'] ?? '-') ?></td>
-                    <td class="<?= $platform_text_class ?>"><?= esc(strtoupper($platform_name ?: '-')) ?></td>
                     <td style="color: <?= $status_color ?>; font-weight: bold;"><?= esc(strtoupper($website['status'] ?? '-')) ?></td>
                     <td><?= esc($website['keterangan'] ?? '-') ?></td>
                 </tr>

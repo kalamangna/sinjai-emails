@@ -207,6 +207,13 @@ class Email extends BaseController
         return view('email/batch_update', $data);
     }
 
+    public function batch_perjanjian_kerja()
+    {
+        $data['unit_kerja'] = $this->unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->findAll();
+        $data['status_asn_options'] = $this->statusAsnModel->orderBy('nama_status_asn', 'ASC')->findAll();
+        return view('email/batch_perjanjian_kerja', $data);
+    }
+
     public function batch_update_process()
     {
         if (strtolower($this->request->getMethod()) !== 'post') {

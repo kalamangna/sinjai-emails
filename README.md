@@ -8,7 +8,8 @@ A centralized platform for managing official employee email accounts for the Gov
 - **Comprehensive CRUD:** Manage email accounts with detailed employee profiles (NIK, NIP, Name, Job Title).
 - **Batch Operations:** 
   - **Batch Creation:** Create multiple accounts at once with automatic username generation and smart duplicate resolution (prioritizing NIP characters, then NIK).
-  - **Batch Update:** Update attributes for hundreds of accounts simultaneously using CSV/Excel-like interfaces.
+  - **Batch Update:** Update employee profiles and account details for hundreds of accounts simultaneously using CSV/Excel-like interfaces.
+  - **Batch Update PK:** Dedicated interface for updating "Perjanjian Kerja" (Work Agreement) details specifically for Non-ASN staff.
 - **cPanel Sync:** Real-time two-way synchronization with the mail server to track usage, quota, and status.
 
 ### 🏢 Organizational Structure

@@ -75,5 +75,4 @@ $routes->get('web_opd/create', 'WebOpd::create');
 $routes->post('web_opd/store', 'WebOpd::store');
 $routes->get('web_opd/edit/(:num)', 'WebOpd::edit/$1');
 $routes->post('web_opd/update/(:num)', 'WebOpd::update/$1');
-$routes->get('web_opd/sync_expiration/(:num)', 'WebOpd::sync_expiration/$1');
 

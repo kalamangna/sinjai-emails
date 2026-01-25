@@ -16,10 +16,6 @@ class WebOpdModel extends Model
         'unit_kerja_id',
         'domain',
         'status',
-        'tanggal_berakhir',
-        'sisa_hari',
-        'platform_id',
-        'dikelola_kominfo',
         'keterangan'
     ];
 

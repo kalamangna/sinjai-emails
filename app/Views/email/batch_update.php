@@ -38,7 +38,7 @@ jane.smith@example.com"></textarea>
 
             <div class="row">
                 <!-- Email Table Column -->
-                <div class="col-md-6">
+                <div class="col-md-12">
                     <div class="card h-100">
                         <div class="card-header bg-light fw-bold">
                             <i class="fas fa-user me-2"></i>Email Account & Personal Info
@@ -130,37 +130,6 @@ M.Si"></textarea>
                         </div>
                     </div>
                 </div>
-
-                <!-- PK Table Column -->
-                <div class="col-md-6">
-                    <div class="card h-100">
-                        <div class="card-header bg-light fw-bold">
-                            <i class="fas fa-file-contract me-2"></i>Perjanjian Kerja (PK) Details
-                        </div>
-                        <div class="card-body">
-                            <div class="mb-3">
-                                <label for="nomor_input" class="form-label">New Nomor SK</label>
-                                <textarea class="form-control" id="nomor_input" rows="4" placeholder="e.g. 881"></textarea>
-                            </div>
-                            <div class="mb-3">
-                                <label for="gaji_nominal_input" class="form-label">New Gaji Nominal</label>
-                                <textarea class="form-control" id="gaji_nominal_input" rows="4" placeholder="e.g. 3203600"></textarea>
-                            </div>
-                            <div class="mb-3">
-                                <label for="gaji_terbilang_input" class="form-label">New Gaji Terbilang</label>
-                                <textarea class="form-control" id="gaji_terbilang_input" rows="4" placeholder="e.g. Tiga Juta Dua Ratus Tiga Ribu Enam Ratus"></textarea>
-                            </div>
-                            <div class="mb-3">
-                                <label for="tanggal_kontrak_awal_input" class="form-label">New Tanggal Kontrak Awal (YYYY-MM-DD)</label>
-                                <textarea class="form-control" id="tanggal_kontrak_awal_input" rows="4" placeholder="e.g. 2024-01-01"></textarea>
-                            </div>
-                            <div class="mb-3">
-                                <label for="tanggal_kontrak_akhir_input" class="form-label">New Tanggal Kontrak Akhir (YYYY-MM-DD)</label>
-                                <textarea class="form-control" id="tanggal_kontrak_akhir_input" rows="4" placeholder="e.g. 2024-12-31"></textarea>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
             <div class="mt-4 text-end">
                 <button type="submit" id="update_btn" class="btn btn-primary">
@@ -209,11 +178,6 @@ M.Si"></textarea>
         const passwordInput = document.getElementById('password_input');
         const nikInput = document.getElementById('nik_input');
         const nipInput = document.getElementById('nip_input');
-        const nomorInput = document.getElementById('nomor_input');
-        const gajiNominalInput = document.getElementById('gaji_nominal_input');
-        const gajiTerbilangInput = document.getElementById('gaji_terbilang_input');
-        const tanggalKontrakAwalInput = document.getElementById('tanggal_kontrak_awal_input'); // Added
-        const tanggalKontrakAkhirInput = document.getElementById('tanggal_kontrak_akhir_input'); // Added
         const tempatLahirInput = document.getElementById('tempat_lahir_input');
         const tanggalLahirInput = document.getElementById('tanggal_lahir_input');
         const pendidikanInput = document.getElementById('pendidikan_input');
@@ -249,11 +213,6 @@ M.Si"></textarea>
             const rawPasswords = passwordInput.value.split('\n');
             const rawNiks = nikInput.value.split('\n');
             const rawNips = nipInput.value.split('\n');
-            const rawNomors = nomorInput.value.split('\n');
-            const rawGajiNominals = gajiNominalInput.value.split('\n');
-            const rawGajiTerbilangs = gajiTerbilangInput.value.split('\n');
-            const rawTanggalKontrakAwals = tanggalKontrakAwalInput.value.split('\n');
-            const rawTanggalKontrakAkhirs = tanggalKontrakAkhirInput.value.split('\n');
             const rawTempatLahirs = tempatLahirInput.value.split('\n');
             const rawTanggalLahirs = tanggalLahirInput.value.split('\n');
             const rawPendidikans = pendidikanInput.value.split('\n');
@@ -266,11 +225,6 @@ M.Si"></textarea>
             const newPasswords = [];
             const newNiks = [];
             const newNips = [];
-            const newNomors = [];
-            const newGajiNominals = [];
-            const newGajiTerbilangs = [];
-            const newTanggalKontrakAwals = [];
-            const newTanggalKontrakAkhirs = [];
             const newTempatLahirs = [];
             const newTanggalLahirs = [];
             const newPendidikans = [];
@@ -286,11 +240,6 @@ M.Si"></textarea>
                     newPasswords.push((rawPasswords[i] !== undefined) ? rawPasswords[i].trim() : '');
                     newNiks.push((rawNiks[i] !== undefined) ? rawNiks[i].trim() : '');
                     newNips.push((rawNips[i] !== undefined) ? rawNips[i].trim() : '');
-                    newNomors.push((rawNomors[i] !== undefined) ? rawNomors[i].trim() : '');
-                    newGajiNominals.push((rawGajiNominals[i] !== undefined) ? rawGajiNominals[i].trim() : '');
-                    newGajiTerbilangs.push((rawGajiTerbilangs[i] !== undefined) ? rawGajiTerbilangs[i].trim() : '');
-                    newTanggalKontrakAwals.push((rawTanggalKontrakAwals[i] !== undefined) ? rawTanggalKontrakAwals[i].trim() : '');
-                    newTanggalKontrakAkhirs.push((rawTanggalKontrakAkhirs[i] !== undefined) ? rawTanggalKontrakAkhirs[i].trim() : '');
                     newTempatLahirs.push((rawTempatLahirs[i] !== undefined) ? rawTempatLahirs[i].trim() : '');
                     newTanggalLahirs.push((rawTanggalLahirs[i] !== undefined) ? rawTanggalLahirs[i].trim() : '');
                     newPendidikans.push((rawPendidikans[i] !== undefined) ? rawPendidikans[i].trim() : '');
@@ -323,16 +272,11 @@ M.Si"></textarea>
                         mode: updateMode,
                         identifiers: identifiers,
                         names: newNames,
-                        gelar_depans: newGelarDepans, // Added
-                        gelar_belakangs: newGelarBelakangs, // Added
+                        gelar_depans: newGelarDepans,
+                        gelar_belakangs: newGelarBelakangs,
                         passwords: newPasswords,
                         niks: newNiks,
                         nips: newNips,
-                        nomors: newNomors,
-                        gaji_nominals: newGajiNominals,
-                        gaji_terbilangs: newGajiTerbilangs,
-                        tanggal_kontrak_awals: newTanggalKontrakAwals, // Added
-                        tanggal_kontrak_akhirs: newTanggalKontrakAkhirs, // Added
                         tempat_lahirs: newTempatLahirs,
                         tanggal_lahirs: newTanggalLahirs,
                         pendidikans: newPendidikans,
@@ -343,6 +287,23 @@ M.Si"></textarea>
                         unit_kerja: newUnitKerja
                     })
                 });
+
+                if (!response.ok) {
+                    throw new Error('Server responded with an error.');
+                }
+
+                const result = await response.json();
+                renderResults(result.results);
+
+            } catch (error) {
+                console.error('Error during batch update:', error);
+                alert('An unexpected error occurred during the update process.');
+                resultsTableBody.innerHTML = `<tr><td colspan="4" class="text-center text-danger">Error: ${error.message}</td></tr>`;
+            } finally {
+                updateBtn.disabled = false;
+                updateBtn.innerHTML = `<i class="fas fa-sync-alt me-2"></i>Update Selected Emails`;
+            }
+        });
 
                 if (!response.ok) {
                     throw new Error('Server responded with an error.');

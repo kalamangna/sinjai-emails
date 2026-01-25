@@ -34,32 +34,11 @@
                         <input type="text" class="form-control" id="domain" name="domain" value="<?= esc($website['domain'] ?? '') ?>" placeholder="e.g. dinas.sinjaikab.go.id">
                     </div>
 
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="status" class="form-label">Status</label>
-                            <select class="form-select" id="status" name="status">
-                                <option value="AKTIF" <?= (isset($website['status']) && strtoupper($website['status']) === 'AKTIF') ? 'selected' : '' ?>>AKTIF</option>
-                                <option value="NONAKTIF" <?= (isset($website['status']) && strtoupper($website['status']) === 'NONAKTIF') ? 'selected' : '' ?>>NONAKTIF</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="dikelola_kominfo" class="form-label">Dikelola Kominfo?</label>
-                            <select class="form-select" id="dikelola_kominfo" name="dikelola_kominfo">
-                                <option value="YA" <?= (isset($website['dikelola_kominfo']) && strtoupper($website['dikelola_kominfo']) === 'YA') ? 'selected' : '' ?>>YA</option>
-                                <option value="TIDAK" <?= (isset($website['dikelola_kominfo']) && strtoupper($website['dikelola_kominfo']) === 'TIDAK') ? 'selected' : '' ?>>TIDAK</option>
-                            </select>
-                        </div>
-                    </div>
-
                     <div class="mb-3">
-                        <label for="platform_id" class="form-label">Platform</label>
-                        <select class="form-select" id="platform_id" name="platform_id">
-                            <option value="">Select Platform</option>
-                            <?php foreach ($platforms as $p): ?>
-                                <option value="<?= $p['id'] ?>" <?= (isset($website['platform_id']) && $website['platform_id'] == $p['id']) ? 'selected' : '' ?>>
-                                    <?= esc($p['nama_platform']) ?>
-                                </option>
-                            <?php endforeach; ?>
+                        <label for="status" class="form-label">Status</label>
+                        <select class="form-select" id="status" name="status">
+                            <option value="AKTIF" <?= (isset($website['status']) && strtoupper($website['status']) === 'AKTIF') ? 'selected' : '' ?>>AKTIF</option>
+                            <option value="NONAKTIF" <?= (isset($website['status']) && strtoupper($website['status']) === 'NONAKTIF') ? 'selected' : '' ?>>NONAKTIF</option>
                         </select>
                     </div>
 
