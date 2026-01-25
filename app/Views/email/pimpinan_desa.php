@@ -17,7 +17,7 @@
           <i class="fas fa-file-pdf me-2"></i>Export PDF
         </a>
         <button onclick="syncAllBsreStatus()" class="btn btn-warning">
-          <i class="fas fa-sync-alt me-2"></i>Batch Sync Status TTE
+          <i class="fas fa-sync-alt me-2"></i>Sync Status TTE
         </button>
       </div>
     </div>

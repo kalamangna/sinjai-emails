@@ -23,8 +23,16 @@ A centralized platform for managing official employee email accounts for the Gov
 - **BSrE Integration:** Automated checking of Electronic Signature (TTE) status for each account (Issue, Expired, Revoked, etc.).
 - **HR Sync:** Integration with **Simpegnas** API to pull accurate employee data and ensure consistency.
 
+### 🌐 Web Desa & Kelurahan Tracking
+- **Centralized Database:** Comprehensive listing of all Village (Desa) and Sub-district (Kelurahan) websites within Sinjai Regency.
+- **Automated Expiration Fetching:** Integration with **PANDI RDAP** to automatically retrieve domain expiration dates for village websites.
+- **Smart Expiration Rules:** Specialized logic to handle fixed expiration dates for Kelurahan websites.
+- **Analytics Dashboard:** Visual tracking of website status (Active/Inactive) with percentage-based statistics and platform distribution (SIDEKA-NG, OpenSID, etc.).
+- **Indonesian PDF Reports:** Generate professional reports with Indonesian month names, color-coded rows (Desa vs Kelurahan), and comprehensive platform statistics.
+
 ### 📄 Reporting & Documents
 - **PDF Exports:** Generate formatted lists of emails, leadership directories, and individual account detail sheets.
+- **CSV Exports:** Export Unit Kerja data in CSV format for bulk processing or external use.
 - **Work Agreements (PK):** Automated generation of "Perjanjian Kerja" documents for Non-ASN staff, including batch ZIP downloads.
 
 ## Tech Stack

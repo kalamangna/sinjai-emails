@@ -41,6 +41,9 @@
                     <a href="<?= site_url('email/pimpinan_desa') ?>" class="btn btn-success btn-sm text-white">
                         <i class="fas fa-users me-1"></i>Pimpinan Desa
                     </a>
+                    <a href="<?= site_url('web_desa_kelurahan') ?>" class="btn btn-primary btn-sm text-white">
+                        <i class="fas fa-globe me-1"></i>Website Desa
+                    </a>
                     <a href="<?= site_url('unit_kerja/manage') ?>" class="btn btn-secondary btn-sm text-white">
                         <i class="fas fa-building me-1"></i>Unit Kerja
                     </a>

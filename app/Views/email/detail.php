@@ -27,11 +27,16 @@
       <?php endif; ?>
     </div>
 
-    <!-- Back Button -->
-    <div class="mb-4">
+    <!-- Top Actions -->
+    <div class="mb-4 d-flex justify-content-between align-items-center">
       <a href="javascript:void(0);" onclick="history.back();" class="btn btn-outline-secondary">
         <i class="fas fa-arrow-left me-2"></i>Back
       </a>
+      <?php if ($email['status_asn_id'] == 3): ?>
+        <a href="<?= site_url('email/export_single_perjanjian_kerja_pdf/' . $email['user']) ?>" class="btn btn-info">
+          <i class="fas fa-file-contract me-2"></i>Export PK
+        </a>
+      <?php endif; ?>
     </div>
 
     <!-- Email Header -->
@@ -267,20 +272,20 @@
                 <?php endforeach; ?>
               </div>
               <div class="col-md-6 mb-3">
-                  <strong class="text-muted d-block">Eselon:</strong>
-                  <?php foreach ($eselon_options as $option): ?>
-                      <?php if ($email['eselon_id'] == $option['id']): ?>
-                          <?= esc($option['nama_eselon']) ?>
-                      <?php endif; ?>
-                  <?php endforeach; ?>
+                <strong class="text-muted d-block">Eselon:</strong>
+                <?php foreach ($eselon_options as $option): ?>
+                  <?php if ($email['eselon_id'] == $option['id']): ?>
+                    <?= esc($option['nama_eselon']) ?>
+                  <?php endif; ?>
+                <?php endforeach; ?>
               </div>
               <div class="col-md-6 mb-3">
-                  <strong class="text-muted d-block">Pimpinan:</strong>
-                  <?= ($email['pimpinan'] ?? 0) == 1 ? '<span class="badge bg-primary">Yes</span>' : '<span class="badge bg-secondary">No</span>' ?>
+                <strong class="text-muted d-block">Pimpinan:</strong>
+                <?= ($email['pimpinan'] ?? 0) == 1 ? '<span class="badge bg-primary">Yes</span>' : '<span class="badge bg-secondary">No</span>' ?>
               </div>
               <div class="col-md-6 mb-3">
-                  <strong class="text-muted d-block">Pimpinan Desa:</strong>
-                  <?= ($email['pimpinan_desa'] ?? 0) == 1 ? '<span class="badge bg-primary">Yes</span>' : '<span class="badge bg-secondary">No</span>' ?>
+                <strong class="text-muted d-block">Pimpinan Desa:</strong>
+                <?= ($email['pimpinan_desa'] ?? 0) == 1 ? '<span class="badge bg-primary">Yes</span>' : '<span class="badge bg-secondary">No</span>' ?>
               </div>
               <div class="col-md-6 mb-3">
                 <strong class="text-muted d-block">Unit Kerja:</strong>
@@ -304,39 +309,6 @@
                   </a>
                 </div>
               <?php endif; ?>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Quick Actions -->
-    <div class="row">
-      <div class="col-12">
-        <div class="card shadow-sm">
-          <div class="card-header bg-light py-3">
-            <h5 class="card-title mb-0">
-              <i class="fas fa-bolt me-2 text-danger"></i>Quick Actions
-            </h5>
-          </div>
-          <div class="card-body py-4">
-            <div class="row g-3">
-              <div class="col-md-4 col-sm-6">
-                <a href="mailto:<?= esc($email['email']) ?>" class="btn btn-outline-success w-100">
-                  <i class="fas fa-paper-plane me-2"></i>Send Email
-                </a>
-              </div>
-              <?php if ($email['status_asn_id'] == 3): ?>
-                <div class="col-md-4 col-sm-6">
-                  <a href="<?= site_url('email/export_single_perjanjian_kerja_pdf/' . $email['user']) ?>" class="btn btn-outline-info w-100">
-                    <i class="fas fa-file-contract me-2"></i>Export Perjanjian Kerja PDF
-                  </a>
-                </div>
-              <?php endif; ?> <div class="col-md-4 col-sm-6">
-                <a href="<?= $back_url ?>" class="btn btn-outline-secondary w-100">
-                  <i class="fas fa-arrow-left me-2"></i>Back
-                </a>
-              </div>
             </div>
           </div>
         </div>

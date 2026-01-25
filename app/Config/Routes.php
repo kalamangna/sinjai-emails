@@ -59,3 +59,12 @@ $routes->post('unit_kerja/batch_store', 'UnitKerja::batch_store');
 $routes->get('unit_kerja/edit/(:num)', 'UnitKerja::edit/$1');
 $routes->post('unit_kerja/update/(:num)', 'UnitKerja::update/$1');
 $routes->get('unit_kerja/delete/(:num)', 'UnitKerja::delete/$1');
+
+$routes->get('web_desa_kelurahan', 'WebDesaKelurahan::index');
+$routes->get('web_desa_kelurahan/export_pdf', 'WebDesaKelurahan::export_pdf');
+$routes->get('web_desa_kelurahan/create', 'WebDesaKelurahan::create');
+$routes->post('web_desa_kelurahan/store', 'WebDesaKelurahan::store');
+$routes->get('web_desa_kelurahan/edit/(:num)', 'WebDesaKelurahan::edit/$1');
+$routes->post('web_desa_kelurahan/update/(:num)', 'WebDesaKelurahan::update/$1');
+$routes->get('web_desa_kelurahan/sync_expiration/(:num)', 'WebDesaKelurahan::sync_expiration/$1');
+

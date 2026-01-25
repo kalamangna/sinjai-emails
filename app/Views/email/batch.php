@@ -20,6 +20,9 @@
             <div class="col-md-12">
                 <div class="mb-3">
                     <label for="name_input" class="form-label">Enter one full name per line.</label>
+                    <button class="btn btn-sm btn-outline-secondary ms-2" onclick="document.getElementById('name_input').value = document.getElementById('name_input').value.toUpperCase()">
+                        <i class="fas fa-arrow-up-a-z me-1"></i>Uppercase Full Name
+                    </button>
                     <textarea class="form-control" id="name_input" rows="8" placeholder="e.g.&#10;John Doe&#10;Jane Smith"></textarea>
                 </div>
             </div>
