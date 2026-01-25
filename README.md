@@ -9,7 +9,7 @@ A centralized platform for managing official employee email accounts for the Gov
 - **Batch Operations:** 
   - **Batch Creation:** Create multiple accounts at once with automatic username generation and smart duplicate resolution (prioritizing NIP characters, then NIK).
   - **Batch Update:** Update employee profiles and account details for hundreds of accounts simultaneously using CSV/Excel-like interfaces.
-  - **Batch Update PK:** Dedicated interface for updating "Perjanjian Kerja" (Work Agreement) details specifically for Non-ASN staff.
+  - **Batch Update PK:** Dedicated interface for updating "Perjanjian Kerja" (Work Agreement) details specifically for **PPPK** and **PPPK Paruh Waktu** staff.
 - **cPanel Sync:** Real-time two-way synchronization with the mail server to track usage, quota, and status.
 
 ### 🏢 Organizational Structure
@@ -33,14 +33,13 @@ A centralized platform for managing official employee email accounts for the Gov
 
 ### 🏢 Website OPD Tracking
 - **Agency Website Management:** Centralized tracking for all official websites of local government agencies (OPD).
-- **Domain Expiration Monitoring:** Automated fetching of expiration data from PANDI RDAP.
-- **Platform Analytics:** Track the technology stack used by each agency (Custom CMS, Pihak Ketiga, etc.).
+- **Status Monitoring:** Track website availability and active status (Active/Inactive).
 - **Professional Exports:** Specialized PDF reports for OPD websites with Indonesian formatting and status visualization.
 
 ### 📄 Reporting & Documents
 - **PDF Exports:** Generate formatted lists of emails, leadership directories, and individual account detail sheets.
 - **CSV Exports:** Export Unit Kerja data in CSV format for bulk processing or external use.
-- **Work Agreements (PK):** Automated generation of "Perjanjian Kerja" documents for Non-ASN staff, including batch ZIP downloads.
+- **Work Agreements (PK):** Automated generation of "Perjanjian Kerja" documents for **PPPK** and **PPPK Paruh Waktu** staff, including batch ZIP downloads.
 
 ## Tech Stack
 
