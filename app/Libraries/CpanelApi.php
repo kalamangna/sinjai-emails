@@ -20,7 +20,7 @@ class CpanelApi
 
         $client = Services::curlrequest([
             'baseURI' => $url,
-            'timeout' => 30,
+            'timeout' => 300,
             'http_errors' => false, // Allow handling of non-200 responses
         ]);
 
@@ -168,17 +168,14 @@ class CpanelApi
 
             $response = $this->make_request('Email', 'delete_pop', 'POST', $parameters);
 
-                                    if (isset($response['status']) && $response['status'] == 0) {
+            if (isset($response['status']) && $response['status'] == 0) {
 
-                                        $error_message = $response['errors'][0] ?? 'Unknown error during email deletion.';
+                $error_message = $response['errors'][0] ?? 'Unknown error during email deletion.';
 
-                                        throw new Exception($error_message);
+                throw new Exception($error_message);
+            }
 
-                                    }
-
-                                    return $response;
-
-            
+            return $response;
         } catch (Exception $e) {
             log_message('error', 'Failed to delete email account: ' . $e->getMessage());
             throw new Exception('Failed to delete email account: ' . $e->getMessage());
