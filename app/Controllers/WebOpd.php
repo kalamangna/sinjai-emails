@@ -153,7 +153,12 @@ class WebOpd extends BaseController
             return redirect()->to('web_opd')->with('error', 'Data not found.');
         }
 
-        $data['unit_kerja'] = $unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->findAll();
+        // Fetch the unit_kerja name for display
+        $unitKerja = $unitKerjaModel->find($data['website']['unit_kerja_id']);
+        $data['unit_kerja_name'] = $unitKerja['nama_unit_kerja'] ?? 'N/A';
+
+        // For create mode, we need all unit_kerja options
+        $data['unit_kerja'] = $unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->findAll(); 
         $data['title'] = 'Edit Website OPD';
         return view('web_opd/form', $data);
     }

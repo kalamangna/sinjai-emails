@@ -17,17 +17,25 @@
                 <form action="<?= $action ?>" method="POST" id="websiteForm">
                     <?= csrf_field() ?>
                     
-                    <div class="mb-3">
-                        <label for="unit_kerja_id" class="form-label">Unit Kerja (OPD)</label>
-                        <select class="form-select" id="unit_kerja_id" name="unit_kerja_id" required>
-                            <option value="">Select Unit Kerja</option>
-                            <?php foreach ($unit_kerja as $uk): ?>
-                                <option value="<?= $uk['id'] ?>" <?= (isset($website['unit_kerja_id']) && $website['unit_kerja_id'] == $uk['id']) ? 'selected' : '' ?>>
-                                    <?= esc(strtoupper($uk['nama_unit_kerja'])) ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
+                    <?php if ($isEdit): ?>
+                        <div class="mb-3">
+                            <label class="form-label">Unit Kerja (OPD)</label>
+                            <p class="form-control-static fw-bold"><?= esc(strtoupper($unit_kerja_name)) ?></p>
+                            <input type="hidden" name="unit_kerja_id" value="<?= esc($website['unit_kerja_id']) ?>">
+                        </div>
+                    <?php else: ?>
+                        <div class="mb-3">
+                            <label for="unit_kerja_id" class="form-label">Unit Kerja (OPD)</label>
+                            <select class="form-select" id="unit_kerja_id" name="unit_kerja_id" required>
+                                <option value="">Select Unit Kerja</option>
+                                <?php foreach ($unit_kerja as $uk): ?>
+                                    <option value="<?= $uk['id'] ?>" <?= (isset($website['unit_kerja_id']) && $website['unit_kerja_id'] == $uk['id']) ? 'selected' : '' ?>>
+                                        <?= esc(strtoupper($uk['nama_unit_kerja'])) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    <?php endif; ?>
 
                     <div class="mb-3">
                         <label for="domain" class="form-label">Domain</label>
