@@ -129,6 +129,13 @@
         .footer-info p {
             margin: 2px 0;
         }
+
+        .update-date {
+            text-align: center;
+            font-size: 10px;
+            color: #666;
+            margin-top: -10px;
+        }
     </style>
 </head>
 
@@ -137,7 +144,7 @@
         <img src="<?= $logoSrc ?>" alt="Logo" class="logo" />
         <h1>DAFTAR EMAIL & TTE</h1>
         <h2><?= esc($unit_kerja['nama_unit_kerja']) ?></h2>
-        <p style="text-align: center; font-size: 10px; color: #666; margin-top: -10px;">UPDATE PER: <?= strtoupper(esc($current_date)) ?></p>
+        <p class="update-date">UPDATE PER: <?= strtoupper(esc($current_date)) ?></p>
     </div>
 
     <table>

@@ -60,7 +60,8 @@
         .stats-container {
             display: table;
             width: 100%;
-            margin-bottom: 20px; /* Reverted margin for better spacing after removing platform stats */
+            margin-bottom: 20px;
+            /* Reverted margin for better spacing after removing platform stats */
             border: 1px solid #ddd;
             border-collapse: collapse;
         }
@@ -90,12 +91,32 @@
             font-weight: bold;
             color: #333;
         }
-        
+
         /* Platform column text colors */
-        .platform-sideka-ng-text { color: #0d6efd; font-weight: bold; } /* Bootstrap Primary */
-        .platform-opensid-text { color: #0dcaf0; font-weight: bold; } /* Bootstrap Info */
-        .platform-pihak-ketiga-text { color: #ffc107; font-weight: bold; } /* Bootstrap Warning */
-        .platform-default-text { color: #6c757d; font-weight: bold; } /* Bootstrap Secondary */
+        .platform-sideka-ng-text {
+            color: #0d6efd;
+            font-weight: bold;
+        }
+
+        /* Bootstrap Primary */
+        .platform-opensid-text {
+            color: #0dcaf0;
+            font-weight: bold;
+        }
+
+        /* Bootstrap Info */
+        .platform-pihak-ketiga-text {
+            color: #ffc107;
+            font-weight: bold;
+        }
+
+        /* Bootstrap Warning */
+        .platform-default-text {
+            color: #6c757d;
+            font-weight: bold;
+        }
+
+        /* Bootstrap Secondary */
 
 
         .row-desa {
@@ -191,7 +212,7 @@
             <?php endforeach; ?>
         </tbody>
     </table>
-    
+
     <div class="footer-info">
         <p><strong>Contact Person</strong></p>
         <p style="color: #555;">082188344982 (Dzul)</p>

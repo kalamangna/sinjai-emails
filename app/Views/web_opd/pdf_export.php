@@ -106,8 +106,8 @@
 <body>
     <div class="header">
         <img src="<?= $logoSrc ?>" alt="Logo" class="logo" />
-        <h1>DATA WEBSITE ORGANISASI PERANGKAT DAERAH (OPD)</h1>
-        <h2>PEMERINTAH KABUPATEN SINJAI</h2>
+        <h1><?= esc($title) ?></h1>
+        <h2><?= esc($subtitle) ?></h2>
         <p style="text-align: center; font-size: 10px; color: #666; margin-top: -10px;">UPDATE PER: <?= strtoupper(esc($current_date)) ?></p>
     </div>
 
@@ -152,7 +152,7 @@
             <?php endforeach; ?>
         </tbody>
     </table>
-    
+
     <div class="footer-info">
         <p><strong>Contact Person</strong></p>
         <p style="color: #555;">082188344982 (Dzul)</p>
