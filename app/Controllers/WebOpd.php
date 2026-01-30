@@ -13,19 +13,19 @@ class WebOpd extends BaseController
     {
         $model = new WebOpdModel();
         $unitKerjaModel = new UnitKerjaModel();
-        
+
         $search = trim($this->request->getGet('search') ?? '');
         $filterStatus = trim($this->request->getGet('status') ?? '');
 
         // Build Query with Joins
         $model->select('web_opd.*, unit_kerja.nama_unit_kerja')
-              ->join('unit_kerja', 'unit_kerja.id = web_opd.unit_kerja_id', 'left');
+            ->join('unit_kerja', 'unit_kerja.id = web_opd.unit_kerja_id', 'left');
 
         if ($search !== '') {
             $model->groupStart()
-                  ->like('unit_kerja.nama_unit_kerja', $search)
-                  ->orLike('web_opd.domain', $search)
-                  ->groupEnd();
+                ->like('unit_kerja.nama_unit_kerja', $search)
+                ->orLike('web_opd.domain', $search)
+                ->groupEnd();
         }
 
         if ($filterStatus !== '') {
@@ -33,17 +33,17 @@ class WebOpd extends BaseController
         }
 
         $data['websites'] = $model->orderBy('unit_kerja.nama_unit_kerja', 'ASC')->findAll();
-        
+
         $data['total_filtered'] = count($data['websites']);
-        
+
         $db = \Config\Database::connect();
-        
+
         $data['stats'] = [
             'total' => $db->table('web_opd')->countAllResults(),
             'aktif' => $db->table('web_opd')->where('status', 'AKTIF')->countAllResults(),
             'nonaktif' => $db->table('web_opd')->where('status', 'NONAKTIF')->countAllResults(),
         ];
-        
+
         $total = $data['stats']['total'];
         if ($total > 0) {
             $data['stats']['aktif_percentage'] = round(($data['stats']['aktif'] / $total) * 100, 2);
@@ -64,19 +64,19 @@ class WebOpd extends BaseController
     {
         helper('time');
         $model = new WebOpdModel();
-        
+
         $search = trim($this->request->getGet('search') ?? '');
         $filterStatus = trim($this->request->getGet('status') ?? '');
 
         // Build Query
         $model->select('web_opd.*, unit_kerja.nama_unit_kerja')
-              ->join('unit_kerja', 'unit_kerja.id = web_opd.unit_kerja_id', 'left');
+            ->join('unit_kerja', 'unit_kerja.id = web_opd.unit_kerja_id', 'left');
 
         if ($search !== '') {
             $model->groupStart()
-                  ->like('unit_kerja.nama_unit_kerja', $search)
-                  ->orLike('web_opd.domain', $search)
-                  ->groupEnd();
+                ->like('unit_kerja.nama_unit_kerja', $search)
+                ->orLike('web_opd.domain', $search)
+                ->groupEnd();
         }
 
         if ($filterStatus !== '') {
@@ -86,7 +86,7 @@ class WebOpd extends BaseController
         $websites = $model->orderBy('unit_kerja.nama_unit_kerja', 'ASC')->findAll();
 
         $db = \Config\Database::connect();
-        
+
         $stats = [
             'total' => $db->table('web_opd')->countAllResults(),
             'aktif' => $db->table('web_opd')->where('status', 'AKTIF')->countAllResults(),
@@ -112,11 +112,13 @@ class WebOpd extends BaseController
             'stats' => $stats,
             'logoSrc' => $logoSrc,
             'current_date' => format_indo_date(date('Y-m-d')),
+            'title' => 'DATA WEBSITE ORGANISASI PERANGKAT DAERAH (OPD)',
+            'subtitle' => 'PEMERINTAH KABUPATEN SINJAI'
         ]));
         $dompdf->setPaper('A4', 'landscape');
         $dompdf->render();
-        
-        $filename = url_title('data_website_opd_' . format_indo_date(date('Y-m-d'), false), '_', true) . '.pdf';
+
+        $filename = 'Data Website OPD - ' . format_indo_date(date('Y-m-d'), true) . '.pdf';
         $dompdf->stream($filename, ['Attachment' => true]);
     }
 
@@ -131,7 +133,7 @@ class WebOpd extends BaseController
     public function store()
     {
         $model = new WebOpdModel();
-        
+
         $data = [
             'unit_kerja_id'    => $this->request->getPost('unit_kerja_id'),
             'domain'           => $this->request->getPost('domain'),
@@ -148,7 +150,7 @@ class WebOpd extends BaseController
         $model = new WebOpdModel();
         $unitKerjaModel = new UnitKerjaModel();
         $data['website'] = $model->find($id);
-        
+
         if (!$data['website']) {
             return redirect()->to('web_opd')->with('error', 'Data not found.');
         }
@@ -158,7 +160,7 @@ class WebOpd extends BaseController
         $data['unit_kerja_name'] = $unitKerja['nama_unit_kerja'] ?? 'N/A';
 
         // For create mode, we need all unit_kerja options
-        $data['unit_kerja'] = $unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->findAll(); 
+        $data['unit_kerja'] = $unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->findAll();
         $data['title'] = 'Edit Website OPD';
         return view('web_opd/form', $data);
     }

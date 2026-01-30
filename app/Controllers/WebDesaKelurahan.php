@@ -13,7 +13,7 @@ class WebDesaKelurahan extends BaseController
     {
         $model = new WebDesaKelurahanModel();
         $platformModel = new PlatformModel();
-        
+
         $search = trim($this->request->getGet('search') ?? '');
         $filterKecamatan = trim($this->request->getGet('kecamatan') ?? '');
         $filterStatus = trim($this->request->getGet('status') ?? '');
@@ -22,14 +22,14 @@ class WebDesaKelurahan extends BaseController
 
         // Build Query with Join for the table
         $model->select('web_desa_kelurahan.*, platforms.nama_platform as platform_name')
-              ->join('platforms', 'platforms.id = web_desa_kelurahan.platform_id', 'left');
+            ->join('platforms', 'platforms.id = web_desa_kelurahan.platform_id', 'left');
 
         if ($search !== '') {
             $model->groupStart()
-                  ->like('web_desa_kelurahan.desa_kelurahan', $search)
-                  ->orLike('web_desa_kelurahan.kecamatan', $search)
-                  ->orLike('web_desa_kelurahan.domain', $search)
-                  ->groupEnd();
+                ->like('web_desa_kelurahan.desa_kelurahan', $search)
+                ->orLike('web_desa_kelurahan.kecamatan', $search)
+                ->orLike('web_desa_kelurahan.domain', $search)
+                ->groupEnd();
         }
 
         if ($filterKecamatan !== '') {
@@ -50,19 +50,19 @@ class WebDesaKelurahan extends BaseController
         }
 
         $data['websites'] = $model->orderBy('web_desa_kelurahan.kecamatan', 'ASC')
-                                  ->orderBy('web_desa_kelurahan.desa_kelurahan', 'ASC')
-                                  ->findAll();
-        
+            ->orderBy('web_desa_kelurahan.desa_kelurahan', 'ASC')
+            ->findAll();
+
         $data['total_filtered'] = count($data['websites']);
-        
+
         $db = \Config\Database::connect();
-        
+
         $data['stats'] = [
             'total' => $db->table('web_desa_kelurahan')->countAllResults(),
             'aktif' => $db->table('web_desa_kelurahan')->where('status', 'AKTIF')->countAllResults(),
             'nonaktif' => $db->table('web_desa_kelurahan')->where('status', 'NONAKTIF')->countAllResults(),
         ];
-        
+
         $total = $data['stats']['total'];
         if ($total > 0) {
             $data['stats']['aktif_percentage'] = round(($data['stats']['aktif'] / $total) * 100, 2);
@@ -82,11 +82,11 @@ class WebDesaKelurahan extends BaseController
 
         // Get distinct kecamatan for filter
         $data['kecamatan_list'] = $db->table('web_desa_kelurahan')
-                                     ->select('kecamatan')
-                                     ->distinct()
-                                     ->orderBy('kecamatan', 'ASC')
-                                     ->get()
-                                     ->getResultArray();
+            ->select('kecamatan')
+            ->distinct()
+            ->orderBy('kecamatan', 'ASC')
+            ->get()
+            ->getResultArray();
 
         $data['platforms'] = $platformModel->findAll();
 
@@ -104,7 +104,7 @@ class WebDesaKelurahan extends BaseController
     {
         helper('time');
         $model = new WebDesaKelurahanModel();
-        
+
         $search = trim($this->request->getGet('search') ?? '');
         $filterKecamatan = trim($this->request->getGet('kecamatan') ?? '');
         $filterStatus = trim($this->request->getGet('status') ?? '');
@@ -113,14 +113,14 @@ class WebDesaKelurahan extends BaseController
 
         // Build Query
         $model->select('web_desa_kelurahan.*, platforms.nama_platform as platform_name')
-              ->join('platforms', 'platforms.id = web_desa_kelurahan.platform_id', 'left');
+            ->join('platforms', 'platforms.id = web_desa_kelurahan.platform_id', 'left');
 
         if ($search !== '') {
             $model->groupStart()
-                  ->like('web_desa_kelurahan.desa_kelurahan', $search)
-                  ->orLike('web_desa_kelurahan.kecamatan', $search)
-                  ->orLike('web_desa_kelurahan.domain', $search)
-                  ->groupEnd();
+                ->like('web_desa_kelurahan.desa_kelurahan', $search)
+                ->orLike('web_desa_kelurahan.kecamatan', $search)
+                ->orLike('web_desa_kelurahan.domain', $search)
+                ->groupEnd();
         }
 
         if ($filterKecamatan !== '') {
@@ -140,11 +140,11 @@ class WebDesaKelurahan extends BaseController
         }
 
         $websites = $model->orderBy('web_desa_kelurahan.kecamatan', 'ASC')
-                          ->orderBy('web_desa_kelurahan.desa_kelurahan', 'ASC')
-                          ->findAll();
+            ->orderBy('web_desa_kelurahan.desa_kelurahan', 'ASC')
+            ->findAll();
 
         $db = \Config\Database::connect();
-        
+
         $stats = [
             'total' => $db->table('web_desa_kelurahan')->countAllResults(),
             'aktif' => $db->table('web_desa_kelurahan')->where('status', 'AKTIF')->countAllResults(),
@@ -179,11 +179,13 @@ class WebDesaKelurahan extends BaseController
             'platform_stats' => $platform_stats,
             'logoSrc' => $logoSrc,
             'current_date' => format_indo_date(date('Y-m-d')),
+            'title' => 'DATA WEBSITE DESA & KELURAHAN',
+            'subtitle' => 'PEMERINTAH KABUPATEN SINJAI'
         ]));
         $dompdf->setPaper('A4', 'landscape');
         $dompdf->render();
 
-        $filename = url_title('data_website_desa_kelurahan_' . format_indo_date(date('Y-m-d'), false), '_', true) . '.pdf';
+        $filename = 'Data Website Desa Kelurahan - ' . format_indo_date(date('Y-m-d'), true) . '.pdf';
         $dompdf->stream($filename, ['Attachment' => true]);
     }
 
@@ -198,11 +200,11 @@ class WebDesaKelurahan extends BaseController
     public function store()
     {
         $model = new WebDesaKelurahanModel();
-        
+
         $domain = $this->request->getPost('domain');
         $desaKelurahan = $this->request->getPost('desa_kelurahan');
         $manualDate = $this->request->getPost('tanggal_berakhir');
-        
+
         $expirationDate = $this->determineExpirationDate($desaKelurahan, $domain, $manualDate);
 
         $data = [
@@ -217,10 +219,10 @@ class WebDesaKelurahan extends BaseController
         ];
 
         if ($data['tanggal_berakhir']) {
-             $end = new \DateTime($data['tanggal_berakhir']);
-             $now = new \DateTime();
-             $diff = $now->diff($end);
-             $data['sisa_hari'] = (int)$diff->format('%r%a');
+            $end = new \DateTime($data['tanggal_berakhir']);
+            $now = new \DateTime();
+            $diff = $now->diff($end);
+            $data['sisa_hari'] = (int)$diff->format('%r%a');
         }
 
         $model->insert($data);
@@ -232,7 +234,7 @@ class WebDesaKelurahan extends BaseController
         $model = new WebDesaKelurahanModel();
         $platformModel = new PlatformModel();
         $data['website'] = $model->find($id);
-        
+
         if (!$data['website']) {
             return redirect()->to('web_desa_kelurahan')->with('error', 'Data not found.');
         }
@@ -252,7 +254,7 @@ class WebDesaKelurahan extends BaseController
         }
 
         $domain = $this->request->getPost('domain');
-        
+
         $expirationDate = $this->determineExpirationDate($website['desa_kelurahan'], $domain, null);
 
         $data = [
@@ -265,10 +267,10 @@ class WebDesaKelurahan extends BaseController
         ];
 
         if ($data['tanggal_berakhir']) {
-             $end = new \DateTime($data['tanggal_berakhir']);
-             $now = new \DateTime();
-             $diff = $now->diff($end);
-             $data['sisa_hari'] = (int)$diff->format('%r%a');
+            $end = new \DateTime($data['tanggal_berakhir']);
+            $now = new \DateTime();
+            $diff = $now->diff($end);
+            $data['sisa_hari'] = (int)$diff->format('%r%a');
         }
 
         $model->update($id, $data);
@@ -289,7 +291,7 @@ class WebDesaKelurahan extends BaseController
 
         if ($newDate) {
             $updateData = ['tanggal_berakhir' => $newDate];
-            
+
             // Calculate sisa_hari
             $end = new \DateTime($newDate);
             $now = new \DateTime();
@@ -338,7 +340,7 @@ class WebDesaKelurahan extends BaseController
         try {
             $client = Services::curlrequest();
             $response = $client->request('GET', "https://rdap.pandi.id/rdap/domain/{$domain}", [
-                'timeout' => 5, 
+                'timeout' => 5,
                 'http_errors' => false
             ]);
 
