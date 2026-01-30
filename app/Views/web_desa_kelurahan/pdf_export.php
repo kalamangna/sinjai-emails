@@ -139,15 +139,22 @@
         .footer-info p {
             margin: 2px 0;
         }
+
+        .update-date {
+            text-align: center;
+            font-size: 10px;
+            color: #666;
+            margin-top: -10px;
+        }
     </style>
 </head>
 
 <body>
     <div class="header">
         <img src="<?= $logoSrc ?>" alt="Logo" class="logo" />
-        <h1>DATA WEBSITE DESA & KELURAHAN</h1>
-        <h2>PEMERINTAH KABUPATEN SINJAI</h2>
-        <p style="text-align: center; font-size: 10px; color: #666; margin-top: -10px;">UPDATE PER: <?= strtoupper(esc($current_date)) ?></p>
+        <h1><?= esc($title) ?></h1>
+        <h2><?= esc($subtitle) ?></h2>
+        <p class="update-date">UPDATE PER: <?= strtoupper(esc($current_date)) ?></p>
     </div>
 
     <div class="stats-container">
