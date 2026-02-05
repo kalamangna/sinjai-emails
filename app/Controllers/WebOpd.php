@@ -46,8 +46,8 @@ class WebOpd extends BaseController
 
         $total = $data['stats']['total'];
         if ($total > 0) {
-            $data['stats']['aktif_percentage'] = round(($data['stats']['aktif'] / $total) * 100, 2);
-            $data['stats']['nonaktif_percentage'] = round(($data['stats']['nonaktif'] / $total) * 100, 2);
+            $data['stats']['aktif_percentage'] = round(($data['stats']['aktif'] / $total) * 100);
+            $data['stats']['nonaktif_percentage'] = round(($data['stats']['nonaktif'] / $total) * 100);
         } else {
             $data['stats']['aktif_percentage'] = 0;
             $data['stats']['nonaktif_percentage'] = 0;
@@ -95,8 +95,8 @@ class WebOpd extends BaseController
 
         $total = $stats['total'];
         if ($total > 0) {
-            $stats['aktif_percentage'] = round(($stats['aktif'] / $total) * 100, 2);
-            $stats['nonaktif_percentage'] = round(($stats['nonaktif'] / $total) * 100, 2);
+            $stats['aktif_percentage'] = round(($stats['aktif'] / $total) * 100);
+            $stats['nonaktif_percentage'] = round(($stats['nonaktif'] / $total) * 100);
         } else {
             $stats['aktif_percentage'] = 0;
             $stats['nonaktif_percentage'] = 0;
@@ -106,6 +106,9 @@ class WebOpd extends BaseController
         $logoData = base64_encode(file_get_contents($logoPath));
         $logoSrc = 'data:image/png;base64,' . $logoData;
 
+        // Handle chart data from POST request
+        $statusChartData = $this->request->getPost('statusChartData');
+
         $dompdf = new \Dompdf\Dompdf();
         $dompdf->loadHtml(view('web_opd/pdf_export', [
             'websites' => $websites,
@@ -113,7 +116,8 @@ class WebOpd extends BaseController
             'logoSrc' => $logoSrc,
             'current_date' => format_indo_date(date('Y-m-d')),
             'title' => 'DATA WEBSITE ORGANISASI PERANGKAT DAERAH (OPD)',
-            'subtitle' => 'PEMERINTAH KABUPATEN SINJAI'
+            'subtitle' => 'PEMERINTAH KABUPATEN SINJAI',
+            'statusChart' => $statusChartData,
         ]));
         $dompdf->setPaper('A4', 'landscape');
         $dompdf->render();

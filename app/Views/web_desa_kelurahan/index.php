@@ -6,7 +6,7 @@
     <div class="col-md-4">
         <div class="card shadow-sm border-0 border-start border-primary border-4">
             <div class="card-body">
-                <h6 class="text-muted text-uppercase small fw-bold">Total Websites</h6>
+                <h6 class="text-muted text-uppercase small fw-bold">Total Website</h6>
                 <h2 class="mb-0"><?= $stats['total'] ?></h2>
             </div>
         </div>
@@ -24,28 +24,6 @@
             <div class="card-body">
                 <h6 class="text-muted text-uppercase small fw-bold">Status NONAKTIF</h6>
                 <h2 class="mb-0 text-danger"><?= $stats['nonaktif'] ?> <small class="text-muted">(<?= $stats['nonaktif_percentage'] ?>%)</small></h2>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="card shadow-sm">
-            <div class="card-body py-2">
-                <span class="text-muted small fw-bold me-3">PLATFORM DISTRIBUTION:</span>
-                <?php foreach ($platform_stats as $ps): ?>
-                    <?php
-                    $plat = strtoupper($ps['nama_platform'] ?? 'NOT REGISTERED');
-                    $badgeClass = 'bg-secondary';
-                    if ($plat === 'SIDEKA-NG') $badgeClass = 'bg-primary';
-                    elseif ($plat === 'OPENSID') $badgeClass = 'bg-info';
-                    elseif ($plat === 'PIHAK KETIGA') $badgeClass = 'bg-warning text-dark';
-                    ?>
-                    <span class="badge <?= $badgeClass ?> me-2">
-                        <?= $plat ?>: <?= $ps['count'] ?>
-                    </span>
-                <?php endforeach; ?>
             </div>
         </div>
     </div>
@@ -73,9 +51,13 @@
                     <span class="badge bg-secondary ms-2 small" style="font-size: 0.7em;">Found: <?= $total_filtered ?></span>
                 </h5>
                 <div>
-                    <a href="<?= site_url('web_desa_kelurahan/export_pdf') . '?' . $_SERVER['QUERY_STRING'] ?>" class="btn btn-danger btn-sm me-2" target="_blank">
-                        <i class="fas fa-file-pdf me-2"></i>Export PDF
-                    </a>
+                    <form id="pdfExportForm" action="<?= site_url('web_desa_kelurahan/export_pdf') . '?' . $_SERVER['QUERY_STRING'] ?>" method="POST" class="d-inline" target="_blank">
+                        <input type="hidden" name="statusChartData" id="statusChartData">
+                        <input type="hidden" name="platformChartData" id="platformChartData">
+                        <button type="submit" class="btn btn-danger btn-sm me-2" onclick="return preparePdfExport();">
+                            <i class="fas fa-file-pdf me-2"></i>Export PDF
+                        </button>
+                    </form>
                     <button type="button" class="btn btn-warning text-dark btn-sm" id="batchSyncBtn" onclick="startBatchSync()">
                         <i class="fas fa-sync me-2"></i>Batch Sync Expiration
                     </button>
@@ -116,6 +98,7 @@
                         <div class="col-md-2">
                             <select class="form-select" name="filter_platform">
                                 <option value="">All Platform</option>
+                                <option value="NULL" <?= ($filterPlatform === 'NULL') ? 'selected' : '' ?>>TIDAK TERDAFTAR</option>
                                 <?php foreach ($platforms as $p): ?>
                                     <option value="<?= esc($p['nama_platform']) ?>" <?= ($filterPlatform === $p['nama_platform']) ? 'selected' : '' ?>>
                                         <?= esc($p['nama_platform']) ?>
@@ -224,9 +207,159 @@
         </div>
     </div>
 </div>
+
+<div class="row mb-4 mt-4">
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6 class="text-muted text-uppercase small fw-bold">Status Website</h6>
+                <canvas id="statusChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6 class="text-muted text-uppercase small fw-bold">Distribusi Platform</h6>
+                <canvas id="platformChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
+<script>
+    Chart.register(ChartDataLabels);
+
+    document.addEventListener("DOMContentLoaded", function() {
+        // Data from PHP
+        const stats = <?= json_encode($stats) ?>;
+        const platformStats = <?= json_encode($platform_stats) ?>;
+
+        // Status Chart (Pie)
+        const statusCtx = document.getElementById('statusChart').getContext('2d');
+        const statusChart = new Chart(statusCtx, {
+            type: 'pie',
+            data: {
+                labels: ['AKTIF', 'NONAKTIF'],
+                datasets: [{
+                    label: 'Status Website',
+                    data: [stats.aktif, stats.nonaktif],
+                    backgroundColor: [
+                        'rgba(25, 135, 84, 0.7)', // Green for Aktif
+                        'rgba(220, 53, 69, 0.7)' // Red for Nonaktif
+                    ],
+                    borderColor: [
+                        '#198754',
+                        '#dc3545'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top' // Show legend for pie chart
+                    },
+                    datalabels: {
+                        formatter: (value, context) => {
+                            const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                            if (total === 0) {
+                                return '0 (0%)';
+                            }
+                            const percentage = (value / total * 100);
+                            let percentageString;
+                            if (percentage < 0.01 && percentage !== 0) {
+                                percentageString = '<0.01%';
+                            } else {
+                                percentageString = percentage.toFixed(0) + '%';
+                            }
+                            return `${value} (${percentageString})`; // Combine raw value and percentage
+                        },
+                        color: '#fff', // White color for labels on colored slices
+                        font: {
+                            weight: 'bold'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Platform Chart (Pie)
+        const platformCtx = document.getElementById('platformChart').getContext('2d');
+        const platformChart = new Chart(platformCtx, {
+            type: 'pie',
+            data: {
+                labels: platformStats.map(p => p.nama_platform || 'TIDAK TERDAFTAR'),
+                datasets: [{
+                    label: 'Distribusi Platform',
+                    data: platformStats.map(p => parseInt(p.count)),
+                    backgroundColor: platformStats.map(p => {
+                        const plat = (p.nama_platform || 'NOT REGISTERED').toUpperCase();
+                        if (plat === 'SIDEKA-NG') return 'rgba(13, 110, 253, 0.7)'; // Primary
+                        if (plat === 'OPENSID') return 'rgba(13, 202, 240, 0.7)'; // Info
+                        if (plat === 'PIHAK KETIGA') return 'rgba(255, 193, 7, 0.7)'; // Warning
+                        return 'rgba(108, 117, 125, 0.7)'; // Secondary
+                    }),
+                    borderColor: platformStats.map(p => {
+                        const plat = (p.nama_platform || 'NOT REGISTERED').toUpperCase();
+                        if (plat === 'SIDEKA-NG') return '#0d6efd'; // Primary
+                        if (plat === 'OPENSID') return '#0dcaf0'; // Info
+                        if (plat === 'PIHAK KETIGA') return '#ffc107'; // Warning
+                        return '#6c757d'; // Secondary
+                    }),
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    datalabels: {
+                        formatter: (value, context) => {
+                            const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                            if (total === 0) {
+                                return '0 (0%)'; // Display raw count as 0 and percentage as 0%
+                            }
+                            const percentage = (value / total * 100);
+                            let percentageString;
+                            if (percentage < 0.01 && percentage !== 0) {
+                                percentageString = '<0.01%';
+                            } else {
+                                percentageString = percentage.toFixed(0) + '%';
+                            }
+                            return `${value} (${percentageString})`; // Combine raw value and percentage
+                        },
+                        color: '#fff',
+                        font: {
+                            weight: 'bold'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Store charts for PDF export
+        window.charts = {
+            statusChart: statusChart,
+            platformChart: platformChart
+        };
+    });
+
+    function preparePdfExport() {
+        const statusChartB64 = window.charts.statusChart.toBase64Image();
+        const platformChartB64 = window.charts.platformChart.toBase64Image();
+
+        document.getElementById('statusChartData').value = statusChartB64;
+        document.getElementById('platformChartData').value = platformChartB64;
+
+        return true;
+    }
+</script>
 <script>
     function syncExpiration(id, btn = null) {
         return new Promise((resolve, reject) => {

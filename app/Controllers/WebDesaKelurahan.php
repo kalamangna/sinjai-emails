@@ -41,7 +41,11 @@ class WebDesaKelurahan extends BaseController
         }
 
         if ($filterPlatform !== '') {
-            $model->where('platforms.nama_platform', $filterPlatform);
+            if ($filterPlatform === 'NULL') {
+                $model->where('web_desa_kelurahan.platform_id', null);
+            } else {
+                $model->where('platforms.nama_platform', $filterPlatform);
+            }
         }
 
         if ($filterType !== '') {
@@ -65,8 +69,8 @@ class WebDesaKelurahan extends BaseController
 
         $total = $data['stats']['total'];
         if ($total > 0) {
-            $data['stats']['aktif_percentage'] = round(($data['stats']['aktif'] / $total) * 100, 2);
-            $data['stats']['nonaktif_percentage'] = round(($data['stats']['nonaktif'] / $total) * 100, 2);
+            $data['stats']['aktif_percentage'] = round(($data['stats']['aktif'] / $total) * 100);
+            $data['stats']['nonaktif_percentage'] = round(($data['stats']['nonaktif'] / $total) * 100);
         } else {
             $data['stats']['aktif_percentage'] = 0;
             $data['stats']['nonaktif_percentage'] = 0;
@@ -132,7 +136,11 @@ class WebDesaKelurahan extends BaseController
         }
 
         if ($filterPlatform !== '') {
-            $model->where('platforms.nama_platform', $filterPlatform);
+            if ($filterPlatform === 'NULL') {
+                $model->where('web_desa_kelurahan.platform_id', null);
+            } else {
+                $model->where('platforms.nama_platform', $filterPlatform);
+            }
         }
 
         if ($filterType !== '') {
@@ -153,8 +161,8 @@ class WebDesaKelurahan extends BaseController
 
         $total = $stats['total'];
         if ($total > 0) {
-            $stats['aktif_percentage'] = round(($stats['aktif'] / $total) * 100, 2);
-            $stats['nonaktif_percentage'] = round(($stats['nonaktif'] / $total) * 100, 2);
+            $stats['aktif_percentage'] = round(($stats['aktif'] / $total) * 100);
+            $stats['nonaktif_percentage'] = round(($stats['nonaktif'] / $total) * 100);
         } else {
             $stats['aktif_percentage'] = 0;
             $stats['nonaktif_percentage'] = 0;
@@ -172,6 +180,10 @@ class WebDesaKelurahan extends BaseController
         $logoData = base64_encode(file_get_contents($logoPath));
         $logoSrc = 'data:image/png;base64,' . $logoData;
 
+        // Handle chart data from POST request
+        $statusChartData = $this->request->getPost('statusChartData');
+        $platformChartData = $this->request->getPost('platformChartData');
+
         $dompdf = new \Dompdf\Dompdf();
         $dompdf->loadHtml(view('web_desa_kelurahan/pdf_export', [
             'websites' => $websites,
@@ -180,12 +192,14 @@ class WebDesaKelurahan extends BaseController
             'logoSrc' => $logoSrc,
             'current_date' => format_indo_date(date('Y-m-d')),
             'title' => 'DATA WEBSITE DESA & KELURAHAN',
-            'subtitle' => 'PEMERINTAH KABUPATEN SINJAI'
+            'subtitle' => 'PEMERINTAH KABUPATEN SINJAI',
+            'statusChart' => $statusChartData,
+            'platformChart' => $platformChartData,
         ]));
         $dompdf->setPaper('A4', 'landscape');
         $dompdf->render();
 
-        $filename = 'Data Website Desa Kelurahan - ' . format_indo_date(date('Y-m-d'), true) . '.pdf';
+        $filename = 'Data Website Desa & Kelurahan - ' . format_indo_date(date('Y-m-d'), true) . '.pdf';
         $dompdf->stream($filename, ['Attachment' => true]);
     }
 

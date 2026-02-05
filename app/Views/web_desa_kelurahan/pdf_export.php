@@ -92,6 +92,23 @@
             color: #333;
         }
 
+        .chart-container {
+            width: 100%;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .chart-box {
+            width: 30%;
+            display: inline-block;
+            vertical-align: top;
+        }
+
+        .chart-box img {
+            width: 100%;
+            height: auto;
+        }
+
         /* Platform column text colors */
         .platform-sideka-ng-text {
             color: #0d6efd;
@@ -172,6 +189,8 @@
         </div>
     </div>
 
+
+
     <table>
         <thead>
             <tr>
@@ -219,6 +238,17 @@
             <?php endforeach; ?>
         </tbody>
     </table>
+
+    <?php if (isset($statusChart) && isset($platformChart)): ?>
+    <div class="chart-container">
+        <div class="chart-box">
+            <img src="<?= $statusChart ?>" alt="Status Chart">
+        </div>
+        <div class="chart-box" style="margin-left: 3%;">
+            <img src="<?= $platformChart ?>" alt="Platform Chart">
+        </div>
+    </div>
+    <?php endif; ?>
 
     <div class="footer-info">
         <p><strong>Contact Person</strong></p>

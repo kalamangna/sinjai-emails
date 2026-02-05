@@ -6,7 +6,7 @@
     <div class="col-md-4">
         <div class="card shadow-sm border-0 border-start border-primary border-4">
             <div class="card-body">
-                <h6 class="text-muted text-uppercase small fw-bold">Total Websites</h6>
+                <h6 class="text-muted text-uppercase small fw-bold">Total Website</h6>
                 <h2 class="mb-0"><?= $stats['total'] ?></h2>
             </div>
         </div>
@@ -51,9 +51,12 @@
                     <span class="badge bg-secondary ms-2 small" style="font-size: 0.7em;">Found: <?= $total_filtered ?></span>
                 </h5>
                 <div>
-                    <a href="<?= site_url('web_opd/export_pdf') . '?' . $_SERVER['QUERY_STRING'] ?>" class="btn btn-danger btn-sm me-2" target="_blank">
-                        <i class="fas fa-file-pdf me-2"></i>Export PDF
-                    </a>
+                    <form id="pdfExportForm" action="<?= site_url('web_opd/export_pdf') . '?' . $_SERVER['QUERY_STRING'] ?>" method="POST" class="d-inline" target="_blank">
+                        <input type="hidden" name="statusChartData" id="statusChartData">
+                        <button type="submit" class="btn btn-danger btn-sm me-2" onclick="return preparePdfExport();">
+                            <i class="fas fa-file-pdf me-2"></i>Export PDF
+                        </button>
+                    </form>
                     <a href="<?= site_url('web_opd/create') ?>" class="btn btn-primary btn-sm">
                         <i class="fas fa-plus me-2"></i>Add Website
                     </a>
@@ -63,7 +66,7 @@
                 <!-- Search and Filter Form -->
                 <form method="GET" action="<?= site_url('web_opd') ?>" class="mb-4">
                     <div class="row g-3">
-                        <div class="col-md-8">
+                        <div class="col-md-10">
                             <input type="text" class="form-control" name="search" placeholder="Search by OPD or Domain..." value="<?= esc($search) ?>">
                         </div>
                         <div class="col-md-2">
@@ -73,10 +76,13 @@
                                 <option value="NONAKTIF" <?= ($filterStatus === 'NONAKTIF') ? 'selected' : '' ?>>NONAKTIF</option>
                             </select>
                         </div>
-                        <div class="col-md-2 text-end">
-                            <button type="submit" class="btn btn-info w-100">
+                        <div class="col-12 text-end">
+                            <button type="submit" class="btn btn-info me-2">
                                 <i class="fas fa-filter me-2"></i>Filter
                             </button>
+                            <a href="<?= site_url('web_opd') ?>" class="btn btn-outline-secondary">
+                                <i class="fas fa-sync-alt me-2"></i>Reset
+                            </a>
                         </div>
                     </div>
                 </form>
@@ -135,4 +141,87 @@
         </div>
     </div>
 </div>
+
+<div class="row mb-4 mt-4 justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6 class="text-muted text-uppercase small fw-bold">Status Website</h6>
+                <canvas id="statusChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+<script>
+    Chart.register(ChartDataLabels);
+
+    document.addEventListener("DOMContentLoaded", function() {
+        // Data from PHP
+        const stats = <?= json_encode($stats) ?>;
+
+        // Status Chart (Pie)
+        const statusCtx = document.getElementById('statusChart').getContext('2d');
+        const statusChart = new Chart(statusCtx, {
+            type: 'pie',
+            data: {
+                labels: ['AKTIF', 'NONAKTIF'],
+                datasets: [{
+                    label: 'Status Website',
+                    data: [stats.aktif, stats.nonaktif],
+                    backgroundColor: [
+                        'rgba(25, 135, 84, 0.7)', // Green for Aktif
+                        'rgba(220, 53, 69, 0.7)' // Red for Nonaktif
+                    ],
+                    borderColor: [
+                        '#198754',
+                        '#dc3545'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top' // Show legend for pie chart
+                    },
+                    datalabels: {
+                        formatter: (value, context) => {
+                            const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                            if (total === 0) {
+                                return '0 (0%)';
+                            }
+                            const percentage = (value / total * 100);
+                            let percentageString;
+                            if (percentage < 0.01 && percentage !== 0) {
+                                percentageString = '<0.01%';
+                            } else {
+                                percentageString = percentage.toFixed(0) + '%';
+                            }
+                            return `${value} (${percentageString})`; // Combine raw value and percentage
+                        },
+                        color: '#fff', // White color for labels on colored slices
+                        font: {
+                            weight: 'bold'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Store chart for PDF export
+        window.charts = {
+            statusChart: statusChart,
+        };
+    });
+
+    function preparePdfExport() {
+        const statusChartB64 = window.charts.statusChart.toBase64Image();
+        document.getElementById('statusChartData').value = statusChartB64;
+        return true;
+    }
+</script>
 <?= $this->endSection() ?>

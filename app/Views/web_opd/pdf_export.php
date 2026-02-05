@@ -91,6 +91,24 @@
             color: #333;
         }
 
+        .chart-container {
+            width: 100%;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .chart-box {
+            width: 40%;
+            margin: 0 auto;
+            display: inline-block;
+            vertical-align: top;
+        }
+
+        .chart-box img {
+            width: 100%;
+            height: auto;
+        }
+
         .footer-info {
             margin-top: 20px;
             font-size: 9px;
@@ -133,6 +151,8 @@
         </div>
     </div>
 
+
+
     <table>
         <thead>
             <tr>
@@ -159,6 +179,14 @@
             <?php endforeach; ?>
         </tbody>
     </table>
+
+    <?php if (isset($statusChart)): ?>
+    <div class="chart-container">
+        <div class="chart-box">
+            <img src="<?= $statusChart ?>" alt="Status Chart">
+        </div>
+    </div>
+    <?php endif; ?>
 
     <div class="footer-info">
         <p><strong>Contact Person</strong></p>
