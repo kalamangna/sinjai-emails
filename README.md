@@ -1,58 +1,47 @@
-# Sinjai Email Management System
+# Government Digital Identity & Asset Management
 
-A centralized platform for managing official employee email accounts for the Government of Sinjai Regency. This system integrates with cPanel, BSrE (Digital Signatures), and internal HR systems to provide a seamless experience for provisioning and maintaining official digital identities.
+A centralized management platform designed to streamline digital identity provisioning, institutional asset tracking, and technical support activities for local government agencies.
 
-## Key Features
+## Core Capabilities
 
-### 📧 Email Account Management
-- **Comprehensive CRUD:** Manage email accounts with detailed employee profiles (NIK, NIP, Name, Job Title).
-- **Batch Operations:** 
-  - **Batch Creation:** Create multiple accounts at once with automatic username generation and smart duplicate resolution (prioritizing NIP characters, then NIK).
-  - **Batch Update:** Update employee profiles and account details for hundreds of accounts simultaneously using CSV/Excel-like interfaces.
-  - **Batch Update PK:** Dedicated interface for updating "Perjanjian Kerja" (Work Agreement) details specifically for **PPPK** and **PPPK Paruh Waktu** staff.
-- **cPanel Sync:** Real-time two-way synchronization with the mail server to track usage, quota, and status.
+### 🆔 Identity Management
+- **Digital Account Provisioning:** Full lifecycle management of official electronic identities for employees.
+- **Bulk Processing:** Tools for high-volume account creation and profile updates with automated naming and duplication prevention.
+- **Service Integration:** Real-time synchronization with mail servers to monitor usage and account health.
 
-### 🏢 Organizational Structure
-- **Unit Kerja Management:** Hierarchical management of work units (OPD) with parent-child relationships.
-  - Supports batch creation of units.
-- **Role & Rank Tracking:**
-  - **Eselon:** Management of official ranks.
-  - **Status ASN:** Classification of employees (PNS, PPPK, Non-ASN, etc.).
-  - **Leadership Flags:** Dedicated tracking and reporting for "Pimpinan" (Heads of Agencies) and "Pimpinan Desa" (Village Heads).
+### 🏢 Institutional Directory
+- **Organizational Hierarchy:** Manage agency structures with multi-level relationships.
+- **Classification & Roles:** Track employee status, official ranks, and leadership positions.
+- **Master Data Management:** Centralized control of work units and departments.
 
-### 🔐 Security & Integration
-- **BSrE Integration:** Automated checking of Electronic Signature (TTE) status for each account (Issue, Expired, Revoked, etc.).
-- **HR Sync:** Integration with **Simpegnas** API to pull accurate employee data and ensure consistency.
+### 🔐 Compliance & Connectivity
+- **Digital Signatures:** Automated monitoring of electronic signature certification status.
+- **Human Resource Integration:** Connects with HR systems to maintain accurate employee information.
 
-### 🌐 Web Desa & Kelurahan Tracking
-- **Centralized Database:** Comprehensive listing of all Village (Desa) and Sub-district (Kelurahan) websites within Sinjai Regency.
-- **Automated Expiration Fetching:** Integration with **PANDI RDAP** to automatically retrieve domain expiration dates for village websites.
-- **Smart Expiration Rules:** Specialized logic to handle fixed expiration dates for Kelurahan websites.
-- **Analytics Dashboard:** Visual tracking of website status (Active/Inactive) with percentage-based statistics and platform distribution (SIDEKA-NG, OpenSID, etc.).
-- **Indonesian PDF Reports:** Generate professional reports with Indonesian month names, color-coded rows (Desa vs Kelurahan), and comprehensive platform statistics.
+### 📊 Website Asset Monitoring
+- **Centralized Tracking:** Monitor the status and availability of official government websites.
+- **Automated Metadata:** Intelligent background checks for domain expiration and platform usage.
+- **Visual Analytics:** Interactive dashboards providing clear insights into asset distribution and status using data visualization.
 
-### 🏢 Website OPD Tracking
-- **Agency Website Management:** Centralized tracking for all official websites of local government agencies (OPD).
-- **Status Monitoring:** Track website availability and active status (Active/Inactive).
-- **Professional Exports:** Specialized PDF reports for OPD websites with Indonesian formatting and status visualization.
+### 🤝 Technical Support (Assistance)
+- **Activity Logging:** Document technical assistance and mentoring provided to various government units.
+- **Service Categorization:** Specialized tracking for different support areas such as system applications or website management.
+- **Method Tracking:** Log interactions based on support delivery (Remote or On-site).
 
-### 📄 Reporting & Documents
-- **PDF Exports:** Generate formatted lists of emails, leadership directories, and individual account detail sheets.
-- **CSV Exports:** Export Unit Kerja data in CSV format for bulk processing or external use.
-- **Work Agreements (PK):** Automated generation of "Perjanjian Kerja" documents for **PPPK** and **PPPK Paruh Waktu** staff, including batch ZIP downloads.
+### 📄 Professional Reporting
+- **Automated Documents:** Generate formal work agreements and individual account summaries.
+- **Standardized Exports:** Professional PDF and CSV reports with unified branding and localized formatting.
+- **Filtered Insights:** Targeted report generation based on specific categories or timeframes.
 
-## Tech Stack
+## Technology Stack
 
-- **Framework:** CodeIgniter 4 (PHP)
-- **Database:** MySQL / MariaDB
-- **Frontend:** Bootstrap 5, Vanilla JS (with async batch processing)
-- **PDF Generation:** Dompdf
-- **Integrations:**
-  - cPanel UAPI
-  - BSrE API
-  - Simpegnas API
+- **Backend:** PHP Framework (CodeIgniter 4)
+- **Database:** Relational Database (MySQL / MariaDB)
+- **Frontend:** Modern CSS & JavaScript with Async processing
+- **Visualization:** Data labeling and charting libraries
+- **Reporting:** Advanced PDF generation engine
 
-## Environment
+## Requirements
 
-- PHP 8.1+
-- Composer
+- PHP 8.1 or higher
+- Dependency Manager (Composer)
