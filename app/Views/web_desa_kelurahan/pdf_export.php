@@ -147,113 +147,250 @@
 
         /* Light blue for Kelurahan */
 
-        .footer-info {
-            margin-top: 20px;
-            font-size: 9px;
-            text-align: left;
-        }
+                .footer-info {
 
-        .footer-info p {
-            margin: 2px 0;
-        }
+                    position: fixed;
 
-        .update-date {
-            text-align: center;
-            font-size: 10px;
-            color: #666;
-            margin-top: -10px;
-        }
-    </style>
-</head>
+                    bottom: 0;
 
-<body>
-    <div class="header">
-        <img src="<?= $logoSrc ?>" alt="Logo" class="logo" />
-        <h1><?= esc($title) ?></h1>
-        <h2><?= esc($subtitle) ?></h2>
-        <p class="update-date">UPDATE PER: <?= strtoupper(esc($current_date)) ?></p>
-    </div>
+                    left: 0;
 
-    <div class="stats-container">
-        <div class="stats-box">
-            <h3>Total Website</h3>
-            <p><?= esc($stats['total'] ?? '-') ?></p>
-        </div>
-        <div class="stats-box">
-            <h3>Aktif</h3>
-            <p><?= esc($stats['aktif'] ?? '-') ?> <small>(<?= esc($stats['aktif_percentage'] ?? '-') ?>%)</small></p>
-        </div>
-        <div class="stats-box">
-            <h3>Nonaktif</h3>
-            <p><?= esc($stats['nonaktif'] ?? '-') ?> <small>(<?= esc($stats['nonaktif_percentage'] ?? '-') ?>%)</small></p>
-        </div>
-    </div>
+                    font-size: 9px;
 
+                    text-align: left;
 
-
-    <table>
-        <thead>
-            <tr>
-                <th style="width: 3%;">No.</th>
-                <th style="width: 20%;">Desa/Kelurahan</th>
-                <th style="width: 15%;">Kecamatan</th>
-                <th style="width: 22%;">Domain</th>
-                <th style="width: 15%;">Platform</th>
-                <th style="width: 10%;">Status</th>
-                <th style="width: 15%;">Keterangan</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php
-            $nomor = 1;
-            foreach ($websites as $website) :
-                $row_class = '';
-                if (stripos($website['desa_kelurahan'], 'DESA') !== false) {
-                    $row_class = 'row-desa';
-                } elseif (stripos($website['desa_kelurahan'], 'KELURAHAN') !== false) {
-                    $row_class = 'row-kelurahan';
                 }
 
-                $status_color = (strtoupper($website['status']) === 'AKTIF') ? '#198754' : '#dc3545';
+        
 
-                $platform_name_slug = strtolower(str_replace(' ', '-', $website['platform_name']));
-                $platform_text_class = 'platform-default-text';
-                if ($platform_name_slug === 'sideka-ng') {
-                    $platform_text_class = 'platform-sideka-ng-text';
-                } elseif ($platform_name_slug === 'opensid') {
-                    $platform_text_class = 'platform-opensid-text';
-                } elseif ($platform_name_slug === 'pihak-ketiga') {
-                    $platform_text_class = 'platform-pihak-ketiga-text';
+                .footer-right {
+
+                    position: fixed;
+
+                    bottom: 0;
+
+                    right: 0;
+
+                    font-size: 9px;
+
+                    text-align: right;
+
+                    color: #555;
+
                 }
-            ?>
-                <tr class="<?= $row_class ?>">
-                    <td style="text-align: center;"><?= $nomor++ ?></td>
-                    <td><?= esc(strtoupper($website['desa_kelurahan'] ?? '-')) ?></td>
-                    <td><?= esc(strtoupper($website['kecamatan'] ?? '-')) ?></td>
-                    <td><?= esc($website['domain'] ?? '-') ?></td>
-                    <td class="<?= $platform_text_class ?>"><?= esc(strtoupper($website['platform_name'] ?? '-')) ?></td>
-                    <td style="color: <?= $status_color ?>; font-weight: bold;"><?= esc(strtoupper($website['status'] ?? '-')) ?></td>
-                    <td><?= esc($website['keterangan'] ?? '-') ?></td>
-                </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
 
-    <?php if (isset($statusChart) && isset($platformChart)): ?>
-    <div class="chart-container">
-        <div class="chart-box">
-            <img src="<?= $statusChart ?>" alt="Status Chart">
-        </div>
-        <div class="chart-box" style="margin-left: 3%;">
-            <img src="<?= $platformChart ?>" alt="Platform Chart">
-        </div>
-    </div>
-    <?php endif; ?>
+        
 
-    <div class="footer-info">
-        <p><strong>Contact Person</strong></p>
-        <p style="color: #555;">082188344982 (Dzul)</p>
-    </div>
-</body>
+                .footer-info p,
+
+                .footer-right p {
+
+                    margin: 2px 0;
+
+                }
+
+        
+
+                .update-date {
+
+                    text-align: center;
+
+                    font-size: 10px;
+
+                    color: #666;
+
+                    margin-top: -10px;
+
+                }
+
+            </style>
+
+        </head>
+
+        
+
+        <body>
+
+            <div class="header">
+
+                <img src="<?= $logoSrc ?>" alt="Logo" class="logo" />
+
+                <h1><?= esc($title) ?></h1>
+
+                <h2><?= esc($subtitle) ?></h2>
+
+                <p class="update-date">UPDATE PER: <?= strtoupper(esc($current_date)) ?></p>
+
+            </div>
+
+        
+
+            <div class="stats-container">
+
+                <div class="stats-box">
+
+                    <h3>Total Website</h3>
+
+                    <p><?= esc($stats['total'] ?? '-') ?></p>
+
+                </div>
+
+                <div class="stats-box">
+
+                    <h3>Aktif</h3>
+
+                    <p><?= esc($stats['aktif'] ?? '-') ?> <small>(<?= esc($stats['aktif_percentage'] ?? '-') ?>%)</small></p>
+
+                </div>
+
+                <div class="stats-box">
+
+                    <h3>Nonaktif</h3>
+
+                    <p><?= esc($stats['nonaktif'] ?? '-') ?> <small>(<?= esc($stats['nonaktif_percentage'] ?? '-') ?>%)</small></p>
+
+                </div>
+
+            </div>
+
+        
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th style="width: 3%;">No.</th>
+
+                        <th style="width: 20%;">Desa/Kelurahan</th>
+
+                        <th style="width: 15%;">Kecamatan</th>
+
+                        <th style="width: 22%;">Domain</th>
+
+                        <th style="width: 15%;">Platform</th>
+
+                        <th style="width: 10%;">Status</th>
+
+                        <th style="width: 15%;">Keterangan</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    <?php
+
+                    $nomor = 1;
+
+                    foreach ($websites as $website) :
+
+                        $row_class = '';
+
+                        if (stripos($website['desa_kelurahan'], 'DESA') !== false) {
+
+                            $row_class = 'row-desa';
+
+                        } elseif (stripos($website['desa_kelurahan'], 'KELURAHAN') !== false) {
+
+                            $row_class = 'row-kelurahan';
+
+                        }
+
+        
+
+                        $status_color = (strtoupper($website['status']) === 'AKTIF') ? '#198754' : '#dc3545';
+
+        
+
+                        $platform_name_slug = strtolower(str_replace(' ', '-', $website['platform_name']));
+
+                        $platform_text_class = 'platform-default-text';
+
+                        if ($platform_name_slug === 'sideka-ng') {
+
+                            $platform_text_class = 'platform-sideka-ng-text';
+
+                        } elseif ($platform_name_slug === 'opensid') {
+
+                            $platform_text_class = 'platform-opensid-text';
+
+                        } elseif ($platform_name_slug === 'pihak-ketiga') {
+
+                            $platform_text_class = 'platform-pihak-ketiga-text';
+
+                        }
+
+                    ?>
+
+                        <tr class="<?= $row_class ?>">
+
+                            <td style="text-align: center;"><?= $nomor++ ?></td>
+
+                            <td><?= esc(strtoupper($website['desa_kelurahan'] ?? '-')) ?></td>
+
+                            <td><?= esc(strtoupper($website['kecamatan'] ?? '-')) ?></td>
+
+                            <td><?= esc($website['domain'] ?? '-') ?></td>
+
+                            <td class="<?= $platform_text_class ?>"><?= esc(strtoupper($website['platform_name'] ?? '-')) ?></td>
+
+                            <td style="color: <?= $status_color ?>; font-weight: bold;"><?= esc(strtoupper($website['status'] ?? '-')) ?></td>
+
+                            <td><?= esc($website['keterangan'] ?? '-') ?></td>
+
+                        </tr>
+
+                    <?php endforeach; ?>
+
+                </tbody>
+
+            </table>
+
+        
+
+            <?php if (isset($statusChart) && isset($platformChart)): ?>
+
+            <div class="chart-container">
+
+                <div class="chart-box">
+
+                    <img src="<?= $statusChart ?>" alt="Status Chart">
+
+                </div>
+
+                <div class="chart-box" style="margin-left: 3%;">
+
+                    <img src="<?= $platformChart ?>" alt="Platform Chart">
+
+                </div>
+
+            </div>
+
+            <?php endif; ?>
+
+        
+
+                <div class="footer-info">
+
+        
+
+                    <strong>Contact Person:</strong> 082188344982 (Dzul)
+
+        
+
+                </div>
+
+        
+
+            <div class="footer-right">
+
+                <p>Aptika Diskominfo Sinjai</p>
+
+            </div>
+
+        </body>
 
 </html>

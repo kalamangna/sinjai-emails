@@ -119,12 +119,24 @@
         }
 
         .footer-info {
-            margin-top: 20px;
+            position: fixed;
+            bottom: 0;
+            left: 0;
             font-size: 9px;
             text-align: left;
         }
 
-        .footer-info p {
+        .footer-right {
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            font-size: 9px;
+            text-align: right;
+            color: #555;
+        }
+
+        .footer-info p,
+        .footer-right p {
             margin: 2px 0;
         }
     </style>
@@ -195,8 +207,11 @@
     </div>
 
     <div class="footer-info">
-        <p><strong>Contact Person</strong></p>
-        <p style="color: #555;">082188344982 (Dzul)</p>
+        <strong>Contact Person:</strong> 082188344982 (Dzul)
+    </div>
+
+    <div class="footer-right">
+        <p>Aptika Diskominfo Sinjai</p>
     </div>
 </body>
 

@@ -63,6 +63,11 @@
                             </ul>
                         </div>
 
+                        <!-- Assistance Link -->
+                        <a href="<?= site_url('assistance') ?>" class="btn btn-info btn-sm">
+                            <i class="fas fa-hands-helping fa-fw me-1"></i>Assistance
+                        </a>
+
                         <!-- Master Data Dropdown -->
                         <div class="dropdown">
                             <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">

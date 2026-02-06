@@ -76,3 +76,13 @@ $routes->post('web_opd/store', 'WebOpd::store');
 $routes->get('web_opd/edit/(:num)', 'WebOpd::edit/$1');
 $routes->post('web_opd/update/(:num)', 'WebOpd::update/$1');
 
+// Assistance Module
+$routes->get('assistance', 'Assistance::index');
+$routes->get('assistance/export_pdf', 'Assistance::export_pdf');
+$routes->get('assistance/create', 'Assistance::create');
+$routes->post('assistance/store', 'Assistance::store');
+$routes->get('assistance/edit/(:num)', 'Assistance::edit/$1');
+$routes->post('assistance/update/(:num)', 'Assistance::update/$1');
+$routes->get('assistance/delete/(:num)', 'Assistance::delete/$1');
+
+
