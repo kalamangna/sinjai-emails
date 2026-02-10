@@ -17,6 +17,36 @@ class Assistance extends BaseController
         2 => 'Website Desa & Kelurahan'
     ];
 
+    const SERVICES_MAP = [
+        1 => [ // Aplikasi SPBE
+            'Website OPD', 
+            'Email Resmi', 
+            'Tanda Tangan Elektronik'
+        ],
+        2 => [ // Website Desa & Kelurahan
+            'Bimtek Website', 
+            'Domain Hosting Website'
+        ]
+    ];
+
+    const KETERANGAN_BY_SERVICE_MAP = [
+        'Website OPD' => [
+            'Konsultasi', 'Pendampingan Teknis', 'Migrasi / Setup Hosting', 'Backup Data', 'Update Data / Konten', 'Troubleshooting / Perbaikan'
+        ],
+        'Email Resmi' => [
+            'Konsultasi', 'Aktivasi Akun', 'Reset Password', 'Penonaktifan Akun', 'Troubleshooting / Perbaikan'
+        ],
+        'Tanda Tangan Elektronik' => [
+            'Konsultasi', 'Pendampingan Teknis', 'Aktivasi Sertifikat', 'Reset Passphrase', 'Troubleshooting / Perbaikan'
+        ],
+        'Bimtek Website' => [
+            'Bimtek / Sosialisasi', 'Konsultasi'
+        ],
+        'Domain Hosting Website' => [
+            'Konsultasi', 'Migrasi / Setup Hosting', 'Backup Data', 'Troubleshooting / Perbaikan'
+        ]
+    ];
+
     public function __construct()
     {
         $this->assistanceModel = new AssistanceModel();
@@ -32,11 +62,21 @@ class Assistance extends BaseController
             $this->assistanceModel->where('category', $filterCategory);
         }
 
+        // Flatten keterangan options for filter/index view compatibility if needed
+        $allKeterangan = [];
+        foreach (self::KETERANGAN_BY_SERVICE_MAP as $opts) {
+            $allKeterangan = array_merge($allKeterangan, $opts);
+        }
+        $allKeterangan = array_unique($allKeterangan);
+
         $data = [
             'title' => 'Assistance Activities',
-            'activities' => $this->assistanceModel->orderBy('tanggal_kegiatan', 'DESC')->findAll(),
+            'activities' => $this->assistanceModel->orderBy('tanggal_kegiatan', 'ASC')->orderBy('id', 'ASC')->findAll(),
             'filterCategory' => $filterCategory,
-            'categoryMap' => self::CATEGORY_MAP
+            'categoryMap' => self::CATEGORY_MAP,
+            'servicesMap' => self::SERVICES_MAP,
+            'keteranganMap' => self::KETERANGAN_BY_SERVICE_MAP, // Pass this for potential use
+            'keteranganOptions' => $allKeterangan
         ];
 
         return view('assistance/index', $data);
@@ -47,7 +87,32 @@ class Assistance extends BaseController
         $data = [
             'title' => 'Add New Assistance',
             'agencies' => $this->getAgencies(),
-            'categoryMap' => self::CATEGORY_MAP
+            'categoryMap' => self::CATEGORY_MAP,
+            'servicesMap' => self::SERVICES_MAP,
+            'keteranganByServiceMap' => self::KETERANGAN_BY_SERVICE_MAP
+        ];
+
+        return view('assistance/form', $data);
+    }
+
+    public function edit($id)
+    {
+        $activity = $this->assistanceModel->find($id);
+
+        if (!$activity) {
+            return redirect()->to('/assistance')->with('error', 'Activity not found.');
+        }
+
+        // Decode services JSON string to array for the view
+        $activity['services'] = json_decode($activity['services'], true);
+
+        $data = [
+            'title' => 'Edit Assistance',
+            'activity' => $activity,
+            'agencies' => $this->getAgencies(),
+            'categoryMap' => self::CATEGORY_MAP,
+            'servicesMap' => self::SERVICES_MAP,
+            'keteranganByServiceMap' => self::KETERANGAN_BY_SERVICE_MAP
         ];
 
         return view('assistance/form', $data);
@@ -59,7 +124,9 @@ class Assistance extends BaseController
         $agencyInfo = $this->request->getPost('agency_info');
         list($type, $id, $name) = explode('|', $agencyInfo);
 
-        $services = $this->request->getPost('services');
+        $serviceInput = $this->request->getPost('service');
+        // Ensure services is stored as an array for backward compatibility
+        $services = [$serviceInput];
 
         $data = [
             'tanggal_kegiatan' => $this->request->getPost('tanggal_kegiatan'),
@@ -82,7 +149,9 @@ class Assistance extends BaseController
         $agencyInfo = $this->request->getPost('agency_info');
         list($type, $id_agency, $name) = explode('|', $agencyInfo);
 
-        $services = $this->request->getPost('services');
+        $serviceInput = $this->request->getPost('service');
+        // Ensure services is stored as an array for backward compatibility
+        $services = [$serviceInput];
 
         $data = [
             'id'               => $id,
@@ -155,7 +224,7 @@ class Assistance extends BaseController
             $this->assistanceModel->where('category', $filterCategory);
         }
 
-        $activities = $this->assistanceModel->orderBy('tanggal_kegiatan', 'ASC')->findAll();
+        $activities = $this->assistanceModel->orderBy('tanggal_kegiatan', 'ASC')->orderBy('id', 'ASC')->findAll();
 
         $logoPath = FCPATH . 'logo.png';
         $logoData = base64_encode(file_get_contents($logoPath));

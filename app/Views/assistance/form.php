@@ -65,91 +65,115 @@
                         </div>
                     </div>
 
-                                        <div class="mb-3">
-                                            <label for="category" class="form-label">Category</label>
-                                            <select class="form-select" id="category" name="category" onchange="updateServices()" required>
-                                                <option value="">Select Category...</option>
-                                                <?php foreach ($categoryMap as $id => $label): ?>
-                                                    <option value="<?= $id ?>" <?= (isset($activity) && $activity['category'] == $id) ? 'selected' : '' ?>>
-                                                        <?= esc($label) ?>
-                                                    </option>
-                                                <?php endforeach; ?>
-                                            </select>
-                                        </div>
-                    
-                                        <div class="mb-3">
-                                            <label class="form-label">Services Provided</label>
-                                            <div id="servicesContainer">
-                                                <?php 
-                                                $serviceOptions = [
-                                                    1 => [ // Aplikasi SPBE
-                                                        'Website OPD', 
-                                                        'Email Resmi', 
-                                                        'Tanda Tangan Elektronik'
-                                                    ],
-                                                    2 => [ // Website Desa & Kelurahan
-                                                        'Bimtek Website', 
-                                                        'Domain Hosting Website'
-                                                    ]
-                                                ];
-                                                $selectedServices = isset($activity['services']) ? $activity['services'] : [];
-                                                ?>
-                                                
-                                                <?php foreach ($serviceOptions as $catId => $svcs): ?>
-                                                    <div class="service-group" id="group_<?= $catId ?>" style="display: none;">
-                                                        <div class="row">
-                                                            <?php foreach ($svcs as $svc): ?>
-                                                                <div class="col-md-6">
-                                                                    <div class="form-check">
-                                                                        <input class="form-check-input service-checkbox" type="checkbox" name="services[]" id="svc_<?= md5($svc) ?>" value="<?= $svc ?>"
-                                                                               <?= in_array($svc, $selectedServices) ? 'checked' : '' ?>>
-                                                                        <label class="form-check-label" for="svc_<?= md5($svc) ?>"><?= $svc ?></label>
-                                                                    </div>
-                                                                </div>
-                                                            <?php endforeach; ?>
-                                                        </div>
-                                                    </div>
-                                                <?php endforeach; ?>
-                                            </div>
-                                        </div>
-                    
-                                        <div class="mb-3">
-                                            <label for="keterangan" class="form-label">Notes</label>
-                                            <textarea class="form-control" id="keterangan" name="keterangan" rows="3"><?= isset($activity) ? esc($activity['keterangan']) : '' ?></textarea>
-                                        </div>
-                    
-                                        <div class="d-flex justify-content-between">
-                                            <a href="<?= site_url('assistance') ?>" class="btn btn-secondary">
-                                                <i class="fas fa-arrow-left"></i> Back
-                                            </a>
-                                            <button type="submit" class="btn btn-primary">Save Activity</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="mb-3">
+                        <label for="category" class="form-label">Category</label>
+                        <select class="form-select" id="category" name="category" onchange="updateServicesDropdown()" required>
+                            <option value="">Select Category...</option>
+                            <?php foreach ($categoryMap as $id => $label): ?>
+                                <option value="<?= $id ?>" <?= (isset($activity) && $activity['category'] == $id) ? 'selected' : '' ?>>
+                                    <?= esc($label) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
-                    
-                    <script>
-                    function updateServices() {
-                        const category = document.getElementById('category').value;
-                        const groups = document.querySelectorAll('.service-group');
-                        
-                        // Hide all groups
-                        groups.forEach(g => g.style.display = 'none');
-                    
-                        if (category) {
-                            // Show selected group
-                            const targetId = 'group_' + category;
-                            const targetGroup = document.getElementById(targetId);
-                            if (targetGroup) {
-                                targetGroup.style.display = 'block';
-                            }
-                        }
-                    }
-                    
-                    // Initial update on page load
-                    document.addEventListener('DOMContentLoaded', function() {
-                        updateServices();
-                    });
-                    </script><?= $this->endSection() ?>
+
+                    <div class="mb-3">
+                        <label for="service" class="form-label">Service</label>
+                        <select class="form-select" id="service" name="service" onchange="updateKeteranganOptions()" required>
+                            <option value="">Select Service...</option>
+                            <!-- Options will be populated by JS -->
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="keterangan" class="form-label">Notes (Keterangan)</label>
+                        <select class="form-select" id="keterangan" name="keterangan" required>
+                            <option value="">Select Keterangan...</option>
+                            <!-- Options will be populated by JS -->
+                        </select>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="<?= site_url('assistance') ?>" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Back
+                        </a>
+                        <button type="submit" class="btn btn-primary">Save Activity</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const servicesMap = <?= json_encode($servicesMap) ?>;
+    const keteranganByServiceMap = <?= json_encode($keteranganByServiceMap) ?>;
+    
+    // Handle initial values from PHP
+    const initialCategory = "<?= isset($activity) ? esc($activity['category']) : '' ?>";
+    const initialService = "<?= isset($activity) && !empty($activity['services']) ? esc($activity['services'][0]) : '' ?>";
+    const initialKeterangan = "<?= isset($activity) ? esc($activity['keterangan']) : '' ?>";
+
+    function updateServicesDropdown() {
+        const category = document.getElementById('category').value;
+        const serviceSelect = document.getElementById('service');
+        const currentService = serviceSelect.value || initialService; // Preserve selection or use initial
+
+        // Clear current options
+        serviceSelect.innerHTML = '<option value="">Select Service...</option>';
+
+        if (category && servicesMap[category]) {
+            servicesMap[category].forEach(svc => {
+                const option = document.createElement('option');
+                option.value = svc;
+                option.textContent = svc;
+                // Auto-select if matches current or initial
+                if (svc === currentService) {
+                    option.selected = true;
+                }
+                serviceSelect.appendChild(option);
+            });
+        }
+        
+        // Trigger update for Keterangan
+        updateKeteranganOptions();
+    }
+
+    function updateKeteranganOptions() {
+        const service = document.getElementById('service').value;
+        const keteranganSelect = document.getElementById('keterangan');
+        const currentKeterangan = keteranganSelect.value || initialKeterangan;
+
+        // Clear current options
+        keteranganSelect.innerHTML = '<option value="">Select Keterangan...</option>';
+
+        if (service && keteranganByServiceMap[service]) {
+            keteranganByServiceMap[service].forEach(opt => {
+                const option = document.createElement('option');
+                option.value = opt;
+                option.textContent = opt;
+                if (opt === currentKeterangan) {
+                    option.selected = true;
+                }
+                keteranganSelect.appendChild(option);
+            });
+        }
+
+        // Always add "Lainnya"
+        const lainnyaOpt = document.createElement('option');
+        lainnyaOpt.value = 'Lainnya';
+        lainnyaOpt.textContent = 'Lainnya';
+        if (currentKeterangan === 'Lainnya') {
+            lainnyaOpt.selected = true;
+        }
+        keteranganSelect.appendChild(lainnyaOpt);
+    }
+
+    // Initial update on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        // If category is already selected (edit mode), trigger updates
+        if (document.getElementById('category').value) {
+            updateServicesDropdown();
+        }
+    });
+</script><?= $this->endSection() ?>
