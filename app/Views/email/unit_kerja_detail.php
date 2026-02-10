@@ -17,9 +17,12 @@
         <a href="<?= $csvUrl ?>" class="btn btn-success">
           <i class="fas fa-file-csv me-2"></i>Export CSV
         </a>
-        <a href="<?= $pdfUrl ?>" class="btn btn-danger">
-          <i class="fas fa-file-pdf me-2"></i>Export Status PDF
-        </a>
+        <form id="pdfExportForm" action="<?= site_url('email/export_unit_kerja_pdf/' . $unit_kerja['id']) . ($queryString ? '?' . $queryString : '') ?>" method="POST" class="d-inline" target="_blank">
+            <input type="hidden" name="statusChartData" id="statusChartData">
+            <button type="submit" class="btn btn-danger" onclick="return preparePdfExport();">
+                <i class="fas fa-file-pdf me-2"></i>Export Status PDF
+            </button>
+        </form>
         <a href="<?= site_url('email/export_account_detail_pdf/' . $unit_kerja['id']) . ($queryString ? '?' . $queryString : '') ?>" class="btn btn-dark">
           <i class="fas fa-file-pdf me-2"></i>Export Akun PDF
         </a>
@@ -77,6 +80,64 @@
       </div>
     <?php endif; ?>
 
+
+    <!-- TTE Status Chart -->
+    <?php if (!empty($bsre_status_counts)): ?>
+      <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light py-3">
+          <h5 class="card-title mb-0">
+            <i class="fas fa-chart-pie me-2 text-primary"></i>Distribusi Status TTE
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="row align-items-center">
+            <div class="col-md-4">
+              <div style="height: 250px; position: relative;">
+                <canvas id="bsreStatusChart"></canvas>
+              </div>
+            </div>
+            <div class="col-md-8">
+              <div class="table-responsive">
+                <table class="table table-sm table-bordered">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Status TTE</th>
+                      <th class="text-end">Jumlah</th>
+                      <th class="text-end">Persentase</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php
+                    $total = 0;
+                    foreach ($bsre_status_counts as $status) {
+                      $total += $status['count'];
+                    }
+                    ?>
+                    <?php foreach ($bsre_status_counts as $key => $data): ?>
+                      <tr>
+                        <td>
+                          <span class="badge bg-secondary me-2" style="background-color: var(--chart-color-<?= $key ?>) !important;">&nbsp;</span>
+                          <?= esc($data['label']) ?: '-' ?>
+                        </td>
+                        <td class="text-end fw-bold"><?= number_format($data['count']) ?></td>
+                        <td class="text-end"><?= $total > 0 ? (int)(($data['count'] / $total) * 100) : 0 ?>%</td>
+                      </tr>
+                    <?php endforeach; ?>
+                  </tbody>
+                  <tfoot class="table-light fw-bold">
+                    <tr>
+                      <td>Total</td>
+                      <td class="text-end"><?= number_format($total) ?></td>
+                      <td class="text-end">100%</td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    <?php endif; ?>
 
     <!-- Search Form -->
     <div class="card shadow-sm mb-4">
@@ -187,9 +248,13 @@
                     <td class="align-middle">
                       <?php if (!empty($email['status_asn'])): ?>
                         <div><?= esc($email['status_asn']) ?></div>
+                      <?php else: ?>
+                        <div>-</div>
                       <?php endif; ?>
                       <?php if (!empty($email['jabatan'])): ?>
                         <small class="text-muted"><?= esc($email['jabatan']) ?></small>
+                      <?php else: ?>
+                        <small class="text-muted">-</small>
                       <?php endif; ?>
                     </td>
                     <td class="align-middle">
@@ -296,6 +361,88 @@
 </div>
 
 <script>
+  // Chart Configuration
+  document.addEventListener("DOMContentLoaded", function() {
+    <?php if (!empty($bsre_status_counts)): ?>
+      const ctx = document.getElementById('bsreStatusChart').getContext('2d');
+
+      const labels = [];
+      const data = [];
+      const backgroundColors = [];
+
+      // Define colors map based on status keys
+      const colorMap = {
+        'ISSUE': '#198754', // Success Green
+        'EXPIRED': '#dc3545', // Danger Red
+        'RENEW': '#0dcaf0', // Info Cyan
+        'WAITING_FOR_VERIFICATION': '#0d6efd', // Primary Blue
+        'NEW': '#6610f2', // Indigo
+        'NO_CERTIFICATE': '#ffc107', // Warning Yellow
+        'NOT_REGISTERED': '#6c757d', // Secondary Gray
+        'SUSPEND': '#212529', // Dark
+        'REVOKE': '#d63384', // Pink
+        'not_synced': '#adb5bd' // Gray
+      };
+
+      const chartData = <?= json_encode($bsre_status_counts) ?>;
+
+      Object.keys(chartData).forEach(key => {
+        const item = chartData[key];
+        labels.push(item.label);
+        data.push(item.count);
+
+        // Use mapped color or generate random if missing
+        const color = colorMap[key] || '#' + Math.floor(Math.random() * 16777215).toString(16);
+        backgroundColors.push(color);
+
+        // Set CSS variable for table legend
+        document.documentElement.style.setProperty('--chart-color-' + key, color);
+      });
+
+      window.statusChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: data,
+            backgroundColor: backgroundColors,
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false // We use custom table legend
+            },
+            datalabels: {
+              display: true,
+              color: '#fff',
+              font: {
+                weight: 'bold'
+              },
+              formatter: (value, ctx) => {
+                const total = ctx.dataset.data.reduce((acc, curr) => acc + curr, 0);
+                const percentage = Math.trunc(value * 100 / total) + "%";
+                return value > (total * 0.05) ? percentage : '';
+              }
+            }
+          }
+        },
+        plugins: [ChartDataLabels]
+      });
+    <?php endif; ?>
+  });
+
+  function preparePdfExport() {
+    if (window.statusChart) {
+      const statusChartB64 = window.statusChart.toBase64Image();
+      document.getElementById('statusChartData').value = statusChartB64;
+    }
+    return true;
+  }
+
   function openExportModal(unitId) {
     const exportModal = new bootstrap.Modal(document.getElementById('exportProgressModal'));
     const progressBar = document.getElementById('exportProgressBar');

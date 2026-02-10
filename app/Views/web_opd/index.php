@@ -1,36 +1,59 @@
 <?= $this->extend('templates/layout') ?>
 
 <?= $this->section('content') ?>
-<div class="row mb-4">
-    <!-- Dashboard Cards -->
-    <div class="col-md-4">
-        <div class="card shadow-sm border-0 border-start border-primary border-4">
-            <div class="card-body">
-                <h6 class="text-muted text-uppercase small fw-bold">Total Website</h6>
-                <h2 class="mb-0"><?= $stats['total'] ?></h2>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card shadow-sm border-0 border-start border-success border-4">
-            <div class="card-body">
-                <h6 class="text-muted text-uppercase small fw-bold">Status AKTIF</h6>
-                <h2 class="mb-0 text-success"><?= $stats['aktif'] ?> <small class="text-muted">(<?= $stats['aktif_percentage'] ?>%)</small></h2>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card shadow-sm border-0 border-start border-danger border-4">
-            <div class="card-body">
-                <h6 class="text-muted text-uppercase small fw-bold">Status NONAKTIF</h6>
-                <h2 class="mb-0 text-danger"><?= $stats['nonaktif'] ?> <small class="text-muted">(<?= $stats['nonaktif_percentage'] ?>%)</small></h2>
-            </div>
-        </div>
-    </div>
-</div>
-
 <div class="row">
     <div class="col-12">
+        <!-- Dashboard Charts -->
+        <div class="row mb-4 justify-content-center">
+            <!-- Status Chart -->
+            <div class="col-md-6">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-light py-3">
+                        <h6 class="card-title mb-0"><i class="fas fa-chart-pie me-2 text-primary"></i>Status Website</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-sm-5">
+                                <div style="height: 180px; position: relative;">
+                                    <canvas id="statusChart"></canvas>
+                                </div>
+                            </div>
+                            <div class="col-sm-7">
+                                <table class="table table-sm table-bordered mb-0" style="font-size: 0.85rem;">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Status</th>
+                                            <th class="text-end">Jumlah</th>
+                                            <th class="text-end">%</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><span class="badge bg-success me-2">&nbsp;</span> AKTIF</td>
+                                            <td class="text-end fw-bold"><?= number_format($stats['aktif']) ?></td>
+                                            <td class="text-end"><?= (int)$stats['aktif_percentage'] ?>%</td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="badge bg-danger me-2">&nbsp;</span> NONAKTIF</td>
+                                            <td class="text-end fw-bold"><?= number_format($stats['nonaktif']) ?></td>
+                                            <td class="text-end"><?= (int)$stats['nonaktif_percentage'] ?>%</td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot class="table-light fw-bold">
+                                        <tr>
+                                            <td>Total</td>
+                                            <td class="text-end"><?= number_format($stats['total']) ?></td>
+                                            <td class="text-end">100%</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <?php if (session()->getFlashdata('message')): ?>
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 <?= session()->getFlashdata('message') ?>
@@ -103,7 +126,7 @@
                             <tbody>
                                 <?php foreach ($websites as $web): ?>
                                     <tr>
-                                        <td class="fw-bold"><?= esc(strtoupper($web['nama_unit_kerja'] ?? 'N/A')) ?></td>
+                                        <td class="fw-bold"><?= esc(strtoupper($web['nama_unit_kerja'] ?? '')) ?: '-' ?></td>
                                         <td>
                                             <?php if (!empty($web['domain'])): ?>
                                                 <a href="http://<?= esc($web['domain']) ?>" target="_blank" class="text-decoration-none">
@@ -120,7 +143,7 @@
                                             ?>
                                             <span class="badge <?= $statusClass ?>"><?= $status ?></span>
                                         </td>
-                                        <td><?= esc($web['keterangan'] ?? '-') ?></td>
+                                        <td><?= esc($web['keterangan'] ?? '') ?: '-' ?></td>
                                         <td class="text-center">
                                             <a href="<?= site_url('web_opd/edit/' . $web['id']) ?>" class="btn btn-sm btn-outline-primary" title="Edit">
                                                 <i class="fas fa-edit"></i>
@@ -142,16 +165,6 @@
     </div>
 </div>
 
-<div class="row mb-4 mt-4 justify-content-center">
-    <div class="col-md-6">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h6 class="text-muted text-uppercase small fw-bold">Status Website</h6>
-                <canvas id="statusChart"></canvas>
-            </div>
-        </div>
-    </div>
-</div>
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
@@ -159,60 +172,43 @@
     Chart.register(ChartDataLabels);
 
     document.addEventListener("DOMContentLoaded", function() {
-        // Data from PHP
         const stats = <?= json_encode($stats) ?>;
 
-        // Status Chart (Pie)
+        // Common Chart Labels Formatter
+        const labelFormatter = (value, ctx) => {
+            const total = ctx.dataset.data.reduce((acc, curr) => acc + curr, 0);
+            const percentage = Math.trunc(value * 100 / total) + "%";
+            return value > (total * 0.05) ? percentage : '';
+        };
+
+        // Status Chart
         const statusCtx = document.getElementById('statusChart').getContext('2d');
         const statusChart = new Chart(statusCtx, {
-            type: 'pie',
+            type: 'doughnut',
             data: {
                 labels: ['AKTIF', 'NONAKTIF'],
                 datasets: [{
-                    label: 'Status Website',
                     data: [stats.aktif, stats.nonaktif],
-                    backgroundColor: [
-                        'rgba(25, 135, 84, 0.7)', // Green for Aktif
-                        'rgba(220, 53, 69, 0.7)' // Red for Nonaktif
-                    ],
-                    borderColor: [
-                        '#198754',
-                        '#dc3545'
-                    ],
+                    backgroundColor: ['#198754', '#dc3545'],
                     borderWidth: 1
                 }]
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 plugins: {
-                    legend: {
-                        position: 'top' // Show legend for pie chart
-                    },
+                    legend: { display: false },
                     datalabels: {
-                        formatter: (value, context) => {
-                            const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
-                            if (total === 0) {
-                                return '0 (0%)';
-                            }
-                            const percentage = (value / total * 100);
-                            let percentageString;
-                            if (percentage < 0.01 && percentage !== 0) {
-                                percentageString = '<0.01%';
-                            } else {
-                                percentageString = percentage.toFixed(0) + '%';
-                            }
-                            return `${value} (${percentageString})`; // Combine raw value and percentage
-                        },
-                        color: '#fff', // White color for labels on colored slices
-                        font: {
-                            weight: 'bold'
-                        }
+                        display: true,
+                        color: '#fff',
+                        font: { weight: 'bold' },
+                        formatter: labelFormatter
                     }
                 }
-            }
+            },
+            plugins: [ChartDataLabels]
         });
 
-        // Store chart for PDF export
         window.charts = {
             statusChart: statusChart,
         };

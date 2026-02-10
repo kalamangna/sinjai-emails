@@ -56,6 +56,9 @@ class Email extends BaseController
                     ->groupEnd();
             }
 
+            // Clone builder for statistics BEFORE bsre_status filter and paginate()
+            $statsBuilder = clone $builder;
+
             if ($bsre_status) {
                 if ($bsre_status === 'not_synced') {
                     $builder->groupStart()
@@ -122,8 +125,8 @@ class Email extends BaseController
             }
 
             // --- BSrE Status Statistics ---
-            $bsreStatusCounts = [];
-            $rawBsreCounts = $this->emailModel->allowCallbacks(false)
+            // Use the clone that has only search filters
+            $rawBsreCounts = $statsBuilder->allowCallbacks(false)
                 ->select('bsre_status, COUNT(*) as count')
                 ->groupBy('bsre_status')
                 ->findAll();
@@ -679,6 +682,51 @@ class Email extends BaseController
                 'not_synced' => 'Not Synced'
             ];
 
+            // Calculate BSrE Status Counts for Chart
+            $bsre_status_counts = [];
+            // Clone builder to avoid modifying the main query
+            $countBuilder = $this->emailModel->whereIn('unit_kerja_id', $allUnitIds);
+            
+            // Re-apply filters for accurate counts based on current view
+            if ($isKecamatan && $pimpinan_desa == 0) {
+                $countBuilder->where('pimpinan_desa', 0);
+            }
+            if ($search) {
+                $countBuilder->groupStart()
+                    ->like('email', $search)
+                    ->orLike('name', $search)
+                    ->orLike('nik', $search)
+                    ->orLike('nip', $search)
+                    ->groupEnd();
+            }
+            if ($status_asn) {
+                $countBuilder->where('emails.status_asn_id', $status_asn);
+            }
+            // Note: We don't filter by bsre_status here because we want to see the distribution of statuses
+            
+            $rawCounts = $countBuilder->allowCallbacks(false)
+                ->select('bsre_status, COUNT(*) as count')
+                ->groupBy('bsre_status')
+                ->findAll();
+
+            foreach ($rawCounts as $row) {
+                $statusKey = $row['bsre_status'] ?: 'not_synced';
+                if (!isset($bsre_status_counts[$statusKey])) {
+                    $bsre_status_counts[$statusKey] = [
+                        'label' => $bsre_status_options[$statusKey] ?? $statusKey,
+                        'count' => 0
+                    ];
+                }
+                $bsre_status_counts[$statusKey]['count'] += $row['count'];
+            }
+
+            // Sort: Move ISSUE to the top
+            uksort($bsre_status_counts, function ($a, $b) {
+                if ($a === 'ISSUE') return -1;
+                if ($b === 'ISSUE') return 1;
+                return strcmp($a, $b);
+            });
+
             $data = [
                 'unit_kerja' => $unitKerja,
                 'parent_unit' => !empty($unitKerja['parent_id']) ? $this->unitKerjaModel->find($unitKerja['parent_id']) : null,
@@ -692,6 +740,7 @@ class Email extends BaseController
                 'status_asn_options' => $this->statusAsnModel->orderBy('nama_status_asn', 'ASC')->findAll(),
                 'bsre_status' => $bsre_status,
                 'bsre_status_options' => $bsre_status_options,
+                'bsre_status_counts' => $bsre_status_counts, // Pass data to view
                 'pimpinan_desa' => $pimpinan_desa,
                 'back_url' => site_url('email'),
             ];
@@ -1692,12 +1741,16 @@ class Email extends BaseController
             $logoData = base64_encode(file_get_contents($logoPath));
             $logoSrc = 'data:image/png;base64,' . $logoData;
 
+            // Handle chart data from POST request
+            $statusChartData = $this->request->getPost('statusChartData');
+
             $data = [
                 'unit_kerja' => $unitKerja,
                 'emails' => $emails,
                 'showUnitKerjaColumn' => $showUnitKerjaColumn,
                 'logoSrc' => $logoSrc,
                 'current_date' => format_indo_date(date('Y-m-d')), // Add current date and time
+                'statusChart' => $statusChartData,
             ];
 
             $html = view('email/unit_kerja_pdf', $data);

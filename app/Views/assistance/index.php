@@ -19,11 +19,17 @@
             <div class="card-body">
                 <form action="<?= site_url('assistance') ?>" method="get" class="row g-3 align-items-center">
                     <div class="col-auto">
-                        <label for="category" class="col-form-label fw-bold">Filter Category:</label>
+                        <label for="month" class="col-form-label fw-bold">Filter Bulan:</label>
                     </div>
                     <div class="col-auto">
-                        <select name="category" id="category" class="form-select">
-                            <option value="">All Categories</option>
+                        <input type="month" name="month" id="month" class="form-control" value="<?= esc($filterMonth) ?>" onchange="this.form.submit()">
+                    </div>
+                    <div class="col-auto">
+                        <label for="category" class="col-form-label fw-bold">Kategori:</label>
+                    </div>
+                    <div class="col-auto">
+                        <select name="category" id="category" class="form-select" onchange="this.form.submit()">
+                            <option value="">Semua Kategori</option>
                             <?php foreach ($categoryMap as $id => $label): ?>
                                 <option value="<?= $id ?>" <?= ($filterCategory == $id) ? 'selected' : '' ?>>
                                     <?= esc($label) ?>
@@ -32,10 +38,7 @@
                         </select>
                     </div>
                     <div class="col-auto">
-                        <button type="submit" class="btn btn-secondary">Filter</button>
-                        <?php if ($filterCategory): ?>
-                            <a href="<?= site_url('assistance') ?>" class="btn btn-outline-secondary">Reset</a>
-                        <?php endif; ?>
+                        <a href="<?= site_url('assistance') ?>" class="btn btn-outline-secondary">Reset</a>
                     </div>
                 </form>
             </div>

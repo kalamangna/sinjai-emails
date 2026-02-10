@@ -94,7 +94,6 @@
         <img src="<?= $logoSrc ?>" alt="Logo" class="logo" />
         <h1><?= esc($title) ?></h1>
         <h2><?= esc($subtitle) ?></h2>
-        <p class="update-date">Dicetak: <?= strtoupper(esc($current_date)) ?></p>
     </div>
 
     <table>
@@ -127,11 +126,7 @@
                         <?php
                         $services = json_decode($item['services'], true);
                         if (!empty($services)) {
-                            echo '<ul style="margin: 0; padding-left: 15px;">';
-                            foreach ($services as $svc) {
-                                echo '<li>' . esc($svc) . '</li>';
-                            }
-                            echo '</ul>';
+                            echo esc($services[0]);
                         } else {
                             echo '-';
                         }

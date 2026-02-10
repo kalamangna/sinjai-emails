@@ -1,5 +1,22 @@
 <?= $this->extend('templates/layout') ?>
 
+<?= $this->section('styles') ?>
+<!-- Choices.js CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+<style>
+    .choices__inner {
+        background-color: #fff;
+        border-radius: 0.375rem;
+        border: 1px solid #dee2e6;
+        min-height: 38px;
+    }
+
+    .choices__list--single {
+        padding: 2px 16px 2px 4px;
+    }
+</style>
+<?= $this->endSection() ?>
+
 <?= $this->section('content') ?>
 <div class="row justify-content-center">
     <div class="col-md-8">
@@ -12,15 +29,15 @@
                     <?= csrf_field() ?>
 
                     <div class="mb-3">
-                        <label for="tanggal_kegiatan" class="form-label">Activity Date</label>
+                        <label for="tanggal_kegiatan" class="form-label">Tanggal Kegiatan</label>
                         <input type="date" class="form-control" id="tanggal_kegiatan" name="tanggal_kegiatan"
                             value="<?= isset($activity) ? $activity['tanggal_kegiatan'] : date('Y-m-d') ?>" required>
                     </div>
 
                     <div class="mb-3">
-                        <label for="agency_info" class="form-label">Agency (OPD / Desa / Kelurahan)</label>
+                        <label for="agency_info" class="form-label">Unit Kerja</label>
                         <select class="form-select" id="agency_info" name="agency_info" required>
-                            <option value="">Select Agency...</option>
+                            <option value="">Pilih Unit Kerja...</option>
                             <?php
                             $groups = [];
                             foreach ($agencies as $agency) {
@@ -34,9 +51,6 @@
                                         <?php
                                         $selected = '';
                                         if (isset($activity)) {
-                                            $currentVal = $activity['agency_type'] . '|' . $activity['agency_id'] . '|' . $activity['agency_name'];
-                                            // Ideally match simpler unique ID, but reconstructing value here works
-                                            // Or check breakdown
                                             if ($activity['agency_id'] == explode('|', $item->value)[1] && $activity['agency_type'] == explode('|', $item->value)[0]) {
                                                 $selected = 'selected';
                                             }
@@ -50,7 +64,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Method</label>
+                        <label class="form-label">Metode</label>
                         <div class="d-flex gap-3">
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="method" id="methodOnline" value="Online"
@@ -66,9 +80,9 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="category" class="form-label">Category</label>
+                        <label for="category" class="form-label">Kategori</label>
                         <select class="form-select" id="category" name="category" onchange="updateServicesDropdown()" required>
-                            <option value="">Select Category...</option>
+                            <option value="">Pilih Kategori...</option>
                             <?php foreach ($categoryMap as $id => $label): ?>
                                 <option value="<?= $id ?>" <?= (isset($activity) && $activity['category'] == $id) ? 'selected' : '' ?>>
                                     <?= esc($label) ?>
@@ -78,26 +92,26 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="service" class="form-label">Service</label>
+                        <label for="service" class="form-label">Layanan</label>
                         <select class="form-select" id="service" name="service" onchange="updateKeteranganOptions()" required>
-                            <option value="">Select Service...</option>
+                            <option value="">Pilih Layanan...</option>
                             <!-- Options will be populated by JS -->
                         </select>
                     </div>
 
                     <div class="mb-3">
-                        <label for="keterangan" class="form-label">Notes (Keterangan)</label>
+                        <label for="keterangan" class="form-label">Keterangan</label>
                         <select class="form-select" id="keterangan" name="keterangan" required>
-                            <option value="">Select Keterangan...</option>
+                            <option value="">Pilih Keterangan...</option>
                             <!-- Options will be populated by JS -->
                         </select>
                     </div>
 
                     <div class="d-flex justify-content-between">
                         <a href="<?= site_url('assistance') ?>" class="btn btn-secondary">
-                            <i class="fas fa-arrow-left"></i> Back
+                            <i class="fas fa-arrow-left"></i> Kembali
                         </a>
-                        <button type="submit" class="btn btn-primary">Save Activity</button>
+                        <button type="submit" class="btn btn-primary">Simpan Kegiatan</button>
                     </div>
                 </form>
             </div>
@@ -105,10 +119,11 @@
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 <script>
     const servicesMap = <?= json_encode($servicesMap) ?>;
     const keteranganByServiceMap = <?= json_encode($keteranganByServiceMap) ?>;
-    
+
     // Handle initial values from PHP
     const initialCategory = "<?= isset($activity) ? esc($activity['category']) : '' ?>";
     const initialService = "<?= isset($activity) && !empty($activity['services']) ? esc($activity['services'][0]) : '' ?>";
@@ -120,7 +135,7 @@
         const currentService = serviceSelect.value || initialService; // Preserve selection or use initial
 
         // Clear current options
-        serviceSelect.innerHTML = '<option value="">Select Service...</option>';
+        serviceSelect.innerHTML = '<option value="">Pilih Layanan...</option>';
 
         if (category && servicesMap[category]) {
             servicesMap[category].forEach(svc => {
@@ -134,7 +149,7 @@
                 serviceSelect.appendChild(option);
             });
         }
-        
+
         // Trigger update for Keterangan
         updateKeteranganOptions();
     }
@@ -145,7 +160,7 @@
         const currentKeterangan = keteranganSelect.value || initialKeterangan;
 
         // Clear current options
-        keteranganSelect.innerHTML = '<option value="">Select Keterangan...</option>';
+        keteranganSelect.innerHTML = '<option value="">Pilih Keterangan...</option>';
 
         if (service && keteranganByServiceMap[service]) {
             keteranganByServiceMap[service].forEach(opt => {
@@ -171,6 +186,18 @@
 
     // Initial update on page load
     document.addEventListener('DOMContentLoaded', function() {
+        // Initialize Choices.js for Agency selection
+        const agencySelect = document.getElementById('agency_info');
+        if (agencySelect) {
+            new Choices(agencySelect, {
+                searchEnabled: true,
+                itemSelectText: '',
+                placeholder: true,
+                placeholderValue: 'Pilih Unit Kerja...',
+                searchPlaceholderValue: 'Cari Unit Kerja...',
+                shouldSort: false,
+            });
+        }
         // If category is already selected (edit mode), trigger updates
         if (document.getElementById('category').value) {
             updateServicesDropdown();

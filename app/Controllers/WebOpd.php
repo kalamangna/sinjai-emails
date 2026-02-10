@@ -32,22 +32,29 @@ class WebOpd extends BaseController
             $model->where('web_opd.status', $filterStatus);
         }
 
-        $data['websites'] = $model->orderBy('unit_kerja.nama_unit_kerja', 'ASC')->findAll();
+        $websites = $model->orderBy('unit_kerja.nama_unit_kerja', 'ASC')->findAll();
 
-        $data['total_filtered'] = count($data['websites']);
+        $data['websites'] = $websites;
+        $data['total_filtered'] = count($websites);
 
-        $db = \Config\Database::connect();
+        // Calculate statistics based on filtered data
+        $aktif = 0;
+        $nonaktif = 0;
+
+        foreach ($websites as $web) {
+            if ($web['status'] === 'AKTIF') $aktif++;
+            elseif ($web['status'] === 'NONAKTIF') $nonaktif++;
+        }
 
         $data['stats'] = [
-            'total' => $db->table('web_opd')->countAllResults(),
-            'aktif' => $db->table('web_opd')->where('status', 'AKTIF')->countAllResults(),
-            'nonaktif' => $db->table('web_opd')->where('status', 'NONAKTIF')->countAllResults(),
+            'total' => $data['total_filtered'],
+            'aktif' => $aktif,
+            'nonaktif' => $nonaktif,
         ];
 
-        $total = $data['stats']['total'];
-        if ($total > 0) {
-            $data['stats']['aktif_percentage'] = round(($data['stats']['aktif'] / $total) * 100);
-            $data['stats']['nonaktif_percentage'] = round(($data['stats']['nonaktif'] / $total) * 100);
+        if ($data['total_filtered'] > 0) {
+            $data['stats']['aktif_percentage'] = (int)(($aktif / $data['total_filtered']) * 100);
+            $data['stats']['nonaktif_percentage'] = (int)(($nonaktif / $data['total_filtered']) * 100);
         } else {
             $data['stats']['aktif_percentage'] = 0;
             $data['stats']['nonaktif_percentage'] = 0;

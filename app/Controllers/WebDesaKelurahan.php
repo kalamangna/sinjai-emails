@@ -53,38 +53,58 @@ class WebDesaKelurahan extends BaseController
             $model->like('web_desa_kelurahan.desa_kelurahan', $filterType, 'after');
         }
 
-        $data['websites'] = $model->orderBy('web_desa_kelurahan.kecamatan', 'ASC')
+        $websites = $model->orderBy('web_desa_kelurahan.kecamatan', 'ASC')
             ->orderBy('web_desa_kelurahan.desa_kelurahan', 'ASC')
             ->findAll();
 
-        $data['total_filtered'] = count($data['websites']);
+        $data['websites'] = $websites;
+        $data['total_filtered'] = count($websites);
 
-        $db = \Config\Database::connect();
+        // Calculate statistics based on filtered data
+        $aktif = 0;
+        $nonaktif = 0;
+        $platform_stats_map = [];
+
+        foreach ($websites as $web) {
+            if ($web['status'] === 'AKTIF') $aktif++;
+            elseif ($web['status'] === 'NONAKTIF') $nonaktif++;
+
+            $pName = $web['platform_name'] ?: '-';
+            if (!isset($platform_stats_map[$pName])) {
+                $platform_stats_map[$pName] = 0;
+            }
+            $platform_stats_map[$pName]++;
+        }
 
         $data['stats'] = [
-            'total' => $db->table('web_desa_kelurahan')->countAllResults(),
-            'aktif' => $db->table('web_desa_kelurahan')->where('status', 'AKTIF')->countAllResults(),
-            'nonaktif' => $db->table('web_desa_kelurahan')->where('status', 'NONAKTIF')->countAllResults(),
+            'total' => $data['total_filtered'],
+            'aktif' => $aktif,
+            'nonaktif' => $nonaktif,
         ];
 
-        $total = $data['stats']['total'];
-        if ($total > 0) {
-            $data['stats']['aktif_percentage'] = round(($data['stats']['aktif'] / $total) * 100);
-            $data['stats']['nonaktif_percentage'] = round(($data['stats']['nonaktif'] / $total) * 100);
+        if ($data['total_filtered'] > 0) {
+            $data['stats']['aktif_percentage'] = (int)(($aktif / $data['total_filtered']) * 100);
+            $data['stats']['nonaktif_percentage'] = (int)(($nonaktif / $data['total_filtered']) * 100);
         } else {
             $data['stats']['aktif_percentage'] = 0;
             $data['stats']['nonaktif_percentage'] = 0;
         }
 
-        // Platform distribution
-        $data['platform_stats'] = $db->table('web_desa_kelurahan')
-            ->select('platforms.nama_platform, COUNT(web_desa_kelurahan.id) as count')
-            ->join('platforms', 'platforms.id = web_desa_kelurahan.platform_id', 'left')
-            ->groupBy('platforms.nama_platform')
-            ->get()
-            ->getResultArray();
+        $data['platform_stats'] = [];
+        foreach ($platform_stats_map as $name => $count) {
+            $data['platform_stats'][] = [
+                'nama_platform' => $name,
+                'count' => $count
+            ];
+        }
 
-        // Get distinct kecamatan for filter
+        // Sort by count DESC
+        usort($data['platform_stats'], function ($a, $b) {
+            return $b['count'] <=> $a['count'];
+        });
+
+        $db = \Config\Database::connect();
+        // Get distinct kecamatan for filter (remain global)
         $data['kecamatan_list'] = $db->table('web_desa_kelurahan')
             ->select('kecamatan')
             ->distinct()
@@ -153,28 +173,48 @@ class WebDesaKelurahan extends BaseController
 
         $db = \Config\Database::connect();
 
+        $aktif = 0;
+        $nonaktif = 0;
+        $platform_stats_map = [];
+
+        foreach ($websites as $web) {
+            if ($web['status'] === 'AKTIF') $aktif++;
+            elseif ($web['status'] === 'NONAKTIF') $nonaktif++;
+
+            $pName = $web['platform_name'] ?: '-';
+            if (!isset($platform_stats_map[$pName])) {
+                $platform_stats_map[$pName] = 0;
+            }
+            $platform_stats_map[$pName]++;
+        }
+
         $stats = [
-            'total' => $db->table('web_desa_kelurahan')->countAllResults(),
-            'aktif' => $db->table('web_desa_kelurahan')->where('status', 'AKTIF')->countAllResults(),
-            'nonaktif' => $db->table('web_desa_kelurahan')->where('status', 'NONAKTIF')->countAllResults(),
+            'total' => count($websites),
+            'aktif' => $aktif,
+            'nonaktif' => $nonaktif,
         ];
 
-        $total = $stats['total'];
-        if ($total > 0) {
-            $stats['aktif_percentage'] = round(($stats['aktif'] / $total) * 100);
-            $stats['nonaktif_percentage'] = round(($stats['nonaktif'] / $total) * 100);
+        if ($stats['total'] > 0) {
+            $stats['aktif_percentage'] = (int)(($aktif / $stats['total']) * 100);
+            $stats['nonaktif_percentage'] = (int)(($nonaktif / $stats['total']) * 100);
         } else {
             $stats['aktif_percentage'] = 0;
             $stats['nonaktif_percentage'] = 0;
         }
 
-        // Platform distribution
-        $platform_stats = $db->table('web_desa_kelurahan')
-            ->select('platforms.nama_platform, COUNT(web_desa_kelurahan.id) as count')
-            ->join('platforms', 'platforms.id = web_desa_kelurahan.platform_id', 'left')
-            ->groupBy('platforms.nama_platform')
-            ->get()
-            ->getResultArray();
+        // Platform distribution from filtered data
+        $platform_stats = [];
+        foreach ($platform_stats_map as $name => $count) {
+            $platform_stats[] = [
+                'nama_platform' => $name,
+                'count' => $count
+            ];
+        }
+
+        // Sort by count DESC
+        usort($platform_stats, function ($a, $b) {
+            return $b['count'] <=> $a['count'];
+        });
 
         $logoPath = FCPATH . 'logo.png';
         $logoData = base64_encode(file_get_contents($logoPath));

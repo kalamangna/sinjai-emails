@@ -109,202 +109,206 @@
             height: auto;
         }
 
-                .footer-info {
+        .footer-info {
 
-                    position: fixed;
+            position: fixed;
 
-                    bottom: 0;
+            bottom: 0;
 
-                    left: 0;
+            left: 0;
 
-                    font-size: 9px;
+            font-size: 9px;
 
-                    text-align: left;
+            text-align: left;
 
-                }
+        }
 
-        
 
-                .footer-right {
 
-                    position: fixed;
+        .footer-right {
 
-                    bottom: 0;
+            position: fixed;
 
-                    right: 0;
+            bottom: 0;
 
-                    font-size: 9px;
+            right: 0;
 
-                    text-align: right;
+            font-size: 9px;
 
-                    color: #555;
+            text-align: right;
 
-                }
+            color: #555;
 
-        
+        }
 
-                .footer-info p,
 
-                .footer-right p {
 
-                    margin: 2px 0;
+        .footer-info p,
 
-                }
+        .footer-right p {
 
-        
+            margin: 2px 0;
 
-                .update-date {
+        }
 
-                    text-align: center;
 
-                    font-size: 10px;
 
-                    color: #666;
+        .update-date {
 
-                    margin-top: -10px;
+            text-align: center;
 
-                }
+            font-size: 10px;
 
-            </style>
+            color: #666;
 
-        </head>
+            margin-top: -10px;
 
-        
+        }
+    </style>
 
-        <body>
+</head>
 
-            <div class="header">
 
-                <img src="<?= $logoSrc ?>" alt="Logo" class="logo" />
 
-                <h1><?= esc($title) ?></h1>
+<body>
 
-                <h2><?= esc($subtitle) ?></h2>
+    <div class="header">
 
-                <p class="update-date">UPDATE PER: <?= strtoupper(esc($current_date)) ?></p>
+        <img src="<?= $logoSrc ?>" alt="Logo" class="logo" />
 
-            </div>
+        <h1><?= esc($title) ?></h1>
 
-        
+        <h2><?= esc($subtitle) ?></h2>
 
-            <div class="stats-container">
+        <p class="update-date">UPDATE PER: <?= strtoupper(esc($current_date)) ?></p>
 
-                <div class="stats-box">
+    </div>
 
-                    <h3>Total Website</h3>
 
-                    <p><?= esc($stats['total'] ?? '-') ?></p>
 
-                </div>
+    <div style="width: 100%; margin-bottom: 20px;">
+        <div style="border: 1px solid #ddd; padding: 15px;">
+            <h3 style="font-size: 12px; margin-top: 0; margin-bottom: 15px; text-align: center; border-bottom: 1px solid #eee; padding-bottom: 10px;">STATUS WEBSITE</h3>
 
-                <div class="stats-box">
-
-                    <h3>Aktif</h3>
-
-                    <p><?= esc($stats['aktif'] ?? '-') ?> <small>(<?= esc($stats['aktif_percentage'] ?? '-') ?>%)</small></p>
-
-                </div>
-
-                <div class="stats-box">
-
-                    <h3>Nonaktif</h3>
-
-                    <p><?= esc($stats['nonaktif'] ?? '-') ?> <small>(<?= esc($stats['nonaktif_percentage'] ?? '-') ?>%)</small></p>
-
-                </div>
-
-            </div>
-
-        
-
-            <table>
-
-                <thead>
-
-                    <tr>
-
-                        <th style="width: 3%;">No.</th>
-
-                        <th style="width: 40%;">Unit Kerja (OPD)</th>
-
-                        <th style="width: 27%;">Domain</th>
-
-                        <th style="width: 10%;">Status</th>
-
-                        <th style="width: 20%;">Keterangan</th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                    <?php
-
-                    $nomor = 1;
-
-                    foreach ($websites as $website) :
-
-                        $status_color = (strtoupper($website['status'] ?? '') === 'AKTIF') ? '#198754' : '#dc3545';
-
-                    ?>
-
-                        <tr>
-
-                            <td style="text-align: center;"><?= $nomor++ ?></td>
-
-                            <td><strong><?= esc(strtoupper($website['nama_unit_kerja'] ?? '-')) ?></strong></td>
-
-                            <td><?= esc($website['domain'] ?? '-') ?></td>
-
-                            <td style="color: <?= $status_color ?>; font-weight: bold;"><?= esc(strtoupper($website['status'] ?? '-')) ?></td>
-
-                            <td><?= esc($website['keterangan'] ?? '-') ?></td>
-
-                        </tr>
-
-                    <?php endforeach; ?>
-
-                </tbody>
-
+            <table style="width: 100%; border: none;">
+                <tr>
+                    <td style="width: 45%; border: none; text-align: center; vertical-align: middle; padding: 0;">
+                        <?php if (isset($statusChart) && !empty($statusChart)): ?>
+                            <img src="<?= $statusChart ?>" style="width: 180px; height: auto;">
+                        <?php endif; ?>
+                    </td>
+                    <td style="width: 55%; border: none; vertical-align: middle; padding: 0 0 0 20px;">
+                        <table style="width: 100%; font-size: 9px; margin-bottom: 0; border-collapse: collapse;">
+                            <thead>
+                                <tr style="background-color: #f9f9f9;">
+                                    <th style="border: 1px solid #ddd; padding: 5px;">Status</th>
+                                                                                <th style="border: 1px solid #ddd; padding: 5px; text-align: right;">Jumlah</th>                                    <th style="border: 1px solid #ddd; padding: 5px; text-align: right;">%</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="border: 1px solid #ddd; padding: 5px; color: #198754; font-weight: bold;">AKTIF</td>
+                                    <td style="border: 1px solid #ddd; padding: 5px; text-align: right; font-weight: bold;"><?= number_format($stats['aktif']) ?></td>
+                                    <td style="border: 1px solid #ddd; padding: 5px; text-align: right;"><?= (int)$stats['aktif_percentage'] ?>%</td>
+                                </tr>
+                                <tr>
+                                    <td style="border: 1px solid #ddd; padding: 5px; color: #dc3545; font-weight: bold;">NONAKTIF</td>
+                                    <td style="border: 1px solid #ddd; padding: 5px; text-align: right; font-weight: bold;"><?= number_format($stats['nonaktif']) ?></td>
+                                    <td style="border: 1px solid #ddd; padding: 5px; text-align: right;"><?= (int)$stats['nonaktif_percentage'] ?>%</td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr style="background-color: #f2f2f2; font-weight: bold;">
+                                    <td style="border: 1px solid #ddd; padding: 5px;">TOTAL</td>
+                                    <td style="border: 1px solid #ddd; padding: 5px; text-align: right;"><?= number_format($stats['total']) ?></td>
+                                    <td style="border: 1px solid #ddd; padding: 5px; text-align: right;">100%</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </td>
+                </tr>
             </table>
+        </div>
+    </div>
 
-        
 
-            <?php if (isset($statusChart)): ?>
 
-            <div class="chart-container">
+    <table>
 
-                <div class="chart-box">
+        <thead>
 
-                    <img src="<?= $statusChart ?>" alt="Status Chart">
+            <tr>
 
-                </div>
+                <th style="width: 3%;">No.</th>
 
-            </div>
+                <th style="width: 40%;">OPD</th>
 
-            <?php endif; ?>
+                <th style="width: 27%;">Domain</th>
 
-        
+                <th style="width: 10%;">Status</th>
 
-                <div class="footer-info">
+                <th style="width: 20%;">Keterangan</th>
 
-        
+            </tr>
 
-                    <strong>Contact Person:</strong> 082188344982 (Dzul)
+        </thead>
 
-        
+        <tbody>
 
-                </div>
+            <?php
 
-        
+            $nomor = 1;
 
-            <div class="footer-right">
+            foreach ($websites as $website) :
 
-                <p>Aptika Diskominfo Sinjai</p>
+                $status_color = (strtoupper($website['status'] ?? '') === 'AKTIF') ? '#198754' : '#dc3545';
 
-            </div>
+            ?>
 
-        </body>
+                <tr>
+
+                    <td style="text-align: center;"><?= $nomor++ ?></td>
+
+                    <td><strong><?= esc(strtoupper($website['nama_unit_kerja'] ?? '')) ?: '-' ?></strong></td>
+
+                    <td><?= esc($website['domain'] ?? '') ?: '-' ?></td>
+
+                    <td style="color: <?= $status_color ?>; font-weight: bold;"><?= esc(strtoupper($website['status'] ?? '')) ?: '-' ?></td>
+
+                    <td><?= esc($website['keterangan'] ?? '') ?: '-' ?></td>
+
+                </tr>
+
+            <?php endforeach; ?>
+
+        </tbody>
+
+    </table>
+
+
+
+
+
+
+
+    <div class="footer-info">
+
+
+
+        <strong>Contact Person:</strong> 082188344982 (Dzul)
+
+
+
+    </div>
+
+
+
+    <div class="footer-right">
+
+        <p>Aptika Diskominfo Sinjai</p>
+
+    </div>
+
+</body>
 
 </html>

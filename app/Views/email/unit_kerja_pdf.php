@@ -210,14 +210,94 @@
         </tbody>
     </table>
 
-    <div class="tte-description">
-        <p><strong>Keterangan Status TTE</strong></p>
-        <ul>
-            <li><strong style="color: #198754;">ISSUE</strong> : Sertifikat Aktif / Siap TTE</li>
-            <li><strong style="color: #dc3545;">EXPIRED</strong> : Masa Berlaku Habis</li>
-            <li><strong style="color: #0dcaf0;">RENEW</strong> : Proses Pembaruan</li>
-            <li><strong style="color: #d39e00;">NO_CERTIFICATE</strong> : Belum Ada Sertifikat</li>
-        </ul>
+    <?php
+    // Calculate Status Counts
+    $statusCounts = [];
+    $totalEmails = count($emails);
+    
+    // Status Labels Map
+    $statusLabels = [
+        'ISSUE' => 'Sertifikat Aktif / Siap TTE',
+        'EXPIRED' => 'Masa Berlaku Habis',
+        'RENEW' => 'Proses Pembaruan',
+        'WAITING_FOR_VERIFICATION' => 'Menunggu Verifikasi',
+        'NEW' => 'Belum Aktivasi',
+        'NO_CERTIFICATE' => 'Belum Ada Sertifikat',
+        'NOT_REGISTERED' => 'Pengguna Tidak Terdaftar',
+        'SUSPEND' => 'Akun Ditangguhkan',
+        'REVOKE' => 'Sertifikat Dicabut',
+        'NOT SYNCED' => 'Belum Sinkronisasi',
+        'UNKNOWN' => 'Status Tidak Diketahui'
+    ];
+
+    foreach ($emails as $email) {
+        $status = !empty($email['bsre_status']) ? $email['bsre_status'] : 'NOT SYNCED';
+        if (!isset($statusCounts[$status])) {
+            $statusCounts[$status] = 0;
+        }
+        $statusCounts[$status]++;
+    }
+    
+    // Sort: Move ISSUE to the top
+    uksort($statusCounts, function ($a, $b) {
+        if ($a === 'ISSUE') return -1;
+        if ($b === 'ISSUE') return 1;
+        return strcmp($a, $b);
+    });
+    ?>
+
+    <div style="width: 100%; margin-bottom: 20px; page-break-inside: avoid; margin-top: 20px;">
+        <div style="border: 1px solid #ddd; padding: 15px;">
+            <h3 style="font-size: 12px; margin-top: 0; margin-bottom: 15px; text-align: center; border-bottom: 1px solid #eee; padding-bottom: 10px;">RINGKASAN STATUS TTE</h3>
+            
+            <table style="width: 100%; border: none;">
+                <tr>
+                    <td style="width: 35%; border: none; text-align: center; vertical-align: middle; padding: 0;">
+                        <?php if (isset($statusChart) && !empty($statusChart)): ?>
+                            <img src="<?= $statusChart ?>" style="width: 180px; height: auto;">
+                        <?php endif; ?>
+                    </td>
+                    <td style="width: 65%; border: none; vertical-align: middle; padding: 0 0 0 20px;">
+                        <table style="width: 100%; font-size: 9px; margin-bottom: 0; border-collapse: collapse;">
+                            <thead>
+                                <tr style="background-color: #f9f9f9;">
+                                    <th style="border: 1px solid #ddd; padding: 5px; width: 70%;">Status</th>
+                                    <th style="border: 1px solid #ddd; padding: 5px; text-align: right; width: 15%;">Jumlah</th>
+                                    <th style="border: 1px solid #ddd; padding: 5px; text-align: right; width: 15%;">%</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($statusCounts as $status => $count): ?>
+                                    <?php
+                                        $color = '#000';
+                                        if ($status === 'ISSUE') $color = '#198754';
+                                        elseif (in_array($status, ['EXPIRED', 'REVOKE', 'SUSPEND'])) $color = '#dc3545';
+                                        elseif (in_array($status, ['RENEW', 'WAITING_FOR_VERIFICATION', 'NEW'])) $color = '#0dcaf0';
+                                        elseif (in_array($status, ['NO_CERTIFICATE', 'NOT_REGISTERED', 'NOT SYNCED'])) $color = '#d39e00';
+                                        
+                                        $label = $statusLabels[$status] ?? $status;
+                                    ?>
+                                    <tr>
+                                        <td style="border: 1px solid #ddd; padding: 5px; color: <?= $color ?>; font-weight: bold;">
+                                            <?= esc($status) ?> <span style="color: #666; font-weight: normal; font-size: 8px;">- <?= esc($label) ?></span>
+                                        </td>
+                                        <td style="border: 1px solid #ddd; padding: 5px; text-align: right; font-weight: bold;"><?= $count ?></td>
+                                        <td style="border: 1px solid #ddd; padding: 5px; text-align: right;"><?= (int)(($count / $totalEmails) * 100) ?>%</td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                            <tfoot>
+                                <tr style="background-color: #f2f2f2; font-weight: bold;">
+                                    <td style="border: 1px solid #ddd; padding: 5px;">TOTAL</td>
+                                    <td style="border: 1px solid #ddd; padding: 5px; text-align: right;"><?= $totalEmails ?></td>
+                                    <td style="border: 1px solid #ddd; padding: 5px; text-align: right;">100%</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
     </div>
 
     <div class="footer-info">
