@@ -1,51 +1,51 @@
 # Sinjai Emails - Portal Manajemen Identitas Digital
 
-A centralized management platform designed to streamline digital identity provisioning, institutional asset tracking, and technical support activities for the Government of Sinjai Regency.
+Platform manajemen terpusat yang dirancang untuk mengefisiensikan penyediaan identitas digital, pelacakan aset institusional, dan aktivitas dukungan teknis bagi Pemerintah Kabupaten Sinjai.
 
-## Core Features
+## Fitur Utama
 
 ### 🆔 Manajemen Identitas (Email)
-- **Digital Account Provisioning:** Full lifecycle management of official electronic identities (@sinjaikab.go.id) integrated with cPanel API.
-- **Bulk Processing (Layanan Batch):** High-volume account creation, profile updates, and automated PK (Perjanjian Kerja) document generation.
-- **Service Integration:** Real-time synchronization with mail servers to monitor usage, disk quota, and account health.
+- **Penyediaan Akun Digital:** Pengelolaan siklus hidup lengkap identitas elektronik resmi (@sinjaikab.go.id) yang terintegrasi dengan cPanel API.
+- **Pemrosesan Massal (Layanan Batch):** Pembuatan akun dalam jumlah besar, pembaruan profil, dan otomatisasi pembuatan dokumen PK (Perjanjian Kerja).
+- **Integrasi Layanan:** Sinkronisasi waktu nyata dengan mail server untuk memantau penggunaan, kuota disk, dan kesehatan akun.
 
 ### 🏢 Direktori Institusi
-- **Unit Kerja Hierarchy:** Manage agency structures with multi-level relationships (OPD, UPTD, and Kecamatan).
-- **Classification & Roles:** Track employee status (ASN/PPPK), official ranks (Eselon), and leadership positions.
-- **Data Pimpinan Hub:** Specialized tracking for OPD leaders, Village heads (Kepala Desa), and Ward leaders (Lurah).
+- **Hierarki Unit Kerja:** Mengelola struktur instansi dengan hubungan bertingkat (OPD, UPTD, dan Kecamatan).
+- **Klasifikasi & Peran:** Melacak status kepegawaian (ASN/PPPK), pangkat resmi (Eselon), dan posisi pimpinan.
+- **Hub Data Pimpinan:** Pelacakan khusus untuk pimpinan OPD, Kepala Desa, dan Lurah.
 
-### 🔐 Compliance & Digital Signatures (TTE)
-- **BSrE Integration:** Automated monitoring of electronic signature certification status via BSrE API.
-- **Standardized Status Monitoring:** Consistent color-coded status tracking (ISSUE, EXPIRED, NO_CERTIFICATE, RENEW, etc.) across all platforms.
-- **Human Resource Sync:** Connects with local HR systems (Simpegnas) to maintain accurate employee information.
+### 🔐 Kepatuhan & Tanda Tangan Elektronik (TTE)
+- **Integrasi BSrE:** Pemantauan otomatis status sertifikasi tanda tangan elektronik melalui BSrE API.
+- **Pemantauan Status Terstandar:** Pelacakan status dengan kode warna yang konsisten (ISSUE, EXPIRED, NO_CERTIFICATE, RENEW, dll) di seluruh platform.
+- **Sinkronisasi SDM:** Terhubung dengan sistem kepegawaian lokal (Simpegnas) untuk menjaga akurasi informasi pegawai.
 
-### 📊 Monitoring Website
-- **Centralized Tracking:** Monitor the status and availability of official government websites (OPD and Desa).
-- **Automated Metadata:** Intelligent checks for domain expiration and management status (Dikelola Kominfo/Mandiri).
-- **Visual Analytics:** Interactive dashboards providing insights into asset distribution and status using ApexCharts.
+### 📊 Pemantauan Website
+- **Pelacakan Terpusat:** Memantau status dan ketersediaan situs web resmi pemerintah (OPD dan Desa).
+- **Metadata Otomatis:** Pemeriksaan cerdas untuk masa berlaku domain dan status pengelolaan (Dikelola Kominfo/Mandiri).
+- **Analitik Visual:** Dasbor interaktif yang memberikan wawasan tentang distribusi aset dan status menggunakan ApexCharts.
 
-### 🤝 Log Pendampingan (Technical Support)
-- **Activity Logging:** Document technical assistance and mentoring provided to various government units.
-- **Service Categorization:** Specialized tracking for system applications, email support, or website management.
-- **Method Tracking:** Log interactions based on support delivery (Remote/Online or On-site).
+### 🤝 Log Pendampingan (Dukungan Teknis)
+- **Pencatatan Aktivitas:** Mendokumentasikan bantuan teknis dan pendampingan yang diberikan ke berbagai unit kerja.
+- **Kategorisasi Layanan:** Pelacakan khusus untuk area dukungan yang berbeda seperti aplikasi sistem, dukungan email, atau pengelolaan website.
+- **Pelacakan Metode:** Mencatat interaksi berdasarkan penyampaian dukungan (Remot/Online atau On-site).
 
 ### 📄 Pelaporan Profesional
-- **Standardized Exports:** Professional PDF and CSV reports with unified branding and localized formatting.
-- **Batch Document Generation:** Automated generation of PK documents for PPPK Paruh Waktu with ZIP export capabilities.
-- **Filtered Insights:** Targeted report generation based on specific Unit Kerja, Eselon, or Certification status.
+- **Ekspor Terstandar:** Laporan PDF dan CSV profesional dengan branding terpadu dan format lokal.
+- **Generasi Dokumen Massal:** Pembuatan dokumen PK otomatis untuk PPPK Paruh Waktu dengan kemampuan ekspor ZIP.
+- **Wawasan Terfilter:** Pembuatan laporan bertarget berdasarkan Unit Kerja, Eselon, atau status sertifikasi tertentu.
 
-## Technology Stack
+## Tumpukan Teknologi
 
-- **Backend:** PHP 8.1+ with CodeIgniter 4 Framework
+- **Backend:** PHP 8.1+ dengan Framework CodeIgniter 4
 - **Database:** Relational Database (MySQL / MariaDB)
-- **Frontend:** Tailwind CSS & Modern JavaScript (Async/Fetch)
-- **Visualization:** ApexCharts.js
-- **Reporting:** Dompdf for advanced PDF generation
-- **API Integrations:** cPanel UAPI, BSrE API V2, Simpegnas API
+- **Frontend:** Tailwind CSS & JavaScript Modern (Async/Fetch)
+- **Visualisasi:** ApexCharts.js
+- **Pelaporan:** Dompdf untuk pembuatan PDF tingkat lanjut
+- **Integrasi API:** cPanel UAPI, BSrE API V2, Simpegnas API
 
-## Requirements
+## Persyaratan Sistem
 
-- PHP 8.1 or higher
+- PHP 8.1 atau lebih tinggi
 - Composer Dependency Manager
-- MySQL 5.7+ or MariaDB 10.3+
-- Node.js (for Tailwind CSS build process)
+- MySQL 5.7+ atau MariaDB 10.3+
+- Node.js (untuk proses build Tailwind CSS)
