@@ -9,6 +9,13 @@ use Config\Services;
 
 class WebOpd extends BaseController
 {
+    protected $exportService;
+
+    public function __construct()
+    {
+        $this->exportService = new \App\Services\Exports\WebMonitoringExportService();
+    }
+
     public function index()
     {
         $model = new WebOpdModel();
@@ -69,68 +76,12 @@ class WebOpd extends BaseController
 
     public function export_pdf()
     {
-        helper('time');
-        $model = new WebOpdModel();
-
         $search = trim($this->request->getGet('search') ?? '');
         $filterStatus = trim($this->request->getGet('status') ?? '');
-
-        // Build Query
-        $model->select('web_opd.*, unit_kerja.nama_unit_kerja')
-            ->join('unit_kerja', 'unit_kerja.id = web_opd.unit_kerja_id', 'left');
-
-        if ($search !== '') {
-            $model->groupStart()
-                ->like('unit_kerja.nama_unit_kerja', $search)
-                ->orLike('web_opd.domain', $search)
-                ->groupEnd();
-        }
-
-        if ($filterStatus !== '') {
-            $model->where('web_opd.status', $filterStatus);
-        }
-
-        $websites = $model->orderBy('unit_kerja.nama_unit_kerja', 'ASC')->findAll();
-
-        $db = \Config\Database::connect();
-
-        $stats = [
-            'total' => $db->table('web_opd')->countAllResults(),
-            'aktif' => $db->table('web_opd')->where('status', 'AKTIF')->countAllResults(),
-            'nonaktif' => $db->table('web_opd')->where('status', 'NONAKTIF')->countAllResults(),
-        ];
-
-        $total = $stats['total'];
-        if ($total > 0) {
-            $stats['aktif_percentage'] = round(($stats['aktif'] / $total) * 100);
-            $stats['nonaktif_percentage'] = round(($stats['nonaktif'] / $total) * 100);
-        } else {
-            $stats['aktif_percentage'] = 0;
-            $stats['nonaktif_percentage'] = 0;
-        }
-
-        $logoPath = FCPATH . 'logo.png';
-        $logoData = base64_encode(file_get_contents($logoPath));
-        $logoSrc = 'data:image/png;base64,' . $logoData;
-
-        // Handle chart data from POST request
         $statusChartData = $this->request->getPost('statusChartData');
 
-        $dompdf = new \Dompdf\Dompdf();
-        $dompdf->loadHtml(view('web_opd/pdf_export', [
-            'websites' => $websites,
-            'stats' => $stats,
-            'logoSrc' => $logoSrc,
-            'current_date' => format_indo_date(date('Y-m-d')),
-            'title' => 'DATA WEBSITE ORGANISASI PERANGKAT DAERAH (OPD)',
-            'subtitle' => 'PEMERINTAH KABUPATEN SINJAI',
-            'statusChart' => $statusChartData,
-        ]));
-        $dompdf->setPaper('A4', 'landscape');
-        $dompdf->render();
-
-        $filename = 'Data Website OPD - ' . format_indo_date(date('Y-m-d'), true) . '.pdf';
-        $dompdf->stream($filename, ['Attachment' => true]);
+        $result = $this->exportService->generateWebOpdPdf($search, $filterStatus, $statusChartData);
+        $result['dompdf']->stream($result['filename'], ['Attachment' => true]);
     }
 
     public function create()

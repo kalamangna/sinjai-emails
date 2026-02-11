@@ -175,12 +175,24 @@
                 $color = '#000000'; // Default black
                 if ($statusTte === 'ISSUE') {
                     $color = '#198754'; // Green
-                } elseif (in_array($statusTte, ['EXPIRED', 'REVOKE', 'SUSPEND'])) {
+                } elseif ($statusTte === 'EXPIRED') {
                     $color = '#dc3545'; // Red
-                } elseif (in_array($statusTte, ['RENEW', 'WAITING_FOR_VERIFICATION', 'NEW'])) {
-                    $color = '#0dcaf0'; // Cyan/Info
-                } elseif (in_array($statusTte, ['NO_CERTIFICATE', 'NOT_REGISTERED', 'NOT SYNCED'])) {
-                    $color = '#d39e00'; // Yellow/Orange
+                } elseif ($statusTte === 'NO_CERTIFICATE') {
+                    $color = '#d39e00'; // Yellow
+                } elseif ($statusTte === 'RENEW') {
+                    $color = '#0d6efd'; // Blue
+                } elseif ($statusTte === 'WAITING_FOR_VERIFICATION') {
+                    $color = '#fd7e14'; // Orange
+                } elseif ($statusTte === 'NEW') {
+                    $color = '#6610f2'; // Indigo
+                } elseif ($statusTte === 'NOT_REGISTERED') {
+                    $color = '#e83e8c'; // Fuchsia
+                } elseif ($statusTte === 'SUSPEND') {
+                    $color = '#6f42c1'; // Purple
+                } elseif ($statusTte === 'REVOKE') {
+                    $color = '#6c757d'; // Gray
+                } elseif ($statusTte === 'NOT SYNCED') {
+                    $color = '#333'; // Dark Gray
                 }
 
                 echo '<tr>
@@ -201,8 +213,8 @@
         <ul>
             <li><strong style="color: #198754;">ISSUE</strong> : Sertifikat Aktif / Siap TTE</li>
             <li><strong style="color: #dc3545;">EXPIRED</strong> : Masa Berlaku Habis</li>
-            <li><strong style="color: #0dcaf0;">RENEW</strong> : Proses Pembaruan</li>
             <li><strong style="color: #d39e00;">NO_CERTIFICATE</strong> : Belum Ada Sertifikat</li>
+            <li><strong style="color: #0d6efd;">RENEW</strong> : Proses Pembaruan</li>
         </ul>
     </div>
 

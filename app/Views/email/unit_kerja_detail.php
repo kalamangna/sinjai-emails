@@ -1,640 +1,405 @@
-<?= $this->extend('templates/layout') ?>
+<?= $this->extend('layouts/main') ?>
 
 <?= $this->section('content') ?>
-<div class="row">
-  <div class="col-12">
-    <!-- Back Button -->
-    <div class="mb-4 d-flex justify-content-between">
-      <a href="javascript:void(0);" onclick="history.back();" class="btn btn-outline-secondary">
-        <i class="fas fa-arrow-left me-2"></i>Back
-      </a>
-      <div class="d-flex gap-2">
-        <?php
-        $queryString = \Config\Services::request()->getUri()->getQuery();
-        $csvUrl = site_url('email/export_unit_kerja_csv/' . $unit_kerja['id']) . ($queryString ? '?' . $queryString : '');
-        $pdfUrl = site_url('email/export_unit_kerja_pdf/' . $unit_kerja['id']) . ($queryString ? '?' . $queryString : '');
-        ?>
-        <a href="<?= $csvUrl ?>" class="btn btn-success">
-          <i class="fas fa-file-csv me-2"></i>Export CSV
+<div class="space-y-10">
+    <!-- Navigasi & Aksi -->
+    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+        <a href="<?= site_url('email') ?>" class="inline-flex items-center px-6 py-3 bg-slate-900 border border-slate-800 rounded-2xl text-xs font-black text-slate-400 uppercase tracking-widest hover:bg-slate-800 hover:text-slate-200 transition-all shadow-xl no-underline group">
+            <i class="fas fa-arrow-left mr-3 group-hover:-translate-x-1 transition-transform"></i> Kembali ke Dasbor
         </a>
-        <form id="pdfExportForm" action="<?= site_url('email/export_unit_kerja_pdf/' . $unit_kerja['id']) . ($queryString ? '?' . $queryString : '') ?>" method="POST" class="d-inline" target="_blank">
-            <input type="hidden" name="statusChartData" id="statusChartData">
-            <button type="submit" class="btn btn-danger" onclick="return preparePdfExport();">
-                <i class="fas fa-file-pdf me-2"></i>Export Status PDF
+        <div class="flex flex-wrap gap-3">
+            <a href="<?= site_url('email/export_unit_kerja_csv/' . $unit_kerja['id']) . '?' . ($_SERVER['QUERY_STRING'] ?? '') ?>" class="inline-flex items-center px-5 py-2.5 bg-green-600 border border-transparent rounded-xl font-black text-[10px] text-white uppercase tracking-widest hover:bg-green-700 transition-all shadow-lg shadow-green-900/20 no-underline">
+                <i class="fas fa-file-csv mr-2"></i> Ekspor CSV
+            </a>
+            <form id="pdfExportForm" action="<?= site_url('email/export_unit_kerja_pdf/' . $unit_kerja['id']) . '?' . ($_SERVER['QUERY_STRING'] ?? '') ?>" method="POST" class="inline" target="_blank">
+                <input type="hidden" name="statusChartData" id="statusChartData">
+                <button type="submit" class="inline-flex items-center px-5 py-2.5 bg-red-600 border border-transparent rounded-xl font-black text-[10px] text-white uppercase tracking-widest hover:bg-red-700 transition-all shadow-lg shadow-red-900/20" onclick="return preparePdfExport();">
+                    <i class="fas fa-file-pdf mr-2"></i> Status PDF
+                </button>
+            </form>
+            <button onclick="openExportModal(<?= $unit_kerja['id'] ?>)" class="inline-flex items-center px-5 py-2.5 bg-cyan-600 border border-transparent rounded-xl font-black text-[10px] text-white uppercase tracking-widest hover:bg-cyan-700 transition-all shadow-lg shadow-cyan-900/20">
+                <i class="fas fa-file-contract mr-2"></i> Dokumen PK
             </button>
-        </form>
-        <a href="<?= site_url('email/export_account_detail_pdf/' . $unit_kerja['id']) . ($queryString ? '?' . $queryString : '') ?>" class="btn btn-dark">
-          <i class="fas fa-file-pdf me-2"></i>Export Akun PDF
-        </a>
-        <button onclick="openExportModal(<?= $unit_kerja['id'] ?>)" class="btn btn-info">
-          <i class="fas fa-file-contract me-2"></i>Export PK PDF
-        </button>
-        <button onclick="syncAllBsreStatus()" class="btn btn-warning">
-          <i class="fas fa-sync-alt me-2"></i>Sync Status TTE
-        </button>
-      </div>
-    </div>
-
-    <!-- Unit Kerja Header -->
-    <div class="card shadow-sm mb-4">
-      <div class="card-header bg-light py-3">
-        <h5 class="card-title mb-0">
-          <i class="fas fa-building me-2 text-primary"></i>Unit Kerja: <?= esc(strtoupper($unit_kerja['nama_unit_kerja'])) ?>
-        </h5>
-      </div>
-      <div class="card-body">
-        <?php if ($parent_unit): ?>
-          <p class="card-text">
-            This is a sub-unit of:
-            <a href="<?= site_url('email/unit_kerja/' . $parent_unit['id']) ?>"><?= esc(strtoupper($parent_unit['nama_unit_kerja'])) ?></a>
-          </p>
-        <?php else: ?>
-          <p class="card-text">Daftar akun email yang terkait dengan unit kerja ini dan semua sub-unit di bawahnya.</p>
-        <?php endif; ?>
-      </div>
-    </div>
-
-    <!-- Child Units List -->
-    <?php if (!empty($child_units)): ?>
-      <div class="accordion shadow-sm mb-4" id="subUnitKerjaAccordion">
-        <div class="accordion-item">
-          <h2 class="accordion-header" id="headingSubUnits">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSubUnits" aria-expanded="false" aria-controls="collapseSubUnits">
-              <i class="fas fa-sitemap me-2 text-info"></i>Sub Unit Kerja
+            <button onclick="syncAllBsreStatus()" class="inline-flex items-center px-5 py-2.5 bg-amber-500 border border-transparent rounded-xl font-black text-[10px] text-white uppercase tracking-widest hover:bg-amber-600 transition-all shadow-lg shadow-amber-900/20">
+                <i class="fas fa-sync-alt mr-2 text-xs"></i> Sinkron TTE
             </button>
-          </h2>
-          <div id="collapseSubUnits" class="accordion-collapse collapse" aria-labelledby="headingSubUnits" data-bs-parent="#subUnitKerjaAccordion">
-            <div class="accordion-body">
-              <div class="row">
-                <?php foreach ($child_units as $child): ?>
-                  <div class="col-md-6 mb-2">
-                    <a href="<?= site_url('email/unit_kerja/' . $child['id']) ?>" class="list-group-item list-group-item-action">
-                      <?= esc(strtoupper($child['nama_unit_kerja'])) ?>
-                    </a>
-                  </div>
-                <?php endforeach; ?>
-              </div>
-            </div>
-          </div>
         </div>
-      </div>
-    <?php endif; ?>
-
-
-    <!-- TTE Status Chart -->
-    <?php if (!empty($bsre_status_counts)): ?>
-      <div class="card shadow-sm mb-4">
-        <div class="card-header bg-light py-3">
-          <h5 class="card-title mb-0">
-            <i class="fas fa-chart-pie me-2 text-primary"></i>Distribusi Status TTE
-          </h5>
-        </div>
-        <div class="card-body">
-          <div class="row align-items-center">
-            <div class="col-md-4">
-              <div style="height: 250px; position: relative;">
-                <canvas id="bsreStatusChart"></canvas>
-              </div>
-            </div>
-            <div class="col-md-8">
-              <div class="table-responsive">
-                <table class="table table-sm table-bordered">
-                  <thead class="table-light">
-                    <tr>
-                      <th>Status TTE</th>
-                      <th class="text-end">Jumlah</th>
-                      <th class="text-end">Persentase</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <?php
-                    $total = 0;
-                    foreach ($bsre_status_counts as $status) {
-                      $total += $status['count'];
-                    }
-                    ?>
-                    <?php foreach ($bsre_status_counts as $key => $data): ?>
-                      <tr>
-                        <td>
-                          <span class="badge bg-secondary me-2" style="background-color: var(--chart-color-<?= $key ?>) !important;">&nbsp;</span>
-                          <?= esc($data['label']) ?: '-' ?>
-                        </td>
-                        <td class="text-end fw-bold"><?= number_format($data['count']) ?></td>
-                        <td class="text-end"><?= $total > 0 ? (int)(($data['count'] / $total) * 100) : 0 ?>%</td>
-                      </tr>
-                    <?php endforeach; ?>
-                  </tbody>
-                  <tfoot class="table-light fw-bold">
-                    <tr>
-                      <td>Total</td>
-                      <td class="text-end"><?= number_format($total) ?></td>
-                      <td class="text-end">100%</td>
-                    </tr>
-                  </tfoot>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    <?php endif; ?>
-
-    <!-- Search Form -->
-    <div class="card shadow-sm mb-4">
-      <div class="card-body">
-        <form action="<?= current_url() ?>" method="get" class="row g-3 align-items-center">
-          <?php
-          $isKecamatan = stripos($unit_kerja['nama_unit_kerja'], 'Kecamatan') !== false;
-          $middleColClass = $isKecamatan ? 'col-md-2' : 'col-md-3';
-          ?>
-          <div class="col-md-3">
-            <div class="input-group">
-              <span class="input-group-text"><i class="fas fa-search"></i></span>
-              <input type="text" class="form-control" name="search" placeholder="Search..." value="<?= esc($search ?? '') ?>">
-            </div>
-          </div>
-          <div class="<?= $middleColClass ?>">
-            <div class="input-group">
-              <span class="input-group-text"><i class="fas fa-users-cog"></i></span>
-              <select name="status_asn" class="form-select">
-                <option value="" <?= empty($status_asn) ? 'selected' : '' ?>>All Status ASN</option>
-                <?php foreach ($status_asn_options as $option): ?>
-                  <option value="<?= esc($option['id']) ?>" <?= ($status_asn == $option['id']) ? 'selected' : '' ?>>
-                    <?= esc($option['nama_status_asn']) ?>
-                  </option>
-                <?php endforeach; ?>
-              </select>
-            </div>
-          </div>
-          <div class="<?= $middleColClass ?>">
-            <div class="input-group">
-              <span class="input-group-text"><i class="fas fa-fingerprint"></i></span>
-              <select name="bsre_status" class="form-select">
-                <option value="" <?= empty($bsre_status) ? 'selected' : '' ?>>All Status TTE</option>
-                <?php foreach ($bsre_status_options as $key => $label): ?>
-                  <option value="<?= esc($key) ?>" <?= ($bsre_status === $key) ? 'selected' : '' ?>>
-                    <?= esc($key === 'not_synced' ? $label : $key) ?>
-                  </option>
-                <?php endforeach; ?>
-              </select>
-            </div>
-          </div>
-
-          <?php if ($isKecamatan): ?>
-            <div class="col-md-2">
-              <div class="form-check bg-light rounded p-2 border d-flex align-items-center justify-content-center">
-                <input type="hidden" name="pimpinan_desa" value="0">
-                <input class="form-check-input me-2 mt-0" type="checkbox" name="pimpinan_desa" value="1" id="pimpinanDesaCheck" <?= ($pimpinan_desa ?? 1) ? 'checked' : '' ?>>
-                <label class="form-check-label user-select-none" for="pimpinanDesaCheck">
-                  Pimpinan Desa
-                </label>
-              </div>
-            </div>
-          <?php endif; ?>
-
-          <div class="col-md-3">
-            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-              <button type="submit" class="btn btn-primary flex-grow-1">
-                <i class="fas fa-search me-2"></i>Search
-              </button>
-              <a href="<?= current_url() ?>" class="btn btn-outline-secondary flex-grow-1">
-                <i class="fas fa-sync-alt me-2"></i>Reset
-              </a>
-            </div>
-          </div>
-        </form>
-      </div>
     </div>
 
-    <!-- Email List for Unit Kerja -->
-    <div class="card shadow-sm">
-      <div class="card-header bg-light py-3">
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
-          <h5 class="card-title mb-2 mb-md-0">
-            <i class="fas fa-list me-2 text-primary"></i>Email Accounts
-          </h5>
-          <span class="badge bg-primary fs-6">
-            <?= $total_emails ?> Accounts
-          </span>
-        </div>
-      </div>
-      <div class="card-body p-0">
-        <?php if (!empty($emails)): ?>
-          <div class="table-responsive">
-            <table class="table table-hover mb-0">
-              <thead class="table-light">
-                <tr>
-                  <th class="ps-4"><i class="fas fa-envelope me-2"></i>Email Address</th>
-                  <th><i class="fas fa-user-tag me-2"></i>Status ASN / Jabatan</th>
-                  <th><i class="fas fa-fingerprint me-2"></i>Status TTE</th>
-                  <?php if (!empty($child_units)): ?>
-                    <th><i class="fas fa-building me-2"></i>Unit Kerja</th>
-                  <?php endif; ?>
-                  <th class="text-center" style="width: 120px;"><i class="fas fa-cog me-2"></i>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                <?php foreach ($emails as $email): ?>
-                  <tr>
-                    <td class="ps-4 align-middle">
-                      <div class="d-flex align-items-center">
-                        <i class="fas fa-envelope text-primary me-3"></i>
-                        <div>
-                          <div class="fw-bold"><?= esc($email['email']) ?></div>
-                          <small class="d-block text-muted"><?= esc(strtoupper($email['name'])) ?></small>
-                        </div>
-                      </div>
-                    </td>
-                    <td class="align-middle">
-                      <?php if (!empty($email['status_asn'])): ?>
-                        <div><?= esc($email['status_asn']) ?></div>
-                      <?php else: ?>
-                        <div>-</div>
-                      <?php endif; ?>
-                      <?php if (!empty($email['jabatan'])): ?>
-                        <small class="text-muted"><?= esc($email['jabatan']) ?></small>
-                      <?php else: ?>
-                        <small class="text-muted">-</small>
-                      <?php endif; ?>
-                    </td>
-                    <td class="align-middle">
-                      <div id="bsre-status-<?= esc($email['user']) ?>"
-                        data-user="<?= esc($email['user']) ?>"
-                        data-email="<?= esc($email['email']) ?>"
-                        class="bsre-status-container d-flex align-items-center">
-                        <?php
-                        $status = $email['bsre_status'] ?? '';
-                        $badgeClass = 'bg-secondary';
-                        $badgeText = $status ?: 'Not Synced';
-
-                        if ($status === 'ISSUE') {
-                          $badgeClass = 'bg-success';
-                        } else if (in_array($status, ['EXPIRED', 'REVOKE', 'SUSPEND'])) {
-                          $badgeClass = 'bg-danger';
-                        } else if (in_array($status, ['RENEW', 'WAITING_FOR_VERIFICATION', 'NEW'])) {
-                          $badgeClass = 'bg-info text-dark';
-                        } else if (in_array($status, ['NO_CERTIFICATE', 'NOT_REGISTERED', 'UNKNOWN'])) {
-                          $badgeClass = 'bg-warning text-dark';
-                        }
-                        ?>
-                        <span class="badge <?= $badgeClass ?>"><?= esc($badgeText) ?></span>
-                      </div>
-                    </td>
-                    <?php if (!empty($child_units)): ?>
-                      <td class="align-middle">
-                        <?php if (!empty($email['parent_unit_kerja_name'])): ?>
-                          <small class="d-block"><?= esc(strtoupper($email['parent_unit_kerja_name'])) ?></small>
-                          <small class="d-block text-muted">
-                            (<?= esc(strtoupper($email['unit_kerja_name'])) ?>)
-                          </small>
-                        <?php else: ?>
-                          <small>
-                            <?= esc(strtoupper($email['unit_kerja_name'])) ?>
-                          </small>
-                        <?php endif; ?>
-                      </td>
+    <!-- Profil Unit Kerja -->
+    <div class="bg-slate-900 border border-slate-800 rounded-[2.5rem] p-10 shadow-2xl overflow-hidden relative group">
+        <div class="absolute -right-10 -top-10 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl group-hover:bg-blue-500/10 transition-colors"></div>
+        <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-10">
+            <div class="flex items-center gap-6">
+                <div class="w-20 h-20 bg-blue-600 rounded-3xl flex items-center justify-center shadow-2xl shadow-blue-900/40 border-4 border-slate-900 group-hover:scale-105 transition-transform duration-500">
+                    <i class="fas fa-building text-white text-3xl"></i>
+                </div>
+                <div class="space-y-2">
+                    <h2 class="text-3xl md:text-4xl font-black text-slate-100 uppercase tracking-tighter leading-none"><?= esc($unit_kerja['nama_unit_kerja']) ?></h2>
+                    <?php if ($unit_kerja['parent_name'] ?? ''): ?>
+                        <p class="text-sm font-bold text-slate-500 uppercase tracking-widest">Bagian Dari: <span class="text-blue-400 ml-2"><?= esc($unit_kerja['parent_name']) ?></span></p>
                     <?php endif; ?>
-                    <td class="text-center align-middle">
-                      <a href="<?= site_url('email/detail/' . $email['user']) ?>"
-                        class="btn btn-sm btn-outline-primary">
-                        <i class="fas fa-eye"></i>
-                      </a>
-                      <form action="<?= site_url('email/delete/' . $email['id']) ?>" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this email?');">
-                        <button type="submit" class="btn btn-sm btn-outline-danger">
-                          <i class="fas fa-trash"></i>
-                        </button>
-                      </form>
-                    </td>
-                  </tr>
-                <?php endforeach; ?>
-              </tbody>
-            </table>
-          </div>
-
-          <!-- Pagination -->
-          <?php if ($pagination): ?>
-            <nav class="d-flex flex-column flex-md-row justify-content-between align-items-center p-3" aria-label="Page navigation">
-              <div class="mb-2 mb-md-0">
-                <?php
-                $currentPage = $pagination->getCurrentPage();
-                $perPage = $pagination->getPerPage();
-                $total = $total_emails;
-
-                $start_entry = ($currentPage - 1) * $perPage + 1;
-                $end_entry = min($currentPage * $perPage, $total);
-                ?>
-                <span class="text-muted">
-                  Showing <strong><?= $start_entry ?></strong> to <strong><?= $end_entry ?></strong> of <strong><?= $total ?></strong> entries
-                </span>
-              </div>
-              <?= $pagination->links() ?>
-            </nav>
-          <?php endif; ?>
-
-        <?php else: ?>
-          <div class="text-center py-5">
-            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-            <h5 class="text-muted">No email accounts found for this Unit Kerja.</h5>
-            <p class="text-muted">There are no email accounts currently assigned to "<?= esc(strtoupper($unit_kerja['nama_unit_kerja'])) ?>".</p>
-          </div>
-        <?php endif; ?>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Export Progress Modal -->
-<div class="modal fade" id="exportProgressModal" tabindex="-1" aria-labelledby="exportProgressModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exportProgressModalLabel">Generating PDFs...</h5>
-      </div>
-      <div class="modal-body">
-        <div class="progress mb-3">
-          <div id="exportProgressBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%">0%</div>
+                </div>
+            </div>
+            <div class="flex gap-10 bg-slate-950 px-10 py-6 rounded-[2rem] border border-slate-800 shadow-inner">
+                <div class="text-center space-y-1">
+                    <div class="text-3xl font-black text-slate-100 tracking-tighter"><?= number_format($total_emails ?? 0) ?></div>
+                    <div class="text-[9px] font-black text-slate-600 uppercase tracking-[0.2em]">Total Akun</div>
+                </div>
+                <div class="text-center space-y-1">
+                    <div class="text-3xl font-black text-green-500 tracking-tighter"><?= number_format($active_count ?? 0) ?></div>
+                    <div class="text-[9px] font-black text-slate-600 uppercase tracking-[0.2em]">Sertifikat Aktif</div>
+                </div>
+            </div>
         </div>
-        <p id="exportStatusText" class="text-center">Starting...</p>
-      </div>
     </div>
-  </div>
+
+    <!-- Sub-Unit Struktur -->
+    <?php if (!empty($child_units)): ?>
+        <div class="bg-slate-900 border border-slate-800 rounded-[2.5rem] shadow-2xl overflow-hidden">
+            <div class="bg-slate-800/30 px-8 py-5 border-b border-slate-800 flex justify-between items-center cursor-pointer group" onclick="toggleChildUnits()">
+                <h6 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em] flex items-center">
+                    <i class="fas fa-sitemap mr-3 text-cyan-500 opacity-50"></i>Struktur Sub-Unit Organisasi
+                </h6>
+                <i class="fas fa-chevron-down text-slate-600 text-xs transition-transform duration-300 group-hover:text-slate-400" id="childUnitsChevron"></i>
+            </div>
+            <div id="childUnitsList" class="p-8 hidden bg-slate-950/30">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <?php foreach ($child_units as $child): ?>
+                        <a href="<?= site_url('email/unit_kerja/' . $child['id']) ?>" class="p-4 bg-slate-900 border border-slate-800 rounded-2xl hover:border-blue-500/30 transition-all no-underline group/item">
+                            <span class="text-xs font-bold text-slate-500 group-hover/item:text-blue-400 uppercase tracking-tight transition-colors"><?= esc($child['nama_unit_kerja']) ?></span>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </div>
+    <?php endif; ?>
+
+    <!-- Analisis Distribusi TTE -->
+    <?php if (!empty($bsre_status_counts)): ?>
+        <div class="bg-slate-900 border border-slate-800 rounded-[2.5rem] shadow-2xl overflow-hidden">
+            <div class="bg-slate-800/30 px-8 py-5 border-b border-slate-800">
+                <h6 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em] flex items-center">
+                    <i class="fas fa-chart-pie mr-3 text-blue-500 opacity-50"></i>Analisis Sertifikat Elektronik
+                </h6>
+            </div>
+            <div class="p-10 flex flex-col lg:flex-row items-center gap-12">
+                <div class="w-full lg:w-1/3 min-h-[250px] relative">
+                    <div id="bsreStatusChart"></div>
+                </div>
+                <div class="w-full lg:w-2/3">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <?php foreach ($bsre_status_counts as $key => $data): ?>
+                            <div class="p-4 bg-slate-950 rounded-2xl border border-slate-800 flex justify-between items-center group hover:border-slate-700 transition-colors">
+                                <div class="flex items-center">
+                                    <span class="w-2 h-2 rounded-full mr-3 shadow-sm chart-legend-dot" data-status="<?= $key ?>"></span>
+                                    <span class="text-xs font-bold text-slate-400 uppercase group-hover:text-slate-200 transition-colors"><?= esc($data['label']) ?></span>
+                                </div>
+                                <span class="px-3 py-1 rounded-lg text-xs font-black bg-slate-800 text-slate-100 border border-slate-700"><?= number_format($data['count']) ?></span>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <?php endif; ?>
+
+    <!-- Filter & Pencarian -->
+    <div class="bg-slate-900 border border-slate-800 rounded-[2.5rem] shadow-2xl overflow-hidden p-8">
+        <form method="GET" action="" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-end">
+            <div class="lg:col-span-3">
+                <label class="block text-[9px] font-black text-slate-600 uppercase tracking-[0.2em] mb-3 ml-1">Kata Kunci</label>
+                <input type="text" name="search" value="<?= esc($search ?? '') ?>" class="block w-full px-5 py-3.5 bg-slate-950 border border-slate-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-bold text-slate-200 transition-all uppercase tracking-tight placeholder-slate-800" placeholder="NAMA / EMAIL / NIP...">
+            </div>
+            <div class="lg:col-span-3">
+                <label class="block text-[9px] font-black text-slate-600 uppercase tracking-[0.2em] mb-3 ml-1">Status Kepegawaian</label>
+                <select name="status_asn" class="block w-full px-5 py-3.5 bg-slate-950 border border-slate-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-bold text-slate-300 uppercase tracking-tight cursor-pointer transition-all">
+                    <option value="">SEMUA STATUS</option>
+                    <?php foreach ($status_asn_options as $option): ?>
+                        <option value="<?= esc($option['id']) ?>" <?= (($status_asn ?? '') == $option['id']) ? 'selected' : '' ?>><?= esc(strtoupper($option['nama_status_asn'])) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="lg:col-span-2">
+                <label class="block text-[9px] font-black text-slate-600 uppercase tracking-[0.2em] mb-3 ml-1">Status Sertifikat</label>
+                <select name="bsre_status" class="block w-full px-5 py-3.5 bg-slate-950 border border-slate-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-bold text-slate-300 uppercase tracking-tight cursor-pointer transition-all">
+                    <option value="">SEMUA STATUS</option>
+                    <?php foreach ($bsre_status_options as $key => $label): ?>
+                        <option value="<?= esc($key) ?>" <?= (($bsre_status ?? '') === $key) ? 'selected' : '' ?>><?= esc($label) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="lg:col-span-2">
+                <label class="block text-[9px] font-black text-slate-600 uppercase tracking-[0.2em] mb-3 ml-1">Baris</label>
+                <select name="per_page" class="block w-full px-5 py-3.5 bg-slate-950 border border-slate-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-bold text-slate-300 uppercase tracking-tight cursor-pointer transition-all">
+                    <?php foreach ([25, 50, 100, 250] as $p): ?>
+                        <option value="<?= $p ?>" <?= (($per_page ?? 100) == $p) ? 'selected' : '' ?>><?= $p ?> Baris</option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="lg:col-span-2 flex gap-3">
+                <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-black py-3.5 rounded-2xl shadow-xl shadow-blue-900/20 transition-all text-[10px] uppercase tracking-widest">Cari</button>
+                <a href="<?= current_url() ?>" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-black py-3.5 rounded-2xl shadow-sm text-[10px] text-center no-underline uppercase tracking-widest">Reset</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Tabel Daftar Akun -->
+    <div class="bg-slate-900 border border-slate-800 rounded-[2.5rem] shadow-2xl overflow-hidden">
+        <div class="p-0">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-slate-800/50">
+                    <thead class="bg-slate-950/30">
+                        <tr>
+                            <th class="px-10 py-8 text-left text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Pengguna / Email</th>
+                            <th class="px-10 py-8 text-left text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Jabatan & Status</th>
+                            <th class="px-10 py-8 text-left text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Sertifikat</th>
+                            <th class="px-10 py-8 text-center text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] w-32">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800/50 bg-slate-900/20">
+                        <?php foreach (($emails ?? []) as $email): ?>
+                            <tr class="hover:bg-slate-800/30 transition-colors group">
+                                <td class="px-10 py-8 whitespace-nowrap align-middle">
+                                    <div class="flex items-center">
+                                        <div class="w-12 h-12 rounded-2xl bg-slate-950 border border-slate-800/50 flex items-center justify-center mr-6 group-hover:border-blue-500/30 transition-all shadow-inner">
+                                            <i class="fas fa-envelope text-slate-600 group-hover:text-blue-500/70 text-lg"></i>
+                                        </div>
+                                        <div class="space-y-1">
+                                            <div class="text-base font-bold text-slate-100 tracking-tight leading-none lowercase"><?= esc($email['email']) ?></div>
+                                            <div class="text-[11px] text-slate-500 uppercase font-bold tracking-widest opacity-80"><?= esc($email['name']) ?></div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-10 py-8 align-middle">
+                                    <div class="text-[11px] font-black text-blue-400/80 uppercase tracking-widest mb-1.5"><?= esc($email['status_asn']) ?></div>
+                                    <div class="text-[10px] font-bold text-slate-500 uppercase tracking-tighter leading-none"><?= esc($email['jabatan']) ?: '-' ?></div>
+                                </td>
+                                <td class="px-10 py-8 whitespace-nowrap align-middle">
+                                    <div id="bsre-status-<?= esc($email['user']) ?>" data-email="<?= esc($email['email']) ?>">
+                                        <?php
+                                        $status = $email['bsre_status'] ?? '';
+                                        $badgeBase = 'inline-flex items-center px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border transition-all';
+                                        
+                                        $colors = [
+                                            'ISSUE' => 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+                                            'EXPIRED' => 'bg-red-500/10 text-red-400 border-red-500/20',
+                                            'RENEW' => 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+                                            'WAITING_FOR_VERIFICATION' => 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+                                            'NEW' => 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20',
+                                            'NO_CERTIFICATE' => 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
+                                            'NOT_REGISTERED' => 'bg-fuchsia-500/10 text-fuchsia-400 border-fuchsia-500/20',
+                                            'SUSPEND' => 'bg-purple-500/10 text-purple-400 border-purple-500/20',
+                                            'REVOKE' => 'bg-zinc-500/10 text-zinc-400 border-zinc-500/20',
+                                        ];
+
+                                        $badgeClass = $colors[$status] ?? 'bg-slate-950/50 text-slate-500 border-slate-800/50';
+                                        ?>
+                                        <span class="<?= $badgeBase ?> <?= $badgeClass ?>"><?= $status ?: 'BELUM SINKRON' ?></span>
+                                    </div>
+                                </td>
+                                <td class="px-10 py-8 whitespace-nowrap text-center text-sm font-medium align-middle">
+                                    <div class="flex justify-center space-x-3">
+                                        <a href="<?= site_url('email/detail/' . $email['user']) ?>" class="w-10 h-10 flex items-center justify-center bg-slate-950/50 text-slate-500 border border-slate-800/50 rounded-xl hover:bg-blue-600 hover:text-white hover:border-transparent transition-all no-underline shadow-sm">
+                                            <i class="fas fa-eye text-sm"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+
+            <?php if (!empty($pagination)): ?>
+                <div class="bg-slate-950/50 px-10 py-10 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-8">
+                    <div class="text-xs font-black text-slate-500 uppercase tracking-widest">
+                        Total: <span class="text-blue-500 px-1"><?= number_format($total_emails ?? 0) ?></span> Akun Ditemukan
+                    </div>
+                    <div class="pagination-container font-black uppercase">
+                        <?= $pagination->links() ?>
+                    </div>
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>
 </div>
 
+<!-- Modal Progress PDF -->
+<div id="exportProgressModal" class="fixed inset-0 z-50 hidden overflow-y-auto" role="dialog">
+    <div class="flex items-center justify-center min-h-screen pt-4 px-4 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm transition-opacity"></div>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
+        <div class="inline-block align-bottom bg-slate-900 rounded-[2.5rem] text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-slate-800">
+            <div class="p-10 space-y-8">
+                <h3 class="text-xl font-black text-slate-100 uppercase tracking-tight text-center">Memproses Dokumen PDF</h3>
+                <div class="w-full bg-slate-950 rounded-full h-5 p-1 border border-slate-800 shadow-inner">
+                    <div id="exportProgressBar" class="bg-blue-600 h-full rounded-full transition-all duration-300 text-[9px] font-black text-white flex items-center justify-center" style="width: 0%">0%</div>
+                </div>
+                <p id="exportStatusText" class="text-xs text-slate-500 text-center font-bold uppercase tracking-widest italic animate-pulse">Menyiapkan data...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
 <script>
-  // Chart Configuration
-  document.addEventListener("DOMContentLoaded", function() {
-    <?php if (!empty($bsre_status_counts)): ?>
-      const ctx = document.getElementById('bsreStatusChart').getContext('2d');
-
-      const labels = [];
-      const data = [];
-      const backgroundColors = [];
-
-      // Define colors map based on status keys
-      const colorMap = {
-        'ISSUE': '#198754', // Success Green
-        'EXPIRED': '#dc3545', // Danger Red
-        'RENEW': '#0dcaf0', // Info Cyan
-        'WAITING_FOR_VERIFICATION': '#0d6efd', // Primary Blue
-        'NEW': '#6610f2', // Indigo
-        'NO_CERTIFICATE': '#ffc107', // Warning Yellow
-        'NOT_REGISTERED': '#6c757d', // Secondary Gray
-        'SUSPEND': '#212529', // Dark
-        'REVOKE': '#d63384', // Pink
-        'not_synced': '#adb5bd' // Gray
-      };
-
-      const chartData = <?= json_encode($bsre_status_counts) ?>;
-
-      Object.keys(chartData).forEach(key => {
-        const item = chartData[key];
-        labels.push(item.label);
-        data.push(item.count);
-
-        // Use mapped color or generate random if missing
-        const color = colorMap[key] || '#' + Math.floor(Math.random() * 16777215).toString(16);
-        backgroundColors.push(color);
-
-        // Set CSS variable for table legend
-        document.documentElement.style.setProperty('--chart-color-' + key, color);
-      });
-
-      window.statusChart = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-          labels: labels,
-          datasets: [{
-            data: data,
-            backgroundColor: backgroundColors,
-            borderWidth: 1
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              display: false // We use custom table legend
-            },
-            datalabels: {
-              display: true,
-              color: '#fff',
-              font: {
-                weight: 'bold'
-              },
-              formatter: (value, ctx) => {
-                const total = ctx.dataset.data.reduce((acc, curr) => acc + curr, 0);
-                const percentage = Math.trunc(value * 100 / total) + "%";
-                return value > (total * 0.05) ? percentage : '';
-              }
-            }
-          }
-        },
-        plugins: [ChartDataLabels]
-      });
-    <?php endif; ?>
-  });
-
-  function preparePdfExport() {
-    if (window.statusChart) {
-      const statusChartB64 = window.statusChart.toBase64Image();
-      document.getElementById('statusChartData').value = statusChartB64;
+    function toggleChildUnits() {
+        const list = document.getElementById('childUnitsList');
+        const chevron = document.getElementById('childUnitsChevron');
+        list.classList.toggle('hidden');
+        chevron.style.transform = list.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
     }
-    return true;
-  }
 
-  function openExportModal(unitId) {
-    const exportModal = new bootstrap.Modal(document.getElementById('exportProgressModal'));
-    const progressBar = document.getElementById('exportProgressBar');
-    const statusText = document.getElementById('exportStatusText');
-
-    exportModal.show();
-    progressBar.style.width = '0%';
-    progressBar.innerText = '0%';
-    statusText.innerText = 'Fetching email list...';
-
-    // First, get the list of emails to export, passing current filters
-    const currentQuery = window.location.search;
-    fetch(`<?= site_url('email/api_unit_emails/') ?>${unitId}${currentQuery}`)
-      .then(response => response.json())
-      .then(data => {
-        if (!data.success) {
-          statusText.innerText = 'Error: ' + (data.message || 'Failed to fetch emails.');
-          return;
-        }
-
-        if (data.emails.length === 0) {
-          statusText.innerText = 'No emails found matching the current filters.';
-          return;
-        }
-
-        const emails = data.emails;
-        const totalEmails = emails.length;
-        let processedCount = 0;
-
-        statusText.innerText = `Found ${totalEmails} emails. Starting PDF generation...`;
-
-        // Process each email
-        const processNext = () => {
-          if (processedCount >= totalEmails) {
-            statusText.innerText = 'All PDFs generated. Creating ZIP files...';
-
-            fetch(`<?= site_url('email/api_download_zip/') ?>${unitId}`)
-              .then(response => response.json())
-              .then(data => {
-                if (data.success && data.files.length > 0) {
-                  statusText.innerText = `Created ${data.files.length} ZIP file(s). Downloading...`;
-
-                  data.files.forEach((filename, index) => {
-                    setTimeout(() => {
-                      const link = document.createElement('a');
-                      link.href = `<?= site_url('email/download_zip_file/') ?>${filename}`;
-                      link.style.display = 'none';
-                      document.body.appendChild(link);
-                      link.click();
-                      document.body.removeChild(link);
-                    }, index * 2500); // 2.5 second delay between downloads
-                  });
-
-                  setTimeout(() => exportModal.hide(), (data.files.length * 2500) + 1000);
-                } else {
-                  statusText.innerText = 'Error creating ZIP: ' + (data.message || 'Unknown error');
-                }
-              })
-              .catch(error => {
-                console.error('Error zipping:', error);
-                statusText.innerText = 'Error creating ZIP file.';
-              });
-            return;
-          }
-
-          const email = emails[processedCount];
-          const formData = new FormData();
-          formData.append('unit_id', unitId);
-          formData.append('email_id', email.id);
-
-
-          fetch(`<?= site_url('email/api_generate_pdf') ?>`, {
-              method: 'POST',
-              body: new URLSearchParams(formData)
-            })
-            .then(response => response.json())
-            .then(result => {
-              processedCount++;
-              const progress = Math.round((processedCount / totalEmails) * 100);
-              progressBar.style.width = `${progress}%`;
-              progressBar.innerText = `${progress}%`;
-              statusText.innerText = `Generated PDF for ${email.name}... (${processedCount}/${totalEmails})`;
-
-              // Process the next email
-              setTimeout(processNext, 100); // Small delay
-            })
-            .catch(error => {
-              console.error('Error generating PDF for:', email, error);
-              statusText.innerText = `Error generating PDF for ${email.name}.`;
-              // Decide if you want to stop or continue
-              setTimeout(processNext, 100);
+    document.addEventListener("DOMContentLoaded", function() {
+        <?php if (!empty($bsre_status_counts)): ?>
+            const tteColorMap = {
+                'ISSUE': '#10b981', // Emerald
+                'EXPIRED': '#ef4444', // Red
+                'RENEW': '#3b82f6', // Blue
+                'WAITING_FOR_VERIFICATION': '#f59e0b', // Amber
+                'NEW': '#6366f1', // Indigo
+                'NO_CERTIFICATE': '#eab308', // Yellow
+                'NOT_REGISTERED': '#d946ef', // Fuchsia
+                'SUSPEND': '#a855f7', // Purple
+                'REVOKE': '#71717a', // Zinc
+                'not_synced': '#334155' // Slate-700
+            };
+            const chartData = <?= json_encode($bsre_status_counts) ?>;
+            const labels = [], series = [], colors = [];
+            
+            Object.keys(chartData).forEach(key => {
+                const color = tteColorMap[key] || '#' + Math.floor(Math.random() * 16777215).toString(16);
+                labels.push(chartData[key].label);
+                series.push(chartData[key].count);
+                colors.push(color);
+                
+                // Update legend dots
+                const dot = document.querySelector(`.chart-legend-dot[data-status="${key}"]`);
+                if (dot) dot.style.backgroundColor = color;
             });
-        };
 
-        processNext();
-      })
-      .catch(error => {
-        console.error('Error fetching email list:', error);
-        statusText.innerText = 'Error fetching email list.';
-      });
-  }
+            const options = {
+                series: series,
+                labels: labels,
+                chart: {
+                    type: 'donut',
+                    height: 280,
+                    foreColor: '#94a3b8'
+                },
+                stroke: { show: false },
+                dataLabels: { enabled: false },
+                colors: colors,
+                legend: { show: false },
+                plotOptions: {
+                    pie: {
+                        donut: {
+                            size: '75%',
+                            labels: {
+                                show: true,
+                                name: { show: true, fontSize: '12px', fontWeight: 900, offsetY: -10 },
+                                value: { show: true, fontSize: '24px', fontWeight: 900, offsetY: 10, color: '#f1f5f9' },
+                                total: {
+                                    show: true,
+                                    label: 'TOTAL',
+                                    fontSize: '10px',
+                                    fontWeight: 900,
+                                    color: '#64748b'
+                                }
+                            }
+                        }
+                    }
+                },
+                tooltip: { theme: 'dark' }
+            };
 
-  function updateBsreStatusElement(emailUser, status, keterangan) {
-    const bsreStatusDiv = document.getElementById(`bsre-status-${emailUser}`);
-    if (!bsreStatusDiv) return;
-
-    const statusMapping = {
-      'ISSUE': 'Sertifikat Aktif / Siap TTE',
-      'EXPIRED': 'Masa Berlaku Habis',
-      'RENEW': 'Proses Pembaruan',
-      'WAITING_FOR_VERIFICATION': 'Menunggu Verifikasi',
-      'NEW': 'Belum Aktivasi',
-      'NO_CERTIFICATE': 'Belum Ada Sertifikat',
-      'NOT_REGISTERED': 'Pengguna Tidak Terdaftar',
-      'SUSPEND': 'Akun Ditangguhkan',
-      'REVOKE': 'Sertifikat Dicabut'
-    };
-
-    let badgeClass = 'bg-secondary';
-    let badgeText = status || 'UNKNOWN';
-    let descriptionText = statusMapping[status] || 'Status Tidak Dikenali';
-    let sourceText = ''; // Removed fromDb text
-
-    if (status === 'ISSUE') {
-      badgeClass = 'bg-success';
-    } else if (status === 'EXPIRED' || status === 'REVOKE' || status === 'SUSPEND') {
-      badgeClass = 'bg-danger';
-    } else if (status === 'RENEW' || status === 'WAITING_FOR_VERIFICATION' || status === 'NEW') {
-      badgeClass = 'bg-info text-dark';
-    } else if (status === 'NO_CERTIFICATE' || status === 'NOT_REGISTERED' || status === 'UNKNOWN' || !status) {
-      badgeClass = 'bg-warning text-dark';
-    }
-
-    bsreStatusDiv.innerHTML = `<span class="badge ${badgeClass}">${badgeText}</span>${sourceText}`;
-  }
-
-  function syncBsreStatus(emailUser, emailAddress) {
-    const bsreStatusDiv = document.getElementById(`bsre-status-${emailUser}`);
-    if (!bsreStatusDiv) return;
-
-    // Show syncing state
-    bsreStatusDiv.innerHTML = '<span class="spinner-border spinner-border-sm text-info" role="status" aria-hidden="true"></span><small class="text-muted ms-1">Syncing...</small>';
-
-    fetch('<?= site_url('bsre/sync-status') ?>', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'X-Requested-With': 'XMLHttpRequest'
-        },
-        body: 'email=' + encodeURIComponent(emailAddress)
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.status === 'success') {
-          // Update display with new status
-          updateBsreStatusElement(emailUser, data.bsre_status, '');
-        } else {
-          bsreStatusDiv.innerHTML = `<span class="badge bg-danger">Sync Error</span><br><small class="d-block text-danger mt-1">${data.message}</small>`;
-          console.error(`Error syncing Status TTE for ${emailAddress}:`, data.message);
-        }
-      })
-      .catch(error => {
-        bsreStatusDiv.innerHTML = `<span class="badge bg-danger">Network Error</span>`;
-        console.error(`Network error syncing Status TTE for ${emailAddress}:`, error);
-      });
-  }
-
-  function syncAllBsreStatus() {
-    // Logic to find all sync buttons or rows and trigger syncBsreStatus
-    // We can iterate over IDs starting with bsre-status-
-    const statusContainers = document.querySelectorAll('[id^="bsre-status-"]');
-
-    if (statusContainers.length === 0) {
-      alert('No emails to sync.');
-      return;
-    }
-
-    if (!confirm(`Are you sure you want to sync Status TTE for ${statusContainers.length} displayed emails? This might take a moment.`)) {
-      return;
-    }
-
-    statusContainers.forEach((container, index) => {
-      const emailUser = container.id.replace('bsre-status-', '');
-      const emailAddress = container.getAttribute('data-email'); // Get email from data attribute
-
-      if (emailUser && emailAddress) {
-        setTimeout(() => {
-          syncBsreStatus(emailUser, emailAddress);
-        }, index * 200); // 200ms delay per request
-      }
+            const chart = new ApexCharts(document.querySelector("#bsreStatusChart"), options);
+            chart.render();
+        <?php endif; ?>
     });
-  }
-</script>
 
+    function preparePdfExport() {
+        // Prepare data URL if needed for PDF export (though ApexCharts is harder to export via dataURL directly in JS without plugin)
+        return true;
+    }
+
+    function openExportModal(unitId) {
+        const modal = document.getElementById('exportProgressModal');
+        const bar = document.getElementById('exportProgressBar');
+        const status = document.getElementById('exportStatusText');
+        modal.classList.remove('hidden');
+
+        fetch(`<?= site_url('email/api_unit_emails/') ?>${unitId}${window.location.search}`)
+            .then(r => r.json()).then(data => {
+                if (!data.success || !data.emails.length) return alert('Data tidak ditemukan');
+                const emails = data.emails;
+                let processed = 0;
+                const process = () => {
+                    if (processed >= emails.length) {
+                        status.innerText = 'MEMBUAT FILE ZIP...';
+                        return fetch(`<?= site_url('email/api_download_zip/') ?>${unitId}`).then(r => r.json()).then(d => {
+                            d.files.forEach((f, i) => setTimeout(() => window.location = `<?= site_url('email/download_zip_file/') ?>${f}`, i * 2000));
+                            setTimeout(() => modal.classList.add('hidden'), d.files.length * 2000 + 1000);
+                        });
+                    }
+                    const email = emails[processed];
+                    fetch(`<?= site_url('email/api_generate_pdf') ?>`, {
+                            method: 'POST',
+                            body: new URLSearchParams({
+                                unit_id: unitId,
+                                email_id: email.id
+                            })
+                        })
+                        .then(() => {
+                            processed++;
+                            const p = Math.round((processed / emails.length) * 100);
+                            bar.style.width = p + '%';
+                            bar.innerText = p + '%';
+                            status.innerText = `PDF: ${email.name} (${processed}/${emails.length})`;
+                            setTimeout(process, 50);
+                        });
+                };
+                process();
+            });
+    }
+
+    function syncBsreStatus(emailUser, emailAddress) {
+        const div = document.getElementById(`bsre-status-${emailUser}`);
+        div.innerHTML = '<div class="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full mx-auto"></div>';
+        fetch('<?= site_url('bsre/sync-status') ?>', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: 'email=' + encodeURIComponent(emailAddress)
+            })
+            .then(r => r.json()).then(data => {
+                if (data.status === 'success') {
+                    const badgeBase = 'inline-flex items-center px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border shadow-sm';
+                    const colors = {
+                        'ISSUE': 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+                        'EXPIRED': 'bg-red-500/10 text-red-400 border-red-500/20',
+                        'RENEW': 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+                        'WAITING_FOR_VERIFICATION': 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+                        'NEW': 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20',
+                        'NO_CERTIFICATE': 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
+                        'NOT_REGISTERED': 'bg-fuchsia-500/10 text-fuchsia-400 border-fuchsia-500/20',
+                        'SUSPEND': 'bg-purple-500/10 text-purple-400 border-purple-500/20',
+                        'REVOKE': 'bg-zinc-500/10 text-zinc-400 border-zinc-500/20',
+                    };
+                    const badgeClass = colors[data.bsre_status] || 'bg-slate-950 text-slate-600 border-slate-800';
+                    div.innerHTML = `<span class="${badgeBase} ${badgeClass}">${data.bsre_status}</span>`;
+                } else div.innerHTML = '<span class="text-[10px] font-black text-red-500">ERROR</span>';
+            });
+    }
+
+    function syncAllBsreStatus() {
+        const containers = document.querySelectorAll('[id^="bsre-status-"]');
+        if (!containers.length || !confirm('Sinkronkan semua akun yang tampil?')) return;
+        containers.forEach((c, i) => setTimeout(() => syncBsreStatus(c.id.replace('bsre-status-', ''), c.getAttribute('data-email')), i * 200));
+    }
+</script>
 <?= $this->endSection() ?>

@@ -11,6 +11,7 @@ use Dompdf\Dompdf;
 class Assistance extends BaseController
 {
     protected $desaModel;
+    protected $exportService;
 
     const CATEGORY_MAP = [
         1 => 'Aplikasi SPBE',
@@ -86,41 +87,79 @@ class Assistance extends BaseController
         $this->assistanceModel = new AssistanceModel();
         $this->unitKerjaModel = new UnitKerjaModel();
         $this->desaModel = new WebDesaKelurahanModel();
+        $this->exportService = new \App\Services\Exports\AssistanceExportService();
     }
 
     public function index()
     {
         $filterCategory = $this->request->getGet('category');
-        $filterMonth = $this->request->getGet('month') ?: date('Y-m');
+
+        // Default to current month and year on first visit (null)
+        // If empty string (explicit "Semua"), it remains empty
+        $filterMonth = $this->request->getGet('month');
+        if ($filterMonth === null) {
+            $filterMonth = date('n');
+        }
+
+        $filterYear = $this->request->getGet('year');
+        if ($filterYear === null) {
+            $filterYear = date('Y');
+        }
+
+        // Get available years for filter BEFORE applying other filters to the model
+        $years = $this->assistanceModel->select('YEAR(tanggal_kegiatan) as year')
+            ->distinct()
+            ->orderBy('year', 'DESC')
+            ->findAll();
+
+        $yearOptions = array_column($years, 'year');
+        if (empty($yearOptions)) {
+            $yearOptions = [date('Y')];
+        }
+
+        // Build the main query
+        $builder = $this->assistanceModel;
 
         if ($filterCategory) {
-            $this->assistanceModel->where('category', $filterCategory);
+            $builder->where('category', $filterCategory);
+        }
+
+        if ($filterYear) {
+            $builder->where('YEAR(tanggal_kegiatan)', $filterYear);
         }
 
         if ($filterMonth) {
-            $parts = explode('-', $filterMonth);
-            $year = $parts[0];
-            $month = $parts[1];
-            $this->assistanceModel->where('YEAR(tanggal_kegiatan)', $year);
-            $this->assistanceModel->where('MONTH(tanggal_kegiatan)', $month);
+            $builder->where('MONTH(tanggal_kegiatan)', $filterMonth);
         }
 
-        // Flatten keterangan options for filter/index view compatibility if needed
-        $allKeterangan = [];
-        foreach (self::KETERANGAN_BY_SERVICE_MAP as $opts) {
-            $allKeterangan = array_merge($allKeterangan, $opts);
-        }
-        $allKeterangan = array_unique($allKeterangan);
+        $activities = $builder->orderBy('tanggal_kegiatan', 'DESC')->orderBy('id', 'DESC')->findAll();
+
+        $monthNames = [
+            1 => 'Januari',
+            2 => 'Februari',
+            3 => 'Maret',
+            4 => 'April',
+            5 => 'Mei',
+            6 => 'Juni',
+            7 => 'Juli',
+            8 => 'Agustus',
+            9 => 'September',
+            10 => 'Oktober',
+            11 => 'November',
+            12 => 'Desember'
+        ];
 
         $data = [
             'title' => 'Assistance Activities',
-            'activities' => $this->assistanceModel->orderBy('tanggal_kegiatan', 'ASC')->orderBy('id', 'ASC')->findAll(),
+            'activities' => $activities,
             'filterCategory' => $filterCategory,
             'filterMonth' => $filterMonth,
+            'filterYear' => $filterYear,
+            'yearOptions' => $yearOptions,
+            'monthNames' => $monthNames,
             'categoryMap' => self::CATEGORY_MAP,
             'servicesMap' => self::SERVICES_MAP,
-            'keteranganMap' => self::KETERANGAN_BY_SERVICE_MAP, // Pass this for potential use
-            'keteranganOptions' => $allKeterangan
+            'keteranganMap' => self::KETERANGAN_BY_SERVICE_MAP,
         ];
 
         return view('assistance/index', $data);
@@ -231,10 +270,10 @@ class Assistance extends BaseController
 
         // 2. Get Desa/Kelurahan
         $allDesas = $this->desaModel->orderBy('desa_kelurahan', 'ASC')->findAll();
-        
+
         $kelurahans = [];
         $desas = [];
-        
+
         foreach ($allDesas as $row) {
             if (stripos($row['desa_kelurahan'], 'KELURAHAN') !== false) {
                 $kelurahans[] = $row;
@@ -277,83 +316,11 @@ class Assistance extends BaseController
 
     public function export_pdf()
     {
-        helper('time');
         $filterCategory = $this->request->getGet('category');
-        $filterMonth = $this->request->getGet('month') ?: date('Y-m');
+        $filterMonth = $this->request->getGet('month');
+        $filterYear = $this->request->getGet('year');
 
-        if ($filterCategory) {
-            $this->assistanceModel->where('category', $filterCategory);
-        }
-
-        if ($filterMonth) {
-            $parts = explode('-', $filterMonth);
-            $year = $parts[0];
-            $month = $parts[1];
-            $this->assistanceModel->where('YEAR(tanggal_kegiatan)', $year);
-            $this->assistanceModel->where('MONTH(tanggal_kegiatan)', $month);
-        }
-
-        $activities = $this->assistanceModel->orderBy('tanggal_kegiatan', 'ASC')->orderBy('id', 'ASC')->findAll();
-
-        $logoPath = FCPATH . 'logo.png';
-        $logoData = base64_encode(file_get_contents($logoPath));
-        $logoSrc = 'data:image/png;base64,' . $logoData;
-
-        $categoryLabel = $filterCategory && isset(self::CATEGORY_MAP[$filterCategory])
-            ? self::CATEGORY_MAP[$filterCategory]
-            : 'Semua Kategori';
-
-        $subtitle = 'Kategori: ' . $categoryLabel;
-        if ($filterMonth) {
-            $parts = explode('-', $filterMonth);
-            $monthNum = (int)$parts[1];
-            $yearNum = $parts[0];
-            $monthsIndo = [
-                1 => 'Januari',
-                2 => 'Februari',
-                3 => 'Maret',
-                4 => 'April',
-                5 => 'Mei',
-                6 => 'Juni',
-                7 => 'Juli',
-                8 => 'Agustus',
-                9 => 'September',
-                10 => 'Oktober',
-                11 => 'November',
-                12 => 'Desember'
-            ];
-            $subtitle .= ' | Bulan: ' . $monthsIndo[$monthNum] . ' ' . $yearNum;
-        }
-
-        $data = [
-            'title' => 'Laporan Pendampingan',
-            'subtitle' => $subtitle,
-            'activities' => $activities,
-            'current_date' => format_indo_date(date('Y-m-d')),
-            'logoSrc' => $logoSrc,
-            'categoryMap' => self::CATEGORY_MAP
-        ];
-        $dompdf = new Dompdf();
-        $dompdf->loadHtml(view('assistance/pdf_export', $data));
-        $dompdf->setPaper('A4', 'portrait');
-        $dompdf->render();
-
-        $filename = 'Laporan Pendampingan';
-        if ($filterCategory && isset(self::CATEGORY_MAP[$filterCategory])) {
-            $filename .= ' ' . self::CATEGORY_MAP[$filterCategory];
-        }
-
-        if ($filterMonth) {
-            $parts = explode('-', $filterMonth);
-            $monthNum = (int)$parts[1];
-            $yearNum = $parts[0];
-            $monthsIndo = [
-                1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April', 5 => 'Mei', 6 => 'Juni',
-                7 => 'Juli', 8 => 'Agustus', 9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
-            ];
-            $filename .= ' - ' . $monthsIndo[$monthNum] . ' ' . $yearNum;
-        }
-
-        $dompdf->stream($filename . '.pdf', ['Attachment' => true]);
+        $result = $this->exportService->generateReportPdf($filterCategory, $filterMonth, $filterYear);
+        $result['dompdf']->stream($result['filename'], ['Attachment' => true]);
     }
 }

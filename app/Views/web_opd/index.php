@@ -1,222 +1,171 @@
-<?= $this->extend('templates/layout') ?>
+<?= $this->extend('layouts/main') ?>
 
 <?= $this->section('content') ?>
-<div class="row">
-    <div class="col-12">
-        <!-- Dashboard Charts -->
-        <div class="row mb-4 justify-content-center">
-            <!-- Status Chart -->
-            <div class="col-md-6">
-                <div class="card shadow-sm h-100">
-                    <div class="card-header bg-light py-3">
-                        <h6 class="card-title mb-0"><i class="fas fa-chart-pie me-2 text-primary"></i>Status Website</h6>
-                    </div>
-                    <div class="card-body">
-                        <div class="row align-items-center">
-                            <div class="col-sm-5">
-                                <div style="height: 180px; position: relative;">
-                                    <canvas id="statusChart"></canvas>
-                                </div>
-                            </div>
-                            <div class="col-sm-7">
-                                <table class="table table-sm table-bordered mb-0" style="font-size: 0.85rem;">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th>Status</th>
-                                            <th class="text-end">Jumlah</th>
-                                            <th class="text-end">%</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td><span class="badge bg-success me-2">&nbsp;</span> AKTIF</td>
-                                            <td class="text-end fw-bold"><?= number_format($stats['aktif']) ?></td>
-                                            <td class="text-end"><?= (int)$stats['aktif_percentage'] ?>%</td>
-                                        </tr>
-                                        <tr>
-                                            <td><span class="badge bg-danger me-2">&nbsp;</span> NONAKTIF</td>
-                                            <td class="text-end fw-bold"><?= number_format($stats['nonaktif']) ?></td>
-                                            <td class="text-end"><?= (int)$stats['nonaktif_percentage'] ?>%</td>
-                                        </tr>
-                                    </tbody>
-                                    <tfoot class="table-light fw-bold">
-                                        <tr>
-                                            <td>Total</td>
-                                            <td class="text-end"><?= number_format($stats['total']) ?></td>
-                                            <td class="text-end">100%</td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<div class="space-y-10">
+    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+        <h2 class="text-3xl font-black text-slate-100 uppercase tracking-tighter">Monitoring Website OPD</h2>
+        <div class="flex flex-wrap gap-3">
+            <form id="pdfExportForm" action="<?= site_url('web_opd/export_pdf') . '?' . ($_SERVER['QUERY_STRING'] ?? '') ?>" method="POST" target="_blank" onsubmit="return preparePdfExport();" class="inline">
+                <input type="hidden" name="statusChartData" id="statusChartData">
+                <button type="submit" class="inline-flex items-center px-5 py-2.5 bg-red-600 border border-transparent rounded-xl font-black text-[10px] text-white uppercase tracking-widest hover:bg-red-700 transition-all shadow-lg shadow-red-900/20">
+                    <i class="fas fa-file-pdf mr-2"></i> Ekspor PDF
+                </button>
+            </form>
+            <a href="<?= site_url('web_opd/create') ?>" class="inline-flex items-center px-5 py-2.5 bg-blue-600 border border-transparent rounded-xl font-black text-[10px] text-white uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-900/20 no-underline">
+                <i class="fas fa-plus mr-2"></i> Tambah Data
+            </a>
         </div>
+    </div>
 
-        <?php if (session()->getFlashdata('message')): ?>
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <?= session()->getFlashdata('message') ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <!-- Dashboard Charts -->
+    <div class="flex justify-center">
+        <div class="w-full max-w-2xl bg-slate-900 border border-slate-800 rounded-[2.5rem] shadow-2xl overflow-hidden">
+            <div class="bg-slate-800/30 px-8 py-5 border-b border-slate-800">
+                <h6 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em] flex items-center">
+                    <i class="fas fa-chart-pie mr-3 text-blue-500 opacity-50"></i>Status Keaktifan Website
+                </h6>
             </div>
-        <?php endif; ?>
-        <?php if (session()->getFlashdata('error')): ?>
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <?= session()->getFlashdata('error') ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        <?php endif; ?>
-
-        <div class="card shadow-sm">
-            <div class="card-header bg-light py-3 d-flex justify-content-between align-items-center">
-                <h5 class="card-title mb-0">
-                    <i class="fas fa-globe me-2"></i>Website OPD
-                    <span class="badge bg-secondary ms-2 small" style="font-size: 0.7em;">Found: <?= $total_filtered ?></span>
-                </h5>
-                <div>
-                    <form id="pdfExportForm" action="<?= site_url('web_opd/export_pdf') . '?' . $_SERVER['QUERY_STRING'] ?>" method="POST" class="d-inline" target="_blank">
-                        <input type="hidden" name="statusChartData" id="statusChartData">
-                        <button type="submit" class="btn btn-danger btn-sm me-2" onclick="return preparePdfExport();">
-                            <i class="fas fa-file-pdf me-2"></i>Export PDF
-                        </button>
-                    </form>
-                    <a href="<?= site_url('web_opd/create') ?>" class="btn btn-primary btn-sm">
-                        <i class="fas fa-plus me-2"></i>Add Website
-                    </a>
+            <div class="p-10 flex flex-col sm:flex-row items-center gap-10">
+                <div class="w-full sm:w-1/2 min-h-[220px] relative">
+                    <div id="statusChart"></div>
                 </div>
-            </div>
-            <div class="card-body">
-                <!-- Search and Filter Form -->
-                <form method="GET" action="<?= site_url('web_opd') ?>" class="mb-4">
-                    <div class="row g-3">
-                        <div class="col-md-10">
-                            <input type="text" class="form-control" name="search" placeholder="Search by OPD or Domain..." value="<?= esc($search) ?>">
+                <div class="w-full sm:w-1/2 space-y-3">
+                    <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 flex justify-between items-center group hover:border-slate-700 transition-colors">
+                        <div class="flex items-center">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 mr-3 shadow-sm"></span>
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-tight group-hover:text-slate-200 transition-colors">Aktif</span>
                         </div>
-                        <div class="col-md-2">
-                            <select class="form-select" name="status">
-                                <option value="">All Status</option>
-                                <option value="AKTIF" <?= ($filterStatus === 'AKTIF') ? 'selected' : '' ?>>AKTIF</option>
-                                <option value="NONAKTIF" <?= ($filterStatus === 'NONAKTIF') ? 'selected' : '' ?>>NONAKTIF</option>
-                            </select>
+                        <span class="text-[10px] font-black text-slate-100"><?= number_format($stats['aktif']) ?> (<?= (int)$stats['aktif_percentage'] ?>%)</span>
+                    </div>
+                    <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 flex justify-between items-center group hover:border-slate-700 transition-colors">
+                        <div class="flex items-center">
+                            <span class="w-2 h-2 rounded-full bg-rose-500 mr-3 shadow-sm"></span>
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-tight group-hover:text-slate-200 transition-colors">Nonaktif</span>
                         </div>
-                        <div class="col-12 text-end">
-                            <button type="submit" class="btn btn-info me-2">
-                                <i class="fas fa-filter me-2"></i>Filter
-                            </button>
-                            <a href="<?= site_url('web_opd') ?>" class="btn btn-outline-secondary">
-                                <i class="fas fa-sync-alt me-2"></i>Reset
-                            </a>
-                        </div>
+                        <span class="text-[10px] font-black text-slate-100"><?= number_format($stats['nonaktif']) ?> (<?= (int)$stats['nonaktif_percentage'] ?>%)</span>
                     </div>
-                </form>
-
-                <!-- Website List -->
-                <?php if (!empty($websites)): ?>
-                    <div class="table-responsive">
-                        <table class="table table-hover table-bordered">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>OPD</th>
-                                    <th>Domain</th>
-                                    <th>Status</th>
-                                    <th>Keterangan</th>
-                                    <th class="text-center" style="width: 80px;">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($websites as $web): ?>
-                                    <tr>
-                                        <td class="fw-bold"><?= esc(strtoupper($web['nama_unit_kerja'] ?? '')) ?: '-' ?></td>
-                                        <td>
-                                            <?php if (!empty($web['domain'])): ?>
-                                                <a href="http://<?= esc($web['domain']) ?>" target="_blank" class="text-decoration-none">
-                                                    <?= esc($web['domain']) ?> <i class="fas fa-external-link-alt small ms-1"></i>
-                                                </a>
-                                            <?php else: ?>
-                                                <span class="text-muted">-</span>
-                                            <?php endif; ?>
-                                        </td>
-                                        <td>
-                                            <?php
-                                            $status = strtoupper($web['status'] ?? 'NONAKTIF');
-                                            $statusClass = ($status === 'AKTIF') ? 'bg-success' : 'bg-danger';
-                                            ?>
-                                            <span class="badge <?= $statusClass ?>"><?= $status ?></span>
-                                        </td>
-                                        <td><?= esc($web['keterangan'] ?? '') ?: '-' ?></td>
-                                        <td class="text-center">
-                                            <a href="<?= site_url('web_opd/edit/' . $web['id']) ?>" class="btn btn-sm btn-outline-primary" title="Edit">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                <?php else: ?>
-                    <div class="text-center py-5">
-                        <i class="fas fa-globe fa-3x text-muted mb-3"></i>
-                        <h5 class="text-muted">No websites found.</h5>
-                    </div>
-                <?php endif; ?>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
+    <?php if (session()->getFlashdata('message')): ?>
+        <div class="bg-green-500/10 border border-green-500/20 text-green-400 px-6 py-4 rounded-2xl flex items-center shadow-2xl" role="alert">
+            <i class="fas fa-check-circle mr-4 text-xl"></i>
+            <span class="font-bold text-sm uppercase tracking-widest"><?= session()->getFlashdata('message') ?></span>
+        </div>
+    <?php endif; ?>
+
+    <!-- Filter Section -->
+    <div class="bg-slate-900 border border-slate-800 rounded-[2.5rem] shadow-2xl overflow-hidden p-8">
+        <form method="GET" action="<?= site_url('web_opd') ?>" class="grid grid-cols-1 md:grid-cols-12 gap-6 items-end">
+            <div class="md:col-span-7">
+                <label class="block text-[9px] font-black text-slate-600 uppercase tracking-[0.2em] mb-3 ml-1">Kata Kunci</label>
+                <input type="text" name="search" value="<?= esc($search) ?>" class="block w-full px-5 py-3 bg-slate-950 border border-slate-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-bold text-slate-200 transition-all uppercase placeholder-slate-800" placeholder="OPD ATAU DOMAIN...">
+            </div>
+            <div class="md:col-span-2">
+                <label class="block text-[9px] font-black text-slate-600 uppercase tracking-[0.2em] mb-3 ml-1">Status</label>
+                <select name="status" class="block w-full px-5 py-3 bg-slate-950 border border-slate-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-bold text-slate-300 uppercase cursor-pointer transition-all">
+                    <option value="">SEMUA</option>
+                    <option value="AKTIF" <?= ($filterStatus === 'AKTIF') ? 'selected' : '' ?>>AKTIF</option>
+                    <option value="NONAKTIF" <?= ($filterStatus === 'NONAKTIF') ? 'selected' : '' ?>>NONAKTIF</option>
+                </select>
+            </div>
+            <div class="md:col-span-3 flex gap-3">
+                <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-black py-3 rounded-2xl shadow-xl shadow-blue-900/20 transition-all text-[10px] uppercase tracking-widest flex items-center justify-center">
+                    <i class="fas fa-filter mr-2 text-xs"></i> Filter
+                </button>
+                <a href="<?= site_url('web_opd') ?>" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-black border border-transparent rounded-2xl shadow-sm transition-all text-[10px] uppercase tracking-widest no-underline flex items-center justify-center">
+                    <i class="fas fa-sync-alt mr-2 text-xs"></i> Reset
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Table Section -->
+    <div class="bg-slate-900 border border-slate-800 rounded-[2.5rem] shadow-2xl overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-slate-800">
+                <thead class="bg-slate-950/30">
+                    <tr>
+                        <th class="px-8 py-6 text-left text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Perangkat Daerah (OPD)</th>
+                        <th class="px-8 py-6 text-left text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Domain Website</th>
+                        <th class="px-8 py-6 text-left text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Status</th>
+                        <th class="px-8 py-6 text-left text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Keterangan</th>
+                        <th class="px-8 py-6 text-center text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] w-20">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800 bg-slate-900/30">
+                    <?php foreach ($websites as $web): ?>
+                        <tr class="hover:bg-slate-800/30 transition-colors group">
+                            <td class="px-8 py-6 align-middle">
+                                <div class="text-sm font-black text-slate-200 tracking-tight uppercase leading-snug"><?= esc($web['nama_unit_kerja'] ?? '') ?: '-' ?></div>
+                            </td>
+                            <td class="px-8 py-6 whitespace-nowrap align-middle">
+                                <?php if (!empty($web['domain'])): ?>
+                                    <a href="http://<?= esc($web['domain']) ?>" target="_blank" class="text-sm font-bold text-blue-400 hover:text-blue-300 no-underline tracking-tight lowercase flex items-center">
+                                        <?= esc($web['domain']) ?> <i class="fas fa-external-link-alt ml-2 text-[10px] opacity-50"></i>
+                                    </a>
+                                <?php else: ?>
+                                    <span class="text-slate-700">-</span>
+                                <?php endif; ?>
+                            </td>
+                            <td class="px-8 py-6 whitespace-nowrap align-middle">
+                                <?php
+                                $status = strtoupper($web['status'] ?? 'NONAKTIF');
+                                $statusClass = ($status === 'AKTIF') ? 'bg-emerald-500/10 text-emerald-500/80 border-emerald-500/20' : 'bg-rose-500/10 text-rose-500/80 border-rose-500/20';
+                                ?>
+                                <span class="inline-flex items-center px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border shadow-sm <?= $statusClass ?>"><?= $status ?></span>
+                            </td>
+                            <td class="px-8 py-6 text-sm text-slate-500 leading-relaxed italic"><?= esc($web['keterangan'] ?? '') ?: '-' ?></td>
+                            <td class="px-8 py-6 whitespace-nowrap text-center align-middle">
+                                <a href="<?= site_url('web_opd/edit/' . $web['id']) ?>" class="w-10 h-10 flex items-center justify-center bg-slate-950 text-slate-400 border border-slate-800 rounded-xl hover:bg-blue-600 hover:text-white hover:border-transparent transition-all no-underline shadow-sm">
+                                    <i class="fas fa-edit text-xs"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
 <script>
-    Chart.register(ChartDataLabels);
-
     document.addEventListener("DOMContentLoaded", function() {
         const stats = <?= json_encode($stats) ?>;
 
-        // Common Chart Labels Formatter
-        const labelFormatter = (value, ctx) => {
-            const total = ctx.dataset.data.reduce((acc, curr) => acc + curr, 0);
-            const percentage = Math.trunc(value * 100 / total) + "%";
-            return value > (total * 0.05) ? percentage : '';
-        };
-
-        // Status Chart
-        const statusCtx = document.getElementById('statusChart').getContext('2d');
-        const statusChart = new Chart(statusCtx, {
-            type: 'doughnut',
-            data: {
-                labels: ['AKTIF', 'NONAKTIF'],
-                datasets: [{
-                    data: [stats.aktif, stats.nonaktif],
-                    backgroundColor: ['#198754', '#dc3545'],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    datalabels: {
-                        display: true,
-                        color: '#fff',
-                        font: { weight: 'bold' },
-                        formatter: labelFormatter
+        const options = {
+            series: [stats.aktif, stats.nonaktif],
+            labels: ['AKTIF', 'NONAKTIF'],
+            colors: ['#10b981', '#ef4444'],
+            chart: { type: 'donut', height: 220, foreColor: '#94a3b8' },
+            stroke: { show: false },
+            dataLabels: { enabled: false },
+            legend: { show: false },
+            plotOptions: {
+                pie: {
+                    donut: {
+                        size: '75%',
+                        labels: {
+                            show: true,
+                            name: { show: true, fontSize: '12px', fontWeight: 900, offsetY: -10 },
+                            value: { show: true, fontSize: '20px', fontWeight: 900, offsetY: 10, color: '#f1f5f9' },
+                            total: { show: true, label: 'TOTAL', fontSize: '10px', fontWeight: 900, color: '#64748b' }
+                        }
                     }
                 }
             },
-            plugins: [ChartDataLabels]
-        });
-
-        window.charts = {
-            statusChart: statusChart,
+            tooltip: { theme: 'dark' }
         };
+
+        new ApexCharts(document.querySelector("#statusChart"), options).render();
     });
 
     function preparePdfExport() {
-        const statusChartB64 = window.charts.statusChart.toBase64Image();
-        document.getElementById('statusChartData').value = statusChartB64;
+        // Preparation for PDF export if needed
         return true;
     }
 </script>

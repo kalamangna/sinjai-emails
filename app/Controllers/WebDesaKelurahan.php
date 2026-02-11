@@ -9,6 +9,13 @@ use Config\Services;
 
 class WebDesaKelurahan extends BaseController
 {
+    protected $exportService;
+
+    public function __construct()
+    {
+        $this->exportService = new \App\Services\Exports\WebMonitoringExportService();
+    }
+
     public function index()
     {
         $model = new WebDesaKelurahanModel();
@@ -126,121 +133,17 @@ class WebDesaKelurahan extends BaseController
 
     public function export_pdf()
     {
-        helper('time');
-        $model = new WebDesaKelurahanModel();
-
         $search = trim($this->request->getGet('search') ?? '');
-        $filterKecamatan = trim($this->request->getGet('kecamatan') ?? '');
-        $filterStatus = trim($this->request->getGet('status') ?? '');
         $filterPlatform = trim($this->request->getGet('filter_platform') ?? '');
+        $filterStatus = trim($this->request->getGet('status') ?? '');
         $filterType = trim($this->request->getGet('type') ?? '');
-
-        // Build Query
-        $model->select('web_desa_kelurahan.*, platforms.nama_platform as platform_name')
-            ->join('platforms', 'platforms.id = web_desa_kelurahan.platform_id', 'left');
-
-        if ($search !== '') {
-            $model->groupStart()
-                ->like('web_desa_kelurahan.desa_kelurahan', $search)
-                ->orLike('web_desa_kelurahan.kecamatan', $search)
-                ->orLike('web_desa_kelurahan.domain', $search)
-                ->groupEnd();
-        }
-
-        if ($filterKecamatan !== '') {
-            $model->where('web_desa_kelurahan.kecamatan', $filterKecamatan);
-        }
-
-        if ($filterStatus !== '') {
-            $model->where('web_desa_kelurahan.status', $filterStatus);
-        }
-
-        if ($filterPlatform !== '') {
-            if ($filterPlatform === 'NULL') {
-                $model->where('web_desa_kelurahan.platform_id', null);
-            } else {
-                $model->where('platforms.nama_platform', $filterPlatform);
-            }
-        }
-
-        if ($filterType !== '') {
-            $model->like('web_desa_kelurahan.desa_kelurahan', $filterType, 'after');
-        }
-
-        $websites = $model->orderBy('web_desa_kelurahan.kecamatan', 'ASC')
-            ->orderBy('web_desa_kelurahan.desa_kelurahan', 'ASC')
-            ->findAll();
-
-        $db = \Config\Database::connect();
-
-        $aktif = 0;
-        $nonaktif = 0;
-        $platform_stats_map = [];
-
-        foreach ($websites as $web) {
-            if ($web['status'] === 'AKTIF') $aktif++;
-            elseif ($web['status'] === 'NONAKTIF') $nonaktif++;
-
-            $pName = $web['platform_name'] ?: '-';
-            if (!isset($platform_stats_map[$pName])) {
-                $platform_stats_map[$pName] = 0;
-            }
-            $platform_stats_map[$pName]++;
-        }
-
-        $stats = [
-            'total' => count($websites),
-            'aktif' => $aktif,
-            'nonaktif' => $nonaktif,
-        ];
-
-        if ($stats['total'] > 0) {
-            $stats['aktif_percentage'] = (int)(($aktif / $stats['total']) * 100);
-            $stats['nonaktif_percentage'] = (int)(($nonaktif / $stats['total']) * 100);
-        } else {
-            $stats['aktif_percentage'] = 0;
-            $stats['nonaktif_percentage'] = 0;
-        }
-
-        // Platform distribution from filtered data
-        $platform_stats = [];
-        foreach ($platform_stats_map as $name => $count) {
-            $platform_stats[] = [
-                'nama_platform' => $name,
-                'count' => $count
-            ];
-        }
-
-        // Sort by count DESC
-        usort($platform_stats, function ($a, $b) {
-            return $b['count'] <=> $a['count'];
-        });
-
-        $logoPath = FCPATH . 'logo.png';
-        $logoData = base64_encode(file_get_contents($logoPath));
-        $logoSrc = 'data:image/png;base64,' . $logoData;
-
-        // Handle chart data from POST request
         $statusChartData = $this->request->getPost('statusChartData');
         $platformChartData = $this->request->getPost('platformChartData');
 
-        $dompdf = new \Dompdf\Dompdf();
-        $dompdf->loadHtml(view('web_desa_kelurahan/pdf_export', [
-            'websites' => $websites,
-            'stats' => $stats,
-            'platform_stats' => $platform_stats,
-            'logoSrc' => $logoSrc,
-            'current_date' => format_indo_date(date('Y-m-d')),
-            'title' => 'DATA WEBSITE DESA & KELURAHAN',
-            'subtitle' => 'PEMERINTAH KABUPATEN SINJAI',
-            'statusChart' => $statusChartData,
-            'platformChart' => $platformChartData,
-        ]));
-        $dompdf->setPaper('A4', 'landscape');
-        $dompdf->render();
-
-        $filename = 'Data Website Desa & Kelurahan - ' . format_indo_date(date('Y-m-d'), true) . '.pdf';
-        $dompdf->stream($filename, ['Attachment' => true]);
+        $result = $this->exportService->generateWebDesaPdf(
+            $search, $filterPlatform, $filterStatus, $statusChartData, $platformChartData, $filterType
+        );
+        $result['dompdf']->stream($result['filename'], ['Attachment' => true]);
     }
 
     public function create()

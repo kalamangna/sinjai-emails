@@ -1,320 +1,158 @@
-<?= $this->extend('templates/layout') ?>
+<?= $this->extend('layouts/main') ?>
 
 <?= $this->section('content') ?>
-<div class="row">
-  <div class="col-12">
-    <div id="flash-message-container">
-      <?php if (session()->getFlashdata('success')): ?>
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-          <i class="fas fa-check-circle me-2"></i>
-          <?= session()->getFlashdata('success') ?>
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-      <?php endif; ?>
-      <?php if (session()->getFlashdata('error')): ?>
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-          <i class="fas fa-exclamation-triangle me-2"></i>
-          <?= session()->getFlashdata('error') ?>
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-      <?php endif; ?>
-      <?php if (session()->getFlashdata('info')): ?>
-        <div class="alert alert-info alert-dismissible fade show" role="alert">
-          <i class="fas fa-info-circle me-2"></i>
-          <?= session()->getFlashdata('info') ?>
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-      <?php endif; ?>
-    </div>
-
-    <!-- Top Actions -->
-    <div class="mb-4 d-flex justify-content-between align-items-center">
-      <a href="javascript:void(0);" onclick="history.back();" class="btn btn-outline-secondary">
-        <i class="fas fa-arrow-left me-2"></i>Back
-      </a>
-      <?php if ($email['status_asn_id'] == 3): ?>
-        <a href="<?= site_url('email/export_single_perjanjian_kerja_pdf/' . $email['user']) ?>" class="btn btn-info">
-          <i class="fas fa-file-contract me-2"></i>Export PK
+<div class="max-w-5xl mx-auto space-y-10 font-medium">
+    <!-- Tombol Kembali & PK -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <a href="javascript:void(0);" onclick="history.back();" class="inline-flex items-center px-6 py-3 bg-slate-900 border border-slate-800 rounded-2xl text-xs font-black text-slate-400 uppercase tracking-widest hover:bg-slate-800 hover:text-slate-200 transition-all shadow-xl no-underline group">
+            <i class="fas fa-arrow-left mr-3 group-hover:-translate-x-1 transition-transform"></i> Kembali
         </a>
-      <?php endif; ?>
-    </div>
-
-    <!-- Email Header -->
-    <div class="card shadow-sm mb-4">
-      <div class="card-header bg-light py-3">
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
-          <h5 class="card-title mb-2 mb-md-0">
-            <i class="fas fa-envelope me-2 text-primary"></i>Email Account Details
-          </h5>
-          <?php if (($email['suspended_login'] ?? 0) == 0): ?>
-            <span class="badge bg-success fs-6">Active</span>
-          <?php else: ?>
-            <span class="badge bg-danger fs-6">Suspended</span>
-          <?php endif; ?>
-        </div>
-      </div>
-      <div class="card-body py-4">
-        <div class="row align-items-center">
-          <div class="col-md-8">
-            <div class="d-flex align-items-center mb-2">
-              <h3 class="text-primary mb-0 me-3"><?= esc($email['email']) ?></h3>
-              <button class="btn btn-sm btn-outline-primary" onclick="copyToClipboard('<?= esc($email['email'], 'js') ?>', this)">
-                <i class="fas fa-copy me-1"></i>Copy
-              </button>
-            </div>
-            <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
-              <div id="bsre-status-container">
-                <span class="badge bg-secondary">Not Synced</span>
-              </div> <button class="btn btn-sm btn-outline-secondary ms-2" onclick="syncBsreStatus('<?= esc($email['email'], 'js') ?>')" title="Sync Status to Database">
-                <i class="fas fa-sync-alt"></i>
-              </button>
-            </div>
-            <?php if (isset($email['mtime']) && $email['mtime'] > 0): ?>
-              <p class="text-muted mb-0">
-                <i class="fas fa-fw fa-calendar me-2"></i><small>Last Modified: <?= get_local_datetime($email['mtime']) ?> (<?= relative_local_time($email['mtime']) ?>)</small>
-              </p>
-            <?php endif; ?>
-          </div>
-          <div class="col-md-4 text-md-end mt-3 mt-md-0">
-            <a href="https://<?= config('Cpanel')->cpanel_host ?>:2096" target="_blank" class="btn btn-primary">
-              <i class="fas fa-fw fa-sign-in-alt me-2"></i>Login Webmail
+        <?php if (($email['status_asn_id'] ?? 0) == 3): ?>
+            <a href="<?= site_url('email/export_single_perjanjian_kerja_pdf/' . $email['user']) ?>" class="inline-flex items-center px-8 py-3 bg-cyan-600 border border-transparent rounded-2xl font-black text-xs text-white uppercase tracking-widest hover:bg-cyan-700 transition-all shadow-xl shadow-cyan-900/20 no-underline">
+                <i class="fas fa-file-contract mr-3"></i> Dokumen PK
             </a>
-          </div>
-        </div>
-      </div>
+        <?php endif; ?>
     </div>
 
-    <!-- Disk Usage Information -->
-    <div class="row">
-      <div class="col-lg-12 mb-4">
-        <div class="card shadow-sm">
-          <div class="card-header bg-light py-3">
-            <h5 class="card-title mb-0">
-              <i class="fas fa-hdd me-2 text-info"></i>Disk Usage
-            </h5>
-          </div>
-          <div class="card-body py-4">
-            <?php
-            // Cek apakah kuota unlimited berdasarkan respon API
-            $is_unlimited = ($email['diskquota'] ?? '') == 'unlimited' ||
-              ($email['txtdiskquota'] ?? '') == 'unlimited' ||
-              ($email['humandiskquota'] ?? '') == 'None' ||
-              empty($email['_diskquota']) ||
-              ($email['_diskquota'] ?? 0) == 0;
-
-            $disk_used = $email['humandiskused'] ?? '0 KB';
-            $disk_quota = $is_unlimited ? '<i class="fas fa-infinity text-info"></i>' : ($email['humandiskquota'] ?? '0 GB');
-
-            // Format persentase dengan 2 angka di belakang koma
-            $usage_percent = round($email['diskusedpercent_float'] ?? 0, 2);
-
-            // Hitung sisa kapasitas berdasarkan data API
-            if ($is_unlimited) {
-              $remaining_text = '<i class="fas fa-infinity text-info"></i>';
-              $remaining_class = 'text-info';
-            } else {
-              // Gunakan data bytes dari API
-              $disk_used_bytes = $email['_diskused'] ?? 0;
-              $disk_quota_bytes = $email['_diskquota'] ?? 0;
-
-              if ($disk_quota_bytes > 0 && $disk_used_bytes >= 0) {
-                $remaining_bytes = $disk_quota_bytes - $disk_used_bytes;
-
-                // Konversi ke satuan yang sesuai
-                if ($remaining_bytes >= 1073741824) { // 1 GB = 1073741824 bytes
-                  $remaining_text = number_format($remaining_bytes / 1073741824, 2) . ' GB';
-                } elseif ($remaining_bytes >= 1048576) { // 1 MB = 1048576 bytes
-                  $remaining_text = number_format($remaining_bytes / 1048576, 2) . ' MB';
-                } elseif ($remaining_bytes >= 1024) { // 1 KB = 1024 bytes
-                  $remaining_text = number_format($remaining_bytes / 1024, 2) . ' KB';
-                } else {
-                  $remaining_text = $remaining_bytes . ' bytes';
-                }
-              } else {
-                $remaining_text = '0 MB';
-              }
-
-              $remaining_class = 'text-success';
-            }
-
-            // Tentukan warna progress bar
-            if ($is_unlimited) {
-              $progress_class = 'bg-info progress-bar-striped progress-bar-animated';
-              $progress_width = 100;
-            } else {
-              $progress_class = ($usage_percent > 80) ? 'bg-danger' : (($usage_percent > 60) ? 'bg-warning' : 'bg-success');
-              $progress_width = $usage_percent;
-            }
-            ?>
-
-            <!-- Progress Bar -->
-            <div class="mb-4">
-              <div class="d-flex justify-content-between mb-2">
-                <span class="fw-bold">Storage Capacity</span>
-                <span class="fw-bold <?= $is_unlimited ? 'text-info' : 'text-primary' ?>">
-                  <?= $is_unlimited ? 'Unlimited' : $usage_percent . '%' ?>
-                </span>
-              </div>
-              <div class="progress" style="height: 12px;">
-                <div class="progress-bar <?= $progress_class ?>"
-                  style="width: <?= $progress_width ?>%">
+    <!-- Header Akun -->
+    <div class="bg-slate-900 border border-slate-800 rounded-[2.5rem] p-10 shadow-2xl relative overflow-hidden group">
+        <div class="absolute -right-10 -top-10 w-48 h-48 bg-blue-500/5 rounded-full blur-3xl group-hover:bg-blue-500/10 transition-colors"></div>
+        <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-10">
+            <div class="space-y-6">
+                <div class="space-y-3">
+                    <h2 class="text-3xl md:text-5xl font-black text-blue-500 tracking-tighter lowercase leading-none break-all"><?= esc($email['email']) ?></h2>
+                    <button class="inline-flex items-center px-4 py-2 bg-slate-950 border border-slate-800 rounded-xl text-[10px] font-black text-slate-500 hover:text-blue-400 hover:border-blue-500/30 transition-all uppercase tracking-widest shadow-inner" onclick="copyToClipboard('<?= esc($email['email'], 'js') ?>', this)">
+                        <i class="fas fa-copy mr-2"></i> SALIN ALAMAT
+                    </button>
                 </div>
-              </div>
+                
+                <div class="flex flex-wrap items-center gap-4">
+                    <div id="bsre-status-container" class="flex items-center">
+                        <span class="px-4 py-1.5 bg-slate-950 border border-slate-800 rounded-full text-[10px] font-black text-slate-600 uppercase tracking-[0.2em]">BELUM SINKRON</span>
+                    </div>
+                    <button class="w-10 h-10 flex items-center justify-center bg-slate-950 border border-slate-800 rounded-full text-slate-500 hover:text-blue-400 hover:border-blue-500/30 transition-all shadow-sm group/sync" onclick="syncBsreStatus('<?= esc($email['email'], 'js') ?>')">
+                        <i class="fas fa-sync-alt text-xs group-hover/sync:rotate-180 transition-transform duration-500"></i>
+                    </button>
+                    <?php if (($email['suspended_login'] ?? 0) == 0): ?>
+                        <span class="px-4 py-1.5 bg-green-500/10 border border-green-500/20 rounded-full text-[10px] font-black text-green-400 uppercase tracking-[0.2em]">AKTIF</span>
+                    <?php else: ?>
+                        <span class="px-4 py-1.5 bg-red-500/10 border border-red-500/20 rounded-full text-[10px] font-black text-red-400 uppercase tracking-[0.2em]">DITANGGUHKAN</span>
+                    <?php endif; ?>
+                </div>
             </div>
-
-            <!-- Usage Details -->
-            <div class="row text-center">
-              <div class="col-4">
-                <div class="border-end">
-                  <h4 class="text-primary mb-1"><?= $disk_used ?></h4>
-                  <small class="text-muted">Used</small>
-                </div>
-              </div>
-              <div class="col-4">
-                <div class="border-end">
-                  <h4 class="<?= $remaining_class ?> mb-1">
-                    <?= $remaining_text ?>
-                  </h4>
-                  <small class="text-muted">Remaining</small>
-                </div>
-              </div>
-              <div class="col-4">
-                <div>
-                  <h4 class="<?= $is_unlimited ? 'text-success' : 'text-info' ?> mb-1">
-                    <?= $disk_quota ?>
-                  </h4>
-                  <small class="text-muted">Capacity</small>
-                </div>
-              </div>
-            </div>
-            <hr>
-            <div class="row mb-3">
-              <div class="col-6">
-                <strong class="text-muted">Quota Type:</strong>
-              </div>
-              <div class="col-6">
-                <?php if ($is_unlimited): ?>
-                  <span class="badge bg-info">Unlimited</span>
-                <?php else: ?>
-                  <span class="badge bg-secondary">Limited (<?= $disk_quota ?>)</span>
-                <?php endif; ?>
-              </div>
-            </div>
-          </div>
+            <a href="https://<?= config('Cpanel')->cpanel_host ?>:2096" target="_blank" class="inline-flex items-center px-10 py-5 bg-slate-800 border border-slate-700 rounded-2xl font-black text-xs text-slate-100 uppercase tracking-[0.2em] hover:bg-slate-700 transition-all shadow-2xl no-underline">
+                <i class="fas fa-sign-in-alt mr-3 text-lg text-blue-500"></i> Masuk Webmail
+            </a>
         </div>
-      </div>
-
-      <!-- Account Information -->
-      <div class="col-lg-12 mb-4">
-        <div class="card shadow-sm">
-          <div class="card-header bg-light py-3">
-            <h5 class="card-title mb-0">
-              <i class="fas fa-info-circle me-2 text-primary"></i>Account Details
-            </h5>
-          </div>
-          <div class="card-body py-4">
-            <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#editModal">
-              <i class="fas fa-pencil-alt me-2"></i>Edit Details
-            </button>
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <strong class="text-muted d-block">Name:</strong>
-                <?= esc(strtoupper($email['name'])) ?>
-              </div>
-              <div class="col-md-6 mb-3">
-                <strong class="text-muted d-block">Email:</strong>
-                <?= esc($email['email']) ?>
-              </div>
-              <div class="col-md-6 mb-3">
-                <strong class="text-muted d-block">Gelar Depan:</strong>
-                <?= esc($email['gelar_depan'] ?? '') ?>
-              </div>
-              <div class="col-md-6 mb-3">
-                <strong class="text-muted d-block">Gelar Belakang:</strong>
-                <?= esc($email['gelar_belakang'] ?? '') ?>
-              </div>
-              <div class="col-md-12 mb-3">
-                <strong class="text-muted d-block">Password:</strong>
-                <?= esc($email['password'] ?? '') ?>
-              </div>
-              <hr>
-              <div class="col-md-6 mb-3">
-                <strong class="text-muted d-block">NIK:</strong>
-                <?= esc($email['nik']) ?>
-              </div>
-              <div class="col-md-6 mb-3">
-                <strong class="text-muted d-block">NIP:</strong>
-                <?= esc($email['nip']) ?>
-              </div>
-              <div class="col-md-6 mb-3">
-                <strong class="text-muted d-block">Tempat Lahir:</strong>
-                <?= esc($email['tempat_lahir']) ?>
-              </div>
-              <div class="col-md-6 mb-3">
-                <strong class="text-muted d-block">Tanggal Lahir:</strong>
-                <?= esc($email['tanggal_lahir']) ?>
-              </div>
-              <hr>
-              <div class="col-md-6 mb-3">
-                <strong class="text-muted d-block">Pendidikan:</strong>
-                <?= esc($email['pendidikan']) ?>
-              </div>
-              <div class="col-md-6 mb-3">
-                <strong class="text-muted d-block">Jabatan:</strong>
-                <?= esc($email['jabatan']) ?>
-              </div>
-              <div class="col-md-6 mb-3">
-                <strong class="text-muted d-block">Status ASN:</strong>
-                <?php foreach ($status_asn_options as $option): ?>
-                  <?php if ($email['status_asn_id'] == $option['id']): ?>
-                    <?= esc($option['nama_status_asn']) ?>
-                  <?php endif; ?>
-                <?php endforeach; ?>
-              </div>
-              <div class="col-md-6 mb-3">
-                <strong class="text-muted d-block">Eselon:</strong>
-                <?php foreach ($eselon_options as $option): ?>
-                  <?php if ($email['eselon_id'] == $option['id']): ?>
-                    <?= esc($option['nama_eselon']) ?>
-                  <?php endif; ?>
-                <?php endforeach; ?>
-              </div>
-              <div class="col-md-6 mb-3">
-                <strong class="text-muted d-block">Pimpinan:</strong>
-                <?= ($email['pimpinan'] ?? 0) == 1 ? '<span class="badge bg-primary">Yes</span>' : '<span class="badge bg-secondary">No</span>' ?>
-              </div>
-              <div class="col-md-6 mb-3">
-                <strong class="text-muted d-block">Pimpinan Desa:</strong>
-                <?= ($email['pimpinan_desa'] ?? 0) == 1 ? '<span class="badge bg-primary">Yes</span>' : '<span class="badge bg-secondary">No</span>' ?>
-              </div>
-              <div class="col-md-6 mb-3">
-                <strong class="text-muted d-block">Unit Kerja:</strong>
-                <?php if (!empty($parent_unit_kerja)): ?>
-                  <a href="<?= site_url('email/unit_kerja/' . $parent_unit_kerja['id']) ?>" class="btn btn-sm btn-outline-info">
-                    <i class="fas fa-building me-1"></i><?= esc(strtoupper($parent_unit_kerja['nama_unit_kerja'])) ?>
-                  </a>
-                <?php elseif (!empty($current_unit_kerja)): ?>
-                  <a href="<?= site_url('email/unit_kerja/' . $current_unit_kerja['id']) ?>" class="btn btn-sm btn-outline-info">
-                    <i class="fas fa-building me-1"></i><?= esc(strtoupper($current_unit_kerja['nama_unit_kerja'])) ?>
-                  </a>
-                <?php else: ?>
-                  N/A
-                <?php endif; ?>
-              </div>
-              <?php if (!empty($parent_unit_kerja)): ?>
-                <div class="col-md-6 mb-3">
-                  <strong class="text-muted d-block">Sub Unit Kerja:</strong>
-                  <a href="<?= site_url('email/unit_kerja/' . $current_unit_kerja['id']) ?>" class="btn btn-sm btn-outline-secondary">
-                    <i class="fas fa-sitemap me-1"></i><?= esc(strtoupper($current_unit_kerja['nama_unit_kerja'])) ?>
-                  </a>
-                </div>
-              <?php endif; ?>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
-  </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <!-- Kapasitas Penyimpanan -->
+        <div class="lg:col-span-12 bg-slate-900 border border-slate-800 rounded-[2.5rem] overflow-hidden shadow-2xl">
+            <div class="bg-slate-800/30 px-10 py-6 border-b border-slate-800">
+                <h5 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em] flex items-center">
+                    <i class="fas fa-hdd mr-3 text-cyan-500 opacity-50"></i>Kapasitas Penyimpanan
+                </h5>
+            </div>
+            <div class="p-10 space-y-10">
+                <?php
+                $is_unlimited = ($email['diskquota'] ?? '') == 'unlimited' || empty($email['_diskquota']);
+                $usage_percent = round($email['diskusedpercent_float'] ?? 0, 2);
+                $progress_class = ($usage_percent > 80) ? 'bg-red-500' : (($usage_percent > 60) ? 'bg-amber-500' : 'bg-blue-500');
+                ?>
+
+                <div class="space-y-4">
+                    <div class="flex justify-between items-end">
+                        <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Penggunaan Ruang Disk</span>
+                        <span class="text-2xl font-black <?= $is_unlimited ? 'text-cyan-400' : 'text-slate-100' ?> tracking-tighter">
+                            <?= $is_unlimited ? 'UNLIMITED' : $usage_percent . '%' ?>
+                        </span>
+                    </div>
+                    <div class="w-full bg-slate-950 rounded-full h-4 p-1 border border-slate-800 shadow-inner">
+                        <div class="<?= $is_unlimited ? 'bg-cyan-500' : $progress_class ?> h-full rounded-full transition-all duration-1000 shadow-lg" style="width: <?= $is_unlimited ? 100 : $usage_percent ?>%"></div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="p-6 bg-slate-950 rounded-2xl border border-slate-800 text-center space-y-1">
+                        <div class="text-xl font-black text-slate-100 tracking-tight"><?= $email['humandiskused'] ?? '0 KB' ?></div>
+                        <div class="text-[9px] font-black text-slate-600 uppercase tracking-widest">Digunakan</div>
+                    </div>
+                    <div class="p-6 bg-slate-950 rounded-2xl border border-slate-800 text-center space-y-1">
+                        <div class="text-xl font-black text-blue-400 tracking-tight"><?= $is_unlimited ? '∞' : ($email['humandiskquota'] ?? '-') ?></div>
+                        <div class="text-[9px] font-black text-slate-600 uppercase tracking-widest">Total Kuota</div>
+                    </div>
+                    <div class="p-6 bg-slate-950 rounded-2xl border border-slate-800 text-center space-y-1">
+                        <div class="text-xl font-black text-green-400 tracking-tight"><?= $is_unlimited ? '∞' : (number_format(($email['_diskquota'] - $email['_diskused']) / 1048576, 2) . ' MB') ?></div>
+                        <div class="text-[9px] font-black text-slate-600 uppercase tracking-widest">Tersisa</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detail Kepegawaian -->
+        <div class="lg:col-span-12 bg-slate-900 border border-slate-800 rounded-[2.5rem] overflow-hidden shadow-2xl">
+            <div class="bg-slate-800/30 px-10 py-6 border-b border-slate-800 flex justify-between items-center">
+                <h5 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em] flex items-center">
+                    <i class="fas fa-user-circle mr-3 text-blue-500 opacity-50"></i>Data Personel & Jabatan
+                </h5>
+                <button onclick="openEditModal()" class="px-5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-[10px] font-black text-slate-400 hover:text-white hover:border-slate-600 transition-all uppercase tracking-widest shadow-sm">
+                    <i class="fas fa-pencil-alt mr-2"></i> Ubah Data
+                </button>
+            </div>
+            <div class="p-10">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-10">
+                    <div class="space-y-2">
+                        <span class="block text-[10px] font-black text-slate-600 uppercase tracking-[0.2em]">Nama Lengkap</span>
+                        <span class="block text-lg font-black text-slate-200 uppercase tracking-tight leading-snug"><?= esc($email['name']) ?></span>
+                    </div>
+                    <div class="space-y-2">
+                        <span class="block text-[10px] font-black text-slate-600 uppercase tracking-[0.2em]">Status Kepegawaian</span>
+                        <div class="flex gap-3 pt-1">
+                            <span class="px-4 py-1.5 bg-blue-500/10 border border-blue-500/20 rounded-xl text-[10px] font-black text-blue-400 uppercase tracking-widest"><?= esc($email['status_asn'] ?? 'BUKAN ASN') ?></span>
+                            <?php if ($email['eselon_id']): ?>
+                                <span class="px-4 py-1.5 bg-indigo-500/10 border border-indigo-500/20 rounded-xl text-[10px] font-black text-indigo-400 uppercase tracking-widest">ESELON <?= esc($email['eselon_id']) ?></span>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <span class="block text-[10px] font-black text-slate-600 uppercase tracking-[0.2em]">NIK (Identitas)</span>
+                        <span class="block text-lg font-black text-slate-300 tracking-widest leading-none"><?= esc($email['nik']) ?: '-' ?></span>
+                    </div>
+                    <div class="space-y-2">
+                        <span class="block text-[10px] font-black text-slate-600 uppercase tracking-[0.2em]">NIP (Kepegawaian)</span>
+                        <span class="block text-lg font-black text-slate-300 tracking-widest leading-none"><?= esc($email['nip']) ?: '-' ?></span>
+                    </div>
+                    <div class="space-y-2">
+                        <span class="block text-[10px] font-black text-slate-600 uppercase tracking-[0.2em]">Jabatan Struktural / Pelaksana</span>
+                        <span class="block text-base font-bold text-slate-200 uppercase tracking-tight leading-relaxed"><?= esc($email['jabatan']) ?: '-' ?></span>
+                    </div>
+                    <div class="space-y-2">
+                        <span class="block text-[10px] font-black text-slate-600 uppercase tracking-[0.2em]">Unit Kerja Terdaftar</span>
+                        <div class="space-y-2">
+                            <?php if (!empty($parent_unit_kerja)): ?>
+                                <a href="<?= site_url('email/unit_kerja/' . $parent_unit_kerja['id']) ?>" class="block text-sm font-black text-blue-400 hover:text-blue-300 no-underline uppercase tracking-tight transition-colors">
+                                    <i class="fas fa-building mr-2 opacity-50"></i><?= esc(strtoupper($parent_unit_kerja['nama_unit_kerja'])) ?>
+                                </a>
+                                <div class="pl-6 border-l-2 border-slate-800 ml-1 mt-2">
+                                    <a href="<?= site_url('email/unit_kerja/' . ($current_unit_kerja['id'] ?? '')) ?>" class="block text-xs font-bold text-slate-500 hover:text-slate-300 no-underline uppercase tracking-widest transition-colors">
+                                        <?= esc(strtoupper($current_unit_kerja['nama_unit_kerja'] ?? '')) ?>
+                                    </a>
+                                </div>
+                            <?php elseif (!empty($current_unit_kerja)): ?>
+                                <a href="<?= site_url('email/unit_kerja/' . $current_unit_kerja['id']) ?>" class="block text-base font-black text-blue-400 hover:text-blue-300 no-underline uppercase tracking-tight transition-colors">
+                                    <i class="fas fa-building mr-2 opacity-50"></i><?= esc(strtoupper($current_unit_kerja['nama_unit_kerja'])) ?>
+                                </a>
+                            <?php else: ?>
+                                <span class="block text-base font-black text-slate-200 uppercase tracking-tight">TIDAK TERDAFTAR</span>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?= $this->include('email/components/modal_edit') ?>
 </div>
 <?= $this->endSection() ?>
 
@@ -323,108 +161,48 @@
   function copyToClipboard(text, btn) {
     navigator.clipboard.writeText(text).then(function() {
       const originalText = btn.innerHTML;
-      btn.innerHTML = '<i class="fas fa-check me-2"></i>Copied!';
-      btn.classList.remove('btn-outline-primary');
-      btn.classList.add('btn-success');
-
-      setTimeout(function() {
-        btn.innerHTML = originalText;
-        btn.classList.remove('btn-success');
-        btn.classList.add('btn-outline-primary');
-      }, 2000);
-    }).catch(function(err) {
-      alert('Failed to copy email: ' + err);
+      btn.innerHTML = '<i class="fas fa-check mr-2 text-green-400"></i> COPIED';
+      btn.classList.add('border-green-500/50', 'text-green-400');
+      setTimeout(() => { btn.innerHTML = originalText; btn.classList.remove('border-green-500/50', 'text-green-400'); }, 2000);
     });
   }
 
-  // Helper function to render status (Global Scope)
-  function renderBsreStatus(status, keterangan = '', fromDb = false) {
-    const bsreContainer = document.getElementById('bsre-status-container');
-    if (!bsreContainer) return;
-
-    const statusMapping = {
-      'ISSUE': 'Sertifikat Aktif / Siap TTE',
-      'EXPIRED': 'Masa Berlaku Habis',
-      'RENEW': 'Proses Pembaruan',
-      'WAITING_FOR_VERIFICATION': 'Menunggu Verifikasi',
-      'NEW': 'Belum Aktivasi',
-      'NO_CERTIFICATE': 'Belum Ada Sertifikat',
-      'NOT_REGISTERED': 'Pengguna Tidak Terdaftar',
-      'SUSPEND': 'Akun Ditangguhkan',
-      'REVOKE': 'Sertifikat Dicabut'
+  function renderBsreStatus(status, keterangan = '') {
+    const container = document.getElementById('bsre-status-container');
+    if (!container) return;
+    
+    const badgeBase = 'px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border shadow-sm';
+    
+    const colors = {
+        'ISSUE': 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+        'EXPIRED': 'bg-red-500/10 text-red-400 border-red-500/20',
+        'RENEW': 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+        'WAITING_FOR_VERIFICATION': 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+        'NEW': 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20',
+        'NO_CERTIFICATE': 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
+        'NOT_REGISTERED': 'bg-fuchsia-500/10 text-fuchsia-400 border-fuchsia-500/20',
+        'SUSPEND': 'bg-purple-500/10 text-purple-400 border-purple-500/20',
+        'REVOKE': 'bg-zinc-500/10 text-zinc-400 border-zinc-500/20',
     };
 
-    let badgeClass = 'bg-secondary';
-    let badgeText = status || 'UNKNOWN';
-    let descriptionText = statusMapping[status] || 'Status Tidak Dikenali';
-    let sourceText = '';
-
-    if (status === 'ISSUE') {
-      badgeClass = 'bg-success';
-    } else if (status === 'EXPIRED' || status === 'REVOKE' || status === 'SUSPEND') {
-      badgeClass = 'bg-danger';
-    } else if (status === 'RENEW' || status === 'WAITING_FOR_VERIFICATION' || status === 'NEW') {
-      badgeClass = 'bg-info text-dark';
-    } else if (status === 'NO_CERTIFICATE' || status === 'NOT_REGISTERED' || status === 'UNKNOWN' || !status) {
-      badgeClass = 'bg-warning text-dark';
-    }
-
-    bsreContainer.innerHTML = `
-          <span class="badge ${badgeClass}">${badgeText}</span>${sourceText}
-          ${descriptionText ? `<small class="text-muted d-block mt-1">${descriptionText}</small>` : ''}
-          ${keterangan && keterangan !== descriptionText ? `<small class="text-muted d-block mt-1">${keterangan}</small>` : ''}
-      `;
+    const badgeClass = colors[status] || 'bg-slate-950 text-slate-600 border-slate-800';
+    container.innerHTML = `<span class="${badgeBase} ${badgeClass}">${status}</span>`;
   }
 
   function syncBsreStatus(email) {
-    const bsreContainer = document.getElementById('bsre-status-container');
-    if (bsreContainer) {
-      bsreContainer.innerHTML = '<span class="spinner-border spinner-border-sm text-secondary" role="status" aria-hidden="true"></span><span class="text-muted ms-2">Syncing...</span>';
-    }
-
-    fetch('<?= site_url('bsre/sync-status') ?>', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'X-Requested-With': 'XMLHttpRequest'
-        },
-        body: 'email=' + encodeURIComponent(email)
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.status === 'success') {
-          renderBsreStatus(data.bsre_status, '', true);
-        } else {
-          if (bsreContainer) {
-            bsreContainer.innerHTML = `<span class="text-danger"><i class="fas fa-exclamation-circle me-1"></i>Sync Failed: ${data.message}</span>`;
-          }
-          console.error('Sync Error:', data.message);
-        }
-      })
-      .catch(error => {
-        if (bsreContainer) {
-          bsreContainer.innerHTML = `<span class="text-danger"><i class="fas fa-exclamation-circle me-1"></i>Network Error</span>`;
-        }
-        console.error('Sync Error:', error);
-      });
+    const container = document.getElementById('bsre-status-container');
+    container.innerHTML = '<div class="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full"></div>';
+    fetch('<?= site_url('bsre/sync-status') ?>', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' }, body: 'email=' + encodeURIComponent(email) })
+      .then(r => r.json()).then(data => { if (data.status === 'success') renderBsreStatus(data.bsre_status); else container.innerHTML = '<span class="text-xs font-black text-red-500 uppercase">FAILED</span>'; })
+      .catch(() => { container.innerHTML = '<span class="text-xs font-black text-red-500 uppercase">ERROR</span>'; });
   }
-</script>
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    // Fetch Status TTE Logic
-    const bsreContainer = document.getElementById('bsre-status-container');
-    const emailAddress = '<?= esc($email['email'], 'js') ?>';
 
-    // Initial load logic
-    if (bsreContainer && emailAddress) {
-      const initialBsreStatus = '<?= esc($email['bsre_status'] ?? '', 'js') ?>';
-      if (initialBsreStatus) {
-        renderBsreStatus(initialBsreStatus, '', true);
-      } else {
-        bsreContainer.innerHTML = `<span class="badge bg-secondary">Not Synced</span>`;
-      }
-    }
+  function openEditModal() { document.getElementById('editModal').classList.remove('hidden'); document.body.style.overflow = 'hidden'; }
+  function closeEditModal() { document.getElementById('editModal').classList.add('hidden'); document.body.style.overflow = 'auto'; }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const initialStatus = '<?= esc($email['bsre_status'] ?? '', 'js') ?>';
+    if (initialStatus) renderBsreStatus(initialStatus);
   });
 </script>
-<?= $this->include('email/_modal_edit') ?>
 <?= $this->endSection() ?>

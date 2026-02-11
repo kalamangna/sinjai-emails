@@ -1,0 +1,28 @@
+{
+  "name": "sinjaikab-emails",
+  "version": "1.0.0",
+  "description": "A centralized management platform designed to streamline digital identity provisioning, institutional asset tracking, and technical support activities for local government agencies.",
+  "main": "index.js",
+  "scripts": {
+    "build:css": "npx tailwindcss -i ./public/css/input.css -o ./public/css/output.css",
+    "watch:css": "npx tailwindcss -i ./public/css/input.css -o ./public/css/output.css --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kalamangna/sinjai-emails.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/kalamangna/sinjai-emails/issues"
+  },
+  "homepage": "https://github.com/kalamangna/sinjai-emails#readme",
+  "devDependencies": {
+    "autoprefixer": "^10.4.24",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.17"
+  }
+}

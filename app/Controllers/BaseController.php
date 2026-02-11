@@ -52,6 +52,12 @@ abstract class BaseController extends Controller
         parent::initController($request, $response, $logger);
 
         // Preload any models, libraries, etc, here.
+        $emailService = new \App\Services\Features\EmailService();
+        $navData = $emailService->getGlobalNavigationData();
+        
+        // Use View to share data globally
+        $view = \Config\Services::renderer();
+        $view->setData($navData);
 
         // E.g.: $this->session = service('session');
     }

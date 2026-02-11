@@ -179,12 +179,24 @@
                 $color = '#000000'; // Default black
                 if ($statusTte === 'ISSUE') {
                     $color = '#198754'; // Green
-                } elseif (in_array($statusTte, ['EXPIRED', 'REVOKE', 'SUSPEND'])) {
+                } elseif ($statusTte === 'EXPIRED') {
                     $color = '#dc3545'; // Red
-                } elseif (in_array($statusTte, ['RENEW', 'WAITING_FOR_VERIFICATION', 'NEW'])) {
-                    $color = '#0dcaf0'; // Cyan/Info
-                } elseif (in_array($statusTte, ['NO_CERTIFICATE', 'NOT_REGISTERED', 'NOT SYNCED'])) {
-                    $color = '#d39e00'; // Yellow/Orange
+                } elseif ($statusTte === 'NO_CERTIFICATE') {
+                    $color = '#d39e00'; // Yellow
+                } elseif ($statusTte === 'RENEW') {
+                    $color = '#0d6efd'; // Blue
+                } elseif ($statusTte === 'WAITING_FOR_VERIFICATION') {
+                    $color = '#fd7e14'; // Orange
+                } elseif ($statusTte === 'NEW') {
+                    $color = '#6610f2'; // Indigo
+                } elseif ($statusTte === 'NOT_REGISTERED') {
+                    $color = '#e83e8c'; // Fuchsia
+                } elseif ($statusTte === 'SUSPEND') {
+                    $color = '#6f42c1'; // Purple
+                } elseif ($statusTte === 'REVOKE') {
+                    $color = '#6c757d'; // Gray
+                } elseif ($statusTte === 'NOT SYNCED') {
+                    $color = '#333'; // Dark Gray
                 }
 
                 // Prepare Unit Kerja content
@@ -271,9 +283,15 @@
                                     <?php
                                         $color = '#000';
                                         if ($status === 'ISSUE') $color = '#198754';
-                                        elseif (in_array($status, ['EXPIRED', 'REVOKE', 'SUSPEND'])) $color = '#dc3545';
-                                        elseif (in_array($status, ['RENEW', 'WAITING_FOR_VERIFICATION', 'NEW'])) $color = '#0dcaf0';
-                                        elseif (in_array($status, ['NO_CERTIFICATE', 'NOT_REGISTERED', 'NOT SYNCED'])) $color = '#d39e00';
+                                        elseif ($status === 'EXPIRED') $color = '#dc3545';
+                                        elseif ($status === 'NO_CERTIFICATE') $color = '#d39e00';
+                                        elseif ($status === 'RENEW') $color = '#0d6efd';
+                                        elseif ($status === 'WAITING_FOR_VERIFICATION') $color = '#fd7e14';
+                                        elseif ($status === 'NEW') $color = '#6610f2';
+                                        elseif ($status === 'NOT_REGISTERED') $color = '#e83e8c';
+                                        elseif ($status === 'SUSPEND') $color = '#6f42c1';
+                                        elseif ($status === 'REVOKE') $color = '#6c757d';
+                                        elseif ($status === 'NOT SYNCED') $color = '#333';
                                         
                                         $label = $statusLabels[$status] ?? $status;
                                     ?>

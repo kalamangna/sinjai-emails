@@ -5,84 +5,95 @@ use CodeIgniter\Router\RouteCollection;
 /**
  * @var RouteCollection $routes
  */
-$routes->get('/', 'Email::index');
-$routes->get('email', 'Email::index');
-$routes->get('email/sync', 'Email::sync');
-$routes->get('email/detail/(:any)', 'Email::detail/$1');
-$routes->get('/email/unit_kerja/(:num)', 'Email::unit_kerja_detail/$1');
-$routes->get('/email/eselon/(:num)', 'Email::eselon_detail/$1');
-$routes->post('email/update_details/(:any)', 'Email::update_details/$1');
-$routes->post('/email/delete/(:num)', 'Email::delete/$1');
-$routes->post('/email/create_single', 'Email::create_single_email');
-$routes->post('/user/check_email', 'User::checkEmailAvailability');
-$routes->post('/user/check_niknip', 'User::check_niknip');
-$routes->get('email/batch', 'Email::batch');
-$routes->post('email/create_single', 'Email::create_single_email');
-$routes->get('email/batch_update', 'Email::batch_update');
-$routes->get('email/batch_perjanjian_kerja', 'Email::batch_perjanjian_kerja');
-$routes->post('email/batch_update_process', 'Email::batch_update_process');
-$routes->post('email/batch_create', 'Email::batch_create');
-$routes->post('email/delete/(:num)', 'Email::delete/$1');
 
-$routes->get('email/pimpinan', 'Email::pimpinan');
-$routes->get('email/pimpinan_desa', 'Email::pimpinan_desa');
-$routes->get('email/export_pimpinan_pdf', 'Email::export_pimpinan_pdf');
-$routes->get('email/export_pimpinan_desa_pdf', 'Email::export_pimpinan_desa_pdf');
-
-$routes->get('email/export_unit_kerja_csv/(:num)', 'Email::export_unit_kerja_csv/$1');
-$routes->post('email/export_unit_kerja_pdf/(:num)', 'Email::export_unit_kerja_pdf/$1');
-$routes->get('email/export_account_detail_pdf/(:num)', 'Email::export_account_detail_pdf/$1');
-$routes->get('email/export_perjanjian_kerja_pdf/(:num)', 'Email::export_perjanjian_kerja_pdf/$1');
-$routes->get('email/export_single_perjanjian_kerja_pdf/(:any)', 'Email::export_single_perjanjian_kerja_pdf/$1');
-
-// Batch Export PDF Routes
-$routes->get('email/api_unit_emails/(:num)', 'Email::api_unit_emails/$1');
-$routes->post('email/api_generate_pdf', 'Email::api_generate_pdf');
-$routes->get('email/api_download_zip/(:num)', 'Email::api_download_zip/$1');
-$routes->get('email/download_zip_file/(:any)', 'Email::download_zip_file/$1');
-
-$routes->post('/user/check_email', 'User::checkEmailAvailability');
-$routes->post('/user/check_niknip', 'User::check_niknip');
-$routes->get('/bsre/check-status', 'Bsre::checkStatus');
-$routes->post('/bsre/sync-status', 'Bsre::syncStatus');
-$routes->get('/simpegnas/check/(:any)', 'Simpegnas::check/$1');
-
-$routes->get('/test-pk', 'Email::test_perjanjian_kerja');
-
-// We get a performance increase by specifying the default
-// route since we don't have to scan directories.
+// Portal Utama
 $routes->get('/', 'Home::index');
-$routes->get('unit_kerja/manage', 'UnitKerja::manage');
-$routes->get('unit_kerja/add', 'UnitKerja::add');
-$routes->post('unit_kerja/store', 'UnitKerja::store');
-$routes->get('unit_kerja/batch_create', 'UnitKerja::batch_create');
-$routes->post('unit_kerja/batch_store', 'UnitKerja::batch_store');
-$routes->get('unit_kerja/edit/(:num)', 'UnitKerja::edit/$1');
-$routes->post('unit_kerja/update/(:num)', 'UnitKerja::update/$1');
-$routes->get('unit_kerja/delete/(:num)', 'UnitKerja::delete/$1');
 
-$routes->get('web_desa_kelurahan', 'WebDesaKelurahan::index');
-$routes->post('web_desa_kelurahan/export_pdf', 'WebDesaKelurahan::export_pdf');
-$routes->get('web_desa_kelurahan/create', 'WebDesaKelurahan::create');
-$routes->post('web_desa_kelurahan/store', 'WebDesaKelurahan::store');
-$routes->get('web_desa_kelurahan/edit/(:num)', 'WebDesaKelurahan::edit/$1');
-$routes->post('web_desa_kelurahan/update/(:num)', 'WebDesaKelurahan::update/$1');
-$routes->get('web_desa_kelurahan/sync_expiration/(:num)', 'WebDesaKelurahan::sync_expiration/$1');
+// Manajemen Email
+$routes->group('email', function ($routes) {
+    $routes->get('/', 'Email::index');
+    $routes->get('unit_kerja', 'Email::unit_kerja_list');
+    $routes->get('sync', 'Email::sync');
+    $routes->get('detail/(:any)', 'Email::detail/$1');
+    $routes->get('unit_kerja/(:num)', 'Email::unit_kerja_detail/$1');
+    $routes->get('eselon_detail/(:num)', 'Email::eselon_detail/$1');
+    $routes->post('update_details/(:any)', 'Email::update_details/$1');
+    $routes->post('delete/(:num)', 'Email::delete/$1');
+    $routes->get('batch', 'Email::batch');
+    $routes->get('batch_update', 'Email::batch_update');
+    $routes->get('batch_perjanjian_kerja', 'Email::batch_perjanjian_kerja');
+    $routes->post('batch_update_process', 'Email::batch_update_process');
+    $routes->post('batch_create', 'Email::batch_create');
+    $routes->post('create_single', 'Email::create_single_email');
 
-$routes->get('web_opd', 'WebOpd::index');
-$routes->post('web_opd/export_pdf', 'WebOpd::export_pdf');
-$routes->get('web_opd/create', 'WebOpd::create');
-$routes->post('web_opd/store', 'WebOpd::store');
-$routes->get('web_opd/edit/(:num)', 'WebOpd::edit/$1');
-$routes->post('web_opd/update/(:num)', 'WebOpd::update/$1');
+    $routes->get('pimpinan', 'Email::pimpinan');
+    $routes->get('pimpinan_desa', 'Email::pimpinan_desa');
+    $routes->get('pimpinan_hub', 'Email::pimpinan_hub');
+    $routes->get('batch_hub', 'Email::batch_hub');
+    $routes->get('export_pimpinan_pdf', 'Email::export_pimpinan_pdf');
+    $routes->get('export_pimpinan_desa_pdf', 'Email::export_pimpinan_desa_pdf');
 
-// Assistance Module
-$routes->get('assistance', 'Assistance::index');
-$routes->get('assistance/export_pdf', 'Assistance::export_pdf');
-$routes->get('assistance/create', 'Assistance::create');
-$routes->post('assistance/store', 'Assistance::store');
-$routes->get('assistance/edit/(:num)', 'Assistance::edit/$1');
-$routes->post('assistance/update/(:num)', 'Assistance::update/$1');
-$routes->get('assistance/delete/(:num)', 'Assistance::delete/$1');
+    $routes->get('export_unit_kerja_csv/(:num)', 'Email::export_unit_kerja_csv/$1');
+    $routes->post('export_unit_kerja_pdf/(:num)', 'Email::export_unit_kerja_pdf/$1');
+    $routes->get('export_account_detail_pdf/(:num)', 'Email::export_account_detail_pdf/$1');
+    $routes->get('export_perjanjian_kerja_pdf/(:num)', 'Email::export_perjanjian_kerja_pdf/$1');
+    $routes->get('export_single_perjanjian_kerja_pdf/(:any)', 'Email::export_single_perjanjian_kerja_pdf/$1');
 
+    // API PDF Massal
+    $routes->get('api_unit_emails/(:num)', 'Email::api_unit_emails/$1');
+    $routes->post('api_generate_pdf', 'Email::api_generate_pdf');
+    $routes->get('api_download_zip/(:num)', 'Email::api_download_zip/$1');
+    $routes->get('download_zip_file/(:any)', 'Email::download_zip_file/$1');
+});
 
+$routes->get('website_hub', 'Home::website_hub');
+
+// Manajemen Data Induk (Unit Kerja)
+$routes->group('unit_kerja', function ($routes) {
+    $routes->get('manage', 'UnitKerja::manage');
+    $routes->get('add', 'UnitKerja::add');
+    $routes->post('store', 'UnitKerja::store');
+    $routes->get('batch_create', 'UnitKerja::batch_create');
+    $routes->post('batch_store', 'UnitKerja::batch_store');
+    $routes->get('edit/(:num)', 'UnitKerja::edit/$1');
+    $routes->post('update/(:num)', 'UnitKerja::update/$1');
+    $routes->get('delete/(:num)', 'UnitKerja::delete/$1');
+});
+
+// Pemantauan Website
+$routes->group('web_desa_kelurahan', function ($routes) {
+    $routes->get('/', 'WebDesaKelurahan::index');
+    $routes->post('export_pdf', 'WebDesaKelurahan::export_pdf');
+    $routes->get('create', 'WebDesaKelurahan::create');
+    $routes->post('store', 'WebDesaKelurahan::store');
+    $routes->get('edit/(:num)', 'WebDesaKelurahan::edit/$1');
+    $routes->post('update/(:num)', 'WebDesaKelurahan::update/$1');
+    $routes->get('sync_expiration/(:num)', 'WebDesaKelurahan::sync_expiration/$1');
+});
+
+$routes->group('web_opd', function ($routes) {
+    $routes->get('/', 'WebOpd::index');
+    $routes->post('export_pdf', 'WebOpd::export_pdf');
+    $routes->get('create', 'WebOpd::create');
+    $routes->post('store', 'WebOpd::store');
+    $routes->get('edit/(:num)', 'WebOpd::edit/$1');
+    $routes->post('update/(:num)', 'WebOpd::update/$1');
+});
+
+// Log Pendampingan
+$routes->group('assistance', function ($routes) {
+    $routes->get('/', 'Assistance::index');
+    $routes->get('export_pdf', 'Assistance::export_pdf');
+    $routes->get('create', 'Assistance::create');
+    $routes->post('store', 'Assistance::store');
+    $routes->get('edit/(:num)', 'Assistance::edit/$1');
+    $routes->post('update/(:num)', 'Assistance::update/$1');
+    $routes->get('delete/(:num)', 'Assistance::delete/$1');
+});
+
+// Utilitas User & BSrE
+$routes->post('user/check_email', 'User::checkEmailAvailability');
+$routes->post('user/check_niknip', 'User::check_niknip');
+$routes->get('bsre/check-status', 'Bsre::checkStatus');
+$routes->post('bsre/sync-status', 'Bsre::syncStatus');
+$routes->get('simpegnas/check/(:any)', 'Simpegnas::check/$1');
