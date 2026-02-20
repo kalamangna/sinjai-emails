@@ -75,7 +75,7 @@ class Email extends BaseController
             $data['per_page'] = $perPage;
             $data['last_sync_time'] = $lastSync['value'] ?? null;
             $data['pagination'] = $data['pager'];
-            $data['filtered_count'] = $data['pager']->getTotal();
+            // filtered_count is now provided by the service
             $data['bsre_status_options'] = $data['bsre_status_labels'];
 
             return view('email/index', $data);
@@ -313,6 +313,8 @@ class Email extends BaseController
                 }
             }
 
+            $total_emails = $emailBuilder->countAllResults(false);
+
             $emails = $emailBuilder->orderBy('uk.nama_unit_kerja', 'ASC')
                 ->orderBy('jabatan', 'ASC')
                 ->orderBy('name', 'ASC')
@@ -320,22 +322,22 @@ class Email extends BaseController
             $pager = $this->emailModel->pager;
 
             $bsre_status_options = [
-                'ISSUE' => 'Sertifikat Aktif / Siap TTE',
-                'EXPIRED' => 'Masa Berlaku Habis',
-                'RENEW' => 'Proses Pembaruan',
-                'WAITING_FOR_VERIFICATION' => 'Menunggu Verifikasi',
-                'NEW' => 'Belum Aktivasi',
-                'NO_CERTIFICATE' => 'Belum Ada Sertifikat',
-                'NOT_REGISTERED' => 'Pengguna Tidak Terdaftar',
-                'SUSPEND' => 'Akun Ditangguhkan',
-                'REVOKE' => 'Sertifikat Dicabut',
-                'not_synced' => 'BELUM SINKRON'
+                'ISSUE' => 'ISSUE',
+                'EXPIRED' => 'EXPIRED',
+                'RENEW' => 'RENEW',
+                'WAITING_FOR_VERIFICATION' => 'WAITING_FOR_VERIFICATION',
+                'NEW' => 'NEW',
+                'NO_CERTIFICATE' => 'NO_CERTIFICATE',
+                'NOT_REGISTERED' => 'NOT_REGISTERED',
+                'SUSPEND' => 'SUSPEND',
+                'REVOKE' => 'REVOKE',
+                'not_synced' => 'NOT SYNCED'
             ];
 
             $data = [
                 'eselon' => $eselon,
                 'emails' => $emails,
-                'total_emails' => $pager->getTotal(),
+                'total_emails' => $total_emails,
                 'pagination' => $pager,
                 'per_page' => $perPage,
                 'search' => $search,
@@ -359,13 +361,20 @@ class Email extends BaseController
             $search = $this->request->getGet('search');
             $bsre_status = $this->request->getGet('bsre_status');
 
-            $emailBuilder = $this->emailModel->where('pimpinan', 1);
+            $emailBuilder = $this->emailModel
+                ->allowCallbacks(false)
+                ->select('emails.*, unit_kerja.nama_unit_kerja as unit_kerja_name, parent_unit_kerja.nama_unit_kerja as parent_unit_kerja_name, status_asn.nama_status_asn as status_asn')
+                ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
+                ->join('unit_kerja as parent_unit_kerja', 'parent_unit_kerja.id = unit_kerja.parent_id', 'left')
+                ->join('status_asn', 'status_asn.id = emails.status_asn_id', 'left')
+                ->where('pimpinan', 1);
+
             if ($search) {
                 $emailBuilder->groupStart()
-                    ->like('email', $search)
-                    ->orLike('name', $search)
-                    ->orLike('nik', $search)
-                    ->orLike('nip', $search)
+                    ->like('emails.email', $search)
+                    ->orLike('emails.name', $search)
+                    ->orLike('emails.nik', $search)
+                    ->orLike('emails.nip', $search)
                     ->groupEnd();
             }
 
@@ -380,6 +389,8 @@ class Email extends BaseController
                 }
             }
 
+            $total_emails = $emailBuilder->countAllResults(false);
+
             $emails = $emailBuilder
                 ->orderBy('emails.eselon_id', 'ASC')
                 ->orderBy('COALESCE(parent_unit_kerja.nama_unit_kerja, unit_kerja.nama_unit_kerja)', 'ASC', false)
@@ -392,22 +403,22 @@ class Email extends BaseController
             $pager = $this->emailModel->pager;
 
             $bsre_status_options = [
-                'ISSUE' => 'Sertifikat Aktif / Siap TTE',
-                'EXPIRED' => 'Masa Berlaku Habis',
-                'RENEW' => 'Proses Pembaruan',
-                'WAITING_FOR_VERIFICATION' => 'Menunggu Verifikasi',
-                'NEW' => 'Belum Aktivasi',
-                'NO_CERTIFICATE' => 'Belum Ada Sertifikat',
-                'NOT_REGISTERED' => 'Pengguna Tidak Terdaftar',
-                'SUSPEND' => 'Akun Ditangguhkan',
-                'REVOKE' => 'Sertifikat Dicabut',
-                'not_synced' => 'BELUM SINKRON'
+                'ISSUE' => 'ISSUE',
+                'EXPIRED' => 'EXPIRED',
+                'RENEW' => 'RENEW',
+                'WAITING_FOR_VERIFICATION' => 'WAITING_FOR_VERIFICATION',
+                'NEW' => 'NEW',
+                'NO_CERTIFICATE' => 'NO_CERTIFICATE',
+                'NOT_REGISTERED' => 'NOT_REGISTERED',
+                'SUSPEND' => 'SUSPEND',
+                'REVOKE' => 'REVOKE',
+                'not_synced' => 'NOT SYNCED'
             ];
 
             $data = [
                 'title' => 'Daftar Email Pimpinan',
                 'emails' => $emails,
-                'total_emails' => $pager->getTotal(),
+                'total_emails' => $total_emails,
                 'pagination' => $pager,
                 'per_page' => $perPage,
                 'search' => $search,
@@ -431,13 +442,21 @@ class Email extends BaseController
             $search = $this->request->getGet('search');
             $bsre_status = $this->request->getGet('bsre_status');
 
-            $emailBuilder = $this->emailModel->where('pimpinan_desa', 1);
+            $emailBuilder = $this->emailModel
+                ->allowCallbacks(false)
+                ->select('emails.*, unit_kerja.nama_unit_kerja as unit_kerja_name, parent_unit_kerja.nama_unit_kerja as parent_unit_kerja_name, status_asn.nama_status_asn as status_asn')
+                ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
+                ->join('unit_kerja as parent_unit_kerja', 'parent_unit_kerja.id = unit_kerja.parent_id', 'left')
+                ->join('status_asn', 'status_asn.id = emails.status_asn_id', 'left')
+                ->where('pimpinan_desa', 1)
+                ->where('unit_kerja.nama_unit_kerja NOT LIKE', '%Kelurahan%');
+
             if ($search) {
                 $emailBuilder->groupStart()
-                    ->like('email', $search)
-                    ->orLike('name', $search)
-                    ->orLike('nik', $search)
-                    ->orLike('nip', $search)
+                    ->like('emails.email', $search)
+                    ->orLike('emails.name', $search)
+                    ->orLike('emails.nik', $search)
+                    ->orLike('emails.nip', $search)
                     ->groupEnd();
             }
 
@@ -452,6 +471,8 @@ class Email extends BaseController
                 }
             }
 
+            $total_emails = $emailBuilder->countAllResults(false);
+
             $emails = $emailBuilder
                 ->orderBy('emails.eselon_id', 'ASC')
                 ->orderBy('COALESCE(parent_unit_kerja.nama_unit_kerja, unit_kerja.nama_unit_kerja)', 'ASC', false)
@@ -464,22 +485,22 @@ class Email extends BaseController
             $pager = $this->emailModel->pager;
 
             $bsre_status_options = [
-                'ISSUE' => 'Sertifikat Aktif / Siap TTE',
-                'EXPIRED' => 'Masa Berlaku Habis',
-                'RENEW' => 'Proses Pembaruan',
-                'WAITING_FOR_VERIFICATION' => 'Menunggu Verifikasi',
-                'NEW' => 'Belum Aktivasi',
-                'NO_CERTIFICATE' => 'Belum Ada Sertifikat',
-                'NOT_REGISTERED' => 'Pengguna Tidak Terdaftar',
-                'SUSPEND' => 'Akun Ditangguhkan',
-                'REVOKE' => 'Sertifikat Dicabut',
-                'not_synced' => 'BELUM SINKRON'
+                'ISSUE' => 'ISSUE',
+                'EXPIRED' => 'EXPIRED',
+                'RENEW' => 'RENEW',
+                'WAITING_FOR_VERIFICATION' => 'WAITING_FOR_VERIFICATION',
+                'NEW' => 'NEW',
+                'NO_CERTIFICATE' => 'NO_CERTIFICATE',
+                'NOT_REGISTERED' => 'NOT_REGISTERED',
+                'SUSPEND' => 'SUSPEND',
+                'REVOKE' => 'REVOKE',
+                'not_synced' => 'NOT SYNCED'
             ];
 
             $data = [
                 'title' => 'Daftar Email Pimpinan Desa',
                 'emails' => $emails,
-                'total_emails' => $pager->getTotal(),
+                'total_emails' => $total_emails,
                 'pagination' => $pager,
                 'per_page' => $perPage,
                 'search' => $search,
@@ -854,10 +875,9 @@ class Email extends BaseController
             $status_asn = $this->request->getGet('status_asn');
             $bsre_status = $this->request->getGet('bsre_status');
             $pimpinan_desa = $this->request->getGet('pimpinan_desa') ?? 1;
-            $statusChartData = $this->request->getPost('statusChartData');
 
             $result = $this->emailExportService->generateUnitKerjaPdf(
-                $unitKerjaId, $search, $status_asn, $bsre_status, $pimpinan_desa, $statusChartData
+                $unitKerjaId, $search, $status_asn, $bsre_status, $pimpinan_desa
             );
 
             $result['dompdf']->stream($result['filename'], ["Attachment" => true]);

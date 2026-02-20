@@ -132,7 +132,7 @@ class Assistance extends BaseController
             $builder->where('MONTH(tanggal_kegiatan)', $filterMonth);
         }
 
-        $activities = $builder->orderBy('tanggal_kegiatan', 'DESC')->orderBy('id', 'DESC')->findAll();
+        $activities = $builder->orderBy('tanggal_kegiatan', 'ASC')->orderBy('id', 'ASC')->findAll();
 
         $monthNames = [
             1 => 'Januari',
@@ -168,7 +168,7 @@ class Assistance extends BaseController
     public function create()
     {
         $data = [
-            'title' => 'Add New Assistance',
+            'title' => 'Tambah Log Pendampingan Teknis',
             'agencies' => $this->getAgencies(),
             'categoryMap' => self::CATEGORY_MAP,
             'servicesMap' => self::SERVICES_MAP,
@@ -317,8 +317,16 @@ class Assistance extends BaseController
     public function export_pdf()
     {
         $filterCategory = $this->request->getGet('category');
+        
         $filterMonth = $this->request->getGet('month');
+        if ($filterMonth === null) {
+            $filterMonth = date('n');
+        }
+
         $filterYear = $this->request->getGet('year');
+        if ($filterYear === null) {
+            $filterYear = date('Y');
+        }
 
         $result = $this->exportService->generateReportPdf($filterCategory, $filterMonth, $filterYear);
         $result['dompdf']->stream($result['filename'], ['Attachment' => true]);

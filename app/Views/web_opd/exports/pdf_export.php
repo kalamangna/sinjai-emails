@@ -184,55 +184,6 @@
 
     </div>
 
-
-
-    <div style="width: 100%; margin-bottom: 20px;">
-        <div style="border: 1px solid #ddd; padding: 15px;">
-            <h3 style="font-size: 12px; margin-top: 0; margin-bottom: 15px; text-align: center; border-bottom: 1px solid #eee; padding-bottom: 10px;">STATUS WEBSITE</h3>
-
-            <table style="width: 100%; border: none;">
-                <tr>
-                    <td style="width: 45%; border: none; text-align: center; vertical-align: middle; padding: 0;">
-                        <?php if (isset($statusChart) && !empty($statusChart)): ?>
-                            <img src="<?= $statusChart ?>" style="width: 180px; height: auto;">
-                        <?php endif; ?>
-                    </td>
-                    <td style="width: 55%; border: none; vertical-align: middle; padding: 0 0 0 20px;">
-                        <table style="width: 100%; font-size: 9px; margin-bottom: 0; border-collapse: collapse;">
-                            <thead>
-                                <tr style="background-color: #f9f9f9;">
-                                    <th style="border: 1px solid #ddd; padding: 5px;">Status</th>
-                                                                                <th style="border: 1px solid #ddd; padding: 5px; text-align: right;">Jumlah</th>                                    <th style="border: 1px solid #ddd; padding: 5px; text-align: right;">%</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td style="border: 1px solid #ddd; padding: 5px; color: #198754; font-weight: bold;">AKTIF</td>
-                                    <td style="border: 1px solid #ddd; padding: 5px; text-align: right; font-weight: bold;"><?= number_format($stats['aktif']) ?></td>
-                                    <td style="border: 1px solid #ddd; padding: 5px; text-align: right;"><?= (int)$stats['aktif_percentage'] ?>%</td>
-                                </tr>
-                                <tr>
-                                    <td style="border: 1px solid #ddd; padding: 5px; color: #dc3545; font-weight: bold;">NONAKTIF</td>
-                                    <td style="border: 1px solid #ddd; padding: 5px; text-align: right; font-weight: bold;"><?= number_format($stats['nonaktif']) ?></td>
-                                    <td style="border: 1px solid #ddd; padding: 5px; text-align: right;"><?= (int)$stats['nonaktif_percentage'] ?>%</td>
-                                </tr>
-                            </tbody>
-                            <tfoot>
-                                <tr style="background-color: #f2f2f2; font-weight: bold;">
-                                    <td style="border: 1px solid #ddd; padding: 5px;">TOTAL</td>
-                                    <td style="border: 1px solid #ddd; padding: 5px; text-align: right;"><?= number_format($stats['total']) ?></td>
-                                    <td style="border: 1px solid #ddd; padding: 5px; text-align: right;">100%</td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </td>
-                </tr>
-            </table>
-        </div>
-    </div>
-
-
-
     <table>
 
         <thead>
@@ -305,7 +256,7 @@
 
     <div class="footer-right">
 
-        <p>Aptika Diskominfo Sinjai</p>
+        <p>Aptika Diskominfo-SP Sinjai</p>
 
     </div>
 

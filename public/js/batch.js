@@ -25,37 +25,45 @@ document.addEventListener("DOMContentLoaded", function () {
   );
 
   generateBtn.addEventListener("click", async function () {
-    const names = nameInput.value
-      .trim()
-      .split("\n")
-      .filter((name) => name.trim() !== "");
-    const niks = nikInput.value
-      .trim()
-      .split("\n")
-      .filter((nik) => nik.trim() !== "");
-    const nips = nipInput.value // New
-      .trim()
-      .split("\n")
-      .filter((nip) => nip.trim() !== "");
+    const names = nameInput.value.split("\n").map(n => n.trim());
+    const niks = nikInput.value.split("\n").map(n => n.trim());
+    const nips = nipInput.value.split("\n").map(n => n.trim());
+
+    // Filter out rows where all relevant fields (name, nik, nip) are empty
+    const maxLines = Math.max(names.length, niks.length, nips.length);
+    const filteredRows = [];
+    
+    for (let i = 0; i < maxLines; i++) {
+      const name = names[i] || "";
+      const nik = niks[i] || "";
+      const nip = nips[i] || "";
+      
+      if (name !== "" || nik !== "" || nip !== "") {
+        filteredRows.push({ name, nik, nip });
+      }
+    }
+
+    if (filteredRows.length === 0) {
+      alert("Please enter data for at least one record.");
+      return;
+    }
+
+    const finalNames = filteredRows.map(r => r.name);
+    const finalNiks = filteredRows.map(r => r.nik);
+    const finalNips = filteredRows.map(r => r.nip);
 
     let unitKerjaValues = [];
     let validationError = "";
 
     const singleUnitKerja = unitKerjaInputSingle.value;
 
-    if (names.length === 0) validationError = "Please enter at least one name.";
-    else if (nips.length === 0)
-      validationError = "Please enter at least one NIP.";
-    else if (niks.length > 0 && names.length !== niks.length)
-      validationError = "The number of names and NIKs must match.";
-    else if (names.length !== nips.length)
-      validationError = "The number of names and NIPs must match.";
-    else if (!jenisFormasiInput.value)
-      validationError = "Please select a Status ASN.";
+    if (finalNames.some(n => n === "")) validationError = "One or more rows are missing a name.";
+    else if (finalNips.some(n => n === "")) validationError = "One or more rows are missing a NIP.";
+    else if (!jenisFormasiInput.value) validationError = "Please select a Status ASN.";
     else if (!singleUnitKerja) validationError = "Please select a Unit Kerja.";
 
     if (!validationError) {
-      for (let i = 0; i < names.length; i++) {
+      for (let i = 0; i < filteredRows.length; i++) {
         unitKerjaValues.push(singleUnitKerja);
       }
     }
@@ -66,28 +74,27 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     generateBtn.disabled = true;
-    generateBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generating...`;
+    generateBtn.innerHTML = `<div class="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-3"></div> Generating...`;
     submitBtn.disabled = true;
     resultsTableBody.innerHTML =
-      '<tr><td colspan="8" class="text-center">Generating and checking emails...</td></tr>'; // Updated colspan
+      '<tr><td colspan="8" class="px-10 py-12 text-center text-blue-600 font-bold uppercase tracking-widest text-[10px] animate-pulse">Generating and checking emails...</td></tr>';
 
-    const trimmedNiks = niks.map((n) => n.trim());
-    const trimmedNips = nips.map((n) => n.trim()); // New
+    const trimmedNiks = finalNiks;
+    const trimmedNips = finalNips;
 
     const nikCounts = {};
     for (const nik of trimmedNiks) {
       if (nik) nikCounts[nik] = (nikCounts[nik] || 0) + 1;
     }
-    const nipCounts = {}; // New
+    const nipCounts = {};
     for (const nip of trimmedNips) {
-      // New
       nipCounts[nip] = (nipCounts[nip] || 0) + 1;
     }
 
     const generatedEmails = new Set();
     userBatch = [];
-    for (let i = 0; i < names.length; i++) {
-      const name = names[i];
+    for (let i = 0; i < filteredRows.length; i++) {
+      const name = finalNames[i];
       const cleanedName = name.replace(/[,.']/g, "");
       const nik = trimmedNiks[i] || "";
       const nip = trimmedNips[i] || ""; // New
@@ -373,72 +380,73 @@ document.addEventListener("DOMContentLoaded", function () {
     resultsTableBody.innerHTML = "";
     if (userBatch.length === 0) {
       resultsTableBody.innerHTML =
-        '<tr><td colspan="8" class="text-center">No names entered.</td></tr>';
+        '<tr><td colspan="8" class="px-10 py-12 text-center text-slate-400 font-medium uppercase tracking-widest text-[10px]">No names entered.</td></tr>';
       return;
     }
 
     userBatch.forEach((user, index) => {
       let statusBadge;
+      const badgeBase = 'inline-flex items-center px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border shadow-sm';
+      
       if (user.status === "created") {
-        statusBadge = '<span class="badge bg-success">Created</span>';
+        statusBadge = `<span class="${badgeBase} bg-emerald-50 text-emerald-600 border-emerald-100">Created</span>`;
       } else if (user.status === "failed") {
-        statusBadge = `<span class="badge bg-danger" title="${
-          user.errorMessage || "Failed"
-        }">Failed</span>`;
+        statusBadge = `<span class="${badgeBase} bg-rose-50 text-rose-600 border-rose-100" title="${user.errorMessage || "Failed"}">Failed</span>`;
       } else if (user.isDuplicate) {
-        statusBadge =
-          '<span class="badge bg-warning text-dark">Duplicate</span>';
+        statusBadge = `<span class="${badgeBase} bg-amber-50 text-amber-600 border-amber-100">Duplicate</span>`;
       } else if (user.isAvailable) {
-        statusBadge = '<span class="badge bg-success">Available</span>';
+        statusBadge = `<span class="${badgeBase} bg-blue-50 text-blue-600 border-blue-100">Available</span>`;
       } else {
-        statusBadge = '<span class="badge bg-danger">Used</span>';
+        statusBadge = `<span class="${badgeBase} bg-slate-50 text-slate-400 border-slate-200">Used</span>`;
       }
 
-      const nameCellContent = `<span contenteditable="true" class="editable-name" data-name-index="${index}">${user.name.toUpperCase()}</span>`;
+      const nameCellContent = `<span contenteditable="true" class="editable-name focus:outline-none focus:text-blue-600 transition-colors" data-name-index="${index}">${user.name}</span>`;
       
       const domain = "@sinjaikab.go.id";
       const username = user.email.substring(0, user.email.indexOf(domain));
-      const emailCellContent = `<span contenteditable="true" class="editable-username" data-username-index="${index}">${username}</span><span class="text-muted">${domain}</span>`;
+      const emailCellContent = `<span contenteditable="true" class="editable-username focus:outline-none focus:text-blue-600 transition-colors" data-username-index="${index}">${username}</span><span class="text-slate-300 font-medium">${domain}</span>`;
 
-      const passwordCellContent = `<span contenteditable="true" class="editable-password" data-password-index="${index}">${user.password}</span>`;
-      const unitKerjaCellContent = `<span class="editable-unit-kerja" data-unit-kerja-index="${index}">${user.unitKerja}</span>`;
+      const passwordCellContent = `<span contenteditable="true" class="editable-password font-mono focus:outline-none focus:text-blue-600 transition-colors" data-password-index="${index}">${user.password}</span>`;
+      const unitKerjaCellContent = `<span class="editable-unit-kerja opacity-80" data-unit-kerja-index="${index}">${user.unitKerja}</span>`;
 
-      let nikDisplay = user.nik;
+      const tagBase = 'ml-1.5 px-1.5 py-0.5 rounded text-[8px] font-black uppercase';
+      
+      let nikDisplay = `<span class="font-mono text-slate-500">${user.nik || '-'}</span>`;
       if (user.isNikInDb) {
-        nikDisplay += ` <span class="badge bg-danger" title="NIK already exists in the database">In DB</span>`;
+        nikDisplay += `<span class="${tagBase} bg-rose-100 text-rose-600" title="NIK already exists in the database">DB</span>`;
       }
       if (user.isNikDuplicate) {
-        nikDisplay += ` <span class="badge bg-warning text-dark" title="Duplicate NIK in this batch">Duplicate</span>`;
+        nikDisplay += `<span class="${tagBase} bg-amber-100 text-amber-600" title="Duplicate NIK in this batch">DUP</span>`;
       }
 
-      let nipDisplay = user.nip;
+      let nipDisplay = `<span class="font-mono text-slate-500">${user.nip || '-'}</span>`;
       if (user.isNipInDb) {
-        nipDisplay += ` <span class="badge bg-danger" title="NIP already exists in the database">In DB</span>`;
+        nipDisplay += `<span class="${tagBase} bg-rose-100 text-rose-600" title="NIP already exists in the database">DB</span>`;
       }
       if (user.isNipDuplicate) {
-        nipDisplay += ` <span class="badge bg-warning text-dark" title="Duplicate NIP in this batch">Duplicate</span>`;
+        nipDisplay += `<span class="${tagBase} bg-amber-100 text-amber-600" title="Duplicate NIP in this batch">DUP</span>`;
       }
 
       const row = `
-        <tr>
-            <td>${index + 1}</td>
-            <td>${nipDisplay}</td>
-            <td>${nikDisplay}</td>
-            <td>${nameCellContent}</td>
-            <td>${unitKerjaCellContent}</td>
-            <td>${emailCellContent}</td>
-            <td>${passwordCellContent}</td>
-            <td class="text-center">${statusBadge}</td>
+        <tr class="hover:bg-slate-50/50 transition-colors group">
+            <td class="px-6 py-5 whitespace-nowrap text-[10px] font-black text-slate-300 font-mono">#${index + 1}</td>
+            <td class="px-6 py-5 whitespace-nowrap">${nipDisplay}</td>
+            <td class="px-6 py-5 whitespace-nowrap">${nikDisplay}</td>
+            <td class="px-6 py-5 font-black text-slate-700 tracking-tight">${nameCellContent}</td>
+            <td class="px-6 py-5 text-[10px] uppercase font-bold text-slate-400 leading-tight">${unitKerjaCellContent}</td>
+            <td class="px-6 py-5 whitespace-nowrap font-bold text-slate-600 tracking-tight lowercase">${emailCellContent}</td>
+            <td class="px-6 py-5 whitespace-nowrap">${passwordCellContent}</td>
+            <td class="px-6 py-5 text-center whitespace-nowrap">${statusBadge}</td>
         </tr>`;
       resultsTableBody.insertAdjacentHTML("beforeend", row);
 
       if (user.status === "failed" && user.errorMessage) {
         const errorRow = `
           <tr class="error-row" data-index="${index}">
-              <td colspan="8" class="py-0">
-                  <div class="alert alert-danger mb-0 py-1 px-2 border-0 rounded-0">
-                      <i class="fas fa-exclamation-circle me-2"></i>
-                      <small>${user.errorMessage}</small>
+              <td colspan="8" class="px-6 py-0">
+                  <div class="bg-rose-50 text-rose-600 px-4 py-2 border-x border-rose-100 flex items-center">
+                      <i class="fas fa-exclamation-circle mr-3 text-xs opacity-50"></i>
+                      <span class="text-[10px] font-black uppercase tracking-widest">${user.errorMessage}</span>
                   </div>
               </td>
           </tr>`;

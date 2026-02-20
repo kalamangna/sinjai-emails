@@ -101,7 +101,7 @@
 
         .tte-description li strong {
             display: inline-block;
-            width: 70px;
+            width: 100px;
         }
 
         .header {
@@ -226,7 +226,6 @@
             <li><strong style="color: #198754;">ISSUE</strong> : Sertifikat Aktif / Siap TTE</li>
             <li><strong style="color: #dc3545;">EXPIRED</strong> : Masa Berlaku Habis</li>
             <li><strong style="color: #d39e00;">NO_CERTIFICATE</strong> : Belum Ada Sertifikat</li>
-            <li><strong style="color: #0d6efd;">RENEW</strong> : Proses Pembaruan</li>
         </ul>
     </div>
 
@@ -235,7 +234,7 @@
     </div>
 
     <div class="footer-right">
-        <p>Aptika Diskominfo Sinjai</p>
+        <p>Aptika Diskominfo-SP Sinjai</p>
     </div>
 </body>
 

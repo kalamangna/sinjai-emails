@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id" class="dark">
+<html lang="id">
 
 <head>
     <meta charset="UTF-8">
@@ -18,25 +18,23 @@
         }
 
         ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
         }
 
         ::-webkit-scrollbar-track {
-            background: #0f172a;
+            background: #f8fafc;
         }
 
         ::-webkit-scrollbar-thumb {
-            background: #334155;
+            background: #cbd5e1;
             border-radius: 10px;
-            border: 2px solid #0f172a;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: #475569;
+            background: #94a3b8;
         }
 
-        /* Smooth transitions for interactive elements */
         .transition-all {
             transition-duration: 200ms;
         }
@@ -45,11 +43,11 @@
     <?= $this->renderSection('styles') ?>
 </head>
 
-<body class="bg-slate-950 flex flex-col min-h-screen text-slate-300 font-sans antialiased selection:bg-blue-500/30 selection:text-blue-200">
+<body class="bg-slate-50 flex flex-col min-h-screen text-slate-800 font-sans antialiased selection:bg-blue-100 selection:text-blue-900">
     <!-- Header Section -->
-    <header class="bg-slate-900/80 backdrop-blur-md border-b border-slate-800 sticky top-0 z-40">
+    <header class="bg-white/95 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40 shadow-sm">
         <div class="max-w-screen-2xl mx-auto px-6 lg:px-10">
-            <div class="flex flex-col lg:flex-row lg:items-center justify-between min-h-[80px] py-4 lg:py-0 gap-y-6">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between min-h-[72px] py-4 lg:py-0 gap-y-4">
                 <?= $this->include('layouts/partials/header') ?>
             </div>
         </div>
@@ -57,7 +55,7 @@
 
     <!-- Main Content Area -->
     <main class="flex-grow">
-        <div class="max-w-screen-2xl mx-auto px-6 lg:px-10 py-12">
+        <div class="max-w-screen-2xl mx-auto px-6 lg:px-10 py-8 lg:py-12">
             <?= $this->renderSection('content') ?>
         </div>
     </main>

@@ -67,16 +67,21 @@ class WebDesaKelurahan extends BaseController
         $data['websites'] = $websites;
         $data['total_filtered'] = count($websites);
 
-        // Calculate statistics based on filtered data
+        // Calculate statistics based on complete dataset (ignore filters)
+        $allWebsites = (new WebDesaKelurahanModel())
+            ->select('web_desa_kelurahan.*, platforms.nama_platform as platform_name')
+            ->join('platforms', 'platforms.id = web_desa_kelurahan.platform_id', 'left')
+            ->findAll();
+
         $aktif = 0;
         $nonaktif = 0;
         $platform_stats_map = [];
 
-        foreach ($websites as $web) {
+        foreach ($allWebsites as $web) {
             if ($web['status'] === 'AKTIF') $aktif++;
             elseif ($web['status'] === 'NONAKTIF') $nonaktif++;
 
-            $pName = $web['platform_name'] ?: '-';
+            $pName = $web['platform_name'] ?: 'N/A';
             if (!isset($platform_stats_map[$pName])) {
                 $platform_stats_map[$pName] = 0;
             }
@@ -84,14 +89,14 @@ class WebDesaKelurahan extends BaseController
         }
 
         $data['stats'] = [
-            'total' => $data['total_filtered'],
+            'total' => count($allWebsites),
             'aktif' => $aktif,
             'nonaktif' => $nonaktif,
         ];
 
-        if ($data['total_filtered'] > 0) {
-            $data['stats']['aktif_percentage'] = (int)(($aktif / $data['total_filtered']) * 100);
-            $data['stats']['nonaktif_percentage'] = (int)(($nonaktif / $data['total_filtered']) * 100);
+        if ($data['stats']['total'] > 0) {
+            $data['stats']['aktif_percentage'] = (int)(($aktif / $data['stats']['total']) * 100);
+            $data['stats']['nonaktif_percentage'] = (int)(($nonaktif / $data['stats']['total']) * 100);
         } else {
             $data['stats']['aktif_percentage'] = 0;
             $data['stats']['nonaktif_percentage'] = 0;
@@ -137,53 +142,14 @@ class WebDesaKelurahan extends BaseController
         $filterPlatform = trim($this->request->getGet('filter_platform') ?? '');
         $filterStatus = trim($this->request->getGet('status') ?? '');
         $filterType = trim($this->request->getGet('type') ?? '');
-        $statusChartData = $this->request->getPost('statusChartData');
-        $platformChartData = $this->request->getPost('platformChartData');
 
         $result = $this->exportService->generateWebDesaPdf(
-            $search, $filterPlatform, $filterStatus, $statusChartData, $platformChartData, $filterType
+            $search,
+            $filterPlatform,
+            $filterStatus,
+            $filterType
         );
         $result['dompdf']->stream($result['filename'], ['Attachment' => true]);
-    }
-
-    public function create()
-    {
-        $platformModel = new PlatformModel();
-        $data['platforms'] = $platformModel->findAll();
-        $data['title'] = 'Add Website Desa & Kelurahan';
-        return view('web_desa_kelurahan/form', $data);
-    }
-
-    public function store()
-    {
-        $model = new WebDesaKelurahanModel();
-
-        $domain = $this->request->getPost('domain');
-        $desaKelurahan = $this->request->getPost('desa_kelurahan');
-        $manualDate = $this->request->getPost('tanggal_berakhir');
-
-        $expirationDate = $this->determineExpirationDate($desaKelurahan, $domain, $manualDate);
-
-        $data = [
-            'kecamatan'        => $this->request->getPost('kecamatan'),
-            'desa_kelurahan'   => strtoupper($desaKelurahan),
-            'domain'           => $domain,
-            'status'           => $this->request->getPost('status'),
-            'tanggal_berakhir' => $expirationDate,
-            'platform_id'      => $this->request->getPost('platform_id') ?: null,
-            'dikelola_kominfo' => $this->request->getPost('dikelola_kominfo'),
-            'keterangan'       => $this->request->getPost('keterangan'),
-        ];
-
-        if ($data['tanggal_berakhir']) {
-            $end = new \DateTime($data['tanggal_berakhir']);
-            $now = new \DateTime();
-            $diff = $now->diff($end);
-            $data['sisa_hari'] = (int)$diff->format('%r%a');
-        }
-
-        $model->insert($data);
-        return redirect()->to('web_desa_kelurahan')->with('message', 'Data added successfully.');
     }
 
     public function edit($id)
@@ -270,9 +236,9 @@ class WebDesaKelurahan extends BaseController
 
     private function determineExpirationDate($desaKelurahan, $domain, $manualDate)
     {
-        // Rule for Kelurahan: Expire in 2/1/2026
+        // Rule for Kelurahan: Expire in 2/1/2027
         if (stripos($desaKelurahan, 'KELURAHAN') !== false) {
-            return '2026-02-01';
+            return '2027-02-01';
         }
 
         // Rule for Desa: Check PANDI RDAP

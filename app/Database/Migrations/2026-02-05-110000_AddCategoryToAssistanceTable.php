@@ -11,7 +11,7 @@ class AddCategoryToAssistanceTable extends Migration
         $this->forge->addColumn('assistance', [
             'category' => [
                 'type'       => 'ENUM',
-                'constraint' => ['Aplikasi SPBE', 'Website Desa/Kelurahan'],
+                'constraint' => ['Aplikasi SPBE', 'Website Desa & Kelurahan'],
                 'null'       => true,
                 'after'      => 'agency_name'
             ],

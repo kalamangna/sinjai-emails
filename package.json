@@ -4,8 +4,8 @@
   "description": "A centralized management platform designed to streamline digital identity provisioning, institutional asset tracking, and technical support activities for local government agencies.",
   "main": "index.js",
   "scripts": {
-    "build:css": "npx tailwindcss -i ./public/css/input.css -o ./public/css/output.css",
-    "watch:css": "npx tailwindcss -i ./public/css/input.css -o ./public/css/output.css --watch",
+    "dev": "npx tailwindcss -i ./public/css/input.css -o ./public/css/output.css --watch",
+    "build": "npx tailwindcss -i ./public/css/input.css -o ./public/css/output.css",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

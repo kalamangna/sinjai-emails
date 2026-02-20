@@ -1,113 +1,113 @@
 <?= $this->extend('layouts/main') ?>
 
 <?= $this->section('content') ?>
-<div class="space-y-10">
+<div class="space-y-8">
     <!-- Header & Back -->
-    <div class="flex flex-col md:flex-row justify-between items-end md:items-center gap-6 bg-slate-900/50 p-8 rounded-[2rem] border border-slate-800 shadow-xl">
-        <div class="space-y-2">
-            <h1 class="text-3xl font-black text-slate-100 uppercase tracking-tight">Batch Perjanjian Kerja</h1>
-            <div class="flex items-center text-xs text-slate-500 font-black uppercase tracking-widest">
-                <i class="fas fa-file-contract mr-2.5 text-blue-500/50"></i>
+    <div class="flex flex-col md:flex-row justify-between items-end md:items-center gap-4 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+        <div class="space-y-1">
+            <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Batch Perjanjian Kerja</h1>
+            <div class="flex items-center text-[11px] text-slate-500 font-medium uppercase tracking-wider">
+                <i class="fas fa-file-contract mr-2 text-blue-500 opacity-50"></i>
                 Dokumen PK Massal
             </div>
         </div>
-        <a href="javascript:void(0);" onclick="history.back();" class="inline-flex items-center px-8 py-4 bg-slate-800 border border-slate-700 rounded-2xl font-black text-xs text-slate-200 uppercase tracking-[0.2em] hover:bg-slate-700 transition-all shadow-xl no-underline group">
-            <i class="fas fa-arrow-left mr-3 group-hover:-translate-x-1 transition-transform"></i>
-            Kembali
+        <a href="<?= site_url('email/batch_hub') ?>" class="inline-flex items-center justify-center px-4 py-2 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all shadow-sm no-underline group">
+            <i class="fas fa-arrow-left mr-2 group-hover:-translate-x-1 transition-transform"></i> Kembali
         </a>
     </div>
 
-    <div class="bg-slate-900 border border-slate-800 rounded-[2.5rem] shadow-2xl overflow-hidden relative group">
-        <div class="bg-slate-800/30 px-10 py-8 border-b border-slate-800">
-            <h5 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em] flex items-center">
-                <i class="fas fa-file-contract mr-3 text-blue-500 opacity-50"></i>Pembaruan Data PK Massal
+    <!-- Main Form -->
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+        <div class="bg-slate-50 px-6 py-4 border-b border-slate-200">
+            <h5 class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center">
+                <i class="fas fa-file-contract mr-2 text-blue-500 opacity-50"></i>Pembaruan Data PK Massal
             </h5>
         </div>
-        <div class="p-10">
+        <div class="p-6">
             <form id="batch_update_form" class="space-y-8">
-                <div>
-                    <label class="block text-[9px] font-black text-slate-600 uppercase tracking-[0.2em] mb-4 ml-1">Metode Identifikasi</label>
-                    <div class="flex gap-8">
-                        <label class="inline-flex items-center cursor-pointer group">
-                            <input type="radio" class="w-4 h-4 text-blue-600 bg-slate-950 border-slate-800 focus:ring-blue-500" name="update_mode" id="mode_email" value="email" checked>
-                            <span class="ml-3 text-xs font-bold text-slate-400 group-hover:text-slate-200 transition-colors uppercase tracking-widest">Alamat Email</span>
-                        </label>
-                        <label class="inline-flex items-center cursor-pointer group">
-                            <input type="radio" class="w-4 h-4 text-blue-600 bg-slate-950 border-slate-800 focus:ring-blue-500" name="update_mode" id="mode_nik" value="nik">
-                            <span class="ml-3 text-xs font-bold text-slate-400 group-hover:text-slate-200 transition-colors uppercase tracking-widest">Nomor NIK</span>
-                        </label>
+                <div class="bg-slate-50 p-6 rounded-xl border border-slate-100 space-y-6">
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 ml-1">Metode Identifikasi</label>
+                        <div class="flex gap-6">
+                            <label class="inline-flex items-center cursor-pointer group">
+                                <input type="radio" class="w-4 h-4 text-blue-600 bg-white border-slate-300 focus:ring-blue-500" name="update_mode" id="mode_email" value="email" checked>
+                                <span class="ml-2.5 text-xs font-bold text-slate-600 group-hover:text-slate-900 transition-colors uppercase tracking-tight">Alamat Email</span>
+                            </label>
+                            <label class="inline-flex items-center cursor-pointer group">
+                                <input type="radio" class="w-4 h-4 text-blue-600 bg-white border-slate-300 focus:ring-blue-500" name="update_mode" id="mode_nik" value="nik">
+                                <span class="ml-2.5 text-xs font-bold text-slate-600 group-hover:text-slate-900 transition-colors uppercase tracking-tight">Nomor NIK</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label for="identifier_input" id="identifier_label" class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Daftar Pengenal (Satu per baris)</label>
+                        <textarea id="identifier_input" rows="4" class="block w-full px-4 py-3 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm font-medium transition-all placeholder-slate-300 custom-scrollbar" placeholder="john.doe@sinjaikab.go.id"></textarea>
                     </div>
                 </div>
 
-                <div>
-                    <label for="identifier_input" id="identifier_label" class="block text-[9px] font-black text-slate-600 uppercase tracking-[0.2em] mb-3 ml-1">Daftar Pengenal (Satu per baris)</label>
-                    <textarea class="block w-full px-6 py-5 bg-slate-950 border border-slate-800 rounded-3xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-bold text-slate-200 transition-all min-h-[150px] font-mono placeholder-slate-800 custom-scrollbar" id="identifier_input" placeholder="john.doe@sinjaikab.go.id"></textarea>
-                </div>
-
-                <div class="bg-slate-950 border border-slate-800 rounded-3xl overflow-hidden shadow-inner group/pk">
-                    <div class="px-6 py-4 border-b border-slate-800 bg-slate-900/50 font-black text-[10px] text-slate-500 uppercase tracking-widest flex items-center">
-                        <i class="fas fa-edit mr-3 text-blue-500 opacity-50"></i>Detail Perjanjian Kerja Baru
+                <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                    <div class="px-6 py-3 border-b border-slate-100 bg-slate-50 text-[10px] font-bold text-slate-500 uppercase tracking-widest flex items-center">
+                        <i class="fas fa-edit mr-2 text-blue-500 opacity-50"></i>Detail PK Baru
                     </div>
-                    <div class="p-8 space-y-8">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <div>
-                                <label for="nomor_input" class="block text-[9px] font-black text-slate-600 uppercase tracking-[0.2em] mb-3 ml-1">Daftar Nomor PK</label>
-                                <textarea class="block w-full px-5 py-4 bg-slate-900 border border-slate-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-bold text-slate-200 transition-all h-32 font-mono custom-scrollbar" id="nomor_input" placeholder="881"></textarea>
+                    <div class="p-6 space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label for="nomor_input" class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Nomor PK</label>
+                                <textarea id="nomor_input" rows="3" class="block w-full px-4 py-3 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-sm font-medium custom-scrollbar" placeholder="Contoh: 881"></textarea>
                             </div>
-                            <div>
-                                <label for="gaji_nominal_input" class="block text-[9px] font-black text-slate-600 uppercase tracking-[0.2em] mb-3 ml-1">Daftar Gaji Nominal</label>
-                                <textarea class="block w-full px-5 py-4 bg-slate-900 border border-slate-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-bold text-slate-200 transition-all h-32 font-mono custom-scrollbar" id="gaji_nominal_input" placeholder="3203600"></textarea>
+                            <div class="space-y-2">
+                                <label for="gaji_nominal_input" class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Gaji Nominal</label>
+                                <textarea id="gaji_nominal_input" rows="3" class="block w-full px-4 py-3 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-sm font-medium custom-scrollbar" placeholder="Contoh: 3203600"></textarea>
                             </div>
                         </div>
-                        <div>
-                            <label for="gaji_terbilang_input" class="block text-[9px] font-black text-slate-600 uppercase tracking-[0.2em] mb-3 ml-1">Daftar Gaji Terbilang</label>
-                            <textarea class="block w-full px-5 py-4 bg-slate-900 border border-slate-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-bold text-slate-200 transition-all h-32 font-mono uppercase custom-scrollbar" id="gaji_terbilang_input" placeholder="TIGA JUTA..."></textarea>
+                        <div class="space-y-2">
+                            <label for="gaji_terbilang_input" class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Gaji Terbilang</label>
+                            <textarea id="gaji_terbilang_input" rows="3" class="block w-full px-4 py-3 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-sm font-medium custom-scrollbar" placeholder="Contoh: TIGA JUTA..."></textarea>
                         </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <div>
-                                <label for="tanggal_kontrak_awal_input" class="block text-[9px] font-black text-slate-600 uppercase tracking-[0.2em] mb-3 ml-1">Tanggal Kontrak Awal (YYYY-MM-DD)</label>
-                                <textarea class="block w-full px-5 py-4 bg-slate-900 border border-slate-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-bold text-slate-200 transition-all h-32 font-mono custom-scrollbar" id="tanggal_kontrak_awal_input" placeholder="2024-01-01"></textarea>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label for="tanggal_kontrak_awal_input" class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Kontrak Awal (YYYY-MM-DD)</label>
+                                <textarea id="tanggal_kontrak_awal_input" rows="3" class="block w-full px-4 py-3 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-sm font-medium custom-scrollbar" placeholder="2024-01-01"></textarea>
                             </div>
-                            <div>
-                                <label for="tanggal_kontrak_akhir_input" class="block text-[9px] font-black text-slate-600 uppercase tracking-[0.2em] mb-3 ml-1">Tanggal Kontrak Akhir (YYYY-MM-DD)</label>
-                                <textarea class="block w-full px-5 py-4 bg-slate-900 border border-slate-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-bold text-slate-200 transition-all h-32 font-mono custom-scrollbar" id="tanggal_kontrak_akhir_input" placeholder="2024-12-31"></textarea>
+                            <div class="space-y-2">
+                                <label for="tanggal_kontrak_akhir_input" class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Kontrak Akhir (YYYY-MM-DD)</label>
+                                <textarea id="tanggal_kontrak_akhir_input" rows="3" class="block w-full px-4 py-3 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-sm font-medium custom-scrollbar" placeholder="2024-12-31"></textarea>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="text-right pt-4">
-                    <button type="submit" id="update_btn" class="px-10 py-4 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl shadow-xl shadow-blue-900/20 transition-all text-[10px] uppercase tracking-widest flex items-center ml-auto">
-                        <i class="fas fa-sync-alt mr-3"></i> Perbarui Data PK Massal
+                <div class="flex justify-end pt-4 border-t border-slate-100">
+                    <button type="submit" id="update_btn" class="inline-flex items-center justify-center px-6 py-2.5 bg-blue-600 text-white rounded-lg font-bold text-xs uppercase tracking-wider hover:bg-blue-700 active:bg-blue-800 transition-all shadow-md group focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+                        <i class="fas fa-sync-alt mr-2 group-hover:rotate-180 transition-transform duration-500"></i> Update PK Data
                     </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Results Table -->
-    <div class="bg-slate-900 border border-slate-800 rounded-[2.5rem] shadow-2xl overflow-hidden">
-        <div class="bg-slate-800/30 px-10 py-8 border-b border-slate-800">
-            <h5 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em] flex items-center">
-                <i class="fas fa-list-alt mr-3 text-blue-500 opacity-50"></i>Hasil Pemrosesan
+    <!-- Results -->
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+        <div class="bg-slate-50 px-6 py-4 border-b border-slate-200">
+            <h5 class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center">
+                <i class="fas fa-list-alt mr-2 text-blue-500 opacity-50"></i>Hasil Pemrosesan
             </h5>
         </div>
-        <div class="p-0">
-            <div class="overflow-x-auto">
-                <table id="results_table" class="min-w-full divide-y divide-slate-800">
-                    <thead class="bg-slate-950/50">
-                        <tr>
-                            <th class="px-8 py-5 text-left text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] w-12">#</th>
-                            <th class="px-8 py-5 text-left text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Identitas</th>
-                            <th class="px-8 py-5 text-left text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Status</th>
-                            <th class="px-8 py-5 text-left text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Pesan</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-800 bg-slate-900/30 text-xs font-bold text-slate-300 uppercase tracking-tight">
-                        <!-- Populated by JS -->
-                    </tbody>
-                </table>
-            </div>
+        <div class="overflow-x-auto">
+            <table id="results_table" class="min-w-full divide-y divide-slate-200">
+                <thead class="bg-slate-50/50">
+                    <tr>
+                        <th class="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest w-12">#</th>
+                        <th class="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Identitas</th>
+                        <th class="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Status</th>
+                        <th class="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Pesan</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 bg-white">
+                    <!-- Populated by JS -->
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
@@ -128,17 +128,17 @@
             });
         });
 
-        updateBtn.addEventListener('click', async function(e) {
+        document.getElementById('batch_update_form').addEventListener('submit', async function(e) {
             e.preventDefault();
             const mode = document.querySelector('input[name="update_mode"]:checked').value;
             const identifiers = identifierInput.value.split('\n').map(s => s.trim()).filter(s => s);
-            if (!identifiers.length) return alert('Masukkan setidaknya satu identitas untuk diperbarui.');
+            if (!identifiers.length) return alert('Masukkan setidaknya satu identitas.');
 
             const mapInput = id => document.getElementById(id).value.split('\n').map(s => s.trim());
             
             updateBtn.disabled = true;
-            updateBtn.innerHTML = '<div class="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-3"></div> MEMPROSES...';
-            resultsTableBody.innerHTML = '<tr><td colspan="4" class="px-8 py-10 text-center italic text-slate-500">Sedang memproses pembaruan...</td></tr>';
+            updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> MEMPROSES...';
+            resultsTableBody.innerHTML = '<tr><td colspan="4" class="px-6 py-10 text-center italic text-slate-400 text-xs">Sedang memproses pembaruan...</td></tr>';
 
             try {
                 const response = await fetch('<?= site_url('email/batch_update_process') ?>', {
@@ -157,25 +157,25 @@
                 const result = await response.json();
                 renderResults(result.results);
             } catch (error) {
-                resultsTableBody.innerHTML = `<tr><td colspan="4" class="px-8 py-10 text-center text-red-500">Error: ${error.message}</td></tr>`;
+                resultsTableBody.innerHTML = `<tr><td colspan="4" class="px-6 py-10 text-center text-rose-500 font-bold">Error: ${error.message}</td></tr>`;
             } finally {
                 updateBtn.disabled = false;
-                updateBtn.innerHTML = '<i class="fas fa-sync-alt mr-3"></i> Perbarui Data PK Massal';
+                updateBtn.innerHTML = '<i class="fas fa-sync-alt mr-2"></i> Perbarui Data PK Massal';
             }
         });
 
         function renderResults(results) {
-            resultsTableBody.innerHTML = results.length ? '' : '<tr><td colspan="4" class="px-8 py-10 text-center italic text-slate-500">Tidak ada item yang diproses.</td></tr>';
+            resultsTableBody.innerHTML = results.length ? '' : '<tr><td colspan="4" class="px-6 py-10 text-center italic text-slate-400">Tidak ada item yang diproses.</td></tr>';
             results.forEach((res, i) => {
-                const badge = res.success ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-red-500/10 text-red-400 border-red-500/20';
+                const badge = res.success ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-rose-50 text-rose-700 border-rose-100';
                 resultsTableBody.insertAdjacentHTML('beforeend', `
-                    <tr class="hover:bg-slate-800/30 transition-colors">
-                        <td class="px-8 py-5 whitespace-nowrap text-slate-600 font-mono">${i + 1}</td>
-                        <td class="px-8 py-5 font-mono text-slate-200">${res.identifier}</td>
-                        <td class="px-8 py-5 whitespace-nowrap">
-                            <span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] border shadow-sm ${badge}">${res.success ? 'BERHASIL' : 'GAGAL'}</span>
+                    <tr class="hover:bg-slate-50/50 transition-colors">
+                        <td class="px-6 py-4 whitespace-nowrap text-xs font-bold text-slate-400 font-mono">${i + 1}</td>
+                        <td class="px-6 py-4 font-mono text-[13px] text-slate-700">${res.identifier}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-bold border ${badge}">${res.success ? 'SUCCESS' : 'FAILED'}</span>
                         </td>
-                        <td class="px-8 py-5 text-slate-500 italic">${res.message || ''}</td>
+                        <td class="px-6 py-4 text-xs text-slate-500 italic">${res.message || '-'}</td>
                     </tr>
                 `);
             });

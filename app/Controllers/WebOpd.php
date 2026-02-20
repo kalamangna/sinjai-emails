@@ -44,24 +44,25 @@ class WebOpd extends BaseController
         $data['websites'] = $websites;
         $data['total_filtered'] = count($websites);
 
-        // Calculate statistics based on filtered data
+        // Calculate statistics based on complete dataset (ignore filters)
+        $allWebsites = (new WebOpdModel())->findAll();
         $aktif = 0;
         $nonaktif = 0;
 
-        foreach ($websites as $web) {
+        foreach ($allWebsites as $web) {
             if ($web['status'] === 'AKTIF') $aktif++;
             elseif ($web['status'] === 'NONAKTIF') $nonaktif++;
         }
 
         $data['stats'] = [
-            'total' => $data['total_filtered'],
+            'total' => count($allWebsites),
             'aktif' => $aktif,
             'nonaktif' => $nonaktif,
         ];
 
-        if ($data['total_filtered'] > 0) {
-            $data['stats']['aktif_percentage'] = (int)(($aktif / $data['total_filtered']) * 100);
-            $data['stats']['nonaktif_percentage'] = (int)(($nonaktif / $data['total_filtered']) * 100);
+        if ($data['stats']['total'] > 0) {
+            $data['stats']['aktif_percentage'] = (int)(($aktif / $data['stats']['total']) * 100);
+            $data['stats']['nonaktif_percentage'] = (int)(($nonaktif / $data['stats']['total']) * 100);
         } else {
             $data['stats']['aktif_percentage'] = 0;
             $data['stats']['nonaktif_percentage'] = 0;
@@ -78,33 +79,9 @@ class WebOpd extends BaseController
     {
         $search = trim($this->request->getGet('search') ?? '');
         $filterStatus = trim($this->request->getGet('status') ?? '');
-        $statusChartData = $this->request->getPost('statusChartData');
 
-        $result = $this->exportService->generateWebOpdPdf($search, $filterStatus, $statusChartData);
+        $result = $this->exportService->generateWebOpdPdf($search, $filterStatus);
         $result['dompdf']->stream($result['filename'], ['Attachment' => true]);
-    }
-
-    public function create()
-    {
-        $unitKerjaModel = new UnitKerjaModel();
-        $data['unit_kerja'] = $unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->findAll();
-        $data['title'] = 'Add Website OPD';
-        return view('web_opd/form', $data);
-    }
-
-    public function store()
-    {
-        $model = new WebOpdModel();
-
-        $data = [
-            'unit_kerja_id'    => $this->request->getPost('unit_kerja_id'),
-            'domain'           => $this->request->getPost('domain'),
-            'status'           => $this->request->getPost('status'),
-            'keterangan'       => $this->request->getPost('keterangan'),
-        ];
-
-        $model->insert($data);
-        return redirect()->to('web_opd')->with('message', 'Data added successfully.');
     }
 
     public function edit($id)
@@ -121,8 +98,6 @@ class WebOpd extends BaseController
         $unitKerja = $unitKerjaModel->find($data['website']['unit_kerja_id']);
         $data['unit_kerja_name'] = $unitKerja['nama_unit_kerja'] ?? 'N/A';
 
-        // For create mode, we need all unit_kerja options
-        $data['unit_kerja'] = $unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->findAll();
         $data['title'] = 'Edit Website OPD';
         return view('web_opd/form', $data);
     }

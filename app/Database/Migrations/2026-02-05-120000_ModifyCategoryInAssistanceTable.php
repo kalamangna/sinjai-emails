@@ -29,7 +29,7 @@ class ModifyCategoryInAssistanceTable extends Migration
             'category' => [
                 'name'       => 'category',
                 'type'       => 'ENUM',
-                'constraint' => ['Aplikasi SPBE', 'Website Desa/Kelurahan'],
+                'constraint' => ['Aplikasi SPBE', 'Website Desa & Kelurahan'],
                 'null'       => true,
             ],
         ]);

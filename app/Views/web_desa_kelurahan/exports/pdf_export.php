@@ -147,296 +147,205 @@
 
         /* Light blue for Kelurahan */
 
-                .footer-info {
+        .footer-info {
 
-                    position: fixed;
+            position: fixed;
 
-                    bottom: 0;
+            bottom: 0;
 
-                    left: 0;
+            left: 0;
 
-                    font-size: 9px;
+            font-size: 9px;
 
-                    text-align: left;
+            text-align: left;
 
-                }
+        }
 
-        
 
-                .footer-right {
 
-                    position: fixed;
+        .footer-right {
 
-                    bottom: 0;
+            position: fixed;
 
-                    right: 0;
+            bottom: 0;
 
-                    font-size: 9px;
+            right: 0;
 
-                    text-align: right;
+            font-size: 9px;
 
-                    color: #555;
+            text-align: right;
 
-                }
+            color: #555;
 
-        
+        }
 
-                .footer-info p,
 
-                .footer-right p {
 
-                    margin: 2px 0;
+        .footer-info p,
 
-                }
+        .footer-right p {
 
-        
+            margin: 2px 0;
 
-                .update-date {
+        }
 
-                    text-align: center;
 
-                    font-size: 10px;
 
-                    color: #666;
+        .update-date {
 
-                    margin-top: -10px;
+            text-align: center;
 
-                }
+            font-size: 10px;
 
-            </style>
+            color: #666;
 
-        </head>
+            margin-top: -10px;
 
-        
+        }
+    </style>
 
-        <body>
+</head>
 
-            <div class="header">
 
-                <img src="<?= $logoSrc ?>" alt="Logo" class="logo" />
 
-                <h1><?= esc($title) ?></h1>
+<body>
 
-                <h2><?= esc($subtitle) ?></h2>
+    <div class="header">
 
-                <p class="update-date">UPDATE PER: <?= strtoupper(esc($current_date)) ?></p>
+        <img src="<?= $logoSrc ?>" alt="Logo" class="logo" />
 
-            </div>
+        <h1><?= esc($title) ?></h1>
 
-        
+        <h2><?= esc($subtitle) ?></h2>
 
-    <div style="width: 100%; margin-bottom: 20px;">
-        <table style="width: 100%; border: none; margin-bottom: 0;">
-            <tr>
-                <!-- Status Chart & Table -->
-                <td style="width: 48%; border: 1px solid #ddd; padding: 10px; vertical-align: top;">
-                    <h3 style="font-size: 11px; margin-top: 0; margin-bottom: 10px; text-align: center; border-bottom: 1px solid #eee; padding-bottom: 5px;">STATUS WEBSITE</h3>
-                    
-                    <table style="width: 100%; border: none;">
-                        <tr>
-                            <td style="width: 45%; border: none; text-align: center; vertical-align: middle; padding: 0;">
-                                <?php if (isset($statusChart) && !empty($statusChart)): ?>
-                                    <img src="<?= $statusChart ?>" style="width: 140px; height: auto;">
-                                <?php endif; ?>
-                            </td>
-                            <td style="width: 55%; border: none; vertical-align: middle; padding: 0 0 0 10px;">
-                                <table style="width: 100%; font-size: 8px; margin-bottom: 0; border-collapse: collapse;">
-                                    <thead>
-                                        <tr style="background-color: #f9f9f9;">
-                                            <th style="border: 1px solid #ddd; padding: 3px;">Status</th>
-                                            <th style="border: 1px solid #ddd; padding: 3px; text-align: right;">Jumlah</th>
-                                            <th style="border: 1px solid #ddd; padding: 3px; text-align: right;">%</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td style="border: 1px solid #ddd; padding: 3px; color: #198754; font-weight: bold;">AKTIF</td>
-                                            <td style="border: 1px solid #ddd; padding: 3px; text-align: right; font-weight: bold;"><?= number_format($stats['aktif']) ?></td>
-                                            <td style="border: 1px solid #ddd; padding: 3px; text-align: right;"><?= (int)$stats['aktif_percentage'] ?>%</td>
-                                        </tr>
-                                        <tr>
-                                            <td style="border: 1px solid #ddd; padding: 3px; color: #dc3545; font-weight: bold;">NONAKTIF</td>
-                                            <td style="border: 1px solid #ddd; padding: 3px; text-align: right; font-weight: bold;"><?= number_format($stats['nonaktif']) ?></td>
-                                            <td style="border: 1px solid #ddd; padding: 3px; text-align: right;"><?= (int)$stats['nonaktif_percentage'] ?>%</td>
-                                        </tr>
-                                    </tbody>
-                                    <tfoot>
-                                        <tr style="background-color: #f2f2f2; font-weight: bold;">
-                                            <td style="border: 1px solid #ddd; padding: 3px;">TOTAL</td>
-                                            <td style="border: 1px solid #ddd; padding: 3px; text-align: right;"><?= number_format($stats['total']) ?></td>
-                                            <td style="border: 1px solid #ddd; padding: 3px; text-align: right;">100%</td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                            </td>
-                        </tr>
-                    </table>
-                </td>
+        <p class="update-date">UPDATE PER: <?= strtoupper(esc($current_date)) ?></p>
 
-                <td style="width: 4%; border: none;"></td> <!-- Spacer -->
-
-                <!-- Platform Chart & Table -->
-                <td style="width: 48%; border: 1px solid #ddd; padding: 10px; vertical-align: top;">
-                    <h3 style="font-size: 11px; margin-top: 0; margin-bottom: 10px; text-align: center; border-bottom: 1px solid #eee; padding-bottom: 5px;">DISTRIBUSI PLATFORM</h3>
-                    
-                    <table style="width: 100%; border: none;">
-                        <tr>
-                            <td style="width: 45%; border: none; text-align: center; vertical-align: middle; padding: 0;">
-                                <?php if (isset($platformChart) && !empty($platformChart)): ?>
-                                    <img src="<?= $platformChart ?>" style="width: 140px; height: auto;">
-                                <?php endif; ?>
-                            </td>
-                            <td style="width: 55%; border: none; vertical-align: middle; padding: 0 0 0 10px;">
-                                <table style="width: 100%; font-size: 8px; margin-bottom: 0; border-collapse: collapse;">
-                                    <thead>
-                                        <tr style="background-color: #f9f9f9;">
-                                            <th style="border: 1px solid #ddd; padding: 3px;">Platform</th>
-                                            <th style="border: 1px solid #ddd; padding: 3px; text-align: right;">Jumlah</th>
-                                            <th style="border: 1px solid #ddd; padding: 3px; text-align: right;">%</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php 
-                                        $pColors = ['#0d6efd', '#0dcaf0', '#ffc107', '#6610f2', '#6c757d', '#d63384', '#20c997', '#fd7e14'];
-                                        foreach ($platform_stats as $idx => $ps): 
-                                            $pColor = $pColors[$idx % count($pColors)];
-                                        ?>
-                                            <tr>
-                                                <td style="border: 1px solid #ddd; padding: 3px; color: <?= $pColor ?>; font-weight: bold;"><?= esc($ps['nama_platform']) ?: '-' ?></td>
-                                                <td style="border: 1px solid #ddd; padding: 3px; text-align: right; font-weight: bold;"><?= number_format($ps['count']) ?></td>
-                                                <td style="border: 1px solid #ddd; padding: 3px; text-align: right;"><?= $stats['total'] > 0 ? (int)(($ps['count'] / $stats['total']) * 100) : 0 ?>%</td>
-                                            </tr>
-                                        <?php endforeach; ?>
-                                    </tbody>
-                                </table>
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-        </table>
     </div>
 
-        
+    <table>
 
-            <table>
+        <thead>
 
-                <thead>
+            <tr>
 
-                    <tr>
+                <th style="width: 3%;">No.</th>
 
-                        <th style="width: 3%;">No.</th>
+                <th style="width: 20%;">Desa/Kelurahan</th>
 
-                        <th style="width: 20%;">Desa/Kelurahan</th>
+                <th style="width: 15%;">Kecamatan</th>
 
-                        <th style="width: 15%;">Kecamatan</th>
+                <th style="width: 20%;">Domain</th>
 
-                        <th style="width: 22%;">Domain</th>
+                <th style="width: 12%;">Platform</th>
 
-                        <th style="width: 15%;">Platform</th>
+                <th style="width: 10%;">Berakhir</th>
 
-                        <th style="width: 10%;">Status</th>
+                <th style="width: 10%;">Status</th>
 
-                        <th style="width: 15%;">Keterangan</th>
+                <th style="width: 10%;">Keterangan</th>
 
-                    </tr>
+            </tr>
 
-                </thead>
+        </thead>
 
-                <tbody>
+        <tbody>
 
-                    <?php
+            <?php
 
-                    $nomor = 1;
+            $nomor = 1;
 
-                    foreach ($websites as $website) :
+            foreach ($websites as $website) :
 
-                        $row_class = '';
+                $row_class = '';
 
-                        if (stripos($website['desa_kelurahan'], 'DESA') !== false) {
+                if (stripos($website['desa_kelurahan'], 'DESA') !== false) {
 
-                            $row_class = 'row-desa';
+                    $row_class = 'row-desa';
+                } elseif (stripos($website['desa_kelurahan'], 'KELURAHAN') !== false) {
 
-                        } elseif (stripos($website['desa_kelurahan'], 'KELURAHAN') !== false) {
-
-                            $row_class = 'row-kelurahan';
-
-                        }
-
-        
-
-                        $status_color = (strtoupper($website['status']) === 'AKTIF') ? '#198754' : '#dc3545';
-
-        
-
-                        $platform_name_slug = strtolower(str_replace(' ', '-', $website['platform_name']));
-
-                        $platform_text_class = 'platform-default-text';
-
-                        if ($platform_name_slug === 'sideka-ng') {
-
-                            $platform_text_class = 'platform-sideka-ng-text';
-
-                        } elseif ($platform_name_slug === 'opensid') {
-
-                            $platform_text_class = 'platform-opensid-text';
-
-                        } elseif ($platform_name_slug === 'pihak-ketiga') {
-
-                            $platform_text_class = 'platform-pihak-ketiga-text';
-
-                        }
-
-                    ?>
-
-                                                <tr class="<?= $row_class ?>">
-
-                                                    <td style="text-align: center;"><?= $nomor++ ?></td>
-
-                                                    <td><?= esc(strtoupper($website['desa_kelurahan'] ?? '')) ?: '-' ?></td>
-
-                                                    <td><?= esc(strtoupper($website['kecamatan'] ?? '')) ?: '-' ?></td>
-
-                                                    <td><?= esc($website['domain'] ?? '') ?: '-' ?></td>
-
-                                                    <td class="<?= $platform_text_class ?>"><?= esc(strtoupper($website['platform_name'] ?? '')) ?: '-' ?></td>
-
-                                                    <td style="color: <?= $status_color ?>; font-weight: bold;"><?= esc(strtoupper($website['status'] ?? '')) ?: '-' ?></td>
-
-                                                    <td><?= esc($website['keterangan'] ?? '') ?: '-' ?></td>
-
-                                                </tr>
-
-                    <?php endforeach; ?>
-
-                </tbody>
-
-            </table>
-
-        
+                    $row_class = 'row-kelurahan';
+                }
 
 
 
-        
+                $status_color = (strtoupper($website['status']) === 'AKTIF') ? '#198754' : '#dc3545';
 
-                <div class="footer-info">
 
-        
 
-                    <strong>Contact Person:</strong> 082188344982 (Dzul)
+                $platform_name_slug = strtolower(str_replace(' ', '-', $website['platform_name']));
 
-        
+                $platform_text_class = 'platform-default-text';
 
-                </div>
+                if ($platform_name_slug === 'sideka-ng') {
 
-        
+                    $platform_text_class = 'platform-sideka-ng-text';
+                } elseif ($platform_name_slug === 'opensid') {
 
-            <div class="footer-right">
+                    $platform_text_class = 'platform-opensid-text';
+                } elseif ($platform_name_slug === 'pihak-ketiga') {
 
-                <p>Aptika Diskominfo Sinjai</p>
+                    $platform_text_class = 'platform-pihak-ketiga-text';
+                }
 
-            </div>
+                $expiry_date = '-';
+                if (stripos($website['desa_kelurahan'], 'KELURAHAN') !== false) {
+                    $expiry_date = '01-02-2027';
+                } else {
+                    $expiry_date = $website['tanggal_berakhir'] ? date('d-m-Y', strtotime($website['tanggal_berakhir'])) : '-';
+                }
 
-        </body>
+            ?>
+
+                <tr class="<?= $row_class ?>">
+
+                    <td style="text-align: center;"><?= $nomor++ ?></td>
+
+                    <td><?= esc(strtoupper($website['desa_kelurahan'] ?? '')) ?: '-' ?></td>
+
+                    <td><?= esc(strtoupper($website['kecamatan'] ?? '')) ?: '-' ?></td>
+
+                    <td><?= esc($website['domain'] ?? '') ?: '-' ?></td>
+
+                    <td class="<?= $platform_text_class ?>"><?= esc(strtoupper($website['platform_name'] ?? '')) ?: '-' ?></td>
+
+                    <td style="text-align: center;"><?= $expiry_date ?></td>
+
+                    <td style="color: <?= $status_color ?>; font-weight: bold;"><?= esc(strtoupper($website['status'] ?? '')) ?: '-' ?></td>
+
+                    <td><?= esc($website['keterangan'] ?? '') ?: '-' ?></td>
+
+                </tr>
+
+            <?php endforeach; ?>
+
+        </tbody>
+
+    </table>
+
+
+
+
+
+
+
+    <div class="footer-info">
+
+
+
+        <strong>Contact Person:</strong> 082188344982 (Dzul)
+
+
+
+    </div>
+
+
+
+    <div class="footer-right">
+
+        <p>Aptika Diskominfo-SP Sinjai</p>
+
+    </div>
+
+</body>
 
 </html>

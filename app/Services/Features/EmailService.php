@@ -68,8 +68,6 @@ class EmailService
                 ->groupEnd();
         }
 
-        $statsBuilder = clone $builder;
-
         if ($bsre_status) {
             if ($bsre_status === 'not_synced') {
                 $builder->groupStart()
@@ -81,10 +79,13 @@ class EmailService
             }
         }
 
+        // Get filtered count BEFORE pagination
+        $filtered_count = $builder->countAllResults(false);
+
         $builder->orderBy('mtime', 'DESC');
 
         $emails = $builder->paginate($perPage);
-        $pager = $builder->pager;
+        $pager = $this->emailModel->pager;
 
         $counts = $this->emailModel->allowCallbacks(false)->select('COUNT(*) as total_emails, SUM(CASE WHEN suspended_login = 0 THEN 1 ELSE 0 END) as active_count, SUM(CASE WHEN suspended_login = 1 THEN 1 ELSE 0 END) as suspended_count')->first();
 
@@ -128,21 +129,22 @@ class EmailService
             ];
         }
 
-        $rawBsreCounts = $statsBuilder->allowCallbacks(false)
+        $rawBsreCounts = $this->emailModel->allowCallbacks(false)
             ->select('bsre_status, COUNT(*) as count')
             ->groupBy('bsre_status')
             ->findAll();
 
         $bsre_status_labels = [
-            'ISSUE' => 'Sertifikat Aktif / Siap TTE',
-            'EXPIRED' => 'Masa Berlaku Habis',
-            'RENEW' => 'Proses Pembaruan',
-            'WAITING_FOR_VERIFICATION' => 'Menunggu Verifikasi',
-            'NEW' => 'Belum Aktivasi',
-            'NO_CERTIFICATE' => 'Belum Ada Sertifikat',
-            'NOT_REGISTERED' => 'Pengguna Tidak Terdaftar',
-            'SUSPEND' => 'Akun Ditangguhkan',
-            'REVOKE' => 'Sertifikat Dicabut'
+            'ISSUE' => 'ISSUE',
+            'EXPIRED' => 'EXPIRED',
+            'RENEW' => 'RENEW',
+            'WAITING_FOR_VERIFICATION' => 'WAITING_FOR_VERIFICATION',
+            'NEW' => 'NEW',
+            'NO_CERTIFICATE' => 'NO_CERTIFICATE',
+            'NOT_REGISTERED' => 'NOT_REGISTERED',
+            'SUSPEND' => 'SUSPEND',
+            'REVOKE' => 'REVOKE',
+            'not_synced' => 'NOT SYNCED'
         ];
 
         $bsreStatusCounts = [];
@@ -161,7 +163,7 @@ class EmailService
         if ($notSyncedCount > 0) {
             $bsreStatusCounts[] = [
                 'status' => 'not_synced',
-                'label' => 'BELUM SINKRON',
+                'label' => 'NOT SYNCED',
                 'count' => $notSyncedCount
             ];
         }
@@ -170,6 +172,7 @@ class EmailService
             'emails' => $emails,
             'pager' => $pager,
             'total_emails' => $counts['total_emails'],
+            'filtered_count' => $filtered_count,
             'active_count' => $counts['active_count'],
             'suspended_count' => $counts['suspended_count'],
             'unit_kerja_list' => $unitKerjaList,
@@ -230,11 +233,13 @@ class EmailService
 
         $isKecamatan = stripos($unitKerja['nama_unit_kerja'], 'Kecamatan') !== false;
 
+        // Start building the query for the emails list
         $emailBuilder = $this->emailModel->whereIn('unit_kerja_id', $allUnitIds);
         if ($isKecamatan && $pimpinan_desa == 0) {
             $emailBuilder->where('pimpinan_desa', 0);
         }
 
+        // Apply filters to the list query
         if ($search) {
             $emailBuilder->groupStart()
                 ->like('email', $search)
@@ -259,6 +264,9 @@ class EmailService
             }
         }
 
+        // Get filtered count BEFORE pagination
+        $filtered_count = $emailBuilder->countAllResults(false);
+
         $emails = $emailBuilder
             ->orderBy('emails.eselon_id IS NULL', 'ASC', false)
             ->orderBy('emails.eselon_id', 'ASC')
@@ -268,39 +276,31 @@ class EmailService
             ->orderBy('emails.jabatan', 'ASC')
             ->orderBy('emails.name', 'ASC')
             ->paginate($perPage);
+        
         $pager = $this->emailModel->pager;
 
         $bsre_status_options = [
-            'ISSUE' => 'Sertifikat Aktif / Siap TTE',
-            'EXPIRED' => 'Masa Berlaku Habis',
-            'RENEW' => 'Proses Pembaruan',
-            'WAITING_FOR_VERIFICATION' => 'Menunggu Verifikasi',
-            'NEW' => 'Belum Aktivasi',
-            'NO_CERTIFICATE' => 'Belum Ada Sertifikat',
-            'NOT_REGISTERED' => 'Pengguna Tidak Terdaftar',
-            'SUSPEND' => 'Akun Ditangguhkan',
-            'REVOKE' => 'Sertifikat Dicabut',
-            'not_synced' => 'BELUM SINKRON'
+            'ISSUE' => 'ISSUE',
+            'EXPIRED' => 'EXPIRED',
+            'RENEW' => 'RENEW',
+            'WAITING_FOR_VERIFICATION' => 'WAITING_FOR_VERIFICATION',
+            'NEW' => 'NEW',
+            'NO_CERTIFICATE' => 'NO_CERTIFICATE',
+            'NOT_REGISTERED' => 'NOT_REGISTERED',
+            'SUSPEND' => 'SUSPEND',
+            'REVOKE' => 'REVOKE',
+            'not_synced' => 'NOT SYNCED'
         ];
 
         $bsre_status_counts = [];
-        $countBuilder = $this->emailModel->whereIn('unit_kerja_id', $allUnitIds);
-        if ($isKecamatan && $pimpinan_desa == 0) {
-            $countBuilder->where('pimpinan_desa', 0);
-        }
-        if ($search) {
-            $countBuilder->groupStart()
-                ->like('email', $search)
-                ->orLike('name', $search)
-                ->orLike('nik', $search)
-                ->orLike('nip', $search)
-                ->groupEnd();
-        }
-        if ($status_asn) {
-            $countBuilder->where('emails.status_asn_id', $status_asn);
-        }
         
-        $rawCounts = $countBuilder->allowCallbacks(false)
+        // Calculate overall stats for the unit (not affected by filters)
+        $statsBuilder = $this->emailModel->whereIn('unit_kerja_id', $allUnitIds);
+        if ($isKecamatan && $pimpinan_desa == 0) {
+            $statsBuilder->where('pimpinan_desa', 0);
+        }
+
+        $rawCounts = $statsBuilder->allowCallbacks(false)
             ->select('bsre_status, COUNT(*) as count')
             ->groupBy('bsre_status')
             ->findAll();
@@ -323,13 +323,15 @@ class EmailService
         });
 
         $active_count = $bsre_status_counts['ISSUE']['count'] ?? 0;
+        $total_emails_in_unit = array_sum(array_column($bsre_status_counts, 'count'));
 
         return [
             'unit_kerja' => $unitKerja,
             'parent_unit' => !empty($unitKerja['parent_id']) ? $this->unitKerjaModel->find($unitKerja['parent_id']) : null,
             'child_units' => $children,
             'emails' => $emails,
-            'total_emails' => $pager->getTotal(),
+            'total_emails' => $total_emails_in_unit,
+            'filtered_count' => $filtered_count,
             'active_count' => $active_count,
             'pagination' => $pager,
             'status_asn_options' => $this->statusAsnModel->orderBy('nama_status_asn', 'ASC')->findAll(),

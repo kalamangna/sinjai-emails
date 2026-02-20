@@ -40,14 +40,20 @@ class EmailModel extends Model
         'pimpinan_desa',
     ];
     protected $useTimestamps = true;
-    protected $beforeFind = ['joinUnitKerja'];
+    protected $beforeFind = ['withJoins']; // Use this hook to apply joins and selects
 
-    protected function joinUnitKerja(array $data)
+    public function __construct()
     {
-        $this->select('emails.*, unit_kerja.nama_unit_kerja as unit_kerja_name, parent_unit_kerja.nama_unit_kerja as parent_unit_kerja_name, status_asn.nama_status_asn as status_asn');
+        parent::__construct();
+    }
+
+    protected function withJoins(array $data)
+    {
+        $this->select('emails.*, unit_kerja.nama_unit_kerja as unit_kerja_name, parent_unit_kerja.nama_unit_kerja as parent_unit_kerja_name, status_asn.nama_status_asn as status_asn, eselon.nama_eselon as eselon_name');
         $this->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left');
         $this->join('unit_kerja as parent_unit_kerja', 'parent_unit_kerja.id = unit_kerja.parent_id', 'left');
         $this->join('status_asn', 'status_asn.id = emails.status_asn_id', 'left');
+        $this->join('eselon', 'eselon.id = emails.eselon_id', 'left');
         return $data;
     }
 

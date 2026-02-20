@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title><?= esc($title ?? 'Daftar Email & TTE Pimpinan') ?></title>
+    <title><?= esc($title ?? 'Daftar Email Pimpinan') ?></title>
     <style>
         @page {
             margin: 10px 25px;
@@ -142,7 +142,7 @@
 <body>
     <div class="header">
         <img src="<?= $logoSrc ?>" alt="Logo" class="logo" />
-        <h1><?= esc($title ?? 'DAFTAR EMAIL & TTE PIMPINAN') ?></h1>
+        <h1><?= esc($title ?? 'DAFTAR EMAIL PIMPINAN DESA') ?></h1>
         <h2><?= esc($subtitle ?? 'PEMERINTAH KABUPATEN SINJAI') ?></h2>
         <p style="text-align: center; font-size: 10px; color: #666; margin-top: -10px;">UPDATE PER: <?= strtoupper(esc($current_date)) ?></p>
     </div>
@@ -214,7 +214,6 @@
         <ul>
             <li><strong style="color: #198754;">ISSUE</strong> : Sertifikat Aktif / Siap TTE</li>
             <li><strong style="color: #dc3545;">EXPIRED</strong> : Masa Berlaku Habis</li>
-            <li><strong style="color: #0d6efd;">RENEW</strong> : Proses Pembaruan</li>
             <li><strong style="color: #d39e00;">NO_CERTIFICATE</strong> : Belum Ada Sertifikat</li>
         </ul>
     </div>
@@ -224,7 +223,7 @@
     </div>
 
     <div class="footer-right">
-        <p>Aptika Diskominfo Sinjai</p>
+        <p>Aptika Diskominfo-SP Sinjai</p>
     </div>
 </body>
 

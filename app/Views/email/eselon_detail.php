@@ -1,258 +1,197 @@
 <?= $this->extend('layouts/main') ?>
 
 <?= $this->section('content') ?>
-<div class="space-y-10">
-    <!-- Back Button -->
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-        <a href="javascript:void(0);" onclick="history.back();" class="inline-flex items-center px-6 py-3 bg-slate-900 border border-slate-800 rounded-2xl text-xs font-black text-slate-400 uppercase tracking-widest hover:bg-slate-800 hover:text-slate-200 transition-all shadow-xl no-underline group">
-            <i class="fas fa-arrow-left mr-3 group-hover:-translate-x-1 transition-transform"></i> Kembali
+<div class="space-y-8">
+    <!-- Nav & Actions -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <a href="<?= site_url('email') ?>" class="inline-flex items-center justify-center px-4 py-2 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all shadow-sm no-underline group">
+            <i class="fas fa-arrow-left mr-2 group-hover:-translate-x-1 transition-transform"></i> Kembali
         </a>
-        <div class="flex gap-3">
-            <button onclick="syncAllBsreStatus()" class="inline-flex items-center px-5 py-2.5 bg-amber-500 border border-transparent rounded-xl font-black text-[10px] text-white uppercase tracking-widest hover:bg-amber-600 transition-all shadow-lg shadow-amber-900/20">
-                <i class="fas fa-sync-alt mr-2 text-xs"></i> Sinkron TTE
+        <div class="flex gap-2">
+            <button onclick="syncAllBsreStatus()" class="inline-flex items-center justify-center px-3 py-2 bg-amber-500 text-white rounded-lg font-bold text-[10px] uppercase tracking-wider hover:bg-amber-600 active:bg-amber-700 transition-all shadow-sm focus:outline-none">
+                <i class="fas fa-sync-alt mr-1.5"></i> Sync TTE
             </button>
         </div>
     </div>
 
-    <!-- Eselon Header -->
-    <div class="bg-slate-900 border border-slate-800 rounded-[2.5rem] p-10 shadow-2xl overflow-hidden relative group">
-        <div class="absolute -right-10 -top-10 w-64 h-64 bg-indigo-500/5 rounded-full blur-3xl group-hover:bg-indigo-500/10 transition-colors"></div>
-        <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-10">
-            <div class="flex items-center gap-6">
-                <div class="w-20 h-20 bg-indigo-600 rounded-3xl flex items-center justify-center shadow-2xl shadow-indigo-900/40 border-4 border-slate-900 group-hover:scale-105 transition-transform duration-500">
-                    <i class="fas fa-layer-group text-white text-3xl"></i>
+    <!-- Page Header -->
+    <div class="bg-white border border-slate-200 rounded-xl p-8 shadow-sm relative overflow-hidden group">
+        <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
+            <div class="flex items-center gap-5">
+                <div class="w-14 h-14 bg-indigo-50 border border-indigo-100 rounded-xl flex items-center justify-center shadow-sm">
+                    <i class="fas fa-layer-group text-indigo-600 text-2xl"></i>
                 </div>
-                <div class="space-y-2">
-                    <h2 class="text-3xl md:text-4xl font-black text-slate-100 uppercase tracking-tighter leading-none">ESELON: <?= esc(strtoupper($eselon['nama_eselon'])) ?></h2>
-                    <p class="text-sm font-bold text-slate-500 uppercase tracking-widest">Daftar Akun Email Terkait</p>
+                <div class="space-y-1">
+                    <h2 class="text-xl md:text-2xl font-bold text-slate-900 tracking-tight leading-none uppercase">ESELON: <?= esc($eselon['nama_eselon']) ?></h2>
+                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Daftar Akun Email Terkait</p>
                 </div>
             </div>
-            <div class="flex gap-10 bg-slate-950 px-10 py-6 rounded-[2rem] border border-slate-800 shadow-inner">
-                <div class="text-center space-y-1">
-                    <div class="text-3xl font-black text-slate-100 tracking-tighter"><?= number_format($total_emails) ?></div>
-                    <div class="text-[9px] font-black text-slate-600 uppercase tracking-[0.2em]">Total Akun</div>
+            <div class="bg-slate-50 px-6 py-3 rounded-lg border border-slate-100">
+                <div class="text-center">
+                    <div class="text-xl font-bold text-slate-900"><?= number_format($total_emails) ?></div>
+                    <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none">Total Akun</div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Search Form -->
-    <div class="bg-slate-900 border border-slate-800 rounded-[2.5rem] shadow-2xl overflow-hidden p-8">
-        <form action="<?= current_url() ?>" method="get" class="grid grid-cols-1 md:grid-cols-12 gap-6 items-end">
+    <!-- Filters -->
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-6">
+        <form action="<?= current_url() ?>" method="get" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
             <div class="md:col-span-5">
-                <label class="block text-[9px] font-black text-slate-600 uppercase tracking-[0.2em] mb-3 ml-1">Cari</label>
-                <input type="text" class="block w-full px-5 py-3.5 bg-slate-950 border border-slate-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-bold text-slate-200 transition-all uppercase tracking-tight placeholder-slate-800" name="search" placeholder="NAMA / EMAIL / JABATAN..." value="<?= esc($search ?? '') ?>">
+                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Pencarian</label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+                        <i class="fas fa-search text-xs"></i>
+                    </span>
+                    <input type="text" name="search" value="<?= esc($search ?? '') ?>" class="block w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm font-medium transition-all" placeholder="Nama, Email, Jabatan...">
+                </div>
             </div>
             <div class="md:col-span-4">
-                <label class="block text-[9px] font-black text-slate-600 uppercase tracking-[0.2em] mb-3 ml-1">Status TTE</label>
-                <select name="bsre_status" id="bsre_status" class="block w-full px-5 py-3.5 bg-slate-950 border border-slate-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-bold text-slate-300 uppercase tracking-tight cursor-pointer transition-all">
-                    <option value="" <?= empty($bsre_status) ? 'selected' : '' ?>>SEMUA STATUS</option>
+                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Status TTE</label>
+                <select name="bsre_status" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm font-medium transition-all">
+                    <option value="">Semua Status</option>
                     <?php foreach ($bsre_status_options as $key => $label): ?>
-                        <option value="<?= esc($key) ?>" <?= ($bsre_status === $key) ? 'selected' : '' ?>>
-                            <?= esc($key === 'not_synced' ? $label : $label) ?>
-                        </option>
+                        <option value="<?= esc($key) ?>" <?= ($bsre_status === $key) ? 'selected' : '' ?>><?= esc($label) ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
             <div class="md:col-span-3 flex gap-3">
-                <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-black py-3.5 rounded-2xl shadow-xl shadow-blue-900/20 transition-all text-[10px] uppercase tracking-widest">
-                    Cari
+                <button type="submit" class="flex-1 inline-flex items-center justify-center px-4 py-2 bg-slate-800 border border-transparent rounded-lg font-bold text-[11px] text-white uppercase tracking-wider hover:bg-slate-900 active:bg-slate-950 transition-all shadow-sm focus:outline-none">
+                    <i class="fas fa-filter mr-2"></i> Filter
                 </button>
-                <a href="<?= current_url() ?>" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-black py-3.5 rounded-2xl shadow-sm text-[10px] text-center no-underline uppercase tracking-widest">
-                    Reset
+                <a href="<?= current_url() ?>" class="flex-1 inline-flex items-center justify-center px-4 py-2 bg-white border border-slate-200 rounded-lg font-bold text-[11px] text-slate-600 uppercase tracking-wider hover:bg-slate-50 hover:text-slate-900 active:bg-slate-100 transition-all shadow-sm no-underline" title="Reset Filter">
+                    <i class="fas fa-redo mr-2"></i> Reset
                 </a>
             </div>
         </form>
     </div>
 
-    <!-- Email List for Eselon -->
-    <div class="bg-slate-900 border border-slate-800 rounded-[2.5rem] shadow-2xl overflow-hidden">
-        <div class="p-0">
-            <?php if (!empty($emails)): ?>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-slate-800">
-                        <thead class="bg-slate-950/50">
-                            <tr>
-                                <th class="px-10 py-6 text-left text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Pengguna / Email</th>
-                                <th class="px-10 py-6 text-left text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Jabatan</th>
-                                <th class="px-10 py-6 text-left text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Unit Kerja</th>
-                                <th class="px-10 py-6 text-left text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Sertifikat</th>
-                                <th class="px-10 py-6 text-center text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] w-32">Aksi</th>
+    <!-- Table -->
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-slate-200">
+                <thead class="bg-slate-50/50">
+                    <tr>
+                        <th class="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Pengguna / Email</th>
+                        <th class="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Jabatan</th>
+                        <th class="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Unit Kerja</th>
+                        <th class="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Sertifikat</th>
+                        <th class="px-6 py-4 text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest w-24">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 bg-white">
+                    <?php if (!empty($emails)): ?>
+                        <?php foreach ($emails as $email): ?>
+                            <tr class="hover:bg-slate-50/50 transition-colors group">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="w-9 h-9 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center mr-3 group-hover:bg-blue-50 transition-all">
+                                            <i class="fas fa-envelope text-slate-400 group-hover:text-blue-600 text-sm"></i>
+                                        </div>
+                                        <div>
+                                            <div class="text-[13px] font-bold text-slate-900 lowercase leading-none mb-1"><?= esc($email['email']) ?></div>
+                                            <div class="text-[10px] font-semibold text-slate-500 uppercase tracking-wide opacity-80"><?= esc($email['name']) ?></div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-[11px] font-bold text-slate-700 leading-tight line-clamp-2"><?= esc($email['jabatan']) ?: '-' ?></div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <?php if (!empty($email['parent_unit_kerja_name'])): ?>
+                                        <div class="text-[11px] font-bold text-slate-700 uppercase"><?= esc($email['parent_unit_kerja_name']) ?></div>
+                                        <div class="text-[9px] font-semibold text-slate-400 uppercase tracking-tighter"><?= esc($email['unit_kerja_name']) ?></div>
+                                    <?php else: ?>
+                                        <div class="text-[11px] font-bold text-slate-700 uppercase"><?= esc($email['unit_kerja_name']) ?></div>
+                                    <?php endif; ?>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div id="bsre-status-<?= esc($email['user']) ?>" data-email="<?= esc($email['email']) ?>">
+                                        <?php
+                                        $st = $email['bsre_status'] ?? '';
+                                        $cols = [
+                                            'ISSUE' => 'bg-emerald-50 text-emerald-700 border-emerald-100',
+                                            'EXPIRED' => 'bg-rose-50 text-rose-700 border-rose-100',
+                                            'RENEW' => 'bg-blue-50 text-blue-700 border-blue-100',
+                                            'WAITING_FOR_VERIFICATION' => 'bg-amber-50 text-amber-700 border-amber-100',
+                                            'NEW' => 'bg-indigo-50 text-indigo-700 border-indigo-100',
+                                            'NO_CERTIFICATE' => 'bg-slate-100 text-slate-600 border-slate-200',
+                                        ];
+                                        $c = $cols[$st] ?? 'bg-slate-50 text-slate-400 border-slate-100';
+                                        ?>
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[9px] font-bold uppercase tracking-wider border <?= $c ?>">
+                                            <?= $st ?: 'NOT SYNCED' ?>
+                                        </span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-center">
+                                    <div class="flex justify-center space-x-2">
+                                        <a href="<?= site_url('email/detail/' . $email['user']) ?>" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-white border border-slate-200 text-slate-400 hover:text-blue-600 hover:border-blue-300 hover:bg-blue-50 transition-all no-underline shadow-sm" title="Rincian">
+                                            <i class="fas fa-eye text-xs"></i>
+                                        </a>
+                                        <form action="<?= site_url('email/delete/' . $email['id']) ?>" method="post" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus email ini?');">
+                                            <button type="submit" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-white border border-slate-200 text-slate-400 hover:text-rose-600 hover:border-rose-300 hover:bg-rose-50 transition-all focus:outline-none shadow-sm" title="Hapus">
+                                                <i class="fas fa-trash-alt text-xs"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-800 bg-slate-900/30">
-                            <?php foreach ($emails as $email): ?>
-                                <tr class="hover:bg-slate-800/30 transition-colors group">
-                                    <td class="px-10 py-6 whitespace-nowrap align-middle">
-                                        <div class="flex items-center">
-                                            <div class="w-12 h-12 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center mr-5 group-hover:border-blue-500/30 transition-all">
-                                                <i class="fas fa-envelope text-slate-600 group-hover:text-blue-500 text-lg"></i>
-                                            </div>
-                                            <div>
-                                                <div class="text-base font-black text-slate-200 tracking-tighter leading-none mb-1.5 lowercase"><?= esc($email['email']) ?></div>
-                                                <div class="text-[11px] text-slate-500 uppercase font-black tracking-widest"><?= esc($email['name']) ?></div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-10 py-6 align-middle">
-                                        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter leading-none"><?= esc($email['jabatan']) ?: '-' ?></div>
-                                    </td>
-                                    <td class="px-10 py-6 align-middle">
-                                        <?php if (!empty($email['parent_unit_kerja_name'])): ?>
-                                            <div class="text-xs font-black text-slate-300 uppercase tracking-tight"><?= esc($email['parent_unit_kerja_name']) ?></div>
-                                            <div class="text-[9px] text-slate-600 uppercase font-bold tracking-tight mt-1"><?= esc($email['unit_kerja_name']) ?></div>
-                                        <?php else: ?>
-                                            <div class="text-xs font-black text-slate-300 uppercase tracking-tight"><?= esc($email['unit_kerja_name']) ?></div>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td class="px-10 py-6 whitespace-nowrap align-middle">
-                                        <div id="bsre-status-<?= esc($email['user']) ?>"
-                                            data-user="<?= esc($email['user']) ?>"
-                                            data-email="<?= esc($email['email']) ?>"
-                                            class="bsre-status-container">
-                                            $status = $email['bsre_status'] ?? '';
-                                            $badgeBase = 'inline-flex items-center px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border shadow-sm';
-                                            
-                                            $colors = [
-                                                'ISSUE' => 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-                                                'EXPIRED' => 'bg-red-500/10 text-red-400 border-red-500/20',
-                                                'RENEW' => 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-                                                'WAITING_FOR_VERIFICATION' => 'bg-amber-500/10 text-amber-400 border-amber-500/20',
-                                                'NEW' => 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20',
-                                                'NO_CERTIFICATE' => 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
-                                                'NOT_REGISTERED' => 'bg-fuchsia-500/10 text-fuchsia-400 border-fuchsia-500/20',
-                                                'SUSPEND' => 'bg-purple-500/10 text-purple-400 border-purple-500/20',
-                                                'REVOKE' => 'bg-zinc-500/10 text-zinc-400 border-zinc-500/20',
-                                            ];
-
-                                            $badgeClass = $colors[$status] ?? 'bg-slate-950 text-slate-600 border-slate-800';
-                                            $badgeText = $status ?: 'BELUM SINKRON';
-                                            ?>
-                                            <span class="<?= $badgeBase ?> <?= $badgeClass ?>"><?= esc($badgeText) ?></span>
-                                        </div>
-                                    </td>
-                                    <td class="px-10 py-6 whitespace-nowrap text-center text-sm font-medium align-middle">
-                                        <div class="flex justify-center space-x-3">
-                                            <a href="<?= site_url('email/detail/' . $email['user']) ?>" class="w-10 h-10 flex items-center justify-center bg-slate-950 text-slate-400 border border-slate-800 rounded-xl hover:bg-blue-600 hover:text-white hover:border-transparent transition-all no-underline shadow-sm">
-                                                <i class="fas fa-eye text-sm"></i>
-                                            </a>
-                                            <form action="<?= site_url('email/delete/' . $email['id']) ?>" method="post" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus email ini?');">
-                                                <button type="submit" class="w-10 h-10 flex items-center justify-center bg-slate-950 text-slate-400 border border-slate-800 rounded-xl hover:bg-red-600 hover:text-white hover:border-transparent transition-all shadow-sm">
-                                                    <i class="fas fa-trash-alt text-sm"></i>
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Pagination -->
-                <?php if ($pagination): ?>
-                    <div class="bg-slate-950/50 px-10 py-10 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-8">
-                        <div class="text-xs font-black text-slate-500 uppercase tracking-widest">
-                            Menampilkan <span class="text-blue-500 px-1"><?= ($pagination->getCurrentPage() - 1) * $pagination->getPerPage() + 1 ?></span> s/d <span class="text-blue-500 px-1"><?= min($pagination->getCurrentPage() * $pagination->getPerPage(), $total_emails) ?></span> dari <span class="text-blue-500 px-1"><?= number_format($total_emails) ?></span> entri
-                        </div>
-                        <div class="pagination-container font-black uppercase">
-                            <?= $pagination->links() ?>
-                        </div>
-                    </div>
-                <?php endif; ?>
-
-            <?php else: ?>
-                <div class="text-center py-20 bg-slate-950/30">
-                    <div class="w-20 h-20 bg-slate-900 rounded-3xl flex items-center justify-center mx-auto mb-6 border border-slate-800">
-                        <i class="fas fa-inbox text-4xl text-slate-700"></i>
-                    </div>
-                    <h5 class="text-sm font-black text-slate-500 uppercase tracking-widest mb-2">Tidak ada data ditemukan</h5>
-                    <p class="text-[10px] font-bold text-slate-600 uppercase tracking-wider">Belum ada akun email yang terdaftar pada eselon ini.</p>
-                </div>
-            <?php endif; ?>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="5" class="px-6 py-12 text-center text-slate-400 text-xs font-medium italic">Data tidak ditemukan.</td>
+                        </tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
         </div>
+
+        <?php if ($pagination): ?>
+            <div class="bg-slate-50 px-6 py-4 border-t border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                    Showing <span class="text-slate-900"><?= count($emails) ?></span> of <span class="text-slate-900"><?= number_format($total_emails) ?></span> entries
+                </div>
+                <div class="pagination-container">
+                    <?= $pagination->links() ?>
+                </div>
+            </div>
+        <?php endif; ?>
     </div>
 </div>
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
 <script>
-  function updateBsreStatusElement(emailUser, status, keterangan) {
-    const bsreStatusDiv = document.getElementById(`bsre-status-${emailUser}`);
-    if (!bsreStatusDiv) return;
-
-    const badgeBase = 'inline-flex items-center px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border shadow-sm';
-    
-    const colors = {
-        'ISSUE': 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-        'EXPIRED': 'bg-red-500/10 text-red-400 border-red-500/20',
-        'RENEW': 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-        'WAITING_FOR_VERIFICATION': 'bg-amber-500/10 text-amber-400 border-amber-500/20',
-        'NEW': 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20',
-        'NO_CERTIFICATE': 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
-        'NOT_REGISTERED': 'bg-fuchsia-500/10 text-fuchsia-400 border-fuchsia-500/20',
-        'SUSPEND': 'bg-purple-500/10 text-purple-400 border-purple-500/20',
-        'REVOKE': 'bg-zinc-500/10 text-zinc-400 border-zinc-500/20',
-    };
-
-    const badgeClass = colors[status] || 'bg-slate-950 text-slate-600 border-slate-800';
-    const badgeText = status || 'UNKNOWN';
-
-    bsreStatusDiv.innerHTML = `<span class="${badgeBase} ${badgeClass}">${badgeText}</span>`;
-  }
-
-  function syncBsreStatus(emailUser, emailAddress) {
-    const bsreStatusDiv = document.getElementById(`bsre-status-${emailUser}`);
-    if (!bsreStatusDiv) return;
-
-    // Show syncing state
-    bsreStatusDiv.innerHTML = '<div class="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full mx-auto"></div>';
-
-    fetch('<?= site_url('bsre/sync-status') ?>', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'X-Requested-With': 'XMLHttpRequest'
-        },
-        body: 'email=' + encodeURIComponent(emailAddress)
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.status === 'success') {
-          // Update display with new status
-          updateBsreStatusElement(emailUser, data.bsre_status, '');
-        } else {
-          bsreStatusDiv.innerHTML = `<span class="inline-flex items-center px-4 py-1.5 rounded-full text-[10px] font-black bg-red-500/10 text-red-400 border border-red-500/20 uppercase tracking-widest">Error</span>`;
-          console.error(`Error syncing Status TTE for ${emailAddress}:`, data.message);
-        }
-      })
-      .catch(error => {
-        bsreStatusDiv.innerHTML = `<span class="inline-flex items-center px-4 py-1.5 rounded-full text-[10px] font-black bg-red-500/10 text-red-400 border border-red-500/20 uppercase tracking-widest">Net Error</span>`;
-        console.error(`Network error syncing Status TTE for ${emailAddress}:`, error);
-      });
-  }
-
   function syncAllBsreStatus() {
-    const statusContainers = document.querySelectorAll('[id^="bsre-status-"]');
-
-    if (statusContainers.length === 0) {
-      alert('Tidak ada data untuk disinkronkan.');
-      return;
-    }
-
-    if (!confirm(`Sinkronkan status TTE untuk ${statusContainers.length} akun yang tampil?`)) {
-      return;
-    }
-
-    statusContainers.forEach((container, index) => {
-      const emailUser = container.id.replace('bsre-status-', '');
-      const emailAddress = container.getAttribute('data-email'); // Get email from data attribute
-
-      if (emailUser && emailAddress) {
+    const containers = document.querySelectorAll('[id^="bsre-status-"]');
+    if (!containers.length || !confirm('Sinkronkan status TTE untuk akun yang tampil?')) return;
+    
+    containers.forEach((c, i) => {
         setTimeout(() => {
-          syncBsreStatus(emailUser, emailAddress);
-        }, index * 200); // 200ms delay per request
-      }
+            const user = c.id.replace('bsre-status-', '');
+            const email = c.getAttribute('data-email');
+            c.innerHTML = '<i class="fas fa-spinner fa-spin text-slate-400 text-[10px]"></i>';
+            fetch('<?= site_url('bsre/sync-status') ?>', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
+                body: 'email=' + encodeURIComponent(email)
+            }).then(r => r.json()).then(d => {
+                if (d.status === 'success') {
+                    const colors = {
+                        'ISSUE': 'bg-emerald-50 text-emerald-700 border-emerald-100',
+                        'EXPIRED': 'bg-rose-50 text-rose-700 border-rose-100',
+                        'RENEW': 'bg-blue-50 text-blue-700 border-blue-100',
+                        'WAITING_FOR_VERIFICATION': 'bg-amber-50 text-amber-700 border-amber-100',
+                        'NEW': 'bg-indigo-50 text-indigo-700 border-indigo-100',
+                        'NO_CERTIFICATE': 'bg-slate-100 text-slate-600 border-slate-200',
+                    };
+                    const cls = colors[d.bsre_status] || 'bg-slate-50 text-slate-400 border-slate-100';
+                    c.innerHTML = `<span class="inline-flex items-center px-2.5 py-1 rounded-md text-[9px] font-bold uppercase tracking-wider border ${cls}">${d.bsre_status}</span>`;
+                }
+            });
+        }, i * 250);
     });
   }
 </script>

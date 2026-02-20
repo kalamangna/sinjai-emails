@@ -34,7 +34,7 @@ $routes->group('email', function ($routes) {
     $routes->get('export_pimpinan_desa_pdf', 'Email::export_pimpinan_desa_pdf');
 
     $routes->get('export_unit_kerja_csv/(:num)', 'Email::export_unit_kerja_csv/$1');
-    $routes->post('export_unit_kerja_pdf/(:num)', 'Email::export_unit_kerja_pdf/$1');
+    $routes->get('export_unit_kerja_pdf/(:num)', 'Email::export_unit_kerja_pdf/$1');
     $routes->get('export_account_detail_pdf/(:num)', 'Email::export_account_detail_pdf/$1');
     $routes->get('export_perjanjian_kerja_pdf/(:num)', 'Email::export_perjanjian_kerja_pdf/$1');
     $routes->get('export_single_perjanjian_kerja_pdf/(:any)', 'Email::export_single_perjanjian_kerja_pdf/$1');
@@ -63,9 +63,7 @@ $routes->group('unit_kerja', function ($routes) {
 // Pemantauan Website
 $routes->group('web_desa_kelurahan', function ($routes) {
     $routes->get('/', 'WebDesaKelurahan::index');
-    $routes->post('export_pdf', 'WebDesaKelurahan::export_pdf');
-    $routes->get('create', 'WebDesaKelurahan::create');
-    $routes->post('store', 'WebDesaKelurahan::store');
+    $routes->get('export_pdf', 'WebDesaKelurahan::export_pdf');
     $routes->get('edit/(:num)', 'WebDesaKelurahan::edit/$1');
     $routes->post('update/(:num)', 'WebDesaKelurahan::update/$1');
     $routes->get('sync_expiration/(:num)', 'WebDesaKelurahan::sync_expiration/$1');
@@ -73,9 +71,7 @@ $routes->group('web_desa_kelurahan', function ($routes) {
 
 $routes->group('web_opd', function ($routes) {
     $routes->get('/', 'WebOpd::index');
-    $routes->post('export_pdf', 'WebOpd::export_pdf');
-    $routes->get('create', 'WebOpd::create');
-    $routes->post('store', 'WebOpd::store');
+    $routes->get('export_pdf', 'WebOpd::export_pdf');
     $routes->get('edit/(:num)', 'WebOpd::edit/$1');
     $routes->post('update/(:num)', 'WebOpd::update/$1');
 });

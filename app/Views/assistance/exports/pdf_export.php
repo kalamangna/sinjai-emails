@@ -99,13 +99,13 @@
     <table>
         <thead>
             <tr>
-                <th style="width: 5%">No</th>
-                <th style="width: 12%">Tanggal</th>
-                <th style="width: 25%">Unit Kerja</th>
-                <th style="width: 15%">Kategori</th>
-                <th style="width: 10%">Metode</th>
-                <th style="width: 20%">Layanan</th>
-                <th style="width: 13%">Keterangan</th>
+                <th style="width: 4%">No</th>
+                <th style="width: 11%">Tanggal</th>
+                <th style="width: 23%">Unit Kerja</th>
+                <th style="width: 9%">Metode</th>
+                <th style="width: 13%">Kategori</th>
+                <th style="width: 18%">Layanan</th>
+                <th style="width: 22%">Keterangan</th>
             </tr>
         </thead>
         <tbody>
@@ -120,13 +120,13 @@
                         <strong><?= esc($item['agency_name']) ?></strong><br>
                         <small style="color: #666;"><?= esc($item['agency_type']) ?></small>
                     </td>
-                    <td><?= esc($categoryMap[$item['category']] ?? 'Unknown') ?></td>
                     <td><?= esc($item['method']) ?></td>
+                    <td><?= esc($categoryMap[$item['category']] ?? 'Unknown') ?></td>
                     <td>
                         <?php
                         $services = json_decode($item['services'], true);
                         if (!empty($services)) {
-                            echo esc($services[0]);
+                            echo esc(implode(', ', $services));
                         } else {
                             echo '-';
                         }
@@ -143,7 +143,7 @@
     </div>
 
     <div class="footer-right">
-        <p>Aptika Diskominfo Sinjai</p>
+        <p>Aptika Diskominfo-SP Sinjai</p>
     </div>
 </body>
 

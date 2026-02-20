@@ -1,73 +1,71 @@
 <?= $this->extend('layouts/main') ?>
 
 <?= $this->section('content') ?>
-<div class="space-y-10">
-    <div class="bg-slate-900 border border-slate-800 rounded-[2.5rem] shadow-2xl overflow-hidden">
-        <div class="bg-slate-800/30 px-10 py-8 border-b border-slate-800 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-            <h5 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em] flex items-center">
-                <i class="fas fa-building mr-3 text-blue-500 opacity-50"></i>Kelola Data Unit Kerja
+<div class="space-y-8">
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+        <div class="bg-slate-50 px-6 py-4 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <h5 class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center">
+                <i class="fas fa-building mr-2 text-blue-500 opacity-50"></i>Kelola Unit Kerja
             </h5>
-            <div class="flex flex-wrap gap-3">
-                <a href="<?= site_url('unit_kerja/batch_create') ?>" class="inline-flex items-center px-5 py-2.5 bg-green-600 border border-transparent rounded-xl font-black text-[10px] text-white uppercase tracking-widest hover:bg-green-700 transition-all shadow-lg shadow-green-900/20 no-underline">
-                    <i class="fas fa-file-csv mr-2"></i> Buat Massal
+            <div class="flex flex-wrap gap-2">
+                <a href="<?= site_url('unit_kerja/batch_create') ?>" class="inline-flex items-center justify-center px-3 py-2 bg-emerald-600 border border-transparent rounded-lg font-bold text-[10px] text-white uppercase tracking-wider hover:bg-emerald-700 active:bg-emerald-800 transition-all shadow-sm no-underline">
+                    <i class="fas fa-file-csv mr-1.5"></i> Buat Massal
                 </a>
-                <a href="<?= site_url('unit_kerja/add') ?>" class="inline-flex items-center px-5 py-2.5 bg-blue-600 border border-transparent rounded-xl font-black text-[10px] text-white uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-900/20 no-underline">
-                    <i class="fas fa-plus mr-2"></i> Tambah Unit Kerja
+                <a href="<?= site_url('unit_kerja/add') ?>" class="inline-flex items-center justify-center px-3 py-2 bg-blue-600 border border-transparent rounded-lg font-bold text-[10px] text-white uppercase tracking-wider hover:bg-blue-700 active:bg-blue-800 transition-all shadow-sm no-underline">
+                    <i class="fas fa-plus mr-1.5"></i> Tambah
                 </a>
             </div>
         </div>
-        <div class="p-10">
-            <!-- Search Form -->
-            <form method="GET" action="" class="mb-10">
-                <div class="flex flex-col md:flex-row gap-4 max-w-2xl">
+        
+        <div class="p-6">
+            <!-- Search -->
+            <form method="GET" action="" class="mb-8">
+                <div class="flex flex-col sm:flex-row gap-2 max-w-xl">
                     <div class="flex-grow relative">
-                        <span class="absolute inset-y-0 left-0 pl-5 flex items-center text-slate-600">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
                             <i class="fas fa-search text-xs"></i>
                         </span>
-                        <input type="text" class="block w-full pl-12 pr-5 py-3.5 bg-slate-950 border border-slate-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-bold text-slate-200 transition-all uppercase tracking-tight placeholder-slate-800" name="search" placeholder="CARI NAMA ATAU INDUK..." value="<?= isset($search) ? esc($search) : '' ?>">
+                        <input type="text" name="search" value="<?= isset($search) ? esc($search) : '' ?>" class="block w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm font-medium transition-all" placeholder="Cari unit kerja...">
                     </div>
-                    <button type="submit" class="px-6 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl shadow-xl shadow-blue-900/20 transition-all text-[10px] uppercase tracking-widest flex items-center justify-center">
-                        Cari
+                    <button type="submit" class="inline-flex items-center justify-center bg-slate-800 hover:bg-slate-900 active:bg-slate-950 text-white font-bold py-2 px-4 rounded-lg text-[11px] uppercase tracking-wider shadow-sm transition-all focus:outline-none">
+                        <i class="fas fa-filter mr-2"></i> Filter
                     </button>
-                    <a href="<?= site_url('unit_kerja/manage') ?>" class="px-6 py-3.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-black border border-transparent rounded-2xl shadow-sm transition-all text-[10px] uppercase tracking-widest no-underline flex items-center justify-center text-center">
-                        Reset
+                    <a href="<?= site_url('unit_kerja/manage') ?>" class="inline-flex items-center justify-center px-4 py-2 bg-white border border-slate-200 rounded-lg font-bold text-[11px] text-slate-600 uppercase tracking-wider hover:bg-slate-50 hover:text-slate-900 active:bg-slate-100 transition-all shadow-sm no-underline" title="Reset Filter">
+                        <i class="fas fa-redo mr-2"></i> Reset
                     </a>
                 </div>
             </form>
 
-            <!-- Unit Kerja List -->
+            <!-- Table -->
             <?php if (!empty($unit_kerja_list)): ?>
-                <div class="overflow-x-auto rounded-3xl border border-slate-800">
-                    <table class="min-w-full divide-y divide-slate-800">
-                        <thead class="bg-slate-950/50">
+                <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm">
+                    <table class="min-w-full divide-y divide-slate-200">
+                        <thead class="bg-slate-50/50">
                             <tr>
-                                <th class="px-8 py-5 text-left text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] w-24">ID</th>
-                                <th class="px-8 py-5 text-left text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Nama Unit Kerja</th>
-                                <th class="px-8 py-5 text-left text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Induk (Parent)</th>
-                                <th class="px-8 py-5 text-center text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] w-40">Aksi</th>
+                                <th class="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest w-20">ID</th>
+                                <th class="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Nama Unit Kerja</th>
+                                <th class="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Induk / Parent</th>
+                                <th class="px-6 py-4 text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest w-24">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-800 bg-slate-900/30">
+                        <tbody class="divide-y divide-slate-100 bg-white">
                             <?php foreach ($unit_kerja_list as $unit): ?>
-                                <tr class="hover:bg-slate-800/30 transition-colors group">
-                                    <td class="px-8 py-5 whitespace-nowrap text-xs font-black text-slate-600 font-mono">#<?= $unit['id'] ?></td>
-                                    <td class="px-8 py-5 align-middle">
-                                        <div class="flex items-center">
-                                            <div class="w-10 h-10 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center mr-4 group-hover:border-blue-500/30 transition-all">
-                                                <i class="fas fa-building text-slate-600 group-hover:text-blue-500 text-sm"></i>
-                                            </div>
-                                            <div class="text-sm font-bold text-slate-300 uppercase tracking-tight group-hover:text-slate-100 transition-colors"><?= esc($unit['nama_unit_kerja']) ?></div>
-                                        </div>
+                                <tr class="hover:bg-slate-50/50 transition-colors group">
+                                    <td class="px-6 py-4 whitespace-nowrap text-xs font-bold text-slate-400 font-mono">#<?= $unit['id'] ?></td>
+                                    <td class="px-6 py-4">
+                                        <div class="text-[13px] font-bold text-slate-900 uppercase leading-tight group-hover:text-blue-600 transition-colors"><?= esc($unit['nama_unit_kerja']) ?></div>
                                     </td>
-                                    <td class="px-8 py-5 whitespace-nowrap text-xs font-bold text-slate-500 uppercase tracking-tight">
-                                        <?= !empty($unit['parent_name']) ? '<span class="text-blue-400">' . esc($unit['parent_name']) . '</span>' : '<span class="text-slate-700 italic">TIDAK ADA</span>' ?>
+                                    <td class="px-6 py-4">
+                                        <span class="text-[11px] font-semibold <?= !empty($unit['parent_name']) ? 'text-blue-600' : 'text-slate-300 italic' ?> uppercase tracking-tight">
+                                            <?= !empty($unit['parent_name']) ? esc($unit['parent_name']) : 'Tidak Ada' ?>
+                                        </span>
                                     </td>
-                                    <td class="px-8 py-5 whitespace-nowrap text-center text-sm font-medium align-middle">
-                                        <div class="flex justify-center space-x-3">
-                                            <a href="<?= site_url('unit_kerja/edit/' . $unit['id']) ?>" class="w-10 h-10 flex items-center justify-center bg-slate-950 text-slate-400 border border-slate-800 rounded-xl hover:bg-blue-600 hover:text-white hover:border-transparent transition-all shadow-sm" title="Edit">
-                                                <i class="fas fa-pencil-alt text-xs"></i>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                                        <div class="flex justify-center space-x-2">
+                                            <a href="<?= site_url('unit_kerja/edit/' . $unit['id']) ?>" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-white border border-slate-200 text-slate-400 hover:text-blue-600 hover:border-blue-300 hover:bg-blue-50 transition-all no-underline shadow-sm" title="Edit">
+                                                <i class="fas fa-edit text-xs"></i>
                                             </a>
-                                            <a href="<?= site_url('unit_kerja/delete/' . $unit['id']) ?>" class="w-10 h-10 flex items-center justify-center bg-slate-950 text-slate-400 border border-slate-800 rounded-xl hover:bg-red-600 hover:text-white hover:border-transparent transition-all shadow-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus unit kerja ini?');" title="Hapus">
+                                            <a href="<?= site_url('unit_kerja/delete/' . $unit['id']) ?>" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-white border border-slate-200 text-slate-400 hover:text-rose-600 hover:border-rose-300 hover:bg-rose-50 transition-all no-underline shadow-sm" onclick="return confirm('Hapus unit kerja ini?')" title="Hapus">
                                                 <i class="fas fa-trash-alt text-xs"></i>
                                             </a>
                                         </div>
@@ -78,11 +76,11 @@
                     </table>
                 </div>
             <?php else: ?>
-                <div class="text-center py-20 bg-slate-950/30 rounded-[2rem] border border-slate-800 border-dashed">
-                    <div class="w-20 h-20 bg-slate-900 rounded-3xl flex items-center justify-center mx-auto mb-6 border border-slate-800">
-                        <i class="fas fa-building text-4xl text-slate-700"></i>
+                <div class="text-center py-20 bg-slate-50/50 rounded-xl border border-slate-200 border-dashed">
+                    <div class="w-16 h-16 bg-white border border-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm text-slate-200">
+                        <i class="fas fa-building text-2xl"></i>
                     </div>
-                    <h5 class="text-sm font-black text-slate-500 uppercase tracking-widest">Belum ada data unit kerja.</h5>
+                    <p class="text-sm font-bold text-slate-400 uppercase tracking-widest">Belum ada data unit kerja</p>
                 </div>
             <?php endif; ?>
         </div>

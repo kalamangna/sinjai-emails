@@ -103,7 +103,9 @@ class EmailExportService
         set_time_limit(0);
         ini_set('memory_limit', '-1');
 
-        $builder = $this->emailModel->where('pimpinan_desa', 1);
+        $builder = $this->emailModel
+            ->where('pimpinan_desa', 1)
+            ->where('unit_kerja.nama_unit_kerja NOT LIKE', '%Kelurahan%');
         if ($search) {
             $builder->groupStart()
                 ->like('email', $search)
@@ -151,7 +153,7 @@ class EmailExportService
         return $dompdf;
     }
 
-    public function generateUnitKerjaPdf($unitKerjaId, $search = null, $status_asn = null, $bsre_status = null, $pimpinan_desa = 1, $statusChartData = null)
+    public function generateUnitKerjaPdf($unitKerjaId, $search = null, $status_asn = null, $bsre_status = null, $pimpinan_desa = 1)
     {
         set_time_limit(0);
         ini_set('memory_limit', '-1');
@@ -197,7 +199,6 @@ class EmailExportService
             'showUnitKerjaColumn' => $showUnitKerjaColumn,
             'logoSrc' => $this->getLogoSrc(),
             'current_date' => format_indo_date(date('Y-m-d')),
-            'statusChart' => $statusChartData,
         ];
 
         $html = view('email/exports/unit_kerja_pdf', $data);
