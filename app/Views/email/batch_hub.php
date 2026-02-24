@@ -22,7 +22,7 @@
                     <i class="fas fa-plus-circle text-blue-600 text-2xl group-hover:text-white transition-colors"></i>
                 </div>
                 <div class="space-y-2">
-                    <h3 class="text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors">Pembuatan Akun</h3>
+                    <h3 class="text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors">Buat Akun</h3>
                     <p class="text-slate-500 text-sm leading-relaxed font-medium">Buat banyak akun email sekaligus dengan impor data dari spreadsheet.</p>
                 </div>
                 <div class="pt-2 flex items-center text-[11px] font-bold text-blue-600 uppercase tracking-wider">
@@ -38,7 +38,7 @@
                     <i class="fas fa-edit text-blue-600 text-2xl group-hover:text-white transition-colors"></i>
                 </div>
                 <div class="space-y-2">
-                    <h3 class="text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors">Pembaruan Data</h3>
+                    <h3 class="text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors">Update Data</h3>
                     <p class="text-slate-500 text-sm leading-relaxed font-medium">Perbarui profil, jabatan, dan status kepegawaian secara massal.</p>
                 </div>
                 <div class="pt-2 flex items-center text-[11px] font-bold text-blue-600 uppercase tracking-wider">
@@ -54,7 +54,7 @@
                     <i class="fas fa-file-contract text-blue-600 text-2xl group-hover:text-white transition-colors"></i>
                 </div>
                 <div class="space-y-2">
-                    <h3 class="text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors">Dokumen PK</h3>
+                    <h3 class="text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors">PK Massal</h3>
                     <p class="text-slate-500 text-sm leading-relaxed font-medium">Generasi dokumen Perjanjian Kerja massal bagi PPPK Paruh Waktu.</p>
                 </div>
                 <div class="pt-2 flex items-center text-[11px] font-bold text-blue-600 uppercase tracking-wider">
