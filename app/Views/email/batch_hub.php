@@ -23,7 +23,7 @@
                 </div>
                 <div class="space-y-2">
                     <h3 class="text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors">Buat Akun</h3>
-                    <p class="text-slate-500 text-sm leading-relaxed font-medium">Buat banyak akun email sekaligus.</p>
+                    <p class="text-slate-500 text-sm leading-relaxed font-medium">Buat akun email baru secara massal.</p>
                 </div>
                 <div class="pt-2 flex items-center text-[11px] font-bold text-blue-600 uppercase tracking-wider">
                     Mulai <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
@@ -39,7 +39,7 @@
                 </div>
                 <div class="space-y-2">
                     <h3 class="text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors">Update Data</h3>
-                    <p class="text-slate-500 text-sm leading-relaxed font-medium">Perbarui profil, jabatan, dan status kepegawaian secara massal.</p>
+                    <p class="text-slate-500 text-sm leading-relaxed font-medium">Perbarui data profil, jabatan, dan status ASN banyak akun sekaligus.</p>
                 </div>
                 <div class="pt-2 flex items-center text-[11px] font-bold text-blue-600 uppercase tracking-wider">
                     Mulai <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
@@ -55,7 +55,7 @@
                 </div>
                 <div class="space-y-2">
                     <h3 class="text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors">PK Massal</h3>
-                    <p class="text-slate-500 text-sm leading-relaxed font-medium">Generasi dokumen Perjanjian Kerja massal bagi PPPK Paruh Waktu.</p>
+                    <p class="text-slate-500 text-sm leading-relaxed font-medium">Hasilkan dokumen Perjanjian Kerja (PK) untuk PPPK Paruh Waktu.</p>
                 </div>
                 <div class="pt-2 flex items-center text-[11px] font-bold text-blue-600 uppercase tracking-wider">
                     Mulai <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
