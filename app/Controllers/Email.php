@@ -60,6 +60,11 @@ class Email extends BaseController
         return view('email/eselon_list', $data);
     }
 
+    public function batch_hub()
+    {
+        return view('email/batch_hub');
+    }
+
     public function index()
     {
         helper('time');
