@@ -57,6 +57,16 @@
                     <div class="px-4 py-2 text-[9px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-100 mb-1">Daftar Pejabat</div>
                     <a class="block px-4 py-2.5 text-[11px] font-medium text-slate-600 hover:bg-slate-50 hover:text-blue-600 transition-colors no-underline" href="<?= site_url('email/pimpinan') ?>">Pimpinan OPD</a>
                     <a class="block px-4 py-2.5 text-[11px] font-medium text-slate-600 hover:bg-slate-50 hover:text-blue-600 transition-colors no-underline" href="<?= site_url('email/pimpinan_desa') ?>">Kepala Desa</a>
+                    
+                    <?php if (!empty($eselon_nav)): ?>
+                        <div class="px-4 py-2 mt-1 text-[9px] font-bold text-slate-400 uppercase tracking-widest border-y border-slate-100 mb-1">Eselon</div>
+                        <?php foreach ($eselon_nav as $eselon): ?>
+                            <a href="<?= site_url('email/eselon_detail/' . $eselon['id']) ?>" class="flex justify-between items-center px-4 py-2 text-[11px] font-medium text-slate-600 hover:bg-slate-50 hover:text-blue-600 transition-colors no-underline">
+                                <span>Eselon <?= esc($eselon['name']) ?></span>
+                                <span class="text-[9px] font-bold bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded"><?= $eselon['count'] ?></span>
+                            </a>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
