@@ -8,7 +8,11 @@
             <i class="fas fa-arrow-left mr-2 group-hover:-translate-x-1 transition-transform"></i> Kembali
         </a>
         <div class="flex flex-wrap gap-2">
-            <a href="<?= site_url('email/export_unit_kerja_csv/' . $unit_kerja['id']) ?>" class="inline-flex items-center justify-center px-3 py-2 bg-emerald-600 text-white rounded-lg font-bold text-[10px] uppercase tracking-wider hover:bg-emerald-700 active:bg-emerald-800 transition-all shadow-sm no-underline">
+            <?php
+            $queryString = $_SERVER['QUERY_STRING'] ?? '';
+            $exportCsvUrl = site_url('email/export_unit_kerja_csv/' . $unit_kerja['id']) . ($queryString ? '?' . $queryString : '');
+            ?>
+            <a href="<?= $exportCsvUrl ?>" class="inline-flex items-center justify-center px-3 py-2 bg-emerald-600 text-white rounded-lg font-bold text-[10px] uppercase tracking-wider hover:bg-emerald-700 active:bg-emerald-800 transition-all shadow-sm no-underline">
                 <i class="fas fa-file-csv mr-1.5"></i> CSV
             </a>
             <a href="<?= site_url('email/export_account_detail_pdf/' . $unit_kerja['id']) ?>" class="inline-flex items-center justify-center px-3 py-2 bg-slate-700 text-white rounded-lg font-bold text-[10px] uppercase tracking-wider hover:bg-slate-800 active:bg-slate-900 transition-all shadow-sm no-underline">
@@ -45,7 +49,7 @@
             <div class="flex gap-8 bg-slate-50 px-8 py-4 rounded-xl border border-slate-100">
                 <div class="text-center space-y-0.5">
                     <div class="text-xl font-bold text-slate-900"><?= number_format($total_emails ?? 0) ?></div>
-                    <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Total Akun</div>
+                    <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Total</div>
                 </div>
                 <div class="w-px bg-slate-200 h-8 self-center"></div>
                 <div class="text-center space-y-0.5">
@@ -61,7 +65,7 @@
         <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
             <button onclick="toggleChildUnits()" class="w-full bg-slate-50 px-6 py-3 border-b border-slate-200 flex justify-between items-center group focus:outline-none">
                 <h6 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex items-center">
-                    <i class="fas fa-sitemap mr-2 text-blue-500 opacity-50"></i>Sub-Unit Struktur
+                    <i class="fas fa-sitemap mr-2 text-blue-500 opacity-50"></i>Sub-Unit
                 </h6>
                 <i class="fas fa-chevron-down text-slate-400 text-[10px] transition-transform duration-300 group-hover:text-slate-600" id="childUnitsChevron"></i>
             </button>
@@ -82,7 +86,7 @@
         <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
             <div class="bg-slate-50 px-6 py-4 border-b border-slate-200">
                 <h6 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex items-center">
-                    <i class="fas fa-chart-pie mr-2 text-blue-500 opacity-50"></i>Status Sertifikat TTE
+                    <i class="fas fa-fingerprint mr-2 text-blue-500 opacity-50"></i>Sertifikat
                 </h6>
             </div>
             <div class="p-6 flex flex-col lg:flex-row items-center gap-10">
@@ -117,7 +121,7 @@
                 </div>
             </div>
             <div class="md:col-span-3 lg:col-span-3">
-                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Status Kepegawaian</label>
+                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Status ASN</label>
                 <select name="status_asn" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm font-medium transition-all">
                     <option value="">Semua Status</option>
                     <?php foreach ($status_asn_options as $option): ?>
@@ -151,8 +155,8 @@
             <table class="min-w-full divide-y divide-slate-200">
                 <thead class="bg-slate-50/50">
                     <tr>
-                        <th class="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">User / Email</th>
-                        <th class="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Jabatan & Status</th>
+                        <th class="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Akun</th>
+                        <th class="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Jabatan</th>
                         <th class="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Sertifikat</th>
                         <th class="px-6 py-4 text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest w-32">Aksi</th>
                     </tr>
@@ -173,8 +177,8 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <div class="text-[11px] font-bold text-blue-600 uppercase tracking-tight mb-0.5"><?= esc($email['status_asn']) ?></div>
-                                    <div class="text-[10px] font-medium text-slate-500 line-clamp-1 italic"><?= esc($email['jabatan']) ?: '-' ?></div>
+                                    <div class="text-[11px] font-bold text-slate-700 leading-tight mb-0.5"><?= esc($email['jabatan']) ?: '-' ?></div>
+                                    <div class="text-[10px] font-semibold text-blue-600 uppercase tracking-tight"><?= esc($email['status_asn']) ?></div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div id="bsre-status-<?= esc($email['user']) ?>" data-email="<?= esc($email['email']) ?>">
@@ -202,6 +206,10 @@
                                 </td>
                             </tr>
                         <?php endforeach; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="4" class="px-6 py-12 text-center text-slate-400 text-xs font-medium italic">Tidak ada data email yang ditemukan.</td>
+                        </tr>
                     <?php endif; ?>
                 </tbody>
             </table>
@@ -230,7 +238,7 @@
                     <h3 class="text-lg font-bold text-slate-900 uppercase tracking-tight">Generating PDF Documents</h3>
                     <p id="exportStatusText" class="text-xs text-slate-500 font-medium italic">Menyiapkan antrian data...</p>
                 </div>
-                <div class="w-full bg-slate-100 rounded-full h-3">
+                <div class="w-full bg-slate-100 rounded-full h-4 overflow-hidden">
                     <div id="exportProgressBar" class="bg-blue-600 h-full rounded-full transition-all duration-300 flex items-center justify-center text-[8px] font-bold text-white" style="width: 0%"></div>
                 </div>
             </div>

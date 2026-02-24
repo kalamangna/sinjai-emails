@@ -5,10 +5,10 @@
     <!-- Header & Back -->
     <div class="flex flex-col md:flex-row justify-between items-end md:items-center gap-4 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
         <div class="space-y-1">
-            <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Batch Perjanjian Kerja</h1>
+            <h1 class="text-2xl font-bold text-slate-900 tracking-tight">PK Massal</h1>
             <div class="flex items-center text-[11px] text-slate-500 font-medium uppercase tracking-wider">
                 <i class="fas fa-file-contract mr-2 text-blue-500 opacity-50"></i>
-                Dokumen PK Massal
+                Batch PK
             </div>
         </div>
         <a href="<?= site_url('email/batch_hub') ?>" class="inline-flex items-center justify-center px-4 py-2 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all shadow-sm no-underline group">
@@ -80,7 +80,7 @@
 
                 <div class="flex justify-end pt-4 border-t border-slate-100">
                     <button type="submit" id="update_btn" class="inline-flex items-center justify-center px-6 py-2.5 bg-blue-600 text-white rounded-lg font-bold text-xs uppercase tracking-wider hover:bg-blue-700 active:bg-blue-800 transition-all shadow-md group focus:outline-none focus:ring-2 focus:ring-blue-500/20">
-                        <i class="fas fa-sync-alt mr-2 group-hover:rotate-180 transition-transform duration-500"></i> Update PK Data
+                        <i class="fas fa-sync-alt mr-2 group-hover:rotate-180 transition-transform duration-500"></i> Update
                     </button>
                 </div>
             </form>

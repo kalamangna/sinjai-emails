@@ -30,7 +30,7 @@
                             <i class="fas fa-arrow-left mr-3"></i> Batal
                         </a>
                         <button type="submit" class="w-full md:w-auto px-10 py-4 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl shadow-xl shadow-blue-900/20 transition-all text-[10px] uppercase tracking-widest flex items-center justify-center">
-                            <i class="fas fa-save mr-3"></i> Simpan Data
+                            <i class="fas fa-save mr-3"></i> Simpan
                         </button>
                     </div>
                 </form>

@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title><?= esc($title ?? 'Daftar Email Pimpinan') ?></title>
+    <title><?= esc($title ?? 'Daftar Email & Sertifikat Elektronik Kepala Desa') ?></title>
     <style>
         @page {
             margin: 10px 25px;
@@ -142,7 +142,7 @@
 <body>
     <div class="header">
         <img src="<?= $logoSrc ?>" alt="Logo" class="logo" />
-        <h1><?= esc($title ?? 'DAFTAR EMAIL PIMPINAN DESA') ?></h1>
+        <h1><?= esc($title ?? 'DAFTAR EMAIL & SERTIFIKAT ELEKTRONIK KEPALA DESA') ?></h1>
         <h2><?= esc($subtitle ?? 'PEMERINTAH KABUPATEN SINJAI') ?></h2>
         <p style="text-align: center; font-size: 10px; color: #666; margin-top: -10px;">UPDATE PER: <?= strtoupper(esc($current_date)) ?></p>
     </div>
@@ -151,10 +151,10 @@
         <thead>
             <tr>
                 <th>No.</th>
-                <th>Nama / Email</th>
+                <th>Akun</th>
                 <th>Jabatan</th>
                 <?= ($showUnitKerjaColumn ? '<th>Unit Kerja</th>' : '') ?>
-                <th>Status TTE</th>
+                <th>Sertifikat</th>
             </tr>
         </thead>
         <tbody>
@@ -191,6 +191,9 @@
                 $unitKerjaContent = '';
                 if ($showUnitKerjaColumn) {
                     $unitKerjaContent = esc(strtoupper($email['unit_kerja_name'] ?? 'N/A'));
+                    if (!empty($email['parent_unit_kerja_name'])) {
+                        $unitKerjaContent .= '<br><small style="color: #666;">' . esc(trim(str_ireplace('KANTOR', '', strtoupper($email['parent_unit_kerja_name'])))) . '</small>';
+                    }
                 }
 
                 echo '<tr>
@@ -210,7 +213,7 @@
     </table>
 
     <div class="tte-description">
-        <p><strong>Keterangan Status TTE</strong></p>
+        <p><strong>Keterangan Sertifikat Elektronik</strong></p>
         <ul>
             <li><strong style="color: #198754;">ISSUE</strong> : Sertifikat Aktif / Siap TTE</li>
             <li><strong style="color: #dc3545;">EXPIRED</strong> : Masa Berlaku Habis</li>

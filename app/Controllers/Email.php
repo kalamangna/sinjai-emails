@@ -163,13 +163,18 @@ class Email extends BaseController
             if (is_cli()) {
                 return $result;
             }
-            return $this->response->setJSON($result);
-        } catch (Exception $e) {
-            $result = ['success' => false, 'message' => 'Failed to synchronize: ' . $e->getMessage()];
-            if (is_cli()) {
-                return $result;
+            
+            if ($result['success']) {
+                return redirect()->to('email')->with('success', $result['message']);
+            } else {
+                return redirect()->to('email')->with('error', $result['message']);
             }
-            return $this->response->setStatusCode(500)->setJSON($result);
+        } catch (Exception $e) {
+            $message = 'Failed to synchronize: ' . $e->getMessage();
+            if (is_cli()) {
+                return ['success' => false, 'message' => $message];
+            }
+            return redirect()->to('email')->with('error', $message);
         }
     }
 

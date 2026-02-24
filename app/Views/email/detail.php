@@ -18,7 +18,7 @@
         <div class="flex flex-wrap gap-2">
             <?php if (($email['status_asn_id'] ?? 0) == 3): ?>
                 <a href="<?= site_url('email/export_single_perjanjian_kerja_pdf/' . $email['user']) ?>" class="inline-flex items-center justify-center px-3 py-2 bg-slate-800 border border-transparent rounded-lg font-bold text-[10px] text-white uppercase tracking-wider hover:bg-slate-900 active:bg-slate-950 focus:outline-none focus:ring-2 focus:ring-slate-500/20 transition-all shadow-sm no-underline">
-                    <i class="fas fa-file-contract mr-1.5"></i> Dokumen PK
+                    <i class="fas fa-file-contract mr-1.5"></i> PK PDF
                 </a>
             <?php endif; ?>
         </div>
@@ -35,11 +35,14 @@
                             <i class="fas fa-copy"></i>
                         </button>
                     </div>
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-[0.2em]"><?= esc($email['name']) ?></p>
+                    <?php
+                    $full_name = trim(($email['gelar_depan'] ?? '') . ' ' . $email['name'] . ' ' . ($email['gelar_belakang'] ?? ''));
+                    ?>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-[0.2em]"><?= esc($full_name) ?></p>
                 </div>
 
                 <div class="flex items-center gap-3 mt-4 pt-4 border-t border-slate-100">
-                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em]">Sertifikat TTE:</span>
+                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em]">Sertifikat:</span>
                     <div id="bsre-status-container" class="flex items-center">
                         <span class="text-[10px] font-extrabold text-slate-600 uppercase tracking-widest">Checking...</span>
                     </div>
@@ -50,12 +53,72 @@
             </div>
 
             <a href="https://<?= config('Cpanel')->cpanel_host ?>:2096" target="_blank" class="inline-flex items-center justify-center px-6 py-3 bg-blue-600 border border-transparent rounded-lg font-bold text-xs text-white uppercase tracking-wider hover:bg-blue-700 active:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all shadow-md no-underline">
-                <i class="fas fa-external-link-alt mr-2 text-sm"></i> Buka Webmail
+                <i class="fas fa-external-link-alt mr-2 text-sm"></i> Webmail
             </a>
         </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Main Info Card -->
+        <div class="lg:col-span-2 bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
+            <div class="bg-slate-50 px-6 py-4 border-b border-slate-200 flex justify-between items-center">
+                <h5 class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center">
+                    <i class="fas fa-user-circle mr-2 text-blue-500"></i>Akun
+                </h5>
+                <button onclick="openEditModal()" class="inline-flex items-center text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-wider focus:outline-none">
+                    <i class="fas fa-edit mr-1.5"></i> Edit
+                </button>
+            </div>
+            <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                <!-- Personel Column -->
+                <div class="space-y-6">
+                    <div class="space-y-1">
+                        <span class="block text-[9px] font-bold text-slate-400 uppercase tracking-widest">NIP / NIK</span>
+                        <p class="text-sm font-bold text-slate-800 tracking-wide font-mono"><?= esc($email['nip']) ?: '-' ?> / <?= esc($email['nik']) ?: '-' ?></p>
+                    </div>
+                    <div class="space-y-1">
+                        <span class="block text-[9px] font-bold text-slate-400 uppercase tracking-widest">Status / Eselon</span>
+                        <div class="flex items-center gap-2 pt-0.5">
+                            <span class="px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-100 rounded text-[10px] font-bold uppercase"><?= esc($email['status_asn'] ?? 'NON ASN') ?></span>
+                            <?php if (!empty($email['eselon_name'])): ?>
+                                <span class="px-2 py-0.5 bg-slate-100 text-slate-700 border border-slate-200 rounded text-[10px] font-bold uppercase"><?= esc($email['eselon_name']) ?></span>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <div class="space-y-1">
+                        <span class="block text-[9px] font-bold text-slate-400 uppercase tracking-widest">Jabatan</span>
+                        <p class="text-sm font-semibold text-slate-700 leading-relaxed"><?= esc($email['jabatan']) ?: '-' ?></p>
+                    </div>
+                </div>
+
+                <!-- Auth & Unit Column -->
+                <div class="space-y-6">
+                    <div class="space-y-1">
+                        <span class="block text-[9px] font-bold text-slate-400 uppercase tracking-widest">Unit Kerja</span>
+                        <div class="space-y-1">
+                            <?php if (!empty($parent_unit_kerja)): ?>
+                                <a href="<?= site_url('email/unit_kerja/' . $parent_unit_kerja['id']) ?>" class="block text-[10px] font-bold text-slate-500 hover:text-blue-600 uppercase tracking-tight leading-tight mb-0.5 no-underline transition-colors"><?= esc($parent_unit_kerja['nama_unit_kerja']) ?></a>
+                                <a href="<?= site_url('email/unit_kerja/' . $unit_kerja['id']) ?>" class="block text-sm font-extrabold text-slate-800 hover:text-blue-700 uppercase tracking-tight leading-tight no-underline transition-colors"><?= esc($unit_kerja['nama_unit_kerja'] ?? 'TIDAK TERDAFTAR') ?></a>
+                            <?php elseif (!empty($unit_kerja)): ?>
+                                <a href="<?= site_url('email/unit_kerja/' . $unit_kerja['id']) ?>" class="block text-sm font-extrabold text-slate-800 hover:text-blue-700 uppercase tracking-tight leading-tight no-underline transition-colors"><?= esc($unit_kerja['nama_unit_kerja']) ?></a>
+                            <?php else: ?>
+                                <p class="text-sm font-extrabold text-slate-400 uppercase tracking-tight leading-tight italic">TIDAK TERDAFTAR</p>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <div class="space-y-1">
+                        <span class="block text-[9px] font-bold text-slate-400 uppercase tracking-widest">Password Akun</span>
+                        <div class="flex items-center gap-2">
+                            <p class="text-sm font-bold text-slate-800 font-mono tracking-widest" id="password-text">••••••••</p>
+                            <button class="text-slate-400 hover:text-blue-600 focus:outline-none" onclick="togglePasswordDisplay(this, '<?= esc($email['password'], 'js') ?>')" title="Lihat Password">
+                                <i class="fas fa-eye text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Storage Card -->
         <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
             <div class="bg-slate-50 px-6 py-4 border-b border-slate-200">
@@ -94,46 +157,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Personal Data Card -->
-        <div class="lg:col-span-2 bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
-            <div class="bg-slate-50 px-6 py-4 border-b border-slate-200 flex justify-between items-center">
-                <h5 class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center">
-                    <i class="fas fa-user-circle mr-2 text-blue-500"></i>Data Personel
-                </h5>
-                <button onclick="openEditModal()" class="inline-flex items-center text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-wider focus:outline-none">
-                    <i class="fas fa-edit mr-1.5"></i> Edit Profile
-                </button>
-            </div>
-            <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="space-y-1">
-                    <span class="block text-[9px] font-bold text-slate-400 uppercase tracking-widest">NIP / NIK</span>
-                    <p class="text-sm font-bold text-slate-800 tracking-wide font-mono"><?= esc($email['nip']) ?: '-' ?> / <?= esc($email['nik']) ?: '-' ?></p>
-                </div>
-                <div class="space-y-1">
-                    <span class="block text-[9px] font-bold text-slate-400 uppercase tracking-widest">Status / Eselon</span>
-                    <div class="flex items-center gap-2 pt-0.5">
-                        <span class="px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-100 rounded text-[10px] font-bold uppercase"><?= esc($email['status_asn'] ?? 'NON ASN') ?></span>
-                        <?php if (!empty($email['eselon_name'])): ?>
-                            <span class="px-2 py-0.5 bg-slate-100 text-slate-700 border border-slate-200 rounded text-[10px] font-bold uppercase"><?= esc($email['eselon_name']) ?></span>
-                        <?php endif; ?>
-                    </div>
-                </div>
-                <div class="space-y-1">
-                    <span class="block text-[9px] font-bold text-slate-400 uppercase tracking-widest">Jabatan</span>
-                    <p class="text-sm font-semibold text-slate-700 leading-relaxed"><?= esc($email['jabatan']) ?: '-' ?></p>
-                </div>
-                <div class="space-y-1">
-                    <span class="block text-[9px] font-bold text-slate-400 uppercase tracking-widest">Unit Kerja</span>
-                    <div class="space-y-1">
-                        <p class="text-sm font-bold text-slate-800 uppercase tracking-tight leading-tight"><?= esc($unit_kerja['nama_unit_kerja'] ?? 'TIDAK TERDAFTAR') ?></p>
-                        <?php if (!empty($parent_unit_kerja)): ?>
-                            <p class="text-[10px] font-medium text-slate-400 uppercase tracking-tighter leading-none italic"><?= esc($parent_unit_kerja['nama_unit_kerja']) ?></p>
-                        <?php endif; ?>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <?= $this->include('email/components/modal_edit') ?>
@@ -150,6 +173,20 @@
                 btn.innerHTML = originalIcon;
             }, 2000);
         });
+    }
+
+    function togglePasswordDisplay(btn, password) {
+        const text = document.getElementById('password-text');
+        const icon = btn.querySelector('i');
+        if (text.textContent === '••••••••') {
+            text.textContent = password;
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            text.textContent = '••••••••';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
     }
 
     function renderBsreStatus(status) {

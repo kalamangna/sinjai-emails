@@ -5,10 +5,10 @@
     <!-- Header & Back -->
     <div class="flex flex-col md:flex-row justify-between items-end md:items-center gap-4 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
         <div class="space-y-1">
-            <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Batch Email Update</h1>
+            <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Update Massal</h1>
             <div class="flex items-center text-[11px] text-slate-500 font-medium uppercase tracking-wider">
                 <i class="fas fa-edit mr-2 text-blue-500 opacity-50"></i>
-                Pembaruan Data Massal
+                Batch Update
             </div>
         </div>
         <a href="<?= site_url('email/batch_hub') ?>" class="inline-flex items-center px-4 py-2 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all shadow-sm no-underline group">
@@ -107,7 +107,7 @@
                 <div class="flex justify-end pt-4">
                     <button type="submit" id="update_btn" class="inline-flex items-center px-8 py-3 bg-blue-600 text-white rounded-lg font-bold text-xs uppercase tracking-wider hover:bg-blue-700 shadow-md transition-all group">
                         <i class="fas fa-sync-alt mr-2 group-hover:rotate-180 transition-transform duration-500"></i>
-                        Update Emails
+                        Update
                     </button>
                 </div>
             </form>

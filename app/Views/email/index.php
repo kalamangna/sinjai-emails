@@ -2,6 +2,21 @@
 
 <?= $this->section('content') ?>
 <div class="space-y-8">
+    <!-- Flash Messages -->
+    <?php if (session()->getFlashdata('success')): ?>
+        <div class="bg-emerald-50 border border-emerald-100 text-emerald-700 px-5 py-3 rounded-lg flex items-center shadow-sm flash-message transition-all duration-500" role="alert">
+            <i class="fas fa-check-circle mr-3 text-emerald-500"></i>
+            <span class="font-bold text-xs uppercase tracking-wider"><?= session()->getFlashdata('success') ?></span>
+        </div>
+    <?php endif; ?>
+
+    <?php if (session()->getFlashdata('error')): ?>
+        <div class="bg-rose-50 border border-rose-100 text-rose-700 px-5 py-3 rounded-lg flex items-center shadow-sm flash-message transition-all duration-500" role="alert">
+            <i class="fas fa-exclamation-circle mr-3 text-rose-500"></i>
+            <span class="font-bold text-xs uppercase tracking-wider"><?= session()->getFlashdata('error') ?></span>
+        </div>
+    <?php endif; ?>
+
     <!-- Header & Sync -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
         <div class="space-y-1">
@@ -26,7 +41,7 @@
             </div>
             <div>
                 <div class="text-2xl font-bold text-slate-900"><?= number_format($total_emails) ?></div>
-                <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total Akun</div>
+                <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total</div>
             </div>
         </div>
 
@@ -36,7 +51,7 @@
             </div>
             <div>
                 <div class="text-2xl font-bold text-slate-900"><?= number_format($active_count) ?></div>
-                <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Status Aktif</div>
+                <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Aktif</div>
             </div>
         </div>
 
@@ -46,7 +61,7 @@
             </div>
             <div>
                 <div class="text-2xl font-bold text-slate-900"><?= number_format($suspended_count) ?></div>
-                <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Ditangguhkan</div>
+                <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Suspended</div>
             </div>
         </div>
     </div>
@@ -57,7 +72,7 @@
         <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
             <div class="bg-slate-50 px-6 py-4 border-b border-slate-200">
                 <h6 class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center">
-                    <i class="fas fa-user-tag mr-2 text-blue-500"></i>Statistik Kepegawaian
+                    <i class="fas fa-user-tag mr-2 text-blue-500"></i>Status ASN
                 </h6>
             </div>
             <div class="p-6 flex flex-col sm:flex-row items-center gap-8">
@@ -82,7 +97,7 @@
         <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
             <div class="bg-slate-50 px-6 py-4 border-b border-slate-200">
                 <h6 class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center">
-                    <i class="fas fa-fingerprint mr-2 text-amber-500"></i>Status Sertifikat TTE
+                    <i class="fas fa-fingerprint mr-2 text-amber-500"></i>Sertifikat
                 </h6>
             </div>
             <div class="p-6 flex flex-col sm:flex-row items-center gap-8">
@@ -109,7 +124,7 @@
         <div class="bg-slate-50 px-6 py-6 border-b border-slate-200">
             <form method="GET" action="" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
                 <div class="md:col-span-5 lg:col-span-6">
-                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Pencarian Data</label>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Pencarian</label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
                             <i class="fas fa-search text-xs"></i>
@@ -119,7 +134,7 @@
                 </div>
 
                 <div class="md:col-span-4 lg:col-span-4">
-                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Status TTE</label>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Sertifikat</label>
                     <select name="bsre_status" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm font-medium transition-all">
                         <option value="">Semua Status</option>
                         <?php foreach ($bsre_status_options as $key => $label): ?>
@@ -143,7 +158,7 @@
             <table class="min-w-full divide-y divide-slate-200">
                 <thead class="bg-slate-50/50">
                     <tr>
-                        <th class="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Identitas Akun</th>
+                        <th class="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Akun</th>
                         <th class="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Unit Kerja</th>
                         <th class="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Sertifikat</th>
                         <th class="px-6 py-4 text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest w-32">Aksi</th>
@@ -218,6 +233,29 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
+        const syncButton = document.getElementById('syncButton');
+        if (syncButton) {
+            syncButton.addEventListener('click', function(e) {
+                const spinner = this.querySelector('.spinner-border');
+                const icon = this.querySelector('.fa-sync-alt');
+                const text = this.querySelector('.button-text');
+
+                spinner.classList.remove('hidden');
+                icon.classList.add('hidden');
+                text.textContent = 'Syncing...';
+                this.classList.add('opacity-75', 'pointer-events-none');
+            });
+        }
+
+        const flashMessages = document.querySelectorAll('.flash-message');
+        flashMessages.forEach(msg => {
+            setTimeout(() => {
+                msg.style.opacity = '0';
+                msg.style.transform = 'translateY(-10px)';
+                setTimeout(() => msg.remove(), 500);
+            }, 3000);
+        });
+
         const commonOptions = {
             chart: {
                 type: 'donut',

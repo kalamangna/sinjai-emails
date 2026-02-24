@@ -3,7 +3,7 @@
 <?= $this->section('content') ?>
 <div class="space-y-8">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h2 class="text-2xl font-bold text-slate-900 tracking-tight">Log Pendampingan Teknis</h2>
+        <h2 class="text-2xl font-bold text-slate-900 tracking-tight">Log Layanan</h2>
         <div class="flex flex-wrap gap-2">
             <a href="<?= site_url('assistance/export_pdf') . '?' . http_build_query(['category' => $filterCategory, 'month' => $filterMonth, 'year' => $filterYear]) ?>" class="inline-flex items-center justify-center px-3 py-2 bg-rose-600 border border-transparent rounded-lg font-bold text-[10px] text-white uppercase tracking-wider hover:bg-rose-700 active:bg-rose-800 transition-all shadow-sm no-underline">
                 <i class="fas fa-file-pdf mr-1.5"></i> PDF

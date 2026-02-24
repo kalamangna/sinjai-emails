@@ -132,10 +132,10 @@
 
                     <div class="flex flex-col sm:flex-row justify-between items-center gap-4 pt-6 border-t border-slate-100">
                         <a href="<?= site_url('assistance') ?>" class="w-full sm:w-auto px-6 py-2.5 bg-white border border-slate-200 text-slate-600 font-bold rounded-lg hover:bg-slate-50 hover:text-slate-900 transition-all text-xs uppercase tracking-widest no-underline flex items-center justify-center shadow-sm">
-                            <i class="fas fa-arrow-left mr-2"></i> Kembali
+                            <i class="fas fa-arrow-left mr-2"></i> Batal
                         </a>
                         <button type="submit" class="w-full sm:w-auto px-8 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-sm transition-all text-xs uppercase tracking-widest flex items-center justify-center">
-                            <i class="fas fa-save mr-2"></i> Simpan Log
+                            <i class="fas fa-save mr-2"></i> Simpan
                         </button>
                     </div>
                 </form>

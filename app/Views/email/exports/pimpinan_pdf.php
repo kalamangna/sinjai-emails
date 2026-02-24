@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title><?= esc($title ?? 'Daftar Email & TTE Pimpinan') ?></title>
+    <title><?= esc($title ?? 'Daftar Email & Sertifikat Elektronik Pimpinan') ?></title>
     <style>
         @page {
             margin: 10px 25px;
@@ -149,7 +149,7 @@
 <body>
     <div class="header">
         <img src="<?= $logoSrc ?>" alt="Logo" class="logo" />
-        <h1><?= esc($title ?? 'DAFTAR EMAIL & TTE PIMPINAN') ?></h1>
+        <h1><?= esc($title ?? 'DAFTAR EMAIL & SERTIFIKAT ELEKTRONIK PIMPINAN') ?></h1>
         <h2><?= esc($subtitle ?? 'PEMERINTAH KABUPATEN SINJAI') ?></h2>
         <p class="update-date">UPDATE PER: <?= strtoupper(esc($current_date)) ?></p>
     </div>
@@ -158,10 +158,10 @@
         <thead>
             <tr>
                 <th>No.</th>
-                <th>Nama / Email</th>
+                <th>Akun</th>
                 <th>Jabatan</th>
                 <?= ($showUnitKerjaColumn ? '<th>Unit Kerja</th>' : '') ?>
-                <th>Status TTE</th>
+                <th>Sertifikat</th>
             </tr>
         </thead>
         <tbody>
@@ -221,7 +221,7 @@
     </table>
 
     <div class="tte-description">
-        <p><strong>Keterangan Status TTE</strong></p>
+        <p><strong>Keterangan Sertifikat Elektronik</strong></p>
         <ul>
             <li><strong style="color: #198754;">ISSUE</strong> : Sertifikat Aktif / Siap TTE</li>
             <li><strong style="color: #dc3545;">EXPIRED</strong> : Masa Berlaku Habis</li>

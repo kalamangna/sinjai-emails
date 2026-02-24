@@ -4,8 +4,8 @@
 <div class="space-y-8">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div class="space-y-1">
-            <h2 class="text-2xl font-bold text-slate-900 tracking-tight">Website Desa & Kelurahan</h2>
-            <p class="text-slate-500 text-xs font-medium uppercase tracking-wider">Pemantauan keaktifan website desa dan kelurahan</p>
+            <h2 class="text-2xl font-bold text-slate-900 tracking-tight">Website Desa</h2>
+            <p class="text-slate-500 text-xs font-medium uppercase tracking-wider">Status Website Desa & Kelurahan</p>
         </div>
         <div class="flex flex-wrap gap-2">
             <a href="<?= site_url('web_desa_kelurahan/export_pdf') ?>" class="inline-flex items-center justify-center px-3 py-2 bg-rose-600 border border-transparent rounded-lg font-bold text-[10px] text-white uppercase tracking-wider hover:bg-rose-700 active:bg-rose-800 transition-all shadow-sm no-underline">
@@ -22,7 +22,7 @@
         <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
             <div class="bg-slate-50 px-6 py-4 border-b border-slate-200">
                 <h6 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex items-center">
-                    <i class="fas fa-chart-pie mr-2 text-blue-500"></i>Status Keaktifan
+                    <i class="fas fa-chart-pie mr-2 text-blue-500"></i>Status
                 </h6>
             </div>
             <div class="p-6 flex items-center justify-around gap-6">
@@ -43,7 +43,7 @@
         <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
             <div class="bg-slate-50 px-6 py-4 border-b border-slate-200">
                 <h6 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex items-center">
-                    <i class="fas fa-microchip mr-2 text-indigo-500"></i>Distribusi Platform
+                    <i class="fas fa-microchip mr-2 text-indigo-500"></i>Platform
                 </h6>
             </div>
             <div class="p-6 flex items-center justify-around gap-6">
@@ -130,6 +130,7 @@
                         <th class="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Domain & Platform</th>
                         <th class="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Berakhir</th>
                         <th class="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Status</th>
+                        <th class="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Keterangan</th>
                         <th class="px-6 py-4 text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest w-20">Aksi</th>
                     </tr>
                 </thead>
@@ -164,6 +165,11 @@
                                 $stCls = ($status === 'AKTIF') ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-rose-50 text-rose-700 border-rose-100';
                                 ?>
                                 <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[9px] font-bold uppercase tracking-wider border <?= $stCls ?>"><?= $status ?></span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="text-[10px] font-medium text-slate-500 line-clamp-2 max-w-[200px]" title="<?= esc($web['keterangan']) ?>">
+                                    <?= esc($web['keterangan']) ?: '-' ?>
+                                </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-center">
                                 <a href="<?= site_url('web_desa_kelurahan/edit/' . $web['id']) ?>" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-white border border-slate-200 text-slate-400 hover:text-blue-600 hover:border-blue-300 transition-all no-underline">

@@ -190,19 +190,19 @@ class EmailService
             throw new Exception('Email tidak ditemukan di database lokal.');
         }
 
-        $current_unit_kerja = null;
+        $unit_kerja = null;
         if (!empty($email_detail['unit_kerja_id'])) {
-            $current_unit_kerja = $this->unitKerjaModel->find($email_detail['unit_kerja_id']);
+            $unit_kerja = $this->unitKerjaModel->find($email_detail['unit_kerja_id']);
         }
 
         $parent_unit_kerja = null;
-        if (!empty($current_unit_kerja['parent_id'])) {
-            $parent_unit_kerja = $this->unitKerjaModel->find($current_unit_kerja['parent_id']);
+        if (!empty($unit_kerja['parent_id'])) {
+            $parent_unit_kerja = $this->unitKerjaModel->find($unit_kerja['parent_id']);
         }
 
         return [
             'email' => $email_detail,
-            'current_unit_kerja' => $current_unit_kerja,
+            'unit_kerja' => $unit_kerja,
             'parent_unit_kerja' => $parent_unit_kerja,
             'unit_kerja_options' => $this->unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->findAll(),
             'status_asn_options' => $this->statusAsnModel->orderBy('nama_status_asn', 'ASC')->findAll(),

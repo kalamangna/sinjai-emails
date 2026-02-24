@@ -5,7 +5,7 @@
         <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
         <div class="inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full border border-slate-200">
             <div class="bg-slate-50 px-6 py-4 border-b border-slate-200 flex justify-between items-center">
-                <h3 class="text-sm font-bold text-slate-900 uppercase tracking-tight" id="modal-title">Perbarui Identitas Akun</h3>
+                <h3 class="text-sm font-bold text-slate-900 uppercase tracking-tight" id="modal-title">Update Akun</h3>
                 <button type="button" onclick="closeEditModal()" class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-slate-400 hover:text-slate-900 hover:bg-slate-100 transition-colors focus:outline-none" aria-label="Tutup modal">
                     <i class="fas fa-times"></i>
                 </button>
@@ -61,7 +61,7 @@
                             <input type="text" name="pendidikan" id="pendidikan" value="<?= esc($email['pendidikan']) ?>" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm font-medium transition-all">
                         </div>
                         <div>
-                            <label for="status_asn" class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Status Kepegawaian</label>
+                            <label for="status_asn" class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Status ASN</label>
                             <select name="status_asn" id="status_asn" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm font-medium transition-all">
                                 <option value="">-- PILIH STATUS --</option>
                                 <?php foreach ($status_asn_options as $option): ?>
@@ -83,7 +83,7 @@
                             </select>
                         </div>
                         <div>
-                            <label for="unit_kerja_id" class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Unit Kerja Utama</label>
+                            <label for="unit_kerja_id" class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Unit Kerja</label>
                             <select id="unit_kerja_id" name="unit_kerja_id" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm font-medium transition-all uppercase">
                                 <option value="">-- PILIH UNIT KERJA --</option>
                                 <?php foreach ($unit_kerja_options as $unit): ?>
@@ -92,14 +92,14 @@
                             </select>
                         </div>
                         <div>
-                            <label for="pimpinan" class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Status Pimpinan OPD</label>
+                            <label for="pimpinan" class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Pimpinan OPD</label>
                             <select name="pimpinan" id="pimpinan" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm font-medium transition-all">
                                 <option value="0" <?= ($email['pimpinan'] ?? 0) == 0 ? 'selected' : '' ?>>Tidak</option>
                                 <option value="1" <?= ($email['pimpinan'] ?? 0) == 1 ? 'selected' : '' ?>>Ya (Pimpinan)</option>
                             </select>
                         </div>
                         <div>
-                            <label for="pimpinan_desa" class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Status Pimpinan Desa</label>
+                            <label for="pimpinan_desa" class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Pimpinan Desa</label>
                             <select name="pimpinan_desa" id="pimpinan_desa" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm font-medium transition-all">
                                 <option value="0" <?= ($email['pimpinan_desa'] ?? 0) == 0 ? 'selected' : '' ?>>Tidak</option>
                                 <option value="1" <?= ($email['pimpinan_desa'] ?? 0) == 1 ? 'selected' : '' ?>>Ya (Kepala Desa)</option>
@@ -112,7 +112,7 @@
                         Batal
                     </button>
                     <button type="submit" class="inline-flex items-center justify-center px-6 py-2 bg-blue-600 border border-transparent rounded-lg font-bold text-xs text-white uppercase tracking-wider hover:bg-blue-700 active:bg-blue-800 transition-all shadow-md focus:outline-none">
-                        Simpan Perubahan
+                        Simpan
                     </button>
                 </div>
             </form>

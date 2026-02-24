@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Daftar Akun Email & TTE - <?= esc($unit_kerja['nama_unit_kerja']) ?></title>
+    <title>Daftar Akun Email & Sertifikat Elektronik - <?= esc($unit_kerja['nama_unit_kerja']) ?></title>
     <style>
         @page {
             margin: 10px 25px;
@@ -145,7 +145,7 @@
 <body>
     <div class="header">
         <img src="<?= $logoSrc ?>" alt="Logo" class="logo" />
-        <h1>DAFTAR AKUN EMAIL & TTE</h1>
+        <h1>DAFTAR AKUN EMAIL & SERTIFIKAT ELEKTRONIK</h1>
         <h2><?= esc($unit_kerja['nama_unit_kerja']) ?></h2>
         <p style="text-align: center; font-size: 10px; color: #666; margin-top: -10px;">UPDATE PER: <?= strtoupper(esc($current_date)) ?></p>
         <p style="text-align: center; font-size: 11px; color: #cc0000; font-weight: bold; margin-top: 15px; margin-bottom: 20px; line-height: 1.4;">
@@ -162,7 +162,7 @@
                 <th>Nama</th>
                 <th>Email</th>
                 <th>Password</th>
-                <th>Status TTE</th>
+                <th>Sertifikat</th>
             </tr>
         </thead>
         <tbody>
@@ -209,7 +209,7 @@
     </table>
 
     <div class="tte-description">
-        <p><strong>Keterangan Status TTE</strong></p>
+        <p><strong>Keterangan Sertifikat Elektronik</strong></p>
         <ul>
             <li><strong style="color: #198754;">ISSUE</strong> : Sertifikat Aktif / Siap TTE</li>
             <li><strong style="color: #dc3545;">EXPIRED</strong> : Masa Berlaku Habis</li>

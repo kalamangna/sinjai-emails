@@ -6,7 +6,7 @@
         </div>
         <div>
             <span class="block text-lg font-bold tracking-tight text-slate-900 leading-none">SINJAI<span class="text-blue-600">EMAILS</span></span>
-            <span class="text-[9px] font-semibold text-slate-500 uppercase tracking-wider block">Identitas Digital</span>
+            <span class="text-[9px] font-semibold text-slate-500 uppercase tracking-wider block">Portal Identitas</span>
         </div>
     </a>
 </div>
@@ -28,7 +28,7 @@
             </button>
             <div class="absolute right-0 hidden group-hover:block w-72 pt-2 z-50">
                 <div class="bg-white border border-slate-200 rounded-xl shadow-xl py-2 max-h-[60vh] flex flex-col">
-                    <div class="px-4 py-2 text-[9px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-100 mb-1">Perangkat Daerah</div>
+                    <div class="px-4 py-2 text-[9px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-100 mb-1">Unit Kerja</div>
                     <div class="overflow-y-auto custom-scrollbar flex-grow">
                         <?php if (!empty($unit_kerja_nav)): ?>
                             <?php foreach ($unit_kerja_nav as $unit): ?>
@@ -74,7 +74,7 @@
         <!-- Batch -->
         <div class="relative group">
             <button class="flex items-center px-3 py-2 text-xs font-semibold text-slate-600 hover:text-blue-600 hover:bg-slate-50 rounded-lg transition-all">
-                Layanan Batch
+                Batch
                 <i class="fas fa-chevron-down ml-1.5 text-[9px] text-slate-400 group-hover:rotate-180 transition-transform"></i>
             </button>
             <div class="absolute right-0 hidden group-hover:block w-56 pt-2 z-50">

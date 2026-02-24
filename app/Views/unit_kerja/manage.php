@@ -5,11 +5,11 @@
     <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
         <div class="bg-slate-50 px-6 py-4 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <h5 class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center">
-                <i class="fas fa-building mr-2 text-blue-500 opacity-50"></i>Kelola Unit Kerja
+                <i class="fas fa-building mr-2 text-blue-500 opacity-50"></i>Unit Kerja
             </h5>
             <div class="flex flex-wrap gap-2">
                 <a href="<?= site_url('unit_kerja/batch_create') ?>" class="inline-flex items-center justify-center px-3 py-2 bg-emerald-600 border border-transparent rounded-lg font-bold text-[10px] text-white uppercase tracking-wider hover:bg-emerald-700 active:bg-emerald-800 transition-all shadow-sm no-underline">
-                    <i class="fas fa-file-csv mr-1.5"></i> Buat Massal
+                    <i class="fas fa-file-csv mr-1.5"></i> Batch
                 </a>
                 <a href="<?= site_url('unit_kerja/add') ?>" class="inline-flex items-center justify-center px-3 py-2 bg-blue-600 border border-transparent rounded-lg font-bold text-[10px] text-white uppercase tracking-wider hover:bg-blue-700 active:bg-blue-800 transition-all shadow-sm no-underline">
                     <i class="fas fa-plus mr-1.5"></i> Tambah

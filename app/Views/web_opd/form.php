@@ -55,7 +55,7 @@
                             <i class="fas fa-arrow-left mr-2"></i> Batal
                         </a>
                         <button type="submit" class="w-full sm:w-auto px-8 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-sm transition-all text-xs uppercase tracking-widest flex items-center justify-center" id="saveBtn">
-                            <i class="fas fa-save mr-2"></i> Simpan Website
+                            <i class="fas fa-save mr-2"></i> Simpan
                         </button>
                     </div>
                 </form>

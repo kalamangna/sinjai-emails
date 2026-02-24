@@ -26,13 +26,13 @@
                 </div>
                 <div class="space-y-1">
                     <h2 class="text-xl md:text-2xl font-bold text-slate-900 tracking-tight leading-none uppercase">Kepala Desa</h2>
-                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Daftar Akun Identitas Digital Pimpinan Wilayah Desa</p>
+                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Daftar Akun Pimpinan Wilayah Desa</p>
                 </div>
             </div>
             <div class="bg-slate-50 px-6 py-3 rounded-lg border border-slate-100">
                 <div class="text-center">
                     <div class="text-xl font-bold text-slate-900"><?= number_format($total_emails) ?></div>
-                    <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none">Total Akun</div>
+                    <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none">Total</div>
                 </div>
             </div>
         </div>
@@ -51,7 +51,7 @@
                 </div>
             </div>
             <div class="md:col-span-4">
-                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Status Sertifikat</label>
+                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Sertifikat</label>
                 <select name="bsre_status" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm font-medium transition-all">
                     <option value="">Semua Status</option>
                     <?php foreach ($bsre_status_options as $key => $label): ?>
@@ -76,8 +76,9 @@
             <table class="min-w-full divide-y divide-slate-200">
                 <thead class="bg-slate-50/50">
                     <tr>
-                        <th class="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Nama / Email</th>
-                        <th class="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Wilayah Desa</th>
+                        <th class="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Akun</th>
+                        <th class="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Jabatan</th>
+                        <th class="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Unit Kerja</th>
                         <th class="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Sertifikat</th>
                         <th class="px-6 py-4 text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest w-32">Aksi</th>
                     </tr>
@@ -98,8 +99,11 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">
+                                    <div class="text-[11px] font-bold text-slate-700 leading-tight line-clamp-2"><?= esc($email['jabatan']) ?: '-' ?></div>
+                                </td>
+                                <td class="px-6 py-4">
                                     <div class="text-[11px] font-bold text-slate-700 uppercase tracking-tight"><?= esc($email['unit_kerja_name']) ?></div>
-                                    <div class="text-[9px] font-medium text-slate-400 italic">Kabupaten Sinjai</div>
+                                    <div class="text-[9px] font-medium text-slate-400 italic"><?= esc(trim(str_ireplace('KANTOR', '', $email['parent_unit_kerja_name'] ?? 'Kecamatan Tidak Terdata'))) ?></div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div id="bsre-status-<?= esc($email['user']) ?>" data-email="<?= esc($email['email']) ?>">
@@ -152,35 +156,38 @@
 
 <?= $this->section('scripts') ?>
 <script>
-  function syncAllBsreStatus() {
-    const containers = document.querySelectorAll('[id^="bsre-status-"]');
-    if (!containers.length || !confirm('Sinkronkan status TTE untuk kepala desa yang tampil?')) return;
-    
-    containers.forEach((c, i) => {
-        setTimeout(() => {
-            const user = c.id.replace('bsre-status-', '');
-            const email = c.getAttribute('data-email');
-            c.innerHTML = '<i class="fas fa-spinner fa-spin text-slate-400 text-[10px]"></i>';
-            fetch('<?= site_url('bsre/sync-status') ?>', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
-                body: 'email=' + encodeURIComponent(email)
-            }).then(r => r.json()).then(d => {
-                if (d.status === 'success') {
-                    const colors = {
-                        'ISSUE': 'bg-emerald-50 text-emerald-700 border-emerald-100',
-                        'EXPIRED': 'bg-rose-50 text-rose-700 border-rose-100',
-                        'RENEW': 'bg-blue-50 text-blue-700 border-blue-100',
-                        'WAITING_FOR_VERIFICATION': 'bg-amber-50 text-amber-700 border-amber-100',
-                        'NEW': 'bg-indigo-50 text-indigo-700 border-indigo-100',
-                        'NO_CERTIFICATE': 'bg-slate-100 text-slate-600 border-slate-200',
-                    };
-                    const cls = colors[d.bsre_status] || 'bg-slate-50 text-slate-400 border-slate-100';
-                    c.innerHTML = `<span class="inline-flex items-center px-2.5 py-1 rounded-md text-[9px] font-bold uppercase tracking-wider border ${cls}">${d.bsre_status}</span>`;
-                }
-            });
-        }, i * 250);
-    });
-  }
+    function syncAllBsreStatus() {
+        const containers = document.querySelectorAll('[id^="bsre-status-"]');
+        if (!containers.length || !confirm('Sinkronkan status TTE untuk kepala desa yang tampil?')) return;
+
+        containers.forEach((c, i) => {
+            setTimeout(() => {
+                const user = c.id.replace('bsre-status-', '');
+                const email = c.getAttribute('data-email');
+                c.innerHTML = '<i class="fas fa-spinner fa-spin text-slate-400 text-[10px]"></i>';
+                fetch('<?= site_url('bsre/sync-status') ?>', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: 'email=' + encodeURIComponent(email)
+                }).then(r => r.json()).then(d => {
+                    if (d.status === 'success') {
+                        const colors = {
+                            'ISSUE': 'bg-emerald-50 text-emerald-700 border-emerald-100',
+                            'EXPIRED': 'bg-rose-50 text-rose-700 border-rose-100',
+                            'RENEW': 'bg-blue-50 text-blue-700 border-blue-100',
+                            'WAITING_FOR_VERIFICATION': 'bg-amber-50 text-amber-700 border-amber-100',
+                            'NEW': 'bg-indigo-50 text-indigo-700 border-indigo-100',
+                            'NO_CERTIFICATE': 'bg-slate-100 text-slate-600 border-slate-200',
+                        };
+                        const cls = colors[d.bsre_status] || 'bg-slate-50 text-slate-400 border-slate-100';
+                        c.innerHTML = `<span class="inline-flex items-center px-2.5 py-1 rounded-md text-[9px] font-bold uppercase tracking-wider border ${cls}">${d.bsre_status}</span>`;
+                    }
+                });
+            }, i * 250);
+        });
+    }
 </script>
 <?= $this->endSection() ?>
