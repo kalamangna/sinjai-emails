@@ -1,43 +1,30 @@
-# Sinjai Emails - Portal Manajemen Identitas Digital
+# Sinjai Emails
 
-Portal terpusat untuk pengelolaan akun email institusi (@sinjaikab.go.id), pemantauan website, dan log pendampingan teknis Pemerintah Kabupaten Sinjai.
+Portal terintegrasi manajemen email institusi, sertifikat digital, dan monitoring website Pemerintah Kabupaten Sinjai.
 
-## Fitur Utama
-- **Manajemen Email:** Provisioning akun via cPanel API, sinkronisasi kuota, dan pemrosesan massal (batch).
-- **Integrasi BSrE:** Pemantauan otomatis status sertifikat digital (TTE).
-- **Direktori Institusi:** Database terstruktur unit kerja, pimpinan, dan status kepegawaian.
-- **Pemantauan Website:** Pelacakan ketersediaan dan masa berlaku domain website OPD & Desa.
-- **Log Pendampingan:** Dokumentasi bantuan teknis IT antar instansi.
-- **Pelaporan:** Ekspor data ke format PDF dan CSV standar institusi.
+## Modul Utama
+- **Email:** Manajemen akun via cPanel API & Monitoring TTE (BSrE).
+- **Web:** Monitoring status & masa berlaku domain OPD/Desa.
+- **Logs:** Dokumentasi bantuan teknis dan pendampingan IT.
+- **Auth:** Akses berbasis peran (Super Admin & Admin).
 
-## Tumpukan Teknologi
-- **Backend:** PHP 8.1+ (CodeIgniter 4)
-- **Database:** MySQL / MariaDB
-- **Frontend:** Tailwind CSS, ApexCharts.js
-- **Integrasi:** cPanel UAPI, BSrE API V2
+## Tech Stack
+- PHP 8.1 (CodeIgniter 4)
+- Tailwind CSS
+- MySQL
+- cPanel & BSrE API
 
-## Instalasi Cepat
+## Setup Cepat
+1. `composer install`
+2. `npm install`
+3. Configure `.env`
+4. `php spark migrate && php spark db:seed UserSeeder`
+5. `npm run build`
+6. `php spark serve`
 
-1. **Setup Awal:**
-   ```bash
-   git clone https://github.com/kalamangna/sinjai-emails.git
-   composer install
-   npm install
-   ```
-
-2. **Konfigurasi:**
-   Salin `env` ke `.env` dan sesuaikan database serta kredensial API.
-
-3. **Migrasi & Build:**
-   ```bash
-   php spark migrate
-   npm run build
-   ```
-
-4. **Jalankan:**
-   ```bash
-   php spark serve
-   ```
+## Akun Default
+- **Super Admin:** `kalamangna` / `Syazani`
+- **Admin (View):** `aptika` / `Kominfo101`
 
 ---
-© 2026 Pemerintah Kabupaten Sinjai. Dikembangkan oleh Diskominfo-SP Sinjai.
+© 2026 Diskominfo-SP Sinjai.
