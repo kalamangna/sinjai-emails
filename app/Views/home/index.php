@@ -7,10 +7,9 @@
             Portal Manajemen<br>
             <span class="text-blue-600">Identitas Digital</span>
         </h1>
-        <p class="max-w-2xl mx-auto text-sm md:text-base text-slate-500 leading-relaxed font-medium">
-            Sistem pengelolaan terpadu untuk akun surat elektronik, pemantauan website daerah, dan dokumentasi layanan SPBE Pemerintah Kabupaten Sinjai.
-        </p>
-    </div>
+                    <p class="max-w-2xl mx-auto text-sm md:text-base text-slate-500 leading-relaxed font-medium">
+                    Portal terpadu manajemen akun email, monitoring website, dan log layanan teknologi informasi Pemerintah Kabupaten Sinjai.
+                </p>    </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
         <!-- Dashboard Utama (Email) -->
@@ -21,10 +20,10 @@
                 </div>
                 <div class="space-y-2">
                     <h3 class="text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors">Manajemen Email</h3>
-                    <p class="text-slate-500 text-[13px] leading-relaxed font-medium">Dasbor utama pengelolaan akun email Perangkat Daerah dan status sertifikat elektronik.</p>
+                    <p class="text-slate-500 text-[13px] leading-relaxed font-medium">Kelola akun email dan pantau status sertifikat digital.</p>
                 </div>
                 <div class="pt-2 flex items-center text-[11px] font-bold text-blue-600 uppercase tracking-wider">
-                    Buka Dasbor <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                    Lihat Detail <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
                 </div>
             </div>
         </a>
@@ -36,11 +35,11 @@
                     <i class="fas fa-building text-slate-600 text-xl group-hover:text-white transition-colors"></i>
                 </div>
                 <div class="space-y-2">
-                    <h3 class="text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors">Unit Kerja</h3>
-                    <p class="text-slate-500 text-[13px] leading-relaxed font-medium">Navigasi data email berdasarkan struktur Organisasi Perangkat Daerah dan Kecamatan.</p>
+                    <h3 class="text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors">Daftar Unit Kerja</h3>
+                    <p class="text-slate-500 text-[13px] leading-relaxed font-medium">Tinjau data email berdasarkan struktur organisasi.</p>
                 </div>
                 <div class="pt-2 flex items-center text-[11px] font-bold text-blue-600 uppercase tracking-wider">
-                    Pilih Unit <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                    Lihat Daftar <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
                 </div>
             </div>
         </a>
@@ -53,10 +52,10 @@
                 </div>
                 <div class="space-y-2">
                     <h3 class="text-lg font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">Data Pimpinan</h3>
-                    <p class="text-slate-500 text-[13px] leading-relaxed font-medium">Akses cepat data email Pejabat Eselon, Kepala OPD, serta Kepala Desa.</p>
+                    <p class="text-slate-500 text-[13px] leading-relaxed font-medium">Akses data email pejabat dan kepala desa.</p>
                 </div>
                 <div class="pt-2 flex items-center text-[11px] font-bold text-emerald-600 uppercase tracking-wider">
-                    Lihat Pejabat <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                    Lihat Daftar <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
                 </div>
             </div>
         </a>
@@ -69,7 +68,7 @@
                 </div>
                 <div class="space-y-2">
                     <h3 class="text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors">Layanan Batch</h3>
-                    <p class="text-slate-500 text-[13px] leading-relaxed font-medium">Pembuatan akun massal, pembaruan data, dan penyusunan dokumen PK PPPK.</p>
+                    <p class="text-slate-500 text-[13px] leading-relaxed font-medium">Lakukan pembuatan, pembaruan akun, dan PK secara massal.</p>
                 </div>
                 <div class="pt-2 flex items-center text-[11px] font-bold text-blue-600 uppercase tracking-wider">
                     Mulai Proses <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
@@ -85,10 +84,10 @@
                 </div>
                 <div class="space-y-2">
                     <h3 class="text-lg font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">Monitoring Website</h3>
-                    <p class="text-slate-500 text-[13px] leading-relaxed font-medium">Pantau keaktifan domain, platform, dan masa berlaku website OPD serta Desa.</p>
+                    <p class="text-slate-500 text-[13px] leading-relaxed font-medium">Pantau status domain dan masa berlaku website daerah.</p>
                 </div>
                 <div class="pt-2 flex items-center text-[11px] font-bold text-indigo-600 uppercase tracking-wider">
-                    Pantau Situs <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                    Lihat Daftar <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
                 </div>
             </div>
         </a>
@@ -100,11 +99,11 @@
                     <i class="fas fa-hands-helping text-amber-600 text-xl group-hover:text-white transition-colors"></i>
                 </div>
                 <div class="space-y-2">
-                    <h3 class="text-lg font-bold text-slate-900 group-hover:text-amber-600 transition-colors">Log Pendampingan</h3>
-                    <p class="text-slate-500 text-[13px] leading-relaxed font-medium">Log kegiatan fasilitasi layanan SPBE dan dukungan teknis bagi pengguna.</p>
+                    <h3 class="text-lg font-bold text-slate-900 group-hover:text-amber-600 transition-colors">Log Layanan TI</h3>
+                    <p class="text-slate-500 text-[13px] leading-relaxed font-medium">Dokumentasi layanan fasilitasi dan dukungan teknis IT.</p>
                 </div>
                 <div class="pt-2 flex items-center text-[11px] font-bold text-amber-600 uppercase tracking-wider">
-                    Buka Log <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                    Lihat Detail <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
                 </div>
             </div>
         </a>
