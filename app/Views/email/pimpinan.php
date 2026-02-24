@@ -26,7 +26,7 @@
                 </div>
                 <div class="space-y-1">
                     <h2 class="text-xl md:text-2xl font-bold text-slate-900 tracking-tight leading-none uppercase">Pimpinan OPD</h2>
-                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Daftar Akun Pimpinan Perangkat Daerah</p>
+                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Data email Kepala Perangkat Daerah, Sekretaris, dan Pejabat Struktural.</p>
                 </div>
             </div>
             <div class="bg-slate-50 px-6 py-3 rounded-lg border border-slate-100">
@@ -50,24 +50,7 @@
                     <input type="text" name="search" value="<?= esc($search ?? '') ?>" class="block w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm font-medium transition-all" placeholder="Nama, Email, NIP...">
                 </div>
             </div>
-            <div class="md:col-span-4">
-                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Sertifikat</label>
-                <select name="bsre_status" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm font-medium transition-all">
-                    <option value="">Semua Status</option>
-                    <?php foreach ($bsre_status_options as $key => $label): ?>
-                        <option value="<?= esc($key) ?>" <?= ($bsre_status === $key) ? 'selected' : '' ?>><?= esc($label) ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-            <div class="md:col-span-4">
-                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Sertifikat</label>
-                <select name="bsre_status" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm font-medium transition-all">
-                    <option value="">Semua Status</option>
-                    <?php foreach ($bsre_status_options as $key => $label): ?>
-                        <option value="<?= esc($key) ?>" <?= ($bsre_status === $key) ? 'selected' : '' ?>><?= esc($label) ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
+
             <div class="md:col-span-3 flex gap-2">
                 <button type="submit" class="flex-1 inline-flex items-center justify-center px-4 py-2 bg-slate-800 border border-transparent rounded-lg font-bold text-[11px] text-white uppercase tracking-wider hover:bg-slate-900 active:bg-slate-950 transition-all shadow-sm focus:outline-none">
                     <i class="fas fa-filter mr-2"></i> Filter
