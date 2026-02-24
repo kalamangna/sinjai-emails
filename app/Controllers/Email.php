@@ -78,6 +78,7 @@ class Email extends BaseController
             
             $lastSync = $this->appSettingModel->where('key', 'last_sync_time')->first();
 
+            $data['title'] = 'Data Email';
             $data['search'] = $search;
             $data['bsre_status'] = $bsre_status;
             $data['per_page'] = $perPage;
@@ -374,8 +375,7 @@ class Email extends BaseController
             $search = $this->request->getGet('search');
             $bsre_status = $this->request->getGet('bsre_status');
 
-            $emailBuilder = $this->emailModel
-                ->where('pimpinan', 1);
+            $emailBuilder = $this->emailModel->getPimpinanBuilder();
 
             if ($search) {
                 $emailBuilder->groupStart()
@@ -400,6 +400,7 @@ class Email extends BaseController
             $total_emails = $emailBuilder->countAllResults(false);
 
             $emails = $emailBuilder
+                ->allowCallbacks(false)
                 ->orderBy('emails.eselon_id', 'ASC')
                 ->orderBy('COALESCE(parent_unit_kerja.nama_unit_kerja, unit_kerja.nama_unit_kerja)', 'ASC', false)
                 ->orderBy('unit_kerja.parent_id IS NOT NULL', 'ASC', false)
@@ -424,7 +425,7 @@ class Email extends BaseController
             ];
 
             $data = [
-                'title' => 'Daftar Email Pimpinan',
+                'title' => 'Pimpinan OPD',
                 'emails' => $emails,
                 'total_emails' => $total_emails,
                 'pagination' => $pager,
@@ -450,9 +451,7 @@ class Email extends BaseController
             $search = $this->request->getGet('search');
             $bsre_status = $this->request->getGet('bsre_status');
 
-            $emailBuilder = $this->emailModel
-                ->where('pimpinan_desa', 1)
-                ->where('unit_kerja.nama_unit_kerja NOT LIKE', '%Kelurahan%');
+            $emailBuilder = $this->emailModel->getPimpinanDesaBuilder();
 
             if ($search) {
                 $emailBuilder->groupStart()
@@ -477,6 +476,7 @@ class Email extends BaseController
             $total_emails = $emailBuilder->countAllResults(false);
 
             $emails = $emailBuilder
+                ->allowCallbacks(false)
                 ->orderBy('emails.eselon_id', 'ASC')
                 ->orderBy('COALESCE(parent_unit_kerja.nama_unit_kerja, unit_kerja.nama_unit_kerja)', 'ASC', false)
                 ->orderBy('unit_kerja.parent_id IS NOT NULL', 'ASC', false)
@@ -501,7 +501,7 @@ class Email extends BaseController
             ];
 
             $data = [
-                'title' => 'Daftar Email Pimpinan Desa',
+                'title' => 'Kepala Desa',
                 'emails' => $emails,
                 'total_emails' => $total_emails,
                 'pagination' => $pager,

@@ -26,7 +26,7 @@
                 </div>
                 <div class="space-y-1">
                     <h2 class="text-xl md:text-2xl font-bold text-slate-900 tracking-tight leading-none uppercase">Kepala Desa</h2>
-                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Data email Kepala Desa se-Kabupaten Sinjai.</p>
+                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Daftar Akun Pimpinan Wilayah Desa</p>
                 </div>
             </div>
             <div class="bg-slate-50 px-6 py-3 rounded-lg border border-slate-100">
@@ -49,6 +49,15 @@
                     </span>
                     <input type="text" name="search" value="<?= esc($search ?? '') ?>" class="block w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm font-medium transition-all" placeholder="Nama, Desa, NIP...">
                 </div>
+            </div>
+            <div class="md:col-span-4">
+                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Sertifikat</label>
+                <select name="bsre_status" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm font-medium transition-all">
+                    <option value="">Semua Status</option>
+                    <?php foreach ($bsre_status_options as $key => $label): ?>
+                        <option value="<?= esc($key) ?>" <?= ($bsre_status === $key) ? 'selected' : '' ?>><?= esc($label) ?></option>
+                    <?php endforeach; ?>
+                </select>
             </div>
             <div class="md:col-span-4">
                 <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Sertifikat</label>

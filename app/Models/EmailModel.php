@@ -57,6 +57,27 @@ class EmailModel extends Model
         return $data;
     }
 
+    public function getPimpinanDesaBuilder()
+    {
+        return $this->select('emails.*, unit_kerja.nama_unit_kerja as unit_kerja_name, parent_unit_kerja.nama_unit_kerja as parent_unit_kerja_name, status_asn.nama_status_asn as status_asn, eselon.nama_eselon as eselon_name')
+            ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
+            ->join('unit_kerja as parent_unit_kerja', 'parent_unit_kerja.id = unit_kerja.parent_id', 'left')
+            ->join('status_asn', 'status_asn.id = emails.status_asn_id', 'left')
+            ->join('eselon', 'eselon.id = emails.eselon_id', 'left')
+            ->where('pimpinan_desa', 1)
+            ->where('unit_kerja.nama_unit_kerja NOT LIKE', '%Kelurahan%');
+    }
+
+    public function getPimpinanBuilder()
+    {
+        return $this->select('emails.*, unit_kerja.nama_unit_kerja as unit_kerja_name, parent_unit_kerja.nama_unit_kerja as parent_unit_kerja_name, status_asn.nama_status_asn as status_asn, eselon.nama_eselon as eselon_name')
+            ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
+            ->join('unit_kerja as parent_unit_kerja', 'parent_unit_kerja.id = unit_kerja.parent_id', 'left')
+            ->join('status_asn', 'status_asn.id = emails.status_asn_id', 'left')
+            ->join('eselon', 'eselon.id = emails.eselon_id', 'left')
+            ->where('pimpinan', 1);
+    }
+
     public function email_exists($email)
     {
         return $this->where('email', $email)->countAllResults() > 0;

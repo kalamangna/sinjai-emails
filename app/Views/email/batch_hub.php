@@ -6,7 +6,7 @@
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div class="space-y-1">
             <h2 class="text-2xl font-bold text-slate-900 tracking-tight uppercase">Layanan Batch</h2>
-            <p class="text-slate-500 text-xs font-medium uppercase tracking-wider">Lakukan pembuatan, pembaruan akun, dan pembaruan data PK massal.</p>
+            <p class="text-slate-500 text-xs font-medium uppercase tracking-wider">Lakukan pembuatan, pembaruan akun, dan PK secara massal.</p>
         </div>
         <a href="<?= site_url('/') ?>" class="inline-flex items-center justify-center px-4 py-2 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all shadow-sm no-underline group">
             <i class="fas fa-arrow-left mr-2 group-hover:-translate-x-1 transition-transform"></i> Kembali

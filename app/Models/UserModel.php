@@ -12,10 +12,10 @@ class UserModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['user_email', 'se_status'];
+    protected $allowedFields    = ['username', 'user_email', 'password', 'role', 'se_status'];
 
     // Dates
-    protected $useTimestamps = false;
+    protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
@@ -29,12 +29,17 @@ class UserModel extends Model
 
     // Callbacks
     protected $allowCallbacks = true;
-    protected $beforeInsert   = [];
-    protected $afterInsert    = [];
-    protected $beforeUpdate   = [];
-    protected $afterUpdate    = [];
-    protected $beforeFind     = [];
-    protected $afterFind      = [];
-    protected $beforeDelete   = [];
-    protected $afterDelete    = [];
+    protected $beforeInsert   = ['hashPassword'];
+    protected $beforeUpdate   = ['hashPassword'];
+
+    protected function hashPassword(array $data)
+    {
+        if (! isset($data['data']['password'])) {
+            return $data;
+        }
+
+        $data['data']['password'] = password_hash($data['data']['password'], PASSWORD_DEFAULT);
+
+        return $data;
+    }
 }

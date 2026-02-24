@@ -50,7 +50,7 @@ class EmailExportService
         set_time_limit(0);
         ini_set('memory_limit', '-1');
 
-        $builder = $this->emailModel->where('pimpinan', 1);
+        $builder = $this->emailModel->getPimpinanBuilder();
         if ($search) {
             $builder->groupStart()
                 ->like('email', $search)
@@ -72,6 +72,7 @@ class EmailExportService
         }
 
         $emails = $builder
+            ->allowCallbacks(false)
             ->orderBy('emails.eselon_id', 'ASC')
             ->orderBy('COALESCE(parent_unit_kerja.nama_unit_kerja, unit_kerja.nama_unit_kerja)', 'ASC', false)
             ->orderBy('unit_kerja.parent_id IS NOT NULL', 'ASC', false)
@@ -103,9 +104,7 @@ class EmailExportService
         set_time_limit(0);
         ini_set('memory_limit', '-1');
 
-        $builder = $this->emailModel
-            ->where('pimpinan_desa', 1)
-            ->where('unit_kerja.nama_unit_kerja NOT LIKE', '%Kelurahan%');
+        $builder = $this->emailModel->getPimpinanDesaBuilder();
         if ($search) {
             $builder->groupStart()
                 ->like('email', $search)
@@ -127,6 +126,7 @@ class EmailExportService
         }
 
         $emails = $builder
+            ->allowCallbacks(false)
             ->orderBy('emails.eselon_id', 'ASC')
             ->orderBy('COALESCE(parent_unit_kerja.nama_unit_kerja, unit_kerja.nama_unit_kerja)', 'ASC', false)
             ->orderBy('unit_kerja.parent_id IS NOT NULL', 'ASC', false)
