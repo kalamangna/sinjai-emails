@@ -4,8 +4,8 @@
 <div class="space-y-8">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div class="space-y-1">
-            <h2 class="text-2xl font-bold text-slate-900 tracking-tight">Perangkat Daerah</h2>
-            <p class="text-slate-500 text-xs font-medium uppercase tracking-wider">Navigasi email berdasarkan struktur unit kerja</p>
+            <h2 class="text-2xl font-bold text-slate-900 tracking-tight">Daftar Unit Kerja</h2>
+            <p class="text-slate-500 text-xs font-medium uppercase tracking-wider">Tinjau data email berdasarkan struktur organisasi.</p>
         </div>
         <a href="<?= site_url('/') ?>" class="inline-flex items-center px-4 py-2 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all shadow-sm no-underline group">
             <i class="fas fa-arrow-left mr-2 group-hover:-translate-x-1 transition-transform"></i> Kembali

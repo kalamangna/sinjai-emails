@@ -5,8 +5,8 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div class="space-y-1">
-            <h2 class="text-2xl font-bold text-slate-900 tracking-tight uppercase">Pimpinan</h2>
-            <p class="text-slate-500 text-xs font-medium uppercase tracking-wider">Akses cepat data email pimpinan daerah</p>
+            <h2 class="text-2xl font-bold text-slate-900 tracking-tight uppercase">Data Pimpinan</h2>
+            <p class="text-slate-500 text-xs font-medium uppercase tracking-wider">Akses data email pejabat dan kepala desa.</p>
         </div>
         <a href="<?= site_url('/') ?>" class="inline-flex items-center justify-center px-4 py-2 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all shadow-sm no-underline group">
             <i class="fas fa-arrow-left mr-2 group-hover:-translate-x-1 transition-transform"></i> Kembali
@@ -23,10 +23,10 @@
                 </div>
                 <div class="space-y-3">
                     <h3 class="text-xl font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">Pimpinan OPD</h3>
-                    <p class="text-slate-500 text-sm leading-relaxed font-medium">Data email Kepala Perangkat Daerah, Sekretaris, dan Pejabat Struktural Eselon II & III.</p>
+                    <p class="text-slate-500 text-sm leading-relaxed font-medium">Data email Kepala Perangkat Daerah, Sekretaris, dan Pejabat Struktural.</p>
                 </div>
                 <div class="pt-2 flex items-center justify-center sm:justify-start text-[11px] font-bold text-emerald-600 uppercase tracking-wider">
-                    Buka <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                    Lihat Daftar <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
                 </div>
             </div>
         </a>
@@ -39,10 +39,10 @@
                 </div>
                 <div class="space-y-3">
                     <h3 class="text-xl font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">Kepala Desa</h3>
-                    <p class="text-slate-500 text-sm leading-relaxed font-medium">Data email Kepala Desa di seluruh wilayah administratif Kabupaten Sinjai.</p>
+                    <p class="text-slate-500 text-sm leading-relaxed font-medium">Data email Kepala Desa se-Kabupaten Sinjai.</p>
                 </div>
                 <div class="pt-2 flex items-center justify-center sm:justify-start text-[11px] font-bold text-emerald-600 uppercase tracking-wider">
-                    Buka <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                    Lihat Daftar <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
                 </div>
             </div>
         </a>
@@ -58,7 +58,7 @@
                     <p class="text-slate-500 text-sm leading-relaxed font-medium">Data email pimpinan berdasarkan jenjang eselon.</p>
                 </div>
                 <div class="pt-2 flex items-center justify-center sm:justify-start text-[11px] font-bold text-blue-600 uppercase tracking-wider">
-                    Buka <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                    Lihat Daftar <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
                 </div>
             </div>
         </a>

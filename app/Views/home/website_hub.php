@@ -6,7 +6,7 @@
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div class="space-y-1">
             <h2 class="text-2xl font-bold text-slate-900 tracking-tight uppercase">Monitoring Website</h2>
-            <p class="text-slate-500 text-xs font-medium uppercase tracking-wider">Pemantauan ketersediaan website daerah</p>
+            <p class="text-slate-500 text-xs font-medium uppercase tracking-wider">Pantau status domain dan masa berlaku website daerah.</p>
         </div>
         <a href="<?= site_url('/') ?>" class="inline-flex items-center justify-center px-4 py-2 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all shadow-sm no-underline group">
             <i class="fas fa-arrow-left mr-2 group-hover:-translate-x-1 transition-transform"></i> Kembali
@@ -23,10 +23,10 @@
                 </div>
                 <div class="space-y-3">
                     <h3 class="text-xl font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">Website OPD</h3>
-                    <p class="text-slate-500 text-sm leading-relaxed font-medium">Monitoring ketersediaan dan masa berlaku domain website Perangkat Daerah.</p>
+                    <p class="text-slate-500 text-sm leading-relaxed font-medium">Pantau ketersediaan dan masa berlaku domain website OPD.</p>
                 </div>
                 <div class="pt-2 flex items-center justify-center sm:justify-start text-[11px] font-bold text-indigo-600 uppercase tracking-wider">
-                    Buka Monitoring <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                    Lihat Daftar <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
                 </div>
             </div>
         </a>
@@ -39,10 +39,10 @@
                 </div>
                 <div class="space-y-3">
                     <h3 class="text-xl font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">Website Desa</h3>
-                    <p class="text-slate-500 text-sm leading-relaxed font-medium">Pemantauan status keaktifan dan pengelolaan website Desa & Kelurahan.</p>
+                    <p class="text-slate-500 text-sm leading-relaxed font-medium">Pantau status keaktifan dan pengelolaan website Desa & Kelurahan.</p>
                 </div>
                 <div class="pt-2 flex items-center justify-center sm:justify-start text-[11px] font-bold text-indigo-600 uppercase tracking-wider">
-                    Buka Monitoring <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                    Lihat Daftar <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
                 </div>
             </div>
         </a>
