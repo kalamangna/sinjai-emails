@@ -68,7 +68,7 @@
                 </div>
                 <div class="space-y-2">
                     <h3 class="text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors">Layanan Batch</h3>
-                    <p class="text-slate-500 text-[13px] leading-relaxed font-medium">Lakukan pembuatan, pembaruan akun, dan PK secara massal.</p>
+                    <p class="text-slate-500 text-[13px] leading-relaxed font-medium">Lakukan pembuatan, pembaruan akun, dan pembaruan data PK massal.</p>
                 </div>
                 <div class="pt-2 flex items-center text-[11px] font-bold text-blue-600 uppercase tracking-wider">
                     Mulai Proses <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
@@ -99,8 +99,8 @@
                     <i class="fas fa-hands-helping text-amber-600 text-xl group-hover:text-white transition-colors"></i>
                 </div>
                 <div class="space-y-2">
-                    <h3 class="text-lg font-bold text-slate-900 group-hover:text-amber-600 transition-colors">Log Layanan TI</h3>
-                    <p class="text-slate-500 text-[13px] leading-relaxed font-medium">Dokumentasi layanan fasilitasi dan dukungan teknis IT.</p>
+                    <h3 class="text-lg font-bold text-slate-900 group-hover:text-amber-600 transition-colors">Log Layanan</h3>
+                    <p class="text-slate-500 text-[13px] leading-relaxed font-medium">Dokumentasi fasilitasi dan dukungan teknis.</p>
                 </div>
                 <div class="pt-2 flex items-center text-[11px] font-bold text-amber-600 uppercase tracking-wider">
                     Lihat Detail <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
