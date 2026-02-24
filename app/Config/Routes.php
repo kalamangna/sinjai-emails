@@ -29,6 +29,7 @@ $routes->group('email', function ($routes) {
     $routes->get('pimpinan', 'Email::pimpinan');
     $routes->get('pimpinan_desa', 'Email::pimpinan_desa');
     $routes->get('pimpinan_hub', 'Email::pimpinan_hub');
+    $routes->get('eselon_list', 'Email::eselon_list'); // New route for Eselon list
     $routes->get('batch_hub', 'Email::batch_hub');
     $routes->get('export_pimpinan_pdf', 'Email::export_pimpinan_pdf');
     $routes->get('export_pimpinan_desa_pdf', 'Email::export_pimpinan_desa_pdf');
@@ -92,4 +93,4 @@ $routes->post('user/check_email', 'User::checkEmailAvailability');
 $routes->post('user/check_niknip', 'User::check_niknip');
 $routes->get('bsre/check-status', 'Bsre::checkStatus');
 $routes->post('bsre/sync-status', 'Bsre::syncStatus');
-$routes->get('simpegnas/check/(:any)', 'Simpegnas::check/$1');
+

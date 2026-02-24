@@ -14,7 +14,7 @@ Portal terpusat untuk pengelolaan akun email institusi (@sinjaikab.go.id), peman
 - **Backend:** PHP 8.1+ (CodeIgniter 4)
 - **Database:** MySQL / MariaDB
 - **Frontend:** Tailwind CSS, ApexCharts.js
-- **Integrasi:** cPanel UAPI, BSrE API V2, Simpegnas API
+- **Integrasi:** cPanel UAPI, BSrE API V2
 
 ## Instalasi Cepat
 

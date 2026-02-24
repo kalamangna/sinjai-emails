@@ -49,12 +49,15 @@ class Email extends BaseController
 
     public function pimpinan_hub()
     {
-        return view('email/pimpinan_hub');
+        $eselonModel = new \App\Models\EselonModel();
+        $data['eselons'] = $eselonModel->orderBy('nama_eselon', 'ASC')->findAll();
+        return view('email/pimpinan_hub', $data);
     }
 
-    public function batch_hub()
+    public function eselon_list()
     {
-        return view('email/batch_hub');
+        $data['eselons'] = $this->eselonModel->orderBy('nama_eselon', 'ASC')->findAll();
+        return view('email/eselon_list', $data);
     }
 
     public function index()
@@ -367,11 +370,6 @@ class Email extends BaseController
             $bsre_status = $this->request->getGet('bsre_status');
 
             $emailBuilder = $this->emailModel
-                ->allowCallbacks(false)
-                ->select('emails.*, unit_kerja.nama_unit_kerja as unit_kerja_name, parent_unit_kerja.nama_unit_kerja as parent_unit_kerja_name, status_asn.nama_status_asn as status_asn')
-                ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
-                ->join('unit_kerja as parent_unit_kerja', 'parent_unit_kerja.id = unit_kerja.parent_id', 'left')
-                ->join('status_asn', 'status_asn.id = emails.status_asn_id', 'left')
                 ->where('pimpinan', 1);
 
             if ($search) {
@@ -448,11 +446,6 @@ class Email extends BaseController
             $bsre_status = $this->request->getGet('bsre_status');
 
             $emailBuilder = $this->emailModel
-                ->allowCallbacks(false)
-                ->select('emails.*, unit_kerja.nama_unit_kerja as unit_kerja_name, parent_unit_kerja.nama_unit_kerja as parent_unit_kerja_name, status_asn.nama_status_asn as status_asn')
-                ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
-                ->join('unit_kerja as parent_unit_kerja', 'parent_unit_kerja.id = unit_kerja.parent_id', 'left')
-                ->join('status_asn', 'status_asn.id = emails.status_asn_id', 'left')
                 ->where('pimpinan_desa', 1)
                 ->where('unit_kerja.nama_unit_kerja NOT LIKE', '%Kelurahan%');
 
