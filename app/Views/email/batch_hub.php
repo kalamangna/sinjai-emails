@@ -23,7 +23,7 @@
                 </div>
                 <div class="space-y-2">
                     <h3 class="text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors">Buat Akun</h3>
-                    <p class="text-slate-500 text-sm leading-relaxed font-medium">Buat banyak akun email sekaligus dengan impor data dari spreadsheet.</p>
+                    <p class="text-slate-500 text-sm leading-relaxed font-medium">Buat banyak akun email sekaligus.</p>
                 </div>
                 <div class="pt-2 flex items-center text-[11px] font-bold text-blue-600 uppercase tracking-wider">
                     Mulai <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
