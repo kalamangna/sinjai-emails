@@ -64,6 +64,11 @@
     </style>
 
     <?= $this->renderSection('styles') ?>
+    
+    <!-- Alpine.js Plugins -->
+    <script src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js" defer></script>
+    <!-- Alpine.js Core -->
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 </head>
 
 <body class="bg-gray-50 text-gray-900 antialiased">
@@ -72,8 +77,8 @@
 
     <!-- Main Wrapper -->
     <div id="main-content" class="lg:ml-64 min-h-screen flex flex-col">
-        <!-- Topbar -->
-        <?= $this->include('components/topbar') ?>
+        <!-- Header -->
+        <?= $this->include('layouts/partials/header') ?>
 
         <!-- Content Area -->
         <main class="flex-grow p-6">
@@ -120,6 +125,9 @@
 
             <?= $this->renderSection('content') ?>
         </main>
+
+        <!-- Footer -->
+        <?= $this->include('layouts/partials/footer') ?>
     </div>
 
     <!-- Scripts -->

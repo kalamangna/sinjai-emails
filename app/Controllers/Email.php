@@ -53,7 +53,7 @@ class Email extends BaseController
 
     public function index()
     {
-        helper('time');
+        helper('tanggal');
 
         try {
             $perPage = $this->request->getGet('per_page') ?? 100;
@@ -513,7 +513,7 @@ class Email extends BaseController
 
             $dompdf = $this->emailExportService->generatePimpinanPdf($search, $bsre_status);
 
-            $filename = 'Email & TTE Pimpinan - ' . format_indo_date(date('Y-m-d'), true) . '.pdf';
+            $filename = 'Email & TTE Pimpinan - ' . formatTanggal('now') . '.pdf';
             $dompdf->stream($filename, ["Attachment" => true]);
             exit();
         } catch (Exception $e) {
@@ -530,7 +530,7 @@ class Email extends BaseController
 
             $dompdf = $this->emailExportService->generatePimpinanDesaPdf($search, $bsre_status);
 
-            $filename = 'Email & TTE Pimpinan Desa - ' . format_indo_date(date('Y-m-d'), true) . '.pdf';
+            $filename = 'Email & TTE Pimpinan Desa - ' . formatTanggal('now') . '.pdf';
             $dompdf->stream($filename, ["Attachment" => true]);
             exit();
         } catch (Exception $e) {

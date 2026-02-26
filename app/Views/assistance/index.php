@@ -76,7 +76,7 @@
                         <?php foreach ($activities as $activity): ?>
                             <tr class="hover:bg-gray-50 transition-colors">
                                 <td class="px-6 py-4">
-                                    <span class="font-medium text-gray-900"><?= date('d/m/Y', strtotime($activity['tanggal_kegiatan'])) ?></span>
+                                    <span class="font-medium text-gray-900"><?= formatSingkat($activity['tanggal_kegiatan']) ?></span>
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="flex flex-col">

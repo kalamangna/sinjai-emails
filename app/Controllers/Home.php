@@ -68,7 +68,7 @@ class Home extends BaseController
             'status_asn_stats' => $status_asn_stats,
             'web_stats' => $web_stats,
             'total_assistance' => $assistanceModel->countAllResults(),
-            'total_assistance_monthly' => $assistanceModel->where('MONTH(tanggal_kegiatan)', date('m'))->where('YEAR(tanggal_kegiatan)', date('Y'))->countAllResults(),
+            'total_assistance_monthly' => $assistanceModel->where('MONTH(tanggal_kegiatan)', bulanSekarang())->where('YEAR(tanggal_kegiatan)', tahunSekarang())->countAllResults(),
             'last_sync_time' => $appSettingModel->where('key', 'last_sync_time')->first()['value'] ?? null,
             'title' => 'Dashboard',
         ];

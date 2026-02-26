@@ -289,9 +289,9 @@
 
                 $expiry_date = '-';
                 if (stripos($website['desa_kelurahan'], 'KELURAHAN') !== false) {
-                    $expiry_date = '01-02-2027';
+                    $expiry_date = formatSingkat('2027-02-01');
                 } else {
-                    $expiry_date = $website['tanggal_berakhir'] ? date('d-m-Y', strtotime($website['tanggal_berakhir'])) : '-';
+                    $expiry_date = formatSingkat($website['tanggal_berakhir']);
                 }
 
             ?>

@@ -90,6 +90,7 @@ class CpanelApi
 
     public function test_connection()
     {
+        helper('tanggal');
         try {
             $emails = $this->get_email_accounts_detailed();
 
@@ -99,14 +100,14 @@ class CpanelApi
                 'data' => [
                     'total_emails' => count($emails),
                     'api_module' => 'Email',
-                    'timestamp' => date('Y-m-d H:i:s')
+                    'timestamp' => untukDatabase('now')
                 ]
             ];
         } catch (Exception $e) {
             return [
                 'success' => false,
                 'message' => 'cPanel API connection failed: ' . $e->getMessage(),
-                'timestamp' => date('Y-m-d H:i:s')
+                'timestamp' => untukDatabase('now')
             ];
         }
     }

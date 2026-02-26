@@ -24,7 +24,7 @@ class EmailExportService
         $this->unitKerjaModel = new UnitKerjaModel();
         $this->statusAsnModel = new StatusAsnModel();
         $this->pkModel = new PkModel();
-        helper('time');
+        helper('tanggal');
     }
 
     private function getDompdf()
@@ -87,7 +87,7 @@ class EmailExportService
             'emails' => $emails,
             'showUnitKerjaColumn' => true,
             'logoSrc' => $this->getLogoSrc(),
-            'current_date' => format_indo_date(date('Y-m-d')),
+            'current_date' => formatTanggal('now'),
         ];
 
         $html = view('email/exports/pimpinan_pdf', $data);
@@ -141,7 +141,7 @@ class EmailExportService
             'emails' => $emails,
             'showUnitKerjaColumn' => true,
             'logoSrc' => $this->getLogoSrc(),
-            'current_date' => format_indo_date(date('Y-m-d')),
+            'current_date' => formatTanggal('now'),
         ];
 
         $html = view('email/exports/pimpinan_desa_pdf', $data);
@@ -198,7 +198,7 @@ class EmailExportService
             'emails' => $emails,
             'showUnitKerjaColumn' => $showUnitKerjaColumn,
             'logoSrc' => $this->getLogoSrc(),
-            'current_date' => format_indo_date(date('Y-m-d')),
+            'current_date' => formatTanggal('now'),
         ];
 
         $html = view('email/exports/unit_kerja_pdf', $data);
@@ -209,7 +209,7 @@ class EmailExportService
 
         return [
             'dompdf' => $dompdf,
-            'filename' => url_title($unitKerja['nama_unit_kerja'] . ' ' . format_indo_date(date('Y-m-d'), false), '_', true) . '.pdf'
+            'filename' => url_title($unitKerja['nama_unit_kerja'] . ' ' . formatBulanTahun('now'), '_', true) . '.pdf'
         ];
     }
 
@@ -255,7 +255,7 @@ class EmailExportService
             'unit_kerja' => $unitKerja,
             'emails' => $emails,
             'logoSrc' => $this->getLogoSrc(),
-            'current_date' => format_indo_date(date('Y-m-d')),
+            'current_date' => formatTanggal('now'),
         ];
 
         $html = view('email/exports/account_detail_pdf', $data);
@@ -266,7 +266,7 @@ class EmailExportService
 
         return [
             'dompdf' => $dompdf,
-            'filename' => url_title($unitKerja['nama_unit_kerja'] . ' Detail Akun ' . format_indo_date(date('Y-m-d'), false), '_', true) . '.pdf'
+            'filename' => url_title($unitKerja['nama_unit_kerja'] . ' Detail Akun ' . formatBulanTahun('now'), '_', true) . '.pdf'
         ];
     }
 

@@ -176,9 +176,9 @@
                             <td class="px-6 py-4 whitespace-nowrap" id="date-cell-<?= $web['id'] ?>">
                                 <span class="text-xs font-medium text-gray-700">
                                     <?php if (stripos($web['desa_kelurahan'], 'KELURAHAN') !== false): ?>
-                                        01 Feb 2027
+                                        <?= formatTanggal('2027-02-01') ?>
                                     <?php else: ?>
-                                        <?= $web['tanggal_berakhir'] ? date('d M Y', strtotime($web['tanggal_berakhir'])) : '-' ?>
+                                        <?= formatTanggal($web['tanggal_berakhir']) ?>
                                     <?php endif; ?>
                                 </span>
                             </td>

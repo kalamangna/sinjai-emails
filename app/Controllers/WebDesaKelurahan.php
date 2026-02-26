@@ -226,7 +226,7 @@ class WebDesaKelurahan extends BaseController
 
             return $this->response->setJSON([
                 'status' => 'success',
-                'date' => date('d-m-Y', strtotime($newDate)),
+                'date' => formatSingkat($newDate),
                 'message' => 'Date synced successfully'
             ]);
         }
@@ -274,7 +274,7 @@ class WebDesaKelurahan extends BaseController
                         if (isset($event['eventAction']) && $event['eventAction'] === 'expiration') {
                             // Date format usually: "2024-05-18T03:57:33Z"
                             if (isset($event['eventDate'])) {
-                                return date('Y-m-d', strtotime($event['eventDate']));
+                                return formatIsiInput($event['eventDate']);
                             }
                         }
                     }

@@ -9,7 +9,7 @@
             <?php if (!empty($last_sync_time)): ?>
                 <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">
                     <i class="fas fa-history mr-1"></i> Terakhir Sync: 
-                    <span class="text-gray-600"><?= date('d/m/Y H:i', strtotime($last_sync_time)) ?></span>
+                    <span class="text-gray-600"><?= formatTanggalWaktu($last_sync_time) ?></span>
                 </p>
             <?php endif; ?>
         </div>
@@ -31,29 +31,29 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
             <p class="text-sm font-medium text-gray-500">Total Email</p>
-            <h3 class="text-2xl font-bold text-gray-900 mt-1"><?= number_format($total_emails) ?></h3>
+            <h3 class="text-2xl font-bold text-gray-900 mt-1"><?= number_format($total_emails ?? 0) ?></h3>
         </div>
         <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
             <p class="text-sm font-medium text-gray-500">Aktif</p>
-            <h3 class="text-2xl font-bold text-gray-900 mt-1"><?= number_format($active_count) ?></h3>
+            <h3 class="text-2xl font-bold text-gray-900 mt-1"><?= number_format($active_count ?? 0) ?></h3>
         </div>
         <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
             <p class="text-sm font-medium text-gray-500">Tidak Aktif</p>
-            <h3 class="text-2xl font-bold text-gray-900 mt-1"><?= number_format($suspended_count) ?></h3>
+            <h3 class="text-2xl font-bold text-gray-900 mt-1"><?= number_format($suspended_count ?? 0) ?></h3>
         </div>
     </div>
 
     <!-- Tabel dan Pencarian -->
     <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
         <div class="p-6 border-b border-gray-100 bg-gray-50/50">
-            <form method="GET" action="" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+            <form method="GET" action="<?= site_url('email') ?>" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
                 <div class="md:col-span-6 lg:col-span-8">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Pencarian</label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
                             <i class="fas fa-search text-xs"></i>
                         </span>
-                        <input type="text" name="search" value="<?= isset($search) ? esc($search) : '' ?>" class="block w-full pl-9 pr-3 py-2 bg-white border <?= !empty($search) ? 'border-gray-900 ring-1 ring-gray-900' : 'border-gray-300' ?> rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-400 focus:border-gray-400 text-sm" placeholder="Cari nama, NIP, atau NIK...">
+                        <input type="text" name="search" value="<?= esc($search ?? '') ?>" class="block w-full pl-9 pr-3 py-2 bg-white border <?= !empty($search) ? 'border-gray-900 ring-1 ring-gray-900' : 'border-gray-300' ?> rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-400 focus:border-gray-400 text-sm" placeholder="Cari nama, NIP, atau NIK...">
                     </div>
                 </div>
 
@@ -61,8 +61,8 @@
                     <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
                     <select name="bsre_status" class="block w-full px-3 py-2 bg-white border <?= !empty($bsre_status) ? 'border-gray-900 ring-1 ring-gray-900' : 'border-gray-300' ?> rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-400 focus:border-gray-400 text-sm appearance-none cursor-pointer">
                         <option value="">Semua Status</option>
-                        <?php foreach ($bsre_status_options as $key => $label): ?>
-                            <option value="<?= esc($key) ?>" <?= ($bsre_status === $key) ? 'selected' : '' ?>><?= esc($label) ?></option>
+                        <?php foreach ($bsre_status_options ?? [] as $key => $label): ?>
+                            <option value="<?= esc($key) ?>" <?= (($bsre_status ?? '') === $key) ? 'selected' : '' ?>><?= esc($label) ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -157,7 +157,7 @@
         <?php if (isset($pager)): ?>
         <div class="px-6 py-4 bg-gray-50/50 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                Menampilkan <span class="text-gray-900"><?= count($emails) ?></span> dari <span class="text-gray-900"><?= number_format($total_emails) ?></span> akun
+                Menampilkan <span class="text-gray-900"><?= count($emails) ?></span> dari <span class="text-gray-900"><?= number_format($total_emails ?? 0) ?></span> akun
             </div>
             <div class="pagination-container">
                 <?= $pager->links() ?>
@@ -168,14 +168,14 @@
 </div>
 
 <style>
-    .pagination-container ul { @apply flex items-center gap-1; }
+    .pagination-container ul { display: flex; align-items: center; gap: 0.25rem; list-style: none; padding: 0; }
     .pagination-container li a, .pagination-container li span { 
-        @apply inline-flex items-center justify-center min-w-[28px] h-[28px] rounded bg-white border border-gray-200 text-[10px] font-bold text-gray-600 transition-all hover:border-gray-400 hover:text-gray-900 shadow-sm no-underline px-1.5;
+        display: inline-flex; align-items: center; justify-center; min-width: 28px; height: 28px; border-radius: 0.5rem; background: white; border: 1px solid #e2e8f0; font-size: 10px; font-weight: 700; color: #4b5563; transition: all 0.2s; text-decoration: none; padding: 0 0.375rem;
     }
-    .pagination-container li.active span { 
-        @apply bg-gray-900 border-gray-900 text-white shadow-sm;
-    }
+    .pagination-container li a:hover { border-color: #94a3b8; color: #111827; }
+    .pagination-container li.active span { background: #111827; border-color: #111827; color: white; }
 </style>
+<?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
 <script>
@@ -199,5 +199,4 @@
         window.location.href = url;
     }
 </script>
-<?= $this->endSection() ?>
 <?= $this->endSection() ?>

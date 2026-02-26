@@ -87,7 +87,7 @@
         </div>
 
         <p class="text-center text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-8">
-            &copy; <?= date('Y') ?> DISKOMINFO-SP SINJAI
+            &copy; <?= tahunSekarang() ?> DISKOMINFO-SP SINJAI
         </p>
     </div>
 

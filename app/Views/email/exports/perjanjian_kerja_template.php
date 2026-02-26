@@ -190,32 +190,6 @@
         }
     </style>
     <?php
-    // Helper for formatting Indonesian dates
-    if (!function_exists('formatIndonesianDate')) {
-        function formatIndonesianDate($dateString)
-        {
-            if (empty($dateString) || $dateString == '0000-00-00') {
-                return '-';
-            }
-            $months = [
-                '01' => 'JANUARI',
-                '02' => 'FEBRUARI',
-                '03' => 'MARET',
-                '04' => 'APRIL',
-                '05' => 'MEI',
-                '06' => 'JUNI',
-                '07' => 'JULI',
-                '08' => 'AGUSTUS',
-                '09' => 'SEPTEMBER',
-                '10' => 'OKTOBER',
-                '11' => 'NOVEMBER',
-                '12' => 'DESEMBER'
-            ];
-            $timestamp = strtotime($dateString);
-            return date('d', $timestamp) . ' ' . $months[date('m', $timestamp)] . ' ' . date('Y', $timestamp);
-        }
-    }
-
     // Construct full name dengan titles
     $fullName = strtoupper($email['name'] ?? '');
     if (!empty($email['gelar_depan'])) {
@@ -276,7 +250,7 @@
                         <td class="info-sep">:</td>
                         <td class="info-val">
                             <?= esc($email['tempat_lahir'] ?? 'N/A') ?> /
-                            <?= (isset($email['tanggal_lahir']) && $email['tanggal_lahir'] != '0000-00-00') ? date('d-m-Y', strtotime($email['tanggal_lahir'])) : 'N/A' ?>
+                            <?= formatSingkat($email['tanggal_lahir'] ?? null) ?>
                         </td>
                     </tr>
                     <tr>
@@ -313,9 +287,9 @@
                             <td class="info-label">Masa Perjanjian Kerja</td>
                             <td class="info-sep">:</td>
                             <td class="info-val">
-                                <?= formatIndonesianDate($pk_data['tanggal_kontrak_awal'] ?? '0000-00-00') ?>
+                                <?= formatTanggal($pk_data['tanggal_kontrak_awal'] ?? '0000-00-00') ?>
                                 s/d
-                                <?= formatIndonesianDate($pk_data['tanggal_kontrak_akhir'] ?? '0000-00-00') ?>
+                                <?= formatTanggal($pk_data['tanggal_kontrak_akhir'] ?? '0000-00-00') ?>
                             </td>
                         </tr>
                     </table>

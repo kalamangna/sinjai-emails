@@ -3,11 +3,14 @@
     <div class="flex flex-col h-full">
         <!-- Logo Section -->
         <div class="flex items-center h-16 px-6 border-b border-gray-100 flex-shrink-0">
-            <a href="<?= site_url('/') ?>" class="flex items-center">
+            <a href="<?= site_url('/') ?>" class="flex items-center no-underline">
                 <div class="w-8 h-8 bg-gray-900 rounded-lg flex items-center justify-center mr-3 shadow-sm">
                     <i class="fas fa-fingerprint text-white text-sm"></i>
                 </div>
-                <span class="text-sm font-bold tracking-tight text-gray-900 uppercase">Identitas Digital</span>
+                <div>
+                    <span class="block text-xs font-bold tracking-tight text-gray-900 leading-none uppercase">sinjai <span class="text-gray-500">emails</span></span>
+                    <span class="text-[8px] font-bold text-gray-400 uppercase tracking-widest block mt-0.5">identitas digital</span>
+                </div>
             </a>
         </div>
 

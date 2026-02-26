@@ -74,10 +74,13 @@
                 <?php else: ?>
                     <span class="px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest bg-red-50 text-red-700 border border-red-100">Ditangguhkan</span>
                 <?php endif; ?>
+
+                <p class="text-[9px] font-bold text-gray-400 uppercase tracking-tight mt-1">
+                    Terakhir diperbarui: <span class="text-gray-600"><?= formatTanggalWaktu($email['mtime'] ?? 'now') ?></span>
+                </p>
             </div>
         </div>
     </div>
-
     <!-- Detail Informasi -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Profil -->
@@ -107,17 +110,7 @@
                                     <label class="block text-[9px] font-bold text-gray-400 uppercase tracking-tight">Tempat, Tanggal Lahir</label>
                                     <p class="text-sm font-semibold text-gray-900 uppercase">
                                         <?= esc($email['tempat_lahir']) ?: '-' ?>,
-                                        <?php
-                                        $tanggal = $email['tanggal_lahir'] ?? null;
-                                        if (!empty($tanggal)) {
-                                            $date = new DateTime($tanggal);
-                                            $months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-                                            $month = $months[$date->format('n') - 1];
-                                            echo $date->format('d') . ' ' . $month . ' ' . $date->format('Y');
-                                        } else {
-                                            echo '-';
-                                        }
-                                        ?>
+                                        <?= formatTanggal($email['tanggal_lahir'] ?? null) ?>
                                     </p>
                                 </div>
                                 <div>
@@ -205,12 +198,12 @@
                                 <div class="flex items-center gap-3 mt-1">
                                     <div class="flex-1 p-2 bg-gray-50 border border-gray-100 rounded text-center">
                                         <span class="block text-[8px] font-bold text-gray-400 uppercase">Mulai</span>
-                                        <span class="text-[10px] font-bold text-gray-900"><?= date('d/m/Y', strtotime($pk_data['tanggal_kontrak_awal'])) ?></span>
+                                        <span class="text-[10px] font-bold text-gray-900"><?= formatSingkat($pk_data['tanggal_kontrak_awal']) ?></span>
                                     </div>
                                     <i class="fas fa-arrow-right text-gray-300 text-[10px]"></i>
                                     <div class="flex-1 p-2 bg-gray-50 border border-gray-100 rounded text-center">
                                         <span class="block text-[8px] font-bold text-gray-400 uppercase">Selesai</span>
-                                        <span class="text-[10px] font-bold text-gray-900"><?= date('d/m/Y', strtotime($pk_data['tanggal_kontrak_akhir'])) ?></span>
+                                        <span class="text-[10px] font-bold text-gray-900"><?= formatSingkat($pk_data['tanggal_kontrak_akhir']) ?></span>
                                     </div>
                                 </div>
                             </div>
@@ -293,17 +286,6 @@
                         <div class="bg-gray-50 rounded-lg p-3 border border-gray-100">
                             <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">Kuota</p>
                             <p class="text-xs font-bold text-gray-900"><?= $is_unlimited ? '∞' : ($email['humandiskquota'] ?? '-') ?></p>
-                        </div>
-                    </div>
-
-                    <div class="pt-4 border-t border-gray-100 space-y-3">
-                        <div class="flex justify-between text-[10px] font-bold uppercase tracking-tight">
-                            <span class="text-gray-400">Dibuat:</span>
-                            <span class="text-gray-700"><?= date('d/m/Y', ($email['mtime'] ?? 0)) ?></span>
-                        </div>
-                        <div class="flex justify-between text-[10px] font-bold uppercase tracking-tight">
-                            <span class="text-gray-400">Diperbarui:</span>
-                            <span class="text-gray-700"><?= date('d/m/Y', strtotime($email['updated_at'] ?? 'now')) ?></span>
                         </div>
                     </div>
                 </div>

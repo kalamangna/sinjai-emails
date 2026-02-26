@@ -13,6 +13,7 @@ class WebDesaKelurahanSeeder extends Seeder
 {
     public function run()
     {
+        helper('tanggal');
         $filePath = FCPATH . '../webdesakel.xlsx';
 
         if (!file_exists($filePath)) {
@@ -147,8 +148,8 @@ class WebDesaKelurahanSeeder extends Seeder
                     'platform_id'      => $platformId,
                     'dikelola_kominfo' => $row[11] ?? '',
                     'keterangan'       => '', 
-                    'created_at'       => date('Y-m-d H:i:s'),
-                    'updated_at'       => date('Y-m-d H:i:s'),
+                    'created_at'       => untukDatabase('now'),
+                    'updated_at'       => untukDatabase('now'),
                 ];
             }
 
@@ -181,7 +182,7 @@ class WebDesaKelurahanSeeder extends Seeder
                     foreach ($body['events'] as $event) {
                         if (isset($event['eventAction']) && $event['eventAction'] === 'expiration') {
                             if (isset($event['eventDate'])) {
-                                return date('Y-m-d', strtotime($event['eventDate']));
+                                return formatIsiInput($event['eventDate']);
                             }
                         }
                     }

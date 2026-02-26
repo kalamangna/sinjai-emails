@@ -99,12 +99,12 @@ class Assistance extends BaseController
         // If empty string (explicit "Semua"), it remains empty
         $filterMonth = $this->request->getGet('month');
         if ($filterMonth === null) {
-            $filterMonth = date('n');
+            $filterMonth = bulanSekarang();
         }
 
         $filterYear = $this->request->getGet('year');
         if ($filterYear === null) {
-            $filterYear = date('Y');
+            $filterYear = tahunSekarang();
         }
 
         // Get available years for filter BEFORE applying other filters to the model
@@ -115,7 +115,7 @@ class Assistance extends BaseController
 
         $yearOptions = array_column($years, 'year');
         if (empty($yearOptions)) {
-            $yearOptions = [date('Y')];
+            $yearOptions = [tahunSekarang()];
         }
 
         // Build the main query
@@ -326,12 +326,12 @@ class Assistance extends BaseController
 
         $filterMonth = $this->request->getGet('month');
         if ($filterMonth === null) {
-            $filterMonth = date('n');
+            $filterMonth = bulanSekarang();
         }
 
         $filterYear = $this->request->getGet('year');
         if ($filterYear === null) {
-            $filterYear = date('Y');
+            $filterYear = tahunSekarang();
         }
 
         $result = $this->exportService->generateReportPdf($filterCategory, $filterMonth, $filterYear);

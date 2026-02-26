@@ -115,7 +115,7 @@
             ?>
                 <tr>
                     <td style="text-align: center;"><?= $nomor++ ?></td>
-                    <td><?= date('d-m-Y', strtotime($item['tanggal_kegiatan'])) ?></td>
+                    <td><?= formatSingkat($item['tanggal_kegiatan']) ?></td>
                     <td>
                         <strong><?= esc($item['agency_name']) ?></strong><br>
                         <small style="color: #666;"><?= esc($item['agency_type']) ?></small>

@@ -16,7 +16,7 @@ class WebMonitoringExportService
     {
         $this->webOpdModel = new WebOpdModel();
         $this->webDesaModel = new WebDesaKelurahanModel();
-        helper('time');
+        helper('tanggal');
     }
 
     private function getDompdf()
@@ -80,7 +80,7 @@ class WebMonitoringExportService
             'websites' => $websites,
             'stats' => $stats,
             'logoSrc' => $this->getLogoSrc(),
-            'current_date' => format_indo_date(date('Y-m-d')),
+            'current_date' => formatTanggal('now'),
             'title' => 'DATA WEBSITE ORGANISASI PERANGKAT DAERAH (OPD)',
             'subtitle' => 'PEMERINTAH KABUPATEN SINJAI',
             'statusChart' => $statusChartData,
@@ -93,7 +93,7 @@ class WebMonitoringExportService
 
         return [
             'dompdf' => $dompdf,
-            'filename' => 'Data Website OPD - ' . format_indo_date(date('Y-m-d'), true) . '.pdf'
+            'filename' => 'Data Website OPD - ' . formatTanggal('now') . '.pdf'
         ];
     }
 
@@ -174,7 +174,7 @@ class WebMonitoringExportService
             'stats' => $stats,
             'platform_stats' => $platform_stats,
             'logoSrc' => $this->getLogoSrc(),
-            'current_date' => format_indo_date(date('Y-m-d')),
+            'current_date' => formatTanggal('now'),
             'title' => 'DATA WEBSITE DESA & KELURAHAN',
             'subtitle' => 'PEMERINTAH KABUPATEN SINJAI',
             'statusChart' => $statusChartData,
@@ -188,7 +188,7 @@ class WebMonitoringExportService
 
         return [
             'dompdf' => $dompdf,
-            'filename' => 'Data Website Desa & Kelurahan - ' . format_indo_date(date('Y-m-d'), true) . '.pdf'
+            'filename' => 'Data Website Desa & Kelurahan - ' . formatTanggal('now') . '.pdf'
         ];
     }
 }

@@ -55,7 +55,7 @@
                     <div>
                         <label for="tanggal_kegiatan" class="block text-sm font-medium text-gray-700 mb-1">Tanggal</label>
                         <input type="date" class="block w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-400 focus:border-gray-400 text-sm font-medium text-gray-900" id="tanggal_kegiatan" name="tanggal_kegiatan"
-                            value="<?= isset($activity) ? $activity['tanggal_kegiatan'] : date('Y-m-d') ?>" required>
+                            value="<?= isset($activity) ? $activity['tanggal_kegiatan'] : formatIsiInput('now') ?>" required>
                     </div>
 
                     <div>

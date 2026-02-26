@@ -18,7 +18,7 @@ class AssistanceExportService
     public function __construct()
     {
         $this->assistanceModel = new AssistanceModel();
-        helper('time');
+        helper('tanggal');
     }
 
     private function getDompdf()
@@ -85,7 +85,7 @@ class AssistanceExportService
             'title' => 'Laporan Pendampingan',
             'subtitle' => $subtitle,
             'activities' => $activities,
-            'current_date' => format_indo_date(date('Y-m-d')),
+            'current_date' => formatTanggal('now'),
             'logoSrc' => $this->getLogoSrc(),
             'categoryMap' => self::CATEGORY_MAP
         ];
