@@ -6,7 +6,7 @@
         <a href="<?= site_url('email/detail/' . $email['user']) ?>" class="inline-flex items-center justify-center w-10 h-10 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all shadow-sm no-underline">
             <i class="fas fa-arrow-left"></i>
         </a>
-        <h1 class="text-2xl font-semibold text-gray-900">Perbarui Profil</h1>
+        <h1 class="text-2xl font-semibold text-gray-900">Edit Profil</h1>
     </div>
 
     <!-- Card Utama -->
@@ -114,7 +114,7 @@
                     <i class="fas fa-times mr-2"></i> Batal
                 </a>
                 <button type="submit" class="order-1 sm:order-2 inline-flex items-center justify-center px-8 py-2 bg-gray-900 text-white rounded-lg font-bold text-xs uppercase tracking-widest hover:bg-gray-800 shadow-sm transition-all">
-                    <i class="fas fa-save mr-2"></i> Simpan
+                    <i class="fas fa-save mr-2"></i> Update
                 </button>
             </div>
         </form>

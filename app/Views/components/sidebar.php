@@ -18,30 +18,45 @@
                 <i class="fas fa-th-large w-5 mr-3 text-gray-400"></i> Dashboard
             </a>
 
-            <!-- Email Submenu -->
-            <div x-data="{ open: <?= (strpos(current_url(), 'email') !== false && strpos(current_url(), 'manage') === false) ? 'true' : 'false' ?> }">
+            <!-- Email -->
+            <a href="<?= site_url('email') ?>" class="flex items-center px-4 py-2.5 text-sm font-medium rounded-xl transition-all <?= (strpos(current_url(), 'email') !== false && strpos(current_url(), 'pimpinan') === false && strpos(current_url(), 'eselon') === false && strpos(current_url(), 'unit_kerja') === false) ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' ?>">
+                <i class="fas fa-envelope w-5 mr-3 text-gray-400"></i> Email
+            </a>
+
+            <!-- Pejabat Submenu -->
+            <div x-data="{ open: <?= (strpos(current_url(), 'pimpinan') !== false) ? 'true' : 'false' ?> }">
                 <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-2.5 text-sm font-medium text-gray-600 rounded-xl hover:bg-gray-50 hover:text-gray-900 transition-all">
                     <div class="flex items-center">
-                        <i class="fas fa-envelope w-5 mr-3 text-gray-400"></i>
-                        <span>Email</span>
+                        <i class="fas fa-user-tie w-5 mr-3 text-gray-400"></i>
+                        <span>Pejabat</span>
                     </div>
                     <i class="fas fa-chevron-down text-[10px] transition-transform duration-200" :class="open ? 'rotate-180' : ''"></i>
                 </button>
                 <div x-show="open" x-collapse class="mt-1 ml-4 pl-4 border-l border-gray-100 space-y-1">
-                    <a href="<?= site_url('email') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg <?= current_url() == site_url('email') ? 'text-gray-900 bg-gray-50' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50' ?>">
-                        Semua Akun
-                    </a>
                     <a href="<?= site_url('email/pimpinan') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg <?= current_url() == site_url('email/pimpinan') ? 'text-gray-900 bg-gray-50' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50' ?>">
                         Pimpinan
                     </a>
                     <a href="<?= site_url('email/pimpinan_desa') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg <?= current_url() == site_url('email/pimpinan_desa') ? 'text-gray-900 bg-gray-50' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50' ?>">
                         Kepala Desa
                     </a>
+                </div>
+            </div>
+
+            <!-- Organisasi Submenu -->
+            <div x-data="{ open: <?= (strpos(current_url(), 'unit_kerja') !== false || strpos(current_url(), 'eselon') !== false) && strpos(current_url(), 'manage') === false ? 'true' : 'false' ?> }">
+                <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-2.5 text-sm font-medium text-gray-600 rounded-xl hover:bg-gray-50 hover:text-gray-900 transition-all">
+                    <div class="flex items-center">
+                        <i class="fas fa-building w-5 mr-3 text-gray-400"></i>
+                        <span>Organisasi</span>
+                    </div>
+                    <i class="fas fa-chevron-down text-[10px] transition-transform duration-200" :class="open ? 'rotate-180' : ''"></i>
+                </button>
+                <div x-show="open" x-collapse class="mt-1 ml-4 pl-4 border-l border-gray-100 space-y-1">
                     <a href="<?= site_url('email/unit_kerja') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg <?= current_url() == site_url('email/unit_kerja') ? 'text-gray-900 bg-gray-50' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50' ?>">
                         Unit Kerja
                     </a>
                     <a href="<?= site_url('email/eselon_list') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg <?= current_url() == site_url('email/eselon_list') ? 'text-gray-900 bg-gray-50' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50' ?>">
-                        Daftar Eselon
+                        Eselon
                     </a>
                 </div>
             </div>
@@ -77,13 +92,13 @@
                     </button>
                     <div x-show="open" x-collapse class="mt-1 ml-4 pl-4 border-l border-gray-100 space-y-1">
                         <a href="<?= site_url('batch') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg <?= current_url() == site_url('batch') ? 'text-gray-900 bg-gray-50' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50' ?>">
-                            Tambah Massal
+                            Buat Akun
                         </a>
                         <a href="<?= site_url('batch/update') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg <?= current_url() == site_url('batch/update') ? 'text-gray-900 bg-gray-50' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50' ?>">
-                            Perbarui Massal
+                            Edit Akun
                         </a>
                         <a href="<?= site_url('batch/pk') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg <?= current_url() == site_url('batch/pk') ? 'text-gray-900 bg-gray-50' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50' ?>">
-                            Perbarui PK
+                            Edit PK
                         </a>
                     </div>
                 </div>

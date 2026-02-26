@@ -88,7 +88,7 @@
                     <h3 class="text-xs font-bold text-gray-900 uppercase tracking-tight">Profil</h3>
                     <?php if (session()->get('role') === 'super_admin'): ?>
                         <a href="<?= site_url('email/edit_profile/' . $email['user']) ?>" class="text-xs font-bold text-gray-600 hover:text-gray-900 uppercase tracking-widest transition-all flex items-center no-underline">
-                            <i class="fas fa-edit mr-1.5"></i> Perbarui
+                            <i class="fas fa-edit mr-1.5"></i> Edit Profil
                         </a>
                     <?php endif; ?>
                 </div>
@@ -149,13 +149,18 @@
                                 </div>
                                 <div>
                                     <label class="block text-[9px] font-bold text-gray-400 uppercase tracking-tight">Status ASN</label>
-                                    <div class="flex flex-wrap gap-2 mt-1">
+                                    <p class="text-sm font-semibold text-gray-900 uppercase mt-1">
                                         <span class="px-2 py-0.5 rounded bg-gray-100 text-gray-700 text-[10px] font-bold uppercase border border-gray-200"><?= $email['status_asn'] ?? 'NON ASN' ?></span>
-                                        <?php if (!empty($email['eselon_name'])): ?>
-                                            <span class="px-2 py-0.5 rounded bg-gray-100 text-gray-700 text-[10px] font-bold uppercase border border-gray-200">Eselon <?= $email['eselon_name'] ?></span>
-                                        <?php endif; ?>
-                                    </div>
+                                    </p>
                                 </div>
+                                <?php if (!empty($email['eselon_name'])): ?>
+                                    <div>
+                                        <label class="block text-[9px] font-bold text-gray-400 uppercase tracking-tight">Eselon</label>
+                                        <p class="text-sm font-semibold text-gray-900 uppercase mt-1">
+                                            <span class="px-2 py-0.5 rounded bg-gray-100 text-gray-700 text-[10px] font-bold uppercase border border-gray-200">Eselon <?= $email['eselon_name'] ?></span>
+                                        </p>
+                                    </div>
+                                <?php endif; ?>
                                 <div>
                                     <label class="block text-[9px] font-bold text-gray-400 uppercase tracking-tight">Jabatan</label>
                                     <p class="text-sm font-semibold text-gray-900 uppercase leading-snug"><?= esc($email['jabatan']) ?: '-' ?></p>
@@ -230,7 +235,7 @@
                     <h3 class="text-xs font-bold text-gray-900 uppercase tracking-tight">Kredensial</h3>
                     <?php if (session()->get('role') === 'super_admin'): ?>
                         <a href="<?= site_url('email/edit_password/' . $email['user']) ?>" class="text-[10px] font-bold text-gray-600 hover:text-gray-900 uppercase tracking-widest transition-all flex items-center no-underline">
-                            <i class="fas fa-key mr-1.5"></i> Ganti
+                            <i class="fas fa-key mr-1.5"></i> Edit Password
                         </a>
                     <?php endif; ?>
                 </div>

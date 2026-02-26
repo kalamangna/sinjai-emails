@@ -9,7 +9,7 @@
         </div>
         <div class="flex items-center gap-2 w-full lg:w-auto">
             <a href="<?= site_url('email') ?>" class="flex-1 lg:flex-none inline-flex items-center justify-center px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white rounded-lg font-bold text-xs uppercase tracking-widest transition-all shadow-sm no-underline">
-                <i class="fas fa-envelope mr-2"></i> Semua Email
+                <i class="fas fa-envelope mr-2"></i> Email
             </a>
         </div>
     </div>

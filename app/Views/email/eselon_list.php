@@ -4,7 +4,7 @@
 <div class="space-y-6">
     <!-- Header Halaman -->
     <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-        <h1 class="text-2xl font-semibold text-gray-900">Daftar Eselon</h1>
+        <h1 class="text-2xl font-semibold text-gray-900">Eselon</h1>
 
         <a href="<?= site_url('email') ?>" class="inline-flex items-center justify-center px-4 py-2 bg-white border border-gray-300 text-gray-700 font-bold rounded-lg hover:bg-gray-50 transition-all text-xs uppercase tracking-widest no-underline shadow-sm">
             <i class="fas fa-arrow-left mr-2"></i> Kembali
@@ -21,7 +21,7 @@
                             <i class="fas fa-layer-group text-xl"></i>
                         </div>
                         <div class="flex-grow">
-                            <h3 class="text-lg font-bold text-gray-900 uppercase tracking-tight"><?= esc($eselon['nama_eselon']) ?></h3>
+                            <h3 class="text-lg font-bold text-gray-900 uppercase tracking-tight">Eselon <?= esc($eselon['nama_eselon']) ?></h3>
                             <p class="text-xs text-gray-500 uppercase font-medium mt-0.5">Lihat Detail</p>
                         </div>
                         <i class="fas fa-chevron-right text-[10px] text-gray-300 group-hover:text-gray-900 group-hover:translate-x-1 transition-all"></i>

@@ -55,7 +55,7 @@
                 <?= csrf_field() ?>
 
                 <div>
-                    <label for="username" class="block text-xs font-medium text-gray-700 mb-1 uppercase tracking-wider">Nama Pengguna</label>
+                    <label for="username" class="block text-xs font-medium text-gray-700 mb-1 uppercase tracking-wider">Username</label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
                             <i class="fas fa-user text-xs"></i>
@@ -67,7 +67,7 @@
                 </div>
 
                 <div>
-                    <label for="password" class="block text-xs font-medium text-gray-700 mb-1 uppercase tracking-wider">Kata Sandi</label>
+                    <label for="password" class="block text-xs font-medium text-gray-700 mb-1 uppercase tracking-wider">Password</label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
                             <i class="fas fa-lock text-xs"></i>
@@ -80,7 +80,7 @@
 
                 <div class="pt-2">
                     <button type="submit" class="w-full inline-flex items-center justify-center px-4 py-2.5 bg-gray-900 hover:bg-gray-800 text-white rounded-lg font-bold text-xs uppercase tracking-widest transition-all shadow-sm">
-                        Masuk Sistem <i class="fas fa-sign-in-alt ml-2"></i>
+                        Masuk <i class="fas fa-sign-in-alt ml-2"></i>
                     </button>
                 </div>
             </form>

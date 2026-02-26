@@ -78,7 +78,7 @@
                 <div>
                     <label for="agency_info" class="block text-sm font-medium text-gray-700 mb-1">Unit Kerja</label>
                     <select id="agency_info" name="agency_info" required>
-                        <option value="">-- PILIH UNIT KERJA --</option>
+                        <option value="">Pilih Unit Kerja...</option>
                         <?php
                         $groups = [];
                         foreach ($agencies as $agency) {
@@ -133,7 +133,7 @@
                         <i class="fas fa-times mr-2"></i> Batal
                     </a>
                     <button type="submit" class="w-full sm:w-auto px-8 py-2 bg-gray-900 hover:bg-gray-800 text-white font-bold rounded-lg shadow-sm transition-all text-xs uppercase tracking-widest flex items-center justify-center">
-                        <i class="fas fa-save mr-2"></i> Simpan
+                        <i class="fas fa-save mr-2"></i> <?= isset($activity) ? 'Update' : 'Simpan' ?>
                     </button>
                 </div>
             </form>
@@ -157,7 +157,7 @@
         const category = document.getElementById('category').value;
         const serviceSelect = document.getElementById('service');
         const currentService = serviceSelect.value || initialService;
-        serviceSelect.innerHTML = '<option value="">-- PILIH LAYANAN --</option>';
+        serviceSelect.innerHTML = '<option value="">Pilih Layanan...</option>';
         if (category && servicesMap[category]) {
             servicesMap[category].forEach(svc => {
                 const opt = document.createElement('option');
@@ -174,7 +174,7 @@
         const service = document.getElementById('service').value;
         const keteranganSelect = document.getElementById('keterangan');
         const currentKeterangan = keteranganSelect.value || initialKeterangan;
-        keteranganSelect.innerHTML = '<option value="">-- PILIH KETERANGAN --</option>';
+        keteranganSelect.innerHTML = '<option value="">Pilih Keterangan...</option>';
         if (service && keteranganByServiceMap[service]) {
             keteranganByServiceMap[service].forEach(opt => {
                 const o = document.createElement('option');
@@ -198,8 +198,8 @@
                 searchEnabled: true,
                 itemSelectText: '',
                 placeholder: true,
-                placeholderValue: '-- PILIH UNIT KERJA --',
-                searchPlaceholderValue: 'CARI UNIT KERJA...',
+                placeholderValue: 'Pilih Unit Kerja...',
+                searchPlaceholderValue: 'Cari Unit Kerja...',
                 shouldSort: false
             });
         }

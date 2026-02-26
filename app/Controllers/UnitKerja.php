@@ -30,7 +30,7 @@ class UnitKerja extends BaseController
 
         $data['unit_kerja_list'] = $unit_kerja_list;
         $data['search'] = $search;
-        $data['title'] = 'Manage Unit Kerja';
+        $data['title'] = 'Master Data Unit Kerja';
 
         return view('unit_kerja/manage', $data);
     }
@@ -39,7 +39,7 @@ class UnitKerja extends BaseController
     {
         $unitKerjaModel = new UnitKerjaModel();
         $data['parent_options'] = $unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->findAll();
-        $data['title'] = 'Add Unit Kerja';
+        $data['title'] = 'Tambah Unit Kerja';
 
         return view('unit_kerja/add', $data);
     }
@@ -60,7 +60,7 @@ class UnitKerja extends BaseController
     {
         $unitKerjaModel = new UnitKerjaModel();
         $data['parent_options'] = $unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->findAll();
-        $data['title'] = 'Batch Create Unit Kerja';
+        $data['title'] = 'Buat Unit Kerja Massal';
 
         return view('unit_kerja/batch_create', $data);
     }

@@ -156,7 +156,7 @@ class Assistance extends BaseController
         ];
 
         $data = [
-            'title' => 'Assistance Activities',
+            'title' => 'Log Layanan',
             'activities' => $activities,
             'filterCategory' => $filterCategory,
             'filterMonth' => $filterMonth,
@@ -174,7 +174,7 @@ class Assistance extends BaseController
     public function create()
     {
         $data = [
-            'title' => 'Tambah Log Pendampingan Teknis',
+            'title' => 'Tambah Log Layanan',
             'agencies' => $this->getAgencies(),
             'categoryMap' => self::CATEGORY_MAP,
             'servicesMap' => self::SERVICES_MAP,
@@ -196,7 +196,7 @@ class Assistance extends BaseController
         $activity['services'] = json_decode($activity['services'], true);
 
         $data = [
-            'title' => 'Edit Assistance',
+            'title' => 'Edit Log Layanan',
             'activity' => $activity,
             'agencies' => $this->getAgencies(),
             'categoryMap' => self::CATEGORY_MAP,

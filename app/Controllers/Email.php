@@ -47,6 +47,7 @@ class Email extends BaseController
     public function eselon_list()
     {
         $data['eselons'] = $this->eselonModel->orderBy('nama_eselon', 'ASC')->findAll();
+        $data['title'] = 'Eselon';
         return view('email/eselon_list', $data);
     }
 
@@ -63,7 +64,7 @@ class Email extends BaseController
 
             $lastSync = $this->appSettingModel->where('key', 'last_sync_time')->first();
 
-            $data['title'] = 'Data Email';
+            $data['title'] = 'Email';
             $data['search'] = $search;
             $data['bsre_status'] = $bsre_status;
             $data['per_page'] = $perPage;
@@ -84,7 +85,7 @@ class Email extends BaseController
         try {
             $navData = $this->emailService->getGlobalNavigationData();
             $data = [
-                'title' => 'Daftar Perangkat Daerah',
+                'title' => 'Unit Kerja',
                 'unit_kerja' => $navData['unit_kerja_nav'],
                 'back_url' => site_url('/')
             ];
@@ -121,10 +122,12 @@ class Email extends BaseController
     {
         try {
             $data = $this->emailService->getEmailDetail($username);
+            $data['title'] = 'Detail Akun';
             $data['back_url'] = site_url('email');
             return view('email/detail', $data);
         } catch (Exception $e) {
             $data['error'] = $e->getMessage();
+            $data['title'] = 'Detail Akun';
             $data['back_url'] = site_url('email');
             return view('email/error', $data);
         }
@@ -134,6 +137,7 @@ class Email extends BaseController
     {
         try {
             $data = $this->emailService->getEmailDetail($username);
+            $data['title'] = 'Edit Profil';
             $data['unit_kerja_options'] = $this->unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->findAll();
             $data['status_asn_options'] = $this->statusAsnModel->orderBy('nama_status_asn', 'ASC')->findAll();
             $data['eselon_options'] = $this->eselonModel->orderBy('nama_eselon', 'ASC')->findAll();
@@ -148,6 +152,7 @@ class Email extends BaseController
     {
         try {
             $data = $this->emailService->getEmailDetail($username);
+            $data['title'] = 'Edit Password';
             return view('email/edit_password', $data);
         } catch (Exception $e) {
             $data['error'] = $e->getMessage();
@@ -178,10 +183,10 @@ class Email extends BaseController
         try {
             // Update on cPanel first
             $this->cpanelApi->change_password($email['email'], $newPassword);
-            
+
             // If successful, update locally
             $this->emailModel->update($email['id'], ['password' => $newPassword]);
-            
+
             return redirect()->to('email/detail/' . $username)->with('success', 'Kata sandi berhasil diperbarui.');
         } catch (Exception $e) {
             log_message('error', 'Error updating password on cPanel: ' . $e->getMessage());
@@ -252,6 +257,7 @@ class Email extends BaseController
 
             $data = $this->emailService->getUnitKerjaDetail($unitKerjaId, $params);
 
+            $data['title'] = $data['unit_kerja']['nama_unit_kerja'];
             $data['per_page'] = $params['per_page'] ?? 100;
             $data['search'] = $params['search'];
             $data['status_asn'] = $params['status_asn'];
@@ -327,6 +333,7 @@ class Email extends BaseController
             ];
 
             $data = [
+                'title' => "Eselon " . $eselon['nama_eselon'],
                 'eselon' => $eselon,
                 'emails' => $emails,
                 'total_emails' => $total_emails,

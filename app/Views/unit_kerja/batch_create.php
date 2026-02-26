@@ -3,7 +3,7 @@
 <?= $this->section('content') ?>
 <div class="max-w-2xl mx-auto space-y-6">
     <div>
-        <h1 class="text-2xl font-semibold text-gray-900">Tambah Unit Kerja Massal</h1>
+        <h1 class="text-2xl font-semibold text-gray-900">Buat Unit Kerja Massal</h1>
     </div>
 
     <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">

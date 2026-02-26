@@ -21,7 +21,7 @@
                 <div class="w-12 h-12 bg-gray-100 border border-gray-200 rounded-xl flex items-center justify-center text-gray-400">
                     <i class="fas fa-layer-group text-2xl"></i>
                 </div>
-                <h1 class="text-2xl font-semibold text-gray-900 uppercase tracking-tight leading-none"><?= esc($eselon['nama_eselon']) ?></h1>
+                <h1 class="text-2xl font-semibold text-gray-900 uppercase tracking-tight leading-none">Eselon <?= esc($eselon['nama_eselon']) ?></h1>
             </div>
             <div class="bg-gray-50 px-6 py-2 rounded-lg border border-gray-100 text-center">
                 <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total Akun</p>
@@ -38,7 +38,7 @@
                     <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
                         <i class="fas fa-search text-xs"></i>
                     </span>
-                    <input type="text" name="search" value="<?= esc($search ?? '') ?>" class="block w-full pl-9 pr-4 py-2 bg-white border <?= !empty($search) ? 'border-gray-900 ring-1 ring-gray-900' : 'border-gray-300' ?> rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-400 focus:border-gray-400 text-sm" placeholder="Cari nama, email, atau jabatan...">
+                    <input type="text" name="search" value="<?= esc($search ?? '') ?>" class="block w-full pl-9 pr-4 py-2 bg-white border <?= !empty($search) ? 'border-gray-900 ring-1 ring-gray-900' : 'border-gray-300' ?> rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-400 focus:border-gray-400 text-sm" placeholder="Cari nama, NIP, atau NIK...">
                 </div>
             </div>
             <div class="md:col-span-3">

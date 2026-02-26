@@ -24,7 +24,7 @@ class BatchController extends BaseController
     {
         $data['unit_kerja'] = $this->unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->findAll();
         $data['status_asn_options'] = $this->statusAsnModel->orderBy('nama_status_asn', 'ASC')->findAll();
-        $data['title'] = 'Tambah Akun Massal';
+        $data['title'] = 'Buat Akun';
         return view('batch/create', $data);
     }
 
@@ -32,7 +32,7 @@ class BatchController extends BaseController
     {
         $data['unit_kerja'] = $this->unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->findAll();
         $data['status_asn_options'] = $this->statusAsnModel->orderBy('nama_status_asn', 'ASC')->findAll();
-        $data['title'] = 'Perbarui Akun Massal';
+        $data['title'] = 'Edit Akun';
         return view('batch/update', $data);
     }
 
@@ -40,7 +40,7 @@ class BatchController extends BaseController
     {
         $data['unit_kerja'] = $this->unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->findAll();
         $data['status_asn_options'] = $this->statusAsnModel->orderBy('nama_status_asn', 'ASC')->findAll();
-        $data['title'] = 'Perbarui PK Massal';
+        $data['title'] = 'Edit PK';
         return view('batch/pk', $data);
     }
 

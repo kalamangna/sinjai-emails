@@ -6,26 +6,32 @@ Portal terintegrasi untuk manajemen identitas digital, sertifikat elektronik, da
 
 ### 1. Manajemen Email Institusi
 - **Integrasi cPanel API**: Pembuatan, penghapusan, dan sinkronisasi akun email secara otomatis dengan server hosting.
-- **Batch Processing**: Pembuatan akun massal dan pembaruan data profil dalam satu kali proses (Excel-like input).
-- **Manajemen Profil**: Pendataan NIK, NIP, Jabatan, dan Unit Kerja untuk setiap pemegang akun.
+- **Advanced Search**: Pencarian akun berdasarkan Nama, NIP, atau NIK secara konsisten di seluruh tabel.
+- **Manajemen Profil**: Pendataan NIK, NIP, Jabatan, dan Unit Kerja untuk setiap pemegang akun dengan visualisasi status yang jelas.
 
 ### 2. Monitoring Sertifikat Elektronik (TTE)
 - **Integrasi BSrE API**: Pemantauan status sertifikat digital secara *real-time* (Aktif, Expired, Revoked, dsb).
-- **Reporting**: Dashboard statistik status TTE pimpinan dan ASN di seluruh perangkat daerah.
+- **Pengelompokan Pejabat**: Akses cepat untuk monitoring TTE Pimpinan OPD dan Kepala Desa.
+- **Reporting**: Dashboard statistik status TTE di seluruh perangkat daerah.
 
 ### 3. Monitoring Website & Domain
 - **Website OPD**: Pemantauan status pemanfaatan subdomain OPD.
 - **Website Desa & Kelurahan**: Pelacakan masa berlaku domain `.desa.id` melalui protokol **RDAP PANDI**.
-- **Visualisasi Data**: Grafik distribusi platform dan status operasional menggunakan ApexCharts.
+- **Visualisasi Data**: Grafik distribusi platform dan status operasional yang modern dan informatif.
 
-### 4. Log Pendampingan Teknis
+### 4. Batch Operations (Super Admin)
+- **Refactored Module**: Modul batch yang terorganisir untuk efisiensi pemrosesan data massal.
+- **Mass Account Creation**: Pembuatan akun massal dengan input ala Excel dan validasi otomatis.
+- **Bulk Updates**: Pembaruan data profil dan dokumen Perjanjian Kerja (PK) secara massal.
+
+### 5. Log Pendampingan Teknis
 - **Documentation**: Pencatatan riwayat bantuan teknis (email, website, TTE, Srikandi) kepada instansi.
-- **Advanced Filtering**: Filter berdasarkan kategori, bulan, dan tahun untuk pelaporan bulanan.
+- **Advanced Filtering**: Filter berdasarkan kategori, bulan, dan tahun untuk pelaporan periodik.
 
-### 5. Administrasi & Keamanan
-- **Role-Based Access Control (RBAC)**: Perbedaan akses fungsional antara *Super Admin* dan *Admin*.
+### 6. Administrasi & Keamanan
+- **Role-Based Access Control (RBAC)**: Pembatasan akses antara *Super Admin* dan *Admin*.
 - **Eksport Data**: Generasi laporan dalam format PDF dan CSV menggunakan Dompdf.
-- **Otomatisasi Dokumen**: Pembuatan dokumen Perjanjian Kerja (PK) massal dalam format PDF/ZIP.
+- **Restructured UI**: Navigasi yang dikelompokkan secara logis (Dashboard, Email, Pejabat, Organisasi) untuk kemudahan penggunaan.
 
 ## Tech Stack
 
@@ -37,7 +43,7 @@ Portal terintegrasi untuk manajemen identitas digital, sertifikat elektronik, da
 
 ### Frontend
 - **CSS Framework**: Tailwind CSS (JIT Compiler)
-- **Interactivity**: Alpine.js (Lightweight JavaScript)
+- **Interactivity**: Alpine.js & Plugins (Collapse)
 - **Charts**: ApexCharts (Data Visualization)
 - **UI Components**: Font Awesome 6, Choices.js (Searchable Selects)
 

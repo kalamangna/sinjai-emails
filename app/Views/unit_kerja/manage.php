@@ -4,7 +4,7 @@
 <div class="space-y-6">
     <!-- Header Halaman -->
     <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-        <h1 class="text-2xl font-semibold text-gray-900">Unit Kerja</h1>
+        <h1 class="text-2xl font-semibold text-gray-900">Master Data Unit Kerja</h1>
         
         <?php if (session()->get('role') === 'super_admin'): ?>
         <div class="flex items-center gap-2 w-full lg:w-auto">
