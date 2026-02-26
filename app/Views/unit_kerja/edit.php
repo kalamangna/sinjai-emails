@@ -1,25 +1,23 @@
 <?= $this->extend('layouts/main') ?>
 
 <?= $this->section('content') ?>
-<div class="flex justify-center">
-    <div class="w-full max-w-2xl">
-        <div class="bg-slate-900 border border-slate-800 rounded-[2.5rem] shadow-2xl overflow-hidden relative group">
-            <div class="bg-slate-800/30 px-10 py-8 border-b border-slate-800">
-                <h5 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em] flex items-center">
-                    <i class="fas fa-edit mr-3 text-blue-500 opacity-50"></i>Edit Unit Kerja
-                </h5>
-            </div>
-            <div class="p-10">
-                <form action="<?= site_url('unit_kerja/update/' . $unit_kerja['id']) ?>" method="post" class="space-y-8">
+<div class="max-w-2xl mx-auto space-y-6">
+    <div>
+        <h1 class="text-2xl font-semibold text-gray-900">Perbarui Unit Kerja</h1>
+    </div>
+
+    <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+        <div class="p-8">
+            <form action="<?= site_url('unit_kerja/update/' . $unit_kerja['id']) ?>" method="post" class="space-y-6">
                     <?= csrf_field() ?>
                     <div>
-                        <label for="nama_unit_kerja" class="block text-[9px] font-black text-slate-600 uppercase tracking-[0.2em] mb-3 ml-1">Nama Unit Kerja</label>
-                        <input type="text" class="block w-full px-5 py-3.5 bg-slate-950 border border-slate-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-bold text-slate-200 transition-all uppercase placeholder-slate-800" id="nama_unit_kerja" name="nama_unit_kerja" value="<?= esc($unit_kerja['nama_unit_kerja']) ?>" required>
+                        <label for="nama_unit_kerja" class="block text-sm font-medium text-gray-700 mb-1">Nama Unit Kerja</label>
+                        <input type="text" class="block w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-400 focus:border-gray-400 text-sm font-medium text-gray-900 uppercase placeholder-gray-300" id="nama_unit_kerja" name="nama_unit_kerja" value="<?= esc($unit_kerja['nama_unit_kerja']) ?>" required>
                     </div>
                     <div>
-                        <label for="parent_id" class="block text-[9px] font-black text-slate-600 uppercase tracking-[0.2em] mb-3 ml-1">Induk Unit Kerja (Opsional)</label>
-                        <select class="block w-full px-5 py-3.5 bg-slate-950 border border-slate-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-bold text-slate-300 uppercase cursor-pointer transition-all" id="parent_id" name="parent_id">
-                            <option value="">PILIH UNIT INDUK...</option>
+                        <label for="parent_id" class="block text-sm font-medium text-gray-700 mb-1">Unit Induk <span class="text-gray-400 font-normal">(Opsional)</span></label>
+                        <select class="choices-search block w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-400 focus:border-gray-400 text-sm font-medium text-gray-900 appearance-none cursor-pointer" id="parent_id" name="parent_id">
+                            <option value="">-- TANPA UNIT INDUK (ROOT) --</option>
                             <?php foreach ($parent_options as $option): ?>
                                 <option value="<?= $option['id'] ?>" <?= ($option['id'] == $unit_kerja['parent_id']) ? 'selected' : '' ?>>
                                     <?= esc(strtoupper($option['nama_unit_kerja'])) ?>
@@ -27,12 +25,12 @@
                             <?php endforeach; ?>
                         </select>
                     </div>
-                    <div class="flex flex-col md:flex-row justify-between items-center gap-4 pt-8 border-t border-slate-800">
-                        <a href="javascript:void(0);" onclick="history.back();" class="w-full md:w-auto px-10 py-4 bg-slate-800 hover:bg-slate-700 text-slate-300 font-black rounded-2xl shadow-sm transition-all text-[10px] uppercase tracking-widest no-underline flex items-center justify-center">
-                            <i class="fas fa-arrow-left mr-3"></i> Batal
+                    <div class="flex flex-col sm:flex-row justify-between items-center gap-4 pt-6 border-t border-gray-100">
+                        <a href="<?= site_url('unit_kerja/manage') ?>" class="w-full sm:w-auto px-6 py-2 bg-white border border-gray-300 text-gray-700 font-bold rounded-lg hover:bg-gray-50 transition-all text-xs uppercase tracking-widest no-underline flex items-center justify-center shadow-sm">
+                            <i class="fas fa-times mr-2"></i> Batal
                         </a>
-                        <button type="submit" class="w-full md:w-auto px-10 py-4 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl shadow-xl shadow-blue-900/20 transition-all text-[10px] uppercase tracking-widest flex items-center justify-center">
-                            <i class="fas fa-save mr-3"></i> Simpan
+                        <button type="submit" class="w-full sm:w-auto px-8 py-2 bg-gray-900 hover:bg-gray-800 text-white font-bold rounded-lg shadow-sm transition-all text-xs uppercase tracking-widest flex items-center justify-center">
+                            <i class="fas fa-save mr-2"></i> Simpan
                         </button>
                     </div>
                 </form>

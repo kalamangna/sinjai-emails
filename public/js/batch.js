@@ -433,7 +433,6 @@ document.addEventListener("DOMContentLoaded", function () {
             <td class="px-6 py-5 whitespace-nowrap">${nipDisplay}</td>
             <td class="px-6 py-5 whitespace-nowrap">${nikDisplay}</td>
             <td class="px-6 py-5 font-black text-slate-700 tracking-tight">${nameCellContent}</td>
-            <td class="px-6 py-5 text-[10px] uppercase font-bold text-slate-400 leading-tight">${unitKerjaCellContent}</td>
             <td class="px-6 py-5 whitespace-nowrap font-bold text-slate-600 tracking-tight lowercase">${emailCellContent}</td>
             <td class="px-6 py-5 whitespace-nowrap">${passwordCellContent}</td>
             <td class="px-6 py-5 text-center whitespace-nowrap">${statusBadge}</td>

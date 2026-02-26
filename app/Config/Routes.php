@@ -27,9 +27,7 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         $routes->get('eselon_detail/(:num)', 'Email::eselon_detail/$1');
         $routes->get('pimpinan', 'Email::pimpinan');
         $routes->get('pimpinan_desa', 'Email::pimpinan_desa');
-        $routes->get('pimpinan_hub', 'Email::pimpinan_hub');
         $routes->get('eselon_list', 'Email::eselon_list');
-        $routes->get('batch_hub', 'Email::batch_hub');
         $routes->get('export_pimpinan_pdf', 'Email::export_pimpinan_pdf');
         $routes->get('export_pimpinan_desa_pdf', 'Email::export_pimpinan_desa_pdf');
         $routes->get('export_unit_kerja_csv/(:num)', 'Email::export_unit_kerja_csv/$1');
@@ -44,19 +42,24 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         // Mutation Routes (Super Admin Only)
         $routes->group('', ['filter' => 'role:super_admin'], function ($routes) {
             $routes->get('sync', 'Email::sync');
+            $routes->get('edit_profile/(:any)', 'Email::edit_profile/$1');
             $routes->post('update_details/(:any)', 'Email::update_details/$1');
+            $routes->get('edit_password/(:any)', 'Email::edit_password/$1');
+            $routes->post('update_password/(:any)', 'Email::update_password/$1');
             $routes->post('delete/(:num)', 'Email::delete/$1');
-            $routes->get('batch', 'Email::batch');
-            $routes->get('batch_update', 'Email::batch_update');
-            $routes->get('batch_perjanjian_kerja', 'Email::batch_perjanjian_kerja');
-            $routes->post('batch_update_process', 'Email::batch_update_process');
-            $routes->post('batch_create', 'Email::batch_create');
             $routes->post('create_single', 'Email::create_single_email');
             $routes->post('api_generate_pdf', 'Email::api_generate_pdf');
         });
     });
 
-    $routes->get('website_hub', 'Home::website_hub');
+    // Batch Operations (Super Admin Only)
+    $routes->group('batch', ['filter' => 'role:super_admin'], function ($routes) {
+        $routes->get('/', 'BatchController::index');
+        $routes->get('update', 'BatchController::update');
+        $routes->get('pk', 'BatchController::pk');
+        $routes->post('process_update', 'BatchController::process_update');
+        $routes->post('process_create', 'BatchController::process_create');
+    });
 
     // Manajemen Data Induk (Unit Kerja)
     $routes->group('unit_kerja', function ($routes) {

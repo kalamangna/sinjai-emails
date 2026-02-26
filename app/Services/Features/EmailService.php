@@ -6,6 +6,7 @@ use App\Models\EmailModel;
 use App\Models\UnitKerjaModel;
 use App\Models\StatusAsnModel;
 use App\Models\EselonModel;
+use App\Models\PkModel;
 use Exception;
 
 class EmailService
@@ -14,6 +15,7 @@ class EmailService
     protected $unitKerjaModel;
     protected $statusAsnModel;
     protected $eselonModel;
+    protected $pkModel;
 
     public function __construct()
     {
@@ -21,6 +23,7 @@ class EmailService
         $this->unitKerjaModel = new UnitKerjaModel();
         $this->statusAsnModel = new StatusAsnModel();
         $this->eselonModel = new EselonModel();
+        $this->pkModel = new PkModel();
     }
 
     public function getGlobalNavigationData()
@@ -200,10 +203,13 @@ class EmailService
             $parent_unit_kerja = $this->unitKerjaModel->find($unit_kerja['parent_id']);
         }
 
+        $pk_data = $this->pkModel->where('email', $email_detail['email'])->first();
+
         return [
             'email' => $email_detail,
             'unit_kerja' => $unit_kerja,
             'parent_unit_kerja' => $parent_unit_kerja,
+            'pk_data' => $pk_data,
             'unit_kerja_options' => $this->unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->findAll(),
             'status_asn_options' => $this->statusAsnModel->orderBy('nama_status_asn', 'ASC')->findAll(),
             'eselon_options' => $this->eselonModel->orderBy('nama_eselon', 'ASC')->findAll(),

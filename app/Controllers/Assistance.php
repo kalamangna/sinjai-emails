@@ -77,7 +77,8 @@ class Assistance extends BaseController
 
         'Domain Hosting Website' => [
             'Registrasi Domain',
-            'Migrasi / Setup Hosting'
+            'Migrasi / Setup Hosting',
+            'Troubleshooting / Perbaikan'
         ]
 
     ];
@@ -133,6 +134,11 @@ class Assistance extends BaseController
         }
 
         $activities = $builder->orderBy('tanggal_kegiatan', 'ASC')->orderBy('id', 'ASC')->findAll();
+
+        foreach ($activities as &$activity) {
+            $activity['category_label'] = self::CATEGORY_MAP[$activity['category']] ?? 'Tidak Diketahui';
+            $activity['services'] = json_decode($activity['services'], true);
+        }
 
         $monthNames = [
             1 => 'Januari',
@@ -317,7 +323,7 @@ class Assistance extends BaseController
     public function export_pdf()
     {
         $filterCategory = $this->request->getGet('category');
-        
+
         $filterMonth = $this->request->getGet('month');
         if ($filterMonth === null) {
             $filterMonth = date('n');

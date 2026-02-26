@@ -9,7 +9,6 @@ use App\Models\UnitKerjaModel;
 use App\Models\StatusAsnModel;
 use App\Models\EselonModel;
 use App\Services\Exports\EmailExportService;
-use App\Services\Features\EmailBatchService;
 use App\Services\Features\EmailService;
 use App\Services\Features\SyncService;
 use CodeIgniter\Controller;
@@ -29,7 +28,6 @@ class Email extends BaseController
     private $eselonModel;
     private $emailExportService;
     private $syncService;
-    private $emailBatchService;
     private $emailService;
 
     public function __construct()
@@ -43,26 +41,13 @@ class Email extends BaseController
         $this->eselonModel = new EselonModel();
         $this->emailExportService = new EmailExportService();
         $this->syncService = new SyncService();
-        $this->emailBatchService = new EmailBatchService();
         $this->emailService = new EmailService();
-    }
-
-    public function pimpinan_hub()
-    {
-        $eselonModel = new \App\Models\EselonModel();
-        $data['eselons'] = $eselonModel->orderBy('nama_eselon', 'ASC')->findAll();
-        return view('email/pimpinan_hub', $data);
     }
 
     public function eselon_list()
     {
         $data['eselons'] = $this->eselonModel->orderBy('nama_eselon', 'ASC')->findAll();
         return view('email/eselon_list', $data);
-    }
-
-    public function batch_hub()
-    {
-        return view('email/batch_hub');
     }
 
     public function index()
@@ -75,7 +60,7 @@ class Email extends BaseController
             $bsre_status = $this->request->getGet('bsre_status');
 
             $data = $this->emailService->getEmailDashboardData($search, $bsre_status, $perPage);
-            
+
             $lastSync = $this->appSettingModel->where('key', 'last_sync_time')->first();
 
             $data['title'] = 'Data Email';
@@ -110,61 +95,6 @@ class Email extends BaseController
         }
     }
 
-    public function batch()
-    {
-        $data['unit_kerja'] = $this->unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->findAll();
-        $data['status_asn_options'] = $this->statusAsnModel->orderBy('nama_status_asn', 'ASC')->findAll();
-        return view('email/batch', $data);
-    }
-
-    public function batch_update()
-    {
-        $data['unit_kerja'] = $this->unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->findAll();
-        $data['status_asn_options'] = $this->statusAsnModel->orderBy('nama_status_asn', 'ASC')->findAll();
-        return view('email/batch_update', $data);
-    }
-
-    public function batch_perjanjian_kerja()
-    {
-        $data['unit_kerja'] = $this->unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->findAll();
-        $data['status_asn_options'] = $this->statusAsnModel->orderBy('nama_status_asn', 'ASC')->findAll();
-        return view('email/batch_perjanjian_kerja', $data);
-    }
-
-    public function batch_update_process()
-    {
-        if (strtolower($this->request->getMethod()) !== 'post') {
-            return $this->response->setJSON(['success' => false, 'message' => 'Invalid request method.']);
-        }
-
-        $data = $this->request->getJSON(true);
-        if (empty($data) || !isset($data['identifiers']) || !is_array($data['identifiers'])) {
-            return $this->response->setJSON(['success' => false, 'message' => 'No identifiers provided.']);
-        }
-
-        $results = $this->emailBatchService->processBatchUpdate($data);
-        return $this->response->setJSON(['success' => true, 'results' => $results]);
-    }
-
-    public function batch_create()
-    {
-        if (strtolower($this->request->getMethod()) !== 'post') {
-            return redirect()->to('/email');
-        }
-
-        $data = $this->request->getJSON();
-        if (empty($data)) {
-            return $this->response->setJSON(['success' => false, 'message' => 'No data provided.']);
-        }
-
-        try {
-            $results = $this->emailBatchService->processBatchCreate($data);
-            return $this->response->setJSON(['success' => true, 'results' => $results]);
-        } catch (Exception $e) {
-            return $this->response->setJSON(['success' => false, 'message' => $e->getMessage()]);
-        }
-    }
-
     public function sync()
     {
         try {
@@ -172,7 +102,7 @@ class Email extends BaseController
             if (is_cli()) {
                 return $result;
             }
-            
+
             if ($result['success']) {
                 return redirect()->to('email')->with('success', $result['message']);
             } else {
@@ -200,15 +130,74 @@ class Email extends BaseController
         }
     }
 
-    public function update_details($username)
+    public function edit_profile($username)
+    {
+        try {
+            $data = $this->emailService->getEmailDetail($username);
+            $data['unit_kerja_options'] = $this->unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->findAll();
+            $data['status_asn_options'] = $this->statusAsnModel->orderBy('nama_status_asn', 'ASC')->findAll();
+            $data['eselon_options'] = $this->eselonModel->orderBy('nama_eselon', 'ASC')->findAll();
+            return view('email/edit_profile', $data);
+        } catch (Exception $e) {
+            $data['error'] = $e->getMessage();
+            return view('email/error', $data);
+        }
+    }
+
+    public function edit_password($username)
+    {
+        try {
+            $data = $this->emailService->getEmailDetail($username);
+            return view('email/edit_password', $data);
+        } catch (Exception $e) {
+            $data['error'] = $e->getMessage();
+            return view('email/error', $data);
+        }
+    }
+
+    public function update_password($username)
     {
         if (strtolower($this->request->getMethod()) !== 'post') {
-            return redirect()->to('email/detail/' . $username)->with('error', 'Invalid request method.');
+            return redirect()->to('email/detail/' . $username)->with('error', 'Metode permintaan tidak valid.');
         }
 
         $email = $this->emailModel->where('user', $username)->first();
         if (!$email) {
-            return redirect()->to('email')->with('error', 'Email account not found.');
+            return redirect()->to('email')->with('error', 'Akun email tidak ditemukan.');
+        }
+
+        $newPassword = $this->request->getPost('password');
+        if (empty($newPassword)) {
+            return redirect()->to('email/edit_password/' . $username)->with('error', 'Kata sandi tidak boleh kosong.');
+        }
+
+        if ($newPassword === $email['password']) {
+            return redirect()->to('email/detail/' . $username)->with('info', 'Kata sandi baru sama dengan yang lama.');
+        }
+
+        try {
+            // Update on cPanel first
+            $this->cpanelApi->change_password($email['email'], $newPassword);
+            
+            // If successful, update locally
+            $this->emailModel->update($email['id'], ['password' => $newPassword]);
+            
+            return redirect()->to('email/detail/' . $username)->with('success', 'Kata sandi berhasil diperbarui.');
+        } catch (Exception $e) {
+            log_message('error', 'Error updating password on cPanel: ' . $e->getMessage());
+            return redirect()->to('email/edit_password/' . $username)->with('error', 'Gagal memperbarui kata sandi di server: ' . $e->getMessage());
+        }
+    }
+
+    public function update_details($username)
+    {
+        if (strtolower($this->request->getMethod()) !== 'post') {
+            return redirect()->to('email/detail/' . $username)->with('error', 'Metode permintaan tidak valid.');
+        }
+
+        $email = $this->emailModel->where('user', $username)->first();
+        if (!$email) {
+            return redirect()->to('email')->with('error', 'Akun email tidak ditemukan.');
         }
 
         $statusAsnId = $this->request->getPost('status_asn');
@@ -237,27 +226,16 @@ class Email extends BaseController
         $tanggalLahir = $this->request->getPost('tanggal_lahir');
         $updateData['tanggal_lahir'] = !empty($tanggalLahir) ? $tanggalLahir : null;
 
-        $newPassword = $this->request->getPost('password');
-        if (!empty($newPassword) && $newPassword !== $email['password']) {
-            try {
-                $this->cpanelApi->change_password($email['email'], $newPassword);
-                $updateData['password'] = $newPassword;
-            } catch (Exception $e) {
-                log_message('error', 'Error updating password on cPanel: ' . $e->getMessage());
-                return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update password on cPanel: ' . $e->getMessage());
-            }
-        }
-
         try {
             $updated = $this->emailModel->update($email['id'], $updateData);
             if ($updated) {
-                return redirect()->to('email/detail/' . $username)->with('success', 'Email details have been updated successfully.');
+                return redirect()->to('email/detail/' . $username)->with('success', 'Data profil berhasil diperbarui.');
             } else {
-                return redirect()->to('email/detail/' . $username)->with('info', 'No changes were detected.');
+                return redirect()->to('email/detail/' . $username)->with('info', 'Tidak ada perubahan data.');
             }
         } catch (Exception $e) {
             log_message('error', 'Database error during email details update: ' . $e->getMessage());
-            return redirect()->to('email/detail/' . $username)->with('error', 'Failed to update email details due to a database error.');
+            return redirect()->to('email/detail/' . $username)->with('error', 'Gagal memperbarui data karena kesalahan database.');
         }
     }
 
@@ -273,7 +251,7 @@ class Email extends BaseController
             ];
 
             $data = $this->emailService->getUnitKerjaDetail($unitKerjaId, $params);
-            
+
             $data['per_page'] = $params['per_page'] ?? 100;
             $data['search'] = $params['search'];
             $data['status_asn'] = $params['status_asn'];
@@ -425,7 +403,7 @@ class Email extends BaseController
             ];
 
             $data = [
-                'title' => 'Pimpinan OPD',
+                'title' => 'Pimpinan',
                 'emails' => $emails,
                 'total_emails' => $total_emails,
                 'pagination' => $pager,
@@ -703,7 +681,7 @@ class Email extends BaseController
         }
 
         if (empty($pdfFiles)) {
-             return $this->response->setJSON(['success' => false, 'message' => 'Temp folder is empty.']);
+            return $this->response->setJSON(['success' => false, 'message' => 'Temp folder is empty.']);
         }
 
         $limit = 250;
@@ -858,7 +836,7 @@ class Email extends BaseController
     {
         try {
             $result = $this->emailExportService->generatePerjanjianKerjaZip($unitKerjaId);
-            
+
             header('Content-Type: application/zip');
             header('Content-Disposition: attachment; filename="' . $result['filename'] . '"');
             header('Content-Length: ' . filesize($result['path']));
@@ -880,7 +858,11 @@ class Email extends BaseController
             $pimpinan_desa = $this->request->getGet('pimpinan_desa') ?? 1;
 
             $result = $this->emailExportService->generateUnitKerjaPdf(
-                $unitKerjaId, $search, $status_asn, $bsre_status, $pimpinan_desa
+                $unitKerjaId,
+                $search,
+                $status_asn,
+                $bsre_status,
+                $pimpinan_desa
             );
 
             $result['dompdf']->stream($result['filename'], ["Attachment" => true]);
@@ -900,7 +882,11 @@ class Email extends BaseController
             $pimpinan_desa = $this->request->getGet('pimpinan_desa') ?? 1;
 
             $result = $this->emailExportService->generateAccountDetailPdf(
-                $unitKerjaId, $search, $status_asn, $bsre_status, $pimpinan_desa
+                $unitKerjaId,
+                $search,
+                $status_asn,
+                $bsre_status,
+                $pimpinan_desa
             );
 
             $result['dompdf']->stream($result['filename'], ["Attachment" => true]);
