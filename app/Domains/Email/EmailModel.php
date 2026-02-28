@@ -102,7 +102,7 @@ class EmailModel extends Model
                 'email' => $emailData['email'],
                 'domain' => $emailData['domain'] ?? null,
                 'mtime' => $emailData['mtime'] ?? null,
-                'suspended_login' => $emailData['suspended_login'] ?? 0,
+                'suspended_login' => 0,
                 'diskquota' => $emailData['diskquota'] ?? null,
                 'humandiskquota' => $emailData['humandiskquota'] ?? null,
                 '_diskquota' => $emailData['_diskquota'] ?? null,
