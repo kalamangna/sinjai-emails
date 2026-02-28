@@ -76,6 +76,20 @@
 </head>
 
 <body class="bg-slate-50 text-slate-700 antialiased font-inter">
+    <!-- Global Loading Overlay -->
+    <div id="global-loading" class="fixed inset-0 z-[9999] hidden flex items-center justify-center bg-slate-900/60 backdrop-blur-sm transition-all duration-300">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl flex flex-col items-center gap-4 max-w-xs w-full border border-white/20">
+            <div class="relative">
+                <div class="w-12 h-12 border-4 border-slate-100 rounded-full"></div>
+                <div class="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin absolute inset-0"></div>
+            </div>
+            <div class="text-center">
+                <h3 class="text-sm font-bold text-slate-800 uppercase tracking-tight">Mohon Tunggu</h3>
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">Sedang Memproses...</p>
+            </div>
+        </div>
+    </div>
+
     <!-- Sidebar -->
     <?= $this->include('components/sidebar') ?>
 
@@ -128,7 +142,7 @@
                                 <i class="fas fa-check-circle mr-3 text-white"></i>
                                 <span class="font-bold text-xs uppercase tracking-wider"><?= $msg === true ? 'Berhasil' : $msg ?></span>
                             </div>
-                            <button onclick="this.parentElement.remove()" class="text-white/50 hover:text-white transition-colors focus:outline-none">
+                            <button onclick="const p = this.parentElement; const container = p.parentElement; p.remove(); if(container && container.children.length === 0) container.remove();" class="text-white/50 hover:text-white transition-colors focus:outline-none">
                                 <i class="fas fa-times text-xs"></i>
                             </button>
                         </div>
@@ -140,7 +154,7 @@
                                 <i class="fas fa-exclamation-circle mr-3 text-white"></i>
                                 <span class="font-bold text-xs uppercase tracking-wider"><?= $err ?></span>
                             </div>
-                            <button onclick="this.parentElement.remove()" class="text-white/50 hover:text-white transition-colors focus:outline-none">
+                            <button onclick="const p = this.parentElement; const container = p.parentElement; p.remove(); if(container && container.children.length === 0) container.remove();" class="text-white/50 hover:text-white transition-colors focus:outline-none">
                                 <i class="fas fa-times text-xs"></i>
                             </button>
                         </div>
@@ -152,7 +166,7 @@
                                 <i class="fas fa-info-circle mr-3 text-white"></i>
                                 <span class="font-bold text-xs uppercase tracking-wider"><?= $info ?></span>
                             </div>
-                            <button onclick="this.parentElement.remove()" class="text-white/50 hover:text-white transition-colors focus:outline-none">
+                            <button onclick="const p = this.parentElement; const container = p.parentElement; p.remove(); if(container && container.children.length === 0) container.remove();" class="text-white/50 hover:text-white transition-colors focus:outline-none">
                                 <i class="fas fa-times text-xs"></i>
                             </button>
                         </div>
@@ -200,7 +214,14 @@
                 setTimeout(() => {
                     msg.style.opacity = '0';
                     msg.style.transform = 'translateY(-10px)';
-                    setTimeout(() => msg.remove(), 500);
+                    setTimeout(() => {
+                        const parent = msg.parentElement;
+                        msg.remove();
+                        // If no more messages in this container, remove the container
+                        if (parent && parent.children.length === 0) {
+                            parent.remove();
+                        }
+                    }, 500);
                 }, 5000);
             });
         });
@@ -232,6 +253,19 @@
             if (['WAITING_FOR_VERIFICATION', 'RENEW', 'PENDING'].includes(status)) return 'bg-amber-50 text-amber-500 border-amber-200';
             if (['NEW', 'BARU'].includes(status)) return 'bg-blue-50 text-blue-600 border-blue-200';
             return 'bg-slate-100 text-slate-700 border-slate-200';
+        }
+
+        // Global loading helper
+        function showGlobalLoading(show = true) {
+            const overlay = document.getElementById('global-loading');
+            if (!overlay) return;
+            if (show) {
+                overlay.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            } else {
+                overlay.classList.add('hidden');
+                document.body.style.overflow = '';
+            }
         }
     </script>
 

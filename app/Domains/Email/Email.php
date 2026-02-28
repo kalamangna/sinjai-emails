@@ -425,9 +425,9 @@ class Email extends BaseController
             $relativePath = substr($filePath, strlen($tempDir) + 1);
             
             if (preg_match('/_([^_]+)\.pdf$/', $relativePath, $matches)) {
-                $username = $matches[1];
-                if (in_array($username, $addedUsers)) continue;
-                $addedUsers[] = $username;
+                $nip = $matches[1];
+                if (in_array($nip, $addedUsers)) continue;
+                $addedUsers[] = $nip;
             }
             $pdfFiles[] = $relativePath;
         }
@@ -530,7 +530,8 @@ class Email extends BaseController
     public function export_perjanjian_kerja_pdf($unitKerjaId)
     {
         try {
-            $result = $this->emailExportService->generatePerjanjianKerjaZip($unitKerjaId);
+            $pkType = $this->request->getGet('pk_type');
+            $result = $this->emailExportService->generatePerjanjianKerjaZip($unitKerjaId, $pkType);
 
             header('Content-Type: application/zip');
             header('Content-Disposition: attachment; filename="' . $result['filename'] . '"');

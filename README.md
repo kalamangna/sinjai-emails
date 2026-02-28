@@ -7,7 +7,7 @@ Portal terintegrasi untuk manajemen identitas digital, sertifikat elektronik, da
 ### 1. Manajemen Email Institusi
 - **Integrasi cPanel API**: Pembuatan, penghapusan, dan sinkronisasi akun email secara otomatis dengan server hosting.
 - **Advanced Search**: Pencarian akun berdasarkan Nama, NIP, atau NIK secara konsisten di seluruh tabel.
-- **Manajemen Profil**: Pendataan NIK, NIP, Jabatan, dan Unit Kerja untuk setiap pemegang akun dengan visualisasi status yang jelas.
+- **Manajemen Profil**: Pendataan NIK, NIP, Jabatan, Golongan (untuk PNS/PPPK), dan Unit Kerja untuk setiap pemegang akun.
 
 ### 2. Monitoring Sertifikat Elektronik (TTE)
 - **Integrasi BSrE API**: Pemantauan status sertifikat digital secara *real-time* (Aktif, Expired, Revoked, dsb).
@@ -23,6 +23,8 @@ Portal terintegrasi untuk manajemen identitas digital, sertifikat elektronik, da
 - **Refactored Module**: Modul batch yang terorganisir untuk efisiensi pemrosesan data massal.
 - **Mass Account Creation**: Pembuatan akun massal dengan input ala Excel dan validasi otomatis.
 - **Bulk Updates**: Pembaruan data profil dan dokumen Perjanjian Kerja (PK) secara massal.
+- **PK Export System**: Generasi otomatis dokumen Perjanjian Kerja (PPPK/Paruh Waktu) dengan format standar (A4, font Bookman Old Style).
+- **Subfolder Archive**: ZIP hasil batch yang terorganisir secara otomatis berdasarkan status kepegawaian.
 
 ### 5. Log Pendampingan Teknis
 - **Documentation**: Pencatatan riwayat bantuan teknis (email, website, TTE, Srikandi) kepada instansi.

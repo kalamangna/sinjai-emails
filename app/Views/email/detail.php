@@ -119,7 +119,7 @@
                                 </div>
                                 <div>
                                     <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">Gelar Akademik</label>
-                                    <p class="text-sm font-semibold text-slate-800 uppercase">
+                                    <p class="text-sm font-semibold text-slate-800">
                                         <?= esc($email['gelar_depan']) ?: '' ?>
                                         <?= esc($email['gelar_belakang']) ?: '' ?>
                                         <?php if (empty($email['gelar_depan']) && empty($email['gelar_belakang'])): ?>

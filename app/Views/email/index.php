@@ -181,6 +181,7 @@
         const text = btn.querySelector('span');
 
         // State: Loading
+        showGlobalLoading(true);
         btn.disabled = true;
         btn.classList.add('opacity-75', 'cursor-not-allowed');
         icon.classList.remove('group-hover:rotate-180');
