@@ -187,6 +187,7 @@ document.addEventListener("DOMContentLoaded", function () {
     submitBtn.disabled = true;
     submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Memproses...`;
     progressSection.style.display = "block";
+    progressSection.scrollIntoView({ behavior: "smooth", block: "center" });
     resultsLog.innerHTML = "";
 
     const totalToSubmit = validUserBatch.length;

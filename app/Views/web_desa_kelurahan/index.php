@@ -341,6 +341,7 @@
 
         btn.disabled = true;
         container.classList.remove('hidden');
+        container.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
         const rows = document.querySelectorAll('.website-row');
         const total = rows.length;

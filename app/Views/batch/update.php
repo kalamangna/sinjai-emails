@@ -195,6 +195,9 @@
             updateBtn.disabled = true;
             updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Memproses...';
             resultsTableBody.innerHTML = '<tr><td colspan="4" class="px-6 py-10 text-center italic text-slate-700">Sedang memproses data...</td></tr>';
+            
+            // Scroll ke tabel hasil
+            resultsTableBody.closest('table').scrollIntoView({ behavior: 'smooth', block: 'center' });
 
             try {
                 const response = await fetch('<?= site_url('batch/process_update') ?>', {
