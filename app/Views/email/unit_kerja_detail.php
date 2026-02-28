@@ -4,9 +4,9 @@
 <div class="space-y-6">
     <!-- Navigasi dan Aksi -->
     <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-        <a href="<?= site_url('email/unit_kerja') ?>" class="inline-flex items-center justify-center px-4 py-2 bg-white border border-slate-200 text-slate-700 font-bold rounded-lg hover:bg-slate-50 transition-all text-xs uppercase tracking-widest no-underline shadow-sm">
+        <button onclick="history.back()" class="inline-flex items-center justify-center px-4 py-2 bg-white border border-slate-200 text-slate-700 font-bold rounded-lg hover:bg-slate-50 transition-all text-xs uppercase tracking-widest no-underline shadow-sm">
             <i class="fas fa-arrow-left mr-2"></i> Kembali
-        </a>
+        </button>
 
         <div class="flex flex-wrap items-center gap-2">
             <a href="<?= site_url('email/export_unit_kerja_csv/' . $unit_kerja['id']) . ($_SERVER['QUERY_STRING'] ? '?' . $_SERVER['QUERY_STRING'] : '') ?>" class="inline-flex items-center justify-center px-4 py-2 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-lg font-bold text-[10px] uppercase tracking-widest no-underline shadow-sm">
@@ -20,9 +20,19 @@
             </a>
 
             <?php if (session()->get('role') === 'super_admin'): ?>
-                <button onclick="openExportModal(<?= $unit_kerja['id'] ?>)" class="inline-flex items-center justify-center px-4 py-2 bg-slate-800 text-white rounded-lg font-bold text-[10px] uppercase tracking-widest hover:bg-slate-700 transition-all shadow-sm">
-                    <i class="fas fa-file-contract mr-2 text-white/80"></i> Batch PK
-                </button>
+                <div class="relative group">
+                    <button class="inline-flex items-center justify-center px-4 py-2 bg-slate-800 text-white rounded-lg font-bold text-[10px] uppercase tracking-widest hover:bg-slate-700 transition-all shadow-sm">
+                        <i class="fas fa-file-contract mr-2 text-white/80"></i> Batch PK <i class="fas fa-chevron-down ml-2 text-[8px] opacity-50"></i>
+                    </button>
+                    <div class="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 overflow-hidden">
+                        <button onclick="openExportModal(<?= $unit_kerja['id'] ?>, 'pppk')" class="w-full px-4 py-3 text-left text-[10px] font-bold text-slate-700 uppercase tracking-widest hover:bg-slate-50 border-b border-slate-100 transition-colors">
+                            <i class="fas fa-fw fa-user-tie mr-2 text-blue-600"></i> PPPK
+                        </button>
+                        <button onclick="openExportModal(<?= $unit_kerja['id'] ?>, 'pppk_pw')" class="w-full px-4 py-3 text-left text-[10px] font-bold text-slate-700 uppercase tracking-widest hover:bg-slate-50 transition-colors">
+                            <i class="fas fa-fw fa-user-clock mr-2 text-amber-600"></i> Paruh Waktu
+                        </button>
+                    </div>
+                </div>
                 <button onclick="syncAllBsreStatus()" class="inline-flex items-center justify-center px-4 py-2 bg-white border border-slate-200 text-slate-700 rounded-lg font-bold text-[10px] uppercase tracking-widest hover:bg-slate-50 transition-all shadow-sm">
                     <i class="fas fa-sync-alt mr-2 text-slate-700"></i> Sync TTE
                 </button>
@@ -354,18 +364,30 @@
         <?php endif; ?>
     });
 
-    function openExportModal(unitId) {
+    function openExportModal(unitId, statusType = 'pppk') {
         const modal = document.getElementById('exportProgressModal');
         const bar = document.getElementById('exportProgressBar');
         const status = document.getElementById('exportStatusText');
         modal.classList.remove('hidden');
 
-        fetch(`<?= site_url('email/api_unit_emails/') ?>${unitId}<?= $_SERVER['QUERY_STRING'] ? '?' . $_SERVER['QUERY_STRING'] : '' ?>`)
+        let queryParams = `pk_type=${statusType}`;
+        const currentQuery = '<?= $_SERVER['QUERY_STRING'] ?>';
+        if (currentQuery) {
+            queryParams += `&${currentQuery}`;
+        }
+
+        fetch(`<?= site_url('email/api_unit_emails/') ?>${unitId}?${queryParams}`)
             .then(r => r.json()).then(data => {
-                if (!data.success || !data.emails.length) {
+                if (!data.success) {
                     modal.classList.add('hidden');
-                    return alert('Gagal mengambil data email.');
+                    return alert(data.message || 'Gagal mengambil data email.');
                 }
+
+                if (!data.emails || !data.emails.length) {
+                    modal.classList.add('hidden');
+                    return alert('Tidak ditemukan data PPPK atau PPPK Paruh Waktu di unit ini.');
+                }
+
                 const emails = data.emails;
                 let processed = 0;
                 const process = () => {

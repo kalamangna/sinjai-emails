@@ -297,17 +297,12 @@ class EmailExportService
 
         $template = $isPppk ? 'email/exports/perjanjian_kerja_pppk_template' : 'email/exports/perjanjian_kerja_template';
 
-        $unitKerja = null;
-        if (!empty($email['unit_kerja_id'])) {
-            $unitKerja = $this->unitKerjaModel->find($email['unit_kerja_id']);
-            if ($unitKerja && !empty($unitKerja['parent_id'])) {
-                $parentUnit = $this->unitKerjaModel->find($unitKerja['parent_id']);
-                if ($parentUnit) {
-                    $unitKerja['nama_unit_kerja'] = $unitKerja['nama_unit_kerja'] . ' - ' . $parentUnit['nama_unit_kerja'];
-                }
-            }
+        $unitKerja = [
+            'nama_unit_kerja' => $email['unit_kerja_name'] ?? 'N/A'
+        ];
+        if (!empty($email['parent_unit_kerja_name'])) {
+            $unitKerja['nama_unit_kerja'] .= ' - ' . $email['parent_unit_kerja_name'];
         }
-        if (!$unitKerja) throw new Exception('Unit Kerja not found for this email account.');
 
         $pk_data = $this->pkModel->where('email', $email['email'])->first();
         $data = [
@@ -379,12 +374,20 @@ class EmailExportService
             
             $isPppk = $statusPppk && $email['status_asn_id'] == $statusPppk['id'];
             $template = $isPppk ? 'email/exports/perjanjian_kerja_pppk_template' : 'email/exports/perjanjian_kerja_template';
+            $folderName = $isPppk ? 'PPPK' : 'PPPK_PARUH_WAKTU';
+
+            $itemUnitKerja = [
+                'nama_unit_kerja' => $email['unit_kerja_name'] ?? 'N/A'
+            ];
+            if (!empty($email['parent_unit_kerja_name'])) {
+                $itemUnitKerja['nama_unit_kerja'] .= ' - ' . $email['parent_unit_kerja_name'];
+            }
 
             $dompdf = $this->getDompdf();
             $pk_data = $this->pkModel->where('email', $email['email'])->first();
             $data = [
                 'email' => $email,
-                'unit_kerja' => $unitKerja,
+                'unit_kerja' => $itemUnitKerja,
                 'logoSrc' => $logoSrc,
                 'pk_data' => $pk_data,
             ];
@@ -395,7 +398,7 @@ class EmailExportService
             $dompdf->render();
             
             $pdfOutput = $dompdf->output();
-            $pdfFileName = 'perjanjian_kerja_' . url_title($email['name'], '_', true) . '_' . $email['user'] . '.pdf';
+            $pdfFileName = $folderName . '/perjanjian_kerja_' . url_title($email['name'], '_', true) . '_' . $email['user'] . '.pdf';
             $zip->addFromString($pdfFileName, $pdfOutput);
             $addedFiles[] = $uniqueKey;
         }
@@ -488,13 +491,13 @@ class EmailExportService
         $statusPppk = $this->statusAsnModel->where('nama_status_asn', 'PPPK')->first();
         $isPppk = $statusPppk && $email['status_asn_id'] == $statusPppk['id'];
         $template = $isPppk ? 'email/exports/perjanjian_kerja_pppk_template' : 'email/exports/perjanjian_kerja_template';
+        $subFolder = $isPppk ? 'PPPK' : 'PPPK_PARUH_WAKTU';
 
-        $unitKerja = $this->unitKerjaModel->find($unitId);
-        if ($unitKerja && !empty($unitKerja['parent_id'])) {
-            $parentUnit = $this->unitKerjaModel->find($unitKerja['parent_id']);
-            if ($parentUnit) {
-                $unitKerja['nama_unit_kerja'] = $unitKerja['nama_unit_kerja'] . '-' . $parentUnit['nama_unit_kerja'];
-            }
+        $unitKerja = [
+            'nama_unit_kerja' => $email['unit_kerja_name'] ?? 'N/A'
+        ];
+        if (!empty($email['parent_unit_kerja_name'])) {
+            $unitKerja['nama_unit_kerja'] .= ' - ' . $email['parent_unit_kerja_name'];
         }
 
         $logoSrc = $this->getGarudaLogoSrc();
@@ -514,13 +517,14 @@ class EmailExportService
         $dompdf->render();
 
         $output = $dompdf->output();
-        $tempDir = WRITEPATH . 'uploads/temp_export_' . $unitId;
-        if (!is_dir($tempDir)) {
-            mkdir($tempDir, 0775, true);
+        $baseTempDir = WRITEPATH . 'uploads/temp_export_' . $unitId;
+        $fullTempDir = $baseTempDir . '/' . $subFolder;
+        if (!is_dir($fullTempDir)) {
+            mkdir($fullTempDir, 0775, true);
         }
 
         $filename = 'perjanjian_kerja_' . url_title($email['name'], '_', true) . '_' . $email['user'] . '.pdf';
-        file_put_contents($tempDir . '/' . $filename, $output);
+        file_put_contents($fullTempDir . '/' . $filename, $output);
         
         return true;
     }

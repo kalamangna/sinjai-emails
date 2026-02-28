@@ -4,9 +4,9 @@
 <div class="space-y-6">
     <!-- Navigasi dan Aksi -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <a href="<?= site_url('email/eselon_list') ?>" class="inline-flex items-center justify-center px-4 py-2 bg-white border border-slate-200 text-slate-700 font-bold rounded-lg hover:bg-slate-50 transition-all text-xs uppercase tracking-widest no-underline shadow-sm">
+        <button onclick="history.back()" class="inline-flex items-center justify-center px-4 py-2 bg-white border border-slate-200 text-slate-700 font-bold rounded-lg hover:bg-slate-50 transition-all text-xs uppercase tracking-widest no-underline shadow-sm">
             <i class="fas fa-arrow-left mr-2"></i> Kembali
-        </a>
+        </button>
         <div class="flex gap-2">
             <button onclick="syncAllBsreStatus()" class="inline-flex items-center justify-center px-4 py-2 bg-slate-800 text-white rounded-lg font-bold text-xs uppercase tracking-widest hover:bg-slate-700 transition-all shadow-sm">
                 <i class="fas fa-sync-alt mr-2 text-white/80"></i> Sync TTE

@@ -5,9 +5,9 @@
     <!-- Navigasi dan Aksi -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div class="flex items-center gap-4">
-            <a href="<?= site_url('email') ?>" class="inline-flex items-center justify-center w-10 h-10 bg-white border border-slate-200 text-slate-700 rounded-lg hover:bg-slate-50 transition-all shadow-sm no-underline">
+            <button onclick="history.back()" class="inline-flex items-center justify-center w-10 h-10 bg-white border border-slate-200 text-slate-700 rounded-lg hover:bg-slate-50 transition-all shadow-sm no-underline">
                 <i class="fas fa-arrow-left"></i>
-            </a>
+            </button>
             <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight">Detail Akun</h1>
         </div>
         <div class="flex flex-wrap items-center gap-2">

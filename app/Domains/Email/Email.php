@@ -19,6 +19,8 @@ class Email extends BaseController
     private $emailModel;
     private $pkModel;
     private $eselonModel;
+    private $unitKerjaModel;
+    private $statusAsnModel;
     private $emailExportService;
     private $syncService;
     private $emailService;
@@ -28,6 +30,8 @@ class Email extends BaseController
         $this->emailModel = new EmailModel();
         $this->pkModel = new PkModel();
         $this->eselonModel = new EselonModel();
+        $this->unitKerjaModel = new UnitKerjaModel();
+        $this->statusAsnModel = new StatusAsnModel();
         $this->emailExportService = new EmailExportService();
         $this->syncService = new SyncService();
         $this->emailService = new EmailService();
@@ -320,12 +324,21 @@ class Email extends BaseController
         $statusPppk = $this->statusAsnModel->where('nama_status_asn', 'PPPK')->first();
         $statusPppkPw = $this->statusAsnModel->where('nama_status_asn', 'PPPK PARUH WAKTU')->first();
         
+        $pkType = $this->request->getGet('pk_type');
         $allowedStatusIds = [];
-        if ($statusPppk) $allowedStatusIds[] = $statusPppk['id'];
-        if ($statusPppkPw) $allowedStatusIds[] = $statusPppkPw['id'];
+        
+        if ($pkType === 'pppk') {
+            if ($statusPppk) $allowedStatusIds[] = $statusPppk['id'];
+        } elseif ($pkType === 'pppk_pw') {
+            if ($statusPppkPw) $allowedStatusIds[] = $statusPppkPw['id'];
+        } else {
+            // Default to both if not specified (legacy behavior)
+            if ($statusPppk) $allowedStatusIds[] = $statusPppk['id'];
+            if ($statusPppkPw) $allowedStatusIds[] = $statusPppkPw['id'];
+        }
 
         if (empty($allowedStatusIds)) {
-            return $this->response->setJSON(['success' => true, 'emails' => [], 'message' => 'PPPK status not configured.']);
+            return $this->response->setJSON(['success' => false, 'emails' => [], 'message' => 'Status PPPK belum dikonfigurasi di sistem.']);
         }
 
         $children = $this->unitKerjaModel->where('parent_id', $unitKerjaId)->findAll();
@@ -401,18 +414,22 @@ class Email extends BaseController
             return $this->response->setJSON(['success' => false, 'message' => 'No files generated to zip.']);
         }
 
-        $files = scandir($tempDir);
         $pdfFiles = [];
         $addedUsers = [];
 
-        foreach ($files as $file) {
-            if ($file == '.' || $file == '..') continue;
-            if (preg_match('/_([^_]+)\.pdf$/', $file, $matches)) {
+        $it = new \RecursiveDirectoryIterator($tempDir);
+        foreach (new \RecursiveIteratorIterator($it) as $file) {
+            if ($file->isDir()) continue;
+            
+            $filePath = $file->getRealPath();
+            $relativePath = substr($filePath, strlen($tempDir) + 1);
+            
+            if (preg_match('/_([^_]+)\.pdf$/', $relativePath, $matches)) {
                 $username = $matches[1];
                 if (in_array($username, $addedUsers)) continue;
                 $addedUsers[] = $username;
             }
-            $pdfFiles[] = $file;
+            $pdfFiles[] = $relativePath;
         }
 
         if (empty($pdfFiles)) {
@@ -424,10 +441,15 @@ class Email extends BaseController
         $generatedZips = [];
         $baseName = url_title($unitKerja['nama_unit_kerja'], '_', true);
 
+        // Detect type for filename
+        $typeLabel = '';
+        if (is_dir($tempDir . '/PPPK')) $typeLabel = 'pppk_';
+        if (is_dir($tempDir . '/PPPK_PARUH_WAKTU')) $typeLabel = 'paruh_waktu_';
+
         foreach ($chunks as $index => $chunk) {
             $zip = new \ZipArchive();
             $partSuffix = (count($chunks) > 1) ? '_part_' . ($index + 1) : '';
-            $zipFileName = 'perjanjian_kerja_' . $baseName . $partSuffix . '.zip';
+            $zipFileName = 'perjanjian_kerja_' . $typeLabel . $baseName . $partSuffix . '.zip';
             $zipFilePath = WRITEPATH . 'uploads/' . $zipFileName;
 
             if ($zip->open($zipFilePath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== TRUE) {
@@ -442,9 +464,15 @@ class Email extends BaseController
             $generatedZips[] = $zipFileName;
         }
 
+        // Cleanup
+        $it = new \RecursiveDirectoryIterator($tempDir, \RecursiveDirectoryIterator::SKIP_DOTS);
+        $files = new \RecursiveIteratorIterator($it, \RecursiveIteratorIterator::CHILD_FIRST);
         foreach ($files as $file) {
-            if ($file == '.' || $file == '..') continue;
-            unlink($tempDir . '/' . $file);
+            if ($file->isDir()) {
+                rmdir($file->getRealPath());
+            } else {
+                unlink($file->getRealPath());
+            }
         }
         rmdir($tempDir);
 

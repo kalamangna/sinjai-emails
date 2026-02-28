@@ -4,9 +4,9 @@
 <div class="space-y-6">
     <!-- Navigasi dan Aksi -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <a href="<?= site_url('email') ?>" class="inline-flex items-center justify-center px-4 py-2 bg-white border border-slate-200 text-slate-700 font-bold rounded-lg hover:bg-slate-50 transition-all text-xs uppercase tracking-widest no-underline shadow-sm">
+        <button onclick="history.back()" class="inline-flex items-center justify-center px-4 py-2 bg-white border border-slate-200 text-slate-700 font-bold rounded-lg hover:bg-slate-50 transition-all text-xs uppercase tracking-widest no-underline shadow-sm">
             <i class="fas fa-arrow-left mr-2"></i> Kembali
-        </a>
+        </button>
         <div class="flex flex-wrap gap-2">
             <a href="<?= site_url('email/export_pimpinan_pdf') ?>" class="inline-flex items-center justify-center px-4 py-2 bg-white border border-slate-200 text-slate-700 rounded-lg font-bold text-xs uppercase tracking-widest hover:bg-slate-50 transition-all shadow-sm no-underline">
                 <i class="fas fa-file-pdf mr-2 text-red-600"></i> Unduh PDF

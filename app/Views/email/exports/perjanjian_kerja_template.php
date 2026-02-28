@@ -18,9 +18,30 @@
 
         @font-face {
             font-family: 'Bookman Old Style';
-            src: url(data:font/truetype;charset=utf-8;base64,<?= base64_encode(file_get_contents(FCPATH . 'fonts/BOOKOS.TTF')) ?>) format('truetype');
+            src: url(data:font/truetype;charset=utf-8;base64,<?= base64_encode(file_get_contents(FCPATH . 'fonts/bookmanoldstyle.ttf')) ?>) format('truetype');
             font-weight: normal;
             font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'Bookman Old Style';
+            src: url(data:font/truetype;charset=utf-8;base64,<?= base64_encode(file_get_contents(FCPATH . 'fonts/bookmanoldstyle_bold.ttf')) ?>) format('truetype');
+            font-weight: bold;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'Bookman Old Style';
+            src: url(data:font/truetype;charset=utf-8;base64,<?= base64_encode(file_get_contents(FCPATH . 'fonts/bookmanoldstyle_italic.ttf')) ?>) format('truetype');
+            font-weight: normal;
+            font-style: italic;
+        }
+
+        @font-face {
+            font-family: 'Bookman Old Style';
+            src: url(data:font/truetype;charset=utf-8;base64,<?= base64_encode(file_get_contents(FCPATH . 'fonts/bookmanoldstyle_bolditalic.ttf')) ?>) format('truetype');
+            font-weight: bold;
+            font-style: italic;
         }
 
         body {
@@ -238,12 +259,12 @@
                     <tr>
                         <td class="info-label">Nama</td>
                         <td class="info-sep">:</td>
-                        <td class="info-val"><?= esc($fullName) ?></td>
+                        <td class="info-val"><strong><?= esc($fullName) ?></strong></td>
                     </tr>
                     <tr>
                         <td class="info-label">Nomor Induk PPPK-PW</td>
                         <td class="info-sep">:</td>
-                        <td class="info-val"><?= esc($email['nip'] ?? 'N/A') ?></td>
+                        <td class="info-val"><strong><?= esc($email['nip'] ?? 'N/A') ?></strong></td>
                     </tr>
                     <tr>
                         <td class="info-label">Tempat/Tanggal Lahir</td>
@@ -287,9 +308,9 @@
                             <td class="info-label">Masa Perjanjian Kerja</td>
                             <td class="info-sep">:</td>
                             <td class="info-val">
-                                <?= formatTanggal($pk_data['tanggal_kontrak_awal'] ?? '0000-00-00') ?>
+                                <strong><?= formatStrip($pk_data['tanggal_kontrak_awal'] ?? '0000-00-00') ?></strong>
                                 s/d
-                                <?= formatTanggal($pk_data['tanggal_kontrak_akhir'] ?? '0000-00-00') ?>
+                                <strong><?= formatStrip($pk_data['tanggal_kontrak_akhir'] ?? '0000-00-00') ?></strong>
                             </td>
                         </tr>
                     </table>
@@ -815,7 +836,7 @@
         <tr class="keep-together">
             <td class="num-col">(2)</td>
             <td class="text-justify">
-                Pihak Kedua berhak menerima gaji sebagai PPPK Paruh Waktu sebesar <?= (isset($pk_data['gaji_nominal']) && !empty($pk_data['gaji_nominal'])) ? "Rp. " . number_format($pk_data['gaji_nominal'], 0, ',', '.') : 'N/A' ?> (<?= esc($pk_data['gaji_terbilang'] ?? 'N/A') ?> Rupiah).
+                Pihak Kedua berhak menerima gaji sebagai PPPK Paruh Waktu sebesar <strong><?= (isset($pk_data['gaji_nominal']) && !empty($pk_data['gaji_nominal'])) ? "Rp. " . number_format($pk_data['gaji_nominal'], 0, ',', '.') : 'N/A' ?></strong> (<strong><?= esc($pk_data['gaji_terbilang'] ?? 'N/A') ?></strong> Rupiah).
             </td>
         </tr>
         <tr class="keep-together">
