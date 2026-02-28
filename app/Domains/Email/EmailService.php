@@ -407,6 +407,7 @@ class EmailService
             'total_emails' => $total_emails_in_unit,
             'filtered_count' => $filtered_count,
             'active_count' => $active_count,
+            'active_bsre_count' => $active_bsre_count,
             'pagination' => $pager,
             'status_asn_options' => $this->statusAsnModel->orderBy('nama_status_asn', 'ASC')->findAll(),
             'bsre_status_options' => $bsre_status_options,
