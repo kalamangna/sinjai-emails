@@ -6,7 +6,7 @@
         <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight">Tambah Unit Kerja</h1>
     </div>
 
-    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm">
         <div class="p-8">
             <form action="<?= site_url('unit_kerja/store') ?>" method="post" class="space-y-6">
                 <?= csrf_field() ?>
@@ -28,7 +28,7 @@
                         <i class="fas fa-times mr-2 text-slate-700"></i> Batal
                     </a>
                     <button type="submit" class="w-full sm:w-auto px-8 py-2 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-lg shadow-sm transition-all text-xs uppercase tracking-widest flex items-center justify-center">
-                        <i class="fas fa-save mr-2 text-white/80"></i> Simpan
+                        <i class="fas fa-save mr-2 text-white/80"></i> Simpan Unit
                     </button>
                 </div>
             </form>

@@ -121,7 +121,7 @@
                         <i class="fas fa-times mr-2 text-slate-700"></i> Batal
                     </a>
                     <button type="submit" class="w-full sm:w-auto px-8 py-2 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-lg shadow-sm transition-all text-xs uppercase tracking-widest flex items-center justify-center">
-                        <i class="fas fa-save mr-2 text-white/80"></i> <?= isset($activity) ? 'Update' : 'Simpan' ?>
+                        <i class="fas fa-save mr-2 text-white/80"></i> <?= isset($activity) ? 'Update Log' : 'Simpan Log' ?>
                     </button>
                 </div>
             </form>

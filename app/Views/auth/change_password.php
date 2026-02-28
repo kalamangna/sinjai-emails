@@ -52,7 +52,7 @@
 
                 <div class="pt-4 border-t border-slate-100 flex items-center justify-end">
                     <button type="submit" class="inline-flex items-center justify-center px-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-white rounded-lg font-bold text-xs uppercase tracking-widest transition-all shadow-sm">
-                        <i class="fas fa-save mr-2 text-white/80"></i> Update Password
+                        <i class="fas fa-save mr-2 text-white/80"></i> Simpan Password
                     </button>
                 </div>
             </form>

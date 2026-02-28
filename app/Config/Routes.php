@@ -46,6 +46,8 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
             $routes->post('update_details/(:any)', '\App\Domains\Email\Email::update_details/$1');
             $routes->get('edit_password/(:any)', '\App\Domains\Email\Email::edit_password/$1');
             $routes->post('update_password/(:any)', '\App\Domains\Email\Email::update_password/$1');
+            $routes->get('edit_pk/(:any)', '\App\Domains\Email\Email::edit_pk/$1');
+            $routes->post('update_pk/(:any)', '\App\Domains\Email\Email::update_pk/$1');
             $routes->post('delete/(:num)', '\App\Domains\Email\Email::delete/$1');
             $routes->post('create_single', '\App\Domains\Email\Email::create_single_email');
             $routes->post('api_generate_pdf', '\App\Domains\Email\Email::api_generate_pdf');

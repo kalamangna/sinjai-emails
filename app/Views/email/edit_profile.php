@@ -124,7 +124,7 @@
                     <i class="fas fa-times mr-2"></i> Batal
                 </a>
                 <button type="submit" class="order-1 sm:order-2 inline-flex items-center justify-center px-8 py-2 bg-slate-800 text-white rounded-lg font-bold text-xs uppercase tracking-widest hover:bg-slate-700 shadow-sm transition-all">
-                    <i class="fas fa-save mr-2 text-white/80"></i> Update
+                    <i class="fas fa-save mr-2 text-white/80"></i> Update Profil
                 </button>
             </div>
         </form>

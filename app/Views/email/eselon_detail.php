@@ -8,7 +8,7 @@
             <i class="fas fa-arrow-left mr-2"></i> Kembali
         </button>
         <div class="flex gap-2">
-            <button onclick="syncAllBsreStatus()" class="inline-flex items-center justify-center px-4 py-2 bg-slate-800 text-white rounded-lg font-bold text-xs uppercase tracking-widest hover:bg-slate-700 transition-all shadow-sm">
+            <button id="syncAllTteBtn" onclick="syncAllBsreStatus()" class="inline-flex items-center justify-center px-4 py-2 bg-slate-800 text-white rounded-lg font-bold text-xs uppercase tracking-widest hover:bg-slate-700 transition-all shadow-sm">
                 <i class="fas fa-sync-alt mr-2 text-white/80"></i> Sync TTE
             </button>
         </div>
@@ -62,7 +62,7 @@
     </div>
 
     <!-- Tabel -->
-    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+    <div id="email-table-container" class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-left text-sm">
                 <thead class="bg-slate-50 text-slate-700 uppercase text-[10px] font-bold">
@@ -169,29 +169,72 @@
 </style>
 
 <script>
-    function syncAllBsreStatus() {
+    async function syncAllBsreStatus() {
         const containers = document.querySelectorAll('[id^="bsre-status-"]');
-        if (!containers.length || !confirm('Sinkronkan status sertifikat untuk akun yang tampil?')) return;
+        if (!containers.length) return;
+        
+        if (!confirm(`Sinkronkan status sertifikat untuk ${containers.length} akun dalam eselon ini?`)) {
+            return;
+        }
 
-        containers.forEach((c, i) => {
-            setTimeout(() => {
-                const email = c.getAttribute('data-email');
-                c.innerHTML = '<i class="fas fa-spinner fa-spin text-slate-700 text-[10px]"></i>';
-                fetch('<?= site_url('bsre/sync-status') ?>', {
+        const syncBtn = document.getElementById('syncAllTteBtn');
+        const originalBtnContent = syncBtn.innerHTML;
+
+        // 1. Scroll ke tabel secara smooth
+        const tableContainer = document.getElementById('email-table-container');
+        if (tableContainer) {
+            tableContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // 2. Disable tombol dan beri feedback visual
+        syncBtn.disabled = true;
+        syncBtn.classList.add('opacity-75', 'cursor-not-allowed');
+        syncBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Syncing...';
+
+        // 3. Proses secara sekuensial
+        let processed = 0;
+        for (const container of containers) {
+            const email = container.getAttribute('data-email');
+            const originalContent = container.innerHTML;
+            
+            // Scroll ke container yang sedang diproses
+            container.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            // Set loading state untuk baris ini
+            container.innerHTML = '<i class="fas fa-spinner fa-spin text-blue-600 text-[10px]"></i>';
+            
+            try {
+                const response = await fetch('<?= site_url('bsre/sync-status') ?>', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
                         'X-Requested-With': 'XMLHttpRequest'
                     },
                     body: 'email=' + encodeURIComponent(email)
-                }).then(r => r.json()).then(d => {
-                    if (d.status === 'success') {
-                        const colorClass = getJsStatusColor(d.bsre_status);
-                        c.innerHTML = `<span class="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-bold uppercase border ${colorClass}">${d.bsre_status}</span>`;
-                    }
                 });
-            }, i * 200);
-        });
+                
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    const colorClass = getJsStatusColor(data.bsre_status);
+                    container.innerHTML = `<span class="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-bold uppercase border ${colorClass}">${data.bsre_status}</span>`;
+                } else {
+                    container.innerHTML = originalContent;
+                }
+            } catch (error) {
+                console.error('Sync failed for ' + email, error);
+                container.innerHTML = originalContent;
+            }
+
+            processed++;
+        }
+
+        // 4. Restore tombol
+        syncBtn.disabled = false;
+        syncBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+        syncBtn.innerHTML = originalBtnContent;
+        
+        alert(`Selesai! ${processed} akun telah disinkronkan.`);
     }
 </script>
 <?= $this->endSection() ?>

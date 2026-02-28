@@ -189,41 +189,52 @@
                 </div>
             </div>
 
-            <!-- Bagian: Kontrak Kerja (Hanya jika ada data PK) -->
-            <?php if (!empty($pk_data)): ?>
+            <!-- Bagian: Kontrak Kerja (Hanya jika ada data PK atau status PPPK) -->
+            <?php if (!empty($pk_data) || in_array($email['status_asn_id'] ?? 0, [2, 3])): ?>
                 <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden flex flex-col">
-                    <div class="px-6 py-4 border-b border-slate-100 bg-slate-50">
+                    <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
                         <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Perjanjian Kerja (PK)</h3>
+                        <?php if (session()->get('role') === 'super_admin'): ?>
+                            <a href="<?= site_url('email/edit_pk/' . $email['user']) ?>" class="text-xs font-bold text-slate-700 hover:text-slate-800 uppercase tracking-widest transition-all flex items-center no-underline">
+                                <i class="fas fa-<?= !empty($pk_data) ? 'edit' : 'plus' ?> mr-1.5 text-blue-600"></i> <?= !empty($pk_data) ? 'Edit PK' : 'Tambah PK' ?>
+                            </a>
+                        <?php endif; ?>
                     </div>
-                    <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">Nomor PK</label>
-                                <p class="text-sm font-semibold text-slate-800 font-mono"><?= esc($pk_data['nomor']) ?></p>
-                            </div>
-                            <div>
-                                <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">Masa Kontrak</label>
-                                <div class="flex items-center gap-3 mt-1">
-                                    <div class="flex-1 p-2 bg-slate-50 border border-slate-200 rounded text-center">
-                                        <span class="block text-[8px] font-bold text-slate-700 uppercase">Mulai</span>
-                                        <span class="text-[10px] font-bold text-slate-800"><?= formatSingkat($pk_data['tanggal_kontrak_awal']) ?></span>
-                                    </div>
-                                    <i class="fas fa-arrow-right text-slate-700 text-[10px]"></i>
-                                    <div class="flex-1 p-2 bg-slate-50 border border-slate-200 rounded text-center">
-                                        <span class="block text-[8px] font-bold text-slate-700 uppercase">Selesai</span>
-                                        <span class="text-[10px] font-bold text-slate-800"><?= formatSingkat($pk_data['tanggal_kontrak_akhir']) ?></span>
+                    <?php if (!empty($pk_data)): ?>
+                        <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">Nomor PK</label>
+                                    <p class="text-sm font-semibold text-slate-800 font-mono"><?= esc($pk_data['nomor']) ?></p>
+                                </div>
+                                <div>
+                                    <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">Masa Kontrak</label>
+                                    <div class="flex items-center gap-3 mt-1">
+                                        <div class="flex-1 p-2 bg-slate-50 border border-slate-200 rounded text-center">
+                                            <span class="block text-[8px] font-bold text-slate-700 uppercase">Mulai</span>
+                                            <span class="text-[10px] font-bold text-slate-800"><?= formatSingkat($pk_data['tanggal_kontrak_awal']) ?></span>
+                                        </div>
+                                        <i class="fas fa-arrow-right text-slate-700 text-[10px]"></i>
+                                        <div class="flex-1 p-2 bg-slate-50 border border-slate-200 rounded text-center">
+                                            <span class="block text-[8px] font-bold text-slate-700 uppercase">Selesai</span>
+                                            <span class="text-[10px] font-bold text-slate-800"><?= formatSingkat($pk_data['tanggal_kontrak_akhir']) ?></span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">Gaji</label>
-                                <p class="text-sm font-bold text-slate-800">Rp <?= number_format($pk_data['gaji_nominal'], 0, ',', '.') ?></p>
-                                <p class="text-[10px] font-medium text-slate-700 uppercase italic mt-0.5 leading-tight">"<?= esc($pk_data['gaji_terbilang']) ?> Rupiah"</p>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">Gaji</label>
+                                    <p class="text-sm font-bold text-slate-800">Rp <?= number_format($pk_data['gaji_nominal'], 0, ',', '.') ?></p>
+                                    <p class="text-[10px] font-medium text-slate-700 uppercase italic mt-0.5 leading-tight">"<?= esc($pk_data['gaji_terbilang']) ?> Rupiah"</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    <?php else: ?>
+                        <div class="p-12 text-center">
+                            <p class="text-slate-700 italic text-sm">Data Perjanjian Kerja belum tersedia.</p>
+                        </div>
+                    <?php endif; ?>
                 </div>
             <?php endif; ?>
         </div>

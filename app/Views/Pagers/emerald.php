@@ -24,7 +24,7 @@
     <?php endforeach ?>
 
     <?php if ($pager->hasNext()) : ?>
-        <a href="<?= $pager->getPrevious() ?>" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition-all shadow-sm no-underline" title="<?= lang('Pager.next') ?>">
+        <a href="<?= $pager->getNext() ?>" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition-all shadow-sm no-underline" title="<?= lang('Pager.next') ?>">
             <i class="fas fa-angle-right text-[10px]"></i>
         </a>
         <a href="<?= $pager->getLast() ?>" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition-all shadow-sm no-underline" title="<?= lang('Pager.last') ?>">

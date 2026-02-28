@@ -168,6 +168,55 @@ class Email extends BaseController
         }
     }
 
+    public function edit_pk($username)
+    {
+        try {
+            $data = $this->emailService->getEmailDetail($username);
+            $data['title'] = 'Edit PK';
+            $data['back_url'] = site_url('email/detail/' . $username);
+            return view('email/edit_pk', $data);
+        } catch (Exception $e) {
+            $data['error'] = $e->getMessage();
+            $data['title'] = 'Edit PK';
+            $data['back_url'] = site_url('email');
+            return view('email/error', $data);
+        }
+    }
+
+    public function update_pk($username)
+    {
+        if (strtolower($this->request->getMethod()) !== 'post') {
+            return redirect()->to('email/detail/' . $username)->with('error', 'Metode permintaan tidak valid.');
+        }
+
+        $email_detail = $this->emailModel->where('user', $username)->first();
+        if (!$email_detail) {
+            return redirect()->to('email')->with('error', 'Email tidak ditemukan.');
+        }
+
+        $updateData = [
+            'nomor' => $this->request->getPost('nomor'),
+            'gaji_nominal' => str_replace(['.', ','], '', $this->request->getPost('gaji_nominal')),
+            'gaji_terbilang' => $this->request->getPost('gaji_terbilang'),
+            'tanggal_kontrak_awal' => $this->request->getPost('tanggal_kontrak_awal'),
+            'tanggal_kontrak_akhir' => $this->request->getPost('tanggal_kontrak_akhir'),
+        ];
+
+        try {
+            $pk = $this->pkModel->where('email', $email_detail['email'])->first();
+            if ($pk) {
+                $this->pkModel->update($pk['id'], $updateData);
+            } else {
+                $updateData['email'] = $email_detail['email'];
+                $this->pkModel->insert($updateData);
+            }
+            return redirect()->to('email/detail/' . $username)->with('success', 'Data PK berhasil diperbarui.');
+        } catch (Exception $e) {
+            log_message('error', 'Error updating PK: ' . $e->getMessage());
+            return redirect()->to('email/edit_pk/' . $username)->with('error', 'Gagal memperbarui data PK: ' . $e->getMessage());
+        }
+    }
+
     public function update_details($username)
     {
         if (strtolower($this->request->getMethod()) !== 'post') {
@@ -246,10 +295,7 @@ class Email extends BaseController
             $search = $this->request->getGet('search');
             $bsre_status = $this->request->getGet('bsre_status');
 
-            $emailBuilder = $this->emailModel
-                ->select('emails.*, uk.nama_unit_kerja as unit_kerja_name, parent_uk.nama_unit_kerja as parent_unit_kerja_name')
-                ->join('unit_kerja as uk', 'uk.id = emails.unit_kerja_id', 'left')
-                ->join('unit_kerja as parent_uk', 'parent_uk.id = uk.parent_id', 'left')
+            $emailBuilder = $this->emailModel->withDetails()
                 ->where('eselon_id', $eselonId);
 
             if ($search) {
@@ -274,7 +320,7 @@ class Email extends BaseController
 
             $total_emails = $emailBuilder->countAllResults(false);
 
-            $emails = $emailBuilder->orderBy('uk.nama_unit_kerja', 'ASC')
+            $emails = $emailBuilder->orderBy('unit_kerja.nama_unit_kerja', 'ASC')
                 ->orderBy('jabatan', 'ASC')
                 ->orderBy('name', 'ASC')
                 ->paginate($perPage);
@@ -321,8 +367,8 @@ class Email extends BaseController
             return $this->response->setJSON(['success' => false, 'message' => 'Unit Kerja not found']);
         }
 
-        $statusPppk = $this->statusAsnModel->where('nama_status_asn', 'PPPK')->first();
-        $statusPppkPw = $this->statusAsnModel->where('nama_status_asn', 'PPPK PARUH WAKTU')->first();
+        $statusPppk = $this->statusAsnModel->where('nama_status_asn', 'PPPK')->asArray()->first();
+        $statusPppkPw = $this->statusAsnModel->where('nama_status_asn', 'PPPK PARUH WAKTU')->asArray()->first();
         
         $pkType = $this->request->getGet('pk_type');
         $allowedStatusIds = [];
@@ -341,14 +387,14 @@ class Email extends BaseController
             return $this->response->setJSON(['success' => false, 'emails' => [], 'message' => 'Status PPPK belum dikonfigurasi di sistem.']);
         }
 
-        $children = $this->unitKerjaModel->where('parent_id', $unitKerjaId)->findAll();
+        $children = $this->unitKerjaModel->where('parent_id', $unitKerjaId)->asArray()->findAll();
         $childrenIds = array_column($children, 'id');
         $allUnitIds = array_merge([$unitKerjaId], $childrenIds);
 
         $search = $this->request->getGet('search');
         $bsre_status = $this->request->getGet('bsre_status');
 
-        $builder = $this->emailModel->whereIn('unit_kerja_id', $allUnitIds);
+        $builder = $this->emailModel->withDetails()->whereIn('unit_kerja_id', $allUnitIds);
         $builder->whereIn('emails.status_asn_id', $allowedStatusIds);
 
         if ($search) {

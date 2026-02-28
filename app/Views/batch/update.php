@@ -137,7 +137,7 @@
 
                 <div class="flex justify-end pt-4 border-t border-slate-100">
                     <button type="submit" id="update_btn" class="inline-flex items-center px-8 py-3 bg-slate-800 text-white rounded-lg font-bold text-xs uppercase tracking-widest hover:bg-slate-700 transition-all shadow-sm">
-                        <i class="fas fa-save mr-2 text-white/80"></i> Update
+                        <i class="fas fa-save mr-2 text-white/80"></i> Update Data Akun
                     </button>
                 </div>
             </form>

@@ -49,7 +49,7 @@ class PimpinanController extends BaseController
             $total_emails = $emailBuilder->countAllResults(false);
 
             $emails = $emailBuilder
-                ->allowCallbacks(false)
+                ->asArray()
                 ->orderBy('emails.eselon_id', 'ASC')
                 ->orderBy('COALESCE(parent_unit_kerja.nama_unit_kerja, unit_kerja.nama_unit_kerja)', 'ASC', false)
                 ->orderBy('unit_kerja.parent_id IS NOT NULL', 'ASC', false)
@@ -114,7 +114,7 @@ class PimpinanController extends BaseController
             $total_emails = $emailBuilder->countAllResults(false);
 
             $emails = $emailBuilder
-                ->allowCallbacks(false)
+                ->asArray()
                 ->orderBy('emails.eselon_id', 'ASC')
                 ->orderBy('COALESCE(parent_unit_kerja.nama_unit_kerja, unit_kerja.nama_unit_kerja)', 'ASC', false)
                 ->orderBy('unit_kerja.parent_id IS NOT NULL', 'ASC', false)

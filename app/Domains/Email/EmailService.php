@@ -28,27 +28,54 @@ class EmailService
 
     public function getGlobalNavigationData()
     {
-        $parentUnitKerjaList = $this->unitKerjaModel->where('parent_id IS NULL')->orderBy('nama_unit_kerja', 'ASC')->findAll();
+        $parentUnitKerjaList = $this->unitKerjaModel->where('parent_id IS NULL')->orderBy('nama_unit_kerja', 'ASC')->asArray()->findAll();
+        
+        // Aggregate all unit_kerja emails count (including children) in one go
+        $allUnits = $this->unitKerjaModel->select('id, parent_id')->asArray()->findAll();
+        $unitMap = [];
+        foreach ($allUnits as $u) {
+            $parentId = $u['parent_id'] ?: $u['id'];
+            if (!isset($unitMap[$parentId])) $unitMap[$parentId] = [];
+            $unitMap[$parentId][] = $u['id'];
+            if ($u['parent_id']) $unitMap[$u['id']][] = $u['id'];
+        }
+        
+        $emailCountsByUnit = $this->emailModel->allowCallbacks(false)->select('unit_kerja_id, COUNT(id) as count')->groupBy('unit_kerja_id')->asArray()->findAll();
+        $countMap = [];
+        foreach ($emailCountsByUnit as $row) {
+            $countMap[$row['unit_kerja_id']] = (int)$row['count'];
+        }
+
         $unitKerjaList = [];
         foreach ($parentUnitKerjaList as $parentUnit) {
             $parentId = $parentUnit['id'];
-            $childrenIds = $this->unitKerjaModel->where('parent_id', $parentId)->findColumn('id');
-            $allUnitIds = array_merge([$parentId], $childrenIds ?: []);
-            $emailCount = $this->emailModel->allowCallbacks(false)->whereIn('unit_kerja_id', $allUnitIds)->countAllResults();
+            $childrenIds = $unitMap[$parentId] ?? [$parentId];
+            $allUnitIds = array_unique($childrenIds);
+            
+            $emailCount = 0;
+            foreach ($allUnitIds as $uid) {
+                $emailCount += $countMap[$uid] ?? 0;
+            }
+            
             $parentUnit['email_count'] = $emailCount;
             $unitKerjaList[] = $parentUnit;
         }
 
-        $allEselonOptions = $this->eselonModel->orderBy('nama_eselon', 'ASC')->findAll();
+        $allEselonOptions = $this->eselonModel->orderBy('nama_eselon', 'ASC')->asArray()->findAll();
+        
+        // Aggregate all eselon counts in one go
+        $eselonCountsRaw = $this->emailModel->allowCallbacks(false)->select('eselon_id, COUNT(id) as count')->where('eselon_id IS NOT NULL')->groupBy('eselon_id')->asArray()->findAll();
+        $eselonCountMap = [];
+        foreach ($eselonCountsRaw as $row) {
+            $eselonCountMap[$row['eselon_id']] = (int)$row['count'];
+        }
+        
         $eselonCounts = [];
         foreach ($allEselonOptions as $option) {
-            $count = $this->emailModel->allowCallbacks(false)
-                ->where('eselon_id', $option['id'])
-                ->countAllResults();
             $eselonCounts[] = [
                 'id' => $option['id'],
                 'name' => $option['nama_eselon'],
-                'count' => $count
+                'count' => $eselonCountMap[$option['id']] ?? 0
             ];
         }
 
@@ -60,7 +87,7 @@ class EmailService
 
     public function getEmailDashboardData($search = null, $bsre_status = null, $perPage = 100)
     {
-        $builder = $this->emailModel;
+        $builder = $this->emailModel->withDetails();
 
         if (!empty($search)) {
             $builder->groupStart()
@@ -90,105 +117,145 @@ class EmailService
         $emails = $builder->paginate($perPage);
         $pager = $this->emailModel->pager;
 
-        $counts = $this->emailModel->allowCallbacks(false)->select('COUNT(*) as total_emails, SUM(CASE WHEN suspended_login = 0 THEN 1 ELSE 0 END) as active_count, SUM(CASE WHEN suspended_login = 1 THEN 1 ELSE 0 END) as suspended_count')->first();
+        $counts = $this->emailModel->allowCallbacks(false)->select('COUNT(id) as total_emails, SUM(CASE WHEN suspended_login = 0 THEN 1 ELSE 0 END) as active_count, SUM(CASE WHEN suspended_login = 1 THEN 1 ELSE 0 END) as suspended_count')->asArray()->first();
 
-        $parentUnitKerjaList = $this->unitKerjaModel->where('parent_id IS NULL')->orderBy('nama_unit_kerja', 'ASC')->findAll();
+        // Use cache for dashboard summaries
+        $cache = \Config\Services::cache();
+        $cacheKey = 'email_dashboard_summary';
+        if (!$summaryData = $cache->get($cacheKey)) {
+            $parentUnitKerjaList = $this->unitKerjaModel->where('parent_id IS NULL')->orderBy('nama_unit_kerja', 'ASC')->asArray()->findAll();
+            
+            $allUnits = $this->unitKerjaModel->select('id, parent_id')->asArray()->findAll();
+            $unitMap = [];
+            foreach ($allUnits as $u) {
+                $parentId = $u['parent_id'] ?: $u['id'];
+                if (!isset($unitMap[$parentId])) $unitMap[$parentId] = [];
+                $unitMap[$parentId][] = $u['id'];
+                if ($u['parent_id']) $unitMap[$u['id']][] = $u['id'];
+            }
+            
+            $emailCountsByUnit = $this->emailModel->allowCallbacks(false)->select('unit_kerja_id, COUNT(id) as count')->groupBy('unit_kerja_id')->asArray()->findAll();
+            $countMap = [];
+            foreach ($emailCountsByUnit as $row) {
+                $countMap[$row['unit_kerja_id']] = (int)$row['count'];
+            }
 
-        $unitKerjaList = [];
-        foreach ($parentUnitKerjaList as $parentUnit) {
-            $parentId = $parentUnit['id'];
-            $childrenIds = $this->unitKerjaModel->where('parent_id', $parentId)->findColumn('id');
-            $allUnitIds = array_merge([$parentId], $childrenIds ?: []);
+            $unitKerjaList = [];
+            foreach ($parentUnitKerjaList as $parentUnit) {
+                $parentId = $parentUnit['id'];
+                $childrenIds = $unitMap[$parentId] ?? [$parentId];
+                $allUnitIds = array_unique($childrenIds);
+                
+                $emailCount = 0;
+                foreach ($allUnitIds as $uid) {
+                    $emailCount += $countMap[$uid] ?? 0;
+                }
+                
+                $parentUnit['email_count'] = $emailCount;
+                $unitKerjaList[] = $parentUnit;
+            }
 
-            $emailCount = $this->emailModel->allowCallbacks(false)->whereIn('unit_kerja_id', $allUnitIds)->countAllResults();
-
-            $parentUnit['email_count'] = $emailCount;
-            $unitKerjaList[] = $parentUnit;
-        }
-
-        $allStatusAsnOptions = $this->statusAsnModel->orderBy('nama_status_asn', 'ASC')->findAll();
-        $statusAsnCounts = [];
-        foreach ($allStatusAsnOptions as $option) {
-            $count = $this->emailModel->allowCallbacks(false)
-                ->where('status_asn_id', $option['id'])
-                ->countAllResults();
-            $statusAsnCounts[] = [
-                'id' => $option['id'],
-                'name' => $option['nama_status_asn'],
-                'count' => $count
-            ];
-        }
-
-        $allEselonOptions = $this->eselonModel->orderBy('nama_eselon', 'ASC')->findAll();
-        $eselonCounts = [];
-        foreach ($allEselonOptions as $option) {
-            $count = $this->emailModel->allowCallbacks(false)
-                ->where('eselon_id', $option['id'])
-                ->countAllResults();
-            $eselonCounts[] = [
-                'id' => $option['id'],
-                'name' => $option['nama_eselon'],
-                'count' => $count
-            ];
-        }
-
-        $rawBsreCounts = $this->emailModel->allowCallbacks(false)
-            ->select('bsre_status, COUNT(*) as count')
-            ->groupBy('bsre_status')
-            ->findAll();
-
-        $bsre_status_labels = [
-            'ISSUE' => 'ISSUE',
-            'EXPIRED' => 'EXPIRED',
-            'RENEW' => 'RENEW',
-            'WAITING_FOR_VERIFICATION' => 'WAITING_FOR_VERIFICATION',
-            'NEW' => 'NEW',
-            'NO_CERTIFICATE' => 'NO_CERTIFICATE',
-            'NOT_REGISTERED' => 'NOT_REGISTERED',
-            'SUSPEND' => 'SUSPEND',
-            'REVOKE' => 'REVOKE',
-            'not_synced' => 'NOT_SYNCED'
-        ];
-
-        $bsreStatusCounts = [];
-        $notSyncedCount = 0;
-        foreach ($rawBsreCounts as $row) {
-            if (empty($row['bsre_status'])) {
-                $notSyncedCount += $row['count'];
-            } else {
-                $bsreStatusCounts[] = [
-                    'status' => $row['bsre_status'],
-                    'label' => $bsre_status_labels[$row['bsre_status']] ?? $row['bsre_status'],
-                    'count' => $row['count']
+            // Optimize Status ASN Counts
+            $allStatusAsnOptions = $this->statusAsnModel->orderBy('nama_status_asn', 'ASC')->asArray()->findAll();
+            $asnCountsRaw = $this->emailModel->allowCallbacks(false)->select('status_asn_id, COUNT(id) as count')->where('status_asn_id IS NOT NULL')->groupBy('status_asn_id')->asArray()->findAll();
+            $asnCountMap = [];
+            foreach ($asnCountsRaw as $row) {
+                $asnCountMap[$row['status_asn_id']] = (int)$row['count'];
+            }
+            $statusAsnCounts = [];
+            foreach ($allStatusAsnOptions as $option) {
+                $statusAsnCounts[] = [
+                    'id' => $option['id'],
+                    'name' => $option['nama_status_asn'],
+                    'count' => $asnCountMap[$option['id']] ?? 0
                 ];
             }
-        }
-        if ($notSyncedCount > 0) {
-            $bsreStatusCounts[] = [
-                'status' => 'not_synced',
-                'label' => 'NOT_SYNCED',
-                'count' => $notSyncedCount
+
+            // Optimize Eselon Counts
+            $allEselonOptions = $this->eselonModel->orderBy('nama_eselon', 'ASC')->asArray()->findAll();
+            $eselonCountsRaw = $this->emailModel->allowCallbacks(false)->select('eselon_id, COUNT(id) as count')->where('eselon_id IS NOT NULL')->groupBy('eselon_id')->asArray()->findAll();
+            $eselonCountMap = [];
+            foreach ($eselonCountsRaw as $row) {
+                $eselonCountMap[$row['eselon_id']] = (int)$row['count'];
+            }
+            $eselonCounts = [];
+            foreach ($allEselonOptions as $option) {
+                $eselonCounts[] = [
+                    'id' => $option['id'],
+                    'name' => $option['nama_eselon'],
+                    'count' => $eselonCountMap[$option['id']] ?? 0
+                ];
+            }
+
+            $rawBsreCounts = $this->emailModel->allowCallbacks(false)
+                ->select('bsre_status, COUNT(id) as count')
+                ->groupBy('bsre_status')
+                ->asArray()
+                ->findAll();
+
+            $bsre_status_labels = [
+                'ISSUE' => 'ISSUE',
+                'EXPIRED' => 'EXPIRED',
+                'RENEW' => 'RENEW',
+                'WAITING_FOR_VERIFICATION' => 'WAITING_FOR_VERIFICATION',
+                'NEW' => 'NEW',
+                'NO_CERTIFICATE' => 'NO_CERTIFICATE',
+                'NOT_REGISTERED' => 'NOT_REGISTERED',
+                'SUSPEND' => 'SUSPEND',
+                'REVOKE' => 'REVOKE',
+                'not_synced' => 'NOT_SYNCED'
             ];
+
+            $bsreStatusCounts = [];
+            $notSyncedCount = 0;
+            foreach ($rawBsreCounts as $row) {
+                if (empty($row['bsre_status'])) {
+                    $notSyncedCount += $row['count'];
+                } else {
+                    $bsreStatusCounts[] = [
+                        'status' => $row['bsre_status'],
+                        'label' => $bsre_status_labels[$row['bsre_status']] ?? $row['bsre_status'],
+                        'count' => (int)$row['count']
+                    ];
+                }
+            }
+            if ($notSyncedCount > 0) {
+                $bsreStatusCounts[] = [
+                    'status' => 'not_synced',
+                    'label' => 'NOT_SYNCED',
+                    'count' => $notSyncedCount
+                ];
+            }
+
+            $summaryData = [
+                'unit_kerja_list' => $unitKerjaList,
+                'status_asn_counts' => $statusAsnCounts,
+                'eselon_counts' => $eselonCounts,
+                'bsre_status_counts' => $bsreStatusCounts,
+                'bsre_status_labels' => $bsre_status_labels
+            ];
+
+            $cache->save($cacheKey, $summaryData, 600); // 10 mins cache
         }
 
         return [
             'emails' => $emails,
             'pager' => $pager,
-            'total_emails' => $counts['total_emails'],
+            'total_emails' => $counts['total_emails'] ?? 0,
             'filtered_count' => $filtered_count,
-            'active_count' => $counts['active_count'],
-            'suspended_count' => $counts['suspended_count'],
-            'unit_kerja_list' => $unitKerjaList,
-            'status_asn_counts' => $statusAsnCounts,
-            'eselon_counts' => $eselonCounts,
-            'bsre_status_counts' => $bsreStatusCounts,
-            'bsre_status_labels' => $bsre_status_labels
+            'active_count' => $counts['active_count'] ?? 0,
+            'suspended_count' => $counts['suspended_count'] ?? 0,
+            'unit_kerja_list' => $summaryData['unit_kerja_list'],
+            'status_asn_counts' => $summaryData['status_asn_counts'],
+            'eselon_counts' => $summaryData['eselon_counts'],
+            'bsre_status_counts' => $summaryData['bsre_status_counts'],
+            'bsre_status_labels' => $summaryData['bsre_status_labels']
         ];
     }
 
     public function getEmailDetail($username)
     {
-        $email_detail = $this->emailModel->where('user', $username)->first();
+        $email_detail = $this->emailModel->withDetails()->where('user', $username)->first();
         if (!$email_detail) {
             throw new Exception('Email tidak ditemukan di database lokal.');
         }
@@ -210,9 +277,9 @@ class EmailService
             'unit_kerja' => $unit_kerja,
             'parent_unit_kerja' => $parent_unit_kerja,
             'pk_data' => $pk_data,
-            'unit_kerja_options' => $this->unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->findAll(),
-            'status_asn_options' => $this->statusAsnModel->orderBy('nama_status_asn', 'ASC')->findAll(),
-            'eselon_options' => $this->eselonModel->orderBy('nama_eselon', 'ASC')->findAll(),
+            'unit_kerja_options' => $this->unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->asArray()->findAll(),
+            'status_asn_options' => $this->statusAsnModel->orderBy('nama_status_asn', 'ASC')->asArray()->findAll(),
+            'eselon_options' => $this->eselonModel->orderBy('nama_eselon', 'ASC')->asArray()->findAll(),
         ];
     }
 
@@ -223,7 +290,7 @@ class EmailService
             throw new Exception('Unit Kerja not found.');
         }
 
-        $children = $this->unitKerjaModel->where('parent_id', $unitKerjaId)->findAll();
+        $children = $this->unitKerjaModel->where('parent_id', $unitKerjaId)->asArray()->findAll();
         usort($children, function ($a, $b) {
             return strnatcasecmp($a['nama_unit_kerja'] ?? '', $b['nama_unit_kerja'] ?? '');
         });
@@ -240,7 +307,7 @@ class EmailService
         $isKecamatan = stripos($unitKerja['nama_unit_kerja'], 'Kecamatan') !== false;
 
         // Start building the query for the emails list
-        $emailBuilder = $this->emailModel->whereIn('unit_kerja_id', $allUnitIds);
+        $emailBuilder = $this->emailModel->withDetails()->whereIn('unit_kerja_id', $allUnitIds);
         if ($isKecamatan && $pimpinan_desa == 0) {
             $emailBuilder->where('pimpinan_desa', 0);
         }

@@ -30,8 +30,38 @@ class WebDesaKelurahan extends BaseController
         $filterPlatform = trim($this->request->getGet('filter_platform') ?? '');
         $filterType = trim($this->request->getGet('type') ?? '');
 
+        // Use aggregated counts for stats - single query
+        $statsRaw = $model->select("COUNT(id) as total, SUM(CASE WHEN status = 'AKTIF' THEN 1 ELSE 0 END) as aktif, SUM(CASE WHEN status = 'NONAKTIF' THEN 1 ELSE 0 END) as nonaktif")->asArray()->first();
+        $total = (int)($statsRaw['total'] ?? 0);
+        $aktif = (int)($statsRaw['aktif'] ?? 0);
+        $nonaktif = (int)($statsRaw['nonaktif'] ?? 0);
+
+        $stats = [
+            'total' => $total,
+            'aktif' => $aktif,
+            'nonaktif' => $nonaktif,
+            'aktif_percentage' => $total > 0 ? (int)(($aktif / $total) * 100) : 0,
+            'nonaktif_percentage' => $total > 0 ? (int)(($nonaktif / $total) * 100) : 0,
+        ];
+
+        // Platform distribution via aggregation
+        $platform_stats_raw = $model->select('platforms.nama_platform, COUNT(web_desa_kelurahan.id) as count')
+            ->join('platforms', 'platforms.id = web_desa_kelurahan.platform_id', 'left')
+            ->groupBy('platforms.nama_platform')
+            ->orderBy('count', 'DESC')
+            ->asArray()
+            ->findAll();
+
+        $platform_stats = [];
+        foreach ($platform_stats_raw as $row) {
+            $platform_stats[] = [
+                'nama_platform' => $row['nama_platform'] ?: 'N/A',
+                'count' => (int)$row['count']
+            ];
+        }
+
         // Build Query with Join for the table
-        $model->select('web_desa_kelurahan.*, platforms.nama_platform as platform_name')
+        $model->select('web_desa_kelurahan.id, web_desa_kelurahan.desa_kelurahan, web_desa_kelurahan.kecamatan, web_desa_kelurahan.domain, web_desa_kelurahan.status, web_desa_kelurahan.tanggal_berakhir, web_desa_kelurahan.sisa_hari, platforms.nama_platform as platform_name')
             ->join('platforms', 'platforms.id = web_desa_kelurahan.platform_id', 'left');
 
         if ($search !== '') {
@@ -59,82 +89,38 @@ class WebDesaKelurahan extends BaseController
         }
 
         if ($filterType !== '') {
-            // Filter by prefix in desa_kelurahan column
             $model->like('web_desa_kelurahan.desa_kelurahan', $filterType, 'after');
         }
 
+        $perPage = 100;
         $websites = $model->orderBy('web_desa_kelurahan.kecamatan', 'ASC')
             ->orderBy('web_desa_kelurahan.desa_kelurahan', 'ASC')
-            ->findAll();
-
-        $data['websites'] = $websites;
-        $data['total_filtered'] = count($websites);
-
-        // Calculate statistics based on complete dataset (ignore filters)
-        $allWebsites = (new WebDesaKelurahanModel())
-            ->select('web_desa_kelurahan.*, platforms.nama_platform as platform_name')
-            ->join('platforms', 'platforms.id = web_desa_kelurahan.platform_id', 'left')
-            ->findAll();
-
-        $aktif = 0;
-        $nonaktif = 0;
-        $platform_stats_map = [];
-
-        foreach ($allWebsites as $web) {
-            if ($web['status'] === 'AKTIF') $aktif++;
-            elseif ($web['status'] === 'NONAKTIF') $nonaktif++;
-
-            $pName = $web['platform_name'] ?: 'N/A';
-            if (!isset($platform_stats_map[$pName])) {
-                $platform_stats_map[$pName] = 0;
-            }
-            $platform_stats_map[$pName]++;
-        }
-
-        $data['stats'] = [
-            'total' => count($allWebsites),
-            'aktif' => $aktif,
-            'nonaktif' => $nonaktif,
-        ];
-
-        if ($data['stats']['total'] > 0) {
-            $data['stats']['aktif_percentage'] = (int)(($aktif / $data['stats']['total']) * 100);
-            $data['stats']['nonaktif_percentage'] = (int)(($nonaktif / $data['stats']['total']) * 100);
-        } else {
-            $data['stats']['aktif_percentage'] = 0;
-            $data['stats']['nonaktif_percentage'] = 0;
-        }
-
-        $data['platform_stats'] = [];
-        foreach ($platform_stats_map as $name => $count) {
-            $data['platform_stats'][] = [
-                'nama_platform' => $name,
-                'count' => $count
-            ];
-        }
-
-        // Sort by count DESC
-        usort($data['platform_stats'], function ($a, $b) {
-            return $b['count'] <=> $a['count'];
-        });
+            ->asArray()
+            ->paginate($perPage);
+        $pager = $model->pager;
 
         $db = \Config\Database::connect();
-        // Get distinct kecamatan for filter (remain global)
-        $data['kecamatan_list'] = $db->table('web_desa_kelurahan')
+        $kecamatan_list = $db->table('web_desa_kelurahan')
             ->select('kecamatan')
             ->distinct()
             ->orderBy('kecamatan', 'ASC')
             ->get()
             ->getResultArray();
 
-        $data['platforms'] = $platformModel->findAll();
-
-        $data['title'] = 'Website Desa & Kelurahan';
-        $data['search'] = $search;
-        $data['filterKecamatan'] = $filterKecamatan;
-        $data['filterStatus'] = $filterStatus;
-        $data['filterPlatform'] = $filterPlatform;
-        $data['filterType'] = $filterType;
+        $data = [
+            'websites' => $websites,
+            'pager' => $pager,
+            'stats' => $stats,
+            'platform_stats' => $platform_stats,
+            'kecamatan_list' => $kecamatan_list,
+            'platforms' => $platformModel->asArray()->findAll(),
+            'title' => 'Website Desa & Kelurahan',
+            'search' => $search,
+            'filterKecamatan' => $filterKecamatan,
+            'filterStatus' => $filterStatus,
+            'filterPlatform' => $filterPlatform,
+            'filterType' => $filterType,
+        ];
 
         return view('web_desa_kelurahan/index', $data);
     }

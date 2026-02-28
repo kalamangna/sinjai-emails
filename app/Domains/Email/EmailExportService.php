@@ -282,7 +282,7 @@ class EmailExportService
 
     public function generatePerjanjianKerjaPdf($username)
     {
-        $email = $this->emailModel->where('user', $username)->first();
+        $email = $this->emailModel->withDetails()->where('emails.user', $username)->asArray()->first();
         if (!$email) throw new Exception('Email account not found.');
 
         $statusPppk = $this->statusAsnModel->where('nama_status_asn', 'PPPK')->first();
@@ -298,11 +298,15 @@ class EmailExportService
         $template = $isPppk ? 'email/exports/perjanjian_kerja_pppk_template' : 'email/exports/perjanjian_kerja_template';
         $prefix = $isPppk ? 'pppk_' : 'paruh_waktu_';
 
+        // Fallback to raw unit_kerja column if joined name is missing
+        $name = $email['unit_kerja_name'] ?? $email['unit_kerja'] ?? 'N/A';
+        
         $unitKerja = [
-            'nama_unit_kerja' => $email['unit_kerja_name'] ?? 'N/A'
+            'nama_unit_kerja' => $name
         ];
+        
         if (!empty($email['parent_unit_kerja_name'])) {
-            $unitKerja['nama_unit_kerja'] .= ' - ' . $email['parent_unit_kerja_name'];
+            $unitKerja['nama_unit_kerja'] = $unitKerja['nama_unit_kerja'] . ' - ' . $email['parent_unit_kerja_name'];
         }
 
         $pk_data = $this->pkModel->where('email', $email['email'])->first();
@@ -358,13 +362,22 @@ class EmailExportService
         if (empty($allowedStatusIds)) throw new Exception('No matching PPPK status found for this export type.');
 
         $allUnitIds = array_merge([$unitKerjaId], $childrenIds);
-        $emails = $this->emailModel
+        $emails = $this->emailModel->withDetails()
             ->whereIn('unit_kerja_id', $allUnitIds)
             ->whereIn('emails.status_asn_id', $allowedStatusIds)
             ->orderBy('name', 'ASC')
+            ->asArray()
             ->findAll();
 
         if (empty($emails)) throw new Exception('No email accounts found for this Unit Kerja.');
+
+        // Pre-fetch all PK data to avoid N+1 queries
+        $emailList = array_column($emails, 'email');
+        $pkRaw = $this->pkModel->whereIn('email', $emailList)->asArray()->findAll();
+        $pkMap = [];
+        foreach ($pkRaw as $pk) {
+            $pkMap[$pk['email']] = $pk;
+        }
 
         $typeLabel = '';
         if ($pkType === 'pppk') $typeLabel = 'pppk_';
@@ -390,15 +403,16 @@ class EmailExportService
             $folderName = $isPppk ? 'PPPK' : 'PPPK_PARUH_WAKTU';
             $filePrefix = $isPppk ? 'pppk_' : 'paruh_waktu_';
 
+            $name = $email['unit_kerja_name'] ?? $email['unit_kerja'] ?? 'N/A';
             $itemUnitKerja = [
-                'nama_unit_kerja' => $email['unit_kerja_name'] ?? 'N/A'
+                'nama_unit_kerja' => $name
             ];
             if (!empty($email['parent_unit_kerja_name'])) {
-                $itemUnitKerja['nama_unit_kerja'] .= ' - ' . $email['parent_unit_kerja_name'];
+                $itemUnitKerja['nama_unit_kerja'] = $itemUnitKerja['nama_unit_kerja'] . ' - ' . $email['parent_unit_kerja_name'];
             }
 
             $dompdf = $this->getDompdf();
-            $pk_data = $this->pkModel->where('email', $email['email'])->first();
+            $pk_data = $pkMap[$email['email']] ?? null;
             $data = [
                 'email' => $email,
                 'unit_kerja' => $itemUnitKerja,
@@ -499,7 +513,7 @@ class EmailExportService
 
     public function generateAndSavePerjanjianKerja($emailId, $unitId)
     {
-        $email = $this->emailModel->find($emailId);
+        $email = $this->emailModel->withDetails()->asArray()->find($emailId);
         if (!$email) throw new Exception('Email not found');
 
         $statusPppk = $this->statusAsnModel->where('nama_status_asn', 'PPPK')->first();
@@ -507,11 +521,12 @@ class EmailExportService
         $template = $isPppk ? 'email/exports/perjanjian_kerja_pppk_template' : 'email/exports/perjanjian_kerja_template';
         $subFolder = $isPppk ? 'PPPK' : 'PPPK_PARUH_WAKTU';
 
+        $name = $email['unit_kerja_name'] ?? $email['unit_kerja'] ?? 'N/A';
         $unitKerja = [
-            'nama_unit_kerja' => $email['unit_kerja_name'] ?? 'N/A'
+            'nama_unit_kerja' => $name
         ];
         if (!empty($email['parent_unit_kerja_name'])) {
-            $unitKerja['nama_unit_kerja'] .= ' - ' . $email['parent_unit_kerja_name'];
+            $unitKerja['nama_unit_kerja'] = $unitKerja['nama_unit_kerja'] . ' - ' . $email['parent_unit_kerja_name'];
         }
 
         $logoSrc = $this->getGarudaLogoSrc();

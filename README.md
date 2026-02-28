@@ -5,21 +5,25 @@ Portal terintegrasi untuk manajemen identitas digital, sertifikat elektronik, da
 ## Fitur Utama
 
 ### 1. Manajemen Email Institusi
+
 - **Integrasi cPanel API**: Pembuatan, penghapusan, dan sinkronisasi akun email secara otomatis dengan server hosting.
 - **Advanced Search**: Pencarian akun berdasarkan Nama, NIP, atau NIK secara konsisten di seluruh tabel.
 - **Manajemen Profil**: Pendataan NIK, NIP, Jabatan, Golongan (untuk PNS/PPPK), dan Unit Kerja untuk setiap pemegang akun.
 
 ### 2. Monitoring Sertifikat Elektronik (TTE)
-- **Integrasi BSrE API**: Pemantauan status sertifikat digital secara *real-time* (Aktif, Expired, Revoked, dsb).
+
+- **Integrasi BSrE API**: Pemantauan status sertifikat digital secara _real-time_ (Aktif, Expired, Revoked, dsb).
 - **Pengelompokan Pejabat**: Akses cepat untuk monitoring TTE Pimpinan OPD dan Kepala Desa.
 - **Reporting**: Dashboard statistik status TTE di seluruh perangkat daerah.
 
 ### 3. Monitoring Website & Domain
+
 - **Website OPD**: Pemantauan status pemanfaatan subdomain OPD.
 - **Website Desa & Kelurahan**: Pelacakan masa berlaku domain `.desa.id` melalui protokol **RDAP PANDI**.
 - **Visualisasi Data**: Grafik distribusi platform dan status operasional yang modern dan informatif.
 
 ### 4. Batch Operations (Super Admin)
+
 - **Refactored Module**: Modul batch yang terorganisir untuk efisiensi pemrosesan data massal.
 - **Mass Account Creation**: Pembuatan akun massal dengan input ala Excel dan validasi otomatis.
 - **Bulk Updates**: Pembaruan data profil dan dokumen Perjanjian Kerja (PK) secara massal.
@@ -27,29 +31,34 @@ Portal terintegrasi untuk manajemen identitas digital, sertifikat elektronik, da
 - **Subfolder Archive**: ZIP hasil batch yang terorganisir secara otomatis berdasarkan status kepegawaian.
 
 ### 5. Log Pendampingan Teknis
+
 - **Documentation**: Pencatatan riwayat bantuan teknis (email, website, TTE, Srikandi) kepada instansi.
 - **Advanced Filtering**: Filter berdasarkan kategori, bulan, dan tahun untuk pelaporan periodik.
 
 ### 6. Administrasi & Keamanan
-- **Role-Based Access Control (RBAC)**: Pembatasan akses antara *Super Admin* dan *Admin*.
+
+- **Role-Based Access Control (RBAC)**: Pembatasan akses antara _Super Admin_ dan _Admin_.
 - **Eksport Data**: Generasi laporan dalam format PDF dan CSV menggunakan Dompdf.
 - **Restructured UI**: Navigasi yang dikelompokkan secara logis (Dashboard, Email, Pejabat, Organisasi) untuk kemudahan penggunaan.
 
 ## Tech Stack
 
 ### Backend
+
 - **Core Framework**: PHP 8.1+ (CodeIgniter 4.6)
 - **Database**: MySQL / MariaDB
 - **PDF Engine**: Dompdf
 - **HTTP Client**: CodeIgniter CURLRequest
 
 ### Frontend
+
 - **CSS Framework**: Tailwind CSS (JIT Compiler)
 - **Interactivity**: Alpine.js & Plugins (Collapse)
 - **Charts**: ApexCharts (Data Visualization)
 - **UI Components**: Font Awesome 6, Choices.js (Searchable Selects)
 
 ### Integrasi Eksternal
+
 - **cPanel UAPI**: Manajemen akun email server.
 - **BSrE API**: Validasi status sertifikat elektronik.
 - **PANDI RDAP**: Pengecekan masa aktif domain desa.
@@ -57,6 +66,7 @@ Portal terintegrasi untuk manajemen identitas digital, sertifikat elektronik, da
 ## Instalasi
 
 1. **Clone & Dependencies**
+
    ```bash
    git clone https://github.com/kalamangna/sinjai-emails.git
    composer install
@@ -65,10 +75,11 @@ Portal terintegrasi untuk manajemen identitas digital, sertifikat elektronik, da
 
 2. **Environment**
    Salin `env` ke `.env` dan konfigurasi Database serta API Credentials:
+
    ```ini
    database.default.hostname = localhost
    database.default.database = sinjai_emails
-   
+
    # cPanel Config
    cpanel.host = your-server.com
    cpanel.user = username
@@ -76,6 +87,7 @@ Portal terintegrasi untuk manajemen identitas digital, sertifikat elektronik, da
    ```
 
 3. **Migration & Seeding**
+
    ```bash
    php spark migrate
    php spark db:seed UserSeeder
@@ -87,4 +99,5 @@ Portal terintegrasi untuk manajemen identitas digital, sertifikat elektronik, da
    ```
 
 ---
-© 2026 Diskominfo-SP Kabupaten Sinjai.
+
+© 2026 Diskominfo-SP Sinjai.

@@ -31,7 +31,7 @@
                         <i class="fas fa-times mr-2"></i> Batal
                     </a>
                     <button type="submit" class="w-full sm:w-auto px-8 py-2 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-lg shadow-sm transition-all text-xs uppercase tracking-widest flex items-center justify-center">
-                        <i class="fas fa-save mr-2"></i> Simpan
+                        <i class="fas fa-save mr-2 text-white/80"></i> Simpan Batch
                     </button>
                 </div>
             </form>

@@ -185,7 +185,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     submitBtn.disabled = true;
-    submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Submitting...`;
+    submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Memproses...`;
     progressSection.style.display = "block";
     resultsLog.innerHTML = "";
 
@@ -261,7 +261,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 1000);
       }
     } finally {
-      submitBtn.innerHTML = `<i class="fas fa-check-circle me-2"></i>Submit Batch`;
+      submitBtn.innerHTML = `<i class="fas fa-check-circle me-2"></i>Simpan Batch`;
       if (failureCount > 0) {
         updateSubmitButtonState();
       }

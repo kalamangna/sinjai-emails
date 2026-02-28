@@ -115,7 +115,9 @@ class Assistance extends BaseController
             $builder->where('MONTH(tanggal_kegiatan)', $filterMonth);
         }
 
-        $activities = $builder->orderBy('tanggal_kegiatan', 'ASC')->orderBy('id', 'ASC')->findAll();
+        $perPage = 100;
+        $activities = $builder->orderBy('tanggal_kegiatan', 'ASC')->orderBy('id', 'ASC')->asArray()->paginate($perPage);
+        $pager = $this->assistanceModel->pager;
 
         foreach ($activities as &$activity) {
             $activity['category_label'] = self::CATEGORY_MAP[$activity['category']] ?? 'Tidak Diketahui';
@@ -140,6 +142,7 @@ class Assistance extends BaseController
         $data = [
             'title' => 'Log Layanan',
             'activities' => $activities,
+            'pager' => $pager,
             'filterCategory' => $filterCategory,
             'filterMonth' => $filterMonth,
             'filterYear' => $filterYear,

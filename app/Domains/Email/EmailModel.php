@@ -41,41 +41,35 @@ class EmailModel extends Model
         'pimpinan_desa',
     ];
     protected $useTimestamps = true;
-    protected $beforeFind = ['withJoins']; // Use this hook to apply joins and selects
+    protected $returnType = 'array';
+    
+    // Default columns to fetch for the email dashboard/detail
+    protected $standardColumns = 'emails.*';
 
     public function __construct()
     {
         parent::__construct();
     }
 
-    protected function withJoins(array $data)
+    public function withDetails()
     {
-        $this->select('emails.*, unit_kerja.nama_unit_kerja as unit_kerja_name, parent_unit_kerja.nama_unit_kerja as parent_unit_kerja_name, status_asn.nama_status_asn as status_asn, eselon.nama_eselon as eselon_name');
-        $this->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left');
-        $this->join('unit_kerja as parent_unit_kerja', 'parent_unit_kerja.id = unit_kerja.parent_id', 'left');
-        $this->join('status_asn', 'status_asn.id = emails.status_asn_id', 'left');
-        $this->join('eselon', 'eselon.id = emails.eselon_id', 'left');
-        return $data;
+        return $this->select($this->standardColumns . ', unit_kerja.nama_unit_kerja as unit_kerja_name, parent_unit_kerja.nama_unit_kerja as parent_unit_kerja_name, status_asn.nama_status_asn as status_asn, eselon.nama_eselon as eselon_name')
+            ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
+            ->join('unit_kerja as parent_unit_kerja', 'parent_unit_kerja.id = unit_kerja.parent_id', 'left')
+            ->join('status_asn', 'status_asn.id = emails.status_asn_id', 'left')
+            ->join('eselon', 'eselon.id = emails.eselon_id', 'left');
     }
 
     public function getPimpinanDesaBuilder()
     {
-        return $this->select('emails.*, unit_kerja.nama_unit_kerja as unit_kerja_name, parent_unit_kerja.nama_unit_kerja as parent_unit_kerja_name, status_asn.nama_status_asn as status_asn, eselon.nama_eselon as eselon_name')
-            ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
-            ->join('unit_kerja as parent_unit_kerja', 'parent_unit_kerja.id = unit_kerja.parent_id', 'left')
-            ->join('status_asn', 'status_asn.id = emails.status_asn_id', 'left')
-            ->join('eselon', 'eselon.id = emails.eselon_id', 'left')
+        return $this->withDetails()
             ->where('pimpinan_desa', 1)
             ->where('unit_kerja.nama_unit_kerja NOT LIKE', '%Kelurahan%');
     }
 
     public function getPimpinanBuilder()
     {
-        return $this->select('emails.*, unit_kerja.nama_unit_kerja as unit_kerja_name, parent_unit_kerja.nama_unit_kerja as parent_unit_kerja_name, status_asn.nama_status_asn as status_asn, eselon.nama_eselon as eselon_name')
-            ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
-            ->join('unit_kerja as parent_unit_kerja', 'parent_unit_kerja.id = unit_kerja.parent_id', 'left')
-            ->join('status_asn', 'status_asn.id = emails.status_asn_id', 'left')
-            ->join('eselon', 'eselon.id = emails.eselon_id', 'left')
+        return $this->withDetails()
             ->where('pimpinan', 1);
     }
 
