@@ -43,9 +43,9 @@
             </div>
             <div class="p-6 flex flex-col md:flex-row items-center gap-8">
                 <div class="w-full md:w-1/2 flex justify-center">
-                    <div id="emailStatusChart" class="w-full max-w-[200px]"></div>
+                    <div id="emailStatusChart" class="w-full max-w-[300px]"></div>
                 </div>
-                <div class="w-full md:w-1/2 space-y-2 max-h-[200px] overflow-y-auto custom-scrollbar pr-2">
+                <div class="w-full md:w-1/2 space-y-2 max-h-[300px] overflow-y-auto custom-scrollbar pr-2">
                     <?php foreach ($email_stats as $index => $stat):
                         $status = $stat['label'];
                         $bgClass = 'bg-slate-700'; // Default
@@ -73,9 +73,9 @@
             </div>
             <div class="p-6 flex flex-col md:flex-row items-center gap-8">
                 <div class="w-full md:w-1/2 flex justify-center">
-                    <div id="asnStatusChart" class="w-full max-w-[200px]"></div>
+                    <div id="asnStatusChart" class="w-full max-w-[300px]"></div>
                 </div>
-                <div class="w-full md:w-1/2 space-y-2 max-h-[200px] overflow-y-auto custom-scrollbar pr-2">
+                <div class="w-full md:w-1/2 space-y-2 max-h-[300px] overflow-y-auto custom-scrollbar pr-2">
                     <?php
                     $asnBgClasses = ['bg-blue-600', 'bg-emerald-600', 'bg-amber-500', 'bg-red-600', 'bg-slate-800', 'bg-slate-700', 'bg-slate-100', 'bg-slate-50'];
                     foreach ($status_asn_stats as $index => $stat):
@@ -102,7 +102,7 @@
         const commonOptions = {
             chart: {
                 type: 'donut',
-                height: 200,
+                height: 300,
                 fontFamily: 'Inter, sans-serif'
             },
             stroke: {
