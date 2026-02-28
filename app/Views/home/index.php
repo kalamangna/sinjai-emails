@@ -139,7 +139,7 @@
                                 color: '#1e293b',
                                 offsetY: 5,
                                 formatter: function(val) {
-                                    return val
+                                    return parseInt(val).toLocaleString('id-ID')
                                 }
                             },
                             total: {
@@ -149,7 +149,7 @@
                                 fontWeight: 700,
                                 color: '#334155',
                                 formatter: function(w) {
-                                    return w.globals.seriesTotals.reduce((a, b) => a + b, 0)
+                                    return w.globals.seriesTotals.reduce((a, b) => a + b, 0).toLocaleString('id-ID')
                                 }
                             }
                         }
