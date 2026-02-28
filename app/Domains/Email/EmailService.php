@@ -171,6 +171,19 @@ class EmailService
                 ];
             }
 
+            // Custom sort for Status ASN
+            $asnOrder = ['PNS', 'PPPK', 'PPPK PARUH WAKTU'];
+            usort($statusAsnCounts, function ($a, $b) use ($asnOrder) {
+                $posA = array_search(strtoupper($a['name']), $asnOrder);
+                $posB = array_search(strtoupper($b['name']), $asnOrder);
+                
+                if ($posA === false) $posA = 999;
+                if ($posB === false) $posB = 999;
+                
+                if ($posA === $posB) return strcmp($a['name'], $b['name']);
+                return $posA - $posB;
+            });
+
             // Optimize Eselon Counts
             $allEselonOptions = $this->eselonModel->orderBy('nama_eselon', 'ASC')->asArray()->findAll();
             $eselonCountsRaw = $this->emailModel->allowCallbacks(false)->select('eselon_id, COUNT(id) as count')->where('eselon_id IS NOT NULL')->groupBy('eselon_id')->asArray()->findAll();
@@ -226,6 +239,19 @@ class EmailService
                     'count' => $notSyncedCount
                 ];
             }
+
+            // Custom sort for BSrE Status
+            $tteOrder = ['ISSUE', 'EXPIRED', 'NO_CERTIFICATE', 'NOT_REGISTERED', 'NOT_SYNCED'];
+            usort($bsreStatusCounts, function ($a, $b) use ($tteOrder) {
+                $posA = array_search($a['status'], $tteOrder);
+                $posB = array_search($b['status'], $tteOrder);
+                
+                if ($posA === false) $posA = 999;
+                if ($posB === false) $posB = 999;
+                
+                if ($posA === $posB) return strcmp($a['label'], $b['label']);
+                return $posA - $posB;
+            });
 
             $summaryData = [
                 'unit_kerja_list' => $unitKerjaList,
@@ -390,10 +416,16 @@ class EmailService
             $bsre_status_counts[$statusKey]['count'] += $row['count'];
         }
 
-        uksort($bsre_status_counts, function ($a, $b) {
-            if ($a === 'ISSUE') return -1;
-            if ($b === 'ISSUE') return 1;
-            return strcmp($a, $b);
+        $tteOrder = ['ISSUE', 'EXPIRED', 'NO_CERTIFICATE', 'NOT_REGISTERED', 'not_synced'];
+        uksort($bsre_status_counts, function ($a, $b) use ($tteOrder) {
+            $posA = array_search($a, $tteOrder);
+            $posB = array_search($b, $tteOrder);
+            
+            if ($posA === false) $posA = 999;
+            if ($posB === false) $posB = 999;
+            
+            if ($posA === $posB) return strcmp($a, $b);
+            return $posA - $posB;
         });
 
         $active_bsre_count = $bsre_status_counts['ISSUE']['count'] ?? 0;
@@ -417,6 +449,19 @@ class EmailService
                 'count' => (int)$stat['count']
             ];
         }
+
+        // Custom sort for Status ASN
+        $asnOrder = ['PNS', 'PPPK', 'PPPK PARUH WAKTU'];
+        usort($status_asn_stats, function ($a, $b) use ($asnOrder) {
+            $posA = array_search(strtoupper($a['label']), $asnOrder);
+            $posB = array_search(strtoupper($b['label']), $asnOrder);
+            
+            if ($posA === false) $posA = 999;
+            if ($posB === false) $posB = 999;
+            
+            if ($posA === $posB) return strcmp($a['label'], $b['label']);
+            return $posA - $posB;
+        });
 
         // Calculate actual active count (suspended_login = 0)
         $activeStatsBuilder = $this->emailModel->whereIn('unit_kerja_id', $allUnitIds);
