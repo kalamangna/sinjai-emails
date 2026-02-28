@@ -232,11 +232,19 @@ document.addEventListener("DOMContentLoaded", function () {
               
               // Detect if failure is because password too weak
               if (errorMsg.toLowerCase().includes('strength') || errorMsg.toLowerCase().includes('weak')) {
-                // Change password to use 7th & 8th digit of NIP
-                const strongerPassword = generatePassword(user.name, user.nip, true);
-                userInBatch.password = strongerPassword;
-                userInBatch.errorMessage = "Password terlalu lemah. Sistem telah memperbarui password menggunakan digit NIP alternatif. Silakan klik Eksekusi lagi.";
-                logResult(user.email, "WEAK PW", "Password too weak. System changed to alternative NIP digits.");
+                const altPassword = generatePassword(user.name, user.nip, true);
+                
+                if (user.password === altPassword) {
+                    // If it was already the alternative password, add a '*' at the end
+                    userInBatch.password = user.password + "*";
+                    userInBatch.errorMessage = "Password masih lemah. Sistem menambahkan karakter '*' di akhir. Silakan klik Eksekusi lagi.";
+                    logResult(user.email, "WEAK PW", "Password still weak. Added '*' at the end.");
+                } else {
+                    // Change password to use 7th & 8th digit of NIP
+                    userInBatch.password = altPassword;
+                    userInBatch.errorMessage = "Password terlalu lemah. Sistem telah memperbarui password menggunakan digit NIP alternatif. Silakan klik Eksekusi lagi.";
+                    logResult(user.email, "WEAK PW", "Password too weak. System changed to alternative NIP digits.");
+                }
               } else {
                 userInBatch.errorMessage = errorMsg;
                 logResult(user.email, "FAILURE", errorMsg);
