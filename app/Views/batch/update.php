@@ -232,7 +232,7 @@
                 alert('Gagal memperbarui: ' + error.message);
             } finally {
                 updateBtn.disabled = false;
-                updateBtn.innerHTML = '<i class="fas fa-save mr-2"></i> Update';
+                updateBtn.innerHTML = '<i class="fas fa-save mr-2 text-white/80"></i> Update Data Akun';
             }
         });
 

@@ -160,7 +160,7 @@
                 alert('Gagal memperbarui: ' + error.message);
             } finally {
                 updateBtn.disabled = false;
-                updateBtn.innerHTML = '<i class="fas fa-sync-alt mr-2 text-white/80"></i> Perbarui Data PK Massal';
+                updateBtn.innerHTML = '<i class="fas fa-save mr-2 text-white/80"></i> Update Data PK';
             }
         });
 
