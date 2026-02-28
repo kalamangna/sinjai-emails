@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const jenisFormasiInput = document.getElementById("status_asn_input");
 
   const unitKerjaInputSingle = document.getElementById(
-    "unit_kerja_input_single"
+    "unit_kerja_input_single",
   );
 
   const generateBtn = document.getElementById("generate_btn");
@@ -21,23 +21,23 @@ document.addEventListener("DOMContentLoaded", function () {
   let userBatch = [];
 
   const validUnitKerjaNames = new Set(
-    unitKerjaOptions.map((option) => option.nama_unit_kerja.toLowerCase())
+    unitKerjaOptions.map((option) => option.nama_unit_kerja.toLowerCase()),
   );
 
   generateBtn.addEventListener("click", async function () {
-    const names = nameInput.value.split("\n").map(n => n.trim());
-    const niks = nikInput.value.split("\n").map(n => n.trim());
-    const nips = nipInput.value.split("\n").map(n => n.trim());
+    const names = nameInput.value.split("\n").map((n) => n.trim());
+    const niks = nikInput.value.split("\n").map((n) => n.trim());
+    const nips = nipInput.value.split("\n").map((n) => n.trim());
 
     // Filter out rows where all relevant fields (name, nik, nip) are empty
     const maxLines = Math.max(names.length, niks.length, nips.length);
     const filteredRows = [];
-    
+
     for (let i = 0; i < maxLines; i++) {
       const name = names[i] || "";
       const nik = niks[i] || "";
       const nip = nips[i] || "";
-      
+
       if (name !== "" || nik !== "" || nip !== "") {
         filteredRows.push({ name, nik, nip });
       }
@@ -48,18 +48,21 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    const finalNames = filteredRows.map(r => r.name);
-    const finalNiks = filteredRows.map(r => r.nik);
-    const finalNips = filteredRows.map(r => r.nip);
+    const finalNames = filteredRows.map((r) => r.name);
+    const finalNiks = filteredRows.map((r) => r.nik);
+    const finalNips = filteredRows.map((r) => r.nip);
 
     let unitKerjaValues = [];
     let validationError = "";
 
     const singleUnitKerja = unitKerjaInputSingle.value;
 
-    if (finalNames.some(n => n === "")) validationError = "One or more rows are missing a name.";
-    else if (finalNips.some(n => n === "")) validationError = "One or more rows are missing a NIP.";
-    else if (!jenisFormasiInput.value) validationError = "Please select a Status ASN.";
+    if (finalNames.some((n) => n === ""))
+      validationError = "One or more rows are missing a name.";
+    else if (finalNips.some((n) => n === ""))
+      validationError = "One or more rows are missing a NIP.";
+    else if (!jenisFormasiInput.value)
+      validationError = "Please select a Status ASN.";
     else if (!singleUnitKerja) validationError = "Please select a Unit Kerja.";
 
     if (!validationError) {
@@ -225,7 +228,7 @@ document.addEventListener("DOMContentLoaded", function () {
             logResult(
               user.email,
               "FAILURE",
-              result.message || "An unknown error occurred."
+              result.message || "An unknown error occurred.",
             );
             if (userInBatch) {
               userInBatch.status = "failed";
@@ -237,7 +240,7 @@ document.addEventListener("DOMContentLoaded", function () {
           logResult(
             user.email,
             "FAILURE",
-            "A network or server error occurred."
+            "A network or server error occurred.",
           );
           const userInBatch = userBatch.find((u) => u.email === user.email);
           if (userInBatch) {
@@ -251,7 +254,7 @@ document.addEventListener("DOMContentLoaded", function () {
         userBatch = userBatch.filter((user) => user.status === "failed");
         renderResults(userBatch);
         alert(
-          `Batch submission completed with ${failureCount} errors. Please review the statuses and logs, edit passwords for failed entries if needed, and click "Submit Batch" again.`
+          `Batch submission completed with ${failureCount} errors. Please review the statuses and logs, edit passwords for failed entries if needed, and click "Submit Batch" again.`,
         );
         progressSection.style.display = "none";
       } else {
@@ -386,8 +389,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     userBatch.forEach((user, index) => {
       let statusBadge;
-      const badgeBase = 'inline-flex items-center px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border shadow-sm';
-      
+      const badgeBase =
+        "inline-flex items-center px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border shadow-sm";
+
       if (user.status === "created") {
         statusBadge = `<span class="${badgeBase} bg-emerald-50 text-emerald-600 border-emerald-200">Created</span>`;
       } else if (user.status === "failed") {
@@ -401,7 +405,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       const nameCellContent = `<span contenteditable="true" class="editable-name focus:outline-none focus:text-blue-600 transition-colors" data-name-index="${index}">${user.name}</span>`;
-      
+
       const domain = "@sinjaikab.go.id";
       const username = user.email.substring(0, user.email.indexOf(domain));
       const emailCellContent = `<span contenteditable="true" class="editable-username focus:outline-none focus:text-blue-600 transition-colors" data-username-index="${index}">${username}</span><span class="text-slate-200 font-medium">${domain}</span>`;
@@ -409,9 +413,10 @@ document.addEventListener("DOMContentLoaded", function () {
       const passwordCellContent = `<span contenteditable="true" class="editable-password font-mono focus:outline-none focus:text-blue-600 transition-colors" data-password-index="${index}">${user.password}</span>`;
       const unitKerjaCellContent = `<span class="editable-unit-kerja opacity-80" data-unit-kerja-index="${index}">${user.unitKerja}</span>`;
 
-      const tagBase = 'ml-1.5 px-1.5 py-0.5 rounded text-[8px] font-black uppercase';
-      
-      let nikDisplay = `<span class="font-mono text-slate-700">${user.nik || '-'}</span>`;
+      const tagBase =
+        "ml-1.5 px-1.5 py-0.5 rounded text-[8px] font-black uppercase";
+
+      let nikDisplay = `<span class="font-mono text-slate-700">${user.nik || "-"}</span>`;
       if (user.isNikInDb) {
         nikDisplay += `<span class="${tagBase} bg-red-50 text-red-600" title="NIK already exists in the database">DB</span>`;
       }
@@ -419,7 +424,7 @@ document.addEventListener("DOMContentLoaded", function () {
         nikDisplay += `<span class="${tagBase} bg-amber-50 text-amber-600" title="Duplicate NIK in this batch">DUP</span>`;
       }
 
-      let nipDisplay = `<span class="font-mono text-slate-700">${user.nip || '-'}</span>`;
+      let nipDisplay = `<span class="font-mono text-slate-700">${user.nip || "-"}</span>`;
       if (user.isNipInDb) {
         nipDisplay += `<span class="${tagBase} bg-red-50 text-red-600" title="NIP already exists in the database">DB</span>`;
       }
@@ -432,7 +437,7 @@ document.addEventListener("DOMContentLoaded", function () {
             <td class="px-6 py-5 whitespace-nowrap text-[10px] font-black text-slate-700 font-mono">#${index + 1}</td>
             <td class="px-6 py-5 whitespace-nowrap">${nipDisplay}</td>
             <td class="px-6 py-5 whitespace-nowrap">${nikDisplay}</td>
-            <td class="px-6 py-5 font-black text-slate-800 tracking-tight">${nameCellContent}</td>
+            <td class="px-6 py-5 font-black text-slate-800 tracking-tight whitespace-nowrap">${nameCellContent}</td>
             <td class="px-6 py-5 whitespace-nowrap font-bold text-slate-700 tracking-tight lowercase">${emailCellContent}</td>
             <td class="px-6 py-5 whitespace-nowrap">${passwordCellContent}</td>
             <td class="px-6 py-5 text-center whitespace-nowrap">${statusBadge}</td>
@@ -459,7 +464,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function addEditableListeners() {
     document
       .querySelectorAll(
-        ".editable-name, .editable-username, .editable-password, .editable-nip"
+        ".editable-name, .editable-username, .editable-password, .editable-nip",
       )
       .forEach((cell) => {
         cell.addEventListener("blur", handleCellEdit);
@@ -478,7 +483,7 @@ document.addEventListener("DOMContentLoaded", function () {
       editedCell.dataset.nameIndex ||
         editedCell.dataset.usernameIndex ||
         editedCell.dataset.passwordIndex ||
-        editedCell.dataset.nipIndex
+        editedCell.dataset.nipIndex,
     );
     const user = userBatch[index];
     const newContent = editedCell.textContent.trim();
@@ -516,7 +521,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const result = await checkEmailAvailability(user.email);
     user.isAvailable = result.available;
     user.isDuplicate = userBatch.some(
-      (u, i) => u.email === user.email && i !== index
+      (u, i) => u.email === user.email && i !== index,
     );
     if (user.isDuplicate) user.isAvailable = false;
 
@@ -530,18 +535,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function updateSubmitButtonState() {
     const hasNikDuplicates = userBatch.some(
-      (user) => user.status !== "created" && user.isNikDuplicate
+      (user) => user.status !== "created" && user.isNikDuplicate,
     );
     const hasNikInDb = userBatch.some(
-      (user) => user.status !== "created" && user.isNikInDb
+      (user) => user.status !== "created" && user.isNikInDb,
     );
     const hasNipDuplicates = userBatch.some(
       // New
-      (user) => user.status !== "created" && user.isNipDuplicate
+      (user) => user.status !== "created" && user.isNipDuplicate,
     );
     const hasNipInDb = userBatch.some(
       // New
-      (user) => user.status !== "created" && user.isNipInDb
+      (user) => user.status !== "created" && user.isNipInDb,
     );
 
     validUserBatch = userBatch.filter(
@@ -552,12 +557,12 @@ document.addEventListener("DOMContentLoaded", function () {
         !user.isNipDuplicate && // New
         !user.isNipInDb && // New
         user.isAvailable &&
-        user.status !== "created"
+        user.status !== "created",
     );
 
     const hasProblematicPendingEmails = userBatch.some(
       (user) =>
-        user.status !== "created" && (!user.isAvailable || user.isDuplicate)
+        user.status !== "created" && (!user.isAvailable || user.isDuplicate),
     );
 
     submitBtn.disabled =
