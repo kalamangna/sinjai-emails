@@ -8,21 +8,21 @@
             <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight">Email</h1>
             <?php if (!empty($last_sync_time)): ?>
                 <p class="text-[10px] font-bold text-slate-700 uppercase tracking-widest mt-1">
-                    <i class="fas fa-history mr-1"></i> Terakhir Sync: 
+                    <i class="fas fa-history mr-1"></i> Terakhir Sync:
                     <span class="text-slate-800"><?= formatTanggalWaktu($last_sync_time) ?></span>
                 </p>
             <?php endif; ?>
         </div>
-        
+
         <div class="flex items-center gap-2 w-full lg:w-auto">
             <?php if (session()->get('role') === 'super_admin'): ?>
-            <button onclick="confirmSyncCpanel(this)" data-href="<?= site_url('email/sync') ?>" class="flex-1 lg:flex-none inline-flex items-center justify-center px-4 py-2.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-lg font-bold text-xs uppercase tracking-widest transition-all shadow-sm group" id="syncCpanelBtn">
-                <i class="fas fa-sync-alt mr-2 group-hover:rotate-180 transition-transform duration-500"></i>
-                <span>Sync cPanel</span>
-            </button>
-            <a href="<?= site_url('batch') ?>" class="flex-1 lg:flex-none inline-flex items-center justify-center px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-white rounded-lg font-bold text-xs uppercase tracking-widest transition-all shadow-sm no-underline">
-                <i class="fas fa-layer-group mr-2"></i> Batch
-            </a>
+                <button onclick="confirmSyncCpanel(this)" data-href="<?= site_url('email/sync') ?>" class="flex-1 lg:flex-none inline-flex items-center justify-center px-4 py-2.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-lg font-bold text-xs uppercase tracking-widest transition-all shadow-sm group" id="syncCpanelBtn">
+                    <i class="fas fa-sync-alt mr-2 group-hover:rotate-180 transition-transform duration-500"></i>
+                    <span>Sync cPanel</span>
+                </button>
+                <a href="<?= site_url('batch') ?>" class="flex-1 lg:flex-none inline-flex items-center justify-center px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-white rounded-lg font-bold text-xs uppercase tracking-widest transition-all shadow-sm no-underline">
+                    <i class="fas fa-layer-group mr-2"></i> Batch
+                </a>
             <?php endif; ?>
         </div>
     </div>
@@ -31,15 +31,15 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-6">
             <p class="text-[10px] font-bold text-slate-700 uppercase tracking-widest">Total Akun</p>
-            <h3 class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($total_emails ?? 0) ?></h3>
+            <h3 class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($total_emails ?? 0, 0, ',', '.') ?></h3>
         </div>
         <div class="bg-emerald-50 border border-emerald-200 rounded-xl shadow-sm p-6">
             <p class="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">Email Aktif</p>
-            <h3 class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($active_count ?? 0) ?></h3>
+            <h3 class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($active_count ?? 0, 0, ',', '.') ?></h3>
         </div>
         <div class="bg-blue-50 border border-blue-200 rounded-xl shadow-sm p-6">
             <p class="text-[10px] font-bold text-blue-600 uppercase tracking-widest">TTE Aktif</p>
-            <h3 class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($active_bsre_count ?? 0) ?></h3>
+            <h3 class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($active_bsre_count ?? 0, 0, ',', '.') ?></h3>
         </div>
     </div>
 
@@ -113,13 +113,13 @@
                                     $status = $email['bsre_status'] ?? '';
                                     $colorClass = 'bg-slate-50 text-slate-700 border-slate-200';
                                     $statusLabel = $status ?: 'NOT_SYNCED';
-                                    
-                                    if ($status === 'ISSUE') { 
-                                        $colorClass = 'bg-emerald-50 text-emerald-600 border-emerald-200'; 
-                                    } elseif (in_array($status, ['EXPIRED', 'REVOKE', 'SUSPEND'])) { 
-                                        $colorClass = 'bg-red-50 text-red-600 border-red-200'; 
-                                    } elseif (in_array($status, ['WAITING_FOR_VERIFICATION', 'RENEW'])) { 
-                                        $colorClass = 'bg-amber-50 text-amber-500 border-amber-200'; 
+
+                                    if ($status === 'ISSUE') {
+                                        $colorClass = 'bg-emerald-50 text-emerald-600 border-emerald-200';
+                                    } elseif (in_array($status, ['EXPIRED', 'REVOKE', 'SUSPEND'])) {
+                                        $colorClass = 'bg-red-50 text-red-600 border-red-200';
+                                    } elseif (in_array($status, ['WAITING_FOR_VERIFICATION', 'RENEW'])) {
+                                        $colorClass = 'bg-amber-50 text-amber-500 border-amber-200';
                                     } elseif ($status === 'NEW') {
                                         $colorClass = 'bg-blue-50 text-blue-600 border-blue-200';
                                     }
@@ -153,16 +153,16 @@
                 </tbody>
             </table>
         </div>
-        
+
         <?php if (isset($pager)): ?>
-        <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4">
-            <div class="text-[10px] font-bold text-slate-700 uppercase tracking-widest">
-                Menampilkan <span class="text-slate-800"><?= count($emails) ?></span> dari <span class="text-slate-800"><?= number_format($total_emails ?? 0) ?></span> akun
+            <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="text-[10px] font-bold text-slate-700 uppercase tracking-widest">
+                    Menampilkan <span class="text-slate-800"><?= count($emails) ?></span> dari <span class="text-slate-800"><?= number_format($total_emails ?? 0, 0, ',', '.') ?></span> akun
+                </div>
+                <div class="pagination-container">
+                    <?= $pager->links() ?>
+                </div>
             </div>
-            <div class="pagination-container">
-                <?= $pager->links() ?>
-            </div>
-        </div>
         <?php endif; ?>
     </div>
 </div>

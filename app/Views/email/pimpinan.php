@@ -28,7 +28,7 @@
             </div>
             <div class="bg-slate-50 px-6 py-2 rounded-lg border border-slate-200 text-center">
                 <p class="text-[10px] font-bold text-slate-700 uppercase tracking-widest">Total Akun</p>
-                <p class="text-xl font-bold text-slate-800"><?= number_format($total_emails) ?></p>
+                <p class="text-xl font-bold text-slate-800"><?= number_format($total_emails, 0, ',', '.') ?></p>
             </div>
         </div>
     </div>
@@ -146,7 +146,7 @@
         <?php if ($pagination): ?>
             <div class="bg-slate-50 px-6 py-4 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-4">
                 <div class="text-[10px] font-bold text-slate-700 uppercase tracking-widest">
-                    Menampilkan <span class="text-slate-800"><?= count($emails) ?></span> dari <span class="text-slate-800"><?= number_format($total_emails) ?></span> akun
+                    Menampilkan <span class="text-slate-800"><?= count($emails) ?></span> dari <span class="text-slate-800"><?= number_format($total_emails, 0, ',', '.') ?></span> akun
                 </div>
                 <div class="pagination-container">
                     <?= $pagination->links() ?>

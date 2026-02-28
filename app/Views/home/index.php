@@ -18,19 +18,19 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 shadow-sm">
             <p class="text-[10px] font-bold text-blue-600 uppercase tracking-widest">Total Email</p>
-            <h3 class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($total_emails) ?></h3>
+            <h3 class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($total_emails, 0, ',', '.') ?></h3>
         </div>
         <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-6 shadow-sm">
             <p class="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">TTE Aktif</p>
-            <h3 class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($active_bsre) ?></h3>
+            <h3 class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($active_bsre, 0, ',', '.') ?></h3>
         </div>
         <div class="bg-amber-50 border border-amber-200 rounded-xl p-6 shadow-sm">
             <p class="text-[10px] font-bold text-amber-500 uppercase tracking-widest">Website OPD</p>
-            <h3 class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($web_stats['opd']) ?></h3>
+            <h3 class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($web_stats['opd'], 0, ',', '.') ?></h3>
         </div>
         <div class="bg-red-50 border border-red-200 rounded-xl p-6 shadow-sm">
             <p class="text-[10px] font-bold text-red-600 uppercase tracking-widest">Website Desa & Kelurahan</p>
-            <h3 class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($web_stats['desa'] + $web_stats['kelurahan']) ?></h3>
+            <h3 class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($web_stats['desa'] + $web_stats['kelurahan'], 0, ',', '.') ?></h3>
         </div>
     </div>
 

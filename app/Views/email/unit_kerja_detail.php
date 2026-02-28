@@ -53,11 +53,11 @@
             <div class="flex gap-4 min-w-[240px]">
                 <div class="flex-1 bg-slate-50 border border-slate-200 rounded-xl p-4 text-center">
                     <p class="text-[9px] font-bold text-slate-700 uppercase tracking-widest">Total Email</p>
-                    <p class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($total_emails ?? 0) ?></p>
+                    <p class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($total_emails ?? 0, 0, ',', '.') ?></p>
                 </div>
                 <div class="flex-1 bg-blue-50 border border-blue-200 rounded-xl p-4 text-center">
                     <p class="text-[9px] font-bold text-blue-600 uppercase tracking-widest">TTE Aktif</p>
-                    <p class="text-2xl font-bold text-blue-600 mt-1"><?= number_format($active_count ?? 0) ?></p>
+                    <p class="text-2xl font-bold text-blue-600 mt-1"><?= number_format($active_count ?? 0, 0, ',', '.') ?></p>
                 </div>
             </div>
         </div>
@@ -104,7 +104,7 @@
                                 <span class="w-2.5 h-2.5 rounded-full mr-2 chart-legend-dot" data-status="<?= $key ?>"></span>
                                 <span class="text-[10px] font-bold text-slate-700 uppercase"><?= esc($data['label']) ?></span>
                             </div>
-                            <span class="text-xs font-bold text-slate-800"><?= number_format($data['count']) ?></span>
+                            <span class="text-xs font-bold text-slate-800"><?= number_format($data['count'], 0, ',', '.') ?></span>
                         </div>
                     <?php endforeach; ?>
                 </div>
@@ -229,7 +229,7 @@
         <?php if (!empty($pagination)): ?>
             <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4">
                 <div class="text-[10px] font-bold text-slate-700 uppercase tracking-widest">
-                    Menampilkan <span class="text-slate-800 font-bold"><?= count($emails) ?></span> dari <span class="text-slate-800 font-bold"><?= number_format($total_emails ?? 0) ?></span> data
+                    Menampilkan <span class="text-slate-800 font-bold"><?= count($emails) ?></span> dari <span class="text-slate-800 font-bold"><?= number_format($total_emails ?? 0, 0, ',', '.') ?></span> data
                 </div>
                 <div class="pagination-modern">
                     <?= $pagination->links() ?>
