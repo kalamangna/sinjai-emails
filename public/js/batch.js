@@ -77,10 +77,10 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     generateBtn.disabled = true;
-    generateBtn.innerHTML = `<div class="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-3"></div> Generating...`;
+    generateBtn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Memproses...`;
     submitBtn.disabled = true;
     resultsTableBody.innerHTML =
-      '<tr><td colspan="8" class="px-10 py-12 text-center text-blue-600 font-bold uppercase tracking-widest text-[10px] animate-pulse">Generating and checking emails...</td></tr>';
+      '<tr><td colspan="8" class="px-10 py-12 text-center text-blue-600 font-bold uppercase tracking-widest text-[10px] animate-pulse">Sedang memproses dan memeriksa email...</td></tr>';
 
     const trimmedNiks = finalNiks;
     const trimmedNips = finalNips;
@@ -177,7 +177,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     renderResults(userBatch);
     generateBtn.disabled = false;
-    generateBtn.innerHTML = `<i class="fas fa-cogs me-2"></i>Generate`;
+    generateBtn.innerHTML = `<i class="fas fa-eye mr-2 text-white/80"></i> Preview`;
     updateSubmitButtonState();
   });
 
@@ -188,7 +188,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     submitBtn.disabled = true;
-    submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Memproses...`;
+    submitBtn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Memproses...`;
     progressSection.style.display = "block";
     progressSection.scrollIntoView({ behavior: "smooth", block: "center" });
     resultsLog.innerHTML = "";
@@ -273,7 +273,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 1000);
       }
     } finally {
-      submitBtn.innerHTML = `<i class="fas fa-check-circle me-2"></i>Simpan Batch`;
+      submitBtn.innerHTML = `<i class="fas fa-cloud-upload-alt mr-2 text-white/80"></i> Eksekusi`;
       if (failureCount > 0) {
         updateSubmitButtonState();
       }
