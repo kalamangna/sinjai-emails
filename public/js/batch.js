@@ -232,7 +232,7 @@ document.addEventListener("DOMContentLoaded", function () {
               
               // Detect if failure is because password too weak
               if (errorMsg.toLowerCase().includes('strength') || errorMsg.toLowerCase().includes('weak')) {
-                // Change password to use 5th & 6th digit of NIP
+                // Change password to use 7th & 8th digit of NIP
                 const strongerPassword = generatePassword(user.name, user.nip, true);
                 userInBatch.password = strongerPassword;
                 userInBatch.errorMessage = "Password terlalu lemah. Sistem telah memperbarui password menggunakan digit NIP alternatif. Silakan klik Eksekusi lagi.";
@@ -300,9 +300,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function generatePassword(name, nip, useAltNipPart = false) {
     let suffix = new Date().getDate();
-    if (nip && nip.length >= 6) {
+    if (nip && nip.length >= 8) {
       if (useAltNipPart) {
-        suffix = nip.substring(4, 6); // 5th & 6th
+        suffix = nip.substring(6, 8); // 7th & 8th
       } else {
         suffix = nip.substring(2, 4); // 3rd & 4th
       }
