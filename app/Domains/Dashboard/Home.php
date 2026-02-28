@@ -43,6 +43,16 @@ class Home extends BaseController
                 }
             }
 
+            // Custom sort for Email/TTE Status
+            $tteOrder = ['ISSUE', 'EXPIRED', 'NO_CERTIFICATE', 'NOT_REGISTERED', 'NOT_SYNCED'];
+            usort($email_stats, function ($a, $b) use ($tteOrder) {
+                $posA = array_search(strtoupper($a['label']), $tteOrder);
+                $posB = array_search(strtoupper($b['label']), $tteOrder);
+                if ($posA === false) $posA = 999;
+                if ($posB === false) $posB = 999;
+                return $posA - $posB;
+            });
+
             // Status ASN Stats - Optimized: Single Aggregated Query
             $asn_stats_raw = $emailModel->select('status_asn_id, COUNT(id) as count')
                 ->allowCallbacks(false)
@@ -71,6 +81,16 @@ class Home extends BaseController
                     }
                 }
             }
+
+            // Custom sort for Status ASN
+            $asnOrder = ['PNS', 'PPPK', 'PPPK PARUH WAKTU'];
+            usort($status_asn_stats, function ($a, $b) use ($asnOrder) {
+                $posA = array_search(strtoupper($a['label']), $asnOrder);
+                $posB = array_search(strtoupper($b['label']), $asnOrder);
+                if ($posA === false) $posA = 999;
+                if ($posB === false) $posB = 999;
+                return $posA - $posB;
+            });
 
             // Website Stats - Optimized: Single query with conditional aggregation
             $web_stats = [
