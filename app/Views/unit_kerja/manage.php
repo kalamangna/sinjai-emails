@@ -5,14 +5,30 @@
     <!-- Header Halaman -->
     <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
         <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight">Master Data Unit Kerja</h1>
-        
+
         <?php if (session()->get('role') === 'super_admin'): ?>
-        <div class="flex items-center gap-2 w-full lg:w-auto">
-            <a href="<?= site_url('unit_kerja/add') ?>" class="flex-1 lg:flex-none inline-flex items-center justify-center px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-white rounded-lg font-bold text-xs uppercase tracking-widest transition-all shadow-sm no-underline">
-                <i class="fas fa-plus mr-2 text-white/80"></i> Tambah
-            </a>
-        </div>
+            <div class="flex items-center gap-2 w-full lg:w-auto">
+                <a href="<?= site_url('unit_kerja/add') ?>" class="flex-1 lg:flex-none inline-flex items-center justify-center px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-white rounded-lg font-bold text-xs uppercase tracking-widest transition-all shadow-sm no-underline">
+                    <i class="fas fa-plus mr-2 text-white/80"></i> Tambah
+                </a>
+            </div>
         <?php endif; ?>
+    </div>
+
+    <!-- Statistik -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+            <p class="text-[10px] font-bold text-slate-700 uppercase tracking-widest">Total Unit Kerja</p>
+            <h3 class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($total_units, 0, ',', '.') ?></h3>
+        </div>
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 shadow-sm">
+            <p class="text-[10px] font-bold text-blue-600 uppercase tracking-widest">Unit Induk</p>
+            <h3 class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($total_parents, 0, ',', '.') ?></h3>
+        </div>
+        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-6 shadow-sm">
+            <p class="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">Sub Unit</p>
+            <h3 class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($total_children, 0, ',', '.') ?></h3>
+        </div>
     </div>
 
     <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
@@ -61,26 +77,26 @@
                                         <div class="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-700">
                                             <i class="fas fa-building text-xs"></i>
                                         </div>
-                                        <span class="font-medium text-slate-800 uppercase tracking-tight"><?= esc($unit['nama_unit_kerja']) ?></span>
+                                        <span class="font-medium text-slate-800 tracking-tight"><?= esc($unit['nama_unit_kerja']) ?></span>
                                     </div>
                                 </td>
-                                <td class="px-6 py-4">
+                                <td class="px-6 py-4 whitespace-nowrap">
                                     <?php if (!empty($unit['parent_name'])): ?>
-                                        <span class="text-xs font-medium text-slate-700 uppercase tracking-tight"><?= esc($unit['parent_name']) ?></span>
+                                        <span class="text-xs font-medium text-slate-700 tracking-tight"><?= esc($unit['parent_name']) ?></span>
                                     <?php else: ?>
                                         <span class="text-[10px] text-slate-700 uppercase font-bold">-</span>
                                     <?php endif; ?>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center">
                                     <?php if (session()->get('role') === 'super_admin'): ?>
-                                    <div class="flex justify-center gap-2">
-                                        <a href="<?= site_url('unit_kerja/edit/' . $unit['id']) ?>" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-white border border-slate-200 text-slate-700 hover:text-slate-800 shadow-sm transition-all" title="Edit">
-                                            <i class="fas fa-edit text-xs"></i>
-                                        </a>
-                                        <a href="<?= site_url('unit_kerja/delete/' . $unit['id']) ?>" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-white border border-slate-200 text-slate-700 hover:text-red-600 shadow-sm transition-all" title="Hapus" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
-                                            <i class="fas fa-trash-alt text-xs"></i>
-                                        </a>
-                                    </div>
+                                        <div class="flex justify-center gap-2">
+                                            <a href="<?= site_url('unit_kerja/edit/' . $unit['id']) ?>" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-white border border-slate-200 text-slate-700 hover:text-slate-800 shadow-sm transition-all" title="Edit">
+                                                <i class="fas fa-edit text-xs"></i>
+                                            </a>
+                                            <a href="<?= site_url('unit_kerja/delete/' . $unit['id']) ?>" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-white border border-slate-200 text-slate-700 hover:text-red-600 shadow-sm transition-all" title="Hapus" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                                                <i class="fas fa-trash-alt text-xs"></i>
+                                            </a>
+                                        </div>
                                     <?php endif; ?>
                                 </td>
                             </tr>
@@ -93,11 +109,11 @@
                 </tbody>
             </table>
         </div>
-        
+
         <?php if (isset($pager)): ?>
-        <div class="px-6 py-4 border-t border-slate-100">
-            <?= $pager->links() ?>
-        </div>
+            <div class="px-6 py-4 border-t border-slate-100">
+                <?= $pager->links() ?>
+            </div>
         <?php endif; ?>
     </div>
 </div>

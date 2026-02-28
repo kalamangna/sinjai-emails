@@ -10,6 +10,12 @@ class UnitKerja extends BaseController
     public function manage()
     {
         $unitKerjaModel = new UnitKerjaModel();
+        
+        // Calculate Statistics
+        $data['total_units'] = $unitKerjaModel->countAllResults(false);
+        $data['total_parents'] = (new UnitKerjaModel())->where('parent_id', null)->countAllResults();
+        $data['total_children'] = (new UnitKerjaModel())->where('parent_id !=', null)->countAllResults();
+
         $search = $this->request->getGet('search');
 
         $unitKerjaModel->select('unit_kerja.*, parent.nama_unit_kerja as parent_name')

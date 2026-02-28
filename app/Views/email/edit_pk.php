@@ -59,7 +59,7 @@
                         </div>
                         <div class="md:col-span-2">
                             <label for="gaji_terbilang" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Gaji Terbilang (Rupiah)</label>
-                            <textarea name="gaji_terbilang" id="gaji_terbilang" rows="2" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 uppercase transition-all" placeholder="CONTOH: TIGA JUTA DUA RATUS TIGA RIBU ENAM RATUS" required><?= esc($pk_data['gaji_terbilang'] ?? '') ?></textarea>
+                            <textarea name="gaji_terbilang" id="gaji_terbilang" rows="2" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 transition-all" placeholder="CONTOH: TIGA JUTA DUA RATUS TIGA RIBU ENAM RATUS" required><?= esc($pk_data['gaji_terbilang'] ?? '') ?></textarea>
                         </div>
                     </div>
                 </div>

@@ -226,7 +226,7 @@
                                 <div>
                                     <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">Gaji</label>
                                     <p class="text-sm font-bold text-slate-800">Rp <?= number_format($pk_data['gaji_nominal'], 0, ',', '.') ?></p>
-                                    <p class="text-[10px] font-medium text-slate-700 uppercase italic mt-0.5 leading-tight">"<?= esc($pk_data['gaji_terbilang']) ?> Rupiah"</p>
+                                    <p class="text-[10px] font-medium text-slate-700 italic mt-0.5 leading-tight">"<?= esc($pk_data['gaji_terbilang']) ?> Rupiah"</p>
                                 </div>
                             </div>
                         </div>

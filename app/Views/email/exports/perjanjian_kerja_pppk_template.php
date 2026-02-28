@@ -346,7 +346,7 @@
         </table>
     </div>
 
-    <!-- <div class="page-break"></div> -->
+    <div class="page-break"></div>
 
     <!-- PASAL 2 -->
     <div class="pasal-header">
