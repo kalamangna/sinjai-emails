@@ -53,7 +53,7 @@
 
                 <div class="md:col-span-4">
                     <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Unit Induk</label>
-                    <select name="parent_id" class="block w-full px-3 py-2 bg-white border <?= !empty($parent_id_filter) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm appearance-none cursor-pointer choices-search transition-all">
+                    <select name="parent_id" class="block w-full px-3 py-2 bg-white border <?= !empty($parent_id_filter) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm cursor-pointer transition-all">
                         <option value="">Semua Unit Induk</option>
                         <?php foreach ($parents_with_children as $parent): ?>
                             <option value="<?= esc($parent['id']) ?>" <?= ($parent_id_filter == $parent['id']) ? 'selected' : '' ?>><?= esc($parent['nama_unit_kerja']) ?></option>
