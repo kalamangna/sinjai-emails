@@ -396,6 +396,7 @@ class EmailService
             return strcmp($a, $b);
         });
 
+        $active_bsre_count = $bsre_status_counts['ISSUE']['count'] ?? 0;
         $total_emails_in_unit = array_sum(array_column($bsre_status_counts, 'count'));
 
         return [
