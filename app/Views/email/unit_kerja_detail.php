@@ -128,12 +128,16 @@
                     </div>
                     <div class="w-full sm:w-1/2 space-y-2 max-h-[200px] overflow-y-auto custom-scrollbar pr-2">
                         <?php
-                        $asnBgClasses = ['bg-blue-600', 'bg-emerald-600', 'bg-amber-500', 'bg-red-600', 'bg-slate-800', 'bg-slate-700', 'bg-slate-100', 'bg-slate-50'];
                         foreach ($status_asn_stats as $index => $stat):
+                            $label = strtoupper($stat['label']);
+                            $bgClass = 'bg-slate-700';
+                            if ($label === 'PNS') $bgClass = 'bg-blue-600';
+                            elseif ($label === 'PPPK') $bgClass = 'bg-emerald-600';
+                            elseif (strpos($label, 'PPPK PARUH WAKTU') !== false) $bgClass = 'bg-amber-500';
                         ?>
                             <div class="p-2 bg-slate-50 border border-slate-200 rounded-lg flex justify-between items-center">
                                 <div class="flex items-center truncate">
-                                    <span class="w-2 h-2 rounded-full mr-2 shrink-0 <?= $asnBgClasses[$index % count($asnBgClasses)] ?>"></span>
+                                    <span class="w-2 h-2 rounded-full mr-2 shrink-0 <?= $bgClass ?>"></span>
                                     <span class="text-[10px] font-bold text-slate-700 uppercase truncate"><?= esc($stat['label']) ?></span>
                                 </div>
                                 <span class="text-xs font-bold text-slate-800"><?= number_format($stat['count'], 0, ',', '.') ?></span>
@@ -401,7 +405,13 @@
 
         <?php if (!empty($status_asn_stats)): ?>
             const asnStats = <?= json_encode($status_asn_stats) ?>;
-            const asnColors = ['#2563eb', '#059669', '#f59e0b', '#dc2626', '#1e293b', '#334155', '#f1f5f9', '#f8fafc'];
+            const asnColors = asnStats.map(s => {
+                const label = s.label.toUpperCase();
+                if (label === 'PNS') return '#2563eb'; // blue-600
+                if (label === 'PPPK') return '#059669'; // emerald-600
+                if (label.includes('PPPK PARUH WAKTU')) return '#f59e0b'; // amber-500
+                return '#334155'; // slate-700
+            });
 
             new ApexCharts(document.querySelector("#asnStatusChart"), {
                 series: asnStats.map(s => s.count),
