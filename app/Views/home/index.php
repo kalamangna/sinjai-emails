@@ -59,7 +59,7 @@
                                 <span class="w-2 h-2 rounded-full mr-2 email-legend-dot shrink-0 <?= $bgClass ?>"></span>
                                 <span class="text-[10px] font-bold text-slate-700 uppercase truncate"><?= esc($stat['label']) ?></span>
                             </div>
-                            <span class="text-xs font-bold text-slate-800"><?= $stat['count'] ?></span>
+                            <span class="text-xs font-bold text-slate-800"><?= number_format($stat['count'], 0, ',', '.') ?></span>
                         </div>
                     <?php endforeach; ?>
                 </div>
