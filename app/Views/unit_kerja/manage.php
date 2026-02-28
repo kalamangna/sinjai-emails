@@ -32,6 +32,13 @@
     </div>
 
     <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+        <div class="bg-slate-50 px-6 py-4 border-b border-slate-200 flex justify-between items-center">
+            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Daftar Unit Kerja</h3>
+            <span class="text-[10px] font-bold text-slate-700 bg-white border border-slate-200 px-2 py-0.5 rounded-full shadow-sm">
+                TOTAL: <?= number_format(count($unit_kerja_list), 0, ',', '.') ?>
+            </span>
+        </div>
+
         <div class="p-6 border-b border-slate-100 bg-slate-50">
             <form method="GET" action="" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
                 <div class="md:col-span-6">
