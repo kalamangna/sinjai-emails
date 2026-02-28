@@ -224,15 +224,23 @@ document.addEventListener("DOMContentLoaded", function () {
             logResult(user.email, "SUCCESS", "Account created successfully.");
             if (userInBatch) userInBatch.status = "created";
           } else {
+            const errorMsg = result.message || "An unknown error occurred.";
             failureCount++;
-            logResult(
-              user.email,
-              "FAILURE",
-              result.message || "An unknown error occurred.",
-            );
+            
             if (userInBatch) {
               userInBatch.status = "failed";
-              userInBatch.errorMessage = result.message;
+              
+              // Detect if failure is because password too weak
+              if (errorMsg.toLowerCase().includes('strength') || errorMsg.toLowerCase().includes('weak')) {
+                // Change password to use 5th & 6th digit of NIP
+                const strongerPassword = generatePassword(user.name, user.nip, true);
+                userInBatch.password = strongerPassword;
+                userInBatch.errorMessage = "Password terlalu lemah. Sistem telah memperbarui password menggunakan digit NIP alternatif. Silakan klik Eksekusi lagi.";
+                logResult(user.email, "WEAK PW", "Password too weak. System changed to alternative NIP digits.");
+              } else {
+                userInBatch.errorMessage = errorMsg;
+                logResult(user.email, "FAILURE", errorMsg);
+              }
             }
           }
         } catch (error) {
@@ -254,12 +262,12 @@ document.addEventListener("DOMContentLoaded", function () {
         userBatch = userBatch.filter((user) => user.status === "failed");
         renderResults(userBatch);
         alert(
-          `Batch submission completed with ${failureCount} errors. Please review the statuses and logs, edit passwords for failed entries if needed, and click "Submit Batch" again.`,
+          `Batch selesai dengan ${failureCount} kesalahan. Silakan periksa log. Untuk kesalahan password lemah, password sudah diperbarui otomatis, silakan klik "Eksekusi" kembali.`,
         );
         progressSection.style.display = "none";
       } else {
         renderResults(userBatch);
-        alert(`Successfully created all ${successCount} email accounts!`);
+        alert(`Berhasil membuat ${successCount} akun email!`);
         setTimeout(() => {
           window.location.href = "/email";
         }, 1000);
@@ -273,8 +281,8 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   function logResult(email, status, message) {
-    const statusColor = status === "SUCCESS" ? "text-success" : "text-danger";
-    const logEntry = `<div>[<span class="${statusColor}">${status}</span>] ${email}: ${message}</div>`;
+    const statusColor = status === "SUCCESS" ? "text-emerald-500" : (status === "WEAK PW" ? "text-amber-500" : "text-red-500");
+    const logEntry = `<div>[<span class="${statusColor} font-bold">${status}</span>] ${email}: ${message}</div>`;
     resultsLog.insertAdjacentHTML("beforeend", logEntry);
     resultsLog.scrollTop = resultsLog.scrollHeight;
   }
@@ -290,11 +298,18 @@ document.addEventListener("DOMContentLoaded", function () {
     return { username: username, email: `${username}${domain}` };
   }
 
-  function generatePassword(name, nip) {
+  function generatePassword(name, nip, useAltNipPart = false) {
     let suffix = new Date().getDate();
-    if (nip && nip.length >= 4) {
-      suffix = nip.substring(2, 4); // 3rd & 4th
+    if (nip && nip.length >= 6) {
+      if (useAltNipPart) {
+        suffix = nip.substring(4, 6); // 5th & 6th
+      } else {
+        suffix = nip.substring(2, 4); // 3rd & 4th
+      }
+    } else if (nip && nip.length >= 4) {
+        suffix = nip.substring(2, 4);
     }
+
     const namePart = name.replace(/\s+/g, "").substring(0, 5).toLowerCase();
     if (!namePart) return `@${suffix}#`;
     const capitalizedNamePart =
