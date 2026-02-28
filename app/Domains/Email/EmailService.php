@@ -117,7 +117,7 @@ class EmailService
         $emails = $builder->paginate($perPage);
         $pager = $this->emailModel->pager;
 
-        $counts = $this->emailModel->allowCallbacks(false)->select('COUNT(id) as total_emails, COUNT(id) as active_count, SUM(CASE WHEN suspended_login = 1 THEN 1 ELSE 0 END) as suspended_count, SUM(CASE WHEN bsre_status = "ISSUE" THEN 1 ELSE 0 END) as active_bsre_count')->asArray()->first();
+        $counts = $this->emailModel->allowCallbacks(false)->select('COUNT(id) as total_emails, SUM(CASE WHEN suspended_login = 0 THEN 1 ELSE 0 END) as active_count, SUM(CASE WHEN suspended_login = 1 THEN 1 ELSE 0 END) as suspended_count, SUM(CASE WHEN bsre_status = "ISSUE" THEN 1 ELSE 0 END) as active_bsre_count')->asArray()->first();
 
         // Use cache for dashboard summaries
         $cache = \Config\Services::cache();
@@ -398,6 +398,13 @@ class EmailService
 
         $active_bsre_count = $bsre_status_counts['ISSUE']['count'] ?? 0;
         $total_emails_in_unit = array_sum(array_column($bsre_status_counts, 'count'));
+        
+        // Calculate actual active count (suspended_login = 0)
+        $activeStatsBuilder = $this->emailModel->whereIn('unit_kerja_id', $allUnitIds);
+        if ($isKecamatan && $pimpinan_desa == 0) {
+            $activeStatsBuilder->where('pimpinan_desa', 0);
+        }
+        $active_count = $activeStatsBuilder->where('suspended_login', 0)->countAllResults();
 
         return [
             'unit_kerja' => $unitKerja,
@@ -406,7 +413,7 @@ class EmailService
             'emails' => $emails,
             'total_emails' => $total_emails_in_unit,
             'filtered_count' => $filtered_count,
-            'active_count' => $total_emails_in_unit,
+            'active_count' => $active_count,
             'active_bsre_count' => $active_bsre_count,
             'pagination' => $pager,
             'status_asn_options' => $this->statusAsnModel->orderBy('nama_status_asn', 'ASC')->findAll(),
