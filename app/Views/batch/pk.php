@@ -23,12 +23,12 @@
                         <label class="block text-sm font-medium text-slate-700 mb-3 uppercase tracking-tight">Identifikasi</label>
                         <div class="flex gap-6">
                             <label class="flex items-center cursor-pointer group">
-                                <input type="radio" name="update_mode" id="mode_email" value="email" class="w-4 h-4 text-blue-600 border-slate-200 focus:ring-blue-600">
-                                <span class="ml-2 text-sm text-slate-700 group-hover:text-slate-800 transition-colors">Email</span>
-                            </label>
-                            <label class="flex items-center cursor-pointer group">
                                 <input type="radio" name="update_mode" id="mode_nik" value="nik" checked class="w-4 h-4 text-blue-600 border-slate-200 focus:ring-blue-600">
                                 <span class="ml-2 text-sm text-slate-700 group-hover:text-slate-800 transition-colors">NIK</span>
+                            </label>
+                            <label class="flex items-center cursor-pointer group">
+                                <input type="radio" name="update_mode" id="mode_email" value="email" class="w-4 h-4 text-blue-600 border-slate-200 focus:ring-blue-600">
+                                <span class="ml-2 text-sm text-slate-700 group-hover:text-slate-800 transition-colors">Email</span>
                             </label>
                         </div>
                     </div>
