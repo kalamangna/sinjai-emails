@@ -30,16 +30,16 @@
     <!-- Metrik -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-6">
-            <p class="text-[10px] font-bold text-slate-700 uppercase tracking-widest">Total Email</p>
+            <p class="text-[10px] font-bold text-slate-700 uppercase tracking-widest">Total Akun</p>
             <h3 class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($total_emails ?? 0) ?></h3>
         </div>
         <div class="bg-emerald-50 border border-emerald-200 rounded-xl shadow-sm p-6">
-            <p class="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">Aktif</p>
+            <p class="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">Email Aktif</p>
             <h3 class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($active_count ?? 0) ?></h3>
         </div>
-        <div class="bg-red-50 border border-red-200 rounded-xl shadow-sm p-6">
-            <p class="text-[10px] font-bold text-red-600 uppercase tracking-widest">Tidak Aktif</p>
-            <h3 class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($suspended_count ?? 0) ?></h3>
+        <div class="bg-blue-50 border border-blue-200 rounded-xl shadow-sm p-6">
+            <p class="text-[10px] font-bold text-blue-600 uppercase tracking-widest">TTE Aktif</p>
+            <h3 class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($active_bsre_count ?? 0) ?></h3>
         </div>
     </div>
 

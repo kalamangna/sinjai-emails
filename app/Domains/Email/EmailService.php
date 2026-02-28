@@ -117,7 +117,7 @@ class EmailService
         $emails = $builder->paginate($perPage);
         $pager = $this->emailModel->pager;
 
-        $counts = $this->emailModel->allowCallbacks(false)->select('COUNT(id) as total_emails, SUM(CASE WHEN suspended_login = 0 THEN 1 ELSE 0 END) as active_count, SUM(CASE WHEN suspended_login = 1 THEN 1 ELSE 0 END) as suspended_count')->asArray()->first();
+        $counts = $this->emailModel->allowCallbacks(false)->select('COUNT(id) as total_emails, SUM(CASE WHEN suspended_login = 0 THEN 1 ELSE 0 END) as active_count, SUM(CASE WHEN suspended_login = 1 THEN 1 ELSE 0 END) as suspended_count, SUM(CASE WHEN bsre_status = "ISSUE" THEN 1 ELSE 0 END) as active_bsre_count')->asArray()->first();
 
         // Use cache for dashboard summaries
         $cache = \Config\Services::cache();
@@ -245,6 +245,7 @@ class EmailService
             'filtered_count' => $filtered_count,
             'active_count' => $counts['active_count'] ?? 0,
             'suspended_count' => $counts['suspended_count'] ?? 0,
+            'active_bsre_count' => $counts['active_bsre_count'] ?? 0,
             'unit_kerja_list' => $summaryData['unit_kerja_list'],
             'status_asn_counts' => $summaryData['status_asn_counts'],
             'eselon_counts' => $summaryData['eselon_counts'],
