@@ -125,7 +125,13 @@ class CpanelApi
             ];
 
             $response = $this->make_request('Email', 'add_pop', 'POST', $parameters);
-            return $response;
+
+            if (isset($response['status']) && $response['status'] == 1) {
+                return $response;
+            } else {
+                $error_message = $response['errors'][0] ?? 'Unknown error during email account creation.';
+                throw new Exception($error_message);
+            }
         } catch (Exception $e) {
             log_message('error', 'Failed to create email account: ' . $e->getMessage());
             throw new Exception('Failed to create email account: ' . $e->getMessage());

@@ -437,18 +437,48 @@ class EmailService
             if ($unit) $unitKerjaId = $unit['id'];
         }
 
-        return $this->emailModel->insert([
-            'email'      => $data['email'],
-            'user'       => explode('@', $data['email'])[0],
-            'domain'     => explode('@', $data['email'])[1],
-            'unit_kerja_id' => $unitKerjaId,
-            'password'   => $data['password'] ?? null,
-            'nik'        => $data['nik'] ?? null,
-            'nip'        => $data['nip'] ?? null,
-            'name'       => $data['name'] ?? null,
-            'jabatan'    => $data['jabatan'] ?? null,
-            'status_asn_id' => $data['jenisFormasi'] ?? null,
-        ]);
+        try {
+            $insertId = $this->emailModel->insert([
+                'email'      => $data['email'],
+                'user'       => explode('@', $data['email'])[0],
+                'domain'     => explode('@', $data['email'])[1],
+                'unit_kerja_id' => $unitKerjaId,
+                'password'   => $data['password'] ?? null,
+                'nik'        => $data['nik'] ?? null,
+                'nip'        => $data['nip'] ?? null,
+                'name'       => $data['name'] ?? null,
+                'jabatan'    => $data['jabatan'] ?? null,
+                'status_asn_id' => $data['jenisFormasi'] ?? null,
+                'gelar_depan' => $data['gelar_depan'] ?? null,
+                'gelar_belakang' => $data['gelar_belakang'] ?? null,
+                'tempat_lahir' => $data['tempat_lahir'] ?? null,
+                'tanggal_lahir' => $data['tanggal_lahir'] ?? null,
+                'pendidikan' => $data['pendidikan'] ?? null,
+                'golongan' => $data['golongan'] ?? null,
+            ]);
+
+            if (!$insertId) {
+                // If local insert fails, we should try to remove the cPanel account to keep them in sync
+                try {
+                    $cpanelApi->delete_email_account($data['email']);
+                } catch (Exception $e2) {
+                    log_message('error', 'Cleanup failed after local insert failure for ' . $data['email'] . ': ' . $e2->getMessage());
+                }
+                throw new Exception('Gagal menyimpan data ke database lokal.');
+            }
+
+            return $insertId;
+        } catch (Exception $e) {
+            // If it's a DB error (like duplicate NIK), also try to cleanup cPanel
+            if (strpos($e->getMessage(), 'Duplicate entry') !== false || strpos($e->getMessage(), 'database') !== false) {
+                try {
+                    $cpanelApi->delete_email_account($data['email']);
+                } catch (Exception $e2) {
+                    log_message('error', 'Cleanup failed after DB exception for ' . $data['email'] . ': ' . $e2->getMessage());
+                }
+            }
+            throw $e;
+        }
     }
 
     public function updateEmailDetails($username, array $updateData)
