@@ -50,14 +50,18 @@
                 <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight"><?= esc($unit_kerja['nama_unit_kerja']) ?></h1>
             </div>
 
-            <div class="flex gap-4 min-w-[240px]">
+            <div class="flex gap-4 min-w-[360px]">
                 <div class="flex-1 bg-slate-50 border border-slate-200 rounded-xl p-4 text-center">
                     <p class="text-[9px] font-bold text-slate-700 uppercase tracking-widest">Total Email</p>
                     <p class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($total_emails ?? 0, 0, ',', '.') ?></p>
                 </div>
+                <div class="flex-1 bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-center">
+                    <p class="text-[9px] font-bold text-emerald-600 uppercase tracking-widest">Email Aktif</p>
+                    <p class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($active_count ?? 0, 0, ',', '.') ?></p>
+                </div>
                 <div class="flex-1 bg-blue-50 border border-blue-200 rounded-xl p-4 text-center">
                     <p class="text-[9px] font-bold text-blue-600 uppercase tracking-widest">TTE Aktif</p>
-                    <p class="text-2xl font-bold text-blue-600 mt-1"><?= number_format($active_count ?? 0, 0, ',', '.') ?></p>
+                    <p class="text-2xl font-bold text-blue-600 mt-1"><?= number_format($active_bsre_count ?? 0, 0, ',', '.') ?></p>
                 </div>
             </div>
         </div>

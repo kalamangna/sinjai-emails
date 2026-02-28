@@ -30,7 +30,7 @@
     <!-- Metrik -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-6">
-            <p class="text-[10px] font-bold text-slate-700 uppercase tracking-widest">Total Akun</p>
+            <p class="text-[10px] font-bold text-slate-700 uppercase tracking-widest">Total Email</p>
             <h3 class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($total_emails ?? 0, 0, ',', '.') ?></h3>
         </div>
         <div class="bg-emerald-50 border border-emerald-200 rounded-xl shadow-sm p-6">

@@ -27,7 +27,7 @@
                 <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight">Kepala Desa</h1>
             </div>
             <div class="bg-slate-50 px-6 py-2 rounded-lg border border-slate-200 text-center">
-                <p class="text-[10px] font-bold text-slate-700 uppercase tracking-widest">Total Akun</p>
+                <p class="text-[10px] font-bold text-slate-700 uppercase tracking-widest">Total Email</p>
                 <p class="text-xl font-bold text-slate-800"><?= number_format($total_emails, 0, ',', '.') ?></p>
             </div>
         </div>
