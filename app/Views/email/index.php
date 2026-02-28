@@ -58,7 +58,7 @@
                 </div>
 
                 <div class="md:col-span-4 lg:col-span-2">
-                    <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Status</label>
+                    <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Status TTE</label>
                     <select name="bsre_status" class="block w-full px-3 py-2 bg-white border <?= !empty($bsre_status) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm appearance-none cursor-pointer transition-all">
                         <option value="">Semua Status</option>
                         <?php foreach ($bsre_status_options ?? [] as $key => $label): ?>
