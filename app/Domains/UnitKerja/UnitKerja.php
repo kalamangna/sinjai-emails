@@ -37,7 +37,7 @@ class UnitKerja extends BaseController
 
         // Fetch parents that actually have children for the filter
         $parentsWithChildren = (new UnitKerjaModel())
-            ->select('parent.id, parent.nama_unit_kerja')
+            ->select('unit_kerja.id, unit_kerja.nama_unit_kerja')
             ->join('unit_kerja as child', 'child.parent_id = unit_kerja.id')
             ->groupBy('unit_kerja.id')
             ->orderBy('unit_kerja.nama_unit_kerja', 'ASC')
