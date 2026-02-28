@@ -92,29 +92,58 @@
     <?php endif; ?>
 
     <!-- Statistik Sertifikat -->
-    <?php if (!empty($bsre_status_counts)): ?>
-        <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
-            <div class="px-6 py-4 border-b border-slate-100 bg-slate-50">
-                <h5 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Status TTE</h5>
-            </div>
-            <div class="p-6 flex flex-col lg:flex-row items-center gap-8">
-                <div class="w-full lg:w-1/3 flex justify-center">
-                    <div id="bsreStatusChart" class="w-full max-w-[200px]"></div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <?php if (!empty($bsre_status_counts)): ?>
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden flex flex-col">
+                <div class="px-6 py-4 border-b border-slate-100 bg-slate-50">
+                    <h5 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Status TTE</h5>
                 </div>
-                <div class="w-full lg:w-2/3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                    <?php foreach ($bsre_status_counts as $key => $data): ?>
-                        <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg flex justify-between items-center">
-                            <div class="flex items-center">
-                                <span class="w-2.5 h-2.5 rounded-full mr-2 chart-legend-dot" data-status="<?= $key ?>"></span>
-                                <span class="text-[10px] font-bold text-slate-700 uppercase"><?= esc($data['label']) ?></span>
+                <div class="p-6 flex flex-col sm:flex-row items-center gap-8 flex-grow">
+                    <div class="w-full sm:w-1/2 flex justify-center">
+                        <div id="bsreStatusChart" class="w-full max-w-[200px]"></div>
+                    </div>
+                    <div class="w-full sm:w-1/2 space-y-2 max-h-[200px] overflow-y-auto custom-scrollbar pr-2">
+                        <?php foreach ($bsre_status_counts as $key => $data): ?>
+                            <div class="p-2 bg-slate-50 border border-slate-200 rounded-lg flex justify-between items-center">
+                                <div class="flex items-center truncate">
+                                    <span class="w-2 h-2 rounded-full mr-2 chart-legend-dot shrink-0" data-status="<?= $key ?>"></span>
+                                    <span class="text-[10px] font-bold text-slate-700 uppercase truncate"><?= esc($data['label']) ?></span>
+                                </div>
+                                <span class="text-xs font-bold text-slate-800"><?= number_format($data['count'], 0, ',', '.') ?></span>
                             </div>
-                            <span class="text-xs font-bold text-slate-800"><?= number_format($data['count'], 0, ',', '.') ?></span>
-                        </div>
-                    <?php endforeach; ?>
+                        <?php endforeach; ?>
+                    </div>
                 </div>
             </div>
-        </div>
-    <?php endif; ?>
+        <?php endif; ?>
+
+        <?php if (!empty($status_asn_stats)): ?>
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden flex flex-col">
+                <div class="px-6 py-4 border-b border-slate-100 bg-slate-50">
+                    <h5 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Status ASN</h5>
+                </div>
+                <div class="p-6 flex flex-col sm:flex-row items-center gap-8 flex-grow">
+                    <div class="w-full sm:w-1/2 flex justify-center">
+                        <div id="asnStatusChart" class="w-full max-w-[200px]"></div>
+                    </div>
+                    <div class="w-full sm:w-1/2 space-y-2 max-h-[200px] overflow-y-auto custom-scrollbar pr-2">
+                        <?php
+                        $asnBgClasses = ['bg-blue-600', 'bg-emerald-600', 'bg-amber-500', 'bg-red-600', 'bg-slate-800', 'bg-slate-700', 'bg-slate-100', 'bg-slate-50'];
+                        foreach ($status_asn_stats as $index => $stat):
+                        ?>
+                            <div class="p-2 bg-slate-50 border border-slate-200 rounded-lg flex justify-between items-center">
+                                <div class="flex items-center truncate">
+                                    <span class="w-2 h-2 rounded-full mr-2 shrink-0 <?= $asnBgClasses[$index % count($asnBgClasses)] ?>"></span>
+                                    <span class="text-[10px] font-bold text-slate-700 uppercase truncate"><?= esc($stat['label']) ?></span>
+                                </div>
+                                <span class="text-xs font-bold text-slate-800"><?= number_format($stat['count'], 0, ',', '.') ?></span>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
+    </div>
 
     <!-- Tabel Akun Email -->
     <div id="email-table-container" class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
@@ -359,6 +388,63 @@
                                     formatter: function(w) {
                                         return w.globals.seriesTotals.reduce((a, b) => a + b, 0)
                                     }
+                                }
+                            }
+                        }
+                    }
+                }
+            }).render();
+        <?php endif; ?>
+
+        <?php if (!empty($status_asn_stats)): ?>
+            const asnStats = <?= json_encode($status_asn_stats) ?>;
+            const asnColors = ['#2563eb', '#059669', '#f59e0b', '#dc2626', '#1e293b', '#334155', '#f1f5f9', '#f8fafc'];
+
+            new ApexCharts(document.querySelector("#asnStatusChart"), {
+                series: asnStats.map(s => s.count),
+                labels: asnStats.map(s => s.label),
+                colors: asnColors,
+                chart: {
+                    type: 'donut',
+                    height: 180,
+                    fontFamily: 'Inter, sans-serif'
+                },
+                stroke: {
+                    width: 2,
+                    colors: ['#ffffff']
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                legend: {
+                    show: false
+                },
+                plotOptions: {
+                    pie: {
+                        donut: {
+                            size: '75%',
+                            labels: {
+                                show: true,
+                                name: {
+                                    show: true,
+                                    fontSize: '10px',
+                                    fontWeight: 700,
+                                    color: '#334155',
+                                    offsetY: -5
+                                },
+                                value: {
+                                    show: true,
+                                    fontSize: '16px',
+                                    fontWeight: 700,
+                                    color: '#1e293b',
+                                    offsetY: 5
+                                },
+                                total: {
+                                    show: true,
+                                    label: 'TOTAL',
+                                    fontSize: '10px',
+                                    fontWeight: 700,
+                                    color: '#334155'
                                 }
                             }
                         }

@@ -399,6 +399,25 @@ class EmailService
         $active_bsre_count = $bsre_status_counts['ISSUE']['count'] ?? 0;
         $total_emails_in_unit = array_sum(array_column($bsre_status_counts, 'count'));
         
+        // Calculate ASN Status stats for the unit
+        $asnStatsBuilder = $this->emailModel->whereIn('unit_kerja_id', $allUnitIds);
+        if ($isKecamatan && $pimpinan_desa == 0) {
+            $asnStatsBuilder->where('pimpinan_desa', 0);
+        }
+        $rawAsnStats = $asnStatsBuilder->allowCallbacks(false)
+            ->select('status_asn.nama_status_asn as label, COUNT(emails.id) as count')
+            ->join('status_asn', 'status_asn.id = emails.status_asn_id', 'left')
+            ->groupBy('status_asn.nama_status_asn')
+            ->findAll();
+        
+        $status_asn_stats = [];
+        foreach ($rawAsnStats as $stat) {
+            $status_asn_stats[] = [
+                'label' => $stat['label'] ?: 'NON ASN',
+                'count' => (int)$stat['count']
+            ];
+        }
+
         // Calculate actual active count (suspended_login = 0)
         $activeStatsBuilder = $this->emailModel->whereIn('unit_kerja_id', $allUnitIds);
         if ($isKecamatan && $pimpinan_desa == 0) {
@@ -415,6 +434,7 @@ class EmailService
             'filtered_count' => $filtered_count,
             'active_count' => $active_count,
             'active_bsre_count' => $active_bsre_count,
+            'status_asn_stats' => $status_asn_stats,
             'pagination' => $pager,
             'status_asn_options' => $this->statusAsnModel->orderBy('nama_status_asn', 'ASC')->findAll(),
             'bsre_status_options' => $bsre_status_options,
