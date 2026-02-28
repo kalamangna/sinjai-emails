@@ -17,6 +17,7 @@ class UnitKerja extends BaseController
         $data['total_children'] = (new UnitKerjaModel())->where('parent_id !=', null)->countAllResults();
 
         $search = $this->request->getGet('search');
+        $parentIdFilter = $this->request->getGet('parent_id');
 
         $unitKerjaModel->select('unit_kerja.*, parent.nama_unit_kerja as parent_name')
             ->join('unit_kerja as parent', 'parent.id = unit_kerja.parent_id', 'left');
@@ -28,7 +29,20 @@ class UnitKerja extends BaseController
                 ->groupEnd();
         }
 
+        if ($parentIdFilter) {
+            $unitKerjaModel->where('unit_kerja.parent_id', $parentIdFilter);
+        }
+
         $unit_kerja_list = $unitKerjaModel->findAll();
+
+        // Fetch parents that actually have children for the filter
+        $parentsWithChildren = (new UnitKerjaModel())
+            ->select('parent.id, parent.nama_unit_kerja')
+            ->join('unit_kerja as child', 'child.parent_id = unit_kerja.id')
+            ->groupBy('unit_kerja.id')
+            ->orderBy('unit_kerja.nama_unit_kerja', 'ASC')
+            ->asArray()
+            ->findAll();
 
         // Sort using PHP's natural sort algorithm (case-insensitive)
         usort($unit_kerja_list, function ($a, $b) {
@@ -36,7 +50,9 @@ class UnitKerja extends BaseController
         });
 
         $data['unit_kerja_list'] = $unit_kerja_list;
+        $data['parents_with_children'] = $parentsWithChildren;
         $data['search'] = $search;
+        $data['parent_id_filter'] = $parentIdFilter;
         $data['title'] = 'Master Data Unit Kerja';
 
         return view('unit_kerja/manage', $data);
