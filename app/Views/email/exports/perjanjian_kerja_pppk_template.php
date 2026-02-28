@@ -12,7 +12,7 @@
            Font embedded directly for portability.
         */
         @page {
-            margin: 1cm 2cm 2.5cm 2cm;
+            margin: 1.5cm 2cm 2cm 2cm;
             size: A4;
         }
 
@@ -180,7 +180,7 @@
 
         /* SIGNATURES */
         .signature-table {
-            margin-top: 40px;
+            margin-top: 80px;
             width: 100%;
             page-break-inside: avoid;
         }
@@ -614,6 +614,8 @@
         </tr>
     </table>
 
+    <div class="page-break"></div>
+
     <!-- PASAL 6 -->
     <div class="pasal-header">
         Pasal 6 <br>
@@ -751,15 +753,71 @@
     <table class="pasal-content">
         <tr class="keep-together">
             <td class="num-col">(1)</td>
-            <td class="text-justify">Pemutusan hubungan Perpanjangan Perpanjangan Perjanjian Kerja dengan hormat dilakukan apabila: <br> a. Jangka waktu Perpanjangan Perpanjangan Perjanjian Kerja berakhir; <br> b. Pihak Kedua meninggal dunia; <br> c. Pihak Kedua mengajukan permohonan berhenti sebagai Pegawai Pemerintah dengan Perpanjangan Perjanjian Kerja; atau <br> d. Terjadi perampingan organisasi atau kebijakan pemerintah yang mengakibatkan pengurangan Pegawai Pemerintah dengan Perpanjangan Perjanjian Kerja pada Pihak Kesatu.</td>
+            <td class="text-justify">
+                Pemutusan hubungan Perpanjangan Perpanjangan Perjanjian Kerja dengan hormat dilakukan apabila:
+                <table class="sub-list">
+                    <tr>
+                        <td class="sub-num-col">a.</td>
+                        <td class="text-justify">Jangka waktu Perpanjangan Perpanjangan Perjanjian Kerja berakhir;</td>
+                    </tr>
+                    <tr>
+                        <td class="sub-num-col">b.</td>
+                        <td class="text-justify">Pihak Kedua meninggal dunia;</td>
+                    </tr>
+                    <tr>
+                        <td class="sub-num-col">c.</td>
+                        <td class="text-justify">Pihak Kedua mengajukan permohonan berhenti sebagai Pegawai Pemerintah dengan Perpanjangan Perjanjian Kerja; atau</td>
+                    </tr>
+                    <tr>
+                        <td class="sub-num-col">d.</td>
+                        <td class="text-justify">Terjadi perampingan organisasi atau kebijakan pemerintah yang mengakibatkan pengurangan Pegawai Pemerintah dengan Perpanjangan Perjanjian Kerja pada Pihak Kesatu.</td>
+                    </tr>
+                </table>
+            </td>
         </tr>
         <tr class="keep-together">
             <td class="num-col">(2)</td>
-            <td class="text-justify">Pemutusan hubungan Perpanjangan Perpanjangan Perjanjian Kerja dengan hormat tidak atas permintaan sendiri dilakukan apabila: <br> a. Pihak Kedua dihukum penjara berdasarkan putusan pengadilan yang telah memiliki kekuatan hukum tetap karena melakukan tindak pidana penjara paling singkat 2 (dua) tahun dan tindak pidana dilakukan dengan tidak berencana; <br> b. Pihak Kedua melakukan pelanggaran kewajiban dan/atau larangan sebagaimana yang dimaksud dalam Pasal 5; atau <br> c. Pihak Kedua tidak dapat memenuhi target kinerja yang telah disepakati sesuai dengan Perpanjangan Perjanjian Kerja.</td>
+            <td class="text-justify">
+                Pemutusan hubungan Perpanjangan Perpanjangan Perjanjian Kerja dengan hormat tidak atas permintaan sendiri dilakukan apabila:
+                <table class="sub-list">
+                    <tr>
+                        <td class="sub-num-col">a.</td>
+                        <td class="text-justify">Pihak Kedua dihukum penjara berdasarkan putusan pengadilan yang telah memiliki kekuatan hukum tetap karena melakukan tindak pidana penjara paling singkat 2 (dua) tahun dan tindak pidana dilakukan dengan tidak berencana;</td>
+                    </tr>
+                    <tr>
+                        <td class="sub-num-col">b.</td>
+                        <td class="text-justify">Pihak Kedua melakukan pelanggaran kewajiban dan/atau larangan sebagaimana yang dimaksud dalam Pasal 5; atau</td>
+                    </tr>
+                    <tr>
+                        <td class="sub-num-col">c.</td>
+                        <td class="text-justify">Pihak Kedua tidak dapat memenuhi target kinerja yang telah disepakati sesuai dengan Perpanjangan Perjanjian Kerja.</td>
+                    </tr>
+                </table>
+            </td>
         </tr>
         <tr class="keep-together">
             <td class="num-col">(3)</td>
-            <td class="text-justify">Pemutusan hubungan Perpanjangan Perjanjian Kerja tidak dengan hormat dilakukan apabila: <br> a. melakukan penyelewengan terhadap Pancasila dan/atau Undang-Undang Dasar Negara Republik Indonesia Tahun 1945; <br> b. dihukum penjara atau kurungan berdasarkan putusan pengadilan yang telah memiliki kekuatan hukum tetap karena melakukan tindak pidana kejahatan jabatan atau tindak pidana yang ada hubungannya dengan jabatan; <br> c. menjadi anggota dan/atau pengurus partai politik; atau <br> d. dihukum penjara berdasarkan putusan pengadilan yang telah memiliki kekuatan hukum tetap karena melakukan tindak pidana yang diancam pidana penjara paling singkat 2 (dua) tahun atau lebih dan tindak pidana tersebut dilakukan dengan berencana.</td>
+            <td class="text-justify">
+                Pemutusan hubungan Perpanjangan Perjanjian Kerja tidak dengan hormat dilakukan apabila:
+                <table class="sub-list">
+                    <tr>
+                        <td class="sub-num-col">a.</td>
+                        <td class="text-justify">melakukan penyelewengan terhadap Pancasila dan/atau Undang-Undang Dasar Negara Republik Indonesia Tahun 1945;</td>
+                    </tr>
+                    <tr>
+                        <td class="sub-num-col">b.</td>
+                        <td class="text-justify">dihukum penjara atau kurungan berdasarkan putusan pengadilan yang telah memiliki kekuatan hukum tetap karena melakukan tindak pidana kejahatan jabatan atau tindak pidana yang ada hubungannya dengan jabatan;</td>
+                    </tr>
+                    <tr>
+                        <td class="sub-num-col">c.</td>
+                        <td class="text-justify">menjadi anggota dan/atau pengurus partai politik; atau</td>
+                    </tr>
+                    <tr>
+                        <td class="sub-num-col">d.</td>
+                        <td class="text-justify">dihukum penjara berdasarkan putusan pengadilan yang telah memiliki kekuatan hukum tetap karena melakukan tindak pidana yang diancam pidana penjara paling singkat 2 (dua) tahun atau lebih dan tindak pidana tersebut dilakukan with berencana.</td>
+                    </tr>
+                </table>
+            </td>
         </tr>
     </table>
 
