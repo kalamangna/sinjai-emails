@@ -75,17 +75,17 @@
                 <div class="w-full md:w-1/2 flex justify-center">
                     <div id="asnStatusChart" class="w-full max-w-[200px]"></div>
                 </div>
-                <div class="w-full md:w-1/2 space-y-1.5 max-h-[200px] overflow-y-auto custom-scrollbar pr-2">
+                <div class="w-full md:w-1/2 space-y-2 max-h-[200px] overflow-y-auto custom-scrollbar pr-2">
                     <?php
                     $asnBgClasses = ['bg-blue-600', 'bg-emerald-600', 'bg-amber-500', 'bg-red-600', 'bg-slate-800', 'bg-slate-700', 'bg-slate-100', 'bg-slate-50'];
                     foreach ($status_asn_stats as $index => $stat):
                     ?>
-                        <div class="flex justify-between items-center p-2 rounded-lg hover:bg-slate-50 transition-colors">
+                        <div class="flex justify-between items-center p-2 rounded-lg border border-slate-200 bg-slate-50">
                             <div class="flex items-center truncate">
                                 <span class="w-2 h-2 rounded-full mr-2 asn-legend-dot shrink-0 <?= $asnBgClasses[$index % count($asnBgClasses)] ?>"></span>
                                 <span class="text-[10px] font-bold text-slate-700 uppercase tracking-tight truncate"><?= esc($stat['label']) ?></span>
                             </div>
-                            <span class="text-[10px] font-bold text-slate-800 bg-slate-100 px-1.5 py-0.5 rounded"><?= $stat['count'] ?></span>
+                            <span class="text-xs font-bold text-slate-800"><?= $stat['count'] ?></span>
                         </div>
                     <?php endforeach; ?>
                 </div>
