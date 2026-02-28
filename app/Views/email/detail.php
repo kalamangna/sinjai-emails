@@ -117,15 +117,15 @@
                                     <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">Pendidikan Terakhir</label>
                                     <p class="text-sm font-semibold text-slate-800 uppercase"><?= esc($email['pendidikan']) ?: '-' ?></p>
                                 </div>
-                                <div>
-                                    <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">Gelar Akademik</label>
-                                    <p class="text-sm font-semibold text-slate-800">
-                                        <?= esc($email['gelar_depan']) ?: '' ?>
-                                        <?= esc($email['gelar_belakang']) ?: '' ?>
-                                        <?php if (empty($email['gelar_depan']) && empty($email['gelar_belakang'])): ?>
-                                            -
-                                        <?php endif; ?>
-                                    </p>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">Gelar Depan</label>
+                                        <p class="text-sm font-semibold text-slate-800"><?= esc($email['gelar_depan']) ?: '-' ?></p>
+                                    </div>
+                                    <div>
+                                        <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">Gelar Belakang</label>
+                                        <p class="text-sm font-semibold text-slate-800"><?= esc($email['gelar_belakang']) ?: '-' ?></p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
