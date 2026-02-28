@@ -318,11 +318,14 @@
             const tteColorMap = {
                 'ISSUE': '#059669', // emerald-600
                 'EXPIRED': '#dc2626', // red-600
+                'REVOKE': '#dc2626', // red-600
+                'SUSPEND': '#dc2626', // red-600
                 'RENEW': '#f59e0b', // amber-500
                 'WAITING_FOR_VERIFICATION': '#f59e0b', // amber-500
                 'NEW': '#2563eb', // blue-600
-                'NO_CERTIFICATE': '#334155', // slate-700
-                'not_synced': '#e2e8f0' // slate-200
+                'NOT_REGISTERED': '#334155', // slate-700
+                'NO_CERTIFICATE': '#475569', // slate-600
+                'not_synced': '#94a3b8' // slate-400
             };
             const chartData = <?= json_encode($bsre_status_counts) ?>;
             const labels = [],
