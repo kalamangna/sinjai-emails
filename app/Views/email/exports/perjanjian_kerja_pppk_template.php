@@ -12,7 +12,7 @@
            Font embedded directly for portability.
         */
         @page {
-            margin: 1.5cm 2cm 2cm 2cm;
+            margin: 1.5cm 2cm 1.5cm 2cm;
             size: A4;
         }
 
@@ -346,7 +346,7 @@
         </table>
     </div>
 
-    <div class="page-break"></div>
+    <!-- <div class="page-break"></div> -->
 
     <!-- PASAL 2 -->
     <div class="pasal-header">
@@ -614,7 +614,7 @@
         </tr>
     </table>
 
-    <div class="page-break"></div>
+    <!-- <div class="page-break"></div> -->
 
     <!-- PASAL 6 -->
     <div class="pasal-header">

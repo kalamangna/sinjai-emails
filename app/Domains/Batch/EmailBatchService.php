@@ -25,7 +25,7 @@ class EmailBatchService
 
     public function processBatchUpdate(array $data)
     {
-        $mode = $data['mode'] ?? 'email';
+        $mode = $data['mode'] ?? 'nik';
         $identifiers = $data['identifiers'];
         $newNames = $data['names'] ?? [];
         $newPasswords = $data['passwords'] ?? [];
@@ -184,11 +184,22 @@ class EmailBatchService
             return $item->email;
         }, $data);
 
-        $existing_emails = $this->emailModel->whereIn('email', $emails)->findColumn('email');
+        $niks = array_filter(array_map(function ($item) {
+            return $item->nik ?? null;
+        }, $data));
 
-        if (!empty($existing_emails)) {
-            $message = 'The following email(s) already exist in the local database: ' . implode(', ', $existing_emails) . '. Please remove them from the list and try again.';
-            throw new Exception($message);
+        $existing_emails = $this->emailModel->whereIn('email', $emails)->findColumn('email') ?? [];
+        $existing_niks = !empty($niks) ? ($this->emailModel->whereIn('nik', $niks)->findColumn('nik') ?? []) : [];
+
+        if (!empty($existing_emails) || !empty($existing_niks)) {
+            $errors = [];
+            if (!empty($existing_emails)) {
+                $errors[] = 'Email(s) already exist: ' . implode(', ', $existing_emails);
+            }
+            if (!empty($existing_niks)) {
+                $errors[] = 'NIK(s) already exist: ' . implode(', ', $existing_niks);
+            }
+            throw new Exception(implode(' | ', $errors) . '. Please remove them from the list and try again.');
         }
 
         $results = [];
