@@ -4,33 +4,33 @@
 <div class="space-y-6">
     <!-- Header Halaman -->
     <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-        <h1 class="text-2xl font-semibold text-gray-900">Website Desa & Kelurahan</h1>
+        <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight">Website Desa & Kelurahan</h1>
 
         <div class="flex items-center gap-2 w-full lg:w-auto">
-            <a href="<?= site_url('web_desa_kelurahan/export_pdf') ?>" class="flex-1 lg:flex-none inline-flex items-center justify-center px-4 py-2.5 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg font-bold text-xs uppercase tracking-widest transition-all shadow-sm no-underline">
+            <a href="<?= site_url('web_desa_kelurahan/export_pdf') ?>" class="flex-1 lg:flex-none inline-flex items-center justify-center px-4 py-2.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-lg font-bold text-xs uppercase tracking-widest transition-all shadow-sm no-underline">
                 <i class="fas fa-file-pdf mr-2 text-red-600"></i> Unduh PDF
             </a>
             <?php if (session()->get('role') === 'super_admin'): ?>
-                <button type="button" class="flex-1 lg:flex-none inline-flex items-center justify-center px-4 py-2.5 bg-gray-900 hover:bg-gray-800 text-white rounded-lg font-bold text-xs uppercase tracking-widest transition-all shadow-sm focus:outline-none" id="batchSyncBtn" onclick="startBatchSync()">
-                    <i class="fas fa-sync mr-2"></i> Sync Expiration
+                <button type="button" class="flex-1 lg:flex-none inline-flex items-center justify-center px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-white rounded-lg font-bold text-xs uppercase tracking-widest transition-all shadow-sm focus:outline-none" id="batchSyncBtn" onclick="startBatchSync()">
+                    <i class="fas fa-sync mr-2 text-white/80"></i> Sync Expiration
                 </button>
             <?php endif; ?>
         </div>
     </div>
 
     <!-- Progress Sinkronisasi -->
-    <div id="syncProgressContainer" class="hidden bg-gray-900 rounded-xl p-6 shadow-sm overflow-hidden relative">
+    <div id="syncProgressContainer" class="hidden bg-slate-800 rounded-xl p-6 shadow-sm overflow-hidden relative">
         <div class="relative z-10 space-y-4">
             <div class="flex justify-between items-end">
                 <div>
-                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Sinkronisasi RDAP</p>
+                    <p class="text-[10px] font-bold text-slate-700 uppercase tracking-widest mb-1">Sinkronisasi RDAP</p>
                     <h4 class="text-sm font-bold text-white uppercase tracking-tight">Memproses Data...</h4>
                 </div>
                 <div class="text-right">
                     <span id="syncStatusCount" class="text-2xl font-bold text-white leading-none">0/0</span>
                 </div>
             </div>
-            <div class="w-full bg-gray-800 rounded-full h-2">
+            <div class="w-full bg-slate-700 rounded-full h-2">
                 <div id="syncProgressBar" class="bg-white h-full rounded-full transition-all duration-300" style="width: 0%"></div>
             </div>
         </div>
@@ -39,37 +39,37 @@
     <!-- Statistik -->
     <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
         <!-- Status -->
-        <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col">
-            <div class="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
-                <h3 class="text-xs font-bold text-gray-900 uppercase tracking-tight">Status Website</h3>
+        <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden flex flex-col">
+            <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/50">
+                <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Status Website</h3>
             </div>
             <div class="p-6 flex flex-col md:flex-row items-center gap-8">
                 <div class="w-full md:w-1/2 flex justify-center">
                     <div id="statusChart" class="w-full max-w-[180px]"></div>
                 </div>
                 <div class="w-full md:w-1/2 space-y-2">
-                    <div class="flex justify-between items-center p-2 rounded-lg border border-gray-50 bg-gray-50">
+                    <div class="flex justify-between items-center p-2 rounded-lg border border-slate-200 bg-slate-50">
                         <div class="flex items-center gap-2">
-                            <span class="w-2.5 h-2.5 rounded-full bg-gray-900"></span>
-                            <span class="text-[10px] font-bold text-gray-700 uppercase">Aktif</span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
+                            <span class="text-[10px] font-bold text-slate-700 uppercase">Aktif</span>
                         </div>
-                        <span class="text-xs font-bold text-gray-900"><?= $stats['aktif'] ?></span>
+                        <span class="text-xs font-bold text-slate-800"><?= $stats['aktif'] ?></span>
                     </div>
-                    <div class="flex justify-between items-center p-2 rounded-lg border border-gray-50 bg-gray-50">
+                    <div class="flex justify-between items-center p-2 rounded-lg border border-slate-200 bg-slate-50">
                         <div class="flex items-center gap-2">
-                            <span class="w-2.5 h-2.5 rounded-full bg-gray-300"></span>
-                            <span class="text-[10px] font-bold text-gray-700 uppercase">Nonaktif</span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-slate-100"></span>
+                            <span class="text-[10px] font-bold text-slate-700 uppercase">Nonaktif</span>
                         </div>
-                        <span class="text-xs font-bold text-gray-900"><?= $stats['nonaktif'] ?></span>
+                        <span class="text-xs font-bold text-slate-800"><?= $stats['nonaktif'] ?></span>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Statistik Teknologi -->
-        <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col">
-            <div class="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
-                <h3 class="text-xs font-bold text-gray-900 uppercase tracking-tight">Distribusi Platform</h3>
+        <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden flex flex-col">
+            <div class="px-6 py-4 border-b border-slate-100 bg-slate-50">
+                <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Distribusi Platform</h3>
             </div>
             <div class="p-6 flex flex-col md:flex-row items-center gap-8">
                 <div class="w-full md:w-1/2 flex justify-center">
@@ -77,12 +77,12 @@
                 </div>
                 <div class="w-full md:w-1/2 space-y-1.5 max-h-[150px] overflow-y-auto custom-scrollbar pr-2">
                     <?php foreach ($platform_stats as $index => $ps): ?>
-                        <div class="flex justify-between items-center p-1.5 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div class="flex justify-between items-center p-1.5 rounded-lg hover:bg-slate-50 transition-colors">
                             <div class="flex items-center truncate">
                                 <span class="w-2 h-2 rounded-full mr-2 platform-legend-dot shrink-0" data-index="<?= $index ?>"></span>
-                                <span class="text-[10px] font-bold text-gray-600 uppercase tracking-tight truncate"><?= esc($ps['nama_platform'] ?: 'Lainnya') ?></span>
+                                <span class="text-[10px] font-bold text-slate-700 uppercase tracking-tight truncate"><?= esc($ps['nama_platform'] ?: 'Lainnya') ?></span>
                             </div>
-                            <span class="text-[10px] font-bold text-gray-900 bg-gray-100 px-1.5 py-0.5 rounded"><?= $ps['count'] ?></span>
+                            <span class="text-[10px] font-bold text-slate-800 bg-slate-100 px-1.5 py-0.5 rounded"><?= $ps['count'] ?></span>
                         </div>
                     <?php endforeach; ?>
                 </div>
@@ -90,22 +90,22 @@
         </div>
     </div>
 
-    <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
-        <div class="p-6 border-b border-gray-100 bg-gray-50/50">
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+        <div class="p-6 border-b border-slate-100 bg-slate-50">
             <form method="GET" action="<?= site_url('web_desa_kelurahan') ?>" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
                 <div class="md:col-span-3">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Pencarian</label>
+                    <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Pencarian</label>
                     <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-700">
                             <i class="fas fa-search text-xs"></i>
                         </span>
-                        <input type="text" name="search" value="<?= esc($search) ?>" class="block w-full pl-9 pr-3 py-2 bg-white border <?= !empty($search) ? 'border-gray-900 ring-1 ring-gray-900' : 'border-gray-300' ?> rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-400 focus:border-gray-400 text-sm" placeholder="Cari desa atau kelurahan...">
+                        <input type="text" name="search" value="<?= esc($search) ?>" class="block w-full pl-9 pr-3 py-2 bg-white border <?= !empty($search) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm transition-all" placeholder="Cari desa atau kelurahan...">
                     </div>
                 </div>
 
                 <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Tipe</label>
-                    <select name="type" class="block w-full px-3 py-2 bg-white border <?= !empty($filterType) ? 'border-gray-900 ring-1 ring-gray-900' : 'border-gray-300' ?> rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-400 focus:border-gray-400 text-sm appearance-none cursor-pointer">
+                    <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Tipe</label>
+                    <select name="type" class="block w-full px-3 py-2 bg-white border <?= !empty($filterType) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm appearance-none cursor-pointer transition-all">
                         <option value="">Semua Tipe</option>
                         <option value="DESA" <?= ($filterType === 'DESA') ? 'selected' : '' ?>>DESA</option>
                         <option value="KELURAHAN" <?= ($filterType === 'KELURAHAN') ? 'selected' : '' ?>>KELURAHAN</option>
@@ -113,8 +113,8 @@
                 </div>
 
                 <div class="md:col-span-3">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Platform</label>
-                    <select name="filter_platform" class="block w-full px-3 py-2 bg-white border <?= !empty($filterPlatform) ? 'border-gray-900 ring-1 ring-gray-900' : 'border-gray-300' ?> rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-400 focus:border-gray-400 text-sm appearance-none cursor-pointer">
+                    <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Platform</label>
+                    <select name="filter_platform" class="block w-full px-3 py-2 bg-white border <?= !empty($filterPlatform) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm appearance-none cursor-pointer transition-all">
                         <option value="">Semua Platform</option>
                         <option value="NULL" <?= ($filterPlatform === 'NULL') ? 'selected' : '' ?>>Tanpa Platform</option>
                         <?php foreach ($platforms as $p): ?>
@@ -124,8 +124,8 @@
                 </div>
 
                 <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                    <select name="status" class="block w-full px-3 py-2 bg-white border <?= !empty($filterStatus) ? 'border-gray-900 ring-1 ring-gray-900' : 'border-gray-300' ?> rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-400 focus:border-gray-400 text-sm appearance-none cursor-pointer">
+                    <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Status</label>
+                    <select name="status" class="block w-full px-3 py-2 bg-white border <?= !empty($filterStatus) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm appearance-none cursor-pointer transition-all">
                         <option value="">Semua Status</option>
                         <option value="AKTIF" <?= ($filterStatus === 'AKTIF') ? 'selected' : '' ?>>AKTIF</option>
                         <option value="NONAKTIF" <?= ($filterStatus === 'NONAKTIF') ? 'selected' : '' ?>>NONAKTIF</option>
@@ -133,10 +133,10 @@
                 </div>
 
                 <div class="md:col-span-2 flex gap-2">
-                    <button type="submit" class="flex-1 inline-flex items-center justify-center px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white rounded-lg font-bold text-xs uppercase tracking-widest transition-all">
-                        <i class="fas fa-filter mr-2"></i> Filter
+                    <button type="submit" class="flex-1 inline-flex items-center justify-center px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg font-bold text-xs uppercase tracking-widest transition-all">
+                        <i class="fas fa-filter mr-2 text-white/80"></i> Filter
                     </button>
-                    <a href="<?= site_url('web_desa_kelurahan') ?>" class="inline-flex items-center justify-center px-4 py-2 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-lg transition-all shadow-sm" title="Reset">
+                    <a href="<?= site_url('web_desa_kelurahan') ?>" class="inline-flex items-center justify-center px-4 py-2 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-lg transition-all shadow-sm" title="Reset">
                         <i class="fas fa-undo"></i>
                     </a>
                 </div>
@@ -145,24 +145,24 @@
 
         <div class="overflow-x-auto">
             <table class="w-full text-left text-sm">
-                <thead class="bg-gray-50 text-gray-500 uppercase text-[10px] font-bold">
+                <thead class="bg-slate-50 text-slate-700 uppercase text-[10px] font-bold">
                     <tr>
-                        <th class="px-6 py-3 border-b border-gray-200">Desa / Kelurahan</th>
-                        <th class="px-6 py-3 border-b border-gray-200">Domain / Platform</th>
-                        <th class="px-6 py-3 border-b border-gray-200">Tanggal Berakhir</th>
-                        <th class="px-6 py-3 border-b border-gray-200">Status</th>
-                        <th class="px-6 py-3 border-b border-gray-200">Dikelola Kominfo</th>
-                        <th class="px-6 py-3 border-b border-gray-200">Keterangan</th>
-                        <th class="px-6 py-3 border-b border-gray-200 text-center">Aksi</th>
+                        <th class="px-6 py-3 border-b border-slate-200">Desa / Kelurahan</th>
+                        <th class="px-6 py-3 border-b border-slate-200">Domain / Platform</th>
+                        <th class="px-6 py-3 border-b border-slate-200">Tanggal Berakhir</th>
+                        <th class="px-6 py-3 border-b border-slate-200">Status</th>
+                        <th class="px-6 py-3 border-b border-slate-200">Dikelola Kominfo</th>
+                        <th class="px-6 py-3 border-b border-slate-200">Keterangan</th>
+                        <th class="px-6 py-3 border-b border-slate-200 text-center">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100">
+                <tbody class="divide-y divide-slate-100">
                     <?php foreach ($websites as $web): ?>
-                        <tr class="hover:bg-gray-50 transition-colors website-row" data-id="<?= $web['id'] ?>">
+                        <tr class="hover:bg-slate-50 transition-colors website-row" data-id="<?= $web['id'] ?>">
                             <td class="px-6 py-4">
                                 <div class="flex flex-col">
-                                    <span class="font-medium text-gray-900 uppercase tracking-tight text-xs"><?= esc($web['desa_kelurahan']) ?></span>
-                                    <span class="text-[10px] text-gray-400 uppercase font-bold tracking-widest mt-0.5"><?= esc($web['kecamatan']) ?></span>
+                                    <span class="font-medium text-slate-800 uppercase tracking-tight text-xs"><?= esc($web['desa_kelurahan']) ?></span>
+                                    <span class="text-[10px] text-slate-700 uppercase font-bold tracking-widest mt-0.5"><?= esc($web['kecamatan']) ?></span>
                                 </div>
                             </td>
                             <td class="px-6 py-4">
@@ -171,10 +171,10 @@
                                         <?= esc($web['domain']) ?>
                                     </a>
                                 <?php endif; ?>
-                                <span class="text-[9px] font-bold text-gray-400 uppercase tracking-tight"><?= esc($web['platform_name'] ?: 'Lainnya') ?></span>
+                                <span class="text-[9px] font-bold text-slate-700 uppercase tracking-tight"><?= esc($web['platform_name'] ?: 'Lainnya') ?></span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap" id="date-cell-<?= $web['id'] ?>">
-                                <span class="text-xs font-medium text-gray-700">
+                                <span class="text-xs font-medium text-slate-700">
                                     <?php if (stripos($web['desa_kelurahan'], 'KELURAHAN') !== false): ?>
                                         <?= formatTanggal('2027-02-01') ?>
                                     <?php else: ?>
@@ -185,7 +185,7 @@
                             <td class="px-6 py-4 whitespace-nowrap" id="status-cell-<?= $web['id'] ?>">
                                 <?php
                                 $status = strtoupper($web['status'] ?? 'NONAKTIF');
-                                $colorClass = ($status === 'AKTIF') ? 'bg-green-50 text-green-700 border-green-100' : 'bg-red-50 text-red-700 border-red-100';
+                                $colorClass = ($status === 'AKTIF') ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-red-50 text-red-600 border-red-200';
                                 ?>
                                 <span class="px-2 py-0.5 rounded-full text-[10px] font-bold border <?= $colorClass ?>">
                                     <?= $status ?>
@@ -193,23 +193,23 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <?php if ($web['dikelola_kominfo'] === 'YA'): ?>
-                                    <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-50 text-blue-600 border border-blue-100" title="Dikelola Kominfo">
+                                    <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-50 text-blue-600 border border-blue-200" title="Dikelola Kominfo">
                                         <i class="fas fa-check text-[10px]"></i>
                                     </span>
                                 <?php else: ?>
-                                    <span class="text-[10px] text-gray-300 font-bold tracking-widest">—</span>
+                                    <span class="text-[10px] text-slate-700 font-bold tracking-widest">—</span>
                                 <?php endif; ?>
                             </td>
                             <td class="px-6 py-4">
-                                <span class="text-[10px] text-gray-500 font-medium tracking-tight"><?= esc($web['keterangan'] ?: '') ?></span>
+                                <span class="text-[10px] text-slate-700 font-medium tracking-tight"><?= esc($web['keterangan'] ?: '') ?></span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-center">
                                 <?php if (session()->get('role') === 'super_admin'): ?>
-                                    <a href="<?= site_url('web_desa_kelurahan/edit/' . $web['id']) ?>" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-white border border-gray-300 text-gray-400 hover:text-gray-900 shadow-sm transition-all" title="Edit">
+                                    <a href="<?= site_url('web_desa_kelurahan/edit/' . $web['id']) ?>" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-white border border-slate-200 text-slate-700 hover:text-slate-800 shadow-sm transition-all" title="Edit">
                                         <i class="fas fa-edit text-xs"></i>
                                     </a>
                                 <?php else: ?>
-                                    <span class="text-[10px] font-bold text-gray-400 uppercase italic">Hanya Lihat</span>
+                                    <span class="text-[10px] font-bold text-slate-700 uppercase italic">Hanya Lihat</span>
                                 <?php endif; ?>
                             </td>
                         </tr>
@@ -236,7 +236,7 @@
             },
             stroke: {
                 width: 2,
-                colors: ['#fff']
+                colors: ['#ffffff']
             },
             dataLabels: {
                 enabled: false
@@ -254,14 +254,14 @@
                                 show: true,
                                 fontSize: '10px',
                                 fontWeight: 700,
-                                color: '#6B7280',
+                                color: '#334155',
                                 offsetY: -5
                             },
                             value: {
                                 show: true,
                                 fontSize: '16px',
                                 fontWeight: 700,
-                                color: '#111827',
+                                color: '#1e293b',
                                 offsetY: 5,
                                 formatter: function(val) {
                                     return val
@@ -272,7 +272,7 @@
                                 label: 'TOTAL',
                                 fontSize: '10px',
                                 fontWeight: 700,
-                                color: '#6B7280',
+                                color: '#334155',
                                 formatter: function(w) {
                                     return w.globals.seriesTotals.reduce((a, b) => a + b, 0)
                                 }
@@ -287,10 +287,10 @@
             ...commonOptions,
             series: [stats.aktif, stats.nonaktif],
             labels: ['AKTIF', 'NONAKTIF'],
-            colors: ['#111827', '#e5e7eb']
+            colors: ['#059669', '#334155']
         }).render();
 
-        const pColors = ['#1f2937', '#4b5563', '#9ca3af', '#d1d5db', '#e5e7eb', '#f3f4f6'];
+        const pColors = ['#2563eb', '#059669', '#f59e0b', '#dc2626', '#1e293b', '#334155', '#f1f5f9', '#f8fafc'];
         new ApexCharts(document.querySelector("#platformChart"), {
             ...commonOptions,
             series: platformStats.map(p => parseInt(p.count)),
@@ -306,15 +306,15 @@
     async function syncExpiration(id) {
         const dateCell = document.getElementById('date-cell-' + id);
         const statusCell = document.getElementById('status-cell-' + id);
-        if (dateCell) dateCell.innerHTML = '<i class="fas fa-spinner fa-spin text-gray-400 text-[10px]"></i>';
+        if (dateCell) dateCell.innerHTML = '<i class="fas fa-spinner fa-spin text-slate-700 text-[10px]"></i>';
         try {
             const r = await fetch('<?= site_url('web_desa_kelurahan/sync_expiration/') ?>' + id);
             const d = await r.json();
             if (d.status === 'success') {
-                dateCell.innerHTML = `<span class="text-xs font-medium text-gray-700">${d.date}</span>`;
+                dateCell.innerHTML = `<span class="text-xs font-medium text-slate-700">${d.date}</span>`;
                 if (statusCell && d.web_status) {
                     const status = d.web_status.toUpperCase();
-                    const colorClass = (status === 'AKTIF') ? 'bg-green-50 text-green-700 border-green-100' : 'bg-red-50 text-red-700 border-red-100';
+                    const colorClass = (status === 'AKTIF') ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-red-50 text-red-600 border-red-200';
                     statusCell.innerHTML = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold border ${colorClass}">${status}</span>`;
                 }
                 return true;
@@ -322,7 +322,7 @@
         } catch (e) {
             console.error(e);
         }
-        if (dateCell) dateCell.innerHTML = '<span class="text-[10px] font-bold text-red-500 uppercase tracking-widest">Gagal</span>';
+        if (dateCell) dateCell.innerHTML = '<span class="text-[10px] font-bold text-red-600 uppercase tracking-widest">Gagal</span>';
         return false;
     }
 

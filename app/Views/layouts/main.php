@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="h-full">
 
 <head>
     <meta charset="UTF-8">
@@ -11,7 +11,7 @@
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -35,50 +35,87 @@
         }
 
         .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #e2e8f0;
+            @apply bg-slate-200;
             border-radius: 10px;
         }
 
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #cbd5e1;
+            @apply bg-slate-200;
         }
 
         /* Choices.js Neutral Theme Overrides */
         .choices__inner {
-            @apply bg-white border-gray-300 rounded-lg text-sm font-medium text-gray-900 !important;
+            @apply bg-white border-slate-200 rounded-lg text-sm font-medium text-slate-700 !important;
             min-height: 38px !important;
             padding: 4px 12px !important;
         }
+
         .choices__list--dropdown {
-            @apply bg-white border-gray-300 rounded-lg shadow-xl !important;
+            @apply bg-white border-slate-200 rounded-lg shadow-xl !important;
         }
+
         .choices__list--dropdown .choices__item--selectable.is-highlighted {
-            @apply bg-gray-100 !important;
+            @apply bg-slate-100 !important;
         }
+
         .choices__input {
             @apply bg-transparent text-sm !important;
         }
+
         .choices__placeholder {
-            @apply text-gray-400 opacity-100 !important;
+            @apply text-slate-700 opacity-100 !important;
         }
     </style>
 
     <?= $this->renderSection('styles') ?>
-    
+
     <!-- Alpine.js Plugins -->
     <script src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js" defer></script>
     <!-- Alpine.js Core -->
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 </head>
 
-<body class="bg-gray-50 text-gray-900 antialiased">
+<body class="bg-slate-50 text-slate-700 antialiased font-inter">
     <!-- Sidebar -->
     <?= $this->include('components/sidebar') ?>
 
     <!-- Main Wrapper -->
     <div id="main-content" class="lg:ml-64 min-h-screen flex flex-col">
-        <!-- Header -->
-        <?= $this->include('layouts/partials/header') ?>
+        <!-- Header / Topbar -->
+        <header class="h-16 bg-white border-b border-slate-200 sticky top-0 z-40 flex items-center justify-between px-6">
+            <div class="flex items-center">
+                <!-- Mobile Toggle -->
+                <button id="sidebar-toggle" class="lg:hidden w-10 h-10 flex items-center justify-center text-slate-700 hover:bg-slate-50 rounded-lg mr-2 transition-colors">
+                    <i class="fas fa-bars"></i>
+                </button>
+
+                <!-- App Title (Mobile Only) -->
+                <div class="flex items-center lg:hidden">
+                    <div class="w-8 h-8 bg-slate-800 rounded-lg flex items-center justify-center mr-3 shadow-sm">
+                        <i class="fas fa-fingerprint text-white text-sm"></i>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="block text-sm font-bold tracking-tight text-slate-800 leading-none uppercase">sinjai<span class="text-slate-700">emails</span></span>
+                        <span class="text-[8px] font-bold text-slate-700 uppercase tracking-widest block mt-0.5">identitas digital</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <!-- User Information -->
+                <div class="flex items-center gap-3">
+                    <div class="hidden sm:flex flex-col items-end">
+                        <p class="text-xs font-bold text-slate-800 leading-none uppercase"><?= session()->get('username') ?></p>
+                        <p class="text-[9px] font-bold text-slate-700 uppercase mt-1 tracking-widest">
+                            <?= session()->get('role') == 'super_admin' ? 'Super Admin' : 'Admin' ?>
+                        </p>
+                    </div>
+                    <div class="w-9 h-9 bg-slate-100 rounded-lg flex items-center justify-center text-slate-700 border border-slate-200 shadow-sm">
+                        <i class="fas fa-user-shield text-sm"></i>
+                    </div>
+                </div>
+            </div>
+        </header>
 
         <!-- Content Area -->
         <main class="flex-grow p-6">
@@ -86,7 +123,7 @@
             <?php if (session()->getFlashdata('success') || session()->getFlashdata('message') || session()->getFlashdata('error') || session()->getFlashdata('info')): ?>
                 <div class="mb-6 space-y-2">
                     <?php if ($msg = session()->getFlashdata('success') ?: session()->getFlashdata('message')): ?>
-                        <div class="flash-message bg-gray-900 text-white px-5 py-3 rounded-xl flex items-center justify-between shadow-lg transform transition-all duration-500 ease-in-out" role="alert">
+                        <div class="flash-message bg-emerald-600 text-white px-5 py-3 rounded-xl flex items-center justify-between shadow-sm transform transition-all duration-500 ease-in-out" role="alert">
                             <div class="flex items-center">
                                 <i class="fas fa-check-circle mr-3 text-white"></i>
                                 <span class="font-bold text-xs uppercase tracking-wider"><?= $msg === true ? 'Berhasil' : $msg ?></span>
@@ -98,7 +135,7 @@
                     <?php endif; ?>
 
                     <?php if ($err = session()->getFlashdata('error')): ?>
-                        <div class="flash-message bg-red-600 text-white px-5 py-3 rounded-xl flex items-center justify-between shadow-lg transform transition-all duration-500 ease-in-out" role="alert">
+                        <div class="flash-message bg-red-600 text-white px-5 py-3 rounded-xl flex items-center justify-between shadow-sm transform transition-all duration-500 ease-in-out" role="alert">
                             <div class="flex items-center">
                                 <i class="fas fa-exclamation-circle mr-3 text-white"></i>
                                 <span class="font-bold text-xs uppercase tracking-wider"><?= $err ?></span>
@@ -110,7 +147,7 @@
                     <?php endif; ?>
 
                     <?php if ($info = session()->getFlashdata('info')): ?>
-                        <div class="flash-message bg-blue-600 text-white px-5 py-3 rounded-xl flex items-center justify-between shadow-lg transform transition-all duration-500 ease-in-out" role="alert">
+                        <div class="flash-message bg-blue-600 text-white px-5 py-3 rounded-xl flex items-center justify-between shadow-sm transform transition-all duration-500 ease-in-out" role="alert">
                             <div class="flex items-center">
                                 <i class="fas fa-info-circle mr-3 text-white"></i>
                                 <span class="font-bold text-xs uppercase tracking-wider"><?= $info ?></span>
@@ -126,8 +163,14 @@
             <?= $this->renderSection('content') ?>
         </main>
 
-        <!-- Footer -->
-        <?= $this->include('layouts/partials/footer') ?>
+        <!-- Footer Component -->
+        <footer class="py-6 px-6 border-t border-slate-200 bg-white">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-[10px] font-bold text-slate-700 uppercase tracking-widest">
+                    &copy; <?= tahunSekarang() ?> Diskominfo-SP Sinjai
+                </p>
+            </div>
+        </footer>
     </div>
 
     <!-- Scripts -->
@@ -180,6 +223,16 @@
                 }
             }
         });
+
+        // Global status color mapper
+        function getJsStatusColor(status) {
+            status = status.toUpperCase();
+            if (['ISSUE', 'AKTIF', 'ACTIVE', 'YA'].includes(status)) return 'bg-emerald-50 text-emerald-600 border-emerald-200';
+            if (['EXPIRED', 'REVOKE', 'SUSPEND', 'NONAKTIF', 'INACTIVE', 'DITANGGUHKAN', 'TIDAK'].includes(status)) return 'bg-red-50 text-red-600 border-red-200';
+            if (['WAITING_FOR_VERIFICATION', 'RENEW', 'PENDING'].includes(status)) return 'bg-amber-50 text-amber-500 border-amber-200';
+            if (['NEW', 'BARU'].includes(status)) return 'bg-blue-50 text-blue-600 border-blue-200';
+            return 'bg-slate-100 text-slate-700 border-slate-200';
+        }
     </script>
 
     <?= $this->renderSection('scripts') ?>

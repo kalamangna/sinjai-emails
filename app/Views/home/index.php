@@ -5,57 +5,61 @@
     <!-- Header Halaman -->
     <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
         <div>
-            <h1 class="text-2xl font-semibold text-gray-900">Dashboard</h1>
+            <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight">Dashboard</h1>
         </div>
         <div class="flex items-center gap-2 w-full lg:w-auto">
-            <a href="<?= site_url('email') ?>" class="flex-1 lg:flex-none inline-flex items-center justify-center px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white rounded-lg font-bold text-xs uppercase tracking-widest transition-all shadow-sm no-underline">
-                <i class="fas fa-envelope mr-2"></i> Email
+            <a href="<?= site_url('email') ?>" class="flex-1 lg:flex-none inline-flex items-center justify-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold text-xs uppercase tracking-widest transition-all shadow-sm no-underline">
+                <i class="fas fa-envelope mr-2 text-white/80"></i> Email
             </a>
         </div>
     </div>
 
     <!-- Metrik Ringkasan -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
-            <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Total Email</p>
-            <h3 class="text-2xl font-bold text-gray-900 mt-1"><?= number_format($total_emails) ?></h3>
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 shadow-sm">
+            <p class="text-[10px] font-bold text-blue-600 uppercase tracking-widest">Total Email</p>
+            <h3 class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($total_emails) ?></h3>
         </div>
-        <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
-            <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">TTE Aktif</p>
-            <h3 class="text-2xl font-bold text-gray-900 mt-1"><?= number_format($active_bsre) ?></h3>
+        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-6 shadow-sm">
+            <p class="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">TTE Aktif</p>
+            <h3 class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($active_bsre) ?></h3>
         </div>
-        <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
-            <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Website OPD</p>
-            <h3 class="text-2xl font-bold text-gray-900 mt-1"><?= number_format($web_stats['opd']) ?></h3>
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-6 shadow-sm">
+            <p class="text-[10px] font-bold text-amber-500 uppercase tracking-widest">Website OPD</p>
+            <h3 class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($web_stats['opd']) ?></h3>
         </div>
-        <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
-            <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Website Desa/Kelurahan</p>
-            <h3 class="text-2xl font-bold text-gray-900 mt-1"><?= number_format($web_stats['desa'] + $web_stats['kelurahan']) ?></h3>
+        <div class="bg-red-50 border border-red-200 rounded-xl p-6 shadow-sm">
+            <p class="text-[10px] font-bold text-red-600 uppercase tracking-widest">Website Desa & Kelurahan</p>
+            <h3 class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($web_stats['desa'] + $web_stats['kelurahan']) ?></h3>
         </div>
     </div>
 
     <!-- Statistik dan Grafik -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Grafik Status Email -->
-        <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col">
-            <div class="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
-                <h3 class="text-xs font-bold text-gray-900 uppercase tracking-tight">Status TTE</h3>
+        <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden flex flex-col">
+            <div class="px-6 py-4 border-b border-slate-100 bg-slate-50">
+                <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Status TTE</h3>
             </div>
             <div class="p-6 flex flex-col md:flex-row items-center gap-8">
                 <div class="w-full md:w-1/2 flex justify-center">
                     <div id="emailStatusChart" class="w-full max-w-[200px]"></div>
                 </div>
                 <div class="w-full md:w-1/2 space-y-2 max-h-[200px] overflow-y-auto custom-scrollbar pr-2">
-                    <?php
-                    $emailColors = ['#111827', '#374151', '#4b5563', '#6b7280', '#9ca3af', '#d1d5db', '#e5e7eb'];
-                    foreach ($email_stats as $index => $stat):
+                    <?php foreach ($email_stats as $index => $stat):
+                        $status = $stat['label'];
+                        $bgClass = 'bg-slate-700'; // Default
+                        if ($status === 'ISSUE') $bgClass = 'bg-emerald-600';
+                        elseif (in_array($status, ['EXPIRED', 'REVOKE', 'SUSPEND'])) $bgClass = 'bg-red-600';
+                        elseif (in_array($status, ['WAITING_FOR_VERIFICATION', 'RENEW'])) $bgClass = 'bg-amber-500';
+                        elseif ($status === 'NEW') $bgClass = 'bg-blue-600';
                     ?>
-                        <div class="flex justify-between items-center p-1.5 rounded-lg border border-gray-50 bg-gray-50">
+                        <div class="flex justify-between items-center p-2 rounded-lg border border-slate-200 bg-slate-50">
                             <div class="flex items-center truncate">
-                                <span class="w-2 h-2 rounded-full mr-2 email-legend-dot shrink-0" style="background-color: <?= $emailColors[$index % count($emailColors)] ?>"></span>
-                                <span class="text-[10px] font-bold text-gray-700 uppercase truncate"><?= esc($stat['label']) ?></span>
+                                <span class="w-2 h-2 rounded-full mr-2 email-legend-dot shrink-0 <?= $bgClass ?>"></span>
+                                <span class="text-[10px] font-bold text-slate-700 uppercase truncate"><?= esc($stat['label']) ?></span>
                             </div>
-                            <span class="text-xs font-bold text-gray-900"><?= $stat['count'] ?></span>
+                            <span class="text-xs font-bold text-slate-800"><?= $stat['count'] ?></span>
                         </div>
                     <?php endforeach; ?>
                 </div>
@@ -63,9 +67,9 @@
         </div>
 
         <!-- Grafik Status ASN -->
-        <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col">
-            <div class="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
-                <h3 class="text-xs font-bold text-gray-900 uppercase tracking-tight">Status ASN</h3>
+        <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden flex flex-col">
+            <div class="px-6 py-4 border-b border-slate-100 bg-slate-50">
+                <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Status ASN</h3>
             </div>
             <div class="p-6 flex flex-col md:flex-row items-center gap-8">
                 <div class="w-full md:w-1/2 flex justify-center">
@@ -73,15 +77,15 @@
                 </div>
                 <div class="w-full md:w-1/2 space-y-1.5 max-h-[200px] overflow-y-auto custom-scrollbar pr-2">
                     <?php
-                    $asnColors = ['#111827', '#374151', '#4b5563', '#6b7280', '#9ca3af', '#d1d5db', '#e5e7eb'];
+                    $asnBgClasses = ['bg-blue-600', 'bg-emerald-600', 'bg-amber-500', 'bg-red-600', 'bg-slate-800', 'bg-slate-700', 'bg-slate-100', 'bg-slate-50'];
                     foreach ($status_asn_stats as $index => $stat):
                     ?>
-                        <div class="flex justify-between items-center p-1.5 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div class="flex justify-between items-center p-2 rounded-lg hover:bg-slate-50 transition-colors">
                             <div class="flex items-center truncate">
-                                <span class="w-2 h-2 rounded-full mr-2 asn-legend-dot shrink-0" style="background-color: <?= $asnColors[$index % count($asnColors)] ?>"></span>
-                                <span class="text-[10px] font-bold text-gray-600 uppercase tracking-tight truncate"><?= esc($stat['label']) ?></span>
+                                <span class="w-2 h-2 rounded-full mr-2 asn-legend-dot shrink-0 <?= $asnBgClasses[$index % count($asnBgClasses)] ?>"></span>
+                                <span class="text-[10px] font-bold text-slate-700 uppercase tracking-tight truncate"><?= esc($stat['label']) ?></span>
                             </div>
-                            <span class="text-[10px] font-bold text-gray-900 bg-gray-100 px-1.5 py-0.5 rounded"><?= $stat['count'] ?></span>
+                            <span class="text-[10px] font-bold text-slate-800 bg-slate-100 px-1.5 py-0.5 rounded"><?= $stat['count'] ?></span>
                         </div>
                     <?php endforeach; ?>
                 </div>
@@ -103,7 +107,7 @@
             },
             stroke: {
                 width: 2,
-                colors: ['#fff']
+                colors: ['#ffffff']
             },
             dataLabels: {
                 enabled: false
@@ -121,14 +125,14 @@
                                 show: true,
                                 fontSize: '10px',
                                 fontWeight: 700,
-                                color: '#6B7280',
+                                color: '#334155',
                                 offsetY: -5
                             },
                             value: {
                                 show: true,
                                 fontSize: '16px',
                                 fontWeight: 700,
-                                color: '#111827',
+                                color: '#1e293b',
                                 offsetY: 5,
                                 formatter: function(val) {
                                     return val
@@ -139,7 +143,7 @@
                                 label: 'TOTAL',
                                 fontSize: '10px',
                                 fontWeight: 700,
-                                color: '#6B7280',
+                                color: '#334155',
                                 formatter: function(w) {
                                     return w.globals.seriesTotals.reduce((a, b) => a + b, 0)
                                 }
@@ -150,8 +154,15 @@
             }
         };
 
-        const emailColors = ['#111827', '#374151', '#4b5563', '#6b7280', '#9ca3af', '#d1d5db', '#e5e7eb'];
         const emailStats = <?= json_encode($email_stats) ?>;
+        const emailColors = emailStats.map(s => {
+            const status = s.label.toUpperCase();
+            if (status === 'ISSUE') return '#059669'; // emerald-600
+            if (['EXPIRED', 'REVOKE', 'SUSPEND'].includes(status)) return '#dc2626'; // red-600
+            if (['WAITING_FOR_VERIFICATION', 'RENEW'].includes(status)) return '#f59e0b'; // amber-500
+            if (status === 'NEW') return '#2563eb'; // blue-600
+            return '#334155'; // slate-700
+        });
 
         // Chart Status Email
         new ApexCharts(document.querySelector("#emailStatusChart"), {
@@ -163,7 +174,7 @@
 
         // Chart Status ASN
         const asnStats = <?= json_encode($status_asn_stats) ?>;
-        const asnColors = ['#111827', '#374151', '#4b5563', '#6b7280', '#9ca3af', '#d1d5db', '#e5e7eb'];
+        const asnColors = ['#2563eb', '#059669', '#f59e0b', '#dc2626', '#1e293b', '#334155', '#f1f5f9', '#f8fafc'];
 
         new ApexCharts(document.querySelector("#asnStatusChart"), {
             ...commonOptions,

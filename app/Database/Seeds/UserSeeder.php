@@ -3,7 +3,7 @@
 namespace App\Database\Seeds;
 
 use CodeIgniter\Database\Seeder;
-use App\Models\UserModel;
+use App\Domains\Auth\UserModel;
 
 class UserSeeder extends Seeder
 {

@@ -26,14 +26,14 @@
         }
 
         h1 {
-            color: #333;
+            color: #1e293b;
             text-align: center;
             font-size: 14px;
             margin-bottom: 5px;
         }
 
         h2 {
-            color: #555;
+            color: #334155;
             text-align: center;
             font-size: 12px;
             margin-top: 0;
@@ -47,7 +47,7 @@
 
         th,
         td {
-            border: 1px solid #ddd;
+            border: 1px solid #e2e8f0;
             padding: 5px;
             text-align: left;
             word-wrap: break-word;
@@ -55,7 +55,7 @@
         }
 
         th {
-            background-color: #f2f2f2;
+            background-color: #f8fafc;
         }
 
         .footer-info {
@@ -72,7 +72,7 @@
             right: 0;
             font-size: 9px;
             text-align: right;
-            color: #555;
+            color: #334155;
         }
 
         .footer-info p,
@@ -83,7 +83,7 @@
         .update-date {
             text-align: center;
             font-size: 10px;
-            color: #666;
+            color: #334155;
             margin-top: -5px;
         }
     </style>
@@ -118,7 +118,7 @@
                     <td><?= formatSingkat($item['tanggal_kegiatan']) ?></td>
                     <td>
                         <strong><?= esc($item['agency_name']) ?></strong><br>
-                        <small style="color: #666;"><?= esc($item['agency_type']) ?></small>
+                        <small style="color: #334155;"><?= esc($item['agency_type']) ?></small>
                     </td>
                     <td><?= esc($item['method']) ?></td>
                     <td><?= esc($categoryMap[$item['category']] ?? 'Unknown') ?></td>

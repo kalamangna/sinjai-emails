@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title><?= esc($title ?? 'Daftar Email & Sertifikat Elektronik Pimpinan') ?></title>
+    <title><?= esc($title ?? 'Daftar Email & TTE Pimpinan') ?></title>
     <style>
         @page {
             margin: 10px 25px;
@@ -15,13 +15,13 @@
         }
 
         h1 {
-            color: #333;
+            color: #1e293b;
             text-align: center;
             font-size: 14px;
         }
 
         h2 {
-            color: #555;
+            color: #334155;
             text-align: center;
             font-size: 12px;
             margin-top: -10px;
@@ -36,7 +36,7 @@
 
         th,
         td {
-            border: 1px solid #ddd;
+            border: 1px solid #e2e8f0;
             padding: 5px;
             text-align: left;
             word-wrap: break-word;
@@ -45,7 +45,7 @@
         }
 
         th {
-            background-color: #f2f2f2;
+            background-color: #f8fafc;
         }
 
         /* Kolom No. */
@@ -96,7 +96,7 @@
         .tte-description li {
             margin-bottom: 2px;
             width: 100%;
-            color: #555;
+            color: #334155;
         }
 
         .tte-description li strong {
@@ -129,7 +129,7 @@
             right: 0;
             font-size: 9px;
             text-align: right;
-            color: #555;
+            color: #334155;
         }
 
         .footer-info p,
@@ -140,7 +140,7 @@
         .update-date {
             text-align: center;
             font-size: 10px;
-            color: #666;
+            color: #334155;
             margin-top: -10px;
         }
     </style>
@@ -149,7 +149,7 @@
 <body>
     <div class="header">
         <img src="<?= $logoSrc ?>" alt="Logo" class="logo" />
-        <h1><?= esc($title ?? 'DAFTAR EMAIL & SERTIFIKAT ELEKTRONIK PIMPINAN') ?></h1>
+        <h1><?= esc($title ?? 'DAFTAR EMAIL & TTE PIMPINAN') ?></h1>
         <h2><?= esc($subtitle ?? 'PEMERINTAH KABUPATEN SINJAI') ?></h2>
         <p class="update-date">UPDATE PER: <?= strtoupper(esc($current_date)) ?></p>
     </div>
@@ -161,44 +161,44 @@
                 <th>Akun</th>
                 <th>Jabatan</th>
                 <?= ($showUnitKerjaColumn ? '<th>Unit Kerja</th>' : '') ?>
-                <th>Sertifikat</th>
+                <th>Status TTE</th>
             </tr>
         </thead>
         <tbody>
             <?php
             $nomor = 1;
             foreach ($emails as $email) {
-                $statusTte = !empty($email['bsre_status']) ? $email['bsre_status'] : 'NOT SYNCED';
+                $statusTte = !empty($email['bsre_status']) ? $email['bsre_status'] : 'NOT_SYNCED';
 
                 // Color logic
-                $color = '#000000'; // Default black
+                $color = '#334155'; // Default slate-700
                 if ($statusTte === 'ISSUE') {
-                    $color = '#198754'; // Green
+                    $color = '#059669'; // Emerald-600
                 } elseif ($statusTte === 'EXPIRED') {
-                    $color = '#dc3545'; // Red
+                    $color = '#dc2626'; // Red-600
                 } elseif ($statusTte === 'NO_CERTIFICATE') {
-                    $color = '#d39e00'; // Yellow
+                    $color = '#334155'; // Slate-700
                 } elseif ($statusTte === 'RENEW') {
-                    $color = '#0d6efd'; // Blue
+                    $color = '#f59e0b'; // Amber-500
                 } elseif ($statusTte === 'WAITING_FOR_VERIFICATION') {
-                    $color = '#fd7e14'; // Orange
+                    $color = '#f59e0b'; // Amber-500
                 } elseif ($statusTte === 'NEW') {
-                    $color = '#6610f2'; // Indigo
+                    $color = '#2563eb'; // Blue-600
                 } elseif ($statusTte === 'NOT_REGISTERED') {
-                    $color = '#e83e8c'; // Fuchsia
+                    $color = '#dc2626'; // Red-600
                 } elseif ($statusTte === 'SUSPEND') {
-                    $color = '#6f42c1'; // Purple
+                    $color = '#dc2626'; // Red-600
                 } elseif ($statusTte === 'REVOKE') {
-                    $color = '#6c757d'; // Gray
-                } elseif ($statusTte === 'NOT SYNCED') {
-                    $color = '#333'; // Dark Gray
+                    $color = '#dc2626'; // Red-600
+                } elseif ($statusTte === 'NOT_SYNCED') {
+                    $color = '#334155'; // Slate-700
                 }
 
                 // Prepare Unit Kerja content
                 $unitKerjaContent = '';
                 if ($showUnitKerjaColumn) {
                     if (!empty($email['parent_unit_kerja_name'])) {
-                        $unitKerjaContent = esc(strtoupper($email['parent_unit_kerja_name'])) . '<br><small style="color: #666;">' . esc(strtoupper($email['unit_kerja_name'] ?? '')) . '</small>';
+                        $unitKerjaContent = esc(strtoupper($email['parent_unit_kerja_name'])) . '<br><small style="color: #334155;">' . esc(strtoupper($email['unit_kerja_name'] ?? '')) . '</small>';
                     } else {
                         $unitKerjaContent = esc(strtoupper($email['unit_kerja_name'] ?? 'N/A'));
                     }
@@ -208,7 +208,7 @@
                         <td>' . $nomor . '</td> 
                         <td>
                             <strong>' . esc(strtoupper($email['name'] ?? 'N/A')) . '</strong><br>
-                            <span style="color: #555;">' . esc($email['email'] ?? 'N/A') . '</span>
+                            <span style="color: #334155;">' . esc($email['email'] ?? 'N/A') . '</span>
                         </td>
                         <td>' . esc($email['jabatan'] ?? '-') . '</td>
                         ' . ($showUnitKerjaColumn ? '<td>' . $unitKerjaContent . '</td>' : '') . '
@@ -221,11 +221,11 @@
     </table>
 
     <div class="tte-description">
-        <p><strong>Keterangan Sertifikat Elektronik</strong></p>
+        <p><strong>Keterangan Status TTE</strong></p>
         <ul>
-            <li><strong style="color: #198754;">ISSUE</strong> : Sertifikat Aktif / Siap TTE</li>
-            <li><strong style="color: #dc3545;">EXPIRED</strong> : Masa Berlaku Habis</li>
-            <li><strong style="color: #d39e00;">NO_CERTIFICATE</strong> : Belum Ada Sertifikat</li>
+            <li><strong style="color: #059669;">ISSUE</strong> : Sertifikat Aktif / Siap TTE</li>
+            <li><strong style="color: #dc2626;">EXPIRED</strong> : Masa Berlaku Habis</li>
+            <li><strong style="color: #334155;">NO_CERTIFICATE</strong> : Belum Ada Sertifikat</li>
         </ul>
     </div>
 

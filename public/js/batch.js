@@ -199,9 +199,8 @@ document.addEventListener("DOMContentLoaded", function () {
         const percentage = Math.round(((i + 1) / totalToSubmit) * 100);
 
         progressBar.style.width = `${percentage}%`;
-        progressBar.textContent = `${percentage}%`;
         progressBar.setAttribute("aria-valuenow", percentage);
-        progressText.textContent = `Processing ${i + 1} / ${totalToSubmit}`;
+        progressText.textContent = `${percentage}% (Processing ${i + 1} / ${totalToSubmit})`;
 
         try {
           const response = await fetch("/email/create_single", {
@@ -289,8 +288,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function generatePassword(name, nip) {
     let suffix = new Date().getDate();
-    if (nip && nip.length >= 8) {
-        suffix = nip.substring(6, 8);
+    if (nip && nip.length >= 4) {
+      suffix = nip.substring(2, 4); // 3rd & 4th
     }
     const namePart = name.replace(/\s+/g, "").substring(0, 5).toLowerCase();
     if (!namePart) return `@${suffix}#`;
@@ -389,51 +388,51 @@ document.addEventListener("DOMContentLoaded", function () {
       const badgeBase = 'inline-flex items-center px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border shadow-sm';
       
       if (user.status === "created") {
-        statusBadge = `<span class="${badgeBase} bg-emerald-50 text-emerald-600 border-emerald-100">Created</span>`;
+        statusBadge = `<span class="${badgeBase} bg-emerald-50 text-emerald-600 border-emerald-200">Created</span>`;
       } else if (user.status === "failed") {
-        statusBadge = `<span class="${badgeBase} bg-rose-50 text-rose-600 border-rose-100" title="${user.errorMessage || "Failed"}">Failed</span>`;
+        statusBadge = `<span class="${badgeBase} bg-red-50 text-red-600 border-red-200" title="${user.errorMessage || "Failed"}">Failed</span>`;
       } else if (user.isDuplicate) {
-        statusBadge = `<span class="${badgeBase} bg-amber-50 text-amber-600 border-amber-100">Duplicate</span>`;
+        statusBadge = `<span class="${badgeBase} bg-amber-50 text-amber-600 border-amber-200">Duplicate</span>`;
       } else if (user.isAvailable) {
-        statusBadge = `<span class="${badgeBase} bg-blue-50 text-blue-600 border-blue-100">Available</span>`;
+        statusBadge = `<span class="${badgeBase} bg-blue-50 text-blue-600 border-blue-200">Available</span>`;
       } else {
-        statusBadge = `<span class="${badgeBase} bg-slate-50 text-slate-400 border-slate-200">Used</span>`;
+        statusBadge = `<span class="${badgeBase} bg-slate-50 text-slate-700 border-slate-200">Used</span>`;
       }
 
       const nameCellContent = `<span contenteditable="true" class="editable-name focus:outline-none focus:text-blue-600 transition-colors" data-name-index="${index}">${user.name}</span>`;
       
       const domain = "@sinjaikab.go.id";
       const username = user.email.substring(0, user.email.indexOf(domain));
-      const emailCellContent = `<span contenteditable="true" class="editable-username focus:outline-none focus:text-blue-600 transition-colors" data-username-index="${index}">${username}</span><span class="text-slate-300 font-medium">${domain}</span>`;
+      const emailCellContent = `<span contenteditable="true" class="editable-username focus:outline-none focus:text-blue-600 transition-colors" data-username-index="${index}">${username}</span><span class="text-slate-200 font-medium">${domain}</span>`;
 
       const passwordCellContent = `<span contenteditable="true" class="editable-password font-mono focus:outline-none focus:text-blue-600 transition-colors" data-password-index="${index}">${user.password}</span>`;
       const unitKerjaCellContent = `<span class="editable-unit-kerja opacity-80" data-unit-kerja-index="${index}">${user.unitKerja}</span>`;
 
       const tagBase = 'ml-1.5 px-1.5 py-0.5 rounded text-[8px] font-black uppercase';
       
-      let nikDisplay = `<span class="font-mono text-slate-500">${user.nik || '-'}</span>`;
+      let nikDisplay = `<span class="font-mono text-slate-700">${user.nik || '-'}</span>`;
       if (user.isNikInDb) {
-        nikDisplay += `<span class="${tagBase} bg-rose-100 text-rose-600" title="NIK already exists in the database">DB</span>`;
+        nikDisplay += `<span class="${tagBase} bg-red-50 text-red-600" title="NIK already exists in the database">DB</span>`;
       }
       if (user.isNikDuplicate) {
-        nikDisplay += `<span class="${tagBase} bg-amber-100 text-amber-600" title="Duplicate NIK in this batch">DUP</span>`;
+        nikDisplay += `<span class="${tagBase} bg-amber-50 text-amber-600" title="Duplicate NIK in this batch">DUP</span>`;
       }
 
-      let nipDisplay = `<span class="font-mono text-slate-500">${user.nip || '-'}</span>`;
+      let nipDisplay = `<span class="font-mono text-slate-700">${user.nip || '-'}</span>`;
       if (user.isNipInDb) {
-        nipDisplay += `<span class="${tagBase} bg-rose-100 text-rose-600" title="NIP already exists in the database">DB</span>`;
+        nipDisplay += `<span class="${tagBase} bg-red-50 text-red-600" title="NIP already exists in the database">DB</span>`;
       }
       if (user.isNipDuplicate) {
-        nipDisplay += `<span class="${tagBase} bg-amber-100 text-amber-600" title="Duplicate NIP in this batch">DUP</span>`;
+        nipDisplay += `<span class="${tagBase} bg-amber-50 text-amber-600" title="Duplicate NIP in this batch">DUP</span>`;
       }
 
       const row = `
-        <tr class="hover:bg-slate-50/50 transition-colors group">
-            <td class="px-6 py-5 whitespace-nowrap text-[10px] font-black text-slate-300 font-mono">#${index + 1}</td>
+        <tr class="hover:bg-slate-50 transition-colors group">
+            <td class="px-6 py-5 whitespace-nowrap text-[10px] font-black text-slate-700 font-mono">#${index + 1}</td>
             <td class="px-6 py-5 whitespace-nowrap">${nipDisplay}</td>
             <td class="px-6 py-5 whitespace-nowrap">${nikDisplay}</td>
-            <td class="px-6 py-5 font-black text-slate-700 tracking-tight">${nameCellContent}</td>
-            <td class="px-6 py-5 whitespace-nowrap font-bold text-slate-600 tracking-tight lowercase">${emailCellContent}</td>
+            <td class="px-6 py-5 font-black text-slate-800 tracking-tight">${nameCellContent}</td>
+            <td class="px-6 py-5 whitespace-nowrap font-bold text-slate-700 tracking-tight lowercase">${emailCellContent}</td>
             <td class="px-6 py-5 whitespace-nowrap">${passwordCellContent}</td>
             <td class="px-6 py-5 text-center whitespace-nowrap">${statusBadge}</td>
         </tr>`;
@@ -443,7 +442,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const errorRow = `
           <tr class="error-row" data-index="${index}">
               <td colspan="8" class="px-6 py-0">
-                  <div class="bg-rose-50 text-rose-600 px-4 py-2 border-x border-rose-100 flex items-center">
+                  <div class="bg-red-50 text-red-600 px-4 py-2 border-x border-red-200 flex items-center">
                       <i class="fas fa-exclamation-circle mr-3 text-xs opacity-50"></i>
                       <span class="text-[10px] font-black uppercase tracking-widest">${user.errorMessage}</span>
                   </div>

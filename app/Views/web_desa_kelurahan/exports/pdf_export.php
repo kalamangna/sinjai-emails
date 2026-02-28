@@ -26,13 +26,13 @@
         }
 
         h1 {
-            color: #333;
+            color: #1e293b;
             text-align: center;
             font-size: 14px;
         }
 
         h2 {
-            color: #555;
+            color: #64748b;
             text-align: center;
             font-size: 12px;
             margin-top: -10px;
@@ -46,7 +46,7 @@
 
         th,
         td {
-            border: 1px solid #ddd;
+            border: 1px solid #e2e8f0;
             padding: 5px;
             text-align: left;
             word-wrap: break-word;
@@ -54,15 +54,14 @@
         }
 
         th {
-            background-color: #f2f2f2;
+            background-color: #f1f5f9;
         }
 
         .stats-container {
             display: table;
             width: 100%;
             margin-bottom: 20px;
-            /* Reverted margin for better spacing after removing platform stats */
-            border: 1px solid #ddd;
+            border: 1px solid #e2e8f0;
             border-collapse: collapse;
         }
 
@@ -71,7 +70,7 @@
             width: 33.33%;
             text-align: center;
             padding: 8px 0;
-            border-right: 1px solid #ddd;
+            border-right: 1px solid #e2e8f0;
         }
 
         .stats-box:last-child {
@@ -81,7 +80,7 @@
         .stats-box h3 {
             margin: 0;
             font-size: 10px;
-            color: #777;
+            color: #64748b;
             text-transform: uppercase;
         }
 
@@ -89,7 +88,7 @@
             margin: 5px 0 0 0;
             font-size: 14px;
             font-weight: bold;
-            color: #333;
+            color: #1e293b;
         }
 
         .chart-container {
@@ -111,96 +110,60 @@
 
         /* Platform column text colors */
         .platform-sideka-ng-text {
-            color: #0d6efd;
+            color: #2563eb;
             font-weight: bold;
         }
 
-        /* Bootstrap Primary */
         .platform-opensid-text {
-            color: #0dcaf0;
+            color: #059669;
             font-weight: bold;
         }
 
-        /* Bootstrap Info */
         .platform-pihak-ketiga-text {
-            color: #ffc107;
+            color: #f59e0b;
             font-weight: bold;
         }
 
-        /* Bootstrap Warning */
         .platform-default-text {
-            color: #6c757d;
+            color: #475569;
             font-weight: bold;
         }
-
-        /* Bootstrap Secondary */
-
 
         .row-desa {
-            background-color: #e6ffe6;
+            background-color: #f8fafc;
         }
 
-        /* Light green for Desa */
         .row-kelurahan {
-            background-color: #e6f7ff;
+            background-color: #f1f5f9;
         }
-
-        /* Light blue for Kelurahan */
 
         .footer-info {
-
             position: fixed;
-
             bottom: 0;
-
             left: 0;
-
             font-size: 9px;
-
             text-align: left;
-
         }
-
-
 
         .footer-right {
-
             position: fixed;
-
             bottom: 0;
-
             right: 0;
-
             font-size: 9px;
-
             text-align: right;
-
-            color: #555;
-
+            color: #64748b;
         }
-
-
 
         .footer-info p,
-
         .footer-right p {
-
             margin: 2px 0;
-
         }
 
-
-
         .update-date {
-
             text-align: center;
-
             font-size: 10px;
-
-            color: #666;
-
+            color: #475569;
             margin-top: -10px;
-
         }
     </style>
 
@@ -268,7 +231,7 @@
 
 
 
-                $status_color = (strtoupper($website['status']) === 'AKTIF') ? '#198754' : '#dc3545';
+                $status_color = (strtoupper($website['status']) === 'AKTIF') ? '#059669' : '#dc2626';
 
 
 

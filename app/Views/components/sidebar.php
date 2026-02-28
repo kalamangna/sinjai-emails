@@ -1,15 +1,13 @@
-<!-- Sidebar Component -->
-<aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 transition-all duration-300 transform lg:translate-x-0 -translate-x-full overflow-y-auto custom-scrollbar">
-    <div class="flex flex-col h-full">
+<aside id="sidebar" class="fixed top-0 left-0 z-50 w-64 h-screen transition-transform bg-slate-800 border-r border-slate-700 flex flex-col lg:translate-x-0">
         <!-- Logo Section -->
-        <div class="flex items-center h-16 px-6 border-b border-gray-100 flex-shrink-0">
+        <div class="flex items-center h-16 px-6 border-b border-slate-700 flex-shrink-0">
             <a href="<?= site_url('/') ?>" class="flex items-center no-underline">
-                <div class="w-8 h-8 bg-gray-900 rounded-lg flex items-center justify-center mr-3 shadow-sm">
+                <div class="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center mr-3 shadow-sm border border-white/10">
                     <i class="fas fa-fingerprint text-white text-sm"></i>
                 </div>
                 <div>
-                    <span class="block text-xs font-bold tracking-tight text-gray-900 leading-none uppercase">sinjai <span class="text-gray-500">emails</span></span>
-                    <span class="text-[8px] font-bold text-gray-400 uppercase tracking-widest block mt-0.5">identitas digital</span>
+                    <span class="block text-xs font-bold tracking-tight text-white leading-none uppercase">sinjai<span class="text-slate-200">emails</span></span>
+                    <span class="text-[8px] font-bold text-slate-200 uppercase tracking-widest block mt-0.5">identitas digital</span>
                 </div>
             </a>
         </div>
@@ -17,29 +15,37 @@
         <!-- Navigation Menu -->
         <nav class="flex-grow py-6 px-4 space-y-1">
             <!-- Dashboard -->
-            <a href="<?= site_url('/') ?>" class="flex items-center px-4 py-2.5 text-sm font-medium rounded-xl transition-all <?= current_url() == site_url() ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' ?>">
-                <i class="fas fa-th-large w-5 mr-3 text-gray-400"></i> Dashboard
+            <a href="<?= site_url('/') ?>" class="flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all <?= current_url() == site_url() ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20' : 'text-slate-200 hover:bg-slate-700 hover:text-white' ?>">
+                <div class="w-5 h-5 flex items-center justify-center mr-3 shrink-0">
+                    <i class="fas fa-th-large <?= current_url() == site_url() ? 'text-white' : 'text-slate-200' ?>"></i>
+                </div>
+                Dashboard
             </a>
 
             <!-- Email -->
-            <a href="<?= site_url('email') ?>" class="flex items-center px-4 py-2.5 text-sm font-medium rounded-xl transition-all <?= (strpos(current_url(), 'email') !== false && strpos(current_url(), 'pimpinan') === false && strpos(current_url(), 'eselon') === false && strpos(current_url(), 'unit_kerja') === false) ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' ?>">
-                <i class="fas fa-envelope w-5 mr-3 text-gray-400"></i> Email
+            <a href="<?= site_url('email') ?>" class="flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all <?= (strpos(current_url(), 'email') !== false && strpos(current_url(), 'pimpinan') === false && strpos(current_url(), 'eselon') === false && strpos(current_url(), 'unit_kerja') === false) ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20' : 'text-slate-200 hover:bg-slate-700 hover:text-white' ?>">
+                <div class="w-5 h-5 flex items-center justify-center mr-3 shrink-0">
+                    <i class="fas fa-envelope <?= (strpos(current_url(), 'email') !== false && strpos(current_url(), 'pimpinan') === false && strpos(current_url(), 'eselon') === false && strpos(current_url(), 'unit_kerja') === false) ? 'text-white' : 'text-slate-200' ?>"></i>
+                </div>
+                Email
             </a>
 
             <!-- Pejabat Submenu -->
             <div x-data="{ open: <?= (strpos(current_url(), 'pimpinan') !== false) ? 'true' : 'false' ?> }">
-                <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-2.5 text-sm font-medium text-gray-600 rounded-xl hover:bg-gray-50 hover:text-gray-900 transition-all">
+                <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-slate-200 rounded-lg hover:bg-slate-700 hover:text-white transition-all focus:outline-none">
                     <div class="flex items-center">
-                        <i class="fas fa-user-tie w-5 mr-3 text-gray-400"></i>
+                        <div class="w-5 h-5 flex items-center justify-center mr-3 shrink-0">
+                            <i class="fas fa-user-tie text-slate-200"></i>
+                        </div>
                         <span>Pejabat</span>
                     </div>
                     <i class="fas fa-chevron-down text-[10px] transition-transform duration-200" :class="open ? 'rotate-180' : ''"></i>
                 </button>
-                <div x-show="open" x-collapse class="mt-1 ml-4 pl-4 border-l border-gray-100 space-y-1">
-                    <a href="<?= site_url('email/pimpinan') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg <?= current_url() == site_url('email/pimpinan') ? 'text-gray-900 bg-gray-50' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50' ?>">
+                <div x-show="open" x-collapse class="mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
+                    <a href="<?= site_url('email/pimpinan') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= current_url() == site_url('email/pimpinan') ? 'text-white bg-slate-700' : 'text-slate-200 hover:text-white hover:bg-slate-700' ?>">
                         Pimpinan
                     </a>
-                    <a href="<?= site_url('email/pimpinan_desa') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg <?= current_url() == site_url('email/pimpinan_desa') ? 'text-gray-900 bg-gray-50' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50' ?>">
+                    <a href="<?= site_url('email/pimpinan_desa') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= current_url() == site_url('email/pimpinan_desa') ? 'text-white bg-slate-700' : 'text-slate-200 hover:text-white hover:bg-slate-700' ?>">
                         Kepala Desa
                     </a>
                 </div>
@@ -47,18 +53,20 @@
 
             <!-- Organisasi Submenu -->
             <div x-data="{ open: <?= (strpos(current_url(), 'unit_kerja') !== false || strpos(current_url(), 'eselon') !== false) && strpos(current_url(), 'manage') === false ? 'true' : 'false' ?> }">
-                <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-2.5 text-sm font-medium text-gray-600 rounded-xl hover:bg-gray-50 hover:text-gray-900 transition-all">
+                <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-slate-200 rounded-lg hover:bg-slate-700 hover:text-white transition-all focus:outline-none">
                     <div class="flex items-center">
-                        <i class="fas fa-building w-5 mr-3 text-gray-400"></i>
+                        <div class="w-5 h-5 flex items-center justify-center mr-3 shrink-0">
+                            <i class="fas fa-building text-slate-200"></i>
+                        </div>
                         <span>Organisasi</span>
                     </div>
                     <i class="fas fa-chevron-down text-[10px] transition-transform duration-200" :class="open ? 'rotate-180' : ''"></i>
                 </button>
-                <div x-show="open" x-collapse class="mt-1 ml-4 pl-4 border-l border-gray-100 space-y-1">
-                    <a href="<?= site_url('email/unit_kerja') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg <?= current_url() == site_url('email/unit_kerja') ? 'text-gray-900 bg-gray-50' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50' ?>">
+                <div x-show="open" x-collapse class="mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
+                    <a href="<?= site_url('email/unit_kerja') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= current_url() == site_url('email/unit_kerja') ? 'text-white bg-slate-700' : 'text-slate-200 hover:text-white hover:bg-slate-700' ?>">
                         Unit Kerja
                     </a>
-                    <a href="<?= site_url('email/eselon_list') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg <?= current_url() == site_url('email/eselon_list') ? 'text-gray-900 bg-gray-50' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50' ?>">
+                    <a href="<?= site_url('email/eselon_list') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= current_url() == site_url('email/eselon_list') ? 'text-white bg-slate-700' : 'text-slate-200 hover:text-white hover:bg-slate-700' ?>">
                         Eselon
                     </a>
                 </div>
@@ -66,18 +74,20 @@
 
             <!-- Website Submenu -->
             <div x-data="{ open: <?= (strpos(current_url(), 'web_') !== false) ? 'true' : 'false' ?> }">
-                <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-2.5 text-sm font-medium text-gray-600 rounded-xl hover:bg-gray-50 hover:text-gray-900 transition-all">
+                <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-slate-200 rounded-lg hover:bg-slate-700 hover:text-white transition-all focus:outline-none">
                     <div class="flex items-center">
-                        <i class="fas fa-globe w-5 mr-3 text-gray-400"></i>
+                        <div class="w-5 h-5 flex items-center justify-center mr-3 shrink-0">
+                            <i class="fas fa-globe text-slate-200"></i>
+                        </div>
                         <span>Website</span>
                     </div>
                     <i class="fas fa-chevron-down text-[10px] transition-transform duration-200" :class="open ? 'rotate-180' : ''"></i>
                 </button>
-                <div x-show="open" x-collapse class="mt-1 ml-4 pl-4 border-l border-gray-100 space-y-1">
-                    <a href="<?= site_url('web_opd') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg <?= current_url() == site_url('web_opd') ? 'text-gray-900 bg-gray-50' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50' ?>">
+                <div x-show="open" x-collapse class="mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
+                    <a href="<?= site_url('web_opd') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= current_url() == site_url('web_opd') ? 'text-white bg-slate-700' : 'text-slate-200 hover:text-white hover:bg-slate-700' ?>">
                         Website OPD
                     </a>
-                    <a href="<?= site_url('web_desa_kelurahan') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg <?= current_url() == site_url('web_desa_kelurahan') ? 'text-gray-900 bg-gray-50' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50' ?>">
+                    <a href="<?= site_url('web_desa_kelurahan') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= current_url() == site_url('web_desa_kelurahan') ? 'text-white bg-slate-700' : 'text-slate-200 hover:text-white hover:bg-slate-700' ?>">
                         Website Desa dan Kelurahan
                     </a>
                 </div>
@@ -86,21 +96,23 @@
             <!-- Batch Submenu -->
             <?php if (session()->get('role') === 'super_admin'): ?>
                 <div x-data="{ open: <?= (strpos(current_url(), 'batch') !== false) ? 'true' : 'false' ?> }">
-                    <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-2.5 text-sm font-medium text-gray-600 rounded-xl hover:bg-gray-50 hover:text-gray-900 transition-all">
+                    <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-slate-200 rounded-lg hover:bg-slate-700 hover:text-white transition-all focus:outline-none">
                         <div class="flex items-center">
-                            <i class="fas fa-layer-group w-5 mr-3 text-gray-400"></i>
+                            <div class="w-5 h-5 flex items-center justify-center mr-3 shrink-0">
+                                <i class="fas fa-layer-group text-slate-200"></i>
+                            </div>
                             <span>Batch</span>
                         </div>
                         <i class="fas fa-chevron-down text-[10px] transition-transform duration-200" :class="open ? 'rotate-180' : ''"></i>
                     </button>
-                    <div x-show="open" x-collapse class="mt-1 ml-4 pl-4 border-l border-gray-100 space-y-1">
-                        <a href="<?= site_url('batch') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg <?= current_url() == site_url('batch') ? 'text-gray-900 bg-gray-50' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50' ?>">
+                    <div x-show="open" x-collapse class="mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
+                        <a href="<?= site_url('batch') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= current_url() == site_url('batch') ? 'text-white bg-slate-700' : 'text-slate-200 hover:text-white hover:bg-slate-700' ?>">
                             Buat Akun
                         </a>
-                        <a href="<?= site_url('batch/update') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg <?= current_url() == site_url('batch/update') ? 'text-gray-900 bg-gray-50' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50' ?>">
+                        <a href="<?= site_url('batch/update') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= current_url() == site_url('batch/update') ? 'text-white bg-slate-700' : 'text-slate-200 hover:text-white hover:bg-slate-700' ?>">
                             Edit Akun
                         </a>
-                        <a href="<?= site_url('batch/pk') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg <?= current_url() == site_url('batch/pk') ? 'text-gray-900 bg-gray-50' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50' ?>">
+                        <a href="<?= site_url('batch/pk') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= current_url() == site_url('batch/pk') ? 'text-white bg-slate-700' : 'text-slate-200 hover:text-white hover:bg-slate-700' ?>">
                             Edit PK
                         </a>
                     </div>
@@ -108,21 +120,26 @@
             <?php endif; ?>
 
             <!-- Log Layanan -->
-            <a href="<?= site_url('assistance') ?>" class="flex items-center px-4 py-2.5 text-sm font-medium rounded-xl transition-all <?= strpos(current_url(), 'assistance') !== false ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' ?>">
-                <i class="fas fa-clipboard-list w-5 mr-3 text-gray-400"></i> Log Layanan
+            <a href="<?= site_url('assistance') ?>" class="flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all <?= strpos(current_url(), 'assistance') !== false ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20' : 'text-slate-200 hover:bg-slate-700 hover:text-white' ?>">
+                <div class="w-5 h-5 flex items-center justify-center mr-3 shrink-0">
+                    <i class="fas fa-clipboard-list <?= strpos(current_url(), 'assistance') !== false ? 'text-white' : 'text-slate-200' ?>"></i>
+                </div>
+                Log Layanan
             </a>
 
             <!-- Master Data Submenu -->
             <div x-data="{ open: <?= (strpos(current_url(), 'unit_kerja/manage') !== false) ? 'true' : 'false' ?> }">
-                <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-2.5 text-sm font-medium text-gray-600 rounded-xl hover:bg-gray-50 hover:text-gray-900 transition-all">
+                <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-slate-200 rounded-lg hover:bg-slate-700 hover:text-white transition-all focus:outline-none">
                     <div class="flex items-center">
-                        <i class="fas fa-database w-5 mr-3 text-gray-400"></i>
+                        <div class="w-5 h-5 flex items-center justify-center mr-3 shrink-0">
+                            <i class="fas fa-database text-slate-200"></i>
+                        </div>
                         <span>Master Data</span>
                     </div>
                     <i class="fas fa-chevron-down text-[10px] transition-transform duration-200" :class="open ? 'rotate-180' : ''"></i>
                 </button>
-                <div x-show="open" x-collapse class="mt-1 ml-4 pl-4 border-l border-gray-100 space-y-1">
-                    <a href="<?= site_url('unit_kerja/manage') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg <?= current_url() == site_url('unit_kerja/manage') ? 'text-gray-900 bg-gray-50' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50' ?>">
+                <div x-show="open" x-collapse class="mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
+                    <a href="<?= site_url('unit_kerja/manage') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= current_url() == site_url('unit_kerja/manage') ? 'text-white bg-slate-700' : 'text-slate-200 hover:text-white hover:bg-slate-700' ?>">
                         Unit Kerja
                     </a>
                 </div>
@@ -130,24 +147,24 @@
         </nav>
 
         <!-- User Section at Bottom -->
-        <div class="p-4 border-t border-gray-100">
-            <div class="flex items-center p-2 rounded-xl bg-gray-50">
-                <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 mr-3">
+        <div class="p-4 border-t border-slate-700">
+            <div class="flex items-center p-2 rounded-xl bg-slate-700/50 border border-white/5">
+                <div class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-slate-100 mr-3 shrink-0 border border-white/10">
                     <i class="fas fa-user text-xs"></i>
                 </div>
                 <div class="flex-grow overflow-hidden">
-                    <p class="text-xs font-bold text-gray-900 truncate"><?= session()->get('username') ?></p>
-                    <p class="text-[10px] text-gray-500 uppercase font-medium"><?= session()->get('role') == 'super_admin' ? 'Super Admin' : 'Admin' ?></p>
+                    <p class="text-xs font-bold text-white truncate uppercase"><?= session()->get('username') ?></p>
+                    <p class="text-[10px] text-slate-200 uppercase font-medium opacity-70"><?= session()->get('role') == 'super_admin' ? 'Super Admin' : 'Admin' ?></p>
                 </div>
-                <a href="<?= site_url('logout') ?>" class="text-gray-400 hover:text-red-600 transition-colors">
-                    <i class="fas fa-power-off text-xs"></i>
-                </a>
+                <div class="flex items-center gap-1">
+                    <a href="<?= site_url('user/change_password') ?>" class="w-7 h-7 flex items-center justify-center text-slate-200 hover:text-white hover:bg-slate-700 rounded-lg transition-colors" title="Ganti Password">
+                        <i class="fas fa-key text-[10px]"></i>
+                    </a>
+                    <a href="<?= site_url('logout') ?>" class="w-7 h-7 flex items-center justify-center text-slate-200 hover:text-red-600 hover:bg-red-600/10 rounded-lg transition-colors" title="Keluar">
+                        <i class="fas fa-power-off text-[10px]"></i>
+                    </a>
+                </div>
             </div>
         </div>
     </div>
 </aside>
-
-<!-- Alpine.js Plugins -->
-<script src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js" defer></script>
-<!-- Alpine.js Core -->
-<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>

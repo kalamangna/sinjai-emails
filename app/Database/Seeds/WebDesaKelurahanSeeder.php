@@ -4,16 +4,16 @@ namespace App\Database\Seeds;
 
 use CodeIgniter\Database\Seeder;
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use App\Models\WebDesaKelurahanModel;
-use App\Models\UnitKerjaModel;
-use App\Models\PlatformModel;
+use App\Domains\Website\WebDesaKelurahanModel;
+use App\Domains\UnitKerja\UnitKerjaModel;
+use App\Shared\Models\PlatformModel;
 use Config\Services;
 
 class WebDesaKelurahanSeeder extends Seeder
 {
     public function run()
     {
-        helper('tanggal');
+        require_once APPPATH . 'Shared/Helpers/TanggalHelper.php';
         $filePath = FCPATH . '../webdesakel.xlsx';
 
         if (!file_exists($filePath)) {
