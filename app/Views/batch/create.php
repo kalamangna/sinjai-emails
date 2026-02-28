@@ -99,7 +99,7 @@
         <div class="w-full bg-slate-100 rounded-full h-2">
             <div id="progress_bar" class="bg-blue-600 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
         </div>
-        <div id="results_log" class="p-4 bg-slate-800 text-white rounded-lg text-[10px] font-mono h-40 overflow-y-auto custom-scrollbar"></div>
+        <div id="results_log" class="p-4 bg-slate-800 text-white rounded-lg text-[10px] font-mono h-96 overflow-y-auto custom-scrollbar"></div>
     </div>
 
     <div class="flex justify-end">
