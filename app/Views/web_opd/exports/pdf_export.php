@@ -135,7 +135,7 @@
             <?php
             $nomor = 1;
             foreach ($websites as $website) :
-                $status_color = (strtoupper($website['status'] ?? '') === 'AKTIF') ? '#059669' : '#dc2626';
+                $status_color = (strtoupper($website['status'] ?? '') === 'AKTIF') ? '#047857' : '#dc2626';
             ?>
                 <tr>
                     <td style="text-align: center;"><?= $nomor++ ?></td>

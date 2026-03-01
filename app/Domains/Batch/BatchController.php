@@ -25,7 +25,7 @@ class BatchController extends BaseController
     {
         $data['unit_kerja'] = $this->unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->findAll();
         $data['status_asn_options'] = $this->statusAsnModel->orderBy('nama_status_asn', 'ASC')->findAll();
-        $data['title'] = 'Buat Akun';
+        $data['title'] = 'Buat Akun Massal';
         return view('batch/create', $data);
     }
 
@@ -34,7 +34,7 @@ class BatchController extends BaseController
         $data['unit_kerja'] = $this->unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->findAll();
         $data['status_asn_options'] = $this->statusAsnModel->orderBy('nama_status_asn', 'ASC')->findAll();
         $data['eselon_options'] = (new \App\Shared\Models\EselonModel())->orderBy('nama_eselon', 'ASC')->findAll();
-        $data['title'] = 'Edit Akun';
+        $data['title'] = 'Edit Akun Massal';
         return view('batch/update', $data);
     }
 
@@ -43,7 +43,7 @@ class BatchController extends BaseController
         $data['unit_kerja'] = $this->unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->findAll();
         $data['status_asn_options'] = $this->statusAsnModel->orderBy('nama_status_asn', 'ASC')->findAll();
         $data['eselon_options'] = (new \App\Shared\Models\EselonModel())->orderBy('nama_eselon', 'ASC')->findAll();
-        $data['title'] = 'Edit PK';
+        $data['title'] = 'Edit PK Massal';
         return view('batch/pk', $data);
     }
 

@@ -171,19 +171,19 @@
                 $statusTte = !empty($email['bsre_status']) ? $email['bsre_status'] : 'NOT_SYNCED';
 
                 // Color logic
-                $color = '#334155'; // Default slate-700
+                $color = '#9ca3af'; // Default slate-700
                 if ($statusTte === 'ISSUE') {
-                    $color = '#059669'; // Emerald-600
+                    $color = '#047857'; // Emerald-600
                 } elseif ($statusTte === 'EXPIRED') {
                     $color = '#dc2626'; // Red-600
                 } elseif ($statusTte === 'NO_CERTIFICATE') {
-                    $color = '#334155'; // Slate-700
+                    $color = '#9ca3af'; // Slate-700
                 } elseif ($statusTte === 'RENEW') {
-                    $color = '#f59e0b'; // Amber-500
+                    $color = '#6ee7b7'; // Amber-500
                 } elseif ($statusTte === 'WAITING_FOR_VERIFICATION') {
-                    $color = '#f59e0b'; // Amber-500
+                    $color = '#6ee7b7'; // Amber-500
                 } elseif ($statusTte === 'NEW') {
-                    $color = '#2563eb'; // Blue-600
+                    $color = '#10b981'; // Blue-600
                 } elseif ($statusTte === 'NOT_REGISTERED') {
                     $color = '#dc2626'; // Red-600
                 } elseif ($statusTte === 'SUSPEND') {
@@ -191,7 +191,7 @@
                 } elseif ($statusTte === 'REVOKE') {
                     $color = '#dc2626'; // Red-600
                 } elseif ($statusTte === 'NOT_SYNCED') {
-                    $color = '#334155'; // Slate-700
+                    $color = '#9ca3af'; // Slate-700
                 }
 
                 // Prepare Unit Kerja content

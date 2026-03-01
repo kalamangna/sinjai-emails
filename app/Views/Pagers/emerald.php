@@ -3,31 +3,31 @@
 <nav aria-label="Page navigation" class="flex items-center gap-1">
 
     <?php if ($pager->hasPrevious()) : ?>
-        <a href="<?= $pager->getFirst() ?>" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition-all shadow-sm no-underline" title="<?= lang('Pager.first') ?>">
+        <a href="<?= $pager->getFirst() ?>" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-800 border-transparent transition-all shadow-sm no-underline" title="<?= lang('Pager.first') ?>">
             <i class="fas fa-angles-left text-[10px]"></i>
         </a>
-        <a href="<?= $pager->getPrevious() ?>" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition-all shadow-sm no-underline" title="<?= lang('Pager.previous') ?>">
+        <a href="<?= $pager->getPrevious() ?>" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-800 border-transparent transition-all shadow-sm no-underline" title="<?= lang('Pager.previous') ?>">
             <i class="fas fa-angle-left text-[10px]"></i>
         </a>
     <?php endif ?>
 
     <?php foreach ($pager->links() as $link) : ?>
         <?php if ($link['active']) : ?>
-            <span class="inline-flex items-center justify-center min-w-[32px] h-8 rounded-lg bg-slate-800 border border-slate-800 text-white text-xs font-bold shadow-sm px-2 cursor-default">
+            <span class="inline-flex items-center justify-center min-w-[32px] h-8 rounded-lg bg-gray-800 border border-gray-800 text-white text-xs font-bold shadow-sm px-2 cursor-default">
                 <?= $link['title'] ?>
             </span>
         <?php else : ?>
-            <a href="<?= $link['uri'] ?>" class="inline-flex items-center justify-center min-w-[32px] h-8 rounded-lg bg-white border border-slate-200 text-slate-700 text-xs font-medium hover:bg-slate-50 transition-all shadow-sm no-underline px-2">
+            <a href="<?= $link['uri'] ?>" class="inline-flex items-center justify-center min-w-[32px] h-8 rounded-lg bg-white border border-gray-200 text-gray-700 text-xs font-medium hover:bg-gray-50 transition-all shadow-sm no-underline px-2">
                 <?= $link['title'] ?>
             </a>
         <?php endif ?>
     <?php endforeach ?>
 
     <?php if ($pager->hasNext()) : ?>
-        <a href="<?= $pager->getNext() ?>" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition-all shadow-sm no-underline" title="<?= lang('Pager.next') ?>">
+        <a href="<?= $pager->getNext() ?>" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-800 border-transparent transition-all shadow-sm no-underline" title="<?= lang('Pager.next') ?>">
             <i class="fas fa-angle-right text-[10px]"></i>
         </a>
-        <a href="<?= $pager->getLast() ?>" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition-all shadow-sm no-underline" title="<?= lang('Pager.last') ?>">
+        <a href="<?= $pager->getLast() ?>" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-800 border-transparent transition-all shadow-sm no-underline" title="<?= lang('Pager.last') ?>">
             <i class="fas fa-angles-right text-[10px]"></i>
         </a>
     <?php endif ?>

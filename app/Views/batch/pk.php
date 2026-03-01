@@ -4,77 +4,77 @@
 <div class="space-y-6">
     <!-- Header Halaman -->
     <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-        <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight">Edit PK</h1>
+        <h1 class="text-2xl font-bold text-gray-800 uppercase tracking-tight">Edit PK Massal</h1>
 
-        <button onclick="history.back()" class="inline-flex items-center justify-center px-4 py-2 bg-white border border-slate-200 text-slate-700 font-bold rounded-lg hover:bg-slate-50 transition-all text-xs uppercase tracking-widest no-underline shadow-sm">
+        <button onclick="history.back()" class="inline-flex items-center justify-center px-4 py-2 bg-white border border-gray-200 text-gray-700 font-bold rounded-lg hover:bg-gray-50 transition-all text-xs uppercase tracking-widest no-underline shadow-sm">
             <i class="fas fa-arrow-left mr-2"></i> Kembali
         </button>
     </div>
 
     <!-- Form Utama -->
-    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
-        <div class="bg-slate-50 px-6 py-4 border-b border-slate-200">
-            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Konfigurasi PK</h3>
+    <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+        <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
+            <h3 class="text-xs font-bold text-gray-800 uppercase tracking-tight">Konfigurasi PK</h3>
         </div>
         <div class="p-6">
             <form id="batch_update_form" class="space-y-6">
-                <div class="bg-slate-50 p-6 rounded-lg border border-slate-100 space-y-6">
+                <div class="bg-gray-50 p-6 rounded-lg border border-gray-100 space-y-6">
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-3 uppercase tracking-tight">Identifikasi</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-3 uppercase tracking-tight">Identifikasi</label>
                         <div class="flex gap-6">
                             <label class="flex items-center cursor-pointer group">
-                                <input type="radio" name="update_mode" id="mode_nik" value="nik" checked class="w-4 h-4 text-blue-600 border-slate-200 focus:ring-blue-600">
-                                <span class="ml-2 text-sm text-slate-700 group-hover:text-slate-800 transition-colors">NIK</span>
+                                <input type="radio" name="update_mode" id="mode_nik" value="nik" checked class="w-4 h-4 text-emerald-700 border-gray-200 focus:ring-emerald-700">
+                                <span class="ml-2 text-sm text-gray-700 group-hover:text-gray-800 transition-colors">NIK</span>
                             </label>
                             <label class="flex items-center cursor-pointer group">
-                                <input type="radio" name="update_mode" id="mode_email" value="email" class="w-4 h-4 text-blue-600 border-slate-200 focus:ring-blue-600">
-                                <span class="ml-2 text-sm text-slate-700 group-hover:text-slate-800 transition-colors">Email</span>
+                                <input type="radio" name="update_mode" id="mode_email" value="email" class="w-4 h-4 text-emerald-700 border-gray-200 focus:ring-emerald-700">
+                                <span class="ml-2 text-sm text-gray-700 group-hover:text-gray-800 transition-colors">Email</span>
                             </label>
                         </div>
                     </div>
 
                     <div>
-                        <label for="identifier_input" id="identifier_label" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Daftar NIK (Satu per baris)</label>
-                        <textarea id="identifier_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px]" placeholder="Satu pengenal per baris..."></textarea>
+                        <label for="identifier_input" id="identifier_label" class="block text-sm font-medium text-gray-700 mb-1 uppercase tracking-tight">Daftar NIK (Satu per baris)</label>
+                        <textarea id="identifier_input" class="block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700 text-sm font-medium text-gray-800 transition-all custom-scrollbar min-h-[300px]" placeholder="Satu pengenal per baris..."></textarea>
                     </div>
                 </div>
 
                 <!-- Detail PK Baru -->
                 <div class="space-y-6">
-                    <div class="flex items-center gap-2 border-b border-slate-100 pb-2">
-                        <span class="text-[10px] font-bold text-slate-700 uppercase tracking-widest">Detail Perubahan</span>
+                    <div class="flex items-center gap-2 border-b border-gray-100 pb-2">
+                        <span class="text-[10px] font-bold text-gray-700 uppercase tracking-widest">Detail Perubahan</span>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label for="nomor_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Nomor PK</label>
-                            <textarea id="nomor_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px]" placeholder="Satu nomor per baris..."></textarea>
+                            <label for="nomor_input" class="block text-sm font-medium text-gray-700 mb-1 uppercase tracking-tight">Nomor PK</label>
+                            <textarea id="nomor_input" class="block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700 text-sm font-medium text-gray-800 transition-all custom-scrollbar min-h-[300px]" placeholder="Satu nomor per baris..."></textarea>
                         </div>
                         <div>
-                            <label for="gaji_nominal_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Gaji (Nominal)</label>
-                            <textarea id="gaji_nominal_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px]" placeholder="Satu nominal per baris..."></textarea>
+                            <label for="gaji_nominal_input" class="block text-sm font-medium text-gray-700 mb-1 uppercase tracking-tight">Gaji (Nominal)</label>
+                            <textarea id="gaji_nominal_input" class="block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700 text-sm font-medium text-gray-800 transition-all custom-scrollbar min-h-[300px]" placeholder="Satu nominal per baris..."></textarea>
                         </div>
                     </div>
 
                     <div>
-                        <label for="gaji_terbilang_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Gaji (Terbilang)</label>
-                        <textarea id="gaji_terbilang_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px]" placeholder="Satu terbilang per baris..."></textarea>
+                        <label for="gaji_terbilang_input" class="block text-sm font-medium text-gray-700 mb-1 uppercase tracking-tight">Gaji (Terbilang)</label>
+                        <textarea id="gaji_terbilang_input" class="block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700 text-sm font-medium text-gray-800 transition-all custom-scrollbar min-h-[300px]" placeholder="Satu terbilang per baris..."></textarea>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label for="tanggal_kontrak_awal_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Tanggal Awal</label>
-                            <textarea id="tanggal_kontrak_awal_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px]" placeholder="YYYY-MM-DD"></textarea>
+                            <label for="tanggal_kontrak_awal_input" class="block text-sm font-medium text-gray-700 mb-1 uppercase tracking-tight">Tanggal Awal</label>
+                            <textarea id="tanggal_kontrak_awal_input" class="block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700 text-sm font-medium text-gray-800 transition-all custom-scrollbar min-h-[300px]" placeholder="YYYY-MM-DD"></textarea>
                         </div>
                         <div>
-                            <label for="tanggal_kontrak_akhir_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Tanggal Akhir</label>
-                            <textarea id="tanggal_kontrak_akhir_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px]" placeholder="YYYY-MM-DD"></textarea>
+                            <label for="tanggal_kontrak_akhir_input" class="block text-sm font-medium text-gray-700 mb-1 uppercase tracking-tight">Tanggal Akhir</label>
+                            <textarea id="tanggal_kontrak_akhir_input" class="block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700 text-sm font-medium text-gray-800 transition-all custom-scrollbar min-h-[300px]" placeholder="YYYY-MM-DD"></textarea>
                         </div>
                     </div>
                 </div>
 
-                <div class="flex justify-end pt-4 border-t border-slate-100">
-                    <button type="submit" id="update_btn" class="inline-flex items-center px-8 py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-lg font-bold text-xs uppercase tracking-widest transition-all shadow-sm">
+                <div class="flex justify-end pt-4 border-t border-gray-100">
+                    <button type="submit" id="update_btn" class="inline-flex items-center px-8 py-3 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg font-bold text-xs uppercase tracking-widest transition-all shadow-sm">
                         <i class="fas fa-save mr-2 text-white/80"></i> Update Data PK
                     </button>
                 </div>
@@ -83,28 +83,28 @@
     </div>
 
     <!-- Hasil Pemrosesan -->
-    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
-        <div class="bg-slate-50 px-6 py-4 border-b border-slate-200">
-            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Hasil Pemrosesan</h3>
+    <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+        <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
+            <h3 class="text-xs font-bold text-gray-800 uppercase tracking-tight">Hasil Pemrosesan</h3>
         </div>
         <div class="overflow-x-auto">
             <table id="results_table" class="w-full text-left text-sm">
-                <thead class="bg-slate-50 text-slate-700 uppercase text-[10px] font-bold">
+                <thead class="bg-gray-100 text-gray-700 uppercase text-[10px] font-bold">
                     <tr>
-                        <th class="px-6 py-3 border-b border-slate-200 w-12">#</th>
-                        <th class="px-6 py-3 border-b border-slate-200">Pengenal</th>
-                        <th class="px-6 py-3 border-b border-slate-200">Status</th>
-                        <th class="px-6 py-3 border-b border-slate-200">Keterangan</th>
+                        <th class="px-6 py-3 border-b border-gray-200 w-12">#</th>
+                        <th class="px-6 py-3 border-b border-gray-200">Pengenal</th>
+                        <th class="px-6 py-3 border-b border-gray-200">Status</th>
+                        <th class="px-6 py-3 border-b border-gray-200">Keterangan</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-100 bg-white">
+                <tbody class="divide-y divide-gray-100 bg-white">
                     <tr>
                         <td colspan="4" class="px-6 py-20 text-center">
                             <div class="flex flex-col items-center justify-center">
-                                <div class="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center mb-3">
-                                    <i class="fas fa-layer-group text-slate-300 text-lg"></i>
+                                <div class="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center mb-3">
+                                    <i class="fas fa-layer-group text-gray-300 text-lg"></i>
                                 </div>
-                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest italic">Belum ada data yang diproses</span>
+                                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest italic">Belum ada data yang diproses</span>
                             </div>
                         </td>
                     </tr>
@@ -139,10 +139,13 @@
 
             updateBtn.disabled = true;
             updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Memproses...';
-            resultsTableBody.innerHTML = '<tr><td colspan="4" class="px-6 py-10 text-center italic text-slate-700">Sedang memproses pembaruan...</td></tr>';
+            resultsTableBody.innerHTML = '<tr><td colspan="4" class="px-6 py-10 text-center italic text-gray-700">Sedang memproses pembaruan...</td></tr>';
 
             // Scroll ke tabel hasil
-            resultsTableBody.closest('table').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            resultsTableBody.closest('table').scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
 
             try {
                 const response = await fetch('<?= site_url('batch/process_update') ?>', {
@@ -172,17 +175,17 @@
         });
 
         function renderResults(results) {
-            resultsTableBody.innerHTML = results.length ? '' : '<tr><td colspan="4" class="px-6 py-10 text-center italic text-slate-700">Tidak ada data hasil pemrosesan.</td></tr>';
+            resultsTableBody.innerHTML = results.length ? '' : '<tr><td colspan="4" class="px-6 py-10 text-center italic text-gray-700">Tidak ada data hasil pemrosesan.</td></tr>';
             results.forEach((res, i) => {
-                const colorClass = res.success ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-red-50 text-red-600 border-red-200';
+                const colorClass = res.success ? 'bg-emerald-100 text-emerald-800 border-transparent' : 'bg-red-100 text-red-700 border-transparent';
                 resultsTableBody.insertAdjacentHTML('beforeend', `
-                    <tr class="hover:bg-slate-50 transition-colors">
-                        <td class="px-6 py-4 font-mono text-slate-700">${i + 1}</td>
-                        <td class="px-6 py-4 font-medium text-slate-800 lowercase">${res.identifier}</td>
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-6 py-4 font-mono text-gray-700">${i + 1}</td>
+                        <td class="px-6 py-4 font-medium text-gray-800 lowercase">${res.identifier}</td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold border ${colorClass}">${res.success ? 'BERHASIL' : 'GAGAL'}</span>
                         </td>
-                        <td class="px-6 py-4 text-slate-700">${res.message || '-'}</td>
+                        <td class="px-6 py-4 text-gray-700">${res.message || '-'}</td>
                     </tr>
                 `);
             });

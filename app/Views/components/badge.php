@@ -6,11 +6,11 @@
  * @param bool $rounded (optional)
  */
 $typeClasses = [
-    'success' => 'bg-emerald-50 text-emerald-600 border-emerald-200',
-    'info'    => 'bg-blue-50 text-blue-600 border-blue-200',
+    'success' => 'bg-emerald-100 text-emerald-800 border-transparent',
+    'info'    => 'bg-blue-100 text-blue-700 border-transparent',
     'warning' => 'bg-amber-50 text-amber-500 border-amber-200',
-    'danger'  => 'bg-red-50 text-red-600 border-red-200',
-    'neutral' => 'bg-slate-50 text-slate-700 border-slate-200',
+    'danger'  => 'bg-red-100 text-red-700 border-transparent',
+    'neutral' => 'bg-gray-100 text-gray-700 border-transparent',
 ];
 
 $class = $typeClasses[$type] ?? $typeClasses['neutral'];

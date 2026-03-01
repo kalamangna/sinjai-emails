@@ -5,25 +5,25 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
 <style>
     .choices__inner {
-        @apply bg-white border-slate-200 rounded-lg text-sm font-medium text-slate-800 !important;
+        @apply bg-white border-gray-200 rounded-lg text-sm font-medium text-gray-800 !important;
         min-height: 38px !important;
         padding: 4px 12px !important;
     }
 
     .choices__list--dropdown {
-        @apply bg-white border-slate-200 rounded-lg shadow-xl text-slate-800 !important;
+        @apply bg-white border-gray-200 rounded-lg shadow-xl text-gray-800 !important;
     }
 
     .choices__list--dropdown .choices__item--selectable.is-highlighted {
-        @apply bg-slate-100 !important;
+        @apply bg-gray-100 !important;
     }
 
     .choices__input {
-        @apply bg-transparent text-sm text-slate-800 !important;
+        @apply bg-transparent text-sm text-gray-800 !important;
     }
 
     .choices__placeholder {
-        @apply text-slate-700 opacity-100 !important;
+        @apply text-gray-700 opacity-100 !important;
     }
 </style>
 <?= $this->endSection() ?>
@@ -31,40 +31,40 @@
 <?= $this->section('content') ?>
 <div class="max-w-2xl mx-auto space-y-6">
     <div>
-        <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight"><?= esc($title) ?></h1>
+        <h1 class="text-2xl font-bold text-gray-800 uppercase tracking-tight"><?= esc($title) ?></h1>
     </div>
 
-    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+    <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
         <div class="p-8">
             <form action="<?= isset($activity) ? site_url('assistance/update/' . $activity['id']) : site_url('assistance/store') ?>" method="post" class="space-y-6">
                 <?= csrf_field() ?>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="tanggal_kegiatan" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Tanggal</label>
-                        <input type="date" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 transition-all" id="tanggal_kegiatan" name="tanggal_kegiatan"
+                        <label for="tanggal_kegiatan" class="block text-sm font-medium text-gray-700 mb-1 uppercase tracking-tight">Tanggal</label>
+                        <input type="date" class="block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700 text-sm font-medium text-gray-800 transition-all" id="tanggal_kegiatan" name="tanggal_kegiatan"
                             value="<?= isset($activity) ? $activity['tanggal_kegiatan'] : formatIsiInput('now') ?>" required>
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Metode</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1 uppercase tracking-tight">Metode</label>
                         <div class="flex items-center gap-6 h-[38px]">
                             <label class="inline-flex items-center cursor-pointer group">
-                                <input type="radio" class="w-4 h-4 text-blue-600 border-slate-200 focus:ring-blue-600" name="method" value="Online"
+                                <input type="radio" class="w-4 h-4 text-emerald-700 border-gray-200 focus:ring-emerald-700" name="method" value="Online"
                                     <?= (isset($activity) && $activity['method'] == 'Online') ? 'checked' : '' ?> required>
-                                <span class="ml-2 text-sm text-slate-700 group-hover:text-slate-800 transition-colors">Online</span>
+                                <span class="ml-2 text-sm text-gray-700 group-hover:text-gray-800 transition-colors">Online</span>
                             </label>
                             <label class="inline-flex items-center cursor-pointer group">
-                                <input type="radio" class="w-4 h-4 text-blue-600 border-slate-200 focus:ring-blue-600" name="method" value="Offline"
+                                <input type="radio" class="w-4 h-4 text-emerald-700 border-gray-200 focus:ring-emerald-700" name="method" value="Offline"
                                     <?= (isset($activity) && $activity['method'] == 'Offline') ? 'checked' : ((!isset($activity)) ? 'checked' : '') ?>>
-                                <span class="ml-2 text-sm text-slate-700 group-hover:text-slate-800 transition-colors">Offline</span>
+                                <span class="ml-2 text-sm text-gray-700 group-hover:text-gray-800 transition-colors">Offline</span>
                             </label>
                         </div>
                     </div>
                 </div>
 
                 <div>
-                    <label for="agency_info" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Unit Kerja</label>
+                    <label for="agency_info" class="block text-sm font-medium text-gray-700 mb-1 uppercase tracking-tight">Unit Kerja</label>
                     <select id="agency_info" name="agency_info" required>
                         <option value="">Pilih Unit Kerja...</option>
                         <?php
@@ -92,8 +92,8 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="category" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Kategori</label>
-                        <select class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 appearance-none cursor-pointer transition-all" id="category" name="category" onchange="updateServicesDropdown()" required>
+                        <label for="category" class="block text-sm font-medium text-gray-700 mb-1 uppercase tracking-tight">Kategori</label>
+                        <select class="block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700 text-sm font-medium text-gray-800 appearance-none cursor-pointer transition-all" id="category" name="category" onchange="updateServicesDropdown()" required>
                             <option value="">Pilih Kategori...</option>
                             <?php foreach ($categoryMap as $id => $label): ?>
                                 <option value="<?= $id ?>" <?= (isset($activity) && $activity['category'] == $id) ? 'selected' : '' ?>><?= esc($label) ?></option>
@@ -102,25 +102,25 @@
                     </div>
 
                     <div>
-                        <label for="service" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Layanan</label>
-                        <select class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 appearance-none cursor-pointer transition-all" id="service" name="service" onchange="updateKeteranganOptions()" required>
+                        <label for="service" class="block text-sm font-medium text-gray-700 mb-1 uppercase tracking-tight">Layanan</label>
+                        <select class="block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700 text-sm font-medium text-gray-800 appearance-none cursor-pointer transition-all" id="service" name="service" onchange="updateKeteranganOptions()" required>
                             <option value="">Pilih Layanan...</option>
                         </select>
                     </div>
                 </div>
 
                 <div>
-                    <label for="keterangan" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Keterangan</label>
-                    <select class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 appearance-none cursor-pointer transition-all" id="keterangan" name="keterangan" required>
+                    <label for="keterangan" class="block text-sm font-medium text-gray-700 mb-1 uppercase tracking-tight">Keterangan</label>
+                    <select class="block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700 text-sm font-medium text-gray-800 appearance-none cursor-pointer transition-all" id="keterangan" name="keterangan" required>
                         <option value="">Pilih Keterangan...</option>
                     </select>
                 </div>
 
-                <div class="flex flex-col sm:flex-row justify-between items-center gap-4 pt-6 border-t border-slate-100">
-                    <a href="<?= site_url('assistance') ?>" class="w-full sm:w-auto px-6 py-2 bg-white border border-slate-200 text-slate-700 font-bold rounded-lg hover:bg-slate-50 transition-all text-xs uppercase tracking-widest no-underline flex items-center justify-center shadow-sm">
-                        <i class="fas fa-times mr-2 text-slate-700"></i> Batal
+                <div class="flex flex-col sm:flex-row justify-between items-center gap-4 pt-6 border-t border-gray-100">
+                    <a href="<?= site_url('assistance') ?>" class="w-full sm:w-auto px-6 py-2 bg-white border border-gray-200 text-gray-700 font-bold rounded-lg hover:bg-gray-50 transition-all text-xs uppercase tracking-widest no-underline flex items-center justify-center shadow-sm">
+                        <i class="fas fa-times mr-2 text-gray-700"></i> Batal
                     </a>
-                    <button type="submit" class="w-full sm:w-auto px-8 py-2 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-lg shadow-sm transition-all text-xs uppercase tracking-widest flex items-center justify-center">
+                    <button type="submit" class="w-full sm:w-auto px-8 py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-lg shadow-sm transition-all text-xs uppercase tracking-widest flex items-center justify-center">
                         <i class="fas fa-save mr-2 text-white/80"></i> <?= isset($activity) ? 'Update Log' : 'Simpan Log' ?>
                     </button>
                 </div>

@@ -12,7 +12,7 @@
            Font embedded directly for portability.
         */
         @page {
-            margin: 2.5cm 2cm 2cm 2cm;
+            margin: 2cm 2cm 2.5cm 2cm;
             size: A4;
         }
 
@@ -48,7 +48,7 @@
             font-family: "Bookman Old Style", serif;
             font-size: 10pt;
             margin: 0;
-            line-height: 1.35;
+            line-height: 1.5;
             color: #000;
         }
 
@@ -98,7 +98,7 @@
 
         /* KOP SURAT */
         .kop-container {
-            margin-bottom: 15px;
+            margin-bottom: 25px;
             text-align: center;
         }
 
@@ -118,7 +118,7 @@
             font-size: 10pt;
             font-weight: bold;
             text-decoration: underline;
-            margin: 10px 0 0 0;
+            margin: 20px 0 0 0;
         }
 
         .kop-number {
@@ -131,8 +131,8 @@
             text-align: center;
             font-weight: bold;
             text-transform: uppercase;
-            margin-top: 18px;
-            margin-bottom: 6px;
+            margin-top: 25px;
+            margin-bottom: 15px;
         }
 
         /* LIST SYSTEMS (Table-based) */
@@ -180,7 +180,7 @@
 
         /* SIGNATURES */
         .signature-table {
-            margin-top: 80px;
+            margin-top: 40px;
             width: 100%;
             page-break-inside: avoid;
         }
@@ -611,8 +611,6 @@
             </td>
         </tr>
     </table>
-
-    <div class="page-break"></div>
 
     <!-- PASAL 6 -->
     <div class="pasal-header">

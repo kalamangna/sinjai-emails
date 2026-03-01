@@ -80,7 +80,7 @@ document.addEventListener("DOMContentLoaded", function () {
     generateBtn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Memproses...`;
     submitBtn.disabled = true;
     resultsTableBody.innerHTML =
-      '<tr><td colspan="8" class="px-10 py-12 text-center text-blue-600 font-bold uppercase tracking-widest text-[10px] animate-pulse">Sedang memproses dan memeriksa email...</td></tr>';
+      '<tr><td colspan="8" class="px-10 py-12 text-center text-emerald-700 font-bold uppercase tracking-widest text-[10px] animate-pulse">Sedang memproses dan memeriksa email...</td></tr>';
 
     const trimmedNiks = finalNiks;
     const trimmedNips = finalNips;
@@ -406,7 +406,7 @@ document.addEventListener("DOMContentLoaded", function () {
     resultsTableBody.innerHTML = "";
     if (userBatch.length === 0) {
       resultsTableBody.innerHTML =
-        '<tr><td colspan="8" class="px-10 py-12 text-center text-slate-400 font-medium uppercase tracking-widest text-[10px]">No names entered.</td></tr>';
+        '<tr><td colspan="8" class="px-10 py-12 text-center text-gray-400 font-medium uppercase tracking-widest text-[10px]">No names entered.</td></tr>';
       return;
     }
 
@@ -416,30 +416,30 @@ document.addEventListener("DOMContentLoaded", function () {
         "inline-flex items-center px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border shadow-sm";
 
       if (user.status === "created") {
-        statusBadge = `<span class="${badgeBase} bg-emerald-50 text-emerald-600 border-emerald-200">Created</span>`;
+        statusBadge = `<span class="${badgeBase} bg-emerald-100 text-emerald-800 border-transparent">Created</span>`;
       } else if (user.status === "failed") {
-        statusBadge = `<span class="${badgeBase} bg-red-50 text-red-600 border-red-200" title="${user.errorMessage || "Failed"}">Failed</span>`;
+        statusBadge = `<span class="${badgeBase} bg-red-100 text-red-700 border-transparent" title="${user.errorMessage || "Failed"}">Failed</span>`;
       } else if (user.isDuplicate) {
-        statusBadge = `<span class="${badgeBase} bg-amber-50 text-amber-600 border-amber-200">Duplicate</span>`;
+        statusBadge = `<span class="${badgeBase} bg-amber-100 text-amber-700 border-transparent">Duplicate</span>`;
       } else if (user.isAvailable) {
-        statusBadge = `<span class="${badgeBase} bg-blue-50 text-blue-600 border-blue-200">Available</span>`;
+        statusBadge = `<span class="${badgeBase} bg-blue-100 text-blue-700 border-transparent">Available</span>`;
       } else {
-        statusBadge = `<span class="${badgeBase} bg-slate-50 text-slate-700 border-slate-200">Used</span>`;
+        statusBadge = `<span class="${badgeBase} bg-gray-100 text-gray-700 border-transparent">Used</span>`;
       }
 
-      const nameCellContent = `<span contenteditable="true" class="editable-name focus:outline-none focus:text-blue-600 transition-colors" data-name-index="${index}">${user.name}</span>`;
+      const nameCellContent = `<span contenteditable="true" class="editable-name focus:outline-none focus:text-emerald-700 transition-colors" data-name-index="${index}">${user.name}</span>`;
 
       const domain = "@sinjaikab.go.id";
       const username = user.email.substring(0, user.email.indexOf(domain));
-      const emailCellContent = `<span contenteditable="true" class="editable-username focus:outline-none focus:text-blue-600 transition-colors" data-username-index="${index}">${username}</span><span class="text-slate-200 font-medium">${domain}</span>`;
+      const emailCellContent = `<span contenteditable="true" class="editable-username focus:outline-none focus:text-emerald-700 transition-colors" data-username-index="${index}">${username}</span><span class="text-gray-200 font-medium">${domain}</span>`;
 
-      const passwordCellContent = `<span contenteditable="true" class="editable-password font-mono focus:outline-none focus:text-blue-600 transition-colors" data-password-index="${index}">${user.password}</span>`;
+      const passwordCellContent = `<span contenteditable="true" class="editable-password font-mono focus:outline-none focus:text-emerald-700 transition-colors" data-password-index="${index}">${user.password}</span>`;
       const unitKerjaCellContent = `<span class="editable-unit-kerja opacity-80" data-unit-kerja-index="${index}">${user.unitKerja}</span>`;
 
       const tagBase =
         "ml-1.5 px-1.5 py-0.5 rounded text-[8px] font-black uppercase";
 
-      let nikDisplay = `<span class="font-mono text-slate-700">${user.nik || "-"}</span>`;
+      let nikDisplay = `<span class="font-mono text-gray-700">${user.nik || "-"}</span>`;
       if (user.isNikInDb) {
         nikDisplay += `<span class="${tagBase} bg-red-50 text-red-600" title="NIK already exists in the database">DB</span>`;
       }
@@ -447,7 +447,7 @@ document.addEventListener("DOMContentLoaded", function () {
         nikDisplay += `<span class="${tagBase} bg-amber-50 text-amber-600" title="Duplicate NIK in this batch">DUP</span>`;
       }
 
-      let nipDisplay = `<span class="font-mono text-slate-700">${user.nip || "-"}</span>`;
+      let nipDisplay = `<span class="font-mono text-gray-700">${user.nip || "-"}</span>`;
       if (user.isNipInDb) {
         nipDisplay += `<span class="${tagBase} bg-red-50 text-red-600" title="NIP already exists in the database">DB</span>`;
       }
@@ -456,12 +456,12 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       const row = `
-        <tr class="hover:bg-slate-50 transition-colors group">
-            <td class="px-6 py-5 whitespace-nowrap text-[10px] font-black text-slate-700 font-mono">#${index + 1}</td>
+        <tr class="hover:bg-gray-50 transition-colors group">
+            <td class="px-6 py-5 whitespace-nowrap text-[10px] font-black text-gray-700 font-mono">#${index + 1}</td>
             <td class="px-6 py-5 whitespace-nowrap">${nipDisplay}</td>
             <td class="px-6 py-5 whitespace-nowrap">${nikDisplay}</td>
-            <td class="px-6 py-5 font-black text-slate-800 tracking-tight whitespace-nowrap">${nameCellContent}</td>
-            <td class="px-6 py-5 whitespace-nowrap font-bold text-slate-700 tracking-tight lowercase">${emailCellContent}</td>
+            <td class="px-6 py-5 font-black text-gray-800 tracking-tight whitespace-nowrap">${nameCellContent}</td>
+            <td class="px-6 py-5 whitespace-nowrap font-bold text-gray-700 tracking-tight lowercase">${emailCellContent}</td>
             <td class="px-6 py-5 whitespace-nowrap">${passwordCellContent}</td>
             <td class="px-6 py-5 text-center whitespace-nowrap">${statusBadge}</td>
         </tr>`;

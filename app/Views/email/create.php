@@ -3,17 +3,17 @@
 <?= $this->section('content') ?>
 <div class="max-w-4xl mx-auto space-y-6">
     <div class="flex items-center gap-4">
-        <a href="<?= site_url('email') ?>" class="inline-flex items-center justify-center w-10 h-10 bg-white border border-slate-200 text-slate-700 rounded-lg hover:bg-slate-50 transition-all shadow-sm no-underline">
+        <a href="<?= site_url('email') ?>" class="inline-flex items-center justify-center w-10 h-10 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-all shadow-sm no-underline">
             <i class="fas fa-arrow-left"></i>
         </a>
-        <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight">Buat Akun Tunggal</h1>
+        <h1 class="text-2xl font-bold text-gray-800 uppercase tracking-tight">Buat Akun Tunggal</h1>
     </div>
 
     <!-- Card Input -->
-    <div class="bg-white border border-slate-200 rounded-xl shadow-sm">
-        <div class="bg-slate-50 px-6 py-4 border-b border-slate-200 flex justify-between items-center">
-            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Input Data</h3>
-            <button type="button" class="text-[10px] font-bold text-slate-700 hover:text-slate-800 uppercase tracking-widest transition-colors flex items-center" onclick="nameInput.value = nameInput.value.toUpperCase(); updateDraft();">
+    <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
+        <div class="bg-gray-50 px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+            <h3 class="text-xs font-bold text-gray-800 uppercase tracking-tight">Input Data</h3>
+            <button type="button" class="text-[10px] font-bold text-gray-700 hover:text-gray-800 uppercase tracking-widest transition-colors flex items-center" onclick="nameInput.value = nameInput.value.toUpperCase(); updateDraft();">
                 <i class="fas fa-font mr-1.5"></i> Huruf Kapital
             </button>
         </div>
@@ -22,23 +22,23 @@
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="md:col-span-2">
-                    <label for="name_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Nama Lengkap <span class="text-slate-700 font-normal">(Tanpa Gelar)</span></label>
-                    <input type="text" id="name_input" name="name" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 uppercase transition-all" required placeholder="Contoh: BUDI SANTOSO">
+                    <label for="name_input" class="block text-sm font-medium text-gray-700 mb-1 uppercase tracking-tight">Nama Lengkap <span class="text-gray-700 font-normal">(Tanpa Gelar)</span></label>
+                    <input type="text" id="name_input" name="name" class="block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700 text-sm font-medium text-gray-800 uppercase transition-all" required placeholder="Contoh: BUDI SANTOSO">
                 </div>
                 
                 <div>
-                    <label for="nip_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">NIP</label>
-                    <input type="text" id="nip_input" name="nip" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 font-mono transition-all" placeholder="Contoh: 198801082022031001" required maxlength="18">
+                    <label for="nip_input" class="block text-sm font-medium text-gray-700 mb-1 uppercase tracking-tight">NIP</label>
+                    <input type="text" id="nip_input" name="nip" class="block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700 text-sm font-medium text-gray-800 font-mono transition-all" placeholder="Contoh: 198801082022031001" required maxlength="18">
                 </div>
 
                 <div>
-                    <label for="nik_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">NIK <span class="text-slate-700 font-normal">(Opsional)</span></label>
-                    <input type="text" id="nik_input" name="nik" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 font-mono transition-all" placeholder="Contoh: 730701XXXXXXXXXX" maxlength="16">
+                    <label for="nik_input" class="block text-sm font-medium text-gray-700 mb-1 uppercase tracking-tight">NIK <span class="text-gray-700 font-normal">(Opsional)</span></label>
+                    <input type="text" id="nik_input" name="nik" class="block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700 text-sm font-medium text-gray-800 font-mono transition-all" placeholder="Contoh: 730701XXXXXXXXXX" maxlength="16">
                 </div>
 
                 <div>
-                    <label for="status_asn_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Status ASN</label>
-                    <select id="status_asn_input" name="jenisFormasi" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 appearance-none cursor-pointer transition-all" required>
+                    <label for="status_asn_input" class="block text-sm font-medium text-gray-700 mb-1 uppercase tracking-tight">Status ASN</label>
+                    <select id="status_asn_input" name="jenisFormasi" class="block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700 text-sm font-medium text-gray-800 appearance-none cursor-pointer transition-all" required>
                         <option value="" disabled selected>Pilih Status...</option>
                         <?php foreach ($status_asn_options as $option): ?>
                             <option value="<?= esc($option['id']) ?>"><?= esc($option['nama_status_asn']) ?></option>
@@ -47,8 +47,8 @@
                 </div>
 
                 <div>
-                    <label for="unit_kerja_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Unit Kerja</label>
-                    <select id="unit_kerja_input" name="unitKerja" class="choices-search block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 appearance-none cursor-pointer transition-all" required>
+                    <label for="unit_kerja_input" class="block text-sm font-medium text-gray-700 mb-1 uppercase tracking-tight">Unit Kerja</label>
+                    <select id="unit_kerja_input" name="unitKerja" class="choices-search block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700 text-sm font-medium text-gray-800 appearance-none cursor-pointer transition-all" required>
                         <option value="" disabled selected>Pilih Unit Kerja...</option>
                         <?php foreach ($unit_kerja_options as $unit): ?>
                             <option value="<?= esc($unit['nama_unit_kerja']) ?>"><?= esc($unit['nama_unit_kerja']) ?></option>
@@ -57,8 +57,8 @@
                 </div>
             </div>
 
-            <div class="flex justify-end pt-4 border-t border-slate-100">
-                <button type="button" id="preview_btn" class="inline-flex items-center px-6 py-2 bg-slate-800 text-white rounded-lg font-bold text-xs uppercase tracking-widest hover:bg-slate-700 transition-all shadow-sm">
+            <div class="flex justify-end pt-4 border-t border-gray-100">
+                <button type="button" id="preview_btn" class="inline-flex items-center px-6 py-2 bg-gray-800 text-white rounded-lg font-bold text-xs uppercase tracking-widest hover:bg-gray-700 transition-all shadow-sm">
                     <i class="fas fa-eye mr-2 text-white/80"></i> Preview
                 </button>
             </div>
@@ -66,24 +66,24 @@
     </div>
 
     <!-- Preview Section -->
-    <div id="preview_section" class="hidden bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
-        <div class="bg-slate-50 px-6 py-4 border-b border-slate-200">
-            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Hasil Preview</h3>
+    <div id="preview_section" class="hidden bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+        <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
+            <h3 class="text-xs font-bold text-gray-800 uppercase tracking-tight">Hasil Preview</h3>
         </div>
         <div class="overflow-x-auto">
             <table id="results_table" class="w-full text-left text-sm">
-                <thead class="bg-slate-50 text-slate-700 uppercase text-[10px] font-bold">
+                <thead class="bg-gray-100 text-gray-700 uppercase text-[10px] font-bold">
                     <tr>
-                        <th class="px-6 py-3 border-b border-slate-200 w-12">#</th>
-                        <th class="px-6 py-3 border-b border-slate-200">NIP</th>
-                        <th class="px-6 py-3 border-b border-slate-200">NIK</th>
-                        <th class="px-6 py-3 border-b border-slate-200">Nama Lengkap</th>
-                        <th class="px-6 py-3 border-b border-slate-200">Email</th>
-                        <th class="px-6 py-3 border-b border-slate-200">Password</th>
-                        <th class="px-6 py-3 border-b border-slate-200 text-center">Status</th>
+                        <th class="px-6 py-3 border-b border-gray-200 w-12">#</th>
+                        <th class="px-6 py-3 border-b border-gray-200">NIP</th>
+                        <th class="px-6 py-3 border-b border-gray-200">NIK</th>
+                        <th class="px-6 py-3 border-b border-gray-200">Nama Lengkap</th>
+                        <th class="px-6 py-3 border-b border-gray-200">Email</th>
+                        <th class="px-6 py-3 border-b border-gray-200">Password</th>
+                        <th class="px-6 py-3 border-b border-gray-200 text-center">Status</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-100 bg-white">
+                <tbody class="divide-y divide-gray-100 bg-white">
                     <!-- Populated by JS -->
                 </tbody>
             </table>
@@ -91,19 +91,19 @@
     </div>
 
     <!-- Execution Progress Section -->
-    <div id="progress_section" class="hidden bg-white border border-slate-200 rounded-xl shadow-sm p-6 space-y-4">
+    <div id="progress_section" class="hidden bg-white border border-gray-200 rounded-lg shadow-sm p-6 space-y-4">
         <div class="flex justify-between items-center">
-            <h3 class="text-[10px] font-bold text-slate-700 uppercase tracking-widest">Progres Eksekusi</h3>
-            <span id="progress_text" class="text-[10px] font-bold text-slate-800 uppercase">MEMULAI</span>
+            <h3 class="text-[10px] font-bold text-gray-700 uppercase tracking-widest">Progres Eksekusi</h3>
+            <span id="progress_text" class="text-[10px] font-bold text-gray-800 uppercase">MEMULAI</span>
         </div>
-        <div class="w-full bg-slate-100 rounded-full h-2">
-            <div id="progress_bar" class="bg-blue-600 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+        <div class="w-full bg-gray-100 rounded-full h-2">
+            <div id="progress_bar" class="bg-emerald-700 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
         </div>
-        <div id="results_log" class="p-4 bg-slate-800 text-white rounded-lg text-[10px] font-mono h-48 overflow-y-auto custom-scrollbar"></div>
+        <div id="results_log" class="p-4 bg-gray-800 text-white rounded-lg text-[10px] font-mono h-48 overflow-y-auto custom-scrollbar"></div>
     </div>
 
     <div class="flex justify-end">
-        <button type="button" id="submit_btn" class="inline-flex items-center px-8 py-3 bg-slate-800 text-white rounded-lg font-bold text-xs uppercase tracking-widest hover:bg-slate-700 shadow-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed group" disabled>
+        <button type="button" id="submit_btn" class="inline-flex items-center px-8 py-3 bg-gray-800 text-white rounded-lg font-bold text-xs uppercase tracking-widest hover:bg-gray-700 shadow-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed group" disabled>
             <i class="fas fa-cloud-upload-alt mr-2 text-white/80"></i> Eksekusi
         </button>
     </div>
@@ -144,7 +144,7 @@
 
         previewBtn.disabled = true;
         previewBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Memproses...';
-        resultsTableBody.innerHTML = '<tr><td colspan="8" class="px-10 py-12 text-center text-blue-600 font-bold uppercase tracking-widest text-[10px] animate-pulse">Sedang memproses dan memeriksa email...</td></tr>';
+        resultsTableBody.innerHTML = '<tr><td colspan="8" class="px-10 py-12 text-center text-emerald-700 font-bold uppercase tracking-widest text-[10px] animate-pulse">Sedang memproses dan memeriksa email...</td></tr>';
         
         // Base Draft Config
         const domain = "@sinjaikab.go.id";
@@ -220,35 +220,35 @@
             const badgeBase = "inline-flex items-center px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border shadow-sm";
 
             if (user.status === "created") {
-                statusBadge = `<span class="${badgeBase} bg-emerald-50 text-emerald-600 border-emerald-200">Created</span>`;
+                statusBadge = `<span class="${badgeBase} bg-emerald-100 text-emerald-800 border-transparent">Created</span>`;
             } else if (user.status === "failed") {
-                statusBadge = `<span class="${badgeBase} bg-red-50 text-red-600 border-red-200" title="${user.errorMessage || "Failed"}">Failed</span>`;
+                statusBadge = `<span class="${badgeBase} bg-red-100 text-red-700 border-transparent" title="${user.errorMessage || "Failed"}">Failed</span>`;
             } else if (user.isAvailable && !user.isNipInDb) {
-                statusBadge = `<span class="${badgeBase} bg-blue-50 text-blue-600 border-blue-200">Ready</span>`;
+                statusBadge = `<span class="${badgeBase} bg-blue-100 text-blue-700 border-transparent">Ready</span>`;
             } else {
-                statusBadge = `<span class="${badgeBase} bg-amber-50 text-amber-600 border-amber-200">Check Required</span>`;
+                statusBadge = `<span class="${badgeBase} bg-amber-100 text-amber-700 border-transparent">Check Required</span>`;
             }
 
-            const nameCellContent = `<span contenteditable="true" class="editable-name focus:outline-none focus:text-blue-600 transition-colors" data-name-index="${index}">${user.name}</span>`;
+            const nameCellContent = `<span contenteditable="true" class="editable-name focus:outline-none focus:text-emerald-700 transition-colors" data-name-index="${index}">${user.name}</span>`;
             const domain = "@sinjaikab.go.id";
             const username = user.email.substring(0, user.email.indexOf(domain));
-            const emailCellContent = `<span contenteditable="true" class="editable-username focus:outline-none focus:text-blue-600 transition-colors" data-username-index="${index}">${username}</span><span class="text-slate-200 font-medium">${domain}</span>`;
-            const passwordCellContent = `<span contenteditable="true" class="editable-password font-mono focus:outline-none focus:text-blue-600 transition-colors" data-password-index="${index}">${user.password}</span>`;
+            const emailCellContent = `<span contenteditable="true" class="editable-username focus:outline-none focus:text-emerald-700 transition-colors" data-username-index="${index}">${username}</span><span class="text-gray-200 font-medium">${domain}</span>`;
+            const passwordCellContent = `<span contenteditable="true" class="editable-password font-mono focus:outline-none focus:text-emerald-700 transition-colors" data-password-index="${index}">${user.password}</span>`;
 
             const tagBase = "ml-1.5 px-1.5 py-0.5 rounded text-[8px] font-black uppercase";
-            let nikDisplay = `<span class="font-mono text-slate-700">${user.nik || "-"}</span>`;
+            let nikDisplay = `<span class="font-mono text-gray-700">${user.nik || "-"}</span>`;
             if (user.isNikInDb) nikDisplay += `<span class="${tagBase} bg-red-50 text-red-600">DB</span>`;
 
-            let nipDisplay = `<span class="font-mono text-slate-700">${user.nip || "-"}</span>`;
+            let nipDisplay = `<span class="font-mono text-gray-700">${user.nip || "-"}</span>`;
             if (user.isNipInDb) nipDisplay += `<span class="${tagBase} bg-red-50 text-red-600">DB</span>`;
 
             const row = `
-                <tr class="hover:bg-slate-50 transition-colors group">
-                    <td class="px-6 py-5 whitespace-nowrap text-[10px] font-black text-slate-700 font-mono">#${index + 1}</td>
+                <tr class="hover:bg-gray-50 transition-colors group">
+                    <td class="px-6 py-5 whitespace-nowrap text-[10px] font-black text-gray-700 font-mono">#${index + 1}</td>
                     <td class="px-6 py-5 whitespace-nowrap">${nipDisplay}</td>
                     <td class="px-6 py-5 whitespace-nowrap">${nikDisplay}</td>
-                    <td class="px-6 py-5 font-black text-slate-800 tracking-tight whitespace-nowrap">${nameCellContent}</td>
-                    <td class="px-6 py-5 whitespace-nowrap font-bold text-slate-700 tracking-tight lowercase">${emailCellContent}</td>
+                    <td class="px-6 py-5 font-black text-gray-800 tracking-tight whitespace-nowrap">${nameCellContent}</td>
+                    <td class="px-6 py-5 whitespace-nowrap font-bold text-gray-700 tracking-tight lowercase">${emailCellContent}</td>
                     <td class="px-6 py-5 whitespace-nowrap">${passwordCellContent}</td>
                     <td class="px-6 py-5 text-center whitespace-nowrap">${statusBadge}</td>
                 </tr>`;
@@ -350,7 +350,7 @@
     });
 
     function logResult(email, status, message) {
-        const colors = { 'SUCCESS': 'text-emerald-500', 'FAILURE': 'text-red-500', 'WEAK PW': 'text-amber-500', 'INFO': 'text-blue-400' };
+        const colors = { 'SUCCESS': 'text-emerald-500', 'FAILURE': 'text-red-500', 'WEAK PW': 'text-amber-500', 'INFO': 'text-emerald-500' };
         const entry = `<div>[<span class="${colors[status] || 'text-white'} font-bold">${status}</span>] ${email}: ${message}</div>`;
         resultsLog.insertAdjacentHTML("beforeend", entry);
         resultsLog.scrollTop = resultsLog.scrollHeight;

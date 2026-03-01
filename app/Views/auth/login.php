@@ -24,23 +24,23 @@
     </style>
 </head>
 
-<body class="bg-slate-50 text-slate-700 antialiased min-h-screen flex items-center justify-center p-6">
+<body class="bg-gray-50 text-gray-700 antialiased min-h-screen flex items-center justify-center p-6">
     <div class="w-full max-w-sm">
         <!-- Branding -->
         <div class="text-center mb-8">
-            <div class="inline-flex items-center justify-center w-12 h-12 bg-slate-800 rounded-xl shadow-sm mb-4">
+            <div class="inline-flex items-center justify-center w-12 h-12 bg-gray-800 rounded-lg shadow-sm mb-4">
                 <i class="fas fa-fingerprint text-white text-xl"></i>
             </div>
-            <h1 class="text-xl font-bold text-slate-800 uppercase tracking-tight">sinjai<span class="text-slate-700">emails</span></h1>
-            <p class="text-[10px] font-bold text-slate-700 uppercase tracking-widest mt-1">identitas digital</p>
+            <h1 class="text-xl font-bold text-gray-800 uppercase tracking-tight">sinjai<span class="text-gray-700">emails</span></h1>
+            <p class="text-[10px] font-bold text-gray-700 uppercase tracking-widest mt-1">identitas digital</p>
         </div>
 
         <!-- Login Card -->
-        <div class="bg-white border border-slate-200 rounded-xl p-8 shadow-sm">
-            <h2 class="text-sm font-bold text-slate-800 uppercase tracking-widest mb-6 border-b border-slate-100 pb-2">Masuk ke Sistem</h2>
+        <div class="bg-white border border-gray-200 rounded-lg p-8 shadow-sm">
+            <h2 class="text-sm font-bold text-gray-800 uppercase tracking-widest mb-6 border-b border-gray-100 pb-2">Masuk ke Sistem</h2>
 
             <?php if (session()->getFlashdata('error')): ?>
-                <div class="flash-message bg-red-50 border border-red-200 text-red-600 px-4 py-2 rounded-lg flex items-center justify-between mb-6 text-xs font-bold uppercase transform transition-all duration-500 ease-in-out">
+                <div class="flash-message bg-white border border-gray-200 border-l-4 border-l-emerald-700 text-red-600 px-4 py-2 rounded-lg flex items-center justify-between mb-6 text-xs font-bold uppercase transform transition-all duration-500 ease-in-out">
                     <div class="flex items-center">
                         <i class="fas fa-exclamation-circle mr-2"></i>
                         <?= session()->getFlashdata('error') ?>
@@ -55,38 +55,38 @@
                 <?= csrf_field() ?>
 
                 <div>
-                    <label for="username" class="block text-xs font-medium text-slate-700 mb-1 uppercase tracking-wider">Username</label>
+                    <label for="username" class="block text-xs font-medium text-gray-700 mb-1 uppercase tracking-wider">Username</label>
                     <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-700">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-700">
                             <i class="fas fa-user text-xs"></i>
                         </span>
                         <input type="text" name="username" id="username" value="<?= old('username') ?>" required
-                            class="block w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 transition-all"
+                            class="block w-full pl-9 pr-3 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700 text-sm font-medium text-gray-800 transition-all"
                             placeholder="Username">
                     </div>
                 </div>
 
                 <div>
-                    <label for="password" class="block text-xs font-medium text-slate-700 mb-1 uppercase tracking-wider">Password</label>
+                    <label for="password" class="block text-xs font-medium text-gray-700 mb-1 uppercase tracking-wider">Password</label>
                     <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-700">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-700">
                             <i class="fas fa-lock text-xs"></i>
                         </span>
                         <input type="password" name="password" id="password" required
-                            class="block w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 transition-all"
+                            class="block w-full pl-9 pr-3 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700 text-sm font-medium text-gray-800 transition-all"
                             placeholder="••••••••">
                     </div>
                 </div>
 
                 <div class="pt-2">
-                    <button type="submit" class="w-full inline-flex items-center justify-center px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-white rounded-lg font-bold text-xs uppercase tracking-widest transition-all shadow-sm">
+                    <button type="submit" class="w-full inline-flex items-center justify-center px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg font-bold text-xs uppercase tracking-widest transition-all shadow-sm">
                         Masuk <i class="fas fa-sign-in-alt ml-2 text-white/80"></i>
                     </button>
                 </div>
             </form>
         </div>
 
-        <p class="text-center text-[10px] font-bold text-slate-700 uppercase tracking-widest mt-8">
+        <p class="text-center text-[10px] font-bold text-gray-700 uppercase tracking-widest mt-8">
             &copy; <?= tahunSekarang() ?> DISKOMINFO-SP SINJAI
         </p>
     </div>
