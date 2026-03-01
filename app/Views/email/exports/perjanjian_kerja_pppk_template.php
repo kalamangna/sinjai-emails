@@ -12,7 +12,7 @@
            Font embedded directly for portability.
         */
         @page {
-            margin: 1.5cm 2cm 2cm 2cm;
+            margin: 2.5cm 2cm 2cm 2cm;
             size: A4;
         }
 
@@ -131,7 +131,7 @@
             text-align: center;
             font-weight: bold;
             text-transform: uppercase;
-            margin-top: 12px;
+            margin-top: 18px;
             margin-bottom: 6px;
         }
 
