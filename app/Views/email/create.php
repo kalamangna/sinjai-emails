@@ -10,7 +10,7 @@
     </div>
 
     <!-- Card Input -->
-    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm">
         <div class="bg-slate-50 px-6 py-4 border-b border-slate-200 flex justify-between items-center">
             <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Input Data</h3>
             <button type="button" class="text-[10px] font-bold text-slate-700 hover:text-slate-800 uppercase tracking-widest transition-colors flex items-center" onclick="nameInput.value = nameInput.value.toUpperCase(); updateDraft();">

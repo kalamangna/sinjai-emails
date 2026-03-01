@@ -10,7 +10,7 @@
     </div>
 
     <!-- Card Utama -->
-    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden flex flex-col">
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm flex flex-col">
         <form action="<?= site_url('email/update_details/' . $email['user']) ?>" method="post">
             <?= csrf_field() ?>
             <div class="p-8 space-y-10">

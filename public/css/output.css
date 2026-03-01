@@ -926,6 +926,10 @@ video {
   height: 8rem;
 }
 
+.h-48 {
+  height: 12rem;
+}
+
 .max-h-\[150px\] {
   max-height: 150px;
 }
@@ -1916,6 +1920,16 @@ video {
 .text-slate-300 {
   --tw-text-opacity: 1;
   color: rgb(203 213 225 / var(--tw-text-opacity, 1));
+}
+
+.text-blue-400 {
+  --tw-text-opacity: 1;
+  color: rgb(96 165 250 / var(--tw-text-opacity, 1));
+}
+
+.text-slate-600 {
+  --tw-text-opacity: 1;
+  color: rgb(71 85 105 / var(--tw-text-opacity, 1));
 }
 
 .underline {
