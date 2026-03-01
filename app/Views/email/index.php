@@ -20,8 +20,11 @@
                     <i class="fas fa-sync-alt mr-2 group-hover:rotate-180 transition-transform duration-500"></i>
                     <span>Sync cPanel</span>
                 </button>
-                <a href="<?= site_url('batch') ?>" class="flex-1 lg:flex-none inline-flex items-center justify-center px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-white rounded-lg font-bold text-xs uppercase tracking-widest transition-all shadow-sm no-underline">
+                <a href="<?= site_url('batch') ?>" class="flex-1 lg:flex-none inline-flex items-center justify-center px-4 py-2.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-lg font-bold text-xs uppercase tracking-widest transition-all shadow-sm no-underline">
                     <i class="fas fa-layer-group mr-2"></i> Batch
+                </a>
+                <a href="<?= site_url('email/create') ?>" class="flex-1 lg:flex-none inline-flex items-center justify-center px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-white rounded-lg font-bold text-xs uppercase tracking-widest transition-all shadow-sm no-underline">
+                    <i class="fas fa-plus mr-2 text-white/80"></i> Tambah Akun
                 </a>
             <?php endif; ?>
         </div>

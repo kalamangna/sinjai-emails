@@ -42,6 +42,7 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         // Mutation Routes (Super Admin Only)
         $routes->group('', ['filter' => 'role:super_admin'], function ($routes) {
             $routes->get('sync', '\App\Domains\Email\Email::sync');
+            $routes->get('create', '\App\Domains\Email\Email::create');
             $routes->get('edit_profile/(:any)', '\App\Domains\Email\Email::edit_profile/$1');
             $routes->post('update_details/(:any)', '\App\Domains\Email\Email::update_details/$1');
             $routes->get('edit_password/(:any)', '\App\Domains\Email\Email::edit_password/$1');

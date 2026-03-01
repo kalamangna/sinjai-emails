@@ -44,6 +44,14 @@ class Email extends BaseController
         return view('email/eselon_list', $data);
     }
 
+    public function create()
+    {
+        $data['unit_kerja_options'] = $this->unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->findAll();
+        $data['status_asn_options'] = $this->statusAsnModel->orderBy('nama_status_asn', 'ASC')->findAll();
+        $data['title'] = 'Buat Akun Tunggal';
+        return view('email/create', $data);
+    }
+
     public function index()
     {
         try {
