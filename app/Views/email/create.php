@@ -11,13 +11,12 @@
 
     <!-- Card Utama -->
     <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden flex flex-col">
-        <form id="create_single_form" class="p-8 space-y-10">
+        <form id="create_single_form" class="p-8 space-y-8">
             <?= csrf_field() ?>
             
-            <!-- Bagian: Informasi Personal -->
             <div class="space-y-6">
                 <div class="flex justify-between items-center border-b border-slate-100 pb-1">
-                    <h4 class="text-[10px] font-bold text-slate-700 uppercase tracking-widest">Data Pribadi</h4>
+                    <h4 class="text-[10px] font-bold text-slate-700 uppercase tracking-widest">Data Minimal</h4>
                     <button type="button" class="text-[10px] font-bold text-slate-700 hover:text-slate-800 uppercase tracking-widest transition-colors flex items-center" onclick="nameInput.value = nameInput.value.toUpperCase(); updateDraft();">
                         <i class="fas fa-font mr-1.5"></i> Huruf Kapital
                     </button>
@@ -28,48 +27,23 @@
                         <label for="name" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Nama Lengkap <span class="text-slate-700 font-normal">(Tanpa Gelar)</span></label>
                         <input type="text" id="name" name="name" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 uppercase transition-all" required placeholder="Contoh: BUDI SANTOSO">
                     </div>
+                    
                     <div>
-                        <label for="gelar_depan" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Gelar Depan</label>
-                        <input type="text" id="gelar_depan" name="gelar_depan" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 transition-all" placeholder="Contoh: Dr.">
-                    </div>
-                    <div>
-                        <label for="gelar_belakang" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Gelar Belakang</label>
-                        <input type="text" id="gelar_belakang" name="gelar_belakang" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 transition-all" placeholder="Contoh: S.Kom, M.T">
-                    </div>
-                    <div class="md:col-span-2">
-                        <label for="nik" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">NIK</label>
-                        <div class="relative">
-                            <input type="text" id="nik" name="nik" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 font-mono transition-all" placeholder="Contoh: 730701XXXXXXXXXX" required maxlength="16">
-                            <div id="nik_status" class="absolute right-3 top-2.5"></div>
-                        </div>
-                    </div>
-                    <div>
-                        <label for="tempat_lahir" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Tempat Lahir</label>
-                        <input type="text" id="tempat_lahir" name="tempat_lahir" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 uppercase transition-all" placeholder="Contoh: SINJAI">
-                    </div>
-                    <div>
-                        <label for="tanggal_lahir" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Tanggal Lahir</label>
-                        <input type="date" id="tanggal_lahir" name="tanggal_lahir" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 transition-all">
-                    </div>
-                    <div class="md:col-span-2">
-                        <label for="pendidikan" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Pendidikan Terakhir</label>
-                        <input type="text" id="pendidikan" name="pendidikan" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 uppercase transition-all" placeholder="Contoh: S1 TEKNIK INFORMATIKA">
-                    </div>
-                </div>
-            </div>
-
-            <!-- Bagian: Kepegawaian & Jabatan -->
-            <div class="space-y-6">
-                <h4 class="text-[10px] font-bold text-slate-700 uppercase tracking-widest border-b border-slate-100 pb-1">Kepegawaian</h4>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="md:col-span-2">
                         <label for="nip" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">NIP</label>
                         <div class="relative">
                             <input type="text" id="nip" name="nip" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 font-mono transition-all" placeholder="Contoh: 198801082022031001" required maxlength="18">
                             <div id="nip_status" class="absolute right-3 top-2.5"></div>
                         </div>
                     </div>
+
+                    <div>
+                        <label for="nik" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">NIK <span class="text-slate-700 font-normal">(Opsional)</span></label>
+                        <div class="relative">
+                            <input type="text" id="nik" name="nik" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 font-mono transition-all" placeholder="Contoh: 730701XXXXXXXXXX" maxlength="16">
+                            <div id="nik_status" class="absolute right-3 top-2.5"></div>
+                        </div>
+                    </div>
+
                     <div>
                         <label for="status_asn" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Status ASN</label>
                         <select id="status_asn" name="jenisFormasi" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 appearance-none cursor-pointer transition-all" required>
@@ -79,15 +53,8 @@
                             <?php endforeach; ?>
                         </select>
                     </div>
-                    <div id="golongan_container" class="hidden">
-                        <label for="golongan" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Golongan</label>
-                        <input type="text" id="golongan" name="golongan" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 transition-all uppercase" placeholder="Contoh: IX">
-                    </div>
-                    <div class="md:col-span-2">
-                        <label for="jabatan" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Jabatan</label>
-                        <input type="text" id="jabatan" name="jabatan" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 uppercase transition-all" placeholder="Contoh: AHLI PERTAMA - PRANATA KOMPUTER">
-                    </div>
-                    <div class="md:col-span-2">
+
+                    <div>
                         <label for="unit_kerja" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Unit Kerja</label>
                         <select id="unit_kerja" name="unitKerja" class="choices-search block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 appearance-none cursor-pointer transition-all" required>
                             <option value="" disabled selected>Pilih Unit Kerja...</option>
@@ -99,7 +66,6 @@
                 </div>
             </div>
 
-            <!-- Bagian: Konfigurasi Email -->
             <div class="space-y-6">
                 <h4 class="text-[10px] font-bold text-slate-700 uppercase tracking-widest border-b border-slate-100 pb-1">Konfigurasi Akun</h4>
 
@@ -125,7 +91,6 @@
                 </div>
             </div>
 
-            <!-- Bagian: Eksekusi -->
             <div id="execution_section" class="hidden space-y-4 pt-6 border-t border-slate-100">
                 <div class="flex justify-between items-center">
                     <h3 class="text-[10px] font-bold text-slate-700 uppercase tracking-widest">Progres Eksekusi</h3>
@@ -134,7 +99,6 @@
                 <div id="results_log" class="p-4 bg-slate-800 text-white rounded-lg text-[10px] font-mono h-32 overflow-y-auto custom-scrollbar"></div>
             </div>
 
-            <!-- Tombol Aksi -->
             <div class="bg-slate-50 px-8 py-4 flex flex-col sm:flex-row justify-end gap-3 border-t border-slate-200 -mx-8 -mb-8 mt-10">
                 <a href="<?= site_url('email') ?>" class="order-2 sm:order-1 inline-flex items-center justify-center px-6 py-2 bg-white border border-slate-200 rounded-lg font-bold text-xs text-slate-700 uppercase tracking-widest hover:bg-slate-50 shadow-sm transition-all no-underline">
                     <i class="fas fa-times mr-2"></i> Batal
@@ -157,19 +121,16 @@
     const emailHidden = document.getElementById('email');
     const passwordInput = document.getElementById('password');
     const statusAsnSelect = document.getElementById('status_asn');
-    const golonganContainer = document.getElementById('golongan_container');
     const form = document.getElementById('create_single_form');
     const submitBtn = document.getElementById('submit_btn');
     const executionSection = document.getElementById('execution_section');
     const resultsLog = document.getElementById('results_log');
     const statusBadge = document.getElementById('status_badge');
 
-    // Status indicators
     const nikStatus = document.getElementById('nik_status');
     const nipStatus = document.getElementById('nip_status');
     const emailStatus = document.getElementById('email_status');
 
-    // Auto-generate username and password when name or nip changes
     nameInput.addEventListener('input', updateDraft);
     nipInput.addEventListener('input', updateDraft);
     
@@ -269,15 +230,6 @@
         passwordInput.value = generatePassword(nameInput.value, nipInput.value);
     }
 
-    statusAsnSelect.addEventListener('change', function() {
-        const val = parseInt(this.value);
-        if ([1, 2].includes(val)) {
-            golonganContainer.classList.remove('hidden');
-        } else {
-            golonganContainer.classList.add('hidden');
-        }
-    });
-
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
         
@@ -291,7 +243,7 @@
         const formData = new FormData(form);
         const data = {};
         formData.forEach((value, key) => data[key] = value);
-        data['quota'] = 1024; // Default quota
+        data['quota'] = 1024;
 
         try {
             const response = await fetch('<?= site_url('email/create_single') ?>', {
