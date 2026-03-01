@@ -91,12 +91,16 @@
                 </div>
             </div>
 
+            <!-- Execution Progress Section -->
             <div id="execution_section" class="hidden space-y-4 pt-6 border-t border-slate-100">
                 <div class="flex justify-between items-center">
                     <h3 class="text-[10px] font-bold text-slate-700 uppercase tracking-widest">Progres Eksekusi</h3>
-                    <span id="status_badge" class="px-2 py-0.5 rounded text-[9px] font-bold border">SEDANG MEMPROSES</span>
+                    <span id="status_badge" class="px-2 py-0.5 rounded text-[9px] font-bold border">MEMULAI</span>
                 </div>
-                <div id="results_log" class="p-4 bg-slate-800 text-white rounded-lg text-[10px] font-mono h-32 overflow-y-auto custom-scrollbar"></div>
+                <div class="w-full bg-slate-100 rounded-full h-2">
+                    <div id="progress_bar" class="bg-blue-600 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+                </div>
+                <div id="results_log" class="p-4 bg-slate-800 text-white rounded-lg text-[10px] font-mono h-48 overflow-y-auto custom-scrollbar"></div>
             </div>
 
             <div class="bg-slate-50 px-8 py-4 flex flex-col sm:flex-row justify-end gap-3 border-t border-slate-200 -mx-8 -mb-8 mt-10">
@@ -124,6 +128,7 @@
     const form = document.getElementById('create_single_form');
     const submitBtn = document.getElementById('submit_btn');
     const executionSection = document.getElementById('execution_section');
+    const progressBar = document.getElementById('progress_bar');
     const resultsLog = document.getElementById('results_log');
     const statusBadge = document.getElementById('status_badge');
 
@@ -179,11 +184,14 @@
             const result = await response.json();
             if (result.available) {
                 emailStatus.innerHTML = '<span class="text-[9px] text-emerald-600 uppercase font-bold"><i class="fas fa-check-circle mr-1"></i> Email Tersedia</span>';
+                return true;
             } else {
                 emailStatus.innerHTML = '<span class="text-[9px] text-red-500 uppercase font-bold"><i class="fas fa-exclamation-circle mr-1"></i> Email Sudah Digunakan</span>';
+                return false;
             }
         } catch (e) {
             emailStatus.innerHTML = '';
+            return false;
         }
     }
 
@@ -233,10 +241,13 @@
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
         
+        const originalBtnHtml = submitBtn.innerHTML;
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Memproses...';
         executionSection.classList.remove('hidden');
+        executionSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
         resultsLog.innerHTML = '';
+        progressBar.style.width = '10%';
         statusBadge.className = 'px-2 py-0.5 rounded text-[9px] font-bold border bg-blue-50 text-blue-600 border-blue-200';
         statusBadge.innerText = 'SEDANG MEMPROSES';
 
@@ -246,6 +257,49 @@
         data['quota'] = 1024;
 
         try {
+            // Step 1: Pre-check email availability one last time
+            logResult('INFO', `Memeriksa ketersediaan email: ${data.email}...`);
+            const isAvailable = await checkEmail(data.email);
+            
+            if (!isAvailable) {
+                // FALLBACK: Auto-resolve email duplicate
+                logResult('WARN', `Email ${data.email} sudah digunakan. Mencoba mencari alternatif...`);
+                let attempts = 0;
+                const maxAttempts = 5;
+                const originalUsername = data.username;
+                const domain = "@sinjaikab.go.id";
+                
+                while (attempts < maxAttempts) {
+                    attempts++;
+                    let suffix = "";
+                    if (attempts === 1) suffix = data.nip.substring(2, 4);
+                    else if (attempts === 2) suffix = data.nip.substring(6, 8);
+                    else if (attempts === 3) suffix = data.nik.substring(10, 12) || attempts;
+                    else suffix = attempts;
+
+                    const newUsername = originalUsername + suffix;
+                    const newEmail = newUsername + domain;
+                    
+                    logResult('INFO', `Mencoba alternatif ${attempts}: ${newEmail}...`);
+                    const check = await checkEmail(newEmail);
+                    if (check) {
+                        data.username = newUsername;
+                        data.email = newEmail;
+                        usernameInput.value = newUsername;
+                        emailHidden.value = newEmail;
+                        logResult('SUCCESS', `Ditemukan alternatif yang tersedia: ${newEmail}`);
+                        break;
+                    }
+                    if (attempts === maxAttempts) {
+                        throw new Exception("Gagal menemukan alternatif email yang tersedia. Silakan ubah secara manual.");
+                    }
+                }
+            }
+
+            progressBar.style.width = '40%';
+            logResult('INFO', 'Mengirim data ke server...');
+
+            // Step 2: Attempt creation
             const response = await fetch('<?= site_url('email/create_single') ?>', {
                 method: 'POST',
                 headers: {
@@ -258,15 +312,19 @@
             const result = await response.json();
 
             if (response.ok && result.success) {
-                logResult('SUCCESS', 'Akun berhasil dibuat.');
+                progressBar.style.width = '100%';
+                logResult('SUCCESS', 'Akun berhasil dibuat di server dan database.');
                 statusBadge.className = 'px-2 py-0.5 rounded text-[9px] font-bold border bg-emerald-50 text-emerald-600 border-emerald-200';
                 statusBadge.innerText = 'BERHASIL';
-                alert('Akun berhasil dibuat!');
-                window.location.href = '<?= site_url('email') ?>';
+                setTimeout(() => {
+                    alert('Akun berhasil dibuat!');
+                    window.location.href = '<?= site_url('email') ?>';
+                }, 1000);
             } else {
                 const errorMsg = result.message || 'Gagal membuat akun.';
                 logResult('FAILURE', errorMsg);
                 
+                // FALLBACK: Password Weak
                 if (errorMsg.toLowerCase().includes('strength') || errorMsg.toLowerCase().includes('weak')) {
                     const altPw = generatePassword(data.name, data.nip, true);
                     if (passwordInput.value === altPw) {
@@ -274,19 +332,22 @@
                     } else {
                         passwordInput.value = altPw;
                     }
-                    logResult('INFO', 'Password diperbarui ke varian lebih kuat. Silakan klik Simpan lagi.');
+                    logResult('WARN', 'Password terlalu lemah. Sistem telah memperbarui ke varian lebih kuat.');
+                    logResult('INFO', 'Silakan klik "Simpan Akun" sekali lagi.');
                 }
                 
                 statusBadge.className = 'px-2 py-0.5 rounded text-[9px] font-bold border bg-red-50 text-red-600 border-red-200';
                 statusBadge.innerText = 'GAGAL';
+                progressBar.style.width = '0%';
             }
         } catch (error) {
-            logResult('FAILURE', 'Terjadi kesalahan jaringan atau server.');
+            logResult('FAILURE', 'Error: ' + error.message);
             statusBadge.className = 'px-2 py-0.5 rounded text-[9px] font-bold border bg-red-50 text-red-600 border-red-200';
             statusBadge.innerText = 'ERROR';
+            progressBar.style.width = '0%';
         } finally {
             submitBtn.disabled = false;
-            submitBtn.innerHTML = '<i class="fas fa-save mr-2 text-white/80"></i> Simpan Akun';
+            submitBtn.innerHTML = originalBtnHtml;
         }
     });
 
@@ -294,7 +355,8 @@
         const colors = {
             'SUCCESS': 'text-emerald-500',
             'FAILURE': 'text-red-500',
-            'INFO': 'text-blue-500'
+            'WARN': 'text-amber-500',
+            'INFO': 'text-blue-400'
         };
         const color = colors[status] || 'text-white';
         const entry = `<div>[<span class="${color} font-bold">${status}</span>] ${message}</div>`;
