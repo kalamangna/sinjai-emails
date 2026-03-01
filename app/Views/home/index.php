@@ -5,10 +5,10 @@
     <!-- Header Halaman -->
     <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
         <div>
-            <h1 class="text-2xl font-bold text-gray-800 uppercase tracking-tight">Dashboard</h1>
+            <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight">Dashboard</h1>
         </div>
         <div class="flex items-center gap-2 w-full lg:w-auto">
-            <a href="<?= site_url('email') ?>" class="flex-1 lg:flex-none inline-flex items-center justify-center px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg font-bold text-xs uppercase tracking-widest transition-all shadow-sm no-underline">
+            <a href="<?= site_url('email') ?>" class="flex-1 lg:flex-none btn btn-solid no-underline">
                 <i class="fas fa-envelope mr-2 text-white/80"></i> Email
             </a>
         </div>
@@ -16,30 +16,30 @@
 
     <!-- Metrik Ringkasan -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div class="bg-white border border-gray-200 border-l-4 border-l-emerald-700 rounded-lg p-6 shadow-sm">
-            <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Total Email</p>
-            <h3 class="text-2xl font-bold text-gray-800 mt-1"><?= number_format($total_emails, 0, ',', '.') ?></h3>
+        <div class="bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-lg p-6 shadow-sm">
+            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Total Email</p>
+            <h3 class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($total_emails, 0, ',', '.') ?></h3>
         </div>
-        <div class="bg-white border border-gray-200 border-l-4 border-l-emerald-700 rounded-lg p-6 shadow-sm">
-            <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">TTE Aktif</p>
-            <h3 class="text-2xl font-bold text-gray-800 mt-1"><?= number_format($active_bsre, 0, ',', '.') ?></h3>
+        <div class="bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-lg p-6 shadow-sm">
+            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">TTE Aktif</p>
+            <h3 class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($active_bsre, 0, ',', '.') ?></h3>
         </div>
-        <div class="bg-white border border-gray-200 border-l-4 border-l-emerald-700 rounded-lg p-6 shadow-sm">
-            <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Website OPD</p>
-            <h3 class="text-2xl font-bold text-gray-800 mt-1"><?= number_format($web_stats['opd'], 0, ',', '.') ?></h3>
+        <div class="bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-lg p-6 shadow-sm">
+            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Website OPD</p>
+            <h3 class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($web_stats['opd'], 0, ',', '.') ?></h3>
         </div>
-        <div class="bg-white border border-gray-200 border-l-4 border-l-emerald-700 rounded-lg p-6 shadow-sm">
-            <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Website Desa & Kelurahan</p>
-            <h3 class="text-2xl font-bold text-gray-800 mt-1"><?= number_format($web_stats['desa'] + $web_stats['kelurahan'], 0, ',', '.') ?></h3>
+        <div class="bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-lg p-6 shadow-sm">
+            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Website Desa & Kelurahan</p>
+            <h3 class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($web_stats['desa'] + $web_stats['kelurahan'], 0, ',', '.') ?></h3>
         </div>
     </div>
 
     <!-- Statistik dan Grafik -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Grafik Status Email -->
-        <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
-            <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
-                <h3 class="text-xs font-bold text-gray-800 uppercase tracking-tight">Status TTE</h3>
+        <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
+            <div class="px-6 py-4 border-b border-slate-100 bg-slate-50">
+                <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Status TTE</h3>
             </div>
             <div class="p-6 flex flex-col md:flex-row items-center gap-8">
                 <div class="w-full md:w-1/2 flex justify-center">
@@ -48,18 +48,18 @@
                 <div class="w-full md:w-1/2 space-y-2 max-h-[300px] overflow-y-auto custom-scrollbar pr-2">
                     <?php foreach ($email_stats as $index => $stat):
                         $status = $stat['label'];
-                        $bgClass = 'bg-gray-700'; // Default
+                        $bgClass = 'bg-slate-700'; // Default
                         if ($status === 'ISSUE') $bgClass = 'bg-emerald-600';
                         elseif (in_array($status, ['EXPIRED', 'REVOKE', 'SUSPEND'])) $bgClass = 'bg-red-600';
-                        elseif (in_array($status, ['WAITING_FOR_VERIFICATION', 'RENEW'])) $bgClass = 'bg-amber-500';
+                        elseif (in_array($status, ['WAITING_FOR_VERIFICATION', 'RENEW', 'NO_CERTIFICATE'])) $bgClass = 'bg-amber-500';
                         elseif ($status === 'NEW') $bgClass = 'bg-emerald-500';
                     ?>
-                        <div class="flex justify-between items-center p-2 rounded-lg border border-gray-200 bg-gray-50">
+                        <div class="flex justify-between items-center p-2 rounded-lg border border-slate-200 bg-slate-50">
                             <div class="flex items-center truncate">
                                 <span class="w-2 h-2 rounded-full mr-2 email-legend-dot shrink-0 <?= $bgClass ?>"></span>
-                                <span class="text-[10px] font-bold text-gray-700 uppercase truncate"><?= esc($stat['label']) ?></span>
+                                <span class="text-[10px] font-bold text-slate-700 uppercase truncate"><?= esc($stat['label']) ?></span>
                             </div>
-                            <span class="text-xs font-bold text-gray-800"><?= number_format($stat['count'], 0, ',', '.') ?></span>
+                            <span class="text-xs font-bold text-slate-800"><?= number_format($stat['count'], 0, ',', '.') ?></span>
                         </div>
                     <?php endforeach; ?>
                 </div>
@@ -67,9 +67,9 @@
         </div>
 
         <!-- Grafik Status ASN -->
-        <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
-            <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
-                <h3 class="text-xs font-bold text-gray-800 uppercase tracking-tight">Status ASN</h3>
+        <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
+            <div class="px-6 py-4 border-b border-slate-100 bg-slate-50">
+                <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Status ASN</h3>
             </div>
             <div class="p-6 flex flex-col md:flex-row items-center gap-8">
                 <div class="w-full md:w-1/2 flex justify-center">
@@ -79,17 +79,17 @@
                     <?php
                     foreach ($status_asn_stats as $index => $stat):
                         $label = strtoupper($stat['label']);
-                        $bgClass = 'bg-gray-700';
-                        if ($label === 'PNS') $bgClass = 'bg-emerald-500';
-                        elseif ($label === 'PPPK') $bgClass = 'bg-emerald-600';
-                        elseif (strpos($label, 'PPPK PARUH WAKTU') !== false) $bgClass = 'bg-amber-500';
+                        $bgClass = 'bg-slate-300';
+                        if ($label === 'PNS') $bgClass = 'bg-slate-800';
+                        elseif ($label === 'PPPK') $bgClass = 'bg-slate-600';
+                        elseif (strpos($label, 'PPPK PARUH WAKTU') !== false) $bgClass = 'bg-slate-400';
                     ?>
-                        <div class="flex justify-between items-center p-2 rounded-lg border border-gray-200 bg-gray-50">
+                        <div class="flex justify-between items-center p-2 rounded-lg border border-slate-200 bg-slate-50">
                             <div class="flex items-center truncate">
                                 <span class="w-2 h-2 rounded-full mr-2 asn-legend-dot shrink-0 <?= $bgClass ?>"></span>
-                                <span class="text-[10px] font-bold text-gray-700 uppercase tracking-tight truncate"><?= esc($stat['label']) ?></span>
+                                <span class="text-[10px] font-bold text-slate-700 uppercase tracking-tight truncate"><?= esc($stat['label']) ?></span>
                             </div>
-                            <span class="text-xs font-bold text-gray-800"><?= number_format($stat['count'], 0, ',', '.') ?></span>
+                            <span class="text-xs font-bold text-slate-800"><?= number_format($stat['count'], 0, ',', '.') ?></span>
                         </div>
                     <?php endforeach; ?>
                 </div>
@@ -161,11 +161,11 @@
         const emailStats = <?= json_encode($email_stats) ?>;
         const emailColors = emailStats.map(s => {
             const status = s.label.toUpperCase();
-            if (status === 'ISSUE') return '#047857'; // emerald-600
+            if (status === 'ISSUE') return '#059669'; // emerald-600
             if (['EXPIRED', 'REVOKE', 'SUSPEND'].includes(status)) return '#dc2626'; // red-600
-            if (['WAITING_FOR_VERIFICATION', 'RENEW'].includes(status)) return '#6ee7b7'; // amber-500
-            if (status === 'NEW') return '#10b981'; // blue-600
-            return '#9ca3af'; // slate-700
+            if (['WAITING_FOR_VERIFICATION', 'RENEW', 'NO_CERTIFICATE'].includes(status)) return '#f59e0b'; // amber-500
+            if (status === 'NEW') return '#475569'; // slate-600
+            return '#94a3b8'; // slate-400
         });
 
         // Chart Status Email
@@ -180,10 +180,10 @@
         const asnStats = <?= json_encode($status_asn_stats) ?>;
         const asnColors = asnStats.map(s => {
             const label = s.label.toUpperCase();
-            if (label === 'PNS') return '#10b981'; // blue-600
-            if (label === 'PPPK') return '#047857'; // emerald-600
-            if (label.includes('PPPK PARUH WAKTU')) return '#6ee7b7'; // amber-500
-            return '#9ca3af'; // slate-700
+            if (label === 'PNS') return '#1e293b'; // slate-800
+            if (label === 'PPPK') return '#475569'; // slate-600
+            if (label.includes('PPPK PARUH WAKTU')) return '#94a3b8'; // slate-400
+            return '#cbd5e1'; // slate-300
         });
 
         new ApexCharts(document.querySelector("#asnStatusChart"), {

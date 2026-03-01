@@ -35,27 +35,27 @@
         }
 
         .custom-scrollbar::-webkit-scrollbar-thumb {
-            @apply bg-gray-200;
+            @apply bg-slate-200;
             border-radius: 10px;
         }
 
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            @apply bg-gray-200;
+            @apply bg-slate-300;
         }
 
-        /* Choices.js Neutral Theme Overrides */
+        /* Choices.js Slate Theme Overrides */
         .choices__inner {
-            @apply bg-white border-gray-200 rounded-lg text-sm font-medium text-gray-700 !important;
+            @apply bg-white border-slate-200 rounded-lg text-sm font-medium text-slate-700 !important;
             min-height: 38px !important;
             padding: 4px 12px !important;
         }
 
         .choices__list--dropdown {
-            @apply bg-white border-gray-200 rounded-lg shadow-xl !important;
+            @apply bg-white border-slate-200 rounded-lg shadow-xl !important;
         }
 
         .choices__list--dropdown .choices__item--selectable.is-highlighted {
-            @apply bg-gray-100 !important;
+            @apply bg-slate-100 !important;
         }
 
         .choices__input {
@@ -63,7 +63,7 @@
         }
 
         .choices__placeholder {
-            @apply text-gray-700 opacity-100 !important;
+            @apply text-slate-700 opacity-100 !important;
         }
     </style>
 
@@ -75,17 +75,17 @@
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 </head>
 
-<body class="bg-gray-50 text-gray-700 antialiased font-inter">
+<body class="bg-slate-50 text-slate-800 antialiased font-inter">
     <!-- Global Loading Overlay -->
-    <div id="global-loading" class="fixed inset-0 z-[9999] hidden flex items-center justify-center bg-gray-900/60 backdrop-blur-sm transition-all duration-300">
+    <div id="global-loading" class="fixed inset-0 z-[9999] hidden flex items-center justify-center bg-slate-900/60 backdrop-blur-sm transition-all duration-300">
         <div class="bg-white p-8 rounded-2xl shadow-2xl flex flex-col items-center gap-4 max-w-xs w-full border border-white/20">
             <div class="relative">
-                <div class="w-12 h-12 border-4 border-gray-100 rounded-full"></div>
-                <div class="w-12 h-12 border-4 border-emerald-700 border-t-transparent rounded-full animate-spin absolute inset-0"></div>
+                <div class="w-12 h-12 border-4 border-slate-100 rounded-full"></div>
+                <div class="w-12 h-12 border-4 border-slate-700 border-t-transparent rounded-full animate-spin absolute inset-0"></div>
             </div>
             <div class="text-center">
-                <h3 class="text-sm font-bold text-gray-800 uppercase tracking-tight">Mohon Tunggu</h3>
-                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-1">Sedang Memproses...</p>
+                <h3 class="text-sm font-bold text-slate-800 uppercase tracking-tight">Mohon Tunggu</h3>
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">Sedang Memproses...</p>
             </div>
         </div>
     </div>
@@ -96,21 +96,21 @@
     <!-- Main Wrapper -->
     <div id="main-content" class="lg:ml-64 min-h-screen flex flex-col">
         <!-- Header / Topbar -->
-        <header class="h-16 bg-white border-b border-gray-200 sticky top-0 z-40 flex items-center justify-between px-6">
+        <header class="h-16 bg-white border-b border-slate-200 sticky top-0 z-40 flex items-center justify-between px-6">
             <div class="flex items-center">
                 <!-- Mobile Toggle -->
-                <button id="sidebar-toggle" class="lg:hidden w-10 h-10 flex items-center justify-center text-gray-700 hover:bg-gray-50 rounded-lg mr-2 transition-colors">
+                <button id="sidebar-toggle" class="lg:hidden w-10 h-10 flex items-center justify-center text-slate-700 hover:bg-slate-50 rounded-lg mr-2 transition-colors">
                     <i class="fas fa-bars"></i>
                 </button>
 
                 <!-- App Title (Mobile Only) -->
                 <div class="flex items-center lg:hidden">
-                    <div class="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center mr-3 shadow-sm">
+                    <div class="w-8 h-8 bg-slate-800 rounded-lg flex items-center justify-center mr-3 shadow-sm">
                         <i class="fas fa-fingerprint text-white text-sm"></i>
                     </div>
                     <div class="flex flex-col">
-                        <span class="block text-sm font-bold tracking-tight text-gray-800 leading-none uppercase">sinjai<span class="text-gray-700">emails</span></span>
-                        <span class="text-[8px] font-bold text-gray-700 uppercase tracking-widest block mt-0.5">identitas digital</span>
+                        <span class="block text-sm font-bold tracking-tight text-slate-800 leading-none uppercase">sinjai<span class="text-slate-700">emails</span></span>
+                        <span class="text-[8px] font-bold text-slate-700 uppercase tracking-widest block mt-0.5">identitas digital</span>
                     </div>
                 </div>
             </div>
@@ -119,12 +119,12 @@
                 <!-- User Information -->
                 <div class="flex items-center gap-3">
                     <div class="hidden sm:flex flex-col items-end">
-                        <p class="text-xs font-bold text-gray-800 leading-none uppercase"><?= session()->get('username') ?></p>
-                        <p class="text-[9px] font-bold text-gray-700 uppercase mt-1 tracking-widest">
+                        <p class="text-xs font-bold text-slate-800 leading-none uppercase"><?= session()->get('username') ?></p>
+                        <p class="text-[9px] font-bold text-slate-700 uppercase mt-1 tracking-widest">
                             <?= session()->get('role') == 'super_admin' ? 'Super Admin' : 'Admin' ?>
                         </p>
                     </div>
-                    <div class="w-9 h-9 bg-gray-100 rounded-lg flex items-center justify-center text-gray-700 border border-gray-200 shadow-sm">
+                    <div class="w-9 h-9 bg-slate-100 rounded-lg flex items-center justify-center text-slate-700 border border-slate-200 shadow-sm">
                         <i class="fas fa-user-shield text-sm"></i>
                     </div>
                 </div>
@@ -137,7 +137,7 @@
             <?php if (session()->getFlashdata('success') || session()->getFlashdata('message') || session()->getFlashdata('error') || session()->getFlashdata('info')): ?>
                 <div class="mb-6 space-y-2">
                     <?php if ($msg = session()->getFlashdata('success') ?: session()->getFlashdata('message')): ?>
-                        <div class="flash-message bg-emerald-600 text-white px-5 py-3 rounded-lg flex items-center justify-between shadow-sm transform transition-all duration-500 ease-in-out" role="alert">
+                        <div class="flash-message bg-slate-700 text-white px-5 py-3 rounded-lg flex items-center justify-between shadow-sm transform transition-all duration-500 ease-in-out" role="alert">
                             <div class="flex items-center">
                                 <i class="fas fa-check-circle mr-3 text-white"></i>
                                 <span class="font-bold text-xs uppercase tracking-wider"><?= $msg === true ? 'Berhasil' : $msg ?></span>
@@ -161,7 +161,7 @@
                     <?php endif; ?>
 
                     <?php if ($info = session()->getFlashdata('info')): ?>
-                        <div class="flash-message bg-emerald-700 text-white px-5 py-3 rounded-lg flex items-center justify-between shadow-sm transform transition-all duration-500 ease-in-out" role="alert">
+                        <div class="flash-message bg-slate-800 text-white px-5 py-3 rounded-lg flex items-center justify-between shadow-sm transform transition-all duration-500 ease-in-out" role="alert">
                             <div class="flex items-center">
                                 <i class="fas fa-info-circle mr-3 text-white"></i>
                                 <span class="font-bold text-xs uppercase tracking-wider"><?= $info ?></span>
@@ -178,9 +178,9 @@
         </main>
 
         <!-- Footer Component -->
-        <footer class="py-6 px-6 border-t border-gray-200 bg-white">
+        <footer class="py-6 px-6 border-t border-slate-200 bg-white">
             <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-                <p class="text-[10px] font-bold text-gray-700 uppercase tracking-widest">
+                <p class="text-[10px] font-bold text-slate-700 uppercase tracking-widest">
                     &copy; <?= tahunSekarang() ?> Diskominfo-SP Sinjai
                 </p>
             </div>
@@ -245,14 +245,14 @@
             }
         });
 
-        // Global status color mapper
+        // Global status color mapper (Remains emerald/red/etc. for semantic statuses)
         function getJsStatusColor(status) {
             status = status.toUpperCase();
             if (['ISSUE', 'AKTIF', 'ACTIVE', 'YA'].includes(status)) return 'bg-emerald-100 text-emerald-800 border-transparent';
             if (['EXPIRED', 'REVOKE', 'SUSPEND', 'NONAKTIF', 'INACTIVE', 'DITANGGUHKAN', 'TIDAK'].includes(status)) return 'bg-red-100 text-red-700 border-transparent';
-            if (['WAITING_FOR_VERIFICATION', 'RENEW', 'PENDING'].includes(status)) return 'bg-amber-50 text-amber-500 border-amber-200';
-            if (['NEW', 'BARU'].includes(status)) return 'bg-blue-100 text-blue-700 border-transparent';
-            return 'bg-gray-100 text-gray-700 border-gray-200';
+            if (['WAITING_FOR_VERIFICATION', 'RENEW', 'PENDING', 'NO_CERTIFICATE'].includes(status)) return 'bg-amber-50 text-amber-500 border-amber-200';
+            if (['NEW', 'BARU'].includes(status)) return 'bg-blue-100 text-slate-700 border-transparent';
+            return 'bg-slate-100 text-slate-700 border-slate-200';
         }
 
         // Global loading helper

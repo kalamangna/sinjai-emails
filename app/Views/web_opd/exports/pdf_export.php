@@ -1,3 +1,30 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Data Website OPD</title>
+    <style>
+        @page {
+            margin: 10px 25px;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 10px;
+            font-size: 10px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .logo {
+            max-width: 80px;
+            max-height: 80px;
+            margin-bottom: 10px;
+        }
+
         h1 {
             color: #1e293b;
             text-align: center;
@@ -156,4 +183,5 @@
         <p>Aptika Diskominfo-SP Sinjai</p>
     </div>
 </body>
+
 </html>

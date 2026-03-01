@@ -118,6 +118,7 @@ class Assistance extends BaseController
         $perPage = 100;
         $activities = $builder->orderBy('tanggal_kegiatan', 'ASC')->orderBy('id', 'ASC')->asArray()->paginate($perPage);
         $pager = $this->assistanceModel->pager;
+        $totalActivities = $this->assistanceModel->countAllResults(false);
 
         foreach ($activities as &$activity) {
             $activity['category_label'] = self::CATEGORY_MAP[$activity['category']] ?? 'Tidak Diketahui';
@@ -143,6 +144,7 @@ class Assistance extends BaseController
             'title' => 'Log Layanan',
             'activities' => $activities,
             'pager' => $pager,
+            'totalActivities' => $totalActivities,
             'filterCategory' => $filterCategory,
             'filterMonth' => $filterMonth,
             'filterYear' => $filterYear,

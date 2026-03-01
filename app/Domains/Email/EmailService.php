@@ -29,7 +29,7 @@ class EmailService
     public function getGlobalNavigationData()
     {
         $parentUnitKerjaList = $this->unitKerjaModel->where('parent_id IS NULL')->orderBy('nama_unit_kerja', 'ASC')->asArray()->findAll();
-        
+
         // Aggregate all unit_kerja emails count (including children) in one go
         $allUnits = $this->unitKerjaModel->select('id, parent_id')->asArray()->findAll();
         $unitMap = [];
@@ -39,7 +39,7 @@ class EmailService
             $unitMap[$parentId][] = $u['id'];
             if ($u['parent_id']) $unitMap[$u['id']][] = $u['id'];
         }
-        
+
         $emailCountsByUnit = $this->emailModel->allowCallbacks(false)->select('unit_kerja_id, COUNT(id) as count')->groupBy('unit_kerja_id')->asArray()->findAll();
         $countMap = [];
         foreach ($emailCountsByUnit as $row) {
@@ -51,25 +51,25 @@ class EmailService
             $parentId = $parentUnit['id'];
             $childrenIds = $unitMap[$parentId] ?? [$parentId];
             $allUnitIds = array_unique($childrenIds);
-            
+
             $emailCount = 0;
             foreach ($allUnitIds as $uid) {
                 $emailCount += $countMap[$uid] ?? 0;
             }
-            
+
             $parentUnit['email_count'] = $emailCount;
             $unitKerjaList[] = $parentUnit;
         }
 
         $allEselonOptions = $this->eselonModel->orderBy('nama_eselon', 'ASC')->asArray()->findAll();
-        
+
         // Aggregate all eselon counts in one go
         $eselonCountsRaw = $this->emailModel->allowCallbacks(false)->select('eselon_id, COUNT(id) as count')->where('eselon_id IS NOT NULL')->groupBy('eselon_id')->asArray()->findAll();
         $eselonCountMap = [];
         foreach ($eselonCountsRaw as $row) {
             $eselonCountMap[$row['eselon_id']] = (int)$row['count'];
         }
-        
+
         $eselonCounts = [];
         foreach ($allEselonOptions as $option) {
             $eselonCounts[] = [
@@ -124,7 +124,7 @@ class EmailService
         $cacheKey = 'email_dashboard_summary';
         if (!$summaryData = $cache->get($cacheKey)) {
             $parentUnitKerjaList = $this->unitKerjaModel->where('parent_id IS NULL')->orderBy('nama_unit_kerja', 'ASC')->asArray()->findAll();
-            
+
             $allUnits = $this->unitKerjaModel->select('id, parent_id')->asArray()->findAll();
             $unitMap = [];
             foreach ($allUnits as $u) {
@@ -133,7 +133,7 @@ class EmailService
                 $unitMap[$parentId][] = $u['id'];
                 if ($u['parent_id']) $unitMap[$u['id']][] = $u['id'];
             }
-            
+
             $emailCountsByUnit = $this->emailModel->allowCallbacks(false)->select('unit_kerja_id, COUNT(id) as count')->groupBy('unit_kerja_id')->asArray()->findAll();
             $countMap = [];
             foreach ($emailCountsByUnit as $row) {
@@ -145,12 +145,12 @@ class EmailService
                 $parentId = $parentUnit['id'];
                 $childrenIds = $unitMap[$parentId] ?? [$parentId];
                 $allUnitIds = array_unique($childrenIds);
-                
+
                 $emailCount = 0;
                 foreach ($allUnitIds as $uid) {
                     $emailCount += $countMap[$uid] ?? 0;
                 }
-                
+
                 $parentUnit['email_count'] = $emailCount;
                 $unitKerjaList[] = $parentUnit;
             }
@@ -176,10 +176,10 @@ class EmailService
             usort($statusAsnCounts, function ($a, $b) use ($asnOrder) {
                 $posA = array_search(strtoupper($a['name']), $asnOrder);
                 $posB = array_search(strtoupper($b['name']), $asnOrder);
-                
+
                 if ($posA === false) $posA = 999;
                 if ($posB === false) $posB = 999;
-                
+
                 if ($posA === $posB) return strcmp($a['name'], $b['name']);
                 return $posA - $posB;
             });
@@ -245,10 +245,10 @@ class EmailService
             usort($bsreStatusCounts, function ($a, $b) use ($tteOrder) {
                 $posA = array_search($a['status'], $tteOrder);
                 $posB = array_search($b['status'], $tteOrder);
-                
+
                 if ($posA === false) $posA = 999;
                 if ($posB === false) $posB = 999;
-                
+
                 if ($posA === $posB) return strcmp($a['label'], $b['label']);
                 return $posA - $posB;
             });
@@ -376,7 +376,7 @@ class EmailService
             ->orderBy('emails.jabatan', 'ASC')
             ->orderBy('emails.name', 'ASC')
             ->paginate($perPage);
-        
+
         $pager = $this->emailModel->pager;
 
         $bsre_status_options = [
@@ -393,7 +393,7 @@ class EmailService
         ];
 
         $bsre_status_counts = [];
-        
+
         // Calculate overall stats for the unit (not affected by filters)
         $statsBuilder = $this->emailModel->whereIn('unit_kerja_id', $allUnitIds);
         if ($isKecamatan && $pimpinan_desa == 0) {
@@ -420,17 +420,17 @@ class EmailService
         uksort($bsre_status_counts, function ($a, $b) use ($tteOrder) {
             $posA = array_search($a, $tteOrder);
             $posB = array_search($b, $tteOrder);
-            
+
             if ($posA === false) $posA = 999;
             if ($posB === false) $posB = 999;
-            
+
             if ($posA === $posB) return strcmp($a, $b);
             return $posA - $posB;
         });
 
         $active_bsre_count = $bsre_status_counts['ISSUE']['count'] ?? 0;
         $total_emails_in_unit = array_sum(array_column($bsre_status_counts, 'count'));
-        
+
         // Calculate ASN Status stats for the unit
         $asnStatsBuilder = $this->emailModel->whereIn('unit_kerja_id', $allUnitIds);
         if ($isKecamatan && $pimpinan_desa == 0) {
@@ -441,11 +441,11 @@ class EmailService
             ->join('status_asn', 'status_asn.id = emails.status_asn_id', 'left')
             ->groupBy('status_asn.nama_status_asn')
             ->findAll();
-        
+
         $status_asn_stats = [];
         foreach ($rawAsnStats as $stat) {
             $status_asn_stats[] = [
-                'label' => $stat['label'] ?: 'NON ASN',
+                'label' => $stat['label'] ?: 'LAINNYA',
                 'count' => (int)$stat['count']
             ];
         }
@@ -455,10 +455,10 @@ class EmailService
         usort($status_asn_stats, function ($a, $b) use ($asnOrder) {
             $posA = array_search(strtoupper($a['label']), $asnOrder);
             $posB = array_search(strtoupper($b['label']), $asnOrder);
-            
+
             if ($posA === false) $posA = 999;
             if ($posB === false) $posB = 999;
-            
+
             if ($posA === $posB) return strcmp($a['label'], $b['label']);
             return $posA - $posB;
         });
@@ -490,7 +490,7 @@ class EmailService
     public function createSingleEmail(array $data)
     {
         $cpanelApi = new \App\Shared\Libraries\CpanelApi();
-        
+
         $existing_email = $this->emailModel->where('email', $data['email'])->first();
         if ($existing_email) throw new Exception('Email already exists in local database.');
 

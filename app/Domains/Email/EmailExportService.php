@@ -92,7 +92,7 @@ class EmailExportService
             ->findAll();
 
         $data = [
-            'title' => 'DAFTAR EMAIL & SERTIFIKAT ELEKTRONIK PIMPINAN',
+            'title' => 'DAFTAR EMAIL & TTE PIMPINAN',
             'subtitle' => 'PEMERINTAH KABUPATEN SINJAI',
             'emails' => $emails,
             'showUnitKerjaColumn' => true,
@@ -146,7 +146,7 @@ class EmailExportService
             ->findAll();
 
         $data = [
-            'title' => 'DAFTAR EMAIL & SERTIFIKAT ELEKTRONIK KEPALA DESA',
+            'title' => 'DAFTAR EMAIL & TTE KEPALA DESA',
             'subtitle' => 'PEMERINTAH KABUPATEN SINJAI',
             'emails' => $emails,
             'showUnitKerjaColumn' => true,

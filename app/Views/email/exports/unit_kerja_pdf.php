@@ -182,7 +182,7 @@
                 } elseif ($statusTte === 'EXPIRED') {
                     $color = '#dc2626'; // Red-600
                 } elseif ($statusTte === 'NO_CERTIFICATE') {
-                    $color = '#9ca3af'; // Slate-700
+                    $color = '#f59e0b'; // Amber-500
                 } elseif ($statusTte === 'RENEW') {
                     $color = '#6ee7b7'; // Amber-500
                 } elseif ($statusTte === 'WAITING_FOR_VERIFICATION') {
@@ -227,7 +227,7 @@
         <ul>
             <li><strong style="color: #059669;">ISSUE</strong> : Sertifikat Aktif / Siap TTE</li>
             <li><strong style="color: #dc2626;">EXPIRED</strong> : Masa Berlaku Habis</li>
-            <li><strong style="color: #334155;">NO_CERTIFICATE</strong> : Belum Ada Sertifikat</li>
+            <li><strong style="color: #f59e0b;">NO_CERTIFICATE</strong> : Belum Ada Sertifikat</li>
         </ul>
     </div>
 

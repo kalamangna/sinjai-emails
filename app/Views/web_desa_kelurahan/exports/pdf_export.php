@@ -281,18 +281,11 @@
 
             <?php endforeach; ?>
 
-        </tbody>
-
-    </table>
-
-
-
-
-
-
-
-    <div class="footer-info">
-
+                        </tbody>
+                
+                    </table>
+                
+                    <div class="footer-info">
 
 
         <strong>Contact Person:</strong> 082188344982 (Dzul)

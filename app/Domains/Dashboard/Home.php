@@ -10,7 +10,7 @@ class Home extends BaseController
     {
         $cache = \Config\Services::cache();
         $cacheKey = 'dashboard_summary_data';
-        
+
         if (!$data = $cache->get($cacheKey)) {
             $emailModel = new \App\Domains\Email\EmailModel();
             $webOpdModel = new \App\Domains\Website\WebOpdModel();
@@ -24,7 +24,7 @@ class Home extends BaseController
                 ->allowCallbacks(false)
                 ->groupBy('bsre_status')
                 ->findAll();
-            
+
             $email_stats = [];
             $total_emails = 0;
             $active_bsre = 0;
@@ -58,7 +58,7 @@ class Home extends BaseController
                 ->allowCallbacks(false)
                 ->groupBy('status_asn_id')
                 ->findAll();
-            
+
             // Get status names
             $statuses = $statusAsnModel->select('id, nama_status_asn')->asArray()->findAll();
             $status_map = [];
@@ -71,7 +71,7 @@ class Home extends BaseController
                 $count = (int)$row['count'];
                 if ($count > 0) {
                     if ($row['status_asn_id'] === null) {
-                        $status_asn_stats[] = ['label' => 'NON ASN / LAINNYA', 'count' => $count];
+                        $status_asn_stats[] = ['label' => 'LAINNYA', 'count' => $count];
                     } else {
                         $label = $status_map[$row['status_asn_id']] ?? 'UNKNOWN';
                         $status_asn_stats[] = [
@@ -98,7 +98,7 @@ class Home extends BaseController
                 'desa' => 0,
                 'kelurahan' => 0,
             ];
-            
+
             $desa_stats_raw = $webDesaModel->select("SUM(CASE WHEN desa_kelurahan NOT LIKE '%Kelurahan%' THEN 1 ELSE 0 END) as desa_count, SUM(CASE WHEN desa_kelurahan LIKE '%Kelurahan%' THEN 1 ELSE 0 END) as kel_count")->first();
             $web_stats['desa'] = (int)($desa_stats_raw['desa_count'] ?? 0);
             $web_stats['kelurahan'] = (int)($desa_stats_raw['kel_count'] ?? 0);
@@ -122,7 +122,7 @@ class Home extends BaseController
                 'last_sync_time' => $last_sync['value'] ?? null,
                 'title' => 'Dashboard',
             ];
-            
+
             // Cache for 10 minutes (600 seconds)
             $cache->save($cacheKey, $data, 600);
         }

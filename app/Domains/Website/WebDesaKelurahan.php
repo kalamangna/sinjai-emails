@@ -55,13 +55,35 @@ class WebDesaKelurahan extends BaseController
         $platform_stats = [];
         foreach ($platform_stats_raw as $row) {
             $platform_stats[] = [
-                'nama_platform' => $row['nama_platform'] ?: 'N/A',
+                'nama_platform' => $row['nama_platform'] ?: 'TIDAK TERDAFTAR',
                 'count' => (int)$row['count']
             ];
         }
 
+        // Custom sort order: Sideka, OpenSID, Pihak Ketiga, Tidak Terdaftar
+        usort($platform_stats, function ($a, $b) {
+            $order = [
+                'SIDEKA-NG' => 1,
+                'OPENSID' => 2,
+                'PIHAK KETIGA' => 3,
+                'TIDAK TERDAFTAR' => 4
+            ];
+            
+            $nameA = strtoupper($a['nama_platform']);
+            $nameB = strtoupper($b['nama_platform']);
+            
+            $posA = $order[$nameA] ?? 99;
+            $posB = $order[$nameB] ?? 99;
+            
+            if ($posA === $posB) {
+                return $b['count'] <=> $a['count'];
+            }
+            
+            return $posA <=> $posB;
+        });
+
         // Build Query with Join for the table
-        $model->select('web_desa_kelurahan.id, web_desa_kelurahan.desa_kelurahan, web_desa_kelurahan.kecamatan, web_desa_kelurahan.domain, web_desa_kelurahan.status, web_desa_kelurahan.tanggal_berakhir, web_desa_kelurahan.sisa_hari, platforms.nama_platform as platform_name')
+        $model->select('web_desa_kelurahan.id, web_desa_kelurahan.desa_kelurahan, web_desa_kelurahan.kecamatan, web_desa_kelurahan.domain, web_desa_kelurahan.status, web_desa_kelurahan.tanggal_berakhir, web_desa_kelurahan.sisa_hari, web_desa_kelurahan.dikelola_kominfo, web_desa_kelurahan.keterangan, platforms.nama_platform as platform_name')
             ->join('platforms', 'platforms.id = web_desa_kelurahan.platform_id', 'left');
 
         if ($search !== '') {

@@ -1,108 +1,77 @@
 const fs = require('fs');
 const path = require('path');
 
-function walkDir(dir, callback) {
-    fs.readdirSync(dir).forEach(f => {
-        let dirPath = path.join(dir, f);
-        let isDirectory = fs.statSync(dirPath).isDirectory();
-        isDirectory ? walkDir(dirPath, callback) : callback(dirPath);
+const targetDir = './app/Views';
+
+function walk(dir) {
+    let results = [];
+    const list = fs.readdirSync(dir);
+    list.forEach(file => {
+        file = path.join(dir, file);
+        const stat = fs.statSync(file);
+        if (stat && stat.isDirectory()) {
+            results = results.concat(walk(file));
+        } else {
+            if (file.endsWith('.php')) results.push(file);
+        }
     });
+    return results;
 }
 
-function processFile(filePath) {
-    if (!filePath.endsWith('.php') && !filePath.endsWith('.js')) return;
+const colorReplacements = {
+    'emerald': 'slate',
+    'blue': 'slate',
+    'indigo': 'slate',
+    'green': 'slate',
+    'gray': 'slate',
+    'zinc': 'slate',
+    'neutral': 'slate',
+};
+
+function refactorFile(file) {
+    let content = fs.readFileSync(file, 'utf8');
+    const originalContent = content;
+
+    // 1. Full replace for gray/zinc/neutral as they are always replaced
+    content = content.replace(/(gray|zinc|neutral)-/g, 'slate-');
+
+    // 2. Selective replace for emerald/blue/indigo/green
+    // Only if they are NOT followed by 100 or 50 (standard badge backgrounds)
+    // and NOT followed by 800 (standard badge text) if it's part of bg-X-100 text-X-800
     
-    let content = fs.readFileSync(filePath, 'utf8');
-    let original = content;
+    const families = ['emerald', 'blue', 'indigo', 'green'];
+    families.forEach(family => {
+        // bg-family-700 -> bg-slate-700
+        // but avoid bg-family-100, bg-family-50
+        const bgRegex = new RegExp(`bg-${family}-(?!100|50)(\\d+)`, 'g');
+        content = content.replace(bgRegex, `bg-slate-$1`);
 
-    // 1. Slate -> Gray
-    content = content.replace(/-slate-/g, '-gray-');
+        // text-family-700 -> text-slate-700
+        // but avoid text-family-800 (semantic)
+        const textRegex = new RegExp(`text-${family}-(?!800)(\\d+)`, 'g');
+        content = content.replace(textRegex, `text-slate-$1`);
 
-    // 2. Badges
-    content = content.replace(/bg-emerald-50 text-emerald-600 border-emerald-200/g, 'bg-emerald-100 text-emerald-800 border-transparent');
-    content = content.replace(/bg-emerald-50 text-emerald-600 border border-emerald-200/g, 'bg-emerald-100 text-emerald-800 border-transparent');
-    
-    content = content.replace(/bg-amber-50 text-amber-600 border-amber-200/g, 'bg-amber-100 text-amber-700 border-transparent');
-    content = content.replace(/bg-amber-50 text-amber-600 border border-amber-200/g, 'bg-amber-100 text-amber-700 border-transparent');
-    
-    content = content.replace(/bg-red-50 text-red-600 border-red-200/g, 'bg-red-100 text-red-700 border-transparent');
-    content = content.replace(/bg-red-50 text-red-600 border border-red-200/g, 'bg-red-100 text-red-700 border-transparent');
-    
-    content = content.replace(/bg-blue-50 text-blue-600 border-blue-200/g, 'bg-blue-100 text-blue-700 border-transparent');
-    content = content.replace(/bg-blue-50 text-blue-600 border border-blue-200/g, 'bg-blue-100 text-blue-700 border-transparent');
+        // border-family-X -> border-slate-X
+        content = content.replace(new RegExp(`border-${family}-`, 'g'), 'border-slate-');
+        
+        // ring-family-X -> ring-slate-X
+        content = content.replace(new RegExp(`ring-${family}-`, 'g'), 'ring-slate-');
+        
+        // focus: variants
+        content = content.replace(new RegExp(`focus:ring-${family}-`, 'g'), 'focus:ring-slate-');
+        content = content.replace(new RegExp(`focus:border-${family}-`, 'g'), 'focus:border-slate-');
+        
+        // hover: variants (avoid semantic hover if any, but usually they are 800)
+        content = content.replace(new RegExp(`hover:bg-${family}-`, 'g'), 'hover:bg-slate-');
+        content = content.replace(new RegExp(`hover:text-${family}-`, 'g'), 'hover:text-slate-');
+    });
 
-    content = content.replace(/bg-gray-50 text-gray-700 border-gray-200/g, 'bg-gray-100 text-gray-700 border-transparent');
-    content = content.replace(/bg-gray-50 text-gray-700 border border-gray-200/g, 'bg-gray-100 text-gray-700 border-transparent');
-
-    // 3. Colored Cards -> White with emphasis border
-    content = content.replace(/bg-emerald-50 border border-emerald-200/g, 'bg-white border border-gray-200 border-l-4 border-l-emerald-700');
-    content = content.replace(/bg-blue-50 border border-blue-200/g, 'bg-white border border-gray-200 border-l-4 border-l-emerald-700');
-    content = content.replace(/bg-amber-50 border border-amber-200/g, 'bg-white border border-gray-200 border-l-4 border-l-emerald-700');
-    content = content.replace(/bg-red-50 border border-red-200/g, 'bg-white border border-gray-200 border-l-4 border-l-emerald-700');
-
-    // Card titles/labels inside the colored cards were colored too (e.g. text-emerald-600)
-    // Make them gray-500
-    content = content.replace(/text-emerald-600 uppercase tracking-widest/g, 'text-gray-500 uppercase tracking-widest');
-    content = content.replace(/text-blue-600 uppercase tracking-widest/g, 'text-gray-500 uppercase tracking-widest');
-    content = content.replace(/text-amber-500 uppercase tracking-widest/g, 'text-gray-500 uppercase tracking-widest');
-    content = content.replace(/text-red-600 uppercase tracking-widest/g, 'text-gray-500 uppercase tracking-widest');
-
-    // 4. Buttons
-    // Primary Button
-    content = content.replace(/bg-gray-800 hover:bg-gray-700 text-white/g, 'bg-emerald-700 hover:bg-emerald-800 text-white');
-    content = content.replace(/bg-gray-800 text-white hover:bg-gray-700/g, 'bg-emerald-700 text-white hover:bg-emerald-800');
-    content = content.replace(/bg-blue-600 hover:bg-blue-700 text-white/g, 'bg-emerald-700 hover:bg-emerald-800 text-white');
-    
-    // Secondary Button
-    content = content.replace(/bg-white border border-gray-200 hover:bg-gray-50 text-gray-700/g, 'bg-gray-200 hover:bg-gray-300 text-gray-800 border-transparent');
-    content = content.replace(/bg-white border border-gray-200 text-gray-700 hover:bg-gray-50/g, 'bg-gray-200 hover:bg-gray-300 text-gray-800 border-transparent');
-    
-    // Icon buttons for Edit/Delete
-    content = content.replace(/bg-white border border-gray-200 text-gray-700 hover:text-gray-800/g, 'bg-gray-200 text-gray-800 hover:bg-gray-300 border-transparent');
-    content = content.replace(/bg-white border border-gray-200 text-gray-700 hover:text-red-600/g, 'bg-red-50 text-red-600 hover:bg-red-600 hover:text-white border-transparent');
-
-    // 5. Tables
-    content = content.replace(/bg-gray-50 text-gray-700 uppercase/g, 'bg-gray-100 text-gray-700 uppercase');
-    
-    // 6. Sidebar (if it's sidebar.php)
-    if (filePath.includes('sidebar.php')) {
-        content = content.replace(/hover:bg-gray-700/g, 'hover:bg-emerald-700\/80');
-        content = content.replace(/bg-blue-600/g, 'bg-emerald-700');
-        content = content.replace(/shadow-blue-900\/20/g, 'shadow-emerald-900\/20');
-        content = content.replace(/shadow-blue-900\/20/g, 'shadow-emerald-900/20');
-    }
-
-    // 7. General fixes
-    // replace blue borders/rings in inputs with emerald
-    content = content.replace(/focus:border-blue-600/g, 'focus:border-emerald-700');
-    content = content.replace(/focus:ring-blue-600/g, 'focus:ring-emerald-700');
-    content = content.replace(/text-blue-600/g, 'text-emerald-700');
-    content = content.replace(/border-blue-600/g, 'border-emerald-700');
-
-    // Charts Palette in unit_kerja_detail.php & index.php
-    content = content.replace(/'#059669'/g, "'#047857'"); // emerald-600 to emerald-700
-    content = content.replace(/'#2563eb'/g, "'#10b981'"); // blue to emerald-500
-    content = content.replace(/'#f59e0b'/g, "'#6ee7b7'"); // amber to emerald-300
-    content = content.replace(/'#334155'/g, "'#9ca3af'"); // slate-700 to gray-400
-    content = content.replace(/'#475569'/g, "'#d1d5db'"); // slate-600 to gray-300
-    content = content.replace(/'#94a3b8'/g, "'#e5e7eb'"); // slate-400 to gray-200
-
-    // Also chart color arrays
-    content = content.replace(/\['#2563eb', '#059669', '#f59e0b', '#dc2626', '#1e293b', '#334155', '#f1f5f9', '#f8fafc'\]/g, "['#047857', '#10b981', '#6ee7b7', '#dc2626', '#9ca3af', '#e5e7eb', '#f3f4f6', '#f9fafb']");
-
-    // rounded-xl -> rounded-lg
-    content = content.replace(/rounded-xl/g, 'rounded-lg');
-
-    // Layout Background
-    if (filePath.includes('layouts/main.php')) {
-        content = content.replace(/bg-gray-50/g, 'bg-gray-50'); // Just checking, we mapped slate-50 to gray-50 already.
-    }
-
-    if (content !== original) {
-        fs.writeFileSync(filePath, content, 'utf8');
-        console.log(`Updated ${filePath}`);
+    if (content !== originalContent) {
+        fs.writeFileSync(file, content, 'utf8');
+        console.log(`Updated: ${file}`);
     }
 }
 
-walkDir('app/Views', processFile);
-walkDir('public/js', processFile);
+const files = walk(targetDir);
+files.forEach(refactorFile);
+console.log('Refactor complete.');

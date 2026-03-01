@@ -303,15 +303,40 @@ class Email extends BaseController
             $search = $this->request->getGet('search');
             $bsre_status = $this->request->getGet('bsre_status');
 
+            // Base query for counting
+            $getCountBuilder = function() use ($eselonId, $search, $bsre_status) {
+                $builder = $this->emailModel->where('eselon_id', $eselonId);
+                if ($search) {
+                    $builder->groupStart()
+                        ->like('email', $search)
+                        ->orLike('name', $search)
+                        ->orLike('nik', $search)
+                        ->orLike('nip', $search)
+                        ->groupEnd();
+                }
+                if ($bsre_status) {
+                    if ($bsre_status === 'not_synced') {
+                        $builder->groupStart()->where('bsre_status', null)->orWhere('bsre_status', '')->groupEnd();
+                    } else {
+                        $builder->where('bsre_status', $bsre_status);
+                    }
+                }
+                return $builder;
+            };
+
+            $total_emails = $getCountBuilder()->countAllResults();
+            $active_bsre_count = $getCountBuilder()->where('bsre_status', 'ISSUE')->countAllResults();
+
+            // Fresh builder for pagination with details
             $emailBuilder = $this->emailModel->withDetails()
-                ->where('eselon_id', $eselonId);
+                ->where('emails.eselon_id', $eselonId);
 
             if ($search) {
                 $emailBuilder->groupStart()
-                    ->like('email', $search)
-                    ->orLike('name', $search)
-                    ->orLike('nik', $search)
-                    ->orLike('nip', $search)
+                    ->like('emails.email', $search)
+                    ->orLike('emails.name', $search)
+                    ->orLike('emails.nik', $search)
+                    ->orLike('emails.nip', $search)
                     ->groupEnd();
             }
 
@@ -326,11 +351,9 @@ class Email extends BaseController
                 }
             }
 
-            $total_emails = $emailBuilder->countAllResults(false);
-
             $emails = $emailBuilder->orderBy('unit_kerja.nama_unit_kerja', 'ASC')
-                ->orderBy('jabatan', 'ASC')
-                ->orderBy('name', 'ASC')
+                ->orderBy('emails.jabatan', 'ASC')
+                ->orderBy('emails.name', 'ASC')
                 ->paginate($perPage);
             $pager = $this->emailModel->pager;
 
@@ -352,6 +375,7 @@ class Email extends BaseController
                 'eselon' => $eselon,
                 'emails' => $emails,
                 'total_emails' => $total_emails,
+                'active_bsre_count' => $active_bsre_count,
                 'pagination' => $pager,
                 'per_page' => $perPage,
                 'search' => $search,

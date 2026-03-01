@@ -136,7 +136,7 @@ class WebMonitoringExportService
             if ($web['status'] === 'AKTIF') $aktif++;
             elseif ($web['status'] === 'NONAKTIF') $nonaktif++;
 
-            $pName = $web['platform_name'] ?: '-';
+            $pName = $web['platform_name'] ?: 'TIDAK TERDAFTAR';
             if (!isset($platform_stats_map[$pName])) {
                 $platform_stats_map[$pName] = 0;
             }
