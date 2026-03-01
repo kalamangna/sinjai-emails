@@ -157,8 +157,9 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
-                    <?php foreach ($websites as $web): ?>
-                        <tr class="hover:bg-slate-50 transition-colors website-row" data-id="<?= $web['id'] ?>">
+                    <?php if (!empty($websites)): ?>
+                        <?php foreach ($websites as $web): ?>
+                            <tr class="hover:bg-slate-50 transition-colors website-row" data-id="<?= $web['id'] ?>">
                             <td class="px-6 py-4">
                                 <div class="flex flex-col">
                                     <span class="font-medium text-slate-800 uppercase tracking-tight text-xs"><?= esc($web['desa_kelurahan']) ?></span>
@@ -213,9 +214,20 @@
                                 <?php endif; ?>
                             </td>
                         </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+                                            <?php endforeach; ?>
+                                        <?php else: ?>
+                                            <tr>
+                                                <td colspan="7" class="px-6 py-20 text-center">
+                                                    <div class="flex flex-col items-center justify-center">
+                                                        <div class="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center mb-3">
+                                                            <i class="fas fa-search text-slate-300 text-lg"></i>
+                                                        </div>
+                                                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest italic">Data tidak ditemukan</span>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        <?php endif; ?>
+                                    </tbody>            </table>
         </div>
 
         <?php if (isset($pager)): ?>

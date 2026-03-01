@@ -161,7 +161,14 @@
                 </thead>
                 <tbody class="divide-y divide-slate-100 bg-white">
                     <tr>
-                        <td colspan="4" class="px-6 py-10 text-center text-slate-700 italic">Belum ada data yang diproses.</td>
+                        <td colspan="4" class="px-6 py-20 text-center">
+                            <div class="flex flex-col items-center justify-center">
+                                <div class="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center mb-3">
+                                    <i class="fas fa-layer-group text-slate-300 text-lg"></i>
+                                </div>
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest italic">Belum ada data yang diproses</span>
+                            </div>
+                        </td>
                     </tr>
                 </tbody>
             </table>

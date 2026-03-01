@@ -256,7 +256,14 @@
                         <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="4" class="px-6 py-10 text-center text-slate-700 uppercase text-xs font-bold italic tracking-widest">Data Kosong</td>
+                            <td colspan="4" class="px-6 py-20 text-center">
+                                <div class="flex flex-col items-center justify-center">
+                                    <div class="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center mb-3">
+                                        <i class="fas fa-search text-slate-300 text-lg"></i>
+                                    </div>
+                                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest italic">Data tidak ditemukan</span>
+                                </div>
+                            </td>
                         </tr>
                     <?php endif; ?>
                 </tbody>

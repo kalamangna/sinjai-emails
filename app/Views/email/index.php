@@ -24,7 +24,7 @@
                     <i class="fas fa-layer-group mr-2"></i> Batch
                 </a>
                 <a href="<?= site_url('email/create') ?>" class="flex-1 lg:flex-none inline-flex items-center justify-center px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-white rounded-lg font-bold text-xs uppercase tracking-widest transition-all shadow-sm no-underline">
-                    <i class="fas fa-plus mr-2 text-white/80"></i> Tambah Akun
+                    <i class="fas fa-plus mr-2 text-white/80"></i> Tambah
                 </a>
             <?php endif; ?>
         </div>
@@ -150,7 +150,14 @@
                         <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="4" class="px-6 py-10 text-center text-slate-700 italic">Data tidak ditemukan.</td>
+                            <td colspan="4" class="px-6 py-20 text-center">
+                                <div class="flex flex-col items-center justify-center">
+                                    <div class="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center mb-3">
+                                        <i class="fas fa-search text-slate-300 text-lg"></i>
+                                    </div>
+                                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest italic">Data tidak ditemukan</span>
+                                </div>
+                            </td>
                         </tr>
                     <?php endif; ?>
                 </tbody>
