@@ -144,17 +144,47 @@
         previewBtn.disabled = true;
         previewBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Memproses...';
         
-        // Generate Draft
+        // Base Draft Config
         const domain = "@sinjaikab.go.id";
         const cleanedName = name.replace(/[,.']/g, "");
-        const username = cleanedName.toLowerCase().replace(/\s+/g, "").substring(0, 30 - domain.length);
-        const email = username + domain;
+        const originalUsername = cleanedName.toLowerCase().replace(/\s+/g, "").substring(0, 30 - domain.length);
         const password = generatePassword(name, nip);
 
-        // Check availability
-        const emailCheck = await checkEmailAvailability(email);
+        // Check NIK/NIP availability in DB
         const nikCheck = nik ? await checkNikNip('nik', nik) : { exists: false };
         const nipCheck = await checkNikNip('nip', nip);
+
+        // Email Fallback Loop
+        let currentUsername = originalUsername;
+        let currentEmail = currentUsername + domain;
+        let isAvailable = false;
+        let attempts = 0;
+        const maxAttempts = 10;
+
+        while (attempts < maxAttempts) {
+            attempts++;
+            
+            // Check current variant
+            const check = await checkEmailAvailability(currentEmail);
+            if (check.available) {
+                isAvailable = true;
+                break;
+            }
+
+            // Not available, prepare next variant
+            let suffix = "";
+            if (attempts === 1) suffix = getNipPart(nip);
+            else if (attempts === 2) suffix = getSecondNipPart(nip);
+            else if (attempts === 3) suffix = getNikPart(nik);
+            else {
+                let base = getNipPart(nip) || getNikPart(nik);
+                suffix = (base || "") + attempts;
+            }
+            if (!suffix) suffix = attempts;
+
+            currentUsername = `${originalUsername}${suffix}`;
+            currentEmail = `${currentUsername}${domain}`;
+        }
 
         currentDraft = {
             name: cleanedName,
@@ -162,10 +192,10 @@
             nip: nip,
             jenisFormasi: statusAsn,
             unitKerja: unitKerja,
-            username: username,
-            email: email,
+            username: currentUsername,
+            email: currentEmail,
             password: password,
-            isAvailable: emailCheck.available,
+            isAvailable: isAvailable,
             nikExists: nikCheck.exists,
             nipExists: nipCheck.exists
         };
@@ -180,6 +210,21 @@
         // Enable execution if no critical errors
         submitBtn.disabled = !(currentDraft.isAvailable && !currentDraft.nipExists);
     });
+
+    function getNipPart(nip) {
+        if (typeof nip !== "string" || nip.length < 4) return "";
+        return nip.substring(2, 4);
+    }
+
+    function getSecondNipPart(nip) {
+        if (typeof nip !== "string" || nip.length < 8) return "";
+        return nip.substring(6, 8);
+    }
+
+    function getNikPart(nik) {
+        if (typeof nik !== "string" || nik.length < 12) return "";
+        return nik.substring(10, 12);
+    }
 
     function renderPreview(draft) {
         previewTableBody.innerHTML = "";
