@@ -18,6 +18,9 @@
             <div class="space-y-6">
                 <div class="flex justify-between items-center border-b border-slate-100 pb-1">
                     <h4 class="text-[10px] font-bold text-slate-700 uppercase tracking-widest">Data Pribadi</h4>
+                    <button type="button" class="text-[10px] font-bold text-slate-700 hover:text-slate-800 uppercase tracking-widest transition-colors flex items-center" onclick="nameInput.value = nameInput.value.toUpperCase(); updateDraft();">
+                        <i class="fas fa-font mr-1.5"></i> Huruf Kapital
+                    </button>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -35,7 +38,10 @@
                     </div>
                     <div class="md:col-span-2">
                         <label for="nik" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">NIK</label>
-                        <input type="text" id="nik" name="nik" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 font-mono transition-all" placeholder="Contoh: 730701XXXXXXXXXX" required maxlength="16">
+                        <div class="relative">
+                            <input type="text" id="nik" name="nik" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 font-mono transition-all" placeholder="Contoh: 730701XXXXXXXXXX" required maxlength="16">
+                            <div id="nik_status" class="absolute right-3 top-2.5"></div>
+                        </div>
                     </div>
                     <div>
                         <label for="tempat_lahir" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Tempat Lahir</label>
@@ -59,7 +65,10 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="md:col-span-2">
                         <label for="nip" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">NIP</label>
-                        <input type="text" id="nip" name="nip" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 font-mono transition-all" placeholder="Contoh: 198801082022031001" required maxlength="18">
+                        <div class="relative">
+                            <input type="text" id="nip" name="nip" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 font-mono transition-all" placeholder="Contoh: 198801082022031001" required maxlength="18">
+                            <div id="nip_status" class="absolute right-3 top-2.5"></div>
+                        </div>
                     </div>
                     <div>
                         <label for="status_asn" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Status ASN</label>
@@ -100,6 +109,7 @@
                         <div class="relative">
                             <input type="text" id="username" name="username" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 transition-all" required placeholder="Contoh: budisans">
                             <span class="absolute right-3 top-2 text-sm text-slate-400 font-medium">@sinjaikab.go.id</span>
+                            <div id="email_status" class="absolute -bottom-5 left-0"></div>
                         </div>
                         <input type="hidden" id="email" name="email">
                     </div>
@@ -141,6 +151,7 @@
 <?= $this->section('scripts') ?>
 <script>
     const nameInput = document.getElementById('name');
+    const nikInput = document.getElementById('nik');
     const nipInput = document.getElementById('nip');
     const usernameInput = document.getElementById('username');
     const emailHidden = document.getElementById('email');
@@ -153,12 +164,67 @@
     const resultsLog = document.getElementById('results_log');
     const statusBadge = document.getElementById('status_badge');
 
+    // Status indicators
+    const nikStatus = document.getElementById('nik_status');
+    const nipStatus = document.getElementById('nip_status');
+    const emailStatus = document.getElementById('email_status');
+
     // Auto-generate username and password when name or nip changes
     nameInput.addEventListener('input', updateDraft);
     nipInput.addEventListener('input', updateDraft);
+    
     usernameInput.addEventListener('input', () => {
-        emailHidden.value = usernameInput.value + '@sinjaikab.go.id';
+        const val = usernameInput.value.trim().toLowerCase();
+        emailHidden.value = val ? val + '@sinjaikab.go.id' : '';
+        if (val) checkEmail(emailHidden.value);
+        else emailStatus.innerHTML = '';
     });
+
+    nikInput.addEventListener('change', () => {
+        if (nikInput.value.length >= 10) checkNikNip('nik', nikInput.value, nikStatus);
+    });
+
+    nipInput.addEventListener('change', () => {
+        if (nipInput.value.length >= 10) checkNikNip('nip', nipInput.value, nipStatus);
+    });
+
+    async function checkNikNip(type, value, indicator) {
+        indicator.innerHTML = '<i class="fas fa-spinner fa-spin text-slate-400"></i>';
+        try {
+            const response = await fetch('<?= site_url('user/check_niknip') ?>', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                body: JSON.stringify({ [type]: value })
+            });
+            const result = await response.json();
+            if (result.exists) {
+                indicator.innerHTML = '<i class="fas fa-exclamation-circle text-red-500" title="Data sudah ada di database"></i>';
+            } else {
+                indicator.innerHTML = '<i class="fas fa-check-circle text-emerald-500" title="Data tersedia"></i>';
+            }
+        } catch (e) {
+            indicator.innerHTML = '';
+        }
+    }
+
+    async function checkEmail(email) {
+        emailStatus.innerHTML = '<span class="text-[9px] text-slate-400 uppercase font-bold"><i class="fas fa-spinner fa-spin mr-1"></i> Checking...</span>';
+        try {
+            const response = await fetch('<?= site_url('user/check_email') ?>', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                body: JSON.stringify({ email: email })
+            });
+            const result = await response.json();
+            if (result.available) {
+                emailStatus.innerHTML = '<span class="text-[9px] text-emerald-600 uppercase font-bold"><i class="fas fa-check-circle mr-1"></i> Email Tersedia</span>';
+            } else {
+                emailStatus.innerHTML = '<span class="text-[9px] text-red-500 uppercase font-bold"><i class="fas fa-exclamation-circle mr-1"></i> Email Sudah Digunakan</span>';
+            }
+        } catch (e) {
+            emailStatus.innerHTML = '';
+        }
+    }
 
     function updateDraft() {
         const name = nameInput.value.trim();
@@ -167,15 +233,16 @@
         if (name) {
             const domain = "@sinjaikab.go.id";
             const maxUsernameLength = 30 - domain.length;
-            const username = name
+            const cleanedName = name.replace(/[,.']/g, "");
+            const username = cleanedName
                 .toLowerCase()
                 .replace(/\s+/g, "")
-                .replace(/[,.]/g, "")
                 .substring(0, maxUsernameLength);
             
             if (!usernameInput.value) {
                 usernameInput.value = username;
                 emailHidden.value = username + domain;
+                checkEmail(emailHidden.value);
             }
             
             if (!passwordInput.value) {
@@ -250,7 +317,7 @@
                 
                 if (errorMsg.toLowerCase().includes('strength') || errorMsg.toLowerCase().includes('weak')) {
                     const altPw = generatePassword(data.name, data.nip, true);
-                    if (data.password === altPw) {
+                    if (passwordInput.value === altPw) {
                         passwordInput.value = altPw + '*';
                     } else {
                         passwordInput.value = altPw;
