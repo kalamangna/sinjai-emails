@@ -9,109 +9,101 @@
         <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight">Buat Akun Tunggal</h1>
     </div>
 
-    <!-- Card Utama -->
-    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden flex flex-col">
-        <form id="create_single_form" class="p-8 space-y-8">
+    <!-- Card Input -->
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+        <div class="bg-slate-50 px-6 py-4 border-b border-slate-200 flex justify-between items-center">
+            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Input Data</h3>
+            <button type="button" class="text-[10px] font-bold text-slate-700 hover:text-slate-800 uppercase tracking-widest transition-colors flex items-center" onclick="nameInput.value = nameInput.value.toUpperCase(); updateDraft();">
+                <i class="fas fa-font mr-1.5"></i> Huruf Kapital
+            </button>
+        </div>
+        <form id="create_single_form" class="p-6 space-y-6">
             <?= csrf_field() ?>
             
-            <div class="space-y-6">
-                <div class="flex justify-between items-center border-b border-slate-100 pb-1">
-                    <h4 class="text-[10px] font-bold text-slate-700 uppercase tracking-widest">Data Minimal</h4>
-                    <button type="button" class="text-[10px] font-bold text-slate-700 hover:text-slate-800 uppercase tracking-widest transition-colors flex items-center" onclick="nameInput.value = nameInput.value.toUpperCase(); updateDraft();">
-                        <i class="fas fa-font mr-1.5"></i> Huruf Kapital
-                    </button>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="md:col-span-2">
+                    <label for="name" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Nama Lengkap <span class="text-slate-700 font-normal">(Tanpa Gelar)</span></label>
+                    <input type="text" id="name" name="name" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 uppercase transition-all" required placeholder="Contoh: BUDI SANTOSO">
+                </div>
+                
+                <div>
+                    <label for="nip" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">NIP</label>
+                    <input type="text" id="nip" name="nip" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 font-mono transition-all" placeholder="Contoh: 198801082022031001" required maxlength="18">
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="md:col-span-2">
-                        <label for="name" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Nama Lengkap <span class="text-slate-700 font-normal">(Tanpa Gelar)</span></label>
-                        <input type="text" id="name" name="name" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 uppercase transition-all" required placeholder="Contoh: BUDI SANTOSO">
-                    </div>
-                    
-                    <div>
-                        <label for="nip" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">NIP</label>
-                        <div class="relative">
-                            <input type="text" id="nip" name="nip" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 font-mono transition-all" placeholder="Contoh: 198801082022031001" required maxlength="18">
-                            <div id="nip_status" class="absolute right-3 top-2.5"></div>
-                        </div>
-                    </div>
+                <div>
+                    <label for="nik" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">NIK <span class="text-slate-700 font-normal">(Opsional)</span></label>
+                    <input type="text" id="nik" name="nik" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 font-mono transition-all" placeholder="Contoh: 730701XXXXXXXXXX" maxlength="16">
+                </div>
 
-                    <div>
-                        <label for="nik" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">NIK <span class="text-slate-700 font-normal">(Opsional)</span></label>
-                        <div class="relative">
-                            <input type="text" id="nik" name="nik" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 font-mono transition-all" placeholder="Contoh: 730701XXXXXXXXXX" maxlength="16">
-                            <div id="nik_status" class="absolute right-3 top-2.5"></div>
-                        </div>
-                    </div>
+                <div>
+                    <label for="status_asn" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Status ASN</label>
+                    <select id="status_asn" name="jenisFormasi" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 appearance-none cursor-pointer transition-all" required>
+                        <option value="" disabled selected>Pilih Status...</option>
+                        <?php foreach ($status_asn_options as $option): ?>
+                            <option value="<?= esc($option['id']) ?>"><?= esc($option['nama_status_asn']) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
 
-                    <div>
-                        <label for="status_asn" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Status ASN</label>
-                        <select id="status_asn" name="jenisFormasi" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 appearance-none cursor-pointer transition-all" required>
-                            <option value="" disabled selected>Pilih Status...</option>
-                            <?php foreach ($status_asn_options as $option): ?>
-                                <option value="<?= esc($option['id']) ?>"><?= esc($option['nama_status_asn']) ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label for="unit_kerja" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Unit Kerja</label>
-                        <select id="unit_kerja" name="unitKerja" class="choices-search block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 appearance-none cursor-pointer transition-all" required>
-                            <option value="" disabled selected>Pilih Unit Kerja...</option>
-                            <?php foreach ($unit_kerja_options as $unit): ?>
-                                <option value="<?= esc($unit['nama_unit_kerja']) ?>"><?= esc($unit['nama_unit_kerja']) ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
+                <div>
+                    <label for="unit_kerja" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Unit Kerja</label>
+                    <select id="unit_kerja" name="unitKerja" class="choices-search block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 appearance-none cursor-pointer transition-all" required>
+                        <option value="" disabled selected>Pilih Unit Kerja...</option>
+                        <?php foreach ($unit_kerja_options as $unit): ?>
+                            <option value="<?= esc($unit['nama_unit_kerja']) ?>"><?= esc($unit['nama_unit_kerja']) ?></option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
             </div>
 
-            <div class="space-y-6">
-                <h4 class="text-[10px] font-bold text-slate-700 uppercase tracking-widest border-b border-slate-100 pb-1">Konfigurasi Akun</h4>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="username" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Username Email</label>
-                        <div class="relative">
-                            <input type="text" id="username" name="username" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 transition-all" required placeholder="Contoh: budisans">
-                            <span class="absolute right-3 top-2 text-sm text-slate-400 font-medium">@sinjaikab.go.id</span>
-                            <div id="email_status" class="absolute -bottom-5 left-0"></div>
-                        </div>
-                        <input type="hidden" id="email" name="email">
-                    </div>
-                    <div>
-                        <label for="password" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Password</label>
-                        <div class="relative">
-                            <input type="text" id="password" name="password" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm font-medium text-slate-800 font-mono transition-all" required>
-                            <button type="button" onclick="regeneratePassword()" class="absolute right-2 top-1.5 p-1 text-slate-400 hover:text-blue-600 transition-colors" title="Generate Ulang">
-                                <i class="fas fa-sync-alt"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Execution Progress Section -->
-            <div id="execution_section" class="hidden space-y-4 pt-6 border-t border-slate-100">
-                <div class="flex justify-between items-center">
-                    <h3 class="text-[10px] font-bold text-slate-700 uppercase tracking-widest">Progres Eksekusi</h3>
-                    <span id="status_badge" class="px-2 py-0.5 rounded text-[9px] font-bold border">MEMULAI</span>
-                </div>
-                <div class="w-full bg-slate-100 rounded-full h-2">
-                    <div id="progress_bar" class="bg-blue-600 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
-                </div>
-                <div id="results_log" class="p-4 bg-slate-800 text-white rounded-lg text-[10px] font-mono h-48 overflow-y-auto custom-scrollbar"></div>
-            </div>
-
-            <div class="bg-slate-50 px-8 py-4 flex flex-col sm:flex-row justify-end gap-3 border-t border-slate-200 -mx-8 -mb-8 mt-10">
-                <a href="<?= site_url('email') ?>" class="order-2 sm:order-1 inline-flex items-center justify-center px-6 py-2 bg-white border border-slate-200 rounded-lg font-bold text-xs text-slate-700 uppercase tracking-widest hover:bg-slate-50 shadow-sm transition-all no-underline">
-                    <i class="fas fa-times mr-2"></i> Batal
-                </a>
-                <button type="submit" id="submit_btn" class="order-1 sm:order-2 inline-flex items-center justify-center px-8 py-2 bg-slate-800 text-white rounded-lg font-bold text-xs uppercase tracking-widest hover:bg-slate-700 shadow-sm transition-all">
-                    <i class="fas fa-save mr-2 text-white/80"></i> Simpan Akun
+            <div class="flex justify-end pt-4 border-t border-slate-100">
+                <button type="button" id="preview_btn" class="inline-flex items-center px-6 py-2 bg-slate-800 text-white rounded-lg font-bold text-xs uppercase tracking-widest hover:bg-slate-700 transition-all shadow-sm">
+                    <i class="fas fa-eye mr-2 text-white/80"></i> Preview
                 </button>
             </div>
         </form>
+    </div>
+
+    <!-- Preview Section -->
+    <div id="preview_section" class="hidden bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+        <div class="bg-slate-50 px-6 py-4 border-b border-slate-200">
+            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Hasil Preview</h3>
+        </div>
+        <div class="overflow-x-auto">
+            <table id="preview_table" class="w-full text-left text-sm">
+                <thead class="bg-slate-50 text-slate-700 uppercase text-[10px] font-bold">
+                    <tr>
+                        <th class="px-6 py-3 border-b border-slate-200">NIP / NIK</th>
+                        <th class="px-6 py-3 border-b border-slate-200">Nama</th>
+                        <th class="px-6 py-3 border-b border-slate-200">Email</th>
+                        <th class="px-6 py-3 border-b border-slate-200">Password</th>
+                        <th class="px-6 py-3 border-b border-slate-200 text-center">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 bg-white">
+                    <!-- Populated by JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Execution Progress Section -->
+    <div id="execution_section" class="hidden bg-white border border-slate-200 rounded-xl shadow-sm p-6 space-y-4">
+        <div class="flex justify-between items-center">
+            <h3 class="text-[10px] font-bold text-slate-700 uppercase tracking-widest">Progres Eksekusi</h3>
+            <span id="status_badge" class="px-2 py-0.5 rounded text-[9px] font-bold border">MEMULAI</span>
+        </div>
+        <div class="w-full bg-slate-100 rounded-full h-2">
+            <div id="progress_bar" class="bg-blue-600 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+        <div id="results_log" class="p-4 bg-slate-800 text-white rounded-lg text-[10px] font-mono h-48 overflow-y-auto custom-scrollbar"></div>
+    </div>
+
+    <div class="flex justify-end">
+        <button type="button" id="submit_btn" class="inline-flex items-center px-8 py-3 bg-slate-800 text-white rounded-lg font-bold text-xs uppercase tracking-widest hover:bg-slate-700 shadow-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed" disabled>
+            <i class="fas fa-cloud-upload-alt mr-2 text-white/80"></i> Eksekusi
+        </button>
     </div>
 </div>
 <?= $this->endSection() ?>
@@ -121,103 +113,132 @@
     const nameInput = document.getElementById('name');
     const nikInput = document.getElementById('nik');
     const nipInput = document.getElementById('nip');
-    const usernameInput = document.getElementById('username');
-    const emailHidden = document.getElementById('email');
-    const passwordInput = document.getElementById('password');
     const statusAsnSelect = document.getElementById('status_asn');
+    const unitKerjaSelect = document.getElementById('unit_kerja');
     const form = document.getElementById('create_single_form');
+    
+    const previewBtn = document.getElementById('preview_btn');
+    const previewSection = document.getElementById('preview_section');
+    const previewTableBody = document.querySelector('#preview_table tbody');
+    
     const submitBtn = document.getElementById('submit_btn');
     const executionSection = document.getElementById('execution_section');
     const progressBar = document.getElementById('progress_bar');
     const resultsLog = document.getElementById('results_log');
     const statusBadge = document.getElementById('status_badge');
 
-    const nikStatus = document.getElementById('nik_status');
-    const nipStatus = document.getElementById('nip_status');
-    const emailStatus = document.getElementById('email_status');
+    let currentDraft = null;
 
-    nameInput.addEventListener('input', updateDraft);
-    nipInput.addEventListener('input', updateDraft);
-    
-    usernameInput.addEventListener('input', () => {
-        const val = usernameInput.value.trim().toLowerCase();
-        emailHidden.value = val ? val + '@sinjaikab.go.id' : '';
-        if (val) checkEmail(emailHidden.value);
-        else emailStatus.innerHTML = '';
+    previewBtn.addEventListener('click', async function() {
+        const name = nameInput.value.trim();
+        const nip = nipInput.value.trim();
+        const nik = nikInput.value.trim();
+        const statusAsn = statusAsnSelect.value;
+        const unitKerja = unitKerjaSelect.value;
+
+        if (!name || !nip || !statusAsn || !unitKerja) {
+            alert('Silakan lengkapi data wajib (Nama, NIP, Status ASN, dan Unit Kerja).');
+            return;
+        }
+
+        previewBtn.disabled = true;
+        previewBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Memproses...';
+        
+        // Generate Draft
+        const domain = "@sinjaikab.go.id";
+        const cleanedName = name.replace(/[,.']/g, "");
+        const username = cleanedName.toLowerCase().replace(/\s+/g, "").substring(0, 30 - domain.length);
+        const email = username + domain;
+        const password = generatePassword(name, nip);
+
+        // Check availability
+        const emailCheck = await checkEmailAvailability(email);
+        const nikCheck = nik ? await checkNikNip('nik', nik) : { exists: false };
+        const nipCheck = await checkNikNip('nip', nip);
+
+        currentDraft = {
+            name: cleanedName,
+            nik: nik,
+            nip: nip,
+            jenisFormasi: statusAsn,
+            unitKerja: unitKerja,
+            username: username,
+            email: email,
+            password: password,
+            isAvailable: emailCheck.available,
+            nikExists: nikCheck.exists,
+            nipExists: nipCheck.exists
+        };
+
+        renderPreview(currentDraft);
+        
+        previewBtn.disabled = false;
+        previewBtn.innerHTML = '<i class="fas fa-eye mr-2 text-white/80"></i> Preview';
+        previewSection.classList.remove('hidden');
+        previewSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+        // Enable execution if no critical errors
+        submitBtn.disabled = !(currentDraft.isAvailable && !currentDraft.nipExists);
     });
 
-    nikInput.addEventListener('change', () => {
-        if (nikInput.value.length >= 10) checkNikNip('nik', nikInput.value, nikStatus);
-    });
+    function renderPreview(draft) {
+        previewTableBody.innerHTML = "";
+        
+        let statusBadge;
+        const badgeBase = "inline-flex items-center px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border shadow-sm";
 
-    nipInput.addEventListener('change', () => {
-        if (nipInput.value.length >= 10) checkNikNip('nip', nipInput.value, nipStatus);
-    });
+        if (draft.isAvailable && !draft.nipExists) {
+            statusBadge = `<span class="${badgeBase} bg-emerald-50 text-emerald-600 border-emerald-200">Ready</span>`;
+        } else if (draft.nipExists) {
+            statusBadge = `<span class="${badgeBase} bg-red-50 text-red-600 border-red-200">NIP Exists</span>`;
+        } else {
+            statusBadge = `<span class="${badgeBase} bg-amber-50 text-amber-600 border-amber-200">Email Used</span>`;
+        }
 
-    async function checkNikNip(type, value, indicator) {
-        indicator.innerHTML = '<i class="fas fa-spinner fa-spin text-slate-400"></i>';
+        const tagBase = "ml-1.5 px-1.5 py-0.5 rounded text-[8px] font-black uppercase";
+        let nipDisplay = `<span class="font-mono text-slate-700">${draft.nip}</span>`;
+        if (draft.nipExists) nipDisplay += `<span class="${tagBase} bg-red-50 text-red-600">DB</span>`;
+
+        let nikDisplay = `<span class="font-mono text-slate-700">${draft.nik || "-"}</span>`;
+        if (draft.nikExists) nikDisplay += `<span class="${tagBase} bg-red-50 text-red-600">DB</span>`;
+
+        const row = `
+            <tr class="hover:bg-slate-50 transition-colors">
+                <td class="px-6 py-5 whitespace-nowrap">
+                    <div class="flex flex-col gap-1">
+                        ${nipDisplay}
+                        ${nikDisplay}
+                    </div>
+                </td>
+                <td class="px-6 py-5 font-black text-slate-800 tracking-tight whitespace-nowrap">${draft.name}</td>
+                <td class="px-6 py-5 whitespace-nowrap font-bold text-slate-700 lowercase">${draft.email}</td>
+                <td class="px-6 py-5 whitespace-nowrap font-mono text-slate-600">${draft.password}</td>
+                <td class="px-6 py-5 text-center whitespace-nowrap">${statusBadge}</td>
+            </tr>`;
+        
+        previewTableBody.insertAdjacentHTML("beforeend", row);
+    }
+
+    async function checkNikNip(type, value) {
         try {
             const response = await fetch('<?= site_url('user/check_niknip') ?>', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
                 body: JSON.stringify({ [type]: value })
             });
-            const result = await response.json();
-            if (result.exists) {
-                indicator.innerHTML = '<i class="fas fa-exclamation-circle text-red-500" title="Data sudah ada di database"></i>';
-            } else {
-                indicator.innerHTML = '<i class="fas fa-check-circle text-emerald-500" title="Data tersedia"></i>';
-            }
-        } catch (e) {
-            indicator.innerHTML = '';
-        }
+            return await response.json();
+        } catch (e) { return { exists: false }; }
     }
 
-    async function checkEmail(email) {
-        emailStatus.innerHTML = '<span class="text-[9px] text-slate-400 uppercase font-bold"><i class="fas fa-spinner fa-spin mr-1"></i> Checking...</span>';
+    async function checkEmailAvailability(email) {
         try {
             const response = await fetch('<?= site_url('user/check_email') ?>', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
                 body: JSON.stringify({ email: email })
             });
-            const result = await response.json();
-            if (result.available) {
-                emailStatus.innerHTML = '<span class="text-[9px] text-emerald-600 uppercase font-bold"><i class="fas fa-check-circle mr-1"></i> Email Tersedia</span>';
-                return true;
-            } else {
-                emailStatus.innerHTML = '<span class="text-[9px] text-red-500 uppercase font-bold"><i class="fas fa-exclamation-circle mr-1"></i> Email Sudah Digunakan</span>';
-                return false;
-            }
-        } catch (e) {
-            emailStatus.innerHTML = '';
-            return false;
-        }
-    }
-
-    function updateDraft() {
-        const name = nameInput.value.trim();
-        const nip = nipInput.value.trim();
-        
-        if (name) {
-            const domain = "@sinjaikab.go.id";
-            const maxUsernameLength = 30 - domain.length;
-            const cleanedName = name.replace(/[,.']/g, "");
-            const username = cleanedName
-                .toLowerCase()
-                .replace(/\s+/g, "")
-                .substring(0, maxUsernameLength);
-            
-            if (!usernameInput.value) {
-                usernameInput.value = username;
-                emailHidden.value = username + domain;
-                checkEmail(emailHidden.value);
-            }
-            
-            if (!passwordInput.value) {
-                passwordInput.value = generatePassword(name, nip);
-            }
-        }
+            return await response.json();
+        } catch (e) { return { available: false }; }
     }
 
     function generatePassword(name, nip, useAltNipPart = false) {
@@ -227,21 +248,15 @@
         } else if (nip && nip.length >= 4) {
             suffix = nip.substring(2, 4);
         }
-
         const namePart = name.replace(/\s+/g, "").substring(0, 5).toLowerCase();
         if (!namePart) return `@${suffix}#`;
         const capitalizedNamePart = namePart.charAt(0).toUpperCase() + namePart.slice(1);
         return `${capitalizedNamePart}@${suffix}#`;
     }
 
-    function regeneratePassword() {
-        passwordInput.value = generatePassword(nameInput.value, nipInput.value);
-    }
-
-    form.addEventListener('submit', async function(e) {
-        e.preventDefault();
+    submitBtn.addEventListener('click', async function() {
+        if (!currentDraft) return;
         
-        const originalBtnHtml = submitBtn.innerHTML;
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Memproses...';
         executionSection.classList.remove('hidden');
@@ -251,55 +266,12 @@
         statusBadge.className = 'px-2 py-0.5 rounded text-[9px] font-bold border bg-blue-50 text-blue-600 border-blue-200';
         statusBadge.innerText = 'SEDANG MEMPROSES';
 
-        const formData = new FormData(form);
-        const data = {};
-        formData.forEach((value, key) => data[key] = value);
-        data['quota'] = 1024;
+        const data = { ...currentDraft, quota: 1024 };
 
         try {
-            // Step 1: Pre-check email availability one last time
-            logResult('INFO', `Memeriksa ketersediaan email: ${data.email}...`);
-            const isAvailable = await checkEmail(data.email);
-            
-            if (!isAvailable) {
-                // FALLBACK: Auto-resolve email duplicate
-                logResult('WARN', `Email ${data.email} sudah digunakan. Mencoba mencari alternatif...`);
-                let attempts = 0;
-                const maxAttempts = 5;
-                const originalUsername = data.username;
-                const domain = "@sinjaikab.go.id";
-                
-                while (attempts < maxAttempts) {
-                    attempts++;
-                    let suffix = "";
-                    if (attempts === 1) suffix = data.nip.substring(2, 4);
-                    else if (attempts === 2) suffix = data.nip.substring(6, 8);
-                    else if (attempts === 3) suffix = data.nik.substring(10, 12) || attempts;
-                    else suffix = attempts;
-
-                    const newUsername = originalUsername + suffix;
-                    const newEmail = newUsername + domain;
-                    
-                    logResult('INFO', `Mencoba alternatif ${attempts}: ${newEmail}...`);
-                    const check = await checkEmail(newEmail);
-                    if (check) {
-                        data.username = newUsername;
-                        data.email = newEmail;
-                        usernameInput.value = newUsername;
-                        emailHidden.value = newEmail;
-                        logResult('SUCCESS', `Ditemukan alternatif yang tersedia: ${newEmail}`);
-                        break;
-                    }
-                    if (attempts === maxAttempts) {
-                        throw new Exception("Gagal menemukan alternatif email yang tersedia. Silakan ubah secara manual.");
-                    }
-                }
-            }
-
-            progressBar.style.width = '40%';
             logResult('INFO', 'Mengirim data ke server...');
+            progressBar.style.width = '40%';
 
-            // Step 2: Attempt creation
             const response = await fetch('<?= site_url('email/create_single') ?>', {
                 method: 'POST',
                 headers: {
@@ -324,16 +296,16 @@
                 const errorMsg = result.message || 'Gagal membuat akun.';
                 logResult('FAILURE', errorMsg);
                 
-                // FALLBACK: Password Weak
                 if (errorMsg.toLowerCase().includes('strength') || errorMsg.toLowerCase().includes('weak')) {
                     const altPw = generatePassword(data.name, data.nip, true);
-                    if (passwordInput.value === altPw) {
-                        passwordInput.value = altPw + '*';
+                    if (currentDraft.password === altPw) {
+                        currentDraft.password = altPw + '*';
                     } else {
-                        passwordInput.value = altPw;
+                        currentDraft.password = altPw;
                     }
                     logResult('WARN', 'Password terlalu lemah. Sistem telah memperbarui ke varian lebih kuat.');
-                    logResult('INFO', 'Silakan klik "Simpan Akun" sekali lagi.');
+                    logResult('INFO', 'Silakan klik "Eksekusi" sekali lagi.');
+                    renderPreview(currentDraft);
                 }
                 
                 statusBadge.className = 'px-2 py-0.5 rounded text-[9px] font-bold border bg-red-50 text-red-600 border-red-200';
@@ -347,7 +319,7 @@
             progressBar.style.width = '0%';
         } finally {
             submitBtn.disabled = false;
-            submitBtn.innerHTML = originalBtnHtml;
+            submitBtn.innerHTML = '<i class="fas fa-cloud-upload-alt mr-2 text-white/80"></i> Eksekusi';
         }
     });
 
