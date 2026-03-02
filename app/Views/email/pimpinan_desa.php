@@ -12,7 +12,7 @@
                 <i class="fas fa-file-pdf mr-2"></i> Export PDF
             </a>
             <button id="syncAllTteBtn" onclick="syncAllBsreStatus()" class="btn btn-solid">
-                <i class="fas fa-sync-alt mr-2 text-white/80"></i> Sync TTE
+                <i class="fas fa-fingerprint mr-2 text-white/80"></i> Sync TTE
             </button>
         </div>
     </div>
@@ -93,7 +93,7 @@
                                 <td class="px-6 py-4">
                                     <div class="flex flex-col">
                                         <span class="text-xs font-bold text-slate-800 uppercase tracking-tight"><?= esc($email['unit_kerja_name']) ?></span>
-                                        <span class="text-[10px] font-bold text-slate-700 uppercase tracking-widest mt-0.5"><?= esc(trim(str_ireplace('KANTOR', '', $email['parent_unit_kerja_name'] ?? 'Kecamatan Tidak Terdata'))) ?></span>
+                                        <span class="text-[10px] font-bold text-slate-700 uppercase tracking-widest mt-0.5"><?= esc(trim(str_ireplace('KANTOR', '', $email['parent_unit_kerja_name'] ?? '-'))) ?></span>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">

@@ -64,11 +64,11 @@
         /* Kolom Jabatan */
         th:nth-child(3),
         td:nth-child(3) {
-            width: 25%;
+            width: 20%;
         }
 
         /* Kolom Unit Kerja */
-        <?= ($showUnitKerjaColumn ? 'th:nth-child(4), td:nth-child(4) { width: 30%; }' : '') ?>
+        <?= ($showUnitKerjaColumn ? 'th:nth-child(4), td:nth-child(4) { width: 35%; }' : '') ?>
 
         /* Kolom Status TTE */
         th:nth-child(<?= ($showUnitKerjaColumn ? '5' : '4') ?>),
@@ -198,17 +198,17 @@
                 $unitKerjaContent = '';
                 if ($showUnitKerjaColumn) {
                     if (!empty($email['parent_unit_kerja_name'])) {
-                        $unitKerjaContent = esc(strtoupper($email['parent_unit_kerja_name'])) . '<br><small style="color: #334155;">' . esc(strtoupper($email['unit_kerja_name'] ?? '')) . '</small>';
+                        $unitKerjaContent = esc(strtoupper($email['unit_kerja_name'] ?? '')) . '<br><small style="color: #334155; font-size: 8px;">' . esc(strtoupper($email['parent_unit_kerja_name'])) . '</small>';
                     } else {
-                        $unitKerjaContent = esc(strtoupper($email['unit_kerja_name'] ?? 'N/A'));
+                        $unitKerjaContent = esc(strtoupper($email['unit_kerja_name'] ?? '-'));
                     }
                 }
 
                 echo '<tr>
                         <td>' . $nomor . '</td> 
                         <td>
-                            <strong>' . esc(strtoupper($email['name'] ?? 'N/A')) . '</strong><br>
-                            <span style="color: #334155;">' . esc($email['email'] ?? 'N/A') . '</span>
+                            <strong>' . esc(strtoupper($email['name'] ?? '-')) . '</strong><br>
+                            <span style="color: #334155;">' . esc($email['email'] ?? '-') . '</span>
                         </td>
                         <td>' . esc($email['jabatan'] ?? '-') . '</td>
                         ' . ($showUnitKerjaColumn ? '<td>' . $unitKerjaContent . '</td>' : '') . '

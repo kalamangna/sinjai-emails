@@ -54,7 +54,7 @@
         }
 
         th {
-            background-color: #f1f5f9;
+            background-color: #f8fafc;
         }
 
         .stats-container {
@@ -129,10 +129,6 @@
             font-weight: bold;
         }
 
-        .row-desa {
-            background-color: #f8fafc;
-        }
-
         .row-kelurahan {
             background-color: #f1f5f9;
         }
@@ -163,7 +159,7 @@
             text-align: center;
             font-size: 10px;
             color: #475569;
-            margin-top: -10px;
+            margin-top: 5px;
         }
     </style>
 
@@ -185,6 +181,34 @@
 
     </div>
 
+    <?php
+    $total_web = count($websites);
+    $aktif_web = 0;
+    $nonaktif_web = 0;
+    foreach ($websites as $w) {
+        if (strtoupper($w['status'] ?? '') === 'AKTIF') {
+            $aktif_web++;
+        } else {
+            $nonaktif_web++;
+        }
+    }
+    ?>
+
+    <div class="stats-container">
+        <div class="stats-box">
+            <h3>Total Website</h3>
+            <p><?= $total_web ?></p>
+        </div>
+        <div class="stats-box">
+            <h3>Status Aktif</h3>
+            <p style="color: #047857;"><?= $aktif_web ?></p>
+        </div>
+        <div class="stats-box">
+            <h3>Status Nonaktif</h3>
+            <p style="color: #dc2626;"><?= $nonaktif_web ?></p>
+        </div>
+    </div>
+
     <table>
 
         <thead>
@@ -193,19 +217,15 @@
 
                 <th style="width: 3%;">No.</th>
 
-                <th style="width: 20%;">Desa/Kelurahan</th>
+                <th style="width: 25%;">Desa/Kelurahan</th>
 
-                <th style="width: 15%;">Kecamatan</th>
-
-                <th style="width: 20%;">Domain</th>
+                <th style="width: 22%;">Domain</th>
 
                 <th style="width: 12%;">Platform</th>
 
-                <th style="width: 10%;">Berakhir</th>
-
                 <th style="width: 10%;">Status</th>
 
-                <th style="width: 10%;">Keterangan</th>
+                <th style="width: 28%;">Keterangan</th>
 
             </tr>
 
@@ -219,17 +239,7 @@
 
             foreach ($websites as $website) :
 
-                $row_class = '';
-
-                if (stripos($website['desa_kelurahan'], 'DESA') !== false) {
-
-                    $row_class = 'row-desa';
-                } elseif (stripos($website['desa_kelurahan'], 'KELURAHAN') !== false) {
-
-                    $row_class = 'row-kelurahan';
-                }
-
-
+                $row_class = (stripos($website['desa_kelurahan'], 'KELURAHAN') !== false) ? 'row-kelurahan' : '';
 
                 $status_color = (strtoupper($website['status']) === 'AKTIF') ? '#047857' : '#dc2626';
 
@@ -250,28 +260,31 @@
                     $platform_text_class = 'platform-pihak-ketiga-text';
                 }
 
-                $expiry_date = '-';
-                if (stripos($website['desa_kelurahan'], 'KELURAHAN') !== false) {
-                    $expiry_date = formatSingkat('2027-02-01');
-                } else {
-                    $expiry_date = formatSingkat($website['tanggal_berakhir']);
-                }
-
             ?>
 
                 <tr class="<?= $row_class ?>">
 
                     <td style="text-align: center;"><?= $nomor++ ?></td>
 
-                    <td><?= esc(strtoupper($website['desa_kelurahan'] ?? '')) ?: '-' ?></td>
+                    <td>
+                        <strong><?= esc(strtoupper($website['desa_kelurahan'] ?? '')) ?: '-' ?></strong><br />
+                        <span style="font-size: 8px; color: #64748b;"><?= esc(strtoupper($website['kecamatan'] ?? '')) ?: '-' ?></span>
+                    </td>
 
-                    <td><?= esc(strtoupper($website['kecamatan'] ?? '')) ?: '-' ?></td>
-
-                    <td><?= esc($website['domain'] ?? '') ?: '-' ?></td>
+                    <td>
+                        <?php if (!empty($website['domain'])) :
+                            $url = $website['domain'];
+                            if (!preg_match("~^(?:f|ht)tps?://~i", $url)) {
+                                $url = "https://" . $url;
+                            }
+                        ?>
+                            <a href="<?= esc($url) ?>"><?= esc($website['domain']) ?></a>
+                        <?php else : ?>
+                            -
+                        <?php endif; ?>
+                    </td>
 
                     <td class="<?= $platform_text_class ?>"><?= esc(strtoupper($website['platform_name'] ?? '')) ?: '-' ?></td>
-
-                    <td style="text-align: center;"><?= $expiry_date ?></td>
 
                     <td style="color: <?= $status_color ?>; font-weight: bold;"><?= esc(strtoupper($website['status'] ?? '')) ?: '-' ?></td>
 
@@ -281,11 +294,11 @@
 
             <?php endforeach; ?>
 
-                        </tbody>
-                
-                    </table>
-                
-                    <div class="footer-info">
+        </tbody>
+
+    </table>
+
+    <div class="footer-info">
 
 
         <strong>Contact Person:</strong> 082188344982 (Dzul)

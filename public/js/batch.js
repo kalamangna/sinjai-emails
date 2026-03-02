@@ -1,4 +1,18 @@
+function showGlobalLoading(show = true) {
+    const overlay = document.getElementById('global-loading');
+    if (!overlay) return;
+    if (show) {
+        overlay.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    } else {
+        overlay.classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+}
+
 document.addEventListener("DOMContentLoaded", function () {
+  const spreadsheetFileInput = document.getElementById("spreadsheet_file");
+
   const nameInput = document.getElementById("name_input");
   const nikInput = document.getElementById("nik_input");
   const nipInput = document.getElementById("nip_input");
@@ -23,6 +37,60 @@ document.addEventListener("DOMContentLoaded", function () {
   const validUnitKerjaNames = new Set(
     unitKerjaOptions.map((option) => option.nama_unit_kerja.toLowerCase()),
   );
+
+  spreadsheetFileInput.addEventListener('change', handleSpreadsheetUpload);
+
+  async function handleSpreadsheetUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('spreadsheet_file', file);
+    formData.append('expected_headers', 'nama,nip,nik');
+
+    showGlobalLoading(true);
+
+        try {
+            const response = await fetch('/batch/import_generic_spreadsheet', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                  "X-Requested-With": "XMLHttpRequest",
+                }
+            });
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            throw new Error(result.message || 'Gagal mengimpor file spreadsheet.');
+        }
+        
+        populateInputsFromCsv(result.data);
+
+    } catch (error) {
+        alert(`Error: ${error.message}`);
+    } finally {
+        showGlobalLoading(false);
+        // Reset file input so user can upload the same file again if needed
+        event.target.value = ''; 
+    }
+  }
+
+  function populateInputsFromCsv(data) {
+    if (!Array.isArray(data)) return;
+
+    const names = data.map(row => row.nama || '').join('\n');
+    const nips = data.map(row => row.nip || '').join('\n');
+    const niks = data.map(row => row.nik || '').join('\n');
+    
+    // For now, we ignore status_asn_id and unit_kerja_id from CSV
+    // and let the user select them from the main dropdowns.
+    
+    nameInput.value = names;
+    nipInput.value = nips;
+    nikInput.value = niks;
+
+    alert(`${data.length} baris berhasil diimpor dari CSV. Silakan pilih Status ASN dan Unit Kerja, lalu klik 'Preview'.`);
+  }
 
   generateBtn.addEventListener("click", async function () {
     const names = nameInput.value.split("\n").map((n) => n.trim());
@@ -61,10 +129,9 @@ document.addEventListener("DOMContentLoaded", function () {
       validationError = "One or more rows are missing a name.";
     else if (finalNips.some((n) => n === ""))
       validationError = "One or more rows are missing a NIP.";
-    else if (!jenisFormasiInput.value)
-      validationError = "Please select a Status ASN.";
-    else if (!singleUnitKerja) validationError = "Please select a Unit Kerja.";
-
+    
+    // No validation for jenisFormasiInput.value or singleUnitKerja anymore, as they are optional.
+    
     if (!validationError) {
       for (let i = 0; i < filteredRows.length; i++) {
         unitKerjaValues.push(singleUnitKerja);

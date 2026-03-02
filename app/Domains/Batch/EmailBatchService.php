@@ -43,6 +43,7 @@ class EmailBatchService
         $newPendidikans = $data['pendidikans'] ?? [];
         $newJabatans = $data['jabatans'] ?? [];
         $newGolongans = $data['golongans'] ?? [];
+        $newUnitKerjaIds = $data['unit_kerja_ids'] ?? [];
         $newStatusAsn = $data['status_asn'] ?? null;
         $newEselonId = $data['eselon_id'] ?? null;
         $newBsreStatus = $data['bsre_status'] ?? null;
@@ -98,6 +99,9 @@ class EmailBatchService
             if (isset($newGolongans[$index]) && !empty($newGolongans[$index])) {
                 $emailUpdateData['golongan'] = $newGolongans[$index];
             }
+            if (isset($newUnitKerjaIds[$index]) && !empty($newUnitKerjaIds[$index])) {
+                $emailUpdateData['unit_kerja_id'] = $newUnitKerjaIds[$index];
+            }
             if (!empty($newStatusAsn)) {
                 $emailUpdateData['status_asn_id'] = $newStatusAsn;
             }
@@ -136,6 +140,10 @@ class EmailBatchService
             }
             if (isset($newTanggalKontrakAkhirs[$index]) && !empty($newTanggalKontrakAkhirs[$index])) {
                 $pkUpdateData['tanggal_kontrak_akhir'] = $newTanggalKontrakAkhirs[$index];
+            }
+
+            if (!empty($pkUpdateData)) {
+                $pkUpdateData['status_asn_id'] = $emailRecord['status_asn_id'];
             }
 
             if (empty($emailUpdateData) && empty($pkUpdateData)) {

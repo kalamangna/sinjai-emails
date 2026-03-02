@@ -1,84 +1,55 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id" class="h-full">
+
 <head>
-    <meta charset="utf-8">
-    <title><?= lang('Errors.pageNotFound') ?></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Halaman Tidak Ditemukan | Sistem Identitas Digital</title>
+
+    <!-- Tailwind CSS (Local Build) -->
+    <link href="/css/output.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        div.logo {
-            height: 200px;
-            width: 155px;
-            display: inline-block;
-            opacity: 0.08;
-            position: absolute;
-            top: 2rem;
-            left: 50%;
-            margin-left: -73px;
-        }
         body {
-            height: 100%;
-            background: #fafafa;
-            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-            color: #777;
-            font-weight: 300;
-        }
-        h1 {
-            font-weight: lighter;
-            letter-spacing: normal;
-            font-size: 3rem;
-            margin-top: 0;
-            margin-bottom: 0;
-            color: #222;
-        }
-        .wrap {
-            max-width: 1024px;
-            margin: 5rem auto;
-            padding: 2rem;
-            background: #fff;
-            text-align: center;
-            border: 1px solid #efefef;
-            border-radius: 0.5rem;
-            position: relative;
-        }
-        pre {
-            white-space: normal;
-            margin-top: 1.5rem;
-        }
-        code {
-            background: #fafafa;
-            border: 1px solid #efefef;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-            display: block;
-        }
-        p {
-            margin-top: 1.5rem;
-        }
-        .footer {
-            margin-top: 2rem;
-            border-top: 1px solid #efefef;
-            padding: 1em 2em 0 2em;
-            font-size: 85%;
-            color: #999;
-        }
-        a:active,
-        a:link,
-        a:visited {
-            color: #dd4814;
+            font-family: 'Inter', sans-serif;
         }
     </style>
 </head>
-<body>
-    <div class="wrap">
-        <h1>404</h1>
 
-        <p>
-            <?php if (ENVIRONMENT !== 'production') : ?>
-                <?= nl2br(esc($message)) ?>
-            <?php else : ?>
-                <?= lang('Errors.sorryCannotFind') ?>
-            <?php endif; ?>
-        </p>
+<body class="bg-slate-50 text-slate-800 antialiased font-inter flex flex-col min-h-screen">
+    <div class="flex-grow flex items-center justify-center">
+        <div class="bg-white p-12 rounded-2xl shadow-2xl flex flex-col items-center gap-6 max-w-md w-full border border-slate-200 text-center">
+            <div class="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center text-slate-700">
+                <i class="fas fa-question-circle text-3xl"></i>
+            </div>
+            <div class="space-y-1">
+                <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight">404 - Halaman Hilang</h1>
+                <p class="text-sm text-slate-600">
+                    <?php if (ENVIRONMENT !== 'production') : ?>
+                        <?= nl2br(esc($message)) ?>
+                    <?php else : ?>
+                        <?= lang('Errors.sorryCannotFind') ?>
+                    <?php endif; ?>
+                </p>
+            </div>
+            <a href="/" class="btn btn-outline no-underline mt-4">
+                <i class="fas fa-arrow-left mr-2"></i> Kembali ke Beranda
+            </a>
+        </div>
     </div>
+    <footer class="py-6 px-6 text-center">
+        <p class="text-[10px] font-bold text-slate-700 uppercase tracking-widest">
+            &copy; <?= date('Y') ?> Diskominfo-SP Sinjai
+        </p>
+    </footer>
 </body>
+
 </html>

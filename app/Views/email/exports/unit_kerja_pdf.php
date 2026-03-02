@@ -55,7 +55,7 @@
             width: 5%;
         }
 
-        /* Kolom Nama */
+        /* Kolom Nama / NIP */
         th:nth-child(2),
         td:nth-child(2) {
             width: <?= ($showUnitKerjaColumn ? '30%' : '45%') ?>;
@@ -163,7 +163,7 @@
         <thead>
             <tr>
                 <th>No.</th>
-                <th>Nama</th>
+                <th>Nama / NIP</th>
                 <th>Email</th>
                 <?= ($showUnitKerjaColumn ? '<th>Unit Kerja</th>' : '') ?>
                 <th>Status TTE</th>
@@ -203,15 +203,18 @@
                 $unitKerjaContent = '';
                 if ($showUnitKerjaColumn) {
                     if (!empty($email['parent_unit_kerja_name'])) {
-                        $unitKerjaContent = esc(strtoupper($email['parent_unit_kerja_name'])) . '<br><small style="color: #334155;">' . esc(strtoupper($email['unit_kerja_name'] ?? '')) . '</small>';
+                        $unitKerjaContent = esc(strtoupper($email['unit_kerja_name'] ?? '')) . '<br><small style="color: #334155; font-size: 8px;">' . esc(strtoupper($email['parent_unit_kerja_name'])) . '</small>';
                     } else {
-                        $unitKerjaContent = esc(strtoupper($email['unit_kerja_name'] ?? 'N/A'));
+                        $unitKerjaContent = esc(strtoupper($email['unit_kerja_name'] ?? '-'));
                     }
                 }
 
                 echo '<tr>
-                        <td>' . $nomor . '</td> 
-                        <td><strong>' . esc(strtoupper($email['name'] ?? 'N/A')) . '</strong></td>
+                        <td style="text-align: center;">' . $nomor . '</td> 
+                        <td>
+                            <strong>' . esc(strtoupper($email['name'] ?? 'N/A')) . '</strong><br/>
+                            <small style="color: #334155; font-size: 8px;">NIP: ' . esc($email['nip'] ?: '-') . '</small>
+                        </td>
                         <td>' . esc($email['email'] ?? 'N/A') . '</td>
                         ' . ($showUnitKerjaColumn ? '<td>' . $unitKerjaContent . '</td>' : '') . '
                         <td style="color: ' . $color . '; font-weight: bold;">' . esc($statusTte) . '</td>

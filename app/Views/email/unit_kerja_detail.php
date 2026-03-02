@@ -34,7 +34,7 @@
                     </div>
                 </div>
                 <button id="syncAllTteBtn" onclick="syncAllBsreStatus()" class="btn btn-solid">
-                    <i class="fas fa-sync-alt mr-2 text-white/80"></i> Sync TTE
+                    <i class="fas fa-fingerprint mr-2 text-white/80"></i> Sync TTE
                 </button>
             <?php endif; ?>
         </div>
@@ -153,6 +153,12 @@
 
     <!-- Tabel Akun Email -->
     <div id="email-table-container" class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
+        <div class="bg-slate-50 px-6 py-4 border-b border-slate-200 flex justify-between items-center">
+            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Daftar Akun Email</h3>
+            <span class="text-[10px] font-bold text-slate-700 bg-white border border-slate-200 px-2 py-0.5 rounded-full shadow-sm">
+                TOTAL DATA: <?= number_format($filtered_count ?? count($emails), 0, ',', '.') ?>
+            </span>
+        </div>
         <div class="p-6 border-b border-slate-100 bg-slate-50">
             <form method="GET" action="" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
                 <div class="md:col-span-5">
@@ -199,6 +205,9 @@
                     <tr>
                         <th class="px-6 py-3 border-b border-slate-200">Email</th>
                         <th class="px-6 py-3 border-b border-slate-200">Jabatan / Status</th>
+                        <?php if ($showUnitKerjaColumn ?? false): ?>
+                            <th class="px-6 py-3 border-b border-slate-200">Unit Kerja</th>
+                        <?php endif; ?>
                         <th class="px-6 py-3 border-b border-slate-200">Status TTE</th>
                         <th class="px-6 py-3 border-b border-slate-200 text-center">Aksi</th>
                     </tr>
@@ -219,6 +228,16 @@
                                         <span class="text-[9px] font-bold text-slate-700 uppercase tracking-widest"><?= esc($email['status_asn']) ?></span>
                                     </div>
                                 </td>
+                                <?php if ($showUnitKerjaColumn ?? false): ?>
+                                    <td class="px-6 py-4">
+                                        <div class="flex flex-col">
+                                            <span class="text-xs font-bold text-slate-800 uppercase tracking-tight"><?= esc($email['unit_kerja_name']) ?></span>
+                                            <?php if (!empty($email['parent_unit_kerja_name'])): ?>
+                                                <span class="text-[9px] font-bold text-slate-500 uppercase leading-none mt-0.5"><?= esc($email['parent_unit_kerja_name']) ?></span>
+                                            <?php endif; ?>
+                                        </div>
+                                    </td>
+                                <?php endif; ?>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div id="bsre-status-<?= esc($email['user']) ?>" data-email="<?= esc($email['email']) ?>">
                                         <?php
@@ -258,7 +277,7 @@
                         <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="4" class="px-6 py-20 text-center">
+                            <td colspan="<?= ($showUnitKerjaColumn ?? false) ? 5 : 4 ?>" class="px-6 py-20 text-center">
                                 <div class="flex flex-col items-center justify-center">
                                     <div class="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center mb-3">
                                         <i class="fas fa-search text-slate-300 text-lg"></i>

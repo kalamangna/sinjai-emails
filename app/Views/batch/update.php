@@ -11,6 +11,26 @@
         </button>
     </div>
 
+    <!-- Import Section -->
+    <div class="bg-white border border-slate-200 rounded-lg shadow-sm">
+        <div class="bg-slate-50 px-6 py-4 border-b border-slate-200">
+            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Impor dari Excel (XLSX)</h3>
+        </div>
+        <div class="p-6 space-y-4">
+            <form id="spreadsheet_import_form" method="post" enctype="multipart/form-data">
+                <div>
+                    <label for="spreadsheet_file" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">File Excel</label>
+                    <input type="file" id="spreadsheet_file" name="spreadsheet_file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-slate-50 file:text-slate-700 hover:file:bg-slate-100 transition-colors">
+                </div>
+            </form>
+            <div class="text-xs text-slate-700">
+                <a href="<?= site_url('batch/download_update_template') ?>" class="text-slate-800 font-bold hover:underline">
+                    <i class="fas fa-download mr-1.5"></i>Template
+                </a>
+            </div>
+        </div>
+    </div>
+
     <!-- Form Utama -->
     <div class="bg-white border border-slate-200 rounded-lg shadow-sm">
         <div class="bg-slate-50 px-6 py-4 border-b border-slate-200">
@@ -54,22 +74,25 @@
                             <label for="nik_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">NIK Baru</label>
                             <textarea id="nik_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px]" placeholder="16 digit NIK..."></textarea>
                         </div>
+                        
                         <div>
                             <label for="nip_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">NIP Baru</label>
                             <textarea id="nip_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px]" placeholder="18 digit NIP..."></textarea>
                         </div>
                         <div>
-                            <label for="jabatan_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Jabatan Baru</label>
-                            <textarea id="jabatan_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px]" placeholder="Nama Jabatan..."></textarea>
-                        </div>
-                        <div>
                             <label for="golongan_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Golongan Baru</label>
                             <textarea id="golongan_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px]" placeholder="IX, VII, etc..."></textarea>
+                        </div>
+
+                        <div>
+                            <label for="jabatan_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Jabatan Baru</label>
+                            <textarea id="jabatan_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px]" placeholder="Nama Jabatan..."></textarea>
                         </div>
                         <div>
                             <label for="pendidikan_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Pendidikan</label>
                             <textarea id="pendidikan_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px]" placeholder="S1 - Teknik Informatika..."></textarea>
                         </div>
+
                         <div>
                             <label for="gelar_depan_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Gelar Depan</label>
                             <textarea id="gelar_depan_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px]" placeholder="H., Dra., etc..."></textarea>
@@ -78,6 +101,7 @@
                             <label for="gelar_belakang_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Gelar Belakang</label>
                             <textarea id="gelar_belakang_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px]" placeholder="S.Kom, M.Si, etc..."></textarea>
                         </div>
+
                         <div>
                             <label for="tempat_lahir_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Tempat Lahir</label>
                             <textarea id="tempat_lahir_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px]" placeholder="Sinjai, Makassar, etc..."></textarea>
@@ -85,6 +109,10 @@
                         <div>
                             <label for="tanggal_lahir_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Tgl Lahir</label>
                             <textarea id="tanggal_lahir_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px]" placeholder="YYYY-MM-DD"></textarea>
+                        </div>
+                        <div>
+                            <label for="unit_kerja_id_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Unit Kerja ID Baru</label>
+                            <textarea id="unit_kerja_id_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px]" placeholder="ID Angka..."></textarea>
                         </div>
                     </div>
 
@@ -95,15 +123,6 @@
                                 <option value="">Tidak Ada Perubahan</option>
                                 <?php foreach ($status_asn_options as $option): ?>
                                     <option value="<?= esc($option['id']) ?>"><?= esc($option['nama_status_asn']) ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                        <div>
-                            <label for="unit_kerja_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Unit Kerja</label>
-                            <select id="unit_kerja_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm appearance-none cursor-pointer choices-search transition-all">
-                                <option selected value="">Tidak Ada Perubahan</option>
-                                <?php foreach ($unit_kerja as $unit) : ?>
-                                    <option value="<?= esc($unit['nama_unit_kerja']); ?>"><?= esc($unit['nama_unit_kerja']); ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -132,6 +151,16 @@
                                 <option value="1">Kepala Desa</option>
                             </select>
                         </div>
+                    </div>
+
+                    <div class="pt-2">
+                        <label for="unit_kerja_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Unit Kerja</label>
+                        <select id="unit_kerja_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm appearance-none cursor-pointer choices-search transition-all">
+                            <option selected value="">Tidak Ada Perubahan</option>
+                            <?php foreach ($unit_kerja as $unit) : ?>
+                                <option value="<?= esc($unit['nama_unit_kerja']); ?>"><?= esc($unit['nama_unit_kerja']); ?></option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
                 </div>
 
@@ -178,6 +207,7 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts'); ?>
+<script src="<?= base_url('js/batch-update.js') ?>"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const identifierInput = document.getElementById('identifier_input');
@@ -229,6 +259,7 @@
                         pendidikans: mapInput('pendidikan_input'),
                         jabatans: mapInput('jabatan_input'),
                         golongans: mapInput('golongan_input'),
+                        unit_kerja_ids: mapInput('unit_kerja_id_input'),
                         status_asn: document.getElementById('status_asn_input').value,
                         unit_kerja: document.getElementById('unit_kerja_input').value,
                         eselon_id: document.getElementById('eselon_input').value,

@@ -91,7 +91,7 @@
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-700">
+                                        <div class="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-700 shrink-0">
                                             <i class="fas fa-building text-xs"></i>
                                         </div>
                                         <span class="font-medium text-slate-800 tracking-tight"><?= esc($unit['nama_unit_kerja']) ?></span>

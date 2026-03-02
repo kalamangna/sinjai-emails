@@ -271,7 +271,7 @@
                         <td class="info-sep">:</td>
                         <td class="info-val">
                             <?= esc($email['tempat_lahir'] ?? 'N/A') ?> /
-                            <?= formatSingkat($email['tanggal_lahir'] ?? null) ?>
+                            <?= strtoupper(formatSingkat($email['tanggal_lahir'] ?? null)) ?>
                         </td>
                     </tr>
                     <tr>

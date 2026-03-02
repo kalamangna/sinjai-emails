@@ -115,6 +115,56 @@ class UnitKerja extends BaseController
         return redirect()->to('unit_kerja/manage');
     }
 
+    public function process_batch_create()
+    {
+        if (strtolower($this->request->getMethod()) !== 'post') {
+            return $this->response->setStatusCode(405)->setJSON(['success' => false, 'message' => 'Invalid request method.']);
+        }
+
+        $data = $this->request->getJSON(true);
+        if (empty($data) || !is_array($data)) {
+            return $this->response->setStatusCode(400)->setJSON(['success' => false, 'message' => 'No data provided.']);
+        }
+
+        $unitKerjaModel = new UnitKerjaModel();
+        $results = [];
+        $successCount = 0;
+        $failCount = 0;
+
+        foreach ($data as $item) {
+            $name = trim($item['nama_unit_kerja'] ?? '');
+            if (empty($name)) {
+                $results[] = ['name' => 'N/A', 'success' => false, 'message' => 'Nama Unit Kerja kosong.'];
+                $failCount++;
+                continue;
+            }
+
+            $parentId = !empty($item['parent_id']) ? $item['parent_id'] : null;
+
+            try {
+                $unitKerjaModel->insert([
+                    'nama_unit_kerja' => $name,
+                    'parent_id' => $parentId
+                ]);
+                $results[] = ['name' => $name, 'success' => true, 'message' => 'Berhasil disimpan.'];
+                $successCount++;
+            } catch (\Exception $e) {
+                $results[] = ['name' => $name, 'success' => false, 'message' => $e->getMessage()];
+                $failCount++;
+            }
+        }
+
+        return $this->response->setJSON([
+            'success' => true,
+            'results' => $results,
+            'summary' => [
+                'success' => $successCount,
+                'fail' => $failCount,
+                'total' => count($data)
+            ]
+        ]);
+    }
+
     public function edit($id)
     {
         $unitKerjaModel = new UnitKerjaModel();

@@ -30,6 +30,30 @@
             Email
         </a>
 
+        <!-- Pegawai Submenu -->
+        <div x-data="{ open: <?= (strpos(current_url(), 'pppk_list') !== false || strpos(current_url(), 'pppk_pw_list') !== false || strpos(current_url(), 'pns_list') !== false) ? 'true' : 'false' ?> }">
+            <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-slate-100 rounded-lg hover:bg-slate-700/80 hover:text-white transition-all focus:outline-none">
+                <div class="flex items-center">
+                    <div class="w-5 h-5 flex items-center justify-center mr-3 shrink-0">
+                        <i class="fas fa-users text-slate-300"></i>
+                    </div>
+                    <span>Pegawai</span>
+                </div>
+                <i class="fas fa-chevron-down text-[10px] transition-transform duration-200" :class="open ? 'rotate-180' : ''"></i>
+            </button>
+            <div x-show="open" x-collapse class="mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
+                <a href="<?= site_url('email/pns_list') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= current_url() == site_url('email/pns_list') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
+                    PNS
+                </a>
+                <a href="<?= site_url('email/pppk_list') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= current_url() == site_url('email/pppk_list') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
+                    PPPK
+                </a>
+                <a href="<?= site_url('email/pppk_pw_list') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= current_url() == site_url('email/pppk_pw_list') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
+                    PPPK PW
+                </a>
+            </div>
+        </div>
+
         <!-- Pejabat Submenu -->
         <div x-data="{ open: <?= (strpos(current_url(), 'pimpinan') !== false) ? 'true' : 'false' ?> }">
             <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-slate-100 rounded-lg hover:bg-slate-700/80 hover:text-white transition-all focus:outline-none">

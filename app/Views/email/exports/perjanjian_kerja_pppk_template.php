@@ -12,7 +12,7 @@
            Font embedded directly for portability.
         */
         @page {
-            margin: 2cm 2cm 2.5cm 2cm;
+            margin: 2cm 2cm 1cm 2cm;
             size: A4;
         }
 
@@ -131,8 +131,8 @@
             text-align: center;
             font-weight: bold;
             text-transform: uppercase;
-            margin-top: 25px;
-            margin-bottom: 15px;
+            margin-top: 20px;
+            margin-bottom: 10px;
         }
 
         /* LIST SYSTEMS (Table-based) */
@@ -180,7 +180,7 @@
 
         /* SIGNATURES */
         .signature-table {
-            margin-top: 40px;
+            margin-top: 100px;
             width: 100%;
             page-break-inside: avoid;
         }
@@ -258,11 +258,11 @@
                         <td class="info-val"><?= esc($email['nip'] ?? 'N/A') ?></td>
                     </tr>
                     <tr>
-                        <td class="info-label">Tempat/Tgl. lahir</td>
+                        <td class="info-label">Tempat / Tanggal Lahir</td>
                         <td class="info-sep">:</td>
                         <td class="info-val">
                             <?= esc($email['tempat_lahir'] ?? 'N/A') ?> /
-                            <?= formatTanggal($email['tanggal_lahir'] ?? null) ?>
+                            <?= strtoupper(formatTanggal($email['tanggal_lahir'] ?? null)) ?>
                         </td>
                     </tr>
                     <tr>
@@ -345,6 +345,8 @@
             </tr>
         </table>
     </div>
+
+    <div class="page-break"></div>
 
     <!-- PASAL 2 -->
     <div class="pasal-header">
@@ -583,7 +585,15 @@
                 <table class="sub-list">
                     <tr>
                         <td class="sub-num-col">a.</td>
-                        <td>Sanksi ringan berupa: <br> 1) teguran lisan</td>
+                        <td>
+                            Sanksi ringan berupa:
+                            <table class="sub-sub-list">
+                                <tr>
+                                    <td class="sub-sub-num-col">1)</td>
+                                    <td>teguran lisan</td>
+                                </tr>
+                            </table>
+                        </td>
                     </tr>
                 </table>
             </td>
@@ -594,7 +604,19 @@
                 <table class="sub-list">
                     <tr>
                         <td class="sub-num-col">b.</td>
-                        <td>Sanksi sedang berupa: <br> 1) teguran tertulis; atau <br> 2) pernyataan tidak puas secara tertulis</td>
+                        <td>
+                            Sanksi sedang berupa:
+                            <table class="sub-sub-list">
+                                <tr>
+                                    <td class="sub-sub-num-col">1)</td>
+                                    <td>teguran tertulis; atau</td>
+                                </tr>
+                                <tr>
+                                    <td class="sub-sub-num-col">2)</td>
+                                    <td>pernyataan tidak puas secara tertulis</td>
+                                </tr>
+                            </table>
+                        </td>
                     </tr>
                 </table>
             </td>
@@ -605,7 +627,23 @@
                 <table class="sub-list">
                     <tr>
                         <td class="sub-num-col">c.</td>
-                        <td>Sanksi berat berupa: <br> 1) pemutusan hubungan Perpanjangan Perjanjian Kerja dengan hormat; <br> 2) pemutusan hubungan Perpanjangan Perjanjian Kerja dengan hormat tidak atas permintaan sendiri; atau <br> 3) pemutusan hubungan Perpanjangan Perjanjian Kerja tidak dengan hormat.</td>
+                        <td>
+                            Sanksi berat berupa:
+                            <table class="sub-sub-list">
+                                <tr>
+                                    <td class="sub-sub-num-col">1)</td>
+                                    <td>pemutusan hubungan Perpanjangan Perjanjian Kerja dengan hormat;</td>
+                                </tr>
+                                <tr>
+                                    <td class="sub-sub-num-col">2)</td>
+                                    <td>pemutusan hubungan Perpanjangan Perjanjian Kerja dengan hormat tidak atas permintaan sendiri; atau</td>
+                                </tr>
+                                <tr>
+                                    <td class="sub-sub-num-col">3)</td>
+                                    <td>pemutusan hubungan Perpanjangan Perjanjian Kerja tidak dengan hormat.</td>
+                                </tr>
+                            </table>
+                        </td>
                     </tr>
                 </table>
             </td>
@@ -630,7 +668,27 @@
         </tr>
         <tr class="keep-together">
             <td class="num-col">(3)</td>
-            <td class="text-justify">Pihak Kedua berhak menerima tunjangan terdiri atas: <br> a. tunjangan keluarga; <br> b. tunjangan pangan; <br> c. tunjangan jabatan fungsional; dan/atau <br> d. tunjangan lainnya</td>
+            <td class="text-justify">
+                Pihak Kedua berhak menerima tunjangan terdiri atas:
+                <table class="sub-list">
+                    <tr>
+                        <td class="sub-num-col">a.</td>
+                        <td class="text-justify">tunjangan keluarga;</td>
+                    </tr>
+                    <tr>
+                        <td class="sub-num-col">b.</td>
+                        <td class="text-justify">tunjangan pangan;</td>
+                    </tr>
+                    <tr>
+                        <td class="sub-num-col">c.</td>
+                        <td class="text-justify">tunjangan jabatan fungsional; dan/atau</td>
+                    </tr>
+                    <tr>
+                        <td class="sub-num-col">d.</td>
+                        <td class="text-justify">tunjangan lainnya</td>
+                    </tr>
+                </table>
+            </td>
         </tr>
         <tr class="keep-together">
             <td class="num-col">(4)</td>
@@ -698,7 +756,23 @@
     <table class="pasal-content">
         <tr class="keep-together">
             <td class="num-col">(1)</td>
-            <td class="text-justify">Pihak Kesatu memberikan penghargaan kepada Pihak Kedua berupa: <br> a. tanda kehormatan; <br> b. kesempatan prioritas untuk pengembangan kompetensi; dan/atau <br> c. kesempatan menghadiri acara resmi dan/atau acara kenegaraan.</td>
+            <td class="text-justify">
+                Pihak Kesatu memberikan penghargaan kepada Pihak Kedua berupa:
+                <table class="sub-list">
+                    <tr>
+                        <td class="sub-num-col">a.</td>
+                        <td class="text-justify">tanda kehormatan;</td>
+                    </tr>
+                    <tr>
+                        <td class="sub-num-col">b.</td>
+                        <td class="text-justify">kesempatan prioritas untuk pengembangan kompetensi; dan/atau</td>
+                    </tr>
+                    <tr>
+                        <td class="sub-num-col">c.</td>
+                        <td class="text-justify">kesempatan menghadiri acara resmi dan/atau acara kenegaraan.</td>
+                    </tr>
+                </table>
+            </td>
         </tr>
         <tr class="keep-together">
             <td class="num-col">(2)</td>
@@ -722,7 +796,31 @@
     <table class="pasal-content">
         <tr class="keep-together">
             <td class="num-col">(1)</td>
-            <td class="text-justify">Pihak Kesatu wajib memberikan perlindungan bagi Pihak Kedua berupa: <br> a. jaminan hari tua; <br> b. jaminan kesehatan; <br> c. jaminan kecelakaan kerja; <br> d. jaminan kematian; dan <br> e. bantuan hukum.</td>
+            <td class="text-justify">
+                Pihak Kesatu wajib memberikan perlindungan bagi Pihak Kedua berupa:
+                <table class="sub-list">
+                    <tr>
+                        <td class="sub-num-col">a.</td>
+                        <td class="text-justify">jaminan hari tua;</td>
+                    </tr>
+                    <tr>
+                        <td class="sub-num-col">b.</td>
+                        <td class="text-justify">jaminan kesehatan;</td>
+                    </tr>
+                    <tr>
+                        <td class="sub-num-col">c.</td>
+                        <td class="text-justify">jaminan kecelakaan kerja;</td>
+                    </tr>
+                    <tr>
+                        <td class="sub-num-col">d.</td>
+                        <td class="text-justify">jaminan kematian; dan</td>
+                    </tr>
+                    <tr>
+                        <td class="sub-num-col">e.</td>
+                        <td class="text-justify">bantuan hukum.</td>
+                    </tr>
+                </table>
+            </td>
         </tr>
         <tr class="keep-together">
             <td class="num-col">(2)</td>
@@ -749,15 +847,71 @@
     <table class="pasal-content">
         <tr class="keep-together">
             <td class="num-col">(1)</td>
-            <td class="text-justify">Pemutusan hubungan Perpanjangan Perpanjangan Perjanjian Kerja dengan hormat dilakukan apabila: <br> a. Jangka waktu Perpanjangan Perpanjangan Perjanjian Kerja berakhir; <br> b. Pihak Kedua meninggal dunia; <br> c. Pihak Kedua mengajukan permohonan berhenti sebagai Pegawai Pemerintah dengan Perpanjangan Perjanjian Kerja; atau <br> d. Terjadi perampingan organisasi atau kebijakan pemerintah yang mengakibatkan pengurangan Pegawai Pemerintah dengan Perpanjangan Perjanjian Kerja pada Pihak Kesatu.</td>
+            <td class="text-justify">
+                Pemutusan hubungan Perpanjangan Perpanjangan Perjanjian Kerja dengan hormat dilakukan apabila:
+                <table class="sub-list">
+                    <tr>
+                        <td class="sub-num-col">a.</td>
+                        <td class="text-justify">Jangka waktu Perpanjangan Perpanjangan Perjanjian Kerja berakhir;</td>
+                    </tr>
+                    <tr>
+                        <td class="sub-num-col">b.</td>
+                        <td class="text-justify">Pihak Kedua meninggal dunia;</td>
+                    </tr>
+                    <tr>
+                        <td class="sub-num-col">c.</td>
+                        <td class="text-justify">Pihak Kedua mengajukan permohonan berhenti sebagai Pegawai Pemerintah dengan Perpanjangan Perjanjian Kerja; atau</td>
+                    </tr>
+                    <tr>
+                        <td class="sub-num-col">d.</td>
+                        <td class="text-justify">Terjadi perampingan organisasi atau kebijakan pemerintah yang mengakibatkan pengurangan Pegawai Pemerintah dengan Perpanjangan Perjanjian Kerja pada Pihak Kesatu.</td>
+                    </tr>
+                </table>
+            </td>
         </tr>
         <tr class="keep-together">
             <td class="num-col">(2)</td>
-            <td class="text-justify">Pemutusan hubungan Perpanjangan Perpanjangan Perjanjian Kerja dengan hormat tidak atas permintaan sendiri dilakukan apabila: <br> a. Pihak Kedua dihukum penjara berdasarkan putusan pengadilan yang telah memiliki kekuatan hukum tetap karena melakukan tindak pidana penjara paling singkat 2 (dua) tahun dan tindak pidana dilakukan dengan tidak berencana; <br> b. Pihak Kedua melakukan pelanggaran kewajiban dan/atau larangan sebagaimana yang dimaksud dalam Pasal 5; atau <br> c. Pihak Kedua tidak dapat memenuhi target kinerja yang telah disepakati sesuai dengan Perpanjangan Perjanjian Kerja.</td>
+            <td class="text-justify">
+                Pemutusan hubungan Perpanjangan Perpanjangan Perjanjian Kerja dengan hormat tidak atas permintaan sendiri dilakukan apabila:
+                <table class="sub-list">
+                    <tr>
+                        <td class="sub-num-col">a.</td>
+                        <td class="text-justify">Pihak Kedua dihukum penjara berdasarkan putusan pengadilan yang telah memiliki kekuatan hukum tetap karena melakukan tindak pidana penjara paling singkat 2 (dua) tahun dan tindak pidana dilakukan dengan tidak berencana;</td>
+                    </tr>
+                    <tr>
+                        <td class="sub-num-col">b.</td>
+                        <td class="text-justify">Pihak Kedua melakukan pelanggaran kewajiban dan/atau larangan sebagaimana yang dimaksud dalam Pasal 5; atau</td>
+                    </tr>
+                    <tr>
+                        <td class="sub-num-col">c.</td>
+                        <td class="text-justify">Pihak Kedua tidak dapat memenuhi target kinerja yang telah disepakati sesuai dengan Perpanjangan Perjanjian Kerja.</td>
+                    </tr>
+                </table>
+            </td>
         </tr>
         <tr class="keep-together">
             <td class="num-col">(3)</td>
-            <td class="text-justify">Pemutusan hubungan Perpanjangan Perjanjian Kerja tidak dengan hormat dilakukan apabila: <br> a. melakukan penyelewengan terhadap Pancasila dan/atau Undang-Undang Dasar Negara Republik Indonesia Tahun 1945; <br> b. dihukum penjara atau kurungan berdasarkan putusan pengadilan yang telah memiliki kekuatan hukum tetap karena melakukan tindak pidana kejahatan jabatan atau tindak pidana yang ada hubungannya dengan jabatan; <br> c. menjadi anggota dan/atau pengurus partai politik; atau <br> d. dihukum penjara berdasarkan putusan pengadilan yang telah memiliki kekuatan hukum tetap karena melakukan tindak pidana yang diancam pidana penjara paling singkat 2 (dua) tahun atau lebih dan tindak pidana tersebut dilakukan dengan berencana.</td>
+            <td class="text-justify">
+                Pemutusan hubungan Perpanjangan Perjanjian Kerja tidak dengan hormat dilakukan apabila:
+                <table class="sub-list">
+                    <tr>
+                        <td class="sub-num-col">a.</td>
+                        <td class="text-justify">melakukan penyelewengan terhadap Pancasila dan/atau Undang-Undang Dasar Negara Republik Indonesia Tahun 1945;</td>
+                    </tr>
+                    <tr>
+                        <td class="sub-num-col">b.</td>
+                        <td class="text-justify">dihukum penjara atau kurungan berdasarkan putusan pengadilan yang telah memiliki kekuatan hukum tetap karena melakukan tindak pidana kejahatan jabatan atau tindak pidana yang ada hubungannya dengan jabatan;</td>
+                    </tr>
+                    <tr>
+                        <td class="sub-num-col">c.</td>
+                        <td class="text-justify">menjadi anggota dan/atau pengurus partai politik; atau</td>
+                    </tr>
+                    <tr>
+                        <td class="sub-num-col">d.</td>
+                        <td class="text-justify">dihukum penjara berdasarkan putusan pengadilan yang telah memiliki kekuatan hukum tetap karena melakukan tindak pidana yang diancam pidana penjara paling singkat 2 (dua) tahun atau lebih dan tindak pidana tersebut dilakukan dengan berencana.</td>
+                    </tr>
+                </table>
+            </td>
         </tr>
     </table>
 

@@ -9,6 +9,7 @@ Portal terintegrasi untuk manajemen identitas digital, sertifikat elektronik, da
 - **Integrasi cPanel API**: Pembuatan, penghapusan, dan sinkronisasi akun email secara otomatis dengan server hosting.
 - **Advanced Search**: Pencarian akun berdasarkan Nama, NIP, atau NIK secara konsisten di seluruh tabel.
 - **Manajemen Profil**: Pendataan NIK, NIP, Jabatan, Golongan (untuk PNS/PPPK), dan Unit Kerja untuk setiap pemegang akun.
+- **Manajemen Pegawai**: Pengelompokan dan pemantauan khusus untuk daftar PNS, PPPK (Penuh Waktu), dan PPPK PW (Paruh Waktu) dengan fitur **Pagination** untuk efisiensi data besar.
 
 ### 2. Monitoring Sertifikat Elektronik (TTE)
 
@@ -25,8 +26,10 @@ Portal terintegrasi untuk manajemen identitas digital, sertifikat elektronik, da
 ### 4. Batch Operations (Super Admin)
 
 - **Refactored Module**: Modul batch yang terorganisir untuk efisiensi pemrosesan data massal.
+- **Advanced Spreadsheet Import**: Migrasi dari CSV ke **XLSX (Excel)** untuk impor data yang lebih andal dan mudah diedit.
 - **Mass Account Creation**: Pembuatan akun massal dengan input ala Excel dan validasi otomatis.
-- **Bulk Updates**: Pembaruan data profil dan dokumen Perjanjian Kerja (PK) secara massal.
+- **Bulk Updates**: Pembaruan data profil dan dokumen Perjanjian Kerja (PK) secara massal, termasuk pembaruan Unit Kerja per baris.
+- **Unit Kerja Batch**: Pembuatan daftar Unit Kerja secara massal melalui file Excel.
 - **PK Export System**: Generasi otomatis dokumen Perjanjian Kerja (PPPK/Paruh Waktu) dengan format standar (A4, font Bookman Old Style).
 - **Subfolder Archive**: ZIP hasil batch yang terorganisir secara otomatis berdasarkan status kepegawaian.
 
@@ -38,8 +41,8 @@ Portal terintegrasi untuk manajemen identitas digital, sertifikat elektronik, da
 ### 6. Administrasi & Keamanan
 
 - **Role-Based Access Control (RBAC)**: Pembatasan akses antara _Super Admin_ dan _Admin_.
-- **Eksport Data**: Generasi laporan dalam format PDF dan CSV menggunakan Dompdf.
-- **Restructured UI**: Navigasi yang dikelompokkan secara logis (Dashboard, Email, Pejabat, Organisasi) untuk kemudahan penggunaan.
+- **Eksport Data**: Generasi laporan dalam format PDF dan CSV yang telah dioptimasi (layout portrait, clickable domain, dan ringkasan statistik).
+- **Restructured UI**: Navigasi yang dikelompokkan secara logis (Dashboard, Email, Pegawai, Pejabat, Organisasi) untuk kemudahan penggunaan.
 
 ## Tech Stack
 
@@ -47,6 +50,7 @@ Portal terintegrasi untuk manajemen identitas digital, sertifikat elektronik, da
 
 - **Core Framework**: PHP 8.1+ (CodeIgniter 4.6)
 - **Database**: MySQL / MariaDB
+- **Spreadsheet Engine**: PhpSpreadsheet (XLSX Support)
 - **PDF Engine**: Dompdf
 - **HTTP Client**: CodeIgniter CURLRequest
 

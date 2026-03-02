@@ -204,6 +204,7 @@ class Email extends BaseController
 
         $updateData = [
             'nomor' => $this->request->getPost('nomor'),
+            'status_asn_id' => $email_detail['status_asn_id'],
             'gaji_nominal' => str_replace(['.', ','], '', $this->request->getPost('gaji_nominal')),
             'gaji_terbilang' => $this->request->getPost('gaji_terbilang'),
             'tanggal_kontrak_awal' => $this->request->getPost('tanggal_kontrak_awal'),
@@ -231,12 +232,12 @@ class Email extends BaseController
             return redirect()->to('email/detail/' . $username)->with('error', 'Metode permintaan tidak valid.');
         }
 
-        $currentData = $this->emailService->getEmailDetail($username);
-        $currentEmail = $currentData['email']['email'];
+        $newEmail = $this->request->getPost('email');
+        $emailParts = explode('@', $newEmail);
+        $newUser = $emailParts[0];
 
-        $updateData = [
+        $profileData = [
             'name' => $this->request->getPost('name'),
-            'email' => $this->request->getPost('email') ?: $currentEmail,
             'gelar_depan' => $this->request->getPost('gelar_depan'),
             'gelar_belakang' => $this->request->getPost('gelar_belakang'),
             'nik' => $this->request->getPost('nik'),
@@ -254,8 +255,34 @@ class Email extends BaseController
         ];
 
         try {
-            $this->emailService->updateEmailDetails($username, $updateData);
-            return redirect()->to('email/detail/' . $username)->with('success', 'Data profil berhasil diperbarui.');
+            $emailModel = new \App\Domains\Email\EmailModel();
+            $pkModel = new \App\Domains\Email\PkModel();
+            
+            $sourceRecord = $emailModel->where('user', $username)->first();
+            $targetRecord = $emailModel->where('email', $newEmail)->first();
+
+            if (!$sourceRecord) throw new Exception("Akun asal tidak ditemukan.");
+            if (!$targetRecord) throw new Exception("Akun tujuan tidak ditemukan.");
+
+            // 1. If email changed, we are "moving" the profile to another account
+            if ($sourceRecord['email'] !== $newEmail) {
+                // Clear profile data from source record
+                $emptyData = array_fill_keys(array_keys($profileData), null);
+                $emptyData['pimpinan'] = 0;
+                $emptyData['pimpinan_desa'] = 0;
+                $emailModel->update($sourceRecord['id'], $emptyData);
+
+                // Update target record with the new profile data
+                $emailModel->update($targetRecord['id'], $profileData);
+
+                // Move PK data if exists
+                $pkModel->where('email', $sourceRecord['email'])->set(['email' => $newEmail])->update();
+            } else {
+                // Just a normal profile update on the same account
+                $emailModel->update($sourceRecord['id'], $profileData);
+            }
+
+            return redirect()->to('email/detail/' . $newUser)->with('success', 'Data profil berhasil diperbarui.');
         } catch (Exception $e) {
             log_message('error', 'Database error during email details update: ' . $e->getMessage());
             return redirect()->to('email/detail/' . $username)->with('error', 'Gagal memperbarui data: ' . $e->getMessage());
@@ -703,6 +730,112 @@ class Email extends BaseController
             return $this->response->setJSON(['success' => true, 'email' => $data['email']]);
         } catch (Exception $e) {
             return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+    public function pns_list()
+    {
+        try {
+            $statusPns = $this->statusAsnModel->where('nama_status_asn', 'PNS')->asArray()->first();
+
+            if (!$statusPns) {
+                throw new Exception('Status PNS belum dikonfigurasi di sistem.');
+            }
+
+            $emails = $this->emailModel->withDetails()
+                ->where('emails.status_asn_id', $statusPns['id'])
+                ->select('emails.*, unit_kerja.nama_unit_kerja as unit_kerja_name, parent_unit_kerja.nama_unit_kerja as parent_unit_kerja_name')
+                ->orderBy('emails.name', 'ASC');
+
+            $data = [
+                'title' => 'Daftar PNS',
+                'emails' => $emails->paginate(100, 'default'),
+                'pager' => $this->emailModel->pager,
+                'total_count' => $this->emailModel->where('status_asn_id', $statusPns['id'])->countAllResults(),
+                'back_url' => site_url('email')
+            ];
+
+            return view('email/pns_list', $data);
+        } catch (Exception $e) {
+            $data['error'] = $e->getMessage();
+            $data['back_url'] = site_url('email');
+            return view('email/error', $data);
+        }
+    }
+
+    public function pppk_list()
+    {
+        try {
+            $statusPppk = $this->statusAsnModel->where('nama_status_asn', 'PPPK')->asArray()->first();
+
+            if (!$statusPppk) {
+                throw new Exception('Status PPPK belum dikonfigurasi di sistem.');
+            }
+
+            $emails = $this->emailModel
+                ->select([
+                    'emails.id',
+                    'emails.name',
+                    'emails.nip',
+                    'emails.user',
+                    'emails.email',
+                    'emails.bsre_status',
+                    'unit_kerja.nama_unit_kerja as unit_kerja_name',
+                    'parent_unit_kerja.nama_unit_kerja as parent_unit_kerja_name',
+                    'MIN(pk.nomor) as nomor_pk',
+                ])
+                ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
+                ->join('unit_kerja as parent_unit_kerja', 'parent_unit_kerja.id = unit_kerja.parent_id', 'left')
+                ->join('pk', 'pk.email = emails.email', 'left')
+                ->where('emails.status_asn_id', $statusPppk['id'])
+                ->groupBy('emails.id, unit_kerja.nama_unit_kerja, parent_unit_kerja.nama_unit_kerja')
+                ->orderBy('CAST(MIN(pk.nomor) AS UNSIGNED)', 'ASC');
+
+            $data = [
+                'title' => 'PPPK Penuh Waktu',
+                'emails' => $emails->paginate(100, 'default'),
+                'pager' => $this->emailModel->pager,
+                'total_count' => $this->emailModel->where('status_asn_id', $statusPppk['id'])->countAllResults(),
+                'back_url' => site_url('email')
+            ];
+
+            return view('email/pppk_list', $data);
+        } catch (Exception $e) {
+            $data['error'] = $e->getMessage();
+            $data['back_url'] = site_url('email');
+            return view('email/error', $data);
+        }
+    }
+
+    public function pppk_pw_list()
+    {
+        try {
+            $statusPppkPw = $this->statusAsnModel->where('nama_status_asn', 'PPPK PARUH WAKTU')->asArray()->first();
+
+            if (!$statusPppkPw) {
+                throw new Exception('Status PPPK PARUH WAKTU belum dikonfigurasi di sistem.');
+            }
+
+            $emails = $this->emailModel->withDetails()
+                ->where('emails.status_asn_id', $statusPppkPw['id'])
+                ->join('pk', 'pk.email = emails.email', 'left')
+                ->select('emails.*, unit_kerja.nama_unit_kerja as unit_kerja_name, parent_unit_kerja.nama_unit_kerja as parent_unit_kerja_name, pk.nomor as nomor_pk, pk.tanggal_kontrak_awal, pk.tanggal_kontrak_akhir')
+                ->orderBy('CAST(pk.nomor AS UNSIGNED)', 'ASC')
+                ->orderBy('pk.nomor', 'ASC');
+
+            $data = [
+                'title' => 'PPPK Paruh Waktu',
+                'emails' => $emails->paginate(100, 'default'),
+                'pager' => $this->emailModel->pager,
+                'total_count' => $this->emailModel->where('status_asn_id', $statusPppkPw['id'])->countAllResults(),
+                'back_url' => site_url('email')
+            ];
+
+            return view('email/pppk_pw_list', $data);
+        } catch (Exception $e) {
+            $data['error'] = $e->getMessage();
+            $data['back_url'] = site_url('email');
+            return view('email/error', $data);
         }
     }
 }

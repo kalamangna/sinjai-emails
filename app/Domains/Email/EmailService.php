@@ -307,6 +307,7 @@ class EmailService
             'unit_kerja_options' => $this->unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->asArray()->findAll(),
             'status_asn_options' => $this->statusAsnModel->orderBy('nama_status_asn', 'ASC')->asArray()->findAll(),
             'eselon_options' => $this->eselonModel->orderBy('nama_eselon', 'ASC')->asArray()->findAll(),
+            'all_email_options' => $this->emailModel->select('email')->orderBy('email', 'ASC')->asArray()->findAll(),
         ];
     }
 
@@ -367,15 +368,26 @@ class EmailService
         // Get filtered count BEFORE pagination
         $filtered_count = $emailBuilder->countAllResults(false);
 
-        $emails = $emailBuilder
-            ->orderBy('emails.eselon_id IS NULL', 'ASC', false)
-            ->orderBy('emails.eselon_id', 'ASC')
-            ->orderBy('emails.status_asn_id IS NULL', 'ASC', false)
-            ->orderBy('emails.status_asn_id', 'ASC')
-            ->orderBy('emails.jabatan IS NULL', 'ASC', false)
-            ->orderBy('emails.jabatan', 'ASC')
-            ->orderBy('emails.name', 'ASC')
-            ->paginate($perPage);
+        // Determine if we should show the Unit Kerja column (if there's more than one unit involved)
+        $showUnitKerjaColumn = !empty($childrenIds);
+
+        // Sorting logic
+        if ($showUnitKerjaColumn) {
+            $emailBuilder->orderBy('emails.eselon_id IS NULL', 'ASC', false)
+                        ->orderBy('emails.eselon_id', 'ASC')
+                        ->orderBy('emails.status_asn_id IS NULL', 'ASC', false)
+                        ->orderBy('emails.status_asn_id', 'ASC')
+                        ->orderBy('unit_kerja.nama_unit_kerja', 'ASC')
+                        ->orderBy('emails.name', 'ASC');
+        } else {
+            $emailBuilder->orderBy('emails.eselon_id IS NULL', 'ASC', false)
+                        ->orderBy('emails.eselon_id', 'ASC')
+                        ->orderBy('emails.status_asn_id IS NULL', 'ASC', false)
+                        ->orderBy('emails.status_asn_id', 'ASC')
+                        ->orderBy('emails.name', 'ASC');
+        }
+
+        $emails = $emailBuilder->paginate($perPage);
 
         $pager = $this->emailModel->pager;
 
@@ -480,6 +492,7 @@ class EmailService
             'active_count' => $active_count,
             'active_bsre_count' => $active_bsre_count,
             'status_asn_stats' => $status_asn_stats,
+            'showUnitKerjaColumn' => $showUnitKerjaColumn,
             'pagination' => $pager,
             'status_asn_options' => $this->statusAsnModel->orderBy('nama_status_asn', 'ASC')->findAll(),
             'bsre_status_options' => $bsre_status_options,

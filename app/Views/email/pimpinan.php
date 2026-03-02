@@ -12,7 +12,7 @@
                 <i class="fas fa-file-pdf mr-2"></i> Export PDF
             </a>
             <button id="syncAllTteBtn" onclick="syncAllBsreStatus()" class="btn btn-solid">
-                <i class="fas fa-sync-alt mr-2 text-white/80"></i> Sync TTE
+                <i class="fas fa-fingerprint mr-2 text-white/80"></i> Sync TTE
             </button>
         </div>
     </div>

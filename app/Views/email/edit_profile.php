@@ -17,17 +17,21 @@
 
                 <!-- Bagian: Informasi Personal -->
                 <div class="space-y-6">
-                    <div class="flex justify-between items-center border-b border-slate-100 pb-1">
+                    <div class="border-b border-slate-100 pb-1">
                         <h4 class="text-[10px] font-bold text-slate-700 uppercase tracking-widest">Data Pribadi</h4>
-                        <div class="text-[10px] font-bold text-slate-700 tracking-tight bg-slate-50 px-2 py-0.5 rounded border border-slate-200">
-                            <?= esc($email['email']) ?>
-                            <input type="hidden" name="email" value="<?= esc($email['email']) ?>">
-                        </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="md:col-span-2">
-                            <label for="name" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Nama Lengkap <span class="text-slate-700 font-normal">(Tanpa Gelar)</span></label>
+                            <label for="email" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Email</label>
+                            <select id="email" name="email" class="choices-search block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 appearance-none cursor-pointer transition-all">
+                                <?php foreach ($all_email_options as $opt): ?>
+                                    <option value="<?= esc($opt['email']) ?>" <?= ($opt['email'] == $email['email']) ? 'selected' : '' ?>><?= esc($opt['email']) ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label for="name" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Nama <span class="text-slate-700 font-normal">(Tanpa Gelar)</span></label>
                             <input type="text" name="name" id="name" value="<?= esc($email['name']) ?>" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 uppercase transition-all" required>
                         </div>
                         <div>

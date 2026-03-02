@@ -27,6 +27,9 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         $routes->get('eselon_detail/(:num)', '\App\Domains\Email\Email::eselon_detail/$1');
         $routes->get('pimpinan', '\App\Domains\Pimpinan\PimpinanController::pimpinan');
         $routes->get('pimpinan_desa', '\App\Domains\Pimpinan\PimpinanController::pimpinan_desa');
+        $routes->get('pns_list', '\App\Domains\Email\Email::pns_list');
+        $routes->get('pppk_list', '\App\Domains\Email\Email::pppk_list');
+        $routes->get('pppk_pw_list', '\App\Domains\Email\Email::pppk_pw_list');
         $routes->get('eselon_list', '\App\Domains\Email\Email::eselon_list');
         $routes->get('export_pimpinan_pdf', '\App\Domains\Pimpinan\PimpinanController::export_pimpinan_pdf');
         $routes->get('export_pimpinan_desa_pdf', '\App\Domains\Pimpinan\PimpinanController::export_pimpinan_desa_pdf');
@@ -58,6 +61,11 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
     // Batch Operations (Super Admin Only)
     $routes->group('batch', ['filter' => 'role:super_admin'], function ($routes) {
         $routes->get('/', '\App\Domains\Batch\BatchController::index');
+        $routes->post('import_generic_spreadsheet', '\App\Domains\Batch\BatchController::import_generic_spreadsheet');
+        $routes->get('download_template', '\App\Domains\Batch\BatchController::download_template');
+        $routes->get('download_update_template', '\App\Domains\Batch\BatchController::download_update_template');
+        $routes->get('download_pk_template', '\App\Domains\Batch\BatchController::download_pk_template');
+        $routes->get('download_unit_kerja_template', '\App\Domains\Batch\BatchController::download_unit_kerja_template');
         $routes->get('update', '\App\Domains\Batch\BatchController::update');
         $routes->get('pk', '\App\Domains\Batch\BatchController::pk');
         $routes->post('process_update', '\App\Domains\Batch\BatchController::process_update');
@@ -74,6 +82,7 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
             $routes->post('store', '\App\Domains\UnitKerja\UnitKerja::store');
             $routes->get('batch_create', '\App\Domains\UnitKerja\UnitKerja::batch_create');
             $routes->post('batch_store', '\App\Domains\UnitKerja\UnitKerja::batch_store');
+            $routes->post('process_batch_create', '\App\Domains\UnitKerja\UnitKerja::process_batch_create');
             $routes->get('edit/(:num)', '\App\Domains\UnitKerja\UnitKerja::edit/$1');
             $routes->post('update/(:num)', '\App\Domains\UnitKerja\UnitKerja::update/$1');
             $routes->get('delete/(:num)', '\App\Domains\UnitKerja\UnitKerja::delete/$1');
@@ -125,5 +134,6 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
     $routes->post('user/check_email', '\App\Domains\Auth\User::checkEmailAvailability');
     $routes->post('user/check_niknip', '\App\Domains\Auth\User::check_niknip');
     $routes->get('bsre/check-status', '\App\Domains\Email\Bsre::checkStatus');
+    $routes->get('bsre/sync-all', '\App\Domains\Email\Bsre::syncAllStatus');
     $routes->post('bsre/sync-status', '\App\Domains\Email\Bsre::syncStatus');
 });

@@ -88,7 +88,7 @@ class WebMonitoringExportService
 
         $dompdf = $this->getDompdf();
         $dompdf->loadHtml(view('web_opd/exports/pdf_export', $data));
-        $dompdf->setPaper('A4', 'landscape');
+        $dompdf->setPaper('A4', 'portrait');
         $dompdf->render();
 
         return [
@@ -183,7 +183,7 @@ class WebMonitoringExportService
 
         $dompdf = $this->getDompdf();
         $dompdf->loadHtml(view('web_desa_kelurahan/exports/pdf_export', $data));
-        $dompdf->setPaper('A4', 'landscape');
+        $dompdf->setPaper('A4', 'portrait');
         $dompdf->render();
 
         return [

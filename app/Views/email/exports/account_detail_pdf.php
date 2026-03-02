@@ -55,28 +55,36 @@
             width: 5%;
         }
 
-        /* Kolom Nama */
+        /* Kolom Nama / NIP */
         th:nth-child(2),
         td:nth-child(2) {
-            width: 35%;
+            width: <?= ($showUnitKerjaColumn ? '25%' : '35%') ?>;
         }
 
         /* Kolom Email */
         th:nth-child(3),
         td:nth-child(3) {
+            width: <?= ($showUnitKerjaColumn ? '20%' : '25%') ?>;
+        }
+
+        /* Kolom Unit Kerja */
+        <?php if ($showUnitKerjaColumn): ?>th:nth-child(4),
+        td:nth-child(4) {
             width: 25%;
         }
 
+        <?php endif; ?>
+
         /* Kolom Password */
-        th:nth-child(4),
-        td:nth-child(4) {
-            width: 20%;
+        th:nth-child(<?= ($showUnitKerjaColumn ? '5' : '4') ?>),
+        td:nth-child(<?= ($showUnitKerjaColumn ? '5' : '4') ?>) {
+            width: 15%;
         }
 
         /* Kolom Status TTE */
-        th:nth-child(5),
-        td:nth-child(5) {
-            width: 15%;
+        th:nth-child(<?= ($showUnitKerjaColumn ? '6' : '5') ?>),
+        td:nth-child(<?= ($showUnitKerjaColumn ? '6' : '5') ?>) {
+            width: 10%;
         }
 
         .tte-description {
@@ -159,8 +167,9 @@
         <thead>
             <tr>
                 <th>No.</th>
-                <th>Nama</th>
+                <th>Nama / NIP</th>
                 <th>Email</th>
+                <?= ($showUnitKerjaColumn ? '<th>Unit Kerja</th>' : '') ?>
                 <th>Password</th>
                 <th>Status TTE</th>
             </tr>
@@ -195,10 +204,24 @@
                     $color = '#9ca3af'; // Slate-700
                 }
 
+                // Prepare Unit Kerja content
+                $unitKerjaContent = '';
+                if ($showUnitKerjaColumn) {
+                    if (!empty($email['parent_unit_kerja_name'])) {
+                        $unitKerjaContent = esc(strtoupper($email['unit_kerja_name'] ?? '')) . '<br><small style="color: #334155; font-size: 8px;">' . esc(strtoupper($email['parent_unit_kerja_name'])) . '</small>';
+                    } else {
+                        $unitKerjaContent = esc(strtoupper($email['unit_kerja_name'] ?? '-'));
+                    }
+                }
+
                 echo '<tr>
-                        <td>' . $nomor . '</td> 
-                        <td><strong>' . esc(strtoupper($email['name'] ?? 'N/A')) . '</strong></td>
+                        <td style="text-align: center;">' . $nomor . '</td> 
+                        <td>
+                            <strong>' . esc(strtoupper($email['name'] ?? 'N/A')) . '</strong><br/>
+                            <small style="color: #334155; font-size: 8px;">NIP: ' . esc($email['nip'] ?: '-') . '</small>
+                        </td>
                         <td>' . esc($email['email'] ?? 'N/A') . '</td>
+                        ' . ($showUnitKerjaColumn ? '<td>' . $unitKerjaContent . '</td>' : '') . '
                         <td>' . esc($email['password'] ?? '') . '</td>
                         <td style="color: ' . $color . '; font-weight: bold;">' . esc($statusTte) . '</td>
                     </tr>';

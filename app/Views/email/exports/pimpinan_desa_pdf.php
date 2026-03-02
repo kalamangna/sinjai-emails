@@ -190,17 +190,17 @@
                 // Prepare Unit Kerja content
                 $unitKerjaContent = '';
                 if ($showUnitKerjaColumn) {
-                    $unitKerjaContent = esc(strtoupper($email['unit_kerja_name'] ?? 'N/A'));
+                    $unitKerjaContent = esc(strtoupper($email['unit_kerja_name'] ?? '-'));
                     if (!empty($email['parent_unit_kerja_name'])) {
-                        $unitKerjaContent .= '<br><small style="color: #334155;">' . esc(trim(str_ireplace('KANTOR', '', strtoupper($email['parent_unit_kerja_name'])))) . '</small>';
+                        $unitKerjaContent .= '<br><small style="color: #334155; font-size: 8px;">' . esc(trim(str_ireplace('KANTOR KECAMATAN', '', strtoupper($email['parent_unit_kerja_name'])))) . '</small>';
                     }
                 }
 
                 echo '<tr>
                         <td>' . $nomor . '</td> 
                         <td>
-                            <strong>' . esc(strtoupper($email['name'] ?? 'N/A')) . '</strong><br>
-                            <span style="color: #334155;">' . esc($email['email'] ?? 'N/A') . '</span>
+                            <strong>' . esc(strtoupper($email['name'] ?? '-')) . '</strong><br>
+                            <span style="color: #334155;">' . esc($email['email'] ?? '-') . '</span>
                         </td>
                         <td>' . esc($email['jabatan'] ?? '-') . '</td>
                         ' . ($showUnitKerjaColumn ? '<td>' . $unitKerjaContent . '</td>' : '') . '

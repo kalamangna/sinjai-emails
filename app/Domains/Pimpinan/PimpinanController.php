@@ -174,7 +174,7 @@ class PimpinanController extends BaseController
             $dompdf = $this->emailExportService->generatePimpinanDesaPdf($search, $bsre_status);
 
             require_once APPPATH . 'Shared/Helpers/TanggalHelper.php';
-            $filename = 'Email & TTE Pimpinan Desa - ' . formatTanggal('now') . '.pdf';
+            $filename = 'Email & TTE Kepala Desa - ' . formatTanggal('now') . '.pdf';
             $dompdf->stream($filename, ["Attachment" => true]);
             exit();
         } catch (\Exception $e) {
