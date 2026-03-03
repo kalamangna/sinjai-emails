@@ -41,7 +41,7 @@ Portal terintegrasi untuk manajemen identitas digital, sertifikat elektronik, da
 ### 6. Administrasi & Keamanan
 
 - **Role-Based Access Control (RBAC)**: Pembatasan akses antara _Super Admin_ dan _Admin_.
-- **Eksport Data**: Generasi laporan dalam format PDF dan CSV yang telah dioptimasi (layout portrait, clickable domain, dan ringkasan statistik).
+- **Eksport Data**: Generasi laporan dalam format PDF, Excel (XLSX), dan CSV yang telah dioptimasi (layout landscape/portrait, clickable domain, dan ringkasan statistik).
 - **Restructured UI**: Navigasi yang dikelompokkan secara logis (Dashboard, Email, Pegawai, Pejabat, Organisasi) untuk kemudahan penggunaan.
 
 ## Tech Stack

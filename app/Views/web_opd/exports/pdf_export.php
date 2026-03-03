@@ -78,7 +78,7 @@
         .info-layout td {
             border: none;
             padding: 0;
-            vertical-align: top;
+            vertical-align: middle;
             text-align: center;
         }
 
@@ -95,7 +95,7 @@
         }
 
         .summary-value {
-            font-size: 16px;
+            font-size: 18px;
             font-weight: bold;
             color: #1e293b;
         }

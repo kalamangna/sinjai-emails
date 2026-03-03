@@ -12,6 +12,9 @@
             <a href="<?= site_url('email/export_unit_kerja_csv/' . $unit_kerja['id']) . ($_SERVER['QUERY_STRING'] ? '?' . $_SERVER['QUERY_STRING'] : '') ?>" class="btn btn-outline no-underline">
                 <i class="fas fa-file-csv mr-2"></i> Export CSV
             </a>
+            <a href="<?= site_url('email/export_unit_kerja_excel/' . $unit_kerja['id']) . ($_SERVER['QUERY_STRING'] ? '?' . $_SERVER['QUERY_STRING'] : '') ?>" class="btn btn-outline no-underline">
+                <i class="fas fa-file-excel mr-2"></i> Export Excel
+            </a>
             <a href="<?= site_url('email/export_account_detail_pdf/' . $unit_kerja['id']) . ($_SERVER['QUERY_STRING'] ? '?' . $_SERVER['QUERY_STRING'] : '') ?>" class="btn btn-outline no-underline">
                 <i class="fas fa-user-shield mr-2"></i> Akun PDF
             </a>

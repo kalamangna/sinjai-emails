@@ -41,7 +41,8 @@
             margin-bottom: 20px;
         }
 
-        .main-table th, .main-table td {
+        .main-table th,
+        .main-table td {
             border: 1px solid #e2e8f0;
             padding: 6px 4px;
             text-align: left;
@@ -59,8 +60,14 @@
         }
 
         /* Fixed Column Widths */
-        .col-no { width: 20px; text-align: center; }
-        .col-tte { width: 80px; }
+        .col-no {
+            width: 20px;
+            text-align: center;
+        }
+
+        .col-tte {
+            width: 80px;
+        }
 
         .info-box {
             margin-bottom: 20px;
@@ -83,17 +90,25 @@
         }
 
         .activation-text {
-            font-size: 11px;
+            font-size: 13px;
             color: #b91c1c;
             font-weight: bold;
             margin: 0;
         }
 
+        .activation-link {
+            display: inline-block;
+            margin-top: 5px;
+            font-size: 16px;
+            color: #b91c1c;
+            text-decoration: underline;
+        }
+
         .activation-sub {
             font-weight: normal;
             color: #64748b;
-            font-size: 10px;
-            margin-top: 2px;
+            font-size: 11px;
+            margin-top: 5px;
         }
 
         .header {
@@ -154,18 +169,28 @@
             <tr>
                 <!-- Activation Section -->
                 <td style="width: 55%; vertical-align: middle;">
-                    <p class="activation-text">
-                        Untuk aktivasi akun, masukkan email dan password di halaman <a href="https://sinjaikab.go.id/webmail" style="color: #b91c1c; text-decoration: underline;">sinjaikab.go.id/webmail</a>
-                    </p>
-                    <p class="activation-sub">Hubungi admin jika ada kendala.</p>
+                    <p class="activation-text">Untuk aktivasi akun, silakan akses:</p>
+                    <a href="https://sinjaikab.go.id/webmail" class="activation-link">sinjaikab.go.id/webmail</a>
+                    <p class="activation-sub">Masukkan email dan password. Hubungi admin jika ada kendala.</p>
                 </td>
 
                 <!-- Legend Section -->
-                <td style="width: 45%; padding-left: 10px; border-left: 1px solid #e2e8f0;">
+                <td style="width: 45%; padding-left: 10px; border-left: 1px solid #e2e8f0; vertical-align: top;">
                     <div style="font-size: 9px; font-weight: bold; color: #475569; margin-bottom: 4px; text-transform: uppercase;">Keterangan Status TTE</div>
-                    <div style="font-size: 9px;"><strong style="color: #059669; display: inline-block; width: 85px;">ISSUE</strong> : Sertifikat aktif dan siap digunakan untuk TTE</div>
-                    <div style="font-size: 9px;"><strong style="color: #dc2626; display: inline-block; width: 85px;">EXPIRED</strong> : Sertifikat kedaluwarsa, hubungi admin untuk pembaruan</div>
-                    <div style="font-size: 9px;"><strong style="color: #f59e0b; display: inline-block; width: 85px;">NO_CERTIFICATE</strong> : Belum memiliki sertifikat, cek email untuk aktivasi</div>
+                    <table style="border: none; margin: 0; font-size: 9px; width: 100%;">
+                        <tr>
+                            <td style="border: none; padding: 1px 0; width: 85px;"><strong style="color: #059669;">ISSUE</strong></td>
+                            <td style="border: none; padding: 1px 0;">: Sertifikat aktif, siap digunakan untuk TTE</td>
+                        </tr>
+                        <tr>
+                            <td style="border: none; padding: 1px 0;"><strong style="color: #dc2626;">EXPIRED</strong></td>
+                            <td style="border: none; padding: 1px 0;">: Sertifikat kedaluwarsa, hubungi admin untuk pembaruan</td>
+                        </tr>
+                        <tr>
+                            <td style="border: none; padding: 1px 0;"><strong style="color: #f59e0b;">NO_CERTIFICATE</strong></td>
+                            <td style="border: none; padding: 1px 0;">: Belum memiliki sertifikat, cek email untuk aktivasi</td>
+                        </tr>
+                    </table>
                 </td>
             </tr>
         </table>
@@ -209,7 +234,7 @@
                 }
             ?>
                 <tr>
-                    <td style="text-align: center; color: #64748b;"><?= $nomor++ ?></td> 
+                    <td style="text-align: center; color: #64748b;"><?= $nomor++ ?></td>
                     <td><strong><?= esc(strtoupper($email['name'] ?? '')) ?></strong></td>
                     <td><?= esc($email['nip'] ?: '') ?></td>
                     <td><?= esc($email['nik'] ?: '') ?></td>

@@ -40,6 +40,7 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
 
         // Export Routes
         $routes->get('export_unit_kerja_csv/(:num)', '\App\Domains\Email\EmailExport::export_unit_kerja_csv/$1');
+        $routes->get('export_unit_kerja_excel/(:num)', '\App\Domains\Email\EmailExport::export_unit_kerja_excel/$1');
         $routes->get('export_unit_kerja_pdf/(:num)', '\App\Domains\Email\EmailExport::export_unit_kerja_pdf/$1');
         $routes->get('export_account_detail_pdf/(:num)', '\App\Domains\Email\EmailExport::export_account_detail_pdf/$1');
         $routes->get('export_perjanjian_kerja_pdf/(:num)', '\App\Domains\Email\EmailExport::export_perjanjian_kerja_pdf/$1');

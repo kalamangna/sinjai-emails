@@ -144,8 +144,11 @@
     <?php
     $totalEmail = count($emails);
     $issueCount = 0;
+    $expiredCount = 0;
     foreach ($emails as $email) {
-        if (($email['bsre_status'] ?? '') === 'ISSUE') $issueCount++;
+        $st = $email['bsre_status'] ?? '';
+        if ($st === 'ISSUE') $issueCount++;
+        elseif ($st === 'EXPIRED') $expiredCount++;
     }
     ?>
 
@@ -153,26 +156,36 @@
         <table class="info-layout">
             <tr>
                 <!-- Summary Section -->
-                <td style="width: 35%;">
-                    <div style="font-size: 9px; font-weight: bold; color: #475569; margin-bottom: 4px; text-transform: uppercase;">Ringkasan Data</div>
-                    <table style="border: none; margin: 0; font-size: 10px;">
-                        <tr>
-                            <td style="border: none; padding: 0; width: 80px; color: #64748b;">TOTAL EMAIL</td>
-                            <td style="border: none; padding: 0; color: #1e293b;">: <strong><?= $totalEmail ?></strong></td>
-                        </tr>
-                        <tr>
-                            <td style="border: none; padding: 0; color: #059669;">TTE AKTIF</td>
-                            <td style="border: none; padding: 0; color: #059669;">: <strong><?= $issueCount ?></strong></td>
-                        </tr>
-                    </table>
+                <td style="width: 15%; text-align: center; vertical-align: middle;">
+                    <div style="font-size: 9px; font-weight: bold; color: #64748b; text-transform: uppercase; margin-bottom: 4px;">TOTAL EMAIL</div>
+                    <div style="font-size: 18px; font-weight: bold; color: #1e293b;"><?= $totalEmail ?></div>
+                </td>
+                <td style="width: 15%; border-left: 1px solid #e2e8f0; text-align: center; vertical-align: middle;">
+                    <div style="font-size: 9px; font-weight: bold; color: #059669; text-transform: uppercase; margin-bottom: 4px;">TTE AKTIF</div>
+                    <div style="font-size: 18px; font-weight: bold; color: #059669;"><?= $issueCount ?></div>
+                </td>
+                <td style="width: 15%; border-left: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0; text-align: center; vertical-align: middle;">
+                    <div style="font-size: 9px; font-weight: bold; color: #dc2626; text-transform: uppercase; margin-bottom: 4px;">TTE EXPIRED</div>
+                    <div style="font-size: 18px; font-weight: bold; color: #dc2626;"><?= $expiredCount ?></div>
                 </td>
 
                 <!-- Legend Section -->
-                <td style="width: 65%; border-left: 1px solid #e2e8f0; padding-left: 15px;">
+                <td style="width: 55%; padding-left: 15px; text-align: left; vertical-align: middle;">
                     <div style="font-size: 9px; font-weight: bold; color: #475569; margin-bottom: 4px; text-transform: uppercase;">Keterangan Status TTE</div>
-                    <div style="font-size: 9px;"><strong style="color: #059669; display: inline-block; width: 85px;">ISSUE</strong> : Sertifikat aktif dan siap digunakan untuk TTE</div>
-                    <div style="font-size: 9px;"><strong style="color: #dc2626; display: inline-block; width: 85px;">EXPIRED</strong> : Sertifikat kedaluwarsa, hubungi admin untuk pembaruan</div>
-                    <div style="font-size: 9px;"><strong style="color: #f59e0b; display: inline-block; width: 85px;">NO_CERTIFICATE</strong> : Belum memiliki sertifikat, cek email untuk aktivasi</div>
+                    <table style="border: none; margin: 0; font-size: 9px; width: 100%;">
+                        <tr>
+                            <td style="border: none; padding: 1px 0; width: 85px;"><strong style="color: #059669;">ISSUE</strong></td>
+                            <td style="border: none; padding: 1px 0;">: Sertifikat aktif, siap digunakan untuk TTE</td>
+                        </tr>
+                        <tr>
+                            <td style="border: none; padding: 1px 0;"><strong style="color: #dc2626;">EXPIRED</strong></td>
+                            <td style="border: none; padding: 1px 0;">: Sertifikat kedaluwarsa, hubungi admin untuk pembaruan</td>
+                        </tr>
+                        <tr>
+                            <td style="border: none; padding: 1px 0;"><strong style="color: #f59e0b;">NO_CERTIFICATE</strong></td>
+                            <td style="border: none; padding: 1px 0;">: Belum memiliki sertifikat, cek email untuk aktivasi</td>
+                        </tr>
+                    </table>
                 </td>
             </tr>
         </table>

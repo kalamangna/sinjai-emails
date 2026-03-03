@@ -6,6 +6,8 @@ use App\Domains\Email\EmailModel;
 use App\Domains\UnitKerja\UnitKerjaModel;
 use App\Shared\Models\StatusAsnModel;
 use App\Domains\Email\PkModel;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx as XlsxWriter;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use ZipArchive;
@@ -507,6 +509,83 @@ class EmailExportService
             'path' => $tempZipPath,
             'filename' => $zipFileName
         ];
+    }
+
+    public function generateUnitKerjaExcel($unitKerjaId, $params = [])
+    {
+        set_time_limit(0);
+        ini_set('memory_limit', '-1');
+
+        $unitKerja = $this->unitKerjaModel->find($unitKerjaId);
+        if (!$unitKerja) throw new Exception('Unit Kerja not found.');
+
+        $children = $this->unitKerjaModel->where('parent_id', $unitKerjaId)->findAll();
+        $childrenIds = array_column($children, 'id');
+        $allUnitIds = array_merge([$unitKerjaId], $childrenIds);
+
+        $builder = $this->emailModel->withDetails()->whereIn('unit_kerja_id', $allUnitIds);
+        if (!empty($params['search'])) {
+            $builder->groupStart()
+                ->like('emails.email', $params['search'])
+                ->orLike('emails.name', $params['search'])
+                ->orLike('emails.nik', $params['search'])
+                ->orLike('emails.nip', $params['search'])
+                ->groupEnd();
+        }
+        if (!empty($params['status_asn'])) $builder->where('emails.status_asn_id', $params['status_asn']);
+        if (!empty($params['bsre_status'])) {
+            if ($params['bsre_status'] === 'not_synced') {
+                $builder->groupStart()->where('emails.bsre_status', null)->orWhere('emails.bsre_status', '')->groupEnd();
+            } else {
+                $builder->where('emails.bsre_status', $params['bsre_status']);
+            }
+        }
+
+        $emails = $builder->orderBy('emails.name', 'ASC')->findAll();
+        
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        
+        // Header
+        $header = ['NO', 'NAMA', 'NIP', 'NIK', 'EMAIL', 'PASSWORD', 'UNIT KERJA'];
+        $sheet->fromArray($header, NULL, 'A1');
+        
+        // Styling Header
+        $sheet->getStyle('A1:G1')->getFont()->setBold(true);
+        
+        // Data
+        $data = [];
+        $no = 1;
+        foreach ($emails as $email) {
+            $unitKerjaName = $email['unit_kerja_name'] ?? '';
+            
+            $data[] = [
+                $no++,
+                strtoupper($email['name'] ?? ''),
+                $email['nip'] ?? '',
+                $email['nik'] ?? '',
+                $email['email'] ?? '',
+                $email['password'] ?? '',
+                strtoupper($unitKerjaName)
+            ];
+        }
+        
+        if (!empty($data)) {
+            $sheet->fromArray($data, NULL, 'A2');
+        }
+        
+        // Auto size columns
+        foreach (range('A', 'G') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+        
+        $filename = 'Detail Akun - ' . $unitKerja['nama_unit_kerja'] . '.xlsx';
+        $path = WRITEPATH . 'uploads/' . url_title($filename, '_', true);
+        
+        $writer = new XlsxWriter($spreadsheet);
+        $writer->save($path);
+        
+        return ['path' => $path, 'filename' => $filename];
     }
 
     public function generateUnitKerjaCsv($unitKerjaId, $params = [])

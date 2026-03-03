@@ -37,6 +37,24 @@ class EmailExport extends BaseController
         }
     }
 
+    public function export_unit_kerja_excel($unitKerjaId)
+    {
+        try {
+            $params = [
+                'search' => $this->request->getGet('search'),
+                'status_asn' => $this->request->getGet('status_asn'),
+                'bsre_status' => $this->request->getGet('bsre_status'),
+            ];
+
+            $result = $this->emailExportService->generateUnitKerjaExcel($unitKerjaId, $params);
+
+            return $this->response->download($result['path'], null)->setFileName($result['filename']);
+        } catch (Exception $e) {
+            $data['error'] = $e->getMessage();
+            return view('email/error', $data);
+        }
+    }
+
     public function export_single_perjanjian_kerja_pdf($username)
     {
         try {
