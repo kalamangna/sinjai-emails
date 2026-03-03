@@ -21,26 +21,34 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
     $routes->group('email', function ($routes) {
         // View Routes (Admin & Super Admin)
         $routes->get('/', '\App\Domains\Email\Email::index');
-        $routes->get('unit_kerja', '\App\Domains\Email\Email::unit_kerja_list');
         $routes->get('detail/(:any)', '\App\Domains\Email\Email::detail/$1');
-        $routes->get('unit_kerja/(:num)', '\App\Domains\Email\Email::unit_kerja_detail/$1');
-        $routes->get('eselon_detail/(:num)', '\App\Domains\Email\Email::eselon_detail/$1');
+        
+        // List Routes
+        $routes->get('unit_kerja', '\App\Domains\Email\EmailList::unit_kerja_list');
+        $routes->get('unit_kerja/(:num)', '\App\Domains\Email\EmailList::unit_kerja_detail/$1');
+        $routes->get('eselon_detail/(:num)', '\App\Domains\Email\EmailList::eselon_detail/$1');
+        $routes->get('pns_list', '\App\Domains\Email\EmailList::pns_list');
+        $routes->get('pppk_list', '\App\Domains\Email\EmailList::pppk_list');
+        $routes->get('pppk_pw_list', '\App\Domains\Email\EmailList::pppk_pw_list');
+        $routes->get('eselon_list', '\App\Domains\Email\EmailList::eselon_list');
+
+        // Pimpinan Routes
         $routes->get('pimpinan', '\App\Domains\Pimpinan\PimpinanController::pimpinan');
         $routes->get('pimpinan_desa', '\App\Domains\Pimpinan\PimpinanController::pimpinan_desa');
-        $routes->get('pns_list', '\App\Domains\Email\Email::pns_list');
-        $routes->get('pppk_list', '\App\Domains\Email\Email::pppk_list');
-        $routes->get('pppk_pw_list', '\App\Domains\Email\Email::pppk_pw_list');
-        $routes->get('eselon_list', '\App\Domains\Email\Email::eselon_list');
         $routes->get('export_pimpinan_pdf', '\App\Domains\Pimpinan\PimpinanController::export_pimpinan_pdf');
         $routes->get('export_pimpinan_desa_pdf', '\App\Domains\Pimpinan\PimpinanController::export_pimpinan_desa_pdf');
-        $routes->get('export_unit_kerja_csv/(:num)', '\App\Domains\Email\Email::export_unit_kerja_csv/$1');
-        $routes->get('export_unit_kerja_pdf/(:num)', '\App\Domains\Email\Email::export_unit_kerja_pdf/$1');
-        $routes->get('export_account_detail_pdf/(:num)', '\App\Domains\Email\Email::export_account_detail_pdf/$1');
-        $routes->get('export_perjanjian_kerja_pdf/(:num)', '\App\Domains\Email\Email::export_perjanjian_kerja_pdf/$1');
-        $routes->get('export_single_perjanjian_kerja_pdf/(:any)', '\App\Domains\Email\Email::export_single_perjanjian_kerja_pdf/$1');
-        $routes->get('api_unit_emails/(:num)', '\App\Domains\Email\Email::api_unit_emails/$1');
-        $routes->get('api_download_zip/(:num)', '\App\Domains\Email\Email::api_download_zip/$1');
-        $routes->get('download_zip_file/(:any)', '\App\Domains\Email\Email::download_zip_file/$1');
+
+        // Export Routes
+        $routes->get('export_unit_kerja_csv/(:num)', '\App\Domains\Email\EmailExport::export_unit_kerja_csv/$1');
+        $routes->get('export_unit_kerja_pdf/(:num)', '\App\Domains\Email\EmailExport::export_unit_kerja_pdf/$1');
+        $routes->get('export_account_detail_pdf/(:num)', '\App\Domains\Email\EmailExport::export_account_detail_pdf/$1');
+        $routes->get('export_perjanjian_kerja_pdf/(:num)', '\App\Domains\Email\EmailExport::export_perjanjian_kerja_pdf/$1');
+        $routes->get('export_single_perjanjian_kerja_pdf/(:any)', '\App\Domains\Email\EmailExport::export_single_perjanjian_kerja_pdf/$1');
+        $routes->get('download_zip_file/(:any)', '\App\Domains\Email\EmailExport::download_zip_file/$1');
+
+        // API Routes
+        $routes->get('api_unit_emails/(:num)', '\App\Domains\Email\EmailApi::api_unit_emails/$1');
+        $routes->get('api_download_zip/(:num)', '\App\Domains\Email\EmailApi::api_download_zip/$1');
 
         // Mutation Routes (Super Admin Only)
         $routes->group('', ['filter' => 'role:super_admin'], function ($routes) {
@@ -53,8 +61,8 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
             $routes->get('edit_pk/(:any)', '\App\Domains\Email\Email::edit_pk/$1');
             $routes->post('update_pk/(:any)', '\App\Domains\Email\Email::update_pk/$1');
             $routes->post('delete/(:num)', '\App\Domains\Email\Email::delete/$1');
-            $routes->post('create_single', '\App\Domains\Email\Email::create_single_email');
-            $routes->post('api_generate_pdf', '\App\Domains\Email\Email::api_generate_pdf');
+            $routes->post('create_single', '\App\Domains\Email\EmailApi::create_single_email');
+            $routes->post('api_generate_pdf', '\App\Domains\Email\EmailApi::api_generate_pdf');
         });
     });
 

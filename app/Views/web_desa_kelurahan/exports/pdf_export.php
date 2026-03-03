@@ -2,183 +2,161 @@
 <html>
 
 <head>
-    <title>Data Website Desa & Kelurahan</title>
+    <title><?= esc($title) ?></title>
     <style>
         @page {
-            margin: 10px 25px;
+            size: portrait;
+            margin: 20px 30px 40px 30px;
         }
 
         body {
             font-family: Arial, sans-serif;
-            margin: 10px;
+            margin: 0;
             font-size: 10px;
+            color: #334155;
+            line-height: 1.4;
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 15px;
-        }
-
-        .logo {
-            max-width: 80px;
-            max-height: 80px;
-            margin-bottom: 10px;
-        }
-
+        /* Typography */
         h1 {
-            color: #1e293b;
+            color: #0f172a;
             text-align: center;
-            font-size: 14px;
+            font-size: 16px;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         h2 {
-            color: #64748b;
+            color: #334155;
             text-align: center;
             font-size: 12px;
-            margin-top: -10px;
+            margin: 5px 0 15px 0;
+            text-transform: uppercase;
+            font-weight: bold;
         }
 
-        table {
+        /* Table Styles */
+        .main-table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
         }
 
-        th,
-        td {
+        .main-table th, .main-table td {
             border: 1px solid #e2e8f0;
-            padding: 5px;
+            padding: 6px 8px;
             text-align: left;
-            word-wrap: break-word;
             vertical-align: top;
+            word-wrap: break-word;
         }
 
-        th {
-            background-color: #f8fafc;
+        .main-table th {
+            background-color: #f1f5f9;
+            color: #475569;
+            text-transform: uppercase;
+            font-size: 9px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
         }
 
-        .stats-container {
-            display: table;
-            width: 100%;
+        /* Info Box */
+        .info-box {
             margin-bottom: 20px;
             border: 1px solid #e2e8f0;
-            border-collapse: collapse;
+            padding: 12px;
+            background-color: #f8fafc;
+            border-radius: 6px;
         }
 
-        .stats-box {
-            display: table-cell;
-            width: 33.33%;
-            text-align: center;
-            padding: 8px 0;
-            border-right: 1px solid #e2e8f0;
-        }
-
-        .stats-box:last-child {
-            border-right: none;
-        }
-
-        .stats-box h3 {
+        .info-layout {
+            width: 100%;
+            border: none;
             margin: 0;
-            font-size: 10px;
+        }
+
+        .info-layout td {
+            border: none;
+            padding: 0;
+            vertical-align: top;
+            text-align: center;
+        }
+
+        .summary-metric {
+            text-align: center;
+        }
+
+        .summary-label {
+            font-size: 9px;
+            font-weight: bold;
             color: #64748b;
             text-transform: uppercase;
+            margin-bottom: 4px;
         }
 
-        .stats-box p {
-            margin: 5px 0 0 0;
-            font-size: 14px;
+        .summary-value {
+            font-size: 16px;
             font-weight: bold;
             color: #1e293b;
         }
 
-        .chart-container {
-            width: 100%;
-            margin-bottom: 20px;
+        /* Branding */
+        .header {
             text-align: center;
+            margin-bottom: 20px;
         }
 
-        .chart-box {
-            width: 30%;
-            display: inline-block;
-            vertical-align: top;
+        .logo {
+            max-width: 60px;
+            margin-bottom: 10px;
         }
 
-        .chart-box img {
+        .update-per {
+            text-align: center;
+            font-size: 10px;
+            color: #64748b;
+            font-weight: bold;
+            margin-top: -10px;
+        }
+
+        /* Footer */
+        .footer {
+            position: fixed;
+            bottom: -20px;
+            left: 0;
+            right: 0;
+            height: 30px;
+            font-size: 9px;
+            color: #94a3b8;
+            border-top: 1px solid #f1f5f9;
+            padding-top: 5px;
+        }
+
+        .footer-content {
             width: 100%;
-            height: auto;
-        }
-
-        /* Platform column text colors */
-        .platform-sideka-ng-text {
-            color: #2563eb;
-            font-weight: bold;
-        }
-
-        .platform-opensid-text {
-            color: #059669;
-            font-weight: bold;
-        }
-
-        .platform-pihak-ketiga-text {
-            color: #f59e0b;
-            font-weight: bold;
-        }
-
-        .platform-default-text {
-            color: #475569;
-            font-weight: bold;
         }
 
         .row-kelurahan {
-            background-color: #f1f5f9;
-        }
-
-        .footer-info {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            font-size: 9px;
-            text-align: left;
-        }
-
-        .footer-right {
-            position: fixed;
-            bottom: 0;
-            right: 0;
-            font-size: 9px;
-            text-align: right;
-            color: #64748b;
-        }
-
-        .footer-info p,
-        .footer-right p {
-            margin: 2px 0;
-        }
-
-        .update-date {
-            text-align: center;
-            font-size: 10px;
-            color: #475569;
-            margin-top: 5px;
+            background-color: #f8fafc;
         }
     </style>
-
 </head>
 
-
-
 <body>
+    <div class="footer">
+        <table class="footer-content" style="border: none;">
+            <tr>
+                <td style="border: none; text-align: left; padding: 0;">Contact Person: 082188344982 (Dzul)</td>
+                <td style="border: none; text-align: right; padding: 0; font-weight: bold;">Aptika Diskominfo-SP Sinjai</td>
+            </tr>
+        </table>
+    </div>
 
     <div class="header">
-
         <img src="<?= $logoSrc ?>" alt="Logo" class="logo" />
-
         <h1><?= esc($title) ?></h1>
-
         <h2><?= esc($subtitle) ?></h2>
-
-        <p class="update-date">UPDATE PER: <?= strtoupper(esc($current_date)) ?></p>
-
+        <p class="update-per">UPDATE PER: <?= strtoupper(esc($current_date)) ?></p>
     </div>
 
     <?php
@@ -186,135 +164,70 @@
     $aktif_web = 0;
     $nonaktif_web = 0;
     foreach ($websites as $w) {
-        if (strtoupper($w['status'] ?? '') === 'AKTIF') {
-            $aktif_web++;
-        } else {
-            $nonaktif_web++;
-        }
+        if (strtoupper($w['status'] ?? '') === 'AKTIF') $aktif_web++;
+        else $nonaktif_web++;
     }
     ?>
 
-    <div class="stats-container">
-        <div class="stats-box">
-            <h3>Total Website</h3>
-            <p><?= $total_web ?></p>
-        </div>
-        <div class="stats-box">
-            <h3>Status Aktif</h3>
-            <p style="color: #047857;"><?= $aktif_web ?></p>
-        </div>
-        <div class="stats-box">
-            <h3>Status Nonaktif</h3>
-            <p style="color: #dc2626;"><?= $nonaktif_web ?></p>
-        </div>
-    </div>
-
-    <table>
-
-        <thead>
-
+    <div class="info-box">
+        <table class="info-layout">
             <tr>
-
-                <th style="width: 3%;">No.</th>
-
-                <th style="width: 25%;">Desa/Kelurahan</th>
-
-                <th style="width: 22%;">Domain</th>
-
-                <th style="width: 12%;">Platform</th>
-
-                <th style="width: 10%;">Status</th>
-
-                <th style="width: 28%;">Keterangan</th>
-
+                <td style="width: 33.33%;">
+                    <div class="summary-label">TOTAL WEBSITE</div>
+                    <div class="summary-value"><?= $total_web ?></div>
+                </td>
+                <td style="width: 33.33%; border-left: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0;">
+                    <div class="summary-label" style="color: #059669;">AKTIF</div>
+                    <div class="summary-value" style="color: #059669;"><?= $aktif_web ?></div>
+                </td>
+                <td style="width: 33.33%;">
+                    <div class="summary-label" style="color: #dc2626;">NONAKTIF</div>
+                    <div class="summary-value" style="color: #dc2626;"><?= $nonaktif_web ?></div>
+                </td>
             </tr>
+        </table>
+    </div>
 
+    <table class="main-table">
+        <thead>
+            <tr>
+                <th style="width: 20px; text-align: center;">No.</th>
+                <th style="width: 150px;">Desa/Kelurahan</th>
+                <th style="width: 150px;">Domain</th>
+                <th style="width: 70px;">Platform</th>
+                <th style="width: 50px;">Status</th>
+                <th>Keterangan</th>
+            </tr>
         </thead>
-
         <tbody>
-
             <?php
-
             $nomor = 1;
-
             foreach ($websites as $website) :
-
                 $row_class = (stripos($website['desa_kelurahan'], 'KELURAHAN') !== false) ? 'row-kelurahan' : '';
+                $status_color = (strtoupper($website['status']) === 'AKTIF') ? '#059669' : '#dc2626';
 
-                $status_color = (strtoupper($website['status']) === 'AKTIF') ? '#047857' : '#dc2626';
-
-
-
-                $platform_name_slug = strtolower(str_replace(' ', '-', $website['platform_name']));
-
-                $platform_text_class = 'platform-default-text';
-
-                if ($platform_name_slug === 'sideka-ng') {
-
-                    $platform_text_class = 'platform-sideka-ng-text';
-                } elseif ($platform_name_slug === 'opensid') {
-
-                    $platform_text_class = 'platform-opensid-text';
-                } elseif ($platform_name_slug === 'pihak-ketiga') {
-
-                    $platform_text_class = 'platform-pihak-ketiga-text';
-                }
-
+                $pName = strtoupper($website['platform_name'] ?? '');
+                $pColor = '#475569';
+                if ($pName === 'SIDEKA-NG') $pColor = '#2563eb';
+                elseif ($pName === 'OPENSID') $pColor = '#059669';
+                elseif ($pName === 'PIHAK KETIGA') $pColor = '#d97706';
             ?>
-
                 <tr class="<?= $row_class ?>">
-
-                    <td style="text-align: center;"><?= $nomor++ ?></td>
-
+                    <td style="text-align: center; color: #64748b;"><?= $nomor++ ?></td>
                     <td>
-                        <strong><?= esc(strtoupper($website['desa_kelurahan'] ?? '')) ?: '-' ?></strong><br />
-                        <span style="font-size: 8px; color: #64748b;"><?= esc(strtoupper($website['kecamatan'] ?? '')) ?: '-' ?></span>
+                        <strong><?= esc(strtoupper($website['desa_kelurahan'] ?? '')) ?></strong><br />
+                        <span style="font-size: 8px; color: #64748b;"><?= esc(strtoupper($website['kecamatan'] ?? '')) ?></span>
                     </td>
-
-                    <td>
-                        <?php if (!empty($website['domain'])) :
-                            $url = $website['domain'];
-                            if (!preg_match("~^(?:f|ht)tps?://~i", $url)) {
-                                $url = "https://" . $url;
-                            }
-                        ?>
-                            <a href="<?= esc($url) ?>"><?= esc($website['domain']) ?></a>
-                        <?php else : ?>
-                            -
-                        <?php endif; ?>
+                    <td style="color: #475569;">
+                        <span><?= esc($website['domain'] ?? '') ?></span>
                     </td>
-
-                    <td class="<?= $platform_text_class ?>"><?= esc(strtoupper($website['platform_name'] ?? '')) ?: '-' ?></td>
-
-                    <td style="color: <?= $status_color ?>; font-weight: bold;"><?= esc(strtoupper($website['status'] ?? '')) ?: '-' ?></td>
-
-                    <td><?= esc($website['keterangan'] ?? '') ?: '-' ?></td>
-
+                    <td style="font-weight: bold; color: <?= $pColor ?>; font-size: 9px;"><?= esc($pName) ?></td>
+                    <td style="color: <?= $status_color ?>; font-weight: bold; font-size: 9px;"><?= esc(strtoupper($website['status'] ?? '')) ?></td>
+                    <td style="font-size: 9px; color: #64748b;"><?= esc($website['keterangan'] ?? '') ?></td>
                 </tr>
-
             <?php endforeach; ?>
-
         </tbody>
-
     </table>
-
-    <div class="footer-info">
-
-
-        <strong>Contact Person:</strong> 082188344982 (Dzul)
-
-
-
-    </div>
-
-
-
-    <div class="footer-right">
-
-        <p>Aptika Diskominfo-SP Sinjai</p>
-
-    </div>
-
 </body>
 
 </html>

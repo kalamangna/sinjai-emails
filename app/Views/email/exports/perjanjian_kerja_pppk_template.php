@@ -225,7 +225,7 @@
 
     <!-- PREAMBLE -->
     <div class="text-justify">
-        Pada hari ini <strong>SENIN</strong> tanggal <strong>TIGA</strong> bulan <strong>MARET</strong> tahun <strong>DUA RIBU DUA PULUH ENAM</strong> yang bertandatangan di bawah ini:
+        Pada hari ini <strong>SENIN</strong> tanggal <strong>DUA</strong> bulan <strong>MARET</strong> tahun <strong>DUA RIBU DUA PULUH ENAM</strong> yang bertandatangan di bawah ini:
     </div>
 
     <!-- PARTIES (PIHAK) -->

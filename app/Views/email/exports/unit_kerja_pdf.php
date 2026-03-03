@@ -5,242 +5,240 @@
     <title>Daftar Email & TTE - <?= esc($unit_kerja['nama_unit_kerja']) ?></title>
     <style>
         @page {
-            margin: 10px 25px;
+            margin: 20px 30px 40px 30px;
         }
 
         body {
             font-family: Arial, sans-serif;
-            margin: 10px;
+            margin: 0;
             font-size: 10px;
+            color: #334155;
+            line-height: 1.4;
         }
 
         h1 {
-            color: #1e293b;
+            color: #0f172a;
             text-align: center;
-            font-size: 14px;
+            font-size: 16px;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         h2 {
             color: #334155;
             text-align: center;
             font-size: 12px;
-            margin-top: -10px;
-            margin-bottom: 20px;
+            margin: 5px 0 15px 0;
+            text-transform: uppercase;
+            font-weight: bold;
         }
 
-        table {
+        .main-table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
         }
 
-        th,
-        td {
+        .main-table th,
+        .main-table td {
             border: 1px solid #e2e8f0;
-            padding: 5px;
+            padding: 6px 8px;
             text-align: left;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
             vertical-align: top;
+            word-wrap: break-word;
         }
 
-        th {
-            background-color: #f8fafc;
-        }
-
-        /* Kolom No. */
-        th:nth-child(1),
-        td:nth-child(1) {
-            text-align: center;
-            width: 5%;
-        }
-
-        /* Kolom Nama / NIP */
-        th:nth-child(2),
-        td:nth-child(2) {
-            width: <?= ($showUnitKerjaColumn ? '30%' : '45%') ?>;
-        }
-
-        /* Kolom Email */
-        th:nth-child(3),
-        td:nth-child(3) {
-            width: <?= ($showUnitKerjaColumn ? '25%' : '40%') ?>;
-        }
-
-        /* Kolom Unit Kerja */
-        <?php if ($showUnitKerjaColumn): ?>th:nth-child(4),
-        td:nth-child(4) {
-            width: 30%;
-        }
-
-        <?php endif; ?>
-
-        /* Kolom Status TTE */
-        th:nth-child(<?= ($showUnitKerjaColumn ? '5' : '4') ?>),
-        td:nth-child(<?= ($showUnitKerjaColumn ? '5' : '4') ?>) {
-            width: 10%;
-        }
-
-        .tte-description {
+        .main-table th {
+            background-color: #f1f5f9;
+            color: #475569;
+            text-transform: uppercase;
             font-size: 9px;
-            margin-top: 10px;
-            width: 100%;
+            font-weight: bold;
+            letter-spacing: 0.5px;
         }
 
-        .tte-description p {
-            margin: 0 0 5px 0;
+        /* Fixed Column Widths */
+        .col-no {
+            width: 20px;
+            text-align: center;
         }
 
-        .tte-description ul {
-            list-style-type: none;
-            padding: 0;
-            margin: 0;
-            width: 100%;
+        .col-tte {
+            width: 80px;
         }
 
-        .tte-description li {
-            margin-bottom: 2px;
-            width: 100%;
-            color: #334155;
-        }
-
-        .tte-description li strong {
-            display: inline-block;
+        <?php if (!$showUnitKerjaColumn): ?>.col-nip {
             width: 100px;
+        }
+
+        <?php endif; ?>.info-box {
+            margin-bottom: 20px;
+            border: 1px solid #e2e8f0;
+            padding: 10px;
+            background-color: #f8fafc;
+            border-radius: 6px;
+        }
+
+        .info-layout {
+            width: 100%;
+            border: none;
+            margin: 0;
+        }
+
+        .info-layout td {
+            border: none;
+            padding: 0;
+            vertical-align: top;
         }
 
         .header {
             text-align: center;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         .logo {
-            max-width: 80px;
-            max-height: 80px;
+            max-width: 60px;
             margin-bottom: 10px;
         }
 
-        .footer-info {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            font-size: 9px;
-            text-align: left;
-        }
-
-        .footer-right {
-            position: fixed;
-            bottom: 0;
-            right: 0;
-            font-size: 9px;
-            text-align: right;
-            color: #334155;
-        }
-
-        .footer-info p,
-        .footer-right p {
-            margin: 2px 0;
-        }
-
-        .update-date {
+        .update-per {
             text-align: center;
             font-size: 10px;
-            color: #334155;
+            color: #64748b;
+            font-weight: bold;
             margin-top: -10px;
+        }
+
+        .footer {
+            position: fixed;
+            bottom: -20px;
+            left: 0;
+            right: 0;
+            height: 30px;
+            font-size: 9px;
+            color: #94a3b8;
+            border-top: 1px solid #f1f5f9;
+            padding-top: 5px;
+        }
+
+        .footer-content {
+            width: 100%;
         }
     </style>
 </head>
 
 <body>
-    <div class="header">
-        <img src="<?= $logoSrc ?>" alt="Logo" class="logo" />
-        <h1>DAFTAR EMAIL & TTE</h1>
-        <h2><?= esc($unit_kerja['nama_unit_kerja']) ?></h2>
-        <p class="update-date">UPDATE PER: <?= strtoupper(esc($current_date)) ?></p>
+    <div class="footer">
+        <table class="footer-content" style="border: none;">
+            <tr>
+                <td style="border: none; text-align: left; padding: 0;">Contact Person: 082188344982 (Dzul)</td>
+                <td style="border: none; text-align: right; padding: 0; font-weight: bold;">Aptika Diskominfo-SP Sinjai</td>
+            </tr>
+        </table>
     </div>
 
-    <table>
+    <div class="header">
+        <img src="<?= $logoSrc ?>" alt="Logo" class="logo" />
+        <h1>MONITORING EMAIL & TTE</h1>
+        <h2><?= esc($unit_kerja['nama_unit_kerja']) ?></h2>
+        <p class="update-per">UPDATE PER: <?= strtoupper(esc($current_date)) ?></p>
+    </div>
+
+    <?php
+    $totalEmail = count($emails);
+    $issueCount = 0;
+    foreach ($emails as $email) {
+        if (($email['bsre_status'] ?? '') === 'ISSUE') $issueCount++;
+    }
+    ?>
+
+    <div class="info-box">
+        <table class="info-layout">
+            <tr>
+                <!-- Summary Section -->
+                <td style="width: 35%;">
+                    <div style="font-size: 9px; font-weight: bold; color: #475569; margin-bottom: 4px; text-transform: uppercase;">Ringkasan Data</div>
+                    <table style="border: none; margin: 0; font-size: 10px;">
+                        <tr>
+                            <td style="border: none; padding: 0; width: 80px; color: #64748b;">TOTAL EMAIL</td>
+                            <td style="border: none; padding: 0; color: #1e293b;">: <strong><?= $totalEmail ?></strong></td>
+                        </tr>
+                        <tr>
+                            <td style="border: none; padding: 0; color: #059669;">TTE AKTIF</td>
+                            <td style="border: none; padding: 0; color: #059669;">: <strong><?= $issueCount ?></strong></td>
+                        </tr>
+                    </table>
+                </td>
+
+                <!-- Legend Section -->
+                <td style="width: 65%; border-left: 1px solid #e2e8f0; padding-left: 15px;">
+                    <div style="font-size: 9px; font-weight: bold; color: #475569; margin-bottom: 4px; text-transform: uppercase;">Keterangan Status TTE</div>
+                    <div style="font-size: 9px;"><strong style="color: #059669; display: inline-block; width: 85px;">ISSUE</strong> : Sertifikat aktif & siap digunakan untuk TTE</div>
+                    <div style="font-size: 9px;"><strong style="color: #dc2626; display: inline-block; width: 85px;">EXPIRED</strong> : Sertifikat kedaluwarsa, hubungi admin untuk pembaruan</div>
+                    <div style="font-size: 9px;"><strong style="color: #f59e0b; display: inline-block; width: 85px;">NO_CERTIFICATE</strong> : Belum memiliki sertifikat, cek email untuk aktivasi</div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <table class="main-table">
         <thead>
             <tr>
-                <th>No.</th>
-                <th>Nama / NIP</th>
-                <th>Email</th>
-                <?= ($showUnitKerjaColumn ? '<th>Unit Kerja</th>' : '') ?>
-                <th>Status TTE</th>
+                <th style="width: 20px; text-align: center;">No.</th>
+                <th class="col-nama">Nama <?= ($showUnitKerjaColumn ? '/ NIP' : '') ?></th>
+                <?php if (!$showUnitKerjaColumn): ?>
+                    <th style="width: 100px;">NIP</th>
+                <?php endif; ?>
+                <th class="col-email">Email</th>
+                <?php if ($showUnitKerjaColumn): ?>
+                    <th class="col-unit">Unit Kerja</th>
+                <?php endif; ?>
+                <th style="width: 80px;">Status TTE</th>
             </tr>
         </thead>
         <tbody>
             <?php
             $nomor = 1;
-            foreach ($emails as $email) {
+            foreach ($emails as $email):
                 $statusTte = !empty($email['bsre_status']) ? $email['bsre_status'] : 'NOT_SYNCED';
 
                 // Color logic
-                $color = '#9ca3af'; // Default slate-700
-                if ($statusTte === 'ISSUE') {
-                    $color = '#047857'; // Emerald-600
-                } elseif ($statusTte === 'EXPIRED') {
-                    $color = '#dc2626'; // Red-600
-                } elseif ($statusTte === 'NO_CERTIFICATE') {
-                    $color = '#f59e0b'; // Amber-500
-                } elseif ($statusTte === 'RENEW') {
-                    $color = '#6ee7b7'; // Amber-500
-                } elseif ($statusTte === 'WAITING_FOR_VERIFICATION') {
-                    $color = '#6ee7b7'; // Amber-500
-                } elseif ($statusTte === 'NEW') {
-                    $color = '#10b981'; // Blue-600
-                } elseif ($statusTte === 'NOT_REGISTERED') {
-                    $color = '#dc2626'; // Red-600
-                } elseif ($statusTte === 'SUSPEND') {
-                    $color = '#dc2626'; // Red-600
-                } elseif ($statusTte === 'REVOKE') {
-                    $color = '#dc2626'; // Red-600
-                } elseif ($statusTte === 'NOT_SYNCED') {
-                    $color = '#9ca3af'; // Slate-700
-                }
+                $color = '#94a3b8';
+                if ($statusTte === 'ISSUE') $color = '#059669';
+                elseif (in_array($statusTte, ['EXPIRED', 'NOT_REGISTERED', 'SUSPEND', 'REVOKE'])) $color = '#dc2626';
+                elseif (in_array($statusTte, ['NO_CERTIFICATE', 'RENEW', 'WAITING_FOR_VERIFICATION'])) $color = '#d97706';
+                elseif ($statusTte === 'NEW') $color = '#0d9488';
 
-                // Prepare Unit Kerja content
                 $unitKerjaContent = '';
                 if ($showUnitKerjaColumn) {
                     if (!empty($email['parent_unit_kerja_name'])) {
-                        $unitKerjaContent = esc(strtoupper($email['unit_kerja_name'] ?? '')) . '<br><small style="color: #334155; font-size: 8px;">' . esc(strtoupper($email['parent_unit_kerja_name'])) . '</small>';
+                        $unitKerjaContent = esc(strtoupper($email['unit_kerja_name'] ?? '')) . '<br><small style="color: #64748b; font-size: 8px;">' . esc(strtoupper($email['parent_unit_kerja_name'])) . '</small>';
                     } else {
-                        $unitKerjaContent = esc(strtoupper($email['unit_kerja_name'] ?? '-'));
+                        $unitKerjaContent = esc(strtoupper($email['unit_kerja_name'] ?? ''));
                     }
                 }
-
-                echo '<tr>
-                        <td style="text-align: center;">' . $nomor . '</td> 
-                        <td>
-                            <strong>' . esc(strtoupper($email['name'] ?? 'N/A')) . '</strong><br/>
-                            <small style="color: #334155; font-size: 8px;">NIP: ' . esc($email['nip'] ?: '-') . '</small>
-                        </td>
-                        <td>' . esc($email['email'] ?? 'N/A') . '</td>
-                        ' . ($showUnitKerjaColumn ? '<td>' . $unitKerjaContent . '</td>' : '') . '
-                        <td style="color: ' . $color . '; font-weight: bold;">' . esc($statusTte) . '</td>
-                    </tr>';
-                $nomor++;
-            }
             ?>
+                <tr>
+                    <td style="text-align: center; color: #64748b;"><?= $nomor++ ?></td>
+                    <td>
+                        <strong><?= esc(strtoupper($email['name'] ?? '')) ?></strong>
+                        <?php if ($showUnitKerjaColumn && !empty($email['nip'])): ?>
+                            <br><small style="color: #64748b; font-size: 8px;"><?= esc($email['nip']) ?></small>
+                        <?php endif; ?>
+                    </td>
+                    <?php if (!$showUnitKerjaColumn): ?>
+                        <td><?= esc($email['nip'] ?: '') ?></td>
+                    <?php endif; ?>
+                    <td style="color: #475569;"><span><?= esc($email['email'] ?? '') ?></span></td>
+                    <?php if ($showUnitKerjaColumn): ?>
+                        <td><?= $unitKerjaContent ?></td>
+                    <?php endif; ?>
+                    <td style="color: <?= $color ?>; font-weight: bold; font-size: 9px;"><?= esc($statusTte) ?></td>
+                </tr>
+            <?php endforeach; ?>
         </tbody>
     </table>
-
-    <div class="tte-description">
-        <p><strong>Keterangan Status TTE</strong></p>
-        <ul>
-            <li><strong style="color: #059669;">ISSUE</strong> : Sertifikat Aktif / Siap TTE</li>
-            <li><strong style="color: #dc2626;">EXPIRED</strong> : Masa Berlaku Habis</li>
-            <li><strong style="color: #f59e0b;">NO_CERTIFICATE</strong> : Belum Ada Sertifikat</li>
-        </ul>
-    </div>
-
-    <div class="footer-info">
-        <strong>Contact Person:</strong> 082188344982 (Dzul)
-    </div>
-
-    <div class="footer-right">
-        <p>Aptika Diskominfo-SP Sinjai</p>
-    </div>
 </body>
 
 </html>

@@ -70,9 +70,6 @@
                                         <div id="bsre-status-<?= $email['id'] ?>" class="bsre-status-container">
                                             <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest animate-pulse">Checking...</span>
                                         </div>
-                                        <button onclick="syncBsreStatus('<?= esc($email['email'], 'js') ?>', <?= $email['id'] ?>)" class="btn btn-table !w-6 !h-6" title="Sinkronisasi TTE">
-                                            <i class="fas fa-fingerprint text-[10px]"></i>
-                                        </button>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center">

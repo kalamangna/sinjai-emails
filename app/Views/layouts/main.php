@@ -65,6 +65,20 @@
         .choices__placeholder {
             @apply text-slate-700 opacity-100 !important;
         }
+
+        /* Sidebar Desktop Collapse */
+        @media (min-width: 1024px) {
+            .sidebar-collapsed #sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar-collapsed #main-content {
+                margin-left: 0;
+            }
+        }
+        
+        #sidebar, #main-content {
+            transition: transform 0.3s ease-in-out, margin-left 0.3s ease-in-out;
+        }
     </style>
 
     <?= $this->renderSection('styles') ?>
@@ -76,6 +90,12 @@
 </head>
 
 <body class="bg-slate-50 text-slate-800 antialiased font-inter">
+    <script>
+        // Apply sidebar state immediately to prevent flicker
+        if (localStorage.getItem('sidebar-collapsed') === 'true' && window.innerWidth >= 1024) {
+            document.body.classList.add('sidebar-collapsed');
+        }
+    </script>
     <!-- Global Loading Overlay -->
     <div id="global-loading" class="fixed inset-0 z-[9999] hidden flex items-center justify-center bg-slate-900/60 backdrop-blur-sm transition-all duration-300">
         <div class="bg-white p-8 rounded-2xl shadow-2xl flex flex-col items-center gap-4 max-w-xs w-full border border-white/20">
@@ -98,8 +118,8 @@
         <!-- Header / Topbar -->
         <header class="h-16 bg-white border-b border-slate-200 sticky top-0 z-40 flex items-center justify-between px-6">
             <div class="flex items-center">
-                <!-- Mobile Toggle -->
-                <button id="sidebar-toggle" class="lg:hidden w-10 h-10 flex items-center justify-center text-slate-700 hover:bg-slate-50 rounded-lg mr-2 transition-colors">
+                <!-- Sidebar Toggle -->
+                <button id="sidebar-toggle" class="w-10 h-10 flex items-center justify-center text-slate-700 hover:bg-slate-50 rounded-lg mr-2 transition-colors">
                     <i class="fas fa-bars"></i>
                 </button>
 
@@ -226,13 +246,19 @@
             });
         });
 
-        // Sidebar Toggle for Mobile
+        // Sidebar Toggle for Mobile & Desktop
         const sidebar = document.getElementById('sidebar');
         const sidebarToggle = document.getElementById('sidebar-toggle');
+        const body = document.body;
 
         if (sidebarToggle) {
             sidebarToggle.addEventListener('click', () => {
-                sidebar.classList.toggle('-translate-x-full');
+                if (window.innerWidth >= 1024) {
+                    body.classList.toggle('sidebar-collapsed');
+                    localStorage.setItem('sidebar-collapsed', body.classList.contains('sidebar-collapsed'));
+                } else {
+                    sidebar.classList.toggle('-translate-x-full');
+                }
             });
         }
 

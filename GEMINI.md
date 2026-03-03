@@ -32,6 +32,11 @@
 - **Duplicates Check**: Verified duplicate PK numbers in the database and provided a list of affected accounts.
 
 ## Technical Details
+- Refactored `Email` controller into four specialized controllers:
+    - `Email.php`: Dashboard, Index, Detail, and core mutation actions (Create, Sync, Edit Profile, Delete).
+    - `EmailList.php`: Categorized lists (Unit Kerja, Eselon, PNS, PPPK).
+    - `EmailExport.php`: PDF, CSV, and ZIP export actions.
+    - `EmailApi.php`: API endpoints and AJAX helpers.
 - Added `import_generic_spreadsheet` method to `BatchController` for flexible XLSX parsing.
 - Added `status_asn_id` to `PkModel` allowed fields.
 - Created `batch-update.js`, `batch-pk.js`, and `unit-kerja-batch.js` to handle specialized import logic.
@@ -49,6 +54,14 @@
 - **PPPK Summary**:
     - Implemented a summary section on the `pppk_list.php` page, showing TTE status counts grouped by parent `unit_kerja`.
     - Iteratively refined the summary's styling, content, and grouping logic based on feedback.
+- **Sidebar & Layout**:
+    - Enabled the sidebar toggle button for desktop screens with a full-hide behavior.
+    - Implemented state persistence using `localStorage`, ensuring the sidebar remains in the user's preferred state across page reloads.
+    - Optimized layout rendering by applying the sidebar state before the body renders to prevent flicker during navigation.
+- **Individual TTE Sync Removal**: Removed per-row "Sync TTE" buttons from `pns_list.php` for consistency with other employee lists.
+
+## Feature Refinements
+- **Assistance Logs**: Updated the creation form to set "Online" as the default assistance method.
 
 ## Bug Fixes
 - **SQL Errors**:
@@ -58,5 +71,33 @@
     - Fixed "Duplicate column name 'id'" error by refactoring the main query to be explicit and not use `select(*)`.
 - **Query Builder State**: Fixed a bug where a shared query builder instance was being reset, causing the main page query to fail after the summary query was executed. Isolated the summary query to its own model instance.
 
+## Global Design Standards
+The project adheres to a **"Slate Clean Government"** aesthetic:
+- **Primary Palette**: Tailwind **Slate** (bg-slate-50 for body, bg-slate-800 for sidebar, border-slate-200).
+- **Typography**: Uses **Inter** font with high-contrast weights and uppercase tracking for UI labels.
+- **Semantic Feedback**: Uses Emerald (Success), Red (Danger), Amber (Warning), and Blue (Info).
+- **Standardized Components**: Centralized buttons in `input.css`, unified badges in `badge.php`, and standardized status color mapping in `main.php`.
+- **Interactions**: Uses Alpine.js for lightweight UI logic and smooth transitions.
+
+## Architectural Improvements
+- **Controller Refactoring**: Decomposed the "fat" `Email` controller into four specialized, maintainable units: `Email.php`, `EmailList.php`, `EmailExport.php`, and `EmailApi.php`, strictly adhering to the Single Responsibility Principle.
+- **Service Optimization**: Refined `AssistanceExportService` to utilize fresh query builders for each request, preventing filter bleeding and ensuring data integrity in reports.
+
+## PDF Export System Refinements
+- **Standardized Styling**: Unified all export templates (`Email`, `Pimpinan`, `Website`, `Assistance`) under the "Clean Slate Government" visual standard.
+- **Layout Stability**: Migrated from float-based positioning to robust, table-based layouts, resolving blank page and alignment issues in `Dompdf`.
+- **Data Richness**:
+    - Added NIP and NIK columns to account and unit kerja exports.
+    - Implemented a dynamic "Ringkasan Data" (Summary) section in Website and Unit Kerja exports.
+    - Switched `Account Detail` export to Landscape orientation for better data density.
+- **UX Improvements**:
+    - Repositioned activation instructions and TTE legends for better prominence above tables.
+    - Enforced fixed widths for "No." and "Status TTE" columns while allowing other data to flow flexibly.
+    - Ensured footers appear consistently on every page of the generated reports.
+    - Optimized data cleanliness by replacing "N/A" or "-" placeholders with empty strings for a more professional look.
+
 ## Housekeeping
-- **CSS Build**: Compiled Tailwind CSS to include new styles used in the error pages and summary views.
+- **CSS Build**: Compiled production Tailwind CSS assets.
+- **Filter Fixes**: Corrected the assistance export link to properly propagate active filters (Category, Month, Year) via query strings.
+- **Parse Errors**: Resolved a syntax error in `WebMonitoringExportService`.
+

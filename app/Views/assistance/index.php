@@ -5,16 +5,16 @@
     <!-- Header Halaman -->
     <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
         <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight">Log Layanan</h1>
-        
+
         <?php if (session()->get('role') === 'super_admin'): ?>
-        <div class="flex items-center gap-2 w-full lg:w-auto">
-            <a href="<?= site_url('assistance/create') ?>" class="flex-1 lg:flex-none btn btn-solid no-underline">
-                <i class="fas fa-plus mr-2 text-white/80"></i> Tambah
-            </a>
-            <a href="<?= site_url('assistance/export_pdf') ?>" class="flex-1 lg:flex-none btn btn-outline no-underline">
-                <i class="fas fa-file-pdf mr-2"></i> Export PDF
-            </a>
-        </div>
+            <div class="flex items-center gap-2 w-full lg:w-auto">
+                <a href="<?= site_url('assistance/create') ?>" class="flex-1 lg:flex-none btn btn-solid no-underline">
+                    <i class="fas fa-plus mr-2 text-white/80"></i> Tambah
+                </a>
+                <a href="<?= site_url('assistance/export_pdf?' . ($_SERVER['QUERY_STRING'] ?? '')) ?>" class="flex-1 lg:flex-none btn btn-outline no-underline">
+                    <i class="fas fa-file-pdf mr-2"></i> Export PDF
+                </a>
+            </div>
         <?php endif; ?>
     </div>
 
@@ -96,14 +96,14 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center">
                                     <?php if (session()->get('role') === 'super_admin'): ?>
-                                    <div class="flex justify-center gap-2">
-                                        <a href="<?= site_url('assistance/edit/' . $activity['id']) ?>" class="btn btn-table" title="Edit">
-                                            <i class="fas fa-edit text-xs"></i>
-                                        </a>
-                                        <a href="<?= site_url('assistance/delete/' . $activity['id']) ?>" class="btn btn-table" title="Hapus" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
-                                            <i class="fas fa-trash-alt text-xs"></i>
-                                        </a>
-                                    </div>
+                                        <div class="flex justify-center gap-2">
+                                            <a href="<?= site_url('assistance/edit/' . $activity['id']) ?>" class="btn btn-table" title="Edit">
+                                                <i class="fas fa-edit text-xs"></i>
+                                            </a>
+                                            <a href="<?= site_url('assistance/delete/' . $activity['id']) ?>" class="btn btn-table" title="Hapus" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                                                <i class="fas fa-trash-alt text-xs"></i>
+                                            </a>
+                                        </div>
                                     <?php else: ?>
                                         <span class="text-[10px] font-bold text-slate-700 uppercase tracking-widest italic">Hanya Lihat</span>
                                     <?php endif; ?>
@@ -125,7 +125,7 @@
                 </tbody>
             </table>
         </div>
-        
+
         <?php if (!empty($activities)): ?>
             <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4">
                 <div class="text-[10px] font-bold text-slate-700 uppercase tracking-widest">

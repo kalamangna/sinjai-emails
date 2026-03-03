@@ -5,146 +5,171 @@
     <title><?= esc($title) ?></title>
     <style>
         @page {
-            margin: 10px 25px;
+            size: portrait;
+            margin: 20px 30px 40px 30px;
         }
 
         body {
             font-family: Arial, sans-serif;
-            margin: 10px;
+            margin: 0;
             font-size: 10px;
+            color: #334155;
+            line-height: 1.4;
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 15px;
-        }
-
-        .logo {
-            max-width: 80px;
-            max-height: 80px;
-            margin-bottom: 10px;
-        }
-
+        /* Typography */
         h1 {
-            color: #1e293b;
+            color: #0f172a;
             text-align: center;
-            font-size: 14px;
-            margin-bottom: 5px;
+            font-size: 16px;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         h2 {
             color: #334155;
             text-align: center;
             font-size: 12px;
-            margin-top: 0;
+            margin: 5px 0 15px 0;
+            text-transform: uppercase;
+            font-weight: bold;
         }
 
-        table {
+        /* Table Styles */
+        .main-table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
         }
 
-        th,
-        td {
+        .main-table th, .main-table td {
             border: 1px solid #e2e8f0;
-            padding: 5px;
+            padding: 6px 8px;
             text-align: left;
+            vertical-align: top;
             word-wrap: break-word;
+        }
+
+        .main-table th {
+            background-color: #f1f5f9;
+            color: #475569;
+            text-transform: uppercase;
+            font-size: 9px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+
+        /* Info Box */
+        .info-box {
+            margin-bottom: 20px;
+            border: 1px solid #e2e8f0;
+            padding: 12px;
+            background-color: #f8fafc;
+            border-radius: 6px;
+        }
+
+        .info-layout {
+            width: 100%;
+            border: none;
+            margin: 0;
+        }
+
+        .info-layout td {
+            border: none;
+            padding: 0;
             vertical-align: top;
         }
 
-        th {
-            background-color: #f8fafc;
+        /* Branding */
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
         }
 
-        .footer-info {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            font-size: 9px;
-            text-align: left;
+        .logo {
+            max-width: 60px;
+            margin-bottom: 10px;
         }
 
-        .footer-right {
-            position: fixed;
-            bottom: 0;
-            right: 0;
-            font-size: 9px;
-            text-align: right;
-            color: #334155;
-        }
-
-        .footer-info p,
-        .footer-right p {
-            margin: 2px 0;
-        }
-
-        .update-date {
+        .update-per {
             text-align: center;
             font-size: 10px;
-            color: #334155;
-            margin-top: -5px;
+            color: #64748b;
+            font-weight: bold;
+            margin-top: -10px;
+        }
+
+        /* Footer */
+        .footer {
+            position: fixed;
+            bottom: -20px;
+            left: 0;
+            right: 0;
+            height: 30px;
+            font-size: 9px;
+            color: #94a3b8;
+            border-top: 1px solid #f1f5f9;
+            padding-top: 5px;
+        }
+
+        .footer-content {
+            width: 100%;
         }
     </style>
 </head>
 
 <body>
+    <div class="footer">
+        <table class="footer-content" style="border: none;">
+            <tr>
+                <td style="border: none; text-align: left; padding: 0;">Contact Person: 082188344982 (Dzul)</td>
+                <td style="border: none; text-align: right; padding: 0; font-weight: bold;">Aptika Diskominfo-SP Sinjai</td>
+            </tr>
+        </table>
+    </div>
+
     <div class="header">
         <img src="<?= $logoSrc ?>" alt="Logo" class="logo" />
         <h1><?= esc($title) ?></h1>
         <h2><?= esc($subtitle) ?></h2>
+        <?php if (isset($current_date)): ?>
+            <p class="update-per">UPDATE PER: <?= strtoupper(esc($current_date)) ?></p>
+        <?php endif; ?>
     </div>
 
-    <table>
+    <table class="main-table">
         <thead>
             <tr>
-                <th style="width: 4%">No</th>
-                <th style="width: 11%">Tanggal</th>
-                <th style="width: 23%">Unit Kerja</th>
-                <th style="width: 9%">Metode</th>
-                <th style="width: 13%">Kategori</th>
-                <th style="width: 18%">Layanan</th>
-                <th style="width: 22%">Keterangan</th>
+                <th style="width: 20px; text-align: center;">No.</th>
+                <th style="width: 60px;">Tanggal</th>
+                <th>Unit Kerja</th>
+                <th style="width: 50px;">Metode</th>
+                <th>Layanan</th>
+                <th>Keterangan</th>
             </tr>
         </thead>
         <tbody>
             <?php
             $nomor = 1;
             foreach ($activities as $item):
+                $services = json_decode($item['services'], true);
+                $serviceList = !empty($services) ? implode(', ', $services) : '-';
             ?>
                 <tr>
-                    <td style="text-align: center;"><?= $nomor++ ?></td>
+                    <td style="text-align: center; color: #64748b;"><?= $nomor++ ?></td>
                     <td><?= formatSingkat($item['tanggal_kegiatan']) ?></td>
                     <td>
                         <strong><?= esc($item['agency_name']) ?></strong><br>
-                        <small style="color: #334155;"><?= esc($item['agency_type']) ?></small>
+                        <small style="color: #64748b; font-size: 8px;"><?= esc(strtoupper($item['agency_type'])) ?></small>
                     </td>
-                    <td><?= esc($item['method']) ?></td>
-                    <td><?= esc($categoryMap[$item['category']] ?? 'Unknown') ?></td>
-                    <td>
-                        <?php
-                        $services = json_decode($item['services'], true);
-                        if (!empty($services)) {
-                            echo esc(implode(', ', $services));
-                        } else {
-                            echo '-';
-                        }
-                        ?>
-                    </td>
-                    <td><?= esc($item['keterangan']) ?></td>
+                    <td style="text-align: center;"><?= esc(strtoupper($item['method'])) ?></td>
+                    <td style="font-size: 9px;"><strong><?= esc($serviceList) ?></strong></td>
+                    <td style="font-size: 9px; color: #64748b;"><?= esc($item['keterangan']) ?></td>
                 </tr>
             <?php endforeach; ?>
         </tbody>
     </table>
-
-    <div class="footer-info">
-        <strong>Contact Person:</strong> 082188344982 (Dzul)
-    </div>
-
-    <div class="footer-right">
-        <p>Aptika Diskominfo-SP Sinjai</p>
-    </div>
 </body>
 
 </html>

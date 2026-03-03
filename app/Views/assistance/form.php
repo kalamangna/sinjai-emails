@@ -34,7 +34,7 @@
         <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight"><?= esc($title) ?></h1>
     </div>
 
-    <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
+    <div class="bg-white border border-slate-200 rounded-lg shadow-sm">
         <div class="p-8">
             <form action="<?= isset($activity) ? site_url('assistance/update/' . $activity['id']) : site_url('assistance/store') ?>" method="post" class="space-y-6">
                 <?= csrf_field() ?>
@@ -51,12 +51,12 @@
                         <div class="flex items-center gap-6 h-[38px]">
                             <label class="inline-flex items-center cursor-pointer group">
                                 <input type="radio" class="w-4 h-4 text-slate-700 border-slate-200 focus:ring-slate-700" name="method" value="Online"
-                                    <?= (isset($activity) && $activity['method'] == 'Online') ? 'checked' : '' ?> required>
+                                    <?= (isset($activity) && $activity['method'] == 'Online') ? 'checked' : ((!isset($activity)) ? 'checked' : '') ?> required>
                                 <span class="ml-2 text-sm text-slate-700 group-hover:text-slate-800 transition-colors">Online</span>
                             </label>
                             <label class="inline-flex items-center cursor-pointer group">
                                 <input type="radio" class="w-4 h-4 text-slate-700 border-slate-200 focus:ring-slate-700" name="method" value="Offline"
-                                    <?= (isset($activity) && $activity['method'] == 'Offline') ? 'checked' : ((!isset($activity)) ? 'checked' : '') ?>>
+                                    <?= (isset($activity) && $activity['method'] == 'Offline') ? 'checked' : '' ?>>
                                 <span class="ml-2 text-sm text-slate-700 group-hover:text-slate-800 transition-colors">Offline</span>
                             </label>
                         </div>

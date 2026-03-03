@@ -107,7 +107,7 @@
                 </div>
                 <i class="fas fa-chevron-down text-[10px] transition-transform duration-200" :class="open ? 'rotate-180' : ''"></i>
             </button>
-            <div x-show="open" x-collapse class="mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
+            <div x-show="open" x-collapse class="submenu-container mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
                 <a href="<?= site_url('web_opd') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= current_url() == site_url('web_opd') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
                     Website OPD
                 </a>

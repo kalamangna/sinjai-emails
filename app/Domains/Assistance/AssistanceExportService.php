@@ -43,6 +43,8 @@ class AssistanceExportService
 
     public function generateReportPdf($filterCategory = null, $filterMonth = null, $filterYear = null)
     {
+        $this->assistanceModel->select('*');
+
         if ($filterCategory) {
             $this->assistanceModel->where('category', $filterCategory);
         }
@@ -55,7 +57,7 @@ class AssistanceExportService
             $this->assistanceModel->where('MONTH(tanggal_kegiatan)', $filterMonth);
         }
 
-        $activities = $this->assistanceModel->orderBy('tanggal_kegiatan', 'ASC')->orderBy('id', 'ASC')->findAll();
+        $activities = $this->assistanceModel->orderBy('tanggal_kegiatan', 'ASC')->orderBy('id', 'ASC')->asArray()->findAll();
 
         $categoryLabel = $filterCategory && isset(self::CATEGORY_MAP[$filterCategory])
             ? self::CATEGORY_MAP[$filterCategory]
@@ -84,7 +86,7 @@ class AssistanceExportService
         }
 
         $data = [
-            'title' => 'Laporan Pendampingan',
+            'title' => 'LOG LAYANAN',
             'subtitle' => $subtitle,
             'activities' => $activities,
             'current_date' => formatTanggal('now'),
@@ -98,7 +100,7 @@ class AssistanceExportService
         $dompdf->setPaper('A4', 'portrait');
         $dompdf->render();
 
-        $filename = 'Laporan Pendampingan';
+        $filename = 'Log Layanan';
         if ($filterCategory && isset(self::CATEGORY_MAP[$filterCategory])) {
             $filename .= ' ' . self::CATEGORY_MAP[$filterCategory];
         }
