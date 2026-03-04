@@ -247,8 +247,14 @@
                     <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">QR Code</h3>
                 </div>
                 <div class="p-6 flex flex-col items-center gap-4">
-                    <a id="qrcode-link" href="" target="_blank" class="p-2 bg-white border border-slate-100 rounded-xl shadow-sm hover:border-slate-800 hover:shadow-md transition-all">
+                    <a id="qrcode-link" href="" target="_blank" class="relative p-2 bg-white border border-slate-100 rounded-xl shadow-sm hover:border-slate-800 hover:shadow-md transition-all group/qr">
                         <img id="qrcode-image" src="" alt="QR Code" class="w-32 h-32">
+                        <!-- Logo Overlay -->
+                        <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                            <div class="w-8 h-8 bg-white p-1 rounded-lg shadow-sm border border-slate-100">
+                                <img src="<?= base_url('logo.png') ?>" alt="Logo" class="w-full h-full object-contain">
+                            </div>
+                        </div>
                     </a>
                 </div>
             </div>
