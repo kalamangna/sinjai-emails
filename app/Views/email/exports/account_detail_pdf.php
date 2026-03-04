@@ -2,6 +2,8 @@
 <html>
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex, nofollow">
     <title>Daftar Akun Email & TTE - <?= esc($unit_kerja['nama_unit_kerja']) ?></title>
     <style>
         @page {

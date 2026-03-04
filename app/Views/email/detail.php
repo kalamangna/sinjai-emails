@@ -45,7 +45,7 @@
                             <div id="bsre-status-container" class="flex items-center">
                                 <span class="text-[10px] font-bold text-slate-700 animate-pulse uppercase">Memeriksa...</span>
                             </div>
-                            <?php if (session()->get('role') === 'super_admin'): ?>
+                            <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
                                 <button onclick="syncBsreStatus('<?= esc($email['email'], 'js') ?>')" class="btn btn-solid btn-xs ml-2" title="Sinkronisasi">
                                     <i class="fas fa-sync-alt"></i>
                                 </button>
@@ -89,7 +89,7 @@
             <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
                 <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
                     <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Profil</h3>
-                    <?php if (session()->get('role') === 'super_admin'): ?>
+                    <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
                         <a href="<?= site_url('email/edit_profile/' . $email['user']) ?>" class="btn btn-outline btn-xs no-underline">
                             <i class="fas fa-edit mr-1.5"></i> Edit Profil
                         </a>
@@ -194,7 +194,7 @@
                 <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
                     <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
                         <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Perjanjian Kerja (PK)</h3>
-                        <?php if (session()->get('role') === 'super_admin'): ?>
+                        <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
                             <a href="<?= site_url('email/edit_pk/' . $email['user']) ?>" class="btn btn-outline btn-xs no-underline">
                                 <i class="fas fa-<?= !empty($pk_data) ? 'edit' : 'plus' ?> mr-1.5"></i> <?= !empty($pk_data) ? 'Edit PK' : 'Tambah PK' ?>
                             </a>
@@ -245,7 +245,7 @@
             <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
                 <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
                     <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Kredensial</h3>
-                    <?php if (session()->get('role') === 'super_admin'): ?>
+                    <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
                         <a href="<?= site_url('email/edit_password/' . $email['user']) ?>" class="btn btn-outline btn-xs no-underline">
                             <i class="fas fa-key mr-1.5"></i> Edit Password
                         </a>

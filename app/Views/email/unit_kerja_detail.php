@@ -22,7 +22,7 @@
                 <i class="fas fa-file-pdf mr-2"></i> Status PDF
             </a>
 
-            <?php if (session()->get('role') === 'super_admin'): ?>
+            <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
                 <div class="relative group">
                     <button class="btn btn-outline">
                         <i class="fas fa-file-contract mr-2"></i> Batch PK <i class="fas fa-chevron-down ml-2 text-[8px] opacity-50 transition-transform duration-300 group-hover:rotate-180"></i>

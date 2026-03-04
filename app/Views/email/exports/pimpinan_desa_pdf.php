@@ -2,6 +2,8 @@
 <html>
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex, nofollow">
     <title><?= esc($title ?? 'Daftar Email & TTE Kepala Desa') ?></title>
     <style>
         @page {

@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta name="robots" content="noindex">
+    <meta name="robots" content="noindex, nofollow">
 
     <title><?= lang('Errors.whoops') ?></title>
 

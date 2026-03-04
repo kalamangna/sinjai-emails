@@ -23,7 +23,7 @@ Portal terintegrasi untuk manajemen identitas digital, sertifikat elektronik, da
 - **Website Desa & Kelurahan**: Pelacakan masa berlaku domain `.desa.id` melalui protokol **RDAP PANDI**.
 - **Visualisasi Data**: Grafik distribusi platform dan status operasional yang modern dan informatif dengan legend persentase.
 
-### 4. Batch Operations (Super Admin)
+### 4. Batch Operations (Admin & Super Admin)
 
 - **Refactored Module**: Modul batch yang terorganisir untuk efisiensi pemrosesan data massal.
 - **XLSX (Excel) Import**: Dukungan penuh impor file XLSX untuk pembuatan dan pembaruan data secara massal yang lebih andal.
@@ -32,16 +32,17 @@ Portal terintegrasi untuk manajemen identitas digital, sertifikat elektronik, da
 - **PK Export System**: Generasi otomatis dokumen Perjanjian Kerja (PPPK/Paruh Waktu) dengan format standar (A4, font Bookman Old Style).
 - **Subfolder Archive**: ZIP hasil batch yang terorganisir secara otomatis berdasarkan status kepegawaian.
 
-### 5. Log Pendampingan Teknis
+### 5. Log Pendampingan Teknis (Super Admin)
 
 - **Documentation**: Pencatatan riwayat bantuan teknis (email, website, TTE, Srikandi) kepada instansi.
 - **Advanced Filtering**: Filter berdasarkan kategori, bulan, dan tahun untuk pelaporan periodik.
 
 ### 6. Administrasi & Keamanan
 
-- **Role-Based Access Control (RBAC)**: Pembatasan akses antara _Super Admin_ dan _Admin_.
+- **Role-Based Access Control (RBAC)**: Pembatasan akses antara _Super Admin_ dan _Admin_. Admin kini memiliki kemampuan untuk mengelola akun dan melakukan sinkronisasi, sementara Super Admin memegang kontrol penuh atas penghapusan data, manajemen Unit Kerja, dan Log Layanan.
 - **Eksport Data**: Generasi laporan dalam format PDF, Excel (XLSX), dan CSV yang telah dioptimasi (layout landscape/portrait, clickable domain, dan ringkasan statistik).
 - **Restructured UI**: Navigasi yang dikelompokkan secara logis (Dashboard, Email, Pegawai, Pejabat, Organisasi) untuk kemudahan penggunaan.
+- **SEO & Privacy**: Perlindungan privasi data melalui penonaktifan pengindeksan mesin pencari (noindex, nofollow) dan pembatasan akses bot melalui `robots.txt`.
 
 ## Tech Stack
 

@@ -126,6 +126,27 @@ The project adheres to a **"Slate Clean Government"** aesthetic:
 - **Metric Percentages**: Integrated "Aktif" and "Nonaktif" percentages into Website Monitoring PDF exports (OPD and Desa/Kelurahan).
 - **Inline Layouts**: Switched to an inline display for percentages in Unit Kerja PDF reports to match the website monitoring style and improve space efficiency.
 
+## SEO & Privacy
+- **Search Engine Indexing**:
+    - Added `<meta name="robots" content="noindex, nofollow">` to the main layout (`main.php`), login page (`login.php`), and all error pages (`400`, `404`, `exception`, `production`).
+    - Applied the same meta tag to all PDF export HTML templates to prevent indexing of generated reports.
+    - Updated `public/robots.txt` to explicitly disallow all user agents from indexing any part of the application.
+
+## Role-Based Access Control (RBAC) Refinements
+- **Admin Role Expansion**:
+    - Expanded permissions for the "Admin" role to bridge the gap between simple viewing and full management.
+    - **cPanel Sync**: Admins can now trigger cPanel email synchronization.
+    - **TTE Sync**: Admins can now trigger TTE status synchronization (individual and batch).
+    - **Batch Operations**: Admins now have full access to Batch Create, Batch Update, and Batch PK operations.
+    - **Account Mutations**: Admins can now create new accounts and edit existing profiles, passwords, and PK data.
+- **Super Admin Restrictions**:
+    - Reserved "Delete" operations for Super Admins only to prevent accidental data loss.
+    - Restricted "Master Data" (Unit Kerja management) to Super Admins.
+    - Restricted "Log Layanan" (Assistance/Pendampingan) to Super Admins only, removing visibility and access for the Admin role.
+- **UI/UX Consistency**:
+    - Updated sidebar visibility to show/hide "Batch", "Master Data", and "Log Layanan" based on roles.
+    - Adjusted buttons and action links across `index`, `detail`, and `unit_kerja_detail` views to reflect updated permissions.
+
 ## Codebase Cleanup & Housekeeping
 - **Spreadsheet Migration**:
     - Completed the transition from CSV to XLSX for all import operations.
@@ -134,3 +155,6 @@ The project adheres to a **"Slate Clean Government"** aesthetic:
 - **Documentation**:
     - Updated `README.md` to remove the "Instalasi" section and decommissioned features.
     - Forced cache refresh for dashboard analytics by incrementing the cache key version.
+- **Route Optimization**:
+    - Refactored `Routes.php` to use cleaner group-based filters for role restrictions.
+    - Fixed a bug where `bsre/sync-status` was inaccessible due to method mismatch (added both GET and POST support).

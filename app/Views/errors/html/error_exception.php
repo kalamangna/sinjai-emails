@@ -8,7 +8,7 @@ $errorId = uniqid('error', true);
 <html lang="id" class="h-full">
 <head>
     <meta charset="UTF-8">
-    <meta name="robots" content="noindex">
+    <meta name="robots" content="noindex, nofollow">
     <title><?= esc($title) ?> | Sistem Identitas Digital</title>
 
     <!-- Tailwind CSS (Local Build) -->

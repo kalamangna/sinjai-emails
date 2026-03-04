@@ -129,8 +129,9 @@ class Bsre extends BaseController
 
     public function syncAllStatus()
     {
-        // Check if user is super_admin
-        if (session()->get('role') !== 'super_admin') {
+        // Check if user is super_admin or admin
+        $role = session()->get('role');
+        if ($role !== 'super_admin' && $role !== 'admin') {
             return redirect()->to('email')->with('error', 'Unauthorized access');
         }
 

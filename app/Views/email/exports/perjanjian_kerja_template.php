@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="robots" content="noindex, nofollow">
     <title>Perjanjian Kerja - <?= esc($email['name'] ?? 'Pegawai') ?></title>
     <style>
         /* 

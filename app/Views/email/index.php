@@ -15,11 +15,13 @@
         </div>
 
         <div class="flex items-center gap-2 w-full lg:w-auto">
-            <?php if (session()->get('role') === 'super_admin'): ?>
+            <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
                 <button onclick="confirmSyncCpanel(this)" data-href="<?= site_url('email/sync') ?>" class="flex-1 lg:flex-none btn btn-solid group" id="syncCpanelBtn">
                     <i class="fas fa-sync-alt mr-2 group-hover:rotate-180 transition-transform duration-500"></i>
                     <span>Sync cPanel</span>
                 </button>
+            <?php endif; ?>
+            <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
                 <a href="<?= site_url('email/create') ?>" class="flex-1 lg:flex-none btn btn-outline no-underline">
                     <i class="fas fa-plus mr-2 text-slate-700"></i> Tambah
                 </a>

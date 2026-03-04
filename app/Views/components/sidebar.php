@@ -118,7 +118,7 @@
         </div>
 
         <!-- Batch Submenu -->
-        <?php if (session()->get('role') === 'super_admin'): ?>
+        <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
             <div x-data="{ open: <?= (strpos(current_url(), 'batch') !== false) ? 'true' : 'false' ?> }">
                 <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-slate-100 rounded-lg hover:bg-slate-700/80 hover:text-white transition-all focus:outline-none">
                     <div class="flex items-center">
@@ -144,30 +144,34 @@
         <?php endif; ?>
 
         <!-- Log Layanan -->
-        <a href="<?= site_url('assistance') ?>" class="flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all <?= strpos(current_url(), 'assistance') !== false ? 'bg-slate-700 text-white shadow-lg shadow-slate-900/20' : 'text-slate-100 hover:bg-slate-700/80 hover:text-white' ?>">
-            <div class="w-5 h-5 flex items-center justify-center mr-3 shrink-0">
-                <i class="fas fa-clipboard-list <?= strpos(current_url(), 'assistance') !== false ? 'text-white' : 'text-slate-300' ?>"></i>
-            </div>
-            Log Layanan
-        </a>
+        <?php if (session()->get('role') === 'super_admin'): ?>
+            <a href="<?= site_url('assistance') ?>" class="flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all <?= strpos(current_url(), 'assistance') !== false ? 'bg-slate-700 text-white shadow-lg shadow-slate-900/20' : 'text-slate-100 hover:bg-slate-700/80 hover:text-white' ?>">
+                <div class="w-5 h-5 flex items-center justify-center mr-3 shrink-0">
+                    <i class="fas fa-clipboard-list <?= strpos(current_url(), 'assistance') !== false ? 'text-white' : 'text-slate-300' ?>"></i>
+                </div>
+                Log Layanan
+            </a>
+        <?php endif; ?>
 
         <!-- Master Data Submenu -->
-        <div x-data="{ open: <?= (strpos(current_url(), 'unit_kerja/manage') !== false) ? 'true' : 'false' ?> }">
-            <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-slate-100 rounded-lg hover:bg-slate-700/80 hover:text-white transition-all focus:outline-none">
-                <div class="flex items-center">
-                    <div class="w-5 h-5 flex items-center justify-center mr-3 shrink-0">
-                        <i class="fas fa-database text-slate-300"></i>
+        <?php if (session()->get('role') === 'super_admin'): ?>
+            <div x-data="{ open: <?= (strpos(current_url(), 'unit_kerja/manage') !== false) ? 'true' : 'false' ?> }">
+                <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-slate-100 rounded-lg hover:bg-slate-700/80 hover:text-white transition-all focus:outline-none">
+                    <div class="flex items-center">
+                        <div class="w-5 h-5 flex items-center justify-center mr-3 shrink-0">
+                            <i class="fas fa-database text-slate-300"></i>
+                        </div>
+                        <span>Master Data</span>
                     </div>
-                    <span>Master Data</span>
+                    <i class="fas fa-chevron-down text-[10px] transition-transform duration-200" :class="open ? 'rotate-180' : ''"></i>
+                </button>
+                <div x-show="open" x-collapse class="mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
+                    <a href="<?= site_url('unit_kerja/manage') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= current_url() == site_url('unit_kerja/manage') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
+                        Unit Kerja
+                    </a>
                 </div>
-                <i class="fas fa-chevron-down text-[10px] transition-transform duration-200" :class="open ? 'rotate-180' : ''"></i>
-            </button>
-            <div x-show="open" x-collapse class="mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
-                <a href="<?= site_url('unit_kerja/manage') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= current_url() == site_url('unit_kerja/manage') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
-                    Unit Kerja
-                </a>
             </div>
-        </div>
+        <?php endif; ?>
     </nav>
 
     <!-- User Section at Bottom -->
