@@ -107,6 +107,16 @@
     <style>
         [x-cloak] { display: none !important; }
 
+        /* Force show active menu based on data-attribute to prevent Alpine flicker */
+        html[data-sidebar-menu="pegawai"] #submenu-pegawai,
+        html[data-sidebar-menu="pejabat"] #submenu-pejabat,
+        html[data-sidebar-menu="organisasi"] #submenu-organisasi,
+        html[data-sidebar-menu="website"] #submenu-website,
+        html[data-sidebar-menu="batch"] #submenu-batch,
+        html[data-sidebar-menu="master"] #submenu-master {
+            display: block !important;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
         }

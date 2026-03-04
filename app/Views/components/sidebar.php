@@ -75,7 +75,7 @@
                 </div>
                 <i class="fas fa-chevron-down text-[10px] transition-transform duration-200" :class="activeMenu === 'pegawai' ? 'rotate-180' : ''"></i>
             </button>
-            <div x-show="activeMenu === 'pegawai'" x-collapse x-cloak class="mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
+            <div id="submenu-pegawai" x-show="activeMenu === 'pegawai'" x-collapse x-cloak class="mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
                 <a href="<?= site_url('email/pns_list') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= current_url() == site_url('email/pns_list') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
                     PNS
                 </a>
@@ -99,7 +99,7 @@
                 </div>
                 <i class="fas fa-chevron-down text-[10px] transition-transform duration-200" :class="activeMenu === 'pejabat' ? 'rotate-180' : ''"></i>
             </button>
-            <div x-show="activeMenu === 'pejabat'" x-collapse x-cloak class="mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
+            <div id="submenu-pejabat" x-show="activeMenu === 'pejabat'" x-collapse x-cloak class="mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
                 <a href="<?= site_url('email/pimpinan') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= current_url() == site_url('email/pimpinan') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
                     Pimpinan
                 </a>
@@ -120,7 +120,7 @@
                 </div>
                 <i class="fas fa-chevron-down text-[10px] transition-transform duration-200" :class="activeMenu === 'organisasi' ? 'rotate-180' : ''"></i>
             </button>
-            <div x-show="activeMenu === 'organisasi'" x-collapse x-cloak class="mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
+            <div id="submenu-organisasi" x-show="activeMenu === 'organisasi'" x-collapse x-cloak class="mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
                 <a href="<?= site_url('email/unit_kerja') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= current_url() == site_url('email/unit_kerja') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
                     Unit Kerja
                 </a>
@@ -141,7 +141,7 @@
                 </div>
                 <i class="fas fa-chevron-down text-[10px] transition-transform duration-200" :class="activeMenu === 'website' ? 'rotate-180' : ''"></i>
             </button>
-            <div x-show="activeMenu === 'website'" x-collapse x-cloak class="submenu-container mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
+            <div id="submenu-website" x-show="activeMenu === 'website'" x-collapse x-cloak class="submenu-container mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
                 <a href="<?= site_url('web_opd') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= current_url() == site_url('web_opd') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
                     Website OPD
                 </a>
@@ -163,7 +163,7 @@
                     </div>
                     <i class="fas fa-chevron-down text-[10px] transition-transform duration-200" :class="activeMenu === 'batch' ? 'rotate-180' : ''"></i>
                 </button>
-                <div x-show="activeMenu === 'batch'" x-collapse x-cloak class="mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
+                <div id="submenu-batch" x-show="activeMenu === 'batch'" x-collapse x-cloak class="mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
                     <a href="<?= site_url('batch') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= current_url() == site_url('batch') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
                         Buat Akun Massal
                     </a>
@@ -199,7 +199,7 @@
                     </div>
                     <i class="fas fa-chevron-down text-[10px] transition-transform duration-200" :class="activeMenu === 'master' ? 'rotate-180' : ''"></i>
                 </button>
-                <div x-show="activeMenu === 'master'" x-collapse x-cloak class="mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
+                <div id="submenu-master" x-show="activeMenu === 'master'" x-collapse x-cloak class="mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
                     <a href="<?= site_url('unit_kerja/manage') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= current_url() == site_url('unit_kerja/manage') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
                         Unit Kerja
                     </a>
