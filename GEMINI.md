@@ -160,6 +160,12 @@ The project adheres to a **"Slate Clean Government"** aesthetic:
     - Added `aria-current="page"` and `aria-expanded` attributes for better screen reader compatibility.
     - Guaranteed zero external library dependencies for core navigation, resulting in near-instant interaction response.
 
+## Feature Additions
+- **Dynamic QR Code**:
+    - Added a QR code identity card to the Email Detail page.
+    - Automatically displays when TTE status is "ISSUE", providing a quick way to verify digital identity.
+    - Real-time updates: the QR code card toggles instantly based on TTE status synchronization results.
+
 ## Codebase Cleanup & Housekeeping
 - **Spreadsheet Migration**:
     - Completed the transition from CSV to XLSX for all import operations.

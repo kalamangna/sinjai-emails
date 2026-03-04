@@ -241,6 +241,19 @@
 
         <!-- Infrastruktur & Kredensial -->
         <div class="flex flex-col gap-6">
+            <!-- QR Code (Visible only if TTE status is ISSUE) -->
+            <div id="qrcode-card" class="hidden bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
+                <div class="px-6 py-4 border-b border-slate-100 bg-slate-50">
+                    <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">QR Code Identitas</h3>
+                </div>
+                <div class="p-6 flex flex-col items-center gap-4">
+                    <div class="p-2 bg-white border border-slate-100 rounded-xl shadow-sm">
+                        <img id="qrcode-image" src="" alt="QR Code" class="w-32 h-32">
+                    </div>
+                    <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Pindai untuk verifikasi identitas digital</p>
+                </div>
+            </div>
+
             <!-- Kata Sandi -->
             <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
                 <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
@@ -350,6 +363,18 @@
         const label = (status && status.toLowerCase() !== 'not_synced') ? status : 'NOT_SYNCED';
 
         container.innerHTML = `<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${colorClass}">${label}</span>`;
+
+        // Handle QR Code Visibility
+        const qrcodeCard = document.getElementById('qrcode-card');
+        const qrcodeImage = document.getElementById('qrcode-image');
+        
+        if (status === 'ISSUE') {
+            const email = '<?= esc($email['email'], 'js') ?>';
+            qrcodeImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(email)}`;
+            qrcodeCard.classList.remove('hidden');
+        } else {
+            qrcodeCard.classList.add('hidden');
+        }
     }
 
     function syncBsreStatus(email) {
