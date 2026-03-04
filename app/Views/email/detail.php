@@ -371,7 +371,7 @@
         
         if (status === 'ISSUE') {
             const username = '<?= esc($email['user'], 'js') ?>';
-            const profileUrl = `<?= site_url('profile/') ?>${username}`;
+            const profileUrl = `<?= site_url('verifikasi/') ?>${username}`;
             qrcodeImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(profileUrl)}`;
             qrcodeLink.href = profileUrl;
             qrcodeCard.classList.remove('hidden');

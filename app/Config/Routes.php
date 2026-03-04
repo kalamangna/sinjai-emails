@@ -12,7 +12,7 @@ $routes->post('auth/attemptLogin', '\App\Domains\Auth\Auth::attemptLogin');
 $routes->get('logout', '\App\Domains\Auth\Auth::logout');
 
 // Public Identity Verification
-$routes->get('profile/(:any)', '\App\Domains\Email\Email::profile/$1');
+$routes->get('verifikasi/(:any)', '\App\Domains\Email\Email::profile/$1');
 
 // Protected Routes
 $routes->group('', ['filter' => 'auth'], function ($routes) {
