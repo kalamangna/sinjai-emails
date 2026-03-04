@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="robots" content="noindex, nofollow">
 
+    <link rel="icon" type="image/png" href="/logo.png">
+
     <title><?= lang('Errors.whoops') ?></title>
 
     <style>

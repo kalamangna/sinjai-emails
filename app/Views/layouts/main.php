@@ -7,6 +7,8 @@
     <meta name="robots" content="noindex, nofollow">
     <title><?= $title ?? 'Dashboard' ?> | Sistem Identitas Digital</title>
 
+    <link rel="icon" type="image/png" href="<?= base_url('logo.png') ?>">
+
     <!-- Tailwind CSS (Local Build) -->
     <link href="<?= base_url('css/output.css') ?>" rel="stylesheet">
 

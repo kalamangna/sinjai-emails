@@ -11,6 +11,8 @@ $errorId = uniqid('error', true);
     <meta name="robots" content="noindex, nofollow">
     <title><?= esc($title) ?> | Sistem Identitas Digital</title>
 
+    <link rel="icon" type="image/png" href="<?= base_url('logo.png') ?>">
+
     <!-- Tailwind CSS (Local Build) -->
     <link href="/css/output.css" rel="stylesheet">
     
