@@ -148,13 +148,8 @@ class EmailList extends BaseController
             $bsre_status_options = [
                 'ISSUE' => 'ISSUE',
                 'EXPIRED' => 'EXPIRED',
-                'RENEW' => 'RENEW',
-                'WAITING_FOR_VERIFICATION' => 'WAITING_FOR_VERIFICATION',
-                'NEW' => 'NEW',
                 'NO_CERTIFICATE' => 'NO_CERTIFICATE',
                 'NOT_REGISTERED' => 'NOT_REGISTERED',
-                'SUSPEND' => 'SUSPEND',
-                'REVOKE' => 'REVOKE',
                 'not_synced' => 'NOT_SYNCED'
             ];
 

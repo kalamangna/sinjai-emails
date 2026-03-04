@@ -24,15 +24,21 @@
                     </div>
                 </div>
 
-                <div class="p-4 rounded-lg bg-white border border-slate-200 border-l-4 border-l-emerald-700 text-[11px] font-medium text-amber-500 leading-relaxed">
+                <div class="p-4 rounded-lg bg-amber-50/50 border border-amber-100 border-l-4 border-l-amber-500 text-[11px] font-medium text-slate-600 leading-relaxed">
                     <div class="flex gap-3">
-                        <i class="fas fa-info-circle text-sm mt-0.5"></i>
+                        <i class="fas fa-info-circle text-sm mt-0.5 text-amber-600"></i>
                         <p>Password baru akan dikirim langsung ke server cPanel. Mohon gunakan password yang kuat (minimal 8 karakter dengan kombinasi angka dan simbol).</p>
                     </div>
                 </div>
 
                 <div>
-                    <label for="password" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Password Baru</label>
+                    <div class="flex items-center justify-between mb-1">
+                        <label for="password" class="block text-sm font-medium text-slate-700 uppercase tracking-tight">Password Baru</label>
+                        <button type="button" onclick="suggestPassword()" class="text-[10px] font-bold text-slate-700 uppercase tracking-widest hover:text-slate-900 transition-colors flex items-center gap-1">
+                            <i class="fas fa-magic"></i>
+                            Saran Password
+                        </button>
+                    </div>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-700">
                             <i class="fas fa-lock text-xs"></i>
@@ -56,4 +62,32 @@
         </form>
     </div>
 </div>
+
+<script>
+function generatePassword(name, nip, useAltNipPart = false) {
+    let suffix = new Date().getDate();
+    if (nip && nip.length >= 8) {
+        if (useAltNipPart) {
+            suffix = nip.substring(6, 8); // 7th & 8th
+        } else {
+            suffix = nip.substring(2, 4); // 3rd & 4th
+        }
+    } else if (nip && nip.length >= 4) {
+        suffix = nip.substring(2, 4);
+    }
+
+    const namePart = name.replace(/\s+/g, "").substring(0, 5).toLowerCase();
+    if (!namePart) return `@${suffix}#`;
+    const capitalizedNamePart =
+        namePart.charAt(0).toUpperCase() + namePart.slice(1);
+    return `${capitalizedNamePart}@${suffix}#`;
+}
+
+function suggestPassword() {
+    const name = "<?= esc($email['name'], 'js') ?>";
+    const nip = "<?= esc($email['nip'], 'js') ?>";
+    const passwordInput = document.getElementById('password');
+    passwordInput.value = generatePassword(name, nip);
+}
+</script>
 <?= $this->endSection() ?>

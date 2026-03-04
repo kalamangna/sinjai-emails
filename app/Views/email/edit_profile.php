@@ -24,10 +24,8 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="md:col-span-2">
                             <label for="email" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Email</label>
-                            <select id="email" name="email" class="choices-search block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 appearance-none cursor-pointer transition-all">
-                                <?php foreach ($all_email_options as $opt): ?>
-                                    <option value="<?= esc($opt['email']) ?>" <?= ($opt['email'] == $email['email']) ? 'selected' : '' ?>><?= esc($opt['email']) ?></option>
-                                <?php endforeach; ?>
+                            <select id="email" name="email" class="email-ajax-search block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 appearance-none cursor-pointer transition-all">
+                                <option value="<?= esc($email['email']) ?>" selected><?= esc($email['email']) ?></option>
                             </select>
                         </div>
                         <div class="md:col-span-2">
@@ -79,9 +77,9 @@
                                 <?php endforeach; ?>
                             </select>
                         </div>
-                        <div id="golongan_container" class="<?= in_array($email['status_asn_id'] ?? 0, [1, 2]) ? '' : 'hidden' ?>">
-                            <label for="golongan" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Golongan</label>
-                            <input type="text" name="golongan" id="golongan" value="<?= esc($email['golongan']) ?>" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all uppercase" placeholder="Contoh: IX">
+                        <div>
+                            <label for="jabatan" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Jabatan</label>
+                            <input type="text" name="jabatan" id="jabatan" value="<?= esc($email['jabatan']) ?>" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 uppercase transition-all" placeholder="Contoh: AHLI PERTAMA - PRANATA KOMPUTER">
                         </div>
                         <div>
                             <label for="eselon" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Eselon</label>
@@ -92,9 +90,9 @@
                                 <?php endforeach; ?>
                             </select>
                         </div>
-                        <div class="md:col-span-2">
-                            <label for="jabatan" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Jabatan</label>
-                            <input type="text" name="jabatan" id="jabatan" value="<?= esc($email['jabatan']) ?>" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 uppercase transition-all" placeholder="Contoh: AHLI PERTAMA - PRANATA KOMPUTER">
+                        <div id="golongan_container">
+                            <label for="golongan" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Golongan</label>
+                            <input type="text" name="golongan" id="golongan" value="<?= esc($email['golongan']) ?>" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all uppercase" placeholder="Contoh: IX">
                         </div>
                         <div class="md:col-span-2">
                             <label for="unit_kerja_id" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Unit Kerja</label>
@@ -139,17 +137,33 @@
 <?= $this->section('scripts') ?>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const statusAsnSelect = document.getElementById('status_asn');
-        const golonganContainer = document.getElementById('golongan_container');
+        const emailSelect = document.getElementById('email');
+        if (emailSelect) {
+            const choices = new Choices(emailSelect, {
+                searchEnabled: true,
+                itemSelectText: '',
+                placeholder: true,
+                searchPlaceholderValue: 'Cari Email...',
+                shouldSort: false,
+                loadingText: 'Memuat...',
+                noResultsText: 'Tidak ditemukan',
+                noChoicesText: 'Mulai mengetik untuk mencari...',
+            });
 
-        if (statusAsnSelect && golonganContainer) {
-            statusAsnSelect.addEventListener('change', function() {
-                const selectedValue = parseInt(this.value);
-                // 1: PNS, 2: PPPK
-                if ([1, 2].includes(selectedValue)) {
-                    golonganContainer.classList.remove('hidden');
-                } else {
-                    golonganContainer.classList.add('hidden');
+            emailSelect.addEventListener('search', function(event) {
+                const query = event.detail.value;
+                if (query.length >= 2) {
+                    fetch(`<?= site_url('email/search') ?>?q=${encodeURIComponent(query)}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            const items = data.map(item => ({
+                                value: item.email,
+                                label: item.email,
+                                selected: item.email === '<?= esc($email['email'], 'js') ?>'
+                            }));
+                            choices.setChoices(items, 'value', 'label', true);
+                        })
+                        .catch(err => console.error('Error fetching emails:', err));
                 }
             });
         }

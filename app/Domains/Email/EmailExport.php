@@ -135,7 +135,7 @@ class EmailExport extends BaseController
 
     public function download_zip_file($filename)
     {
-        if (strpos($filename, '..') !== false || strpos($filename, '/') !== false || strpos($filename, '') !== false) {
+        if (empty($filename) || strpos($filename, '..') !== false || strpos($filename, '/') !== false || strpos($filename, '\\') !== false) {
             throw new \Exception('Invalid filename');
         }
 

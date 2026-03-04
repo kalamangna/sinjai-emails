@@ -48,6 +48,7 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         $routes->get('download_zip_file/(:any)', '\App\Domains\Email\EmailExport::download_zip_file/$1');
 
         // API Routes
+        $routes->get('search', '\App\Domains\Email\EmailApi::search');
         $routes->get('api_unit_emails/(:num)', '\App\Domains\Email\EmailApi::api_unit_emails/$1');
         $routes->get('api_download_zip/(:num)', '\App\Domains\Email\EmailApi::api_download_zip/$1');
 

@@ -210,4 +210,21 @@ class EmailApi extends BaseController
             return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => $e->getMessage()]);
         }
     }
+
+    public function search()
+    {
+        $q = $this->request->getGet('q');
+        if (empty($q) || strlen($q) < 2) {
+            return $this->response->setJSON([]);
+        }
+
+        $results = $this->emailModel
+            ->select('email, name')
+            ->like('email', $q)
+            ->orLike('name', $q)
+            ->limit(20)
+            ->findAll();
+
+        return $this->response->setJSON($results);
+    }
 }

@@ -209,13 +209,8 @@ class EmailService
             $bsre_status_labels = [
                 'ISSUE' => 'ISSUE',
                 'EXPIRED' => 'EXPIRED',
-                'RENEW' => 'RENEW',
-                'WAITING_FOR_VERIFICATION' => 'WAITING_FOR_VERIFICATION',
-                'NEW' => 'NEW',
                 'NO_CERTIFICATE' => 'NO_CERTIFICATE',
                 'NOT_REGISTERED' => 'NOT_REGISTERED',
-                'SUSPEND' => 'SUSPEND',
-                'REVOKE' => 'REVOKE',
                 'not_synced' => 'NOT_SYNCED'
             ];
 
@@ -307,7 +302,6 @@ class EmailService
             'unit_kerja_options' => $this->unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->asArray()->findAll(),
             'status_asn_options' => $this->statusAsnModel->orderBy('nama_status_asn', 'ASC')->asArray()->findAll(),
             'eselon_options' => $this->eselonModel->orderBy('nama_eselon', 'ASC')->asArray()->findAll(),
-            'all_email_options' => $this->emailModel->select('email')->orderBy('email', 'ASC')->asArray()->findAll(),
         ];
     }
 
@@ -394,13 +388,8 @@ class EmailService
         $bsre_status_options = [
             'ISSUE' => 'ISSUE',
             'EXPIRED' => 'EXPIRED',
-            'RENEW' => 'RENEW',
-            'WAITING_FOR_VERIFICATION' => 'WAITING_FOR_VERIFICATION',
-            'NEW' => 'NEW',
             'NO_CERTIFICATE' => 'NO_CERTIFICATE',
             'NOT_REGISTERED' => 'NOT_REGISTERED',
-            'SUSPEND' => 'SUSPEND',
-            'REVOKE' => 'REVOKE',
             'not_synced' => 'NOT_SYNCED'
         ];
 
