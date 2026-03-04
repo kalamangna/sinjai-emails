@@ -354,7 +354,8 @@
 
     function syncBsreStatus(email) {
         const container = document.getElementById('bsre-status-container');
-        container.innerHTML = '<i class="fas fa-spinner fa-spin text-slate-700 text-[10px]"></i>';
+        container.innerHTML = '<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase border bg-slate-50 text-slate-400 border-slate-200 animate-pulse"><i class="fas fa-spinner fa-spin mr-1"></i> SYNCING</span>';
+        
         fetch('<?= site_url('bsre/sync-status') ?>', {
                 method: 'POST',
                 headers: {
@@ -364,11 +365,16 @@
                 body: 'email=' + encodeURIComponent(email)
             })
             .then(r => r.json()).then(data => {
-                if (data.status === 'success') renderBsreStatus(data.bsre_status);
-                else container.innerHTML = '<span class="text-[9px] text-red-600 font-bold uppercase">Gagal</span>';
+                if (data.status === 'success') {
+                    renderBsreStatus(data.bsre_status);
+                } else {
+                    const errorMsg = data.message || 'Gagal';
+                    container.innerHTML = `<button onclick="showGlobalError('Gagal Sinkronisasi', '${errorMsg.replace(/'/g, "\\'")}')" class="px-2 py-0.5 rounded text-[9px] font-bold uppercase border bg-red-50 text-red-600 border-red-200 hover:bg-red-100 transition-colors">ERROR</button>`;
+                }
             })
-            .catch(() => {
-                container.innerHTML = '<span class="text-[9px] text-red-600 font-bold uppercase">Error</span>';
+            .catch((err) => {
+                const errorMsg = 'Masalah Koneksi Jaringan';
+                container.innerHTML = `<button onclick="showGlobalError('Kesalahan Jaringan', '${errorMsg}')" class="px-2 py-0.5 rounded text-[9px] font-bold uppercase border bg-red-50 text-red-600 border-red-200 hover:bg-red-100 transition-colors">ERROR</button>`;
             });
     }
 

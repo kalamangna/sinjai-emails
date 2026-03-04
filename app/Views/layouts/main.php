@@ -214,6 +214,24 @@
         </div>
     </div>
 
+    <!-- Global Error Modal -->
+    <div id="global-error-modal" class="fixed inset-0 z-[9999] hidden flex items-center justify-center bg-slate-900/60 backdrop-blur-sm transition-all duration-300 px-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md border border-red-100 overflow-hidden">
+            <div class="p-6 text-center">
+                <div class="w-16 h-16 bg-red-50 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-100">
+                    <i class="fas fa-exclamation-triangle text-2xl"></i>
+                </div>
+                <h3 id="error-modal-title" class="text-lg font-bold text-slate-800 uppercase tracking-tight mb-2">Terjadi Kesalahan</h3>
+                <div id="error-modal-message" class="text-xs font-medium text-slate-600 leading-relaxed max-h-48 overflow-y-auto custom-scrollbar p-2 bg-slate-50 rounded-lg"></div>
+            </div>
+            <div class="bg-slate-50 p-4 border-t border-slate-100 flex justify-center">
+                <button onclick="hideGlobalError()" class="px-6 py-2 bg-slate-800 text-white text-[10px] font-bold uppercase tracking-widest rounded-lg hover:bg-slate-700 transition-colors focus:outline-none">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Sidebar -->
     <?= $this->include('components/sidebar') ?>
 
@@ -525,6 +543,26 @@
                 overlay.classList.add('hidden');
                 document.body.style.overflow = '';
             }
+        }
+
+        // Global error modal helpers
+        function showGlobalError(title, message) {
+            const modal = document.getElementById('global-error-modal');
+            const titleEl = document.getElementById('error-modal-title');
+            const messageEl = document.getElementById('error-modal-message');
+            if (!modal) return;
+
+            titleEl.innerText = title || 'Terjadi Kesalahan';
+            messageEl.innerText = message || 'Gagal memproses permintaan.';
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function hideGlobalError() {
+            const modal = document.getElementById('global-error-modal');
+            if (!modal) return;
+            modal.classList.add('hidden');
+            document.body.style.overflow = '';
         }
     </script>
 

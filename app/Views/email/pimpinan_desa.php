@@ -208,6 +208,9 @@
 
         // 3. Proses secara sekuensial
         let processed = 0;
+        let success = 0;
+        let failed = 0;
+
         for (const container of containers) {
             const email = container.getAttribute('data-email');
             const originalContent = container.innerHTML;
@@ -219,7 +222,7 @@
             });
 
             // Set loading state untuk baris ini
-            container.innerHTML = '<i class="fas fa-spinner fa-spin text-slate-700 text-[10px]"></i>';
+            container.innerHTML = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-bold uppercase border bg-slate-50 text-slate-400 border-slate-200 animate-pulse"><i class="fas fa-spinner fa-spin mr-1"></i> SYNCING</span>';
 
             try {
                 const response = await fetch('<?= site_url('bsre/sync-status') ?>', {
@@ -236,15 +239,21 @@
                 if (data.status === 'success') {
                     const colorClass = getJsStatusColor(data.bsre_status);
                     container.innerHTML = `<span class="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-bold uppercase border ${colorClass}">${data.bsre_status}</span>`;
+                    success++;
                 } else {
-                    container.innerHTML = originalContent;
+                    const errorMsg = data.message || 'Gagal';
+                    container.innerHTML = `<button onclick="showGlobalError('Gagal Sinkronisasi', '${errorMsg.replace(/'/g, "\\'")}')" class="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-bold uppercase border bg-red-50 text-red-600 border-red-200 hover:bg-red-100 transition-colors">ERROR</button>`;
+                    failed++;
                 }
             } catch (error) {
                 console.error('Sync failed for ' + email, error);
-                container.innerHTML = originalContent;
+                const errorMsg = 'Masalah Koneksi Jaringan';
+                container.innerHTML = `<button onclick="showGlobalError('Kesalahan Jaringan', '${errorMsg}')" class="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-bold uppercase border bg-red-50 text-red-600 border-red-200 hover:bg-red-100 transition-colors">ERROR</button>`;
+                failed++;
             }
 
             processed++;
+            syncBtn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Syncing ${processed}/${containers.length}...`;
         }
 
         // 4. Restore tombol
@@ -252,7 +261,7 @@
         syncBtn.classList.remove('opacity-75', 'cursor-not-allowed');
         syncBtn.innerHTML = originalBtnContent;
 
-        alert(`Selesai! ${processed} akun kepala desa telah disinkronkan.`);
+        alert(`Sinkronisasi Selesai!\nTotal: ${processed}\nBerhasil: ${success}\nGagal: ${failed}`);
     }
 </script>
 <?= $this->endSection() ?>

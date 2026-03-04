@@ -173,12 +173,6 @@
 
     <!-- Tabel Akun Email -->
     <div id="email-table-container" class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
-        <div class="bg-slate-50 px-6 py-4 border-b border-slate-200 flex justify-between items-center">
-            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Daftar Akun Email</h3>
-            <span class="text-[10px] font-bold text-slate-700 bg-white border border-slate-200 px-2 py-0.5 rounded-full shadow-sm">
-                TOTAL DATA: <?= number_format($filtered_count ?? count($emails), 0, ',', '.') ?>
-            </span>
-        </div>
         <div class="p-6 border-b border-slate-100 bg-slate-50">
             <form method="GET" action="" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
                 <div class="md:col-span-5">
@@ -317,8 +311,9 @@
                     <?php
                     $start = ($pagination->getCurrentPage() - 1) * $pagination->getPerPage() + 1;
                     $end = $start + count($emails) - 1;
+                    $total_filtered = $filtered_count ?? ($total_emails ?? 0);
                     ?>
-                    Menampilkan <span class="text-slate-800 font-bold"><?= $start ?> - <?= $end ?></span> dari <span class="text-slate-800 font-bold"><?= number_format($total_emails ?? 0, 0, ',', '.') ?></span> data
+                    Menampilkan <span class="text-slate-800 font-bold"><?= $start ?> - <?= $end ?></span> dari <span class="text-slate-800 font-bold"><?= number_format($total_filtered, 0, ',', '.') ?></span> data
                 </div>
                 <?php if (isset($pagination) && $pagination->getPageCount() > 1): ?>
                     <div class="pagination-modern">
@@ -603,6 +598,9 @@
 
         // 3. Proses secara sekuensial untuk menghindari load server berlebih
         let processed = 0;
+        let success = 0;
+        let failed = 0;
+
         for (const container of containers) {
             const email = container.getAttribute('data-email');
             const originalContent = container.innerHTML;
@@ -611,7 +609,7 @@
             container.scrollIntoView({ behavior: 'smooth', block: 'center' });
             
             // Set loading state untuk baris ini
-            container.innerHTML = '<i class="fas fa-spinner fa-spin text-slate-700 text-[10px]"></i>';
+            container.innerHTML = '<span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase border bg-slate-50 text-slate-400 border-slate-200 animate-pulse"><i class="fas fa-spinner fa-spin mr-1"></i> SYNCING</span>';
             
             try {
                 const response = await fetch('<?= site_url('bsre/sync-status') ?>', {
@@ -628,16 +626,21 @@
                 if (data.status === 'success') {
                     const colorClass = getJsStatusColor(data.bsre_status);
                     container.innerHTML = `<span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase border ${colorClass}">${data.bsre_status}</span>`;
+                    success++;
                 } else {
-                    container.innerHTML = originalContent;
+                    const errorMsg = data.message || 'Gagal';
+                    container.innerHTML = `<button onclick="showGlobalError('Gagal Sinkronisasi', '${errorMsg.replace(/'/g, "\\'")}')" class="px-2 py-0.5 rounded text-[9px] font-bold uppercase border bg-red-50 text-red-600 border-red-200 hover:bg-red-100 transition-colors">ERROR</button>`;
+                    failed++;
                 }
             } catch (error) {
                 console.error('Sync failed for ' + email, error);
-                container.innerHTML = originalContent;
+                const errorMsg = 'Masalah Koneksi Jaringan';
+                container.innerHTML = `<button onclick="showGlobalError('Kesalahan Jaringan', '${errorMsg}')" class="px-2 py-0.5 rounded text-[9px] font-bold uppercase border bg-red-50 text-red-600 border-red-200 hover:bg-red-100 transition-colors">ERROR</button>`;
+                failed++;
             }
 
             processed++;
-            // Optional: update small progress indicator if needed
+            syncBtn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Syncing ${processed}/${containers.length}...`;
         }
 
         // 4. Restore tombol
@@ -645,7 +648,7 @@
         syncBtn.classList.remove('opacity-75', 'cursor-not-allowed');
         syncBtn.innerHTML = originalBtnContent;
         
-        alert(`Selesai! ${processed} akun telah disinkronkan.`);
+        alert(`Sinkronisasi Selesai!\nTotal: ${processed}\nBerhasil: ${success}\nGagal: ${failed}`);
     }
 </script>
 <?= $this->endSection() ?>

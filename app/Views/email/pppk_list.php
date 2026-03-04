@@ -122,7 +122,7 @@
     async function syncBsreStatus(email, id) {
         const containerId = `bsre-status-${id}`;
         const container = document.getElementById(containerId);
-        container.innerHTML = '<i class="fas fa-spinner fa-spin text-slate-700 text-[10px]"></i>';
+        container.innerHTML = '<span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase border bg-slate-50 text-slate-400 border-slate-200 animate-pulse"><i class="fas fa-spinner fa-spin mr-1"></i> SYNCING</span>';
 
         try {
             const response = await fetch('<?= site_url('bsre/sync-status') ?>', {
@@ -133,17 +133,20 @@
                 },
                 body: 'email=' + encodeURIComponent(email)
             });
+            
             const data = await response.json();
             if (data.status === 'success') {
                 renderBsreStatus(data.bsre_status, containerId);
-                return true;
+                return { success: true, status: data.bsre_status };
             } else {
-                container.innerHTML = '<span class="text-[9px] text-red-600 font-bold uppercase">Gagal</span>';
-                return false;
+                const errorMsg = data.message || 'Gagal';
+                container.innerHTML = `<button onclick="showGlobalError('Gagal Sinkronisasi', '${errorMsg.replace(/'/g, "\\'")}')" class="px-2 py-0.5 rounded text-[9px] font-bold uppercase border bg-red-50 text-red-600 border-red-200 hover:bg-red-100 transition-colors">ERROR</button>`;
+                return { success: false };
             }
         } catch (error) {
-            container.innerHTML = '<span class="text-[9px] text-red-600 font-bold uppercase">Error</span>';
-            return false;
+            const errorMsg = 'Masalah Koneksi Jaringan';
+            container.innerHTML = `<button onclick="showGlobalError('Kesalahan Jaringan', '${errorMsg}')" class="px-2 py-0.5 rounded text-[9px] font-bold uppercase border bg-red-50 text-red-600 border-red-200 hover:bg-red-100 transition-colors">ERROR</button>`;
+            return { success: false };
         }
     }
 
@@ -160,6 +163,9 @@
         btn.classList.add('opacity-75', 'cursor-not-allowed');
 
         let processed = 0;
+        let success = 0;
+        let failed = 0;
+
         for (const email of emails) {
             processed++;
             
@@ -170,13 +176,14 @@
             }
 
             btn.innerHTML = `<i class="fas fa-fingerprint animate-pulse mr-2"></i> Sinkronisasi ${processed}/${emails.length}...`;
-            await syncBsreStatus(email.email, email.id);
+            const result = await syncBsreStatus(email.email, email.id);
+            if (result.success) success++; else failed++;
         }
 
         btn.innerHTML = originalContent;
         btn.disabled = false;
         btn.classList.remove('opacity-75', 'cursor-not-allowed');
-        alert('Proses sinkronisasi halaman selesai.');
+        alert(`Sinkronisasi Selesai!\nTotal: ${processed}\nBerhasil: ${success}\nGagal: ${failed}`);
     }
 
     document.addEventListener('DOMContentLoaded', () => {
