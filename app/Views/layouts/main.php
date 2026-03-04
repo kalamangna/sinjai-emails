@@ -96,10 +96,17 @@
             if (collapsed && window.innerWidth >= 1024) {
                 document.documentElement.classList.add('sidebar-collapsed');
             }
+            
+            const activeMenu = localStorage.getItem('sidebar-active-menu');
+            if (activeMenu) {
+                document.documentElement.setAttribute('data-sidebar-menu', activeMenu);
+            }
         })();
     </script>
 
     <style>
+        [x-cloak] { display: none !important; }
+
         body {
             font-family: 'Inter', sans-serif;
         }
