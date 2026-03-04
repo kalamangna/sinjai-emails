@@ -125,3 +125,6 @@ _modules/*
 /results/
 /phpunit*.xml
 node_modules/
+
+# Ignore the writable directory, except for the index.html files that are needed to prevent directory listing.
+/writable/*
