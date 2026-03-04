@@ -12,10 +12,44 @@
         </a>
     </div>
 
+    <?php
+    // Determine default active menu based on URL
+    $current_url = current_url();
+    $default_active = '';
+    if (strpos($current_url, 'pppk_list') !== false || strpos($current_url, 'pppk_pw_list') !== false || strpos($current_url, 'pns_list') !== false) {
+        $default_active = 'pegawai';
+    } elseif (strpos($current_url, 'pimpinan') !== false) {
+        $default_active = 'pejabat';
+    } elseif ((strpos($current_url, 'unit_kerja') !== false || strpos($current_url, 'eselon') !== false) && strpos($current_url, 'manage') === false) {
+        $default_active = 'organisasi';
+    } elseif (strpos($current_url, 'web_') !== false) {
+        $default_active = 'website';
+    } elseif (strpos($current_url, 'batch') !== false) {
+        $default_active = 'batch';
+    } elseif (strpos($current_url, 'unit_kerja/manage') !== false) {
+        $default_active = 'master';
+    }
+    ?>
+
     <!-- Navigation Menu -->
-    <nav class="flex-grow py-6 px-4 space-y-1 overflow-y-auto custom-scrollbar">
+    <nav 
+        x-data="{ 
+            activeMenu: '<?= $default_active ?>',
+            init() {
+                const stored = localStorage.getItem('sidebar-active-menu');
+                if (stored !== null) {
+                    this.activeMenu = stored;
+                }
+            },
+            toggleMenu(menu) {
+                this.activeMenu = this.activeMenu === menu ? '' : menu;
+                localStorage.setItem('sidebar-active-menu', this.activeMenu);
+            }
+        }"
+        class="flex-grow py-6 px-4 space-y-1 overflow-y-auto custom-scrollbar"
+    >
         <!-- Dashboard -->
-        <a href="<?= site_url('/') ?>" class="flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all <?= current_url() == site_url() ? 'bg-slate-700 text-white shadow-lg shadow-slate-900/20' : 'text-slate-100 hover:bg-slate-700/80 hover:text-white' ?>">
+        <a href="<?= site_url('/') ?>" @click="activeMenu = ''; localStorage.setItem('sidebar-active-menu', '')" class="flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all <?= current_url() == site_url() ? 'bg-slate-700 text-white shadow-lg shadow-slate-900/20' : 'text-slate-100 hover:bg-slate-700/80 hover:text-white' ?>">
             <div class="w-5 h-5 flex items-center justify-center mr-3 shrink-0">
                 <i class="fas fa-th-large <?= current_url() == site_url() ? 'text-white' : 'text-slate-300' ?>"></i>
             </div>
@@ -23,7 +57,7 @@
         </a>
 
         <!-- Email -->
-        <a href="<?= site_url('email') ?>" class="flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all <?= (strpos(current_url(), 'email') !== false && strpos(current_url(), 'pimpinan') === false && strpos(current_url(), 'eselon') === false && strpos(current_url(), 'unit_kerja') === false) ? 'bg-slate-700 text-white shadow-lg shadow-slate-900/20' : 'text-slate-100 hover:bg-slate-700/80 hover:text-white' ?>">
+        <a href="<?= site_url('email') ?>" @click="activeMenu = ''; localStorage.setItem('sidebar-active-menu', '')" class="flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all <?= (strpos(current_url(), 'email') !== false && strpos(current_url(), 'pimpinan') === false && strpos(current_url(), 'eselon') === false && strpos(current_url(), 'unit_kerja') === false) ? 'bg-slate-700 text-white shadow-lg shadow-slate-900/20' : 'text-slate-100 hover:bg-slate-700/80 hover:text-white' ?>">
             <div class="w-5 h-5 flex items-center justify-center mr-3 shrink-0">
                 <i class="fas fa-envelope <?= (strpos(current_url(), 'email') !== false && strpos(current_url(), 'pimpinan') === false && strpos(current_url(), 'eselon') === false && strpos(current_url(), 'unit_kerja') === false) ? 'text-white' : 'text-slate-300' ?>"></i>
             </div>
@@ -31,27 +65,17 @@
         </a>
 
         <!-- Pegawai Submenu -->
-        <div x-data="{ 
-            open: <?= (strpos(current_url(), 'pppk_list') !== false || strpos(current_url(), 'pppk_pw_list') !== false || strpos(current_url(), 'pns_list') !== false) ? 'true' : 'false' ?>,
-            init() {
-                const stored = localStorage.getItem('sidebar-menu-pegawai');
-                if (stored !== null) this.open = stored === 'true';
-            },
-            toggle() {
-                this.open = !this.open;
-                localStorage.setItem('sidebar-menu-pegawai', this.open);
-            }
-        }">
-            <button @click="toggle()" class="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-slate-100 rounded-lg hover:bg-slate-700/80 hover:text-white transition-all focus:outline-none">
+        <div>
+            <button @click="toggleMenu('pegawai')" class="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-slate-100 rounded-lg hover:bg-slate-700/80 hover:text-white transition-all focus:outline-none">
                 <div class="flex items-center">
                     <div class="w-5 h-5 flex items-center justify-center mr-3 shrink-0">
                         <i class="fas fa-users text-slate-300"></i>
                     </div>
                     <span>Pegawai</span>
                 </div>
-                <i class="fas fa-chevron-down text-[10px] transition-transform duration-200" :class="open ? 'rotate-180' : ''"></i>
+                <i class="fas fa-chevron-down text-[10px] transition-transform duration-200" :class="activeMenu === 'pegawai' ? 'rotate-180' : ''"></i>
             </button>
-            <div x-show="open" x-collapse class="mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
+            <div x-show="activeMenu === 'pegawai'" x-collapse class="mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
                 <a href="<?= site_url('email/pns_list') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= current_url() == site_url('email/pns_list') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
                     PNS
                 </a>
@@ -65,27 +89,17 @@
         </div>
 
         <!-- Pejabat Submenu -->
-        <div x-data="{ 
-            open: <?= (strpos(current_url(), 'pimpinan') !== false) ? 'true' : 'false' ?>,
-            init() {
-                const stored = localStorage.getItem('sidebar-menu-pejabat');
-                if (stored !== null) this.open = stored === 'true';
-            },
-            toggle() {
-                this.open = !this.open;
-                localStorage.setItem('sidebar-menu-pejabat', this.open);
-            }
-        }">
-            <button @click="toggle()" class="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-slate-100 rounded-lg hover:bg-slate-700/80 hover:text-white transition-all focus:outline-none">
+        <div>
+            <button @click="toggleMenu('pejabat')" class="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-slate-100 rounded-lg hover:bg-slate-700/80 hover:text-white transition-all focus:outline-none">
                 <div class="flex items-center">
                     <div class="w-5 h-5 flex items-center justify-center mr-3 shrink-0">
                         <i class="fas fa-user-tie text-slate-300"></i>
                     </div>
                     <span>Pejabat</span>
                 </div>
-                <i class="fas fa-chevron-down text-[10px] transition-transform duration-200" :class="open ? 'rotate-180' : ''"></i>
+                <i class="fas fa-chevron-down text-[10px] transition-transform duration-200" :class="activeMenu === 'pejabat' ? 'rotate-180' : ''"></i>
             </button>
-            <div x-show="open" x-collapse class="mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
+            <div x-show="activeMenu === 'pejabat'" x-collapse class="mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
                 <a href="<?= site_url('email/pimpinan') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= current_url() == site_url('email/pimpinan') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
                     Pimpinan
                 </a>
@@ -96,27 +110,17 @@
         </div>
 
         <!-- Organisasi Submenu -->
-        <div x-data="{ 
-            open: <?= (strpos(current_url(), 'unit_kerja') !== false || strpos(current_url(), 'eselon') !== false) && strpos(current_url(), 'manage') === false ? 'true' : 'false' ?>,
-            init() {
-                const stored = localStorage.getItem('sidebar-menu-organisasi');
-                if (stored !== null) this.open = stored === 'true';
-            },
-            toggle() {
-                this.open = !this.open;
-                localStorage.setItem('sidebar-menu-organisasi', this.open);
-            }
-        }">
-            <button @click="toggle()" class="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-slate-100 rounded-lg hover:bg-slate-700/80 hover:text-white transition-all focus:outline-none">
+        <div>
+            <button @click="toggleMenu('organisasi')" class="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-slate-100 rounded-lg hover:bg-slate-700/80 hover:text-white transition-all focus:outline-none">
                 <div class="flex items-center">
                     <div class="w-5 h-5 flex items-center justify-center mr-3 shrink-0">
                         <i class="fas fa-building text-slate-300"></i>
                     </div>
                     <span>Organisasi</span>
                 </div>
-                <i class="fas fa-chevron-down text-[10px] transition-transform duration-200" :class="open ? 'rotate-180' : ''"></i>
+                <i class="fas fa-chevron-down text-[10px] transition-transform duration-200" :class="activeMenu === 'organisasi' ? 'rotate-180' : ''"></i>
             </button>
-            <div x-show="open" x-collapse class="mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
+            <div x-show="activeMenu === 'organisasi'" x-collapse class="mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
                 <a href="<?= site_url('email/unit_kerja') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= current_url() == site_url('email/unit_kerja') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
                     Unit Kerja
                 </a>
@@ -127,27 +131,17 @@
         </div>
 
         <!-- Website Submenu -->
-        <div x-data="{ 
-            open: <?= (strpos(current_url(), 'web_') !== false) ? 'true' : 'false' ?>,
-            init() {
-                const stored = localStorage.getItem('sidebar-menu-website');
-                if (stored !== null) this.open = stored === 'true';
-            },
-            toggle() {
-                this.open = !this.open;
-                localStorage.setItem('sidebar-menu-website', this.open);
-            }
-        }">
-            <button @click="toggle()" class="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-slate-100 rounded-lg hover:bg-slate-700/80 hover:text-white transition-all focus:outline-none">
+        <div>
+            <button @click="toggleMenu('website')" class="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-slate-100 rounded-lg hover:bg-slate-700/80 hover:text-white transition-all focus:outline-none">
                 <div class="flex items-center">
                     <div class="w-5 h-5 flex items-center justify-center mr-3 shrink-0">
                         <i class="fas fa-globe text-slate-300"></i>
                     </div>
                     <span>Website</span>
                 </div>
-                <i class="fas fa-chevron-down text-[10px] transition-transform duration-200" :class="open ? 'rotate-180' : ''"></i>
+                <i class="fas fa-chevron-down text-[10px] transition-transform duration-200" :class="activeMenu === 'website' ? 'rotate-180' : ''"></i>
             </button>
-            <div x-show="open" x-collapse class="submenu-container mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
+            <div x-show="activeMenu === 'website'" x-collapse class="submenu-container mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
                 <a href="<?= site_url('web_opd') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= current_url() == site_url('web_opd') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
                     Website OPD
                 </a>
@@ -159,27 +153,17 @@
 
         <!-- Batch Submenu -->
         <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
-            <div x-data="{ 
-                open: <?= (strpos(current_url(), 'batch') !== false) ? 'true' : 'false' ?>,
-                init() {
-                    const stored = localStorage.getItem('sidebar-menu-batch');
-                    if (stored !== null) this.open = stored === 'true';
-                },
-                toggle() {
-                    this.open = !this.open;
-                    localStorage.setItem('sidebar-menu-batch', this.open);
-                }
-            }">
-                <button @click="toggle()" class="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-slate-100 rounded-lg hover:bg-slate-700/80 hover:text-white transition-all focus:outline-none">
+            <div>
+                <button @click="toggleMenu('batch')" class="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-slate-100 rounded-lg hover:bg-slate-700/80 hover:text-white transition-all focus:outline-none">
                     <div class="flex items-center">
                         <div class="w-5 h-5 flex items-center justify-center mr-3 shrink-0">
                             <i class="fas fa-layer-group text-slate-300"></i>
                         </div>
                         <span>Batch</span>
                     </div>
-                    <i class="fas fa-chevron-down text-[10px] transition-transform duration-200" :class="open ? 'rotate-180' : ''"></i>
+                    <i class="fas fa-chevron-down text-[10px] transition-transform duration-200" :class="activeMenu === 'batch' ? 'rotate-180' : ''"></i>
                 </button>
-                <div x-show="open" x-collapse class="mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
+                <div x-show="activeMenu === 'batch'" x-collapse class="mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
                     <a href="<?= site_url('batch') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= current_url() == site_url('batch') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
                         Buat Akun Massal
                     </a>
@@ -195,7 +179,7 @@
 
         <!-- Log Layanan -->
         <?php if (session()->get('role') === 'super_admin'): ?>
-            <a href="<?= site_url('assistance') ?>" class="flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all <?= strpos(current_url(), 'assistance') !== false ? 'bg-slate-700 text-white shadow-lg shadow-slate-900/20' : 'text-slate-100 hover:bg-slate-700/80 hover:text-white' ?>">
+            <a href="<?= site_url('assistance') ?>" @click="activeMenu = ''; localStorage.setItem('sidebar-active-menu', '')" class="flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all <?= strpos(current_url(), 'assistance') !== false ? 'bg-slate-700 text-white shadow-lg shadow-slate-900/20' : 'text-slate-100 hover:bg-slate-700/80 hover:text-white' ?>">
                 <div class="w-5 h-5 flex items-center justify-center mr-3 shrink-0">
                     <i class="fas fa-clipboard-list <?= strpos(current_url(), 'assistance') !== false ? 'text-white' : 'text-slate-300' ?>"></i>
                 </div>
@@ -205,27 +189,17 @@
 
         <!-- Master Data Submenu -->
         <?php if (session()->get('role') === 'super_admin'): ?>
-            <div x-data="{ 
-                open: <?= (strpos(current_url(), 'unit_kerja/manage') !== false) ? 'true' : 'false' ?>,
-                init() {
-                    const stored = localStorage.getItem('sidebar-menu-master');
-                    if (stored !== null) this.open = stored === 'true';
-                },
-                toggle() {
-                    this.open = !this.open;
-                    localStorage.setItem('sidebar-menu-master', this.open);
-                }
-            }">
-                <button @click="toggle()" class="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-slate-100 rounded-lg hover:bg-slate-700/80 hover:text-white transition-all focus:outline-none">
+            <div>
+                <button @click="toggleMenu('master')" class="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-slate-100 rounded-lg hover:bg-slate-700/80 hover:text-white transition-all focus:outline-none">
                     <div class="flex items-center">
                         <div class="w-5 h-5 flex items-center justify-center mr-3 shrink-0">
                             <i class="fas fa-database text-slate-300"></i>
                         </div>
                         <span>Master Data</span>
                     </div>
-                    <i class="fas fa-chevron-down text-[10px] transition-transform duration-200" :class="open ? 'rotate-180' : ''"></i>
+                    <i class="fas fa-chevron-down text-[10px] transition-transform duration-200" :class="activeMenu === 'master' ? 'rotate-180' : ''"></i>
                 </button>
-                <div x-show="open" x-collapse class="mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
+                <div x-show="activeMenu === 'master'" x-collapse class="mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
                     <a href="<?= site_url('unit_kerja/manage') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= current_url() == site_url('unit_kerja/manage') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
                         Unit Kerja
                     </a>
