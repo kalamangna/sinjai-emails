@@ -35,20 +35,13 @@
             </div>
             
             <div class="relative z-10">
-                <div class="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-white/20 shadow-lg backdrop-blur-sm">
+                <div class="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-3 border border-white/20 shadow-lg backdrop-blur-sm">
                     <i class="fas fa-user-shield text-white text-2xl"></i>
                 </div>
                 <p class="text-[10px] font-bold text-slate-300 uppercase tracking-widest mb-3">Sertifikat Elektronik Terverifikasi</p>
                 <h1 class="text-base font-bold text-white uppercase tracking-tight leading-tight"><?= esc($email['name']) ?></h1>
                 <p class="text-slate-300 text-[9px] font-bold tracking-widest mt-1.5"><?= esc($email['email']) ?></p>
             </div>
-        </div>
-
-        <!-- Verification Message -->
-        <div class="px-8 py-6 bg-slate-50 border-b border-slate-100 shrink-0">
-            <p class="text-xs font-medium text-slate-600 leading-relaxed text-center">
-                Dokumen ini telah ditandatangani secara elektronik oleh:
-            </p>
         </div>
 
         <!-- Detail Data -->
@@ -74,22 +67,13 @@
                     <p class="text-xs font-bold text-slate-800 uppercase tracking-tight">Pemerintah Kabupaten Sinjai</p>
                 </div>
             </div>
-
-            <div class="pt-4 border-t border-slate-100 text-center shrink-0">
-                <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">
-                    Terakhir diperbarui: <?= formatTanggalWaktu($email['mtime'] ?? 'now') ?>
-                </p>
-            </div>
         </div>
 
-        <!-- Footer inside card to save space -->
+        <!-- Footer inside card -->
         <div class="bg-slate-50 p-4 border-t border-slate-100 text-center shrink-0">
-            <div class="flex items-center justify-center gap-2 mb-1">
-                <img src="<?= base_url('logo.png') ?>" alt="Logo" class="h-4 w-auto grayscale opacity-50">
-                <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">
-                    &copy; <?= date('Y') ?> Pemerintah Kabupaten Sinjai
-                </p>
-            </div>
+            <p class="text-[10px] font-bold text-slate-700 uppercase tracking-widest">
+                &copy; <?= tahunSekarang() ?> Diskominfo-SP Sinjai
+            </p>
         </div>
     </div>
 </body>

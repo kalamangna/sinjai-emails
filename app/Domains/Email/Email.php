@@ -255,7 +255,7 @@ class Email extends BaseController
         try {
             $data = $this->emailService->getEmailDetail($username);
             $data['title'] = 'Verifikasi Identitas';
-            return view('email/profile', $data);
+            return view('email/verifikasi', $data);
         } catch (Exception $e) {
             $data['error'] = $e->getMessage();
             $data['title'] = 'Verifikasi Identitas';

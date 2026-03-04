@@ -244,13 +244,12 @@
             <!-- QR Code (Visible only if TTE status is ISSUE) -->
             <div id="qrcode-card" class="hidden bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
                 <div class="px-6 py-4 border-b border-slate-100 bg-slate-50">
-                    <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">QR Code Identitas</h3>
+                    <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">QR Code</h3>
                 </div>
                 <div class="p-6 flex flex-col items-center gap-4">
                     <a id="qrcode-link" href="" target="_blank" class="p-2 bg-white border border-slate-100 rounded-xl shadow-sm hover:border-slate-800 hover:shadow-md transition-all">
                         <img id="qrcode-image" src="" alt="QR Code" class="w-32 h-32">
                     </a>
-                    <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Klik atau pindai untuk verifikasi identitas digital</p>
                 </div>
             </div>
 
@@ -368,7 +367,7 @@
         const qrcodeCard = document.getElementById('qrcode-card');
         const qrcodeImage = document.getElementById('qrcode-image');
         const qrcodeLink = document.getElementById('qrcode-link');
-        
+
         if (status === 'ISSUE') {
             const username = '<?= esc($email['user'], 'js') ?>';
             const profileUrl = `<?= site_url('verifikasi/') ?>${username}`;
@@ -383,7 +382,7 @@
     function syncBsreStatus(email) {
         const container = document.getElementById('bsre-status-container');
         container.innerHTML = '<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase border bg-slate-50 text-slate-400 border-slate-200 animate-pulse"><i class="fas fa-spinner fa-spin mr-1"></i> SYNCING</span>';
-        
+
         fetch('<?= site_url('bsre/sync-status') ?>', {
                 method: 'POST',
                 headers: {
