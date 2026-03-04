@@ -10,7 +10,7 @@
             <a href="<?= site_url('web_desa_kelurahan/export_pdf') ?>" class="flex-1 lg:flex-none btn btn-outline no-underline">
                 <i class="fas fa-file-pdf mr-2"></i> Export PDF
             </a>
-            <?php if (session()->get('role') === 'super_admin'): ?>
+            <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
                 <button type="button" class="flex-1 lg:flex-none btn btn-solid" id="batchSyncBtn" onclick="startBatchSync()">
                     <i class="fas fa-sync mr-2 text-white/80"></i> Sync Expiration
                 </button>
@@ -217,7 +217,7 @@
                                 <span class="text-[10px] text-slate-700 font-medium tracking-tight"><?= esc($web['keterangan'] ?: '') ?></span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-center">
-                                <?php if (session()->get('role') === 'super_admin'): ?>
+                                <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
                                     <a href="<?= site_url('web_desa_kelurahan/edit/' . $web['id']) ?>" class="btn btn-table" title="Edit">
                                         <i class="fas fa-edit text-xs"></i>
                                     </a>

@@ -125,7 +125,7 @@
                                     <span class="text-[10px] text-slate-700 font-medium tracking-tight"><?= esc($web['keterangan'] ?: '') ?></span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center">
-                                    <?php if (session()->get('role') === 'super_admin'): ?>
+                                    <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
                                         <a href="<?= site_url('web_opd/edit/' . $web['id']) ?>" class="btn btn-table" title="Edit">
                                             <i class="fas fa-edit text-xs"></i>
                                         </a>

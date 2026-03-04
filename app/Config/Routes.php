@@ -108,8 +108,8 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         $routes->get('/', '\App\Domains\Website\WebDesaKelurahan::index');
         $routes->get('export_pdf', '\App\Domains\Website\WebDesaKelurahan::export_pdf');
         
-        // Mutation Routes (Super Admin Only)
-        $routes->group('', ['filter' => 'role:super_admin'], function ($routes) {
+        // Mutation Routes (Admin & Super Admin)
+        $routes->group('', ['filter' => 'role:admin,super_admin'], function ($routes) {
             $routes->get('edit/(:num)', '\App\Domains\Website\WebDesaKelurahan::edit/$1');
             $routes->post('update/(:num)', '\App\Domains\Website\WebDesaKelurahan::update/$1');
             $routes->get('sync_expiration/(:num)', '\App\Domains\Website\WebDesaKelurahan::sync_expiration/$1');
@@ -120,8 +120,8 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         $routes->get('/', '\App\Domains\Website\WebOpd::index');
         $routes->get('export_pdf', '\App\Domains\Website\WebOpd::export_pdf');
         
-        // Mutation Routes (Super Admin Only)
-        $routes->group('', ['filter' => 'role:super_admin'], function ($routes) {
+        // Mutation Routes (Admin & Super Admin)
+        $routes->group('', ['filter' => 'role:admin,super_admin'], function ($routes) {
             $routes->get('edit/(:num)', '\App\Domains\Website\WebOpd::edit/$1');
             $routes->post('update/(:num)', '\App\Domains\Website\WebOpd::update/$1');
         });
