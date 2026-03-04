@@ -1,7 +1,7 @@
 <aside id="sidebar" class="fixed top-0 left-0 z-50 w-64 h-screen transition-transform bg-slate-800 border-r border-slate-700 flex flex-col lg:translate-x-0 -translate-x-full">
     <!-- Logo Section -->
     <div class="flex items-center h-16 px-6 border-b border-slate-700 flex-shrink-0">
-        <a href="<?= site_url('/') ?>" class="flex items-center no-underline">
+        <a href="<?= site_url('/') ?>" @click="clearActive()" class="flex items-center no-underline">
             <div class="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center mr-3 shadow-sm border border-white/10">
                 <i class="fas fa-fingerprint text-white text-sm"></i>
             </div>
