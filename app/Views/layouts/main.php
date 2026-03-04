@@ -90,7 +90,10 @@
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
     <script>
-        // Apply sidebar state immediately to prevent flicker
+        /**
+         * Sidebar Persistence Init
+         * Applied in head to prevent UI flicker before render.
+         */
         (function() {
             const collapsed = localStorage.getItem('sidebar-collapsed') === 'true';
             if (collapsed && window.innerWidth >= 1024) {
@@ -105,16 +108,21 @@
     </script>
 
     <style>
-        [x-cloak] { display: none !important; }
-
-        /* Force show active menu based on data-attribute to prevent Alpine flicker */
+        /* Essential behavior classes only (no design changes) */
+        .sidebar-submenu {
+            display: none;
+            overflow: hidden;
+            transition: height 0.3s ease-in-out;
+        }
+        
+        /* Force show based on persisted data-attribute */
         html[data-sidebar-menu="pegawai"] #submenu-pegawai,
         html[data-sidebar-menu="pejabat"] #submenu-pejabat,
         html[data-sidebar-menu="organisasi"] #submenu-organisasi,
         html[data-sidebar-menu="website"] #submenu-website,
         html[data-sidebar-menu="batch"] #submenu-batch,
         html[data-sidebar-menu="master"] #submenu-master {
-            display: block !important;
+            display: block;
         }
 
         body {
@@ -306,6 +314,133 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
     <script>
+        /**
+         * Sidebar & Navigation Interaction Logic
+         * Implements accordion behavior, strict URL matching, and mobile offcanvas.
+         */
+        document.addEventListener('DOMContentLoaded', () => {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebar-toggle');
+            const html = document.documentElement;
+            const allLinks = sidebar.querySelectorAll('a');
+            const submenus = sidebar.querySelectorAll('.sidebar-submenu');
+            const currentUrl = window.location.href.split('#')[0].split('?')[0]; // Path matching
+
+            // --- 1. ACTIVE STATE & AUTO-EXPAND ---
+            let activeGroupId = null;
+
+            allLinks.forEach(link => {
+                const linkUrl = link.href.split('#')[0].split('?')[0];
+                
+                // Strict path matching
+                if (linkUrl === currentUrl || (currentUrl === '<?= site_url() ?>' && linkUrl === '<?= site_url('/') ?>')) {
+                    link.setAttribute('aria-current', 'page');
+                    
+                    // Prevent reload on active link
+                    link.addEventListener('click', (e) => {
+                        if (link.href === window.location.href) e.preventDefault();
+                    });
+
+                    // Identify parent group
+                    const parentSubmenu = link.closest('.sidebar-submenu');
+                    if (parentSubmenu) {
+                        activeGroupId = parentSubmenu.id.replace('submenu-', '');
+                        localStorage.setItem('sidebar-active-menu', activeGroupId);
+                        html.setAttribute('data-sidebar-menu', activeGroupId);
+                    }
+                }
+            });
+
+            // --- 2. ACCORDION LOGIC ---
+            const toggleSubmenu = (groupId, forceOpen = null) => {
+                const targetId = `submenu-${groupId}`;
+                
+                submenus.forEach(menu => {
+                    const parentBtn = menu.previousElementSibling;
+                    const isTarget = menu.id === targetId;
+                    const shouldOpen = forceOpen !== null ? (isTarget && forceOpen) : (isTarget && window.getComputedStyle(menu).display === 'none');
+
+                    if (shouldOpen) {
+                        menu.style.display = 'block';
+                        if (parentBtn) {
+                            parentBtn.setAttribute('aria-expanded', 'true');
+                            parentBtn.classList.add('active-parent'); // Utility state class
+                        }
+                    } else {
+                        // Close others (Accordion)
+                        menu.style.display = 'none';
+                        if (parentBtn) {
+                            parentBtn.setAttribute('aria-expanded', 'false');
+                            parentBtn.classList.remove('active-parent');
+                        }
+                    }
+                });
+
+                if (forceOpen === null) {
+                    const isOpen = window.getComputedStyle(document.getElementById(targetId)).display === 'block';
+                    const activeMenuValue = isOpen ? groupId : '';
+                    localStorage.setItem('sidebar-active-menu', activeMenuValue);
+                    html.setAttribute('data-sidebar-menu', activeMenuValue);
+                }
+            };
+
+            // Attach toggle listeners
+            sidebar.querySelectorAll('[data-sidebar-toggle]').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    toggleSubmenu(btn.getAttribute('data-sidebar-toggle'));
+                });
+            });
+
+            // --- 3. MOBILE OFF-CANVAS & OVERLAY ---
+            let overlay = document.getElementById('sidebar-overlay');
+            if (!overlay) {
+                overlay = document.createElement('div');
+                overlay.id = 'sidebar-overlay';
+                overlay.className = 'fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 lg:hidden transition-opacity duration-300 opacity-0 pointer-events-none';
+                document.body.appendChild(overlay);
+            }
+
+            const closeSidebar = () => {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('opacity-0', 'pointer-events-none');
+                overlay.classList.remove('opacity-100', 'pointer-events-auto');
+                document.body.style.overflow = '';
+            };
+
+            const openSidebar = () => {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.add('opacity-100', 'pointer-events-auto');
+                overlay.classList.remove('opacity-0', 'pointer-events-none');
+                document.body.style.overflow = 'hidden';
+            };
+
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', () => {
+                    if (window.innerWidth < 1024) {
+                        const isHidden = sidebar.classList.contains('-translate-x-full');
+                        isHidden ? openSidebar() : closeSidebar();
+                    } else {
+                        html.classList.toggle('sidebar-collapsed');
+                        localStorage.setItem('sidebar-collapsed', html.classList.contains('sidebar-collapsed'));
+                    }
+                });
+            }
+
+            overlay.addEventListener('click', closeSidebar);
+            document.addEventListener('keydown', (e) => { e.key === 'Escape' && closeSidebar(); });
+            allLinks.forEach(l => l.addEventListener('click', () => { window.innerWidth < 1024 && closeSidebar(); }));
+
+            // --- 4. INITIALIZE STATE ---
+            const initialGroup = localStorage.getItem('sidebar-active-menu') || activeGroupId;
+            if (initialGroup) {
+                toggleSubmenu(initialGroup, true);
+            }
+
+            // Remove no-transition after first paint
+            setTimeout(() => { document.body.classList.remove('no-transition'); }, 100);
+        });
+
         // Global Choices.js initialization
         document.addEventListener('DOMContentLoaded', () => {
             const searchSelects = document.querySelectorAll('.choices-search');
@@ -333,7 +468,6 @@
                     setTimeout(() => {
                         const parent = msg.parentElement;
                         msg.remove();
-                        // If no more messages in this container, remove the container
                         if (parent && parent.children.length === 0) {
                             parent.remove();
                         }
@@ -342,32 +476,7 @@
             });
         });
 
-        // Sidebar Toggle for Mobile & Desktop
-        const sidebar = document.getElementById('sidebar');
-        const sidebarToggle = document.getElementById('sidebar-toggle');
-        const html = document.documentElement;
-
-        if (sidebarToggle) {
-            sidebarToggle.addEventListener('click', () => {
-                if (window.innerWidth >= 1024) {
-                    html.classList.toggle('sidebar-collapsed');
-                    localStorage.setItem('sidebar-collapsed', html.classList.contains('sidebar-collapsed'));
-                } else {
-                    sidebar.classList.toggle('-translate-x-full');
-                }
-            });
-        }
-
-        // Close sidebar when clicking outside on mobile
-        document.addEventListener('click', (e) => {
-            if (window.innerWidth < 1024) {
-                if (sidebar && !sidebar.contains(e.target) && sidebarToggle && !sidebarToggle.contains(e.target)) {
-                    sidebar.classList.add('-translate-x-full');
-                }
-            }
-        });
-
-        // Global status color mapper (Remains emerald/red/etc. for semantic statuses)
+        // Global status color mapper
         function getJsStatusColor(status) {
             status = status.toUpperCase();
             if (['ISSUE', 'AKTIF', 'ACTIVE', 'YA'].includes(status)) return 'bg-emerald-100 text-emerald-800 border-transparent';
