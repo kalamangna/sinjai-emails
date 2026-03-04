@@ -39,7 +39,7 @@ Portal terintegrasi untuk manajemen identitas digital, sertifikat elektronik, da
 
 ### 6. Administrasi & Keamanan
 
-- **Role-Based Access Control (RBAC)**: Pembatasan akses antara _Super Admin_ dan _Admin_. Admin kini memiliki kemampuan untuk mengelola akun dan melakukan sinkronisasi, sementara Super Admin memegang kontrol penuh atas penghapusan data, manajemen Unit Kerja, dan Log Layanan.
+- **Role-Based Access Control (RBAC)**: Pembatasan akses antara _Super Admin_ dan _Admin_. Admin kini memiliki kemampuan untuk mengelola akun, memodifikasi informasi website, dan melakukan sinkronisasi, sementara Super Admin memegang kontrol penuh atas penghapusan data, manajemen Unit Kerja, dan Log Layanan.
 - **Eksport Data**: Generasi laporan dalam format PDF, Excel (XLSX), dan CSV yang telah dioptimasi (layout landscape/portrait, clickable domain, dan ringkasan statistik).
 - **Restructured UI**: Navigasi yang dikelompokkan secara logis (Dashboard, Email, Pegawai, Pejabat, Organisasi) untuk kemudahan penggunaan.
 - **SEO & Privacy**: Perlindungan privasi data melalui penonaktifan pengindeksan mesin pencari (noindex, nofollow) dan pembatasan akses bot melalui `robots.txt`.
@@ -57,7 +57,8 @@ Portal terintegrasi untuk manajemen identitas digital, sertifikat elektronik, da
 ### Frontend
 
 - **CSS Framework**: Tailwind CSS (JIT Compiler)
-- **Interactivity**: Alpine.js & Plugins (Collapse)
+- **UI Logic**: Vanilla JavaScript (ES6+) for ultra-high performance and reliability.
+- **Interactivity**: Custom interaction system with zero external library dependencies for core navigation.
 - **Charts**: ApexCharts (Data Visualization)
 - **UI Components**: Font Awesome 6, Choices.js (Searchable Selects)
 

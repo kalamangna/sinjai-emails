@@ -139,22 +139,32 @@ The project adheres to a **"Slate Clean Government"** aesthetic:
     - **TTE Sync**: Admins can now trigger TTE status synchronization (individual and batch).
     - **Batch Operations**: Admins now have full access to Batch Create, Batch Update, and Batch PK operations.
     - **Account Mutations**: Admins can now create new accounts and edit existing profiles, passwords, and PK data.
+    - **Website Monitoring**: Admins can now modify website information (Edit/Update) and sync domain expirations.
 - **Super Admin Restrictions**:
     - Reserved "Delete" operations for Super Admins only to prevent accidental data loss.
     - Restricted "Master Data" (Unit Kerja management) to Super Admins.
     - Restricted "Log Layanan" (Assistance/Pendampingan) to Super Admins only, removing visibility and access for the Admin role.
 - **UI/UX Consistency**:
     - Updated sidebar visibility to show/hide "Batch", "Master Data", and "Log Layanan" based on roles.
-    - Adjusted buttons and action links across `index`, `detail`, and `unit_kerja_detail` views to reflect updated permissions.
+    - Adjusted buttons and action links across `index`, `detail`, `unit_kerja_detail`, and `web_monitoring` views to reflect updated permissions.
+
+## Navigation & UX Logic Migration
+- **Vanilla JS Transition**:
+    - Successfully migrated the entire sidebar navigation and submenu interaction system from Alpine.js to highly-optimized **Vanilla JavaScript**.
+    - Eliminated layout flickering during page loads by implementing early state detection in the `<head>` using CSS data-attribute mapping.
+- **Advanced Interaction Behavior**:
+    - Implemented a hybrid accordion behavior: menu headers toggle independently, but clicking any child link automatically collapses unrelated menus to maintain a clean interface.
+    - Added strict URL path matching (including full support for query parameters) to ensure active states are accurately identified and reflected in the UI.
+    - Implemented a robust mobile offcanvas system with a dynamic overlay and automatic body-scroll locking.
+- **Accessibility & Performance**:
+    - Added `aria-current="page"` and `aria-expanded` attributes for better screen reader compatibility.
+    - Guaranteed zero external library dependencies for core navigation, resulting in near-instant interaction response.
 
 ## Codebase Cleanup & Housekeeping
 - **Spreadsheet Migration**:
     - Completed the transition from CSV to XLSX for all import operations.
     - Removed legacy CSV import logic and genericized function names in `batch.js` (e.g., `populateInputsFromSpreadsheet`).
-    - Updated UI labels and alert messages to explicitly refer to "Excel (XLSX)" instead of "CSV".
 - **Documentation**:
-    - Updated `README.md` to remove the "Instalasi" section and decommissioned features.
-    - Forced cache refresh for dashboard analytics by incrementing the cache key version.
+    - Updated `README.md` to reflect the latest Tech Stack (Vanilla JS) and refined RBAC model.
 - **Route Optimization**:
-    - Refactored `Routes.php` to use cleaner group-based filters for role restrictions.
-    - Fixed a bug where `bsre/sync-status` was inaccessible due to method mismatch (added both GET and POST support).
+    - Refactored `Routes.php` to use cleaner group-based filters for role restrictions and fixed BSrE sync method compatibility.
