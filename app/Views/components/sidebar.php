@@ -13,20 +13,32 @@
     </div>
 
     <?php
-    // Determine default active menu based on URL
-    $current_url = current_url();
+    // Get full URL including query parameters for strict matching
+    $full_url = current_url();
+    if (!empty($_SERVER['QUERY_STRING'])) {
+        $full_url .= '?' . $_SERVER['QUERY_STRING'];
+    }
+
+    // Helper to check if a URL is active (strict match)
+    $isActive = function($url) use ($full_url) {
+        return $full_url === site_url($url);
+    };
+
+    // Determine default active group based on child matches
     $default_active = '';
-    if (strpos($current_url, 'pppk_list') !== false || strpos($current_url, 'pppk_pw_list') !== false || strpos($current_url, 'pns_list') !== false) {
+    if ($isActive('email/pns_list') || $isActive('email/pppk_list') || $isActive('email/pppk_pw_list')) {
         $default_active = 'pegawai';
-    } elseif (strpos($current_url, 'pimpinan') !== false) {
+    } elseif ($isActive('email/pimpinan') || $isActive('email/pimpinan_desa')) {
         $default_active = 'pejabat';
-    } elseif ((strpos($current_url, 'unit_kerja') !== false || strpos($current_url, 'eselon') !== false) && strpos($current_url, 'manage') === false) {
+    } elseif (strpos($full_url, site_url('email/unit_kerja')) !== false && strpos($full_url, 'manage') === false) {
+        $default_active = 'organisasi'; // Unit kerja detail uses dynamic IDs, so keep strpos for the group
+    } elseif ($isActive('email/eselon_list') || strpos($full_url, site_url('email/eselon_detail')) !== false) {
         $default_active = 'organisasi';
-    } elseif (strpos($current_url, 'web_') !== false) {
+    } elseif ($isActive('web_opd') || $isActive('web_desa_kelurahan')) {
         $default_active = 'website';
-    } elseif (strpos($current_url, 'batch') !== false) {
+    } elseif ($isActive('batch') || $isActive('batch/update') || $isActive('batch/pk')) {
         $default_active = 'batch';
-    } elseif (strpos($current_url, 'unit_kerja/manage') !== false) {
+    } elseif ($isActive('unit_kerja/manage')) {
         $default_active = 'master';
     }
     ?>
@@ -43,16 +55,24 @@
                 master: <?= $default_active === 'master' ? 'true' : 'false' ?>
             },
             init() {
-                const stored = localStorage.getItem('sidebar-active-menu');
-                if (stored && this.openMenus.hasOwnProperty(stored)) {
-                    this.openMenus[stored] = true;
+                // Initialize based on current state or stored preference
+                const currentGroup = '<?= $default_active ?>';
+                if (currentGroup) {
+                    this.openMenus[currentGroup] = true;
+                    localStorage.setItem('sidebar-active-menu', currentGroup);
+                    document.documentElement.setAttribute('data-sidebar-menu', currentGroup);
+                } else {
+                    const stored = localStorage.getItem('sidebar-active-menu');
+                    if (stored && this.openMenus.hasOwnProperty(stored)) {
+                        this.openMenus[stored] = true;
+                    }
                 }
             },
             toggleMenu(menu) {
                 this.openMenus[menu] = !this.openMenus[menu];
             },
             setActive(menu) {
-                // Collapse others and set active for next load
+                // Collapse others when navigating to a specific sub-item
                 Object.keys(this.openMenus).forEach(k => this.openMenus[k] = (k === menu));
                 localStorage.setItem('sidebar-active-menu', menu);
                 document.documentElement.setAttribute('data-sidebar-menu', menu);
@@ -66,17 +86,17 @@
         class="flex-grow py-6 px-4 space-y-1 overflow-y-auto custom-scrollbar"
     >
         <!-- Dashboard -->
-        <a href="<?= site_url('/') ?>" @click="clearActive()" class="flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all <?= current_url() == site_url() ? 'bg-slate-700 text-white shadow-lg shadow-slate-900/20' : 'text-slate-100 hover:bg-slate-700/80 hover:text-white' ?>">
+        <a href="<?= site_url('/') ?>" @click="clearActive()" class="flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('/') ? 'bg-slate-700 text-white shadow-lg shadow-slate-900/20' : 'text-slate-100 hover:bg-slate-700/80 hover:text-white' ?>">
             <div class="w-5 h-5 flex items-center justify-center mr-3 shrink-0">
-                <i class="fas fa-th-large <?= current_url() == site_url() ? 'text-white' : 'text-slate-300' ?>"></i>
+                <i class="fas fa-th-large <?= $isActive('/') ? 'text-white' : 'text-slate-300' ?>"></i>
             </div>
             Dashboard
         </a>
 
         <!-- Email -->
-        <a href="<?= site_url('email') ?>" @click="clearActive()" class="flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all <?= (strpos(current_url(), 'email') !== false && strpos(current_url(), 'pimpinan') === false && strpos(current_url(), 'eselon') === false && strpos(current_url(), 'unit_kerja') === false) ? 'bg-slate-700 text-white shadow-lg shadow-slate-900/20' : 'text-slate-100 hover:bg-slate-700/80 hover:text-white' ?>">
+        <a href="<?= site_url('email') ?>" @click="clearActive()" class="flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('email') ? 'bg-slate-700 text-white shadow-lg shadow-slate-900/20' : 'text-slate-100 hover:bg-slate-700/80 hover:text-white' ?>">
             <div class="w-5 h-5 flex items-center justify-center mr-3 shrink-0">
-                <i class="fas fa-envelope <?= (strpos(current_url(), 'email') !== false && strpos(current_url(), 'pimpinan') === false && strpos(current_url(), 'eselon') === false && strpos(current_url(), 'unit_kerja') === false) ? 'text-white' : 'text-slate-300' ?>"></i>
+                <i class="fas fa-envelope <?= $isActive('email') ? 'text-white' : 'text-slate-300' ?>"></i>
             </div>
             Email
         </a>
@@ -93,13 +113,13 @@
                 <i class="fas fa-chevron-down text-[10px] transition-transform duration-200" :class="openMenus.pegawai ? 'rotate-180' : ''"></i>
             </button>
             <div id="submenu-pegawai" x-show="openMenus.pegawai" x-collapse x-cloak class="mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
-                <a href="<?= site_url('email/pns_list') ?>" @click="setActive('pegawai')" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= current_url() == site_url('email/pns_list') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
+                <a href="<?= site_url('email/pns_list') ?>" @click="setActive('pegawai')" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('email/pns_list') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
                     PNS
                 </a>
-                <a href="<?= site_url('email/pppk_list') ?>" @click="setActive('pegawai')" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= current_url() == site_url('email/pppk_list') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
+                <a href="<?= site_url('email/pppk_list') ?>" @click="setActive('pegawai')" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('email/pppk_list') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
                     PPPK
                 </a>
-                <a href="<?= site_url('email/pppk_pw_list') ?>" @click="setActive('pegawai')" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= current_url() == site_url('email/pppk_pw_list') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
+                <a href="<?= site_url('email/pppk_pw_list') ?>" @click="setActive('pegawai')" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('email/pppk_pw_list') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
                     PPPK PW
                 </a>
             </div>
@@ -117,10 +137,10 @@
                 <i class="fas fa-chevron-down text-[10px] transition-transform duration-200" :class="openMenus.pejabat ? 'rotate-180' : ''"></i>
             </button>
             <div id="submenu-pejabat" x-show="openMenus.pejabat" x-collapse x-cloak class="mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
-                <a href="<?= site_url('email/pimpinan') ?>" @click="setActive('pejabat')" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= current_url() == site_url('email/pimpinan') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
+                <a href="<?= site_url('email/pimpinan') ?>" @click="setActive('pejabat')" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('email/pimpinan') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
                     Pimpinan
                 </a>
-                <a href="<?= site_url('email/pimpinan_desa') ?>" @click="setActive('pejabat')" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= current_url() == site_url('email/pimpinan_desa') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
+                <a href="<?= site_url('email/pimpinan_desa') ?>" @click="setActive('pejabat')" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('email/pimpinan_desa') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
                     Kepala Desa
                 </a>
             </div>
@@ -138,10 +158,10 @@
                 <i class="fas fa-chevron-down text-[10px] transition-transform duration-200" :class="openMenus.organisasi ? 'rotate-180' : ''"></i>
             </button>
             <div id="submenu-organisasi" x-show="openMenus.organisasi" x-collapse x-cloak class="mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
-                <a href="<?= site_url('email/unit_kerja') ?>" @click="setActive('organisasi')" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= current_url() == site_url('email/unit_kerja') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
+                <a href="<?= site_url('email/unit_kerja') ?>" @click="setActive('organisasi')" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('email/unit_kerja') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
                     Unit Kerja
                 </a>
-                <a href="<?= site_url('email/eselon_list') ?>" @click="setActive('organisasi')" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= current_url() == site_url('email/eselon_list') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
+                <a href="<?= site_url('email/eselon_list') ?>" @click="setActive('organisasi')" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('email/eselon_list') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
                     Eselon
                 </a>
             </div>
@@ -159,10 +179,10 @@
                 <i class="fas fa-chevron-down text-[10px] transition-transform duration-200" :class="openMenus.website ? 'rotate-180' : ''"></i>
             </button>
             <div id="submenu-website" x-show="openMenus.website" x-collapse x-cloak class="submenu-container mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
-                <a href="<?= site_url('web_opd') ?>" @click="setActive('website')" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= current_url() == site_url('web_opd') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
+                <a href="<?= site_url('web_opd') ?>" @click="setActive('website')" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('web_opd') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
                     Website OPD
                 </a>
-                <a href="<?= site_url('web_desa_kelurahan') ?>" @click="setActive('website')" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= current_url() == site_url('web_desa_kelurahan') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
+                <a href="<?= site_url('web_desa_kelurahan') ?>" @click="setActive('website')" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('web_desa_kelurahan') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
                     Website Desa dan Kelurahan
                 </a>
             </div>
@@ -181,13 +201,13 @@
                     <i class="fas fa-chevron-down text-[10px] transition-transform duration-200" :class="openMenus.batch ? 'rotate-180' : ''"></i>
                 </button>
                 <div id="submenu-batch" x-show="openMenus.batch" x-collapse x-cloak class="mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
-                    <a href="<?= site_url('batch') ?>" @click="setActive('batch')" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= current_url() == site_url('batch') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
+                    <a href="<?= site_url('batch') ?>" @click="setActive('batch')" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('batch') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
                         Buat Akun Massal
                     </a>
-                    <a href="<?= site_url('batch/update') ?>" @click="setActive('batch')" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= current_url() == site_url('batch/update') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
+                    <a href="<?= site_url('batch/update') ?>" @click="setActive('batch')" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('batch/update') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
                         Edit Akun Massal
                     </a>
-                    <a href="<?= site_url('batch/pk') ?>" @click="setActive('batch')" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= current_url() == site_url('batch/pk') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
+                    <a href="<?= site_url('batch/pk') ?>" @click="setActive('batch')" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('batch/pk') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
                         Edit PK Massal
                     </a>
                 </div>
@@ -196,9 +216,9 @@
 
         <!-- Log Layanan -->
         <?php if (session()->get('role') === 'super_admin'): ?>
-            <a href="<?= site_url('assistance') ?>" @click="clearActive()" class="flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all <?= strpos(current_url(), 'assistance') !== false ? 'bg-slate-700 text-white shadow-lg shadow-slate-900/20' : 'text-slate-100 hover:bg-slate-700/80 hover:text-white' ?>">
+            <a href="<?= site_url('assistance') ?>" @click="clearActive()" class="flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('assistance') ? 'bg-slate-700 text-white shadow-lg shadow-slate-900/20' : 'text-slate-100 hover:bg-slate-700/80 hover:text-white' ?>">
                 <div class="w-5 h-5 flex items-center justify-center mr-3 shrink-0">
-                    <i class="fas fa-clipboard-list <?= strpos(current_url(), 'assistance') !== false ? 'text-white' : 'text-slate-300' ?>"></i>
+                    <i class="fas fa-clipboard-list <?= $isActive('assistance') ? 'text-white' : 'text-slate-300' ?>"></i>
                 </div>
                 Log Layanan
             </a>
@@ -217,7 +237,7 @@
                     <i class="fas fa-chevron-down text-[10px] transition-transform duration-200" :class="openMenus.master ? 'rotate-180' : ''"></i>
                 </button>
                 <div id="submenu-master" x-show="openMenus.master" x-collapse x-cloak class="mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
-                    <a href="<?= site_url('unit_kerja/manage') ?>" @click="setActive('master')" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= current_url() == site_url('unit_kerja/manage') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
+                    <a href="<?= site_url('unit_kerja/manage') ?>" @click="setActive('master')" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('unit_kerja/manage') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
                         Unit Kerja
                     </a>
                 </div>
