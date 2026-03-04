@@ -1,7 +1,7 @@
 <aside id="sidebar" class="fixed top-0 left-0 z-50 w-64 h-screen transition-transform bg-slate-800 border-r border-slate-700 flex flex-col lg:translate-x-0 -translate-x-full">
     <!-- Logo Section -->
     <div class="flex items-center h-16 px-6 border-b border-slate-700 flex-shrink-0">
-        <a href="<?= site_url('/') ?>" class="flex items-center no-underline">
+        <a href="<?= site_url('/') ?>" data-sidebar-clear class="flex items-center no-underline">
             <div class="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center mr-3 shadow-sm border border-white/10">
                 <i class="fas fa-fingerprint text-white text-sm"></i>
             </div>
@@ -15,7 +15,7 @@
     <!-- Navigation Menu -->
     <nav class="flex-grow py-6 px-4 space-y-1 overflow-y-auto custom-scrollbar">
         <!-- Dashboard -->
-        <a href="<?= site_url('/') ?>" class="flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all <?= current_url() == site_url() ? 'bg-slate-700 text-white shadow-lg shadow-slate-900/20' : 'text-slate-100 hover:bg-slate-700/80 hover:text-white' ?>">
+        <a href="<?= site_url('/') ?>" data-sidebar-clear class="flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all <?= current_url() == site_url() ? 'bg-slate-700 text-white shadow-lg shadow-slate-900/20' : 'text-slate-100 hover:bg-slate-700/80 hover:text-white' ?>">
             <div class="w-5 h-5 flex items-center justify-center mr-3 shrink-0">
                 <i class="fas fa-th-large <?= current_url() == site_url() ? 'text-white' : 'text-slate-300' ?>"></i>
             </div>
@@ -23,7 +23,7 @@
         </a>
 
         <!-- Email -->
-        <a href="<?= site_url('email') ?>" class="flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all <?= (strpos(current_url(), 'email') !== false && strpos(current_url(), 'pimpinan') === false && strpos(current_url(), 'eselon') === false && strpos(current_url(), 'unit_kerja') === false) ? 'bg-slate-700 text-white shadow-lg shadow-slate-900/20' : 'text-slate-100 hover:bg-slate-700/80 hover:text-white' ?>">
+        <a href="<?= site_url('email') ?>" data-sidebar-clear class="flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all <?= (strpos(current_url(), 'email') !== false && strpos(current_url(), 'pimpinan') === false && strpos(current_url(), 'eselon') === false && strpos(current_url(), 'unit_kerja') === false) ? 'bg-slate-700 text-white shadow-lg shadow-slate-900/20' : 'text-slate-100 hover:bg-slate-700/80 hover:text-white' ?>">
             <div class="w-5 h-5 flex items-center justify-center mr-3 shrink-0">
                 <i class="fas fa-envelope <?= (strpos(current_url(), 'email') !== false && strpos(current_url(), 'pimpinan') === false && strpos(current_url(), 'eselon') === false && strpos(current_url(), 'unit_kerja') === false) ? 'text-white' : 'text-slate-300' ?>"></i>
             </div>
@@ -145,7 +145,7 @@
 
         <!-- Log Layanan -->
         <?php if (session()->get('role') === 'super_admin'): ?>
-            <a href="<?= site_url('assistance') ?>" class="flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all <?= strpos(current_url(), 'assistance') !== false ? 'bg-slate-700 text-white shadow-lg shadow-slate-900/20' : 'text-slate-100 hover:bg-slate-700/80 hover:text-white' ?>">
+            <a href="<?= site_url('assistance') ?>" data-sidebar-clear class="flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all <?= strpos(current_url(), 'assistance') !== false ? 'bg-slate-700 text-white shadow-lg shadow-slate-900/20' : 'text-slate-100 hover:bg-slate-700/80 hover:text-white' ?>">
                 <div class="w-5 h-5 flex items-center justify-center mr-3 shrink-0">
                     <i class="fas fa-clipboard-list <?= strpos(current_url(), 'assistance') !== false ? 'text-white' : 'text-slate-300' ?>"></i>
                 </div>

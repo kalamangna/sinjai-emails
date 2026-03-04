@@ -328,6 +328,7 @@
 
             // --- 1. ACTIVE STATE & AUTO-EXPAND ---
             let activeGroupId = null;
+            let foundActive = false;
 
             allLinks.forEach(link => {
                 const linkUrl = link.href.split('#')[0].split('?')[0];
@@ -335,6 +336,7 @@
                 // Strict path matching
                 if (linkUrl === currentUrl || (currentUrl === '<?= site_url() ?>' && linkUrl === '<?= site_url('/') ?>')) {
                     link.setAttribute('aria-current', 'page');
+                    foundActive = true;
                     
                     // Prevent reload on active link
                     link.addEventListener('click', (e) => {
@@ -351,7 +353,26 @@
                 }
             });
 
+            // If we are on a page that doesn't belong to any group (like Dashboard), clear storage
+            if (!activeGroupId && foundActive) {
+                localStorage.setItem('sidebar-active-menu', '');
+                html.setAttribute('data-sidebar-menu', '');
+            }
+
             // --- 2. ACCORDION LOGIC ---
+            const clearAllActive = () => {
+                submenus.forEach(menu => {
+                    menu.style.display = 'none';
+                    const parentBtn = menu.previousElementSibling;
+                    if (parentBtn) {
+                        parentBtn.setAttribute('aria-expanded', 'false');
+                        parentBtn.classList.remove('active-parent');
+                    }
+                });
+                localStorage.setItem('sidebar-active-menu', '');
+                html.setAttribute('data-sidebar-menu', '');
+            };
+
             const toggleSubmenu = (groupId, forceOpen = null) => {
                 const targetId = `submenu-${groupId}`;
                 
@@ -364,7 +385,7 @@
                         menu.style.display = 'block';
                         if (parentBtn) {
                             parentBtn.setAttribute('aria-expanded', 'true');
-                            parentBtn.classList.add('active-parent'); // Utility state class
+                            parentBtn.classList.add('active-parent');
                         }
                     } else {
                         // Close others (Accordion)
@@ -380,7 +401,7 @@
                     const isOpen = window.getComputedStyle(document.getElementById(targetId)).display === 'block';
                     const activeMenuValue = isOpen ? groupId : '';
                     localStorage.setItem('sidebar-active-menu', activeMenuValue);
-                    html.setAttribute('data-sidebar-menu', activeMenuValue);
+                    html.setAttribute('data-sidebar-menu', activeMenuValueValue);
                 }
             };
 
@@ -389,6 +410,13 @@
                 btn.addEventListener('click', (e) => {
                     e.preventDefault();
                     toggleSubmenu(btn.getAttribute('data-sidebar-toggle'));
+                });
+            });
+
+            // Attach clear listeners
+            sidebar.querySelectorAll('[data-sidebar-clear]').forEach(link => {
+                link.addEventListener('click', () => {
+                    clearAllActive();
                 });
             });
 
