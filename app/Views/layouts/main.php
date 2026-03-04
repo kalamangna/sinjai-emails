@@ -324,17 +324,17 @@
             const html = document.documentElement;
             const allLinks = sidebar.querySelectorAll('a');
             const submenus = sidebar.querySelectorAll('.sidebar-submenu');
-            const currentUrl = window.location.href.split('#')[0].split('?')[0]; // Path matching
+            const currentUrl = window.location.href.split('#')[0]; // Strict match including query params
 
             // --- 1. ACTIVE STATE & AUTO-EXPAND ---
             let activeGroupId = null;
             let foundActive = false;
 
             allLinks.forEach(link => {
-                const linkUrl = link.href.split('#')[0].split('?')[0];
+                const linkUrl = link.href.split('#')[0];
                 
-                // Strict path matching
-                if (linkUrl === currentUrl || (currentUrl === '<?= site_url() ?>' && linkUrl === '<?= site_url('/') ?>')) {
+                // Strict match
+                if (linkUrl === currentUrl) {
                     link.setAttribute('aria-current', 'page');
                     foundActive = true;
                     
