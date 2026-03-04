@@ -247,10 +247,10 @@
                     <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">QR Code Identitas</h3>
                 </div>
                 <div class="p-6 flex flex-col items-center gap-4">
-                    <div class="p-2 bg-white border border-slate-100 rounded-xl shadow-sm">
+                    <a id="qrcode-link" href="" target="_blank" class="p-2 bg-white border border-slate-100 rounded-xl shadow-sm hover:border-slate-800 hover:shadow-md transition-all">
                         <img id="qrcode-image" src="" alt="QR Code" class="w-32 h-32">
-                    </div>
-                    <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Pindai untuk verifikasi identitas digital</p>
+                    </a>
+                    <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Klik atau pindai untuk verifikasi identitas digital</p>
                 </div>
             </div>
 
@@ -367,10 +367,13 @@
         // Handle QR Code Visibility
         const qrcodeCard = document.getElementById('qrcode-card');
         const qrcodeImage = document.getElementById('qrcode-image');
+        const qrcodeLink = document.getElementById('qrcode-link');
         
         if (status === 'ISSUE') {
-            const email = '<?= esc($email['email'], 'js') ?>';
-            qrcodeImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(email)}`;
+            const username = '<?= esc($email['user'], 'js') ?>';
+            const profileUrl = `<?= site_url('profile/') ?>${username}`;
+            qrcodeImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(profileUrl)}`;
+            qrcodeLink.href = profileUrl;
             qrcodeCard.classList.remove('hidden');
         } else {
             qrcodeCard.classList.add('hidden');

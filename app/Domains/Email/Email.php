@@ -250,6 +250,19 @@ class Email extends BaseController
         }
     }
 
+    public function profile($username)
+    {
+        try {
+            $data = $this->emailService->getEmailDetail($username);
+            $data['title'] = 'Verifikasi Identitas';
+            return view('email/profile', $data);
+        } catch (Exception $e) {
+            $data['error'] = $e->getMessage();
+            $data['title'] = 'Verifikasi Identitas';
+            return view('email/error', $data);
+        }
+    }
+
     public function delete($id)
     {
         try {
