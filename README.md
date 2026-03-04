@@ -23,7 +23,13 @@ Portal terintegrasi untuk manajemen identitas digital, sertifikat elektronik, da
 - **Website Desa & Kelurahan**: Pelacakan masa berlaku domain `.desa.id` melalui protokol **RDAP PANDI**.
 - **Visualisasi Data**: Grafik distribusi platform dan status operasional yang modern dan informatif dengan legend persentase.
 
-### 4. Batch Operations (Admin & Super Admin)
+### 4. Digital Identity Verification
+
+- **Dynamic QR Code**: Generasi QR Code otomatis pada detail akun yang memiliki sertifikat elektronik aktif.
+- **Branded QR**: QR Code dilengkapi dengan logo instansi di bagian tengah untuk tampilan profesional.
+- **Public Verification Page**: Halaman verifikasi publik yang dioptimasi untuk perangkat _mobile_, memungkinkan validasi identitas digital secara instan melalui pemindaian QR Code.
+
+### 5. Batch Operations (Admin & Super Admin)
 
 - **Refactored Module**: Modul batch yang terorganisir untuk efisiensi pemrosesan data massal.
 - **XLSX (Excel) Import**: Dukungan penuh impor file XLSX untuk pembuatan dan pembaruan data secara massal yang lebih andal.
@@ -57,8 +63,8 @@ Portal terintegrasi untuk manajemen identitas digital, sertifikat elektronik, da
 ### Frontend
 
 - **CSS Framework**: Tailwind CSS (JIT Compiler)
-- **UI Logic**: Vanilla JavaScript (ES6+) for ultra-high performance and reliability.
-- **Interactivity**: Custom interaction system with zero external library dependencies for core navigation.
+- **UI Logic**: Pure Vanilla JavaScript (ES6+) for maximum performance and zero layout flicker.
+- **Interactivity**: Custom state management system replacing Alpine.js for core navigation and sidebar interactions.
 - **Charts**: ApexCharts (Data Visualization)
 - **UI Components**: Font Awesome 6, Choices.js (Searchable Selects)
 

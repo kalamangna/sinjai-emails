@@ -160,17 +160,28 @@ The project adheres to a **"Slate Clean Government"** aesthetic:
     - Added `aria-current="page"` and `aria-expanded` attributes for better screen reader compatibility.
     - Guaranteed zero external library dependencies for core navigation, resulting in near-instant interaction response.
 
-## Feature Additions
-- **Dynamic QR Code**:
-    - Added a QR code identity card to the Email Detail page.
-    - Automatically displays when TTE status is "ISSUE", providing a quick way to verify digital identity.
-    - Real-time updates: the QR code card toggles instantly based on TTE status synchronization results.
+## Digital Identity & Verification
+- **Dynamic Identity QR Code**:
+    - Added a QR code identity card to the Account Detail page that appears when TTE status is "ISSUE".
+    - Enhanced the QR code with a centered logo overlay for a professional, integrated look.
+    - Made the QR code clickable, linking to a new public verification route (`/verifikasi/{username}`).
+- **Public Verification Page**:
+    - Implemented a dedicated, mobile-optimized public verification view (`verifikasi.php`).
+    - Displays formal confirmation of digital signature ownership without exposing sensitive data (NIP/NIK).
+    - Features a full-height, centered layout designed specifically for smartphone scans.
 
-## Codebase Cleanup & Housekeeping
-- **Spreadsheet Migration**:
-    - Completed the transition from CSV to XLSX for all import operations.
-    - Removed legacy CSV import logic and genericized function names in `batch.js` (e.g., `populateInputsFromSpreadsheet`).
-- **Documentation**:
-    - Updated `README.md` to reflect the latest Tech Stack (Vanilla JS) and refined RBAC model.
-- **Route Optimization**:
-    - Refactored `Routes.php` to use cleaner group-based filters for role restrictions and fixed BSrE sync method compatibility.
+## Technical Refinements & Housekeeping
+- **Global Error Handling**:
+    - Implemented a unified error modal system in `main.php`.
+    - Updated TTE synchronization logic to display detailed API failure reasons in a modal instead of basic tooltips.
+    - Improved sequential processing feedback with live status counters.
+- **Visual Branding**:
+    - Standardized application favicon across all layouts and error pages using `logo.png`.
+- **UI Cleanup**:
+    - Refined `unit_kerja_detail.php`: removed redundant table headers and moved filtered data summaries to the footer for better data density.
+- **Navigation Optimization**:
+    - Ensured top-level navigation (Logo, Dashboard, Email) resets the sidebar state consistently.
+    - Optimized URL matching to strictly respect query parameters for active state highlighting.
+- **Code Optimization**:
+    - Migrated legacy spreadsheet logic to unified XLSX handler.
+    - Cleaned up redundant Alpine.js state management in favor of native ES6 logic.
