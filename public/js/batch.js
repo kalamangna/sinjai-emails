@@ -64,7 +64,7 @@ document.addEventListener("DOMContentLoaded", function () {
             throw new Error(result.message || 'Gagal mengimpor file spreadsheet.');
         }
         
-        populateInputsFromCsv(result.data);
+        populateInputsFromSpreadsheet(result.data);
 
     } catch (error) {
         alert(`Error: ${error.message}`);
@@ -75,21 +75,21 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  function populateInputsFromCsv(data) {
+  function populateInputsFromSpreadsheet(data) {
     if (!Array.isArray(data)) return;
 
     const names = data.map(row => row.nama || '').join('\n');
     const nips = data.map(row => row.nip || '').join('\n');
     const niks = data.map(row => row.nik || '').join('\n');
     
-    // For now, we ignore status_asn_id and unit_kerja_id from CSV
+    // For now, we ignore status_asn_id and unit_kerja_id from spreadsheet
     // and let the user select them from the main dropdowns.
     
     nameInput.value = names;
     nipInput.value = nips;
     nikInput.value = niks;
 
-    alert(`${data.length} baris berhasil diimpor dari CSV. Silakan pilih Status ASN dan Unit Kerja, lalu klik 'Preview'.`);
+    alert(`${data.length} baris berhasil diimpor dari file Excel. Silakan pilih Status ASN dan Unit Kerja, lalu klik 'Preview'.`);
   }
 
   generateBtn.addEventListener("click", async function () {

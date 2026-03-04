@@ -160,21 +160,21 @@
         <table class="info-layout">
             <tr>
                 <!-- Summary Section -->
-                <td style="width: 15%; text-align: center;">
+                <td style="width: 14%; text-align: center;">
                     <div style="font-size: 9px; font-weight: bold; color: #64748b; text-transform: uppercase; margin-bottom: 4px;">TOTAL EMAIL</div>
                     <div style="font-size: 18px; font-weight: bold; color: #1e293b; text-align: center;"><?= $totalEmail ?></div>
                 </td>
-                <td style="width: 15%; border-left: 1px solid #e2e8f0; text-align: center;">
+                <td style="width: 18%; border-left: 1px solid #e2e8f0; text-align: center;">
                     <div style="font-size: 9px; font-weight: bold; color: #059669; text-transform: uppercase; margin-bottom: 4px;">TTE AKTIF</div>
-                    <div style="font-size: 18px; font-weight: bold; color: #059669; text-align: center;"><?= $issueCount ?></div>
+                    <div style="font-size: 18px; font-weight: bold; color: #059669; text-align: center;"><?= $issueCount ?> <span style="font-size: 10px; color: #64748b; font-weight: normal;">(<?= $totalEmail > 0 ? round(($issueCount / $totalEmail) * 100) : 0 ?>%)</span></div>
                 </td>
-                <td style="width: 15%; border-left: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0; text-align: center;">
+                <td style="width: 18%; border-left: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0; text-align: center;">
                     <div style="font-size: 9px; font-weight: bold; color: #dc2626; text-transform: uppercase; margin-bottom: 4px;">TTE EXPIRED</div>
-                    <div style="font-size: 18px; font-weight: bold; color: #dc2626; text-align: center;"><?= $expiredCount ?></div>
+                    <div style="font-size: 18px; font-weight: bold; color: #dc2626; text-align: center;"><?= $expiredCount ?> <span style="font-size: 10px; color: #64748b; font-weight: normal;">(<?= $totalEmail > 0 ? round(($expiredCount / $totalEmail) * 100) : 0 ?>%)</span></div>
                 </td>
 
                 <!-- Legend Section -->
-                <td style="width: 55%; padding-left: 15px; text-align: left; vertical-align: middle;">
+                <td style="width: 50%; padding-left: 15px; text-align: left; vertical-align: middle;">
                     <div style="font-size: 9px; font-weight: bold; color: #475569; margin-bottom: 4px; text-transform: uppercase;">Keterangan Status TTE</div>
                     <table style="border: none; margin: 0; font-size: 9px; width: 100%;">
                         <tr>

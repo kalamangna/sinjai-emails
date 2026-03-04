@@ -28,14 +28,20 @@
                         <span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
                         <span class="text-[10px] font-bold text-slate-700 uppercase">Aktif</span>
                     </div>
-                    <span class="text-xs font-bold text-slate-800"><?= $stats['aktif'] ?></span>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[9px] font-bold text-slate-400"><?= $stats['total'] > 0 ? round(($stats['aktif'] / $stats['total']) * 100) : 0 ?>%</span>
+                        <span class="text-xs font-bold text-slate-800"><?= $stats['aktif'] ?></span>
+                    </div>
                 </div>
                 <div class="flex justify-between items-center p-2 rounded-lg border border-slate-200 bg-slate-50">
                     <div class="flex items-center gap-2">
                         <span class="w-2.5 h-2.5 rounded-full bg-red-600"></span>
                         <span class="text-[10px] font-bold text-slate-700 uppercase">Nonaktif</span>
                     </div>
-                    <span class="text-xs font-bold text-slate-800"><?= $stats['nonaktif'] ?></span>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[9px] font-bold text-slate-400"><?= $stats['total'] > 0 ? round(($stats['nonaktif'] / $stats['total']) * 100) : 0 ?>%</span>
+                        <span class="text-xs font-bold text-slate-800"><?= $stats['nonaktif'] ?></span>
+                    </div>
                 </div>
             </div>
         </div>

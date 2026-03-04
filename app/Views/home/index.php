@@ -16,22 +16,42 @@
 
     <!-- Metrik Ringkasan -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div class="bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-lg p-6 shadow-sm">
-            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Total Email</p>
-            <h3 class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($total_emails, 0, ',', '.') ?></h3>
-        </div>
-        <div class="bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-lg p-6 shadow-sm">
-            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">TTE Aktif</p>
-            <h3 class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($active_bsre, 0, ',', '.') ?></h3>
-        </div>
-        <div class="bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-lg p-6 shadow-sm">
-            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Website OPD</p>
-            <h3 class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($web_stats['opd'], 0, ',', '.') ?></h3>
-        </div>
-        <div class="bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-lg p-6 shadow-sm">
-            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Website Desa & Kelurahan</p>
-            <h3 class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($web_stats['desa'] + $web_stats['kelurahan'], 0, ',', '.') ?></h3>
-        </div>
+        <a href="<?= site_url('email') ?>" class="bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-lg p-6 shadow-sm hover:border-slate-800 transition-all no-underline group">
+            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest group-hover:text-slate-700">Total Email</p>
+            <div class="flex items-baseline gap-2 mt-1">
+                <h3 class="text-2xl font-bold text-slate-800"><?= number_format($total_emails, 0, ',', '.') ?></h3>
+                <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Aktif</span>
+            </div>
+        </a>
+        <a href="<?= site_url('email?bsre_status=ISSUE') ?>" class="bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-lg p-6 shadow-sm hover:border-slate-800 transition-all no-underline group">
+            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest group-hover:text-slate-700">Status TTE</p>
+            <div class="flex items-baseline gap-2 mt-1">
+                <h3 class="text-2xl font-bold text-slate-800"><?= number_format($active_bsre, 0, ',', '.') ?></h3>
+                <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Aktif</span>
+            </div>
+        </a>
+        <a href="<?= site_url('web_opd') ?>" class="bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-lg p-6 shadow-sm hover:border-slate-800 transition-all no-underline group">
+            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest group-hover:text-slate-700">Website OPD</p>
+            <div class="flex items-baseline gap-2 mt-1">
+                <h3 class="text-2xl font-bold text-slate-800"><?= number_format($web_stats['opd_aktif'], 0, ',', '.') ?></h3>
+                <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">
+                    Aktif <span class="text-slate-400 ml-1">(<?= $web_stats['opd_total'] > 0 ? round(($web_stats['opd_aktif'] / $web_stats['opd_total']) * 100) : 0 ?>%)</span>
+                </span>
+            </div>
+        </a>
+        <a href="<?= site_url('web_desa_kelurahan') ?>" class="bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-lg p-6 shadow-sm hover:border-slate-800 transition-all no-underline group">
+            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest group-hover:text-slate-700">Website Desa & Kelurahan</p>
+            <div class="flex items-baseline gap-2 mt-1">
+                <h3 class="text-2xl font-bold text-slate-800"><?= number_format($web_stats['desa_aktif'] + $web_stats['kelurahan_aktif'], 0, ',', '.') ?></h3>
+                <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">
+                    Aktif <span class="text-slate-400 ml-1">(<?php 
+                    $total_web_dk = ($web_stats['desa_total'] ?? 0) + ($web_stats['kelurahan_total'] ?? 0);
+                    $aktif_web_dk = ($web_stats['desa_aktif'] ?? 0) + ($web_stats['kelurahan_aktif'] ?? 0);
+                    echo $total_web_dk > 0 ? round(($aktif_web_dk / $total_web_dk) * 100) : 0;
+                    ?>%)</span>
+                </span>
+            </div>
+        </a>
     </div>
 
     <!-- Statistik dan Grafik -->

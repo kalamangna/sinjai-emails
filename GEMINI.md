@@ -101,3 +101,36 @@ The project adheres to a **"Slate Clean Government"** aesthetic:
 - **Filter Fixes**: Corrected the assistance export link to properly propagate active filters (Category, Month, Year) via query strings.
 - **Parse Errors**: Resolved a syntax error in `WebMonitoringExportService`.
 
+# Session History - March 5, 2026
+
+## Dashboard & Analytics
+- **Metric Enhancements**:
+    - Refactored dashboard metrics to focus on "Aktif" counts for Emails, TTE, and Websites.
+    - Added percentage indicators to Website metrics (OPD and Desa/Kelurahan) for better performance tracking.
+    - Improved metric card typography and layout (font sizes, rounded values, semantic colors).
+    - Implemented "Click-to-Page" functionality for all dashboard metric cards, linking directly to filtered views.
+- **Chart Legend Improvements**:
+    - Added percentage breakdowns to all donut chart legends (TTE Status, ASN Status, Website Status, and Platform Distribution).
+    - Standardized legend layouts to prevent text overflow and improve readability on all monitoring pages.
+
+## Unit Kerja Monitoring
+- **Data Richness**:
+    - Added a dedicated "TTE Expired" metric card to the Unit Kerja detail page.
+    - Integrated percentage displays for both "Aktif" and "Expired" TTE statuses relative to the unit's total email count.
+    - Refined the visual hierarchy by using emerald/red border accents for status-critical metric cards.
+- **Visual Consistency**:
+    - Adjusted metric container widths for a more balanced layout.
+    - Synchronized chart legend styling with the main dashboard.
+
+## PDF Export System
+- **Metric Percentages**: Integrated "Aktif" and "Nonaktif" percentages into Website Monitoring PDF exports (OPD and Desa/Kelurahan).
+- **Inline Layouts**: Switched to an inline display for percentages in Unit Kerja PDF reports to match the website monitoring style and improve space efficiency.
+
+## Codebase Cleanup & Housekeeping
+- **Spreadsheet Migration**:
+    - Completed the transition from CSV to XLSX for all import operations.
+    - Removed legacy CSV import logic and genericized function names in `batch.js` (e.g., `populateInputsFromSpreadsheet`).
+    - Updated UI labels and alert messages to explicitly refer to "Excel (XLSX)" instead of "CSV".
+- **Documentation**:
+    - Updated `README.md` to remove the "Instalasi" section and decommissioned features.
+    - Forced cache refresh for dashboard analytics by incrementing the cache key version.

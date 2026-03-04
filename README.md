@@ -15,21 +15,20 @@ Portal terintegrasi untuk manajemen identitas digital, sertifikat elektronik, da
 
 - **Integrasi BSrE API**: Pemantauan status sertifikat digital secara _real-time_ (Aktif, Expired, Revoked, dsb).
 - **Pengelompokan Pejabat**: Akses cepat untuk monitoring TTE Pimpinan OPD dan Kepala Desa.
-- **Reporting**: Dashboard statistik status TTE di seluruh perangkat daerah.
+- **Reporting**: Dashboard statistik status TTE di seluruh perangkat daerah dilengkapi dengan persentase capaian.
 
 ### 3. Monitoring Website & Domain
 
 - **Website OPD**: Pemantauan status pemanfaatan subdomain OPD.
 - **Website Desa & Kelurahan**: Pelacakan masa berlaku domain `.desa.id` melalui protokol **RDAP PANDI**.
-- **Visualisasi Data**: Grafik distribusi platform dan status operasional yang modern dan informatif.
+- **Visualisasi Data**: Grafik distribusi platform dan status operasional yang modern dan informatif dengan legend persentase.
 
 ### 4. Batch Operations (Super Admin)
 
 - **Refactored Module**: Modul batch yang terorganisir untuk efisiensi pemrosesan data massal.
-- **Advanced Spreadsheet Import**: Migrasi dari CSV ke **XLSX (Excel)** untuk impor data yang lebih andal dan mudah diedit.
+- **XLSX (Excel) Import**: Dukungan penuh impor file XLSX untuk pembuatan dan pembaruan data secara massal yang lebih andal.
 - **Mass Account Creation**: Pembuatan akun massal dengan input ala Excel dan validasi otomatis.
 - **Bulk Updates**: Pembaruan data profil dan dokumen Perjanjian Kerja (PK) secara massal, termasuk pembaruan Unit Kerja per baris.
-- **Unit Kerja Batch**: Pembuatan daftar Unit Kerja secara massal melalui file Excel.
 - **PK Export System**: Generasi otomatis dokumen Perjanjian Kerja (PPPK/Paruh Waktu) dengan format standar (A4, font Bookman Old Style).
 - **Subfolder Archive**: ZIP hasil batch yang terorganisir secara otomatis berdasarkan status kepegawaian.
 
@@ -66,41 +65,6 @@ Portal terintegrasi untuk manajemen identitas digital, sertifikat elektronik, da
 - **cPanel UAPI**: Manajemen akun email server.
 - **BSrE API**: Validasi status sertifikat elektronik.
 - **PANDI RDAP**: Pengecekan masa aktif domain desa.
-
-## Instalasi
-
-1. **Clone & Dependencies**
-
-   ```bash
-   git clone https://github.com/kalamangna/sinjai-emails.git
-   composer install
-   npm install
-   ```
-
-2. **Environment**
-   Salin `env` ke `.env` dan konfigurasi Database serta API Credentials:
-
-   ```ini
-   database.default.hostname = localhost
-   database.default.database = sinjai_emails
-
-   # cPanel Config
-   cpanel.host = your-server.com
-   cpanel.user = username
-   cpanel.token = your-api-token
-   ```
-
-3. **Migration & Seeding**
-
-   ```bash
-   php spark migrate
-   php spark db:seed UserSeeder
-   ```
-
-4. **Build Assets**
-   ```bash
-   npm run build
-   ```
 
 ---
 

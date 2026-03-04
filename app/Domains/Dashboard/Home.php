@@ -9,7 +9,7 @@ class Home extends BaseController
     public function index(): string
     {
         $cache = \Config\Services::cache();
-        $cacheKey = 'dashboard_summary_data';
+        $cacheKey = 'dashboard_summary_data_v3';
 
         if (!$data = $cache->get($cacheKey)) {
             $emailModel = new \App\Domains\Email\EmailModel();
@@ -94,14 +94,25 @@ class Home extends BaseController
 
             // Website Stats - Optimized: Single query with conditional aggregation
             $web_stats = [
-                'opd' => $webOpdModel->countAllResults(),
-                'desa' => 0,
-                'kelurahan' => 0,
+                'opd_aktif' => $webOpdModel->where('status', 'AKTIF')->countAllResults(),
+                'opd_total' => $webOpdModel->countAllResults(),
+                'desa_aktif' => 0,
+                'desa_total' => 0,
+                'kelurahan_aktif' => 0,
+                'kelurahan_total' => 0,
             ];
 
-            $desa_stats_raw = $webDesaModel->select("SUM(CASE WHEN desa_kelurahan NOT LIKE '%Kelurahan%' THEN 1 ELSE 0 END) as desa_count, SUM(CASE WHEN desa_kelurahan LIKE '%Kelurahan%' THEN 1 ELSE 0 END) as kel_count")->first();
-            $web_stats['desa'] = (int)($desa_stats_raw['desa_count'] ?? 0);
-            $web_stats['kelurahan'] = (int)($desa_stats_raw['kel_count'] ?? 0);
+            $desa_stats_raw = $webDesaModel->select("
+                SUM(CASE WHEN desa_kelurahan NOT LIKE '%Kelurahan%' AND status = 'AKTIF' THEN 1 ELSE 0 END) as desa_aktif_count,
+                SUM(CASE WHEN desa_kelurahan NOT LIKE '%Kelurahan%' THEN 1 ELSE 0 END) as desa_total_count,
+                SUM(CASE WHEN desa_kelurahan LIKE '%Kelurahan%' AND status = 'AKTIF' THEN 1 ELSE 0 END) as kel_aktif_count,
+                SUM(CASE WHEN desa_kelurahan LIKE '%Kelurahan%' THEN 1 ELSE 0 END) as kel_total_count
+            ")->first();
+            
+            $web_stats['desa_aktif'] = (int)($desa_stats_raw['desa_aktif_count'] ?? 0);
+            $web_stats['desa_total'] = (int)($desa_stats_raw['desa_total_count'] ?? 0);
+            $web_stats['kelurahan_aktif'] = (int)($desa_stats_raw['kel_aktif_count'] ?? 0);
+            $web_stats['kelurahan_total'] = (int)($desa_stats_raw['kel_total_count'] ?? 0);
 
             // Assistance Stats
             $total_assistance = $assistanceModel->countAllResults();

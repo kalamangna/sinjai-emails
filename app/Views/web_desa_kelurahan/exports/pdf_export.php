@@ -178,11 +178,11 @@
                 </td>
                 <td style="width: 33.33%; border-left: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0;">
                     <div class="summary-label" style="color: #059669;">AKTIF</div>
-                    <div class="summary-value" style="color: #059669;"><?= $aktif_web ?></div>
+                    <div class="summary-value" style="color: #059669;"><?= $aktif_web ?> <span style="font-size: 10px; color: #64748b; font-weight: normal;">(<?= $total_web > 0 ? round(($aktif_web / $total_web) * 100) : 0 ?>%)</span></div>
                 </td>
                 <td style="width: 33.33%;">
                     <div class="summary-label" style="color: #dc2626;">NONAKTIF</div>
-                    <div class="summary-value" style="color: #dc2626;"><?= $nonaktif_web ?></div>
+                    <div class="summary-value" style="color: #dc2626;"><?= $nonaktif_web ?> <span style="font-size: 10px; color: #64748b; font-weight: normal;">(<?= $total_web > 0 ? round(($nonaktif_web / $total_web) * 100) : 0 ?>%)</span></div>
                 </td>
             </tr>
         </table>

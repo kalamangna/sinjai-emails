@@ -53,14 +53,25 @@
                 <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight"><?= esc($unit_kerja['nama_unit_kerja']) ?></h1>
             </div>
 
-            <div class="flex gap-4 min-w-[240px]">
+            <div class="flex flex-wrap lg:flex-nowrap gap-4 min-w-full lg:min-w-[400px]">
                 <div class="flex-1 bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-lg p-4 text-center">
                     <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Total Email</p>
                     <p class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($total_emails ?? 0, 0, ',', '.') ?></p>
                 </div>
-                <div class="flex-1 bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-lg p-4 text-center">
-                    <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">TTE Aktif</p>
-                    <p class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($active_bsre_count ?? 0, 0, ',', '.') ?></p>
+                <div class="flex-1 bg-white border border-slate-200 border-l-4 border-l-emerald-600 rounded-lg p-4 text-center">
+                    <p class="text-[9px] font-bold text-emerald-600 uppercase tracking-widest">TTE Aktif</p>
+                    <div class="flex items-baseline justify-center gap-1 mt-1">
+                        <p class="text-2xl font-bold text-slate-800"><?= number_format($active_bsre_count ?? 0, 0, ',', '.') ?></p>
+                        <span class="text-xs font-bold text-slate-400">(<?= ($total_emails ?? 0) > 0 ? round(($active_bsre_count / $total_emails) * 100) : 0 ?>%)</span>
+                    </div>
+                </div>
+                <?php $expired_count = $bsre_status_counts['EXPIRED']['count'] ?? 0; ?>
+                <div class="flex-1 bg-white border border-slate-200 border-l-4 border-l-red-600 rounded-lg p-4 text-center">
+                    <p class="text-[9px] font-bold text-red-600 uppercase tracking-widest">TTE Expired</p>
+                    <div class="flex items-baseline justify-center gap-1 mt-1">
+                        <p class="text-2xl font-bold text-slate-800"><?= number_format($expired_count, 0, ',', '.') ?></p>
+                        <span class="text-xs font-bold text-slate-400">(<?= ($total_emails ?? 0) > 0 ? round(($expired_count / $total_emails) * 100) : 0 ?>%)</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -110,11 +121,14 @@
                             elseif ($key === 'NEW') $bgClass = 'bg-emerald-500';
                         ?>
                             <div class="p-2 bg-slate-50 border border-slate-200 rounded-lg flex justify-between items-center">
-                                <div class="flex items-center truncate">
+                                <div class="flex items-center truncate mr-2">
                                     <span class="w-2 h-2 rounded-full mr-2 shrink-0 <?= $bgClass ?>"></span>
                                     <span class="text-[10px] font-bold text-slate-700 uppercase truncate"><?= esc($data['label']) ?></span>
                                 </div>
-                                <span class="text-xs font-bold text-slate-800"><?= number_format($data['count'], 0, ',', '.') ?></span>
+                                <div class="flex items-center gap-2 shrink-0">
+                                    <span class="text-[9px] font-bold text-slate-400"><?= ($total_emails ?? 0) > 0 ? round(($data['count'] / $total_emails) * 100) : 0 ?>%</span>
+                                    <span class="text-xs font-bold text-slate-800"><?= number_format($data['count'], 0, ',', '.') ?></span>
+                                </div>
                             </div>
                         <?php endforeach; ?>
                     </div>
@@ -141,11 +155,14 @@
                             elseif (strpos($label, 'PPPK PARUH WAKTU') !== false) $bgClass = 'bg-slate-400';
                         ?>
                             <div class="p-2 bg-slate-50 border border-slate-200 rounded-lg flex justify-between items-center">
-                                <div class="flex items-center truncate">
+                                <div class="flex items-center truncate mr-2">
                                     <span class="w-2 h-2 rounded-full mr-2 shrink-0 <?= $bgClass ?>"></span>
                                     <span class="text-[10px] font-bold text-slate-700 uppercase truncate"><?= esc($stat['label']) ?></span>
                                 </div>
-                                <span class="text-xs font-bold text-slate-800"><?= number_format($stat['count'], 0, ',', '.') ?></span>
+                                <div class="flex items-center gap-2 shrink-0">
+                                    <span class="text-[9px] font-bold text-slate-400"><?= ($total_emails ?? 0) > 0 ? round(($stat['count'] / $total_emails) * 100) : 0 ?>%</span>
+                                    <span class="text-xs font-bold text-slate-800"><?= number_format($stat['count'], 0, ',', '.') ?></span>
+                                </div>
                             </div>
                         <?php endforeach; ?>
                     </div>

@@ -53,14 +53,20 @@
                             <span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
                             <span class="text-[10px] font-bold text-slate-700 uppercase">Aktif</span>
                         </div>
-                        <span class="text-xs font-bold text-slate-800"><?= $stats['aktif'] ?></span>
+                        <div class="flex items-center gap-2">
+                            <span class="text-[9px] font-bold text-slate-400"><?= ($stats['total'] ?? 0) > 0 ? round(($stats['aktif'] / $stats['total']) * 100) : 0 ?>%</span>
+                            <span class="text-xs font-bold text-slate-800"><?= $stats['aktif'] ?></span>
+                        </div>
                     </div>
                     <div class="flex justify-between items-center p-2 rounded-lg border border-slate-200 bg-slate-50">
                         <div class="flex items-center gap-2">
                             <span class="w-2.5 h-2.5 rounded-full bg-red-600"></span>
                             <span class="text-[10px] font-bold text-slate-700 uppercase">Nonaktif</span>
                         </div>
-                        <span class="text-xs font-bold text-slate-800"><?= $stats['nonaktif'] ?></span>
+                        <div class="flex items-center gap-2">
+                            <span class="text-[9px] font-bold text-slate-400"><?= ($stats['total'] ?? 0) > 0 ? round(($stats['nonaktif'] / $stats['total']) * 100) : 0 ?>%</span>
+                            <span class="text-xs font-bold text-slate-800"><?= $stats['nonaktif'] ?></span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -76,13 +82,19 @@
                     <div id="platformChart" class="w-full max-w-[180px]"></div>
                 </div>
                 <div class="w-full md:w-1/2 space-y-2 max-h-[160px] overflow-y-auto custom-scrollbar pr-2">
-                    <?php foreach ($platform_stats as $index => $ps): ?>
+                    <?php 
+                    $platform_total = array_sum(array_column($platform_stats, 'count'));
+                    foreach ($platform_stats as $index => $ps): 
+                    ?>
                         <div class="flex justify-between items-center p-2 rounded-lg border border-slate-200 bg-slate-50">
-                            <div class="flex items-center gap-2">
+                            <div class="flex items-center gap-2 truncate mr-2">
                                 <span class="w-2.5 h-2.5 rounded-full platform-legend-dot shrink-0" data-index="<?= $index ?>"></span>
                                 <span class="text-[10px] font-bold text-slate-700 uppercase tracking-tight truncate"><?= esc($ps['nama_platform'] ?: 'TIDAK TERDAFTAR') ?></span>
                             </div>
-                            <span class="text-xs font-bold text-slate-800"><?= $ps['count'] ?></span>
+                            <div class="flex items-center gap-2 shrink-0">
+                                <span class="text-[9px] font-bold text-slate-400"><?= $platform_total > 0 ? round(($ps['count'] / $platform_total) * 100) : 0 ?>%</span>
+                                <span class="text-xs font-bold text-slate-800"><?= $ps['count'] ?></span>
+                            </div>
                         </div>
                     <?php endforeach; ?>
                 </div>
