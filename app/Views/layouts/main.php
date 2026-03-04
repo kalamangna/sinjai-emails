@@ -88,14 +88,92 @@
     <script src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js" defer></script>
     <!-- Alpine.js Core -->
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-</head>
 
-<body class="bg-slate-50 text-slate-800 antialiased font-inter">
     <script>
         // Apply sidebar state immediately to prevent flicker
-        if (localStorage.getItem('sidebar-collapsed') === 'true' && window.innerWidth >= 1024) {
-            document.body.classList.add('sidebar-collapsed');
+        (function() {
+            const collapsed = localStorage.getItem('sidebar-collapsed') === 'true';
+            if (collapsed && window.innerWidth >= 1024) {
+                document.documentElement.classList.add('sidebar-collapsed');
+            }
+        })();
+    </script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
         }
+
+        /* Prevent transitions on load */
+        .no-transition * {
+            transition: none !important;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            @apply bg-slate-200;
+            border-radius: 10px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            @apply bg-slate-300;
+        }
+
+        /* Choices.js Slate Theme Overrides */
+        .choices__inner {
+            @apply bg-white border-slate-200 rounded-lg text-sm font-medium text-slate-700 !important;
+            min-height: 38px !important;
+            padding: 4px 12px !important;
+        }
+
+        .choices__list--dropdown {
+            @apply bg-white border-slate-200 rounded-lg shadow-xl !important;
+        }
+
+        .choices__list--dropdown .choices__item--selectable.is-highlighted {
+            @apply bg-slate-100 !important;
+        }
+
+        .choices__input {
+            @apply bg-transparent text-sm !important;
+        }
+
+        .choices__placeholder {
+            @apply text-slate-700 opacity-100 !important;
+        }
+
+        /* Sidebar Desktop Collapse */
+        @media (min-width: 1024px) {
+            .sidebar-collapsed #sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar-collapsed #main-content {
+                margin-left: 0;
+            }
+        }
+        
+        #sidebar, #main-content {
+            transition: transform 0.3s ease-in-out, margin-left 0.3s ease-in-out;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800 antialiased font-inter no-transition">
+    <script>
+        // Remove no-transition after first paint
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                document.body.classList.remove('no-transition');
+            }, 100);
+        });
     </script>
     <!-- Global Loading Overlay -->
     <div id="global-loading" class="fixed inset-0 z-[9999] hidden flex items-center justify-center bg-slate-900/60 backdrop-blur-sm transition-all duration-300">
@@ -250,13 +328,13 @@
         // Sidebar Toggle for Mobile & Desktop
         const sidebar = document.getElementById('sidebar');
         const sidebarToggle = document.getElementById('sidebar-toggle');
-        const body = document.body;
+        const html = document.documentElement;
 
         if (sidebarToggle) {
             sidebarToggle.addEventListener('click', () => {
                 if (window.innerWidth >= 1024) {
-                    body.classList.toggle('sidebar-collapsed');
-                    localStorage.setItem('sidebar-collapsed', body.classList.contains('sidebar-collapsed'));
+                    html.classList.toggle('sidebar-collapsed');
+                    localStorage.setItem('sidebar-collapsed', html.classList.contains('sidebar-collapsed'));
                 } else {
                     sidebar.classList.toggle('-translate-x-full');
                 }

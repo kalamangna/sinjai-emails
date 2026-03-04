@@ -31,8 +31,18 @@
         </a>
 
         <!-- Pegawai Submenu -->
-        <div x-data="{ open: <?= (strpos(current_url(), 'pppk_list') !== false || strpos(current_url(), 'pppk_pw_list') !== false || strpos(current_url(), 'pns_list') !== false) ? 'true' : 'false' ?> }">
-            <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-slate-100 rounded-lg hover:bg-slate-700/80 hover:text-white transition-all focus:outline-none">
+        <div x-data="{ 
+            open: <?= (strpos(current_url(), 'pppk_list') !== false || strpos(current_url(), 'pppk_pw_list') !== false || strpos(current_url(), 'pns_list') !== false) ? 'true' : 'false' ?>,
+            init() {
+                const stored = localStorage.getItem('sidebar-menu-pegawai');
+                if (stored !== null) this.open = stored === 'true';
+            },
+            toggle() {
+                this.open = !this.open;
+                localStorage.setItem('sidebar-menu-pegawai', this.open);
+            }
+        }">
+            <button @click="toggle()" class="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-slate-100 rounded-lg hover:bg-slate-700/80 hover:text-white transition-all focus:outline-none">
                 <div class="flex items-center">
                     <div class="w-5 h-5 flex items-center justify-center mr-3 shrink-0">
                         <i class="fas fa-users text-slate-300"></i>
@@ -55,8 +65,18 @@
         </div>
 
         <!-- Pejabat Submenu -->
-        <div x-data="{ open: <?= (strpos(current_url(), 'pimpinan') !== false) ? 'true' : 'false' ?> }">
-            <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-slate-100 rounded-lg hover:bg-slate-700/80 hover:text-white transition-all focus:outline-none">
+        <div x-data="{ 
+            open: <?= (strpos(current_url(), 'pimpinan') !== false) ? 'true' : 'false' ?>,
+            init() {
+                const stored = localStorage.getItem('sidebar-menu-pejabat');
+                if (stored !== null) this.open = stored === 'true';
+            },
+            toggle() {
+                this.open = !this.open;
+                localStorage.setItem('sidebar-menu-pejabat', this.open);
+            }
+        }">
+            <button @click="toggle()" class="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-slate-100 rounded-lg hover:bg-slate-700/80 hover:text-white transition-all focus:outline-none">
                 <div class="flex items-center">
                     <div class="w-5 h-5 flex items-center justify-center mr-3 shrink-0">
                         <i class="fas fa-user-tie text-slate-300"></i>
@@ -76,8 +96,18 @@
         </div>
 
         <!-- Organisasi Submenu -->
-        <div x-data="{ open: <?= (strpos(current_url(), 'unit_kerja') !== false || strpos(current_url(), 'eselon') !== false) && strpos(current_url(), 'manage') === false ? 'true' : 'false' ?> }">
-            <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-slate-100 rounded-lg hover:bg-slate-700/80 hover:text-white transition-all focus:outline-none">
+        <div x-data="{ 
+            open: <?= (strpos(current_url(), 'unit_kerja') !== false || strpos(current_url(), 'eselon') !== false) && strpos(current_url(), 'manage') === false ? 'true' : 'false' ?>,
+            init() {
+                const stored = localStorage.getItem('sidebar-menu-organisasi');
+                if (stored !== null) this.open = stored === 'true';
+            },
+            toggle() {
+                this.open = !this.open;
+                localStorage.setItem('sidebar-menu-organisasi', this.open);
+            }
+        }">
+            <button @click="toggle()" class="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-slate-100 rounded-lg hover:bg-slate-700/80 hover:text-white transition-all focus:outline-none">
                 <div class="flex items-center">
                     <div class="w-5 h-5 flex items-center justify-center mr-3 shrink-0">
                         <i class="fas fa-building text-slate-300"></i>
@@ -97,8 +127,18 @@
         </div>
 
         <!-- Website Submenu -->
-        <div x-data="{ open: <?= (strpos(current_url(), 'web_') !== false) ? 'true' : 'false' ?> }">
-            <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-slate-100 rounded-lg hover:bg-slate-700/80 hover:text-white transition-all focus:outline-none">
+        <div x-data="{ 
+            open: <?= (strpos(current_url(), 'web_') !== false) ? 'true' : 'false' ?>,
+            init() {
+                const stored = localStorage.getItem('sidebar-menu-website');
+                if (stored !== null) this.open = stored === 'true';
+            },
+            toggle() {
+                this.open = !this.open;
+                localStorage.setItem('sidebar-menu-website', this.open);
+            }
+        }">
+            <button @click="toggle()" class="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-slate-100 rounded-lg hover:bg-slate-700/80 hover:text-white transition-all focus:outline-none">
                 <div class="flex items-center">
                     <div class="w-5 h-5 flex items-center justify-center mr-3 shrink-0">
                         <i class="fas fa-globe text-slate-300"></i>
@@ -119,8 +159,18 @@
 
         <!-- Batch Submenu -->
         <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
-            <div x-data="{ open: <?= (strpos(current_url(), 'batch') !== false) ? 'true' : 'false' ?> }">
-                <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-slate-100 rounded-lg hover:bg-slate-700/80 hover:text-white transition-all focus:outline-none">
+            <div x-data="{ 
+                open: <?= (strpos(current_url(), 'batch') !== false) ? 'true' : 'false' ?>,
+                init() {
+                    const stored = localStorage.getItem('sidebar-menu-batch');
+                    if (stored !== null) this.open = stored === 'true';
+                },
+                toggle() {
+                    this.open = !this.open;
+                    localStorage.setItem('sidebar-menu-batch', this.open);
+                }
+            }">
+                <button @click="toggle()" class="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-slate-100 rounded-lg hover:bg-slate-700/80 hover:text-white transition-all focus:outline-none">
                     <div class="flex items-center">
                         <div class="w-5 h-5 flex items-center justify-center mr-3 shrink-0">
                             <i class="fas fa-layer-group text-slate-300"></i>
@@ -155,8 +205,18 @@
 
         <!-- Master Data Submenu -->
         <?php if (session()->get('role') === 'super_admin'): ?>
-            <div x-data="{ open: <?= (strpos(current_url(), 'unit_kerja/manage') !== false) ? 'true' : 'false' ?> }">
-                <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-slate-100 rounded-lg hover:bg-slate-700/80 hover:text-white transition-all focus:outline-none">
+            <div x-data="{ 
+                open: <?= (strpos(current_url(), 'unit_kerja/manage') !== false) ? 'true' : 'false' ?>,
+                init() {
+                    const stored = localStorage.getItem('sidebar-menu-master');
+                    if (stored !== null) this.open = stored === 'true';
+                },
+                toggle() {
+                    this.open = !this.open;
+                    localStorage.setItem('sidebar-menu-master', this.open);
+                }
+            }">
+                <button @click="toggle()" class="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-slate-100 rounded-lg hover:bg-slate-700/80 hover:text-white transition-all focus:outline-none">
                     <div class="flex items-center">
                         <div class="w-5 h-5 flex items-center justify-center mr-3 shrink-0">
                             <i class="fas fa-database text-slate-300"></i>
