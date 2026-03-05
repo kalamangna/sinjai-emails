@@ -248,31 +248,46 @@
     <!-- Main Wrapper -->
     <div id="main-content" class="lg:ml-64 min-h-screen flex flex-col">
         <!-- Header / Topbar -->
-        <header class="h-16 bg-white border-b border-slate-200 sticky top-0 z-40 flex items-center justify-between px-6 gap-6">
-            <div class="flex items-center gap-4 flex-1">
+        <header class="h-16 bg-white border-b border-slate-200 sticky top-0 z-40 flex items-center justify-between px-6 gap-4">
+            <div class="flex items-center gap-2 flex-1 min-w-0" id="header-left-section">
                 <!-- Sidebar Toggle -->
                 <button id="sidebar-toggle" class="w-10 h-10 flex items-center justify-center text-slate-700 hover:bg-slate-50 rounded-lg transition-colors shrink-0">
                     <i class="fas fa-bars"></i>
                 </button>
 
-                <!-- Global Search -->
-                <div class="max-w-xl w-full hidden md:block">
+                <!-- Global Search (Desktop) -->
+                <div class="max-w-xl w-full hidden lg:block">
                     <?= $this->include('components/global_search') ?>
                 </div>
 
-                <!-- App Title (Mobile Only) -->
-                <div class="flex items-center lg:hidden shrink-0 md:hidden" id="header-mobile-title">
-                    <div class="w-8 h-8 bg-slate-800 rounded-lg flex items-center justify-center mr-3 shadow-sm">
+                <!-- App Title (Mobile/Tablet Only) -->
+                <div class="flex items-center lg:hidden shrink-0" id="header-mobile-title">
+                    <div class="w-8 h-8 bg-slate-800 rounded-lg flex items-center justify-center mr-3 shadow-sm shrink-0">
                         <i class="fas fa-fingerprint text-white text-sm"></i>
                     </div>
-                    <div class="flex flex-col">
-                        <span class="block text-sm font-bold tracking-tight text-slate-800 leading-none uppercase">sinjai<span class="text-slate-700">emails</span></span>
-                        <span class="text-[8px] font-bold text-slate-700 uppercase tracking-widest block mt-0.5">identitas digital</span>
+                    <div class="flex flex-col truncate">
+                        <span class="block text-sm font-bold tracking-tight text-slate-800 leading-none uppercase truncate">sinjai<span class="text-slate-700">emails</span></span>
+                        <span class="text-[8px] font-bold text-slate-700 uppercase tracking-widest block mt-0.5 truncate">identitas digital</span>
                     </div>
                 </div>
             </div>
 
-            <div class="flex items-center gap-4 shrink-0">
+            <!-- Mobile Search Toggle & Bar -->
+            <div class="lg:hidden flex items-center" id="mobile-search-wrapper">
+                <button id="mobile-search-toggle" class="w-10 h-10 flex items-center justify-center text-slate-700 hover:bg-slate-50 rounded-lg transition-colors">
+                    <i class="fas fa-search"></i>
+                </button>
+                <div id="mobile-search-container" class="fixed inset-x-0 top-0 h-16 bg-white z-50 px-4 items-center gap-3 hidden border-b border-slate-200">
+                    <button id="mobile-search-close" class="w-10 h-10 flex items-center justify-center text-slate-500 hover:text-slate-800 transition-colors">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <div class="flex-1">
+                        <?= $this->include('components/global_search', ['id_suffix' => '-mobile']) ?>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4 shrink-0" id="header-right-section">
                 <!-- User Information -->
                 <div class="flex items-center gap-3">
                     <div class="hidden sm:flex flex-col items-end">
@@ -500,6 +515,39 @@
 
             // Remove no-transition after first paint
             setTimeout(() => { document.body.classList.remove('no-transition'); }, 100);
+            // Mobile Search Toggle Logic
+            const mobileSearchToggle = document.getElementById('mobile-search-toggle');
+            const mobileSearchClose = document.getElementById('mobile-search-close');
+            const mobileSearchContainer = document.getElementById('mobile-search-container');
+            const headerLeftSection = document.getElementById('header-left-section');
+            const headerRightSection = document.getElementById('header-right-section');
+            const mobileHeaderTitle = document.getElementById('header-mobile-title');
+            const globalSearchDesktop = document.querySelector('.max-w-xl.w-full.hidden.lg\\:block');
+
+            if (mobileSearchToggle) {
+                mobileSearchToggle.addEventListener('click', () => {
+                    mobileSearchContainer.classList.remove('hidden');
+                    mobileSearchContainer.classList.add('flex'); // Show as flex
+                    mobileHeaderTitle.classList.add('hidden'); // Hide mobile title
+                    mobileSearchToggle.classList.add('hidden'); // Hide mobile search toggle
+                    if (globalSearchDesktop) globalSearchDesktop.classList.add('hidden'); // Hide desktop search too
+                    headerLeftSection.classList.add('hidden'); // Hide sidebar toggle and mobile title
+                    headerRightSection.classList.add('hidden'); // Hide user info
+                    document.getElementById('global-search-input-mobile').focus();
+                });
+            }
+
+            if (mobileSearchClose) {
+                mobileSearchClose.addEventListener('click', () => {
+                    mobileSearchContainer.classList.add('hidden');
+                    mobileSearchContainer.classList.remove('flex'); // Hide flex
+                    mobileHeaderTitle.classList.remove('hidden'); // Show mobile title
+                    mobileSearchToggle.classList.remove('hidden'); // Show mobile search toggle
+                    if (globalSearchDesktop) globalSearchDesktop.classList.remove('hidden'); // Show desktop search
+                    headerLeftSection.classList.remove('hidden'); // Show sidebar toggle and mobile title
+                    headerRightSection.classList.remove('hidden'); // Show user info
+                });
+            }
         });
 
         // Global Choices.js initialization

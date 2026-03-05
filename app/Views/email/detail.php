@@ -10,14 +10,14 @@
             </button>
             <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight">Detail Akun</h1>
         </div>
-        <div class="flex flex-wrap items-center gap-2">
-            <?php if (in_array($email['status_asn_id'] ?? 0, [2, 3])): ?>
-                <a href="<?= site_url('email/export_single_perjanjian_kerja_pdf/' . $email['user']) ?>" class="btn btn-outline no-underline">
-                    <i class="fas fa-file-contract mr-2"></i> Export PK
+        <div class="grid grid-cols-2 gap-2 w-full sm:flex sm:w-auto">
+            <?php if ($showPk = in_array($email['status_asn_id'] ?? 0, [2, 3])): ?>
+                <a href="<?= site_url('email/export_single_perjanjian_kerja_pdf/' . $email['user']) ?>" class="btn btn-outline no-underline justify-center">
+                    <i class="fas fa-file-contract mr-2 text-slate-700"></i> Export PK
                 </a>
             <?php endif; ?>
-            <a href="https://<?= config('Cpanel')->cpanel_host ?>:2096" target="_blank" class="btn btn-solid no-underline">
-                <i class="fas fa-external-link-alt mr-2"></i> Webmail
+            <a href="https://<?= config('Cpanel')->cpanel_host ?>:2096" target="_blank" class="btn btn-solid no-underline justify-center <?= !$showPk ? 'col-span-2' : '' ?>">
+                <i class="fas fa-external-link-alt mr-2 text-white/80"></i> Webmail
             </a>
         </div>
     </div>
