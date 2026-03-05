@@ -1,33 +1,33 @@
 <div class="relative flex-1 max-w-lg group" id="global-search-container">
     <div class="relative">
         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <i class="fas fa-search text-slate-400 text-xs transition-colors group-focus-within:text-slate-800"></i>
+            <i class="fas fa-search text-slate-400 text-[10px] transition-colors group-focus-within:text-slate-800"></i>
         </div>
         <input 
             type="text" 
             id="global-search-input"
-            class="block w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-slate-800/10 focus:border-slate-800 transition-all shadow-sm"
-            placeholder="Cari email, nama, NIP, atau NIK..."
+            class="block w-full pl-9 pr-4 py-2 bg-slate-100/50 border border-slate-200 rounded-lg text-[13px] font-bold text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:ring-4 focus:ring-slate-100 focus:border-slate-400 transition-all uppercase tracking-tight"
+            placeholder="Cari Identitas Digital..."
             autocomplete="off"
         >
         <div id="global-search-spinner" class="absolute inset-y-0 right-0 pr-3 flex items-center hidden">
-            <i class="fas fa-circle-notch fa-spin text-slate-400 text-xs"></i>
+            <i class="fas fa-circle-notch fa-spin text-slate-400 text-[10px]"></i>
         </div>
     </div>
 
     <!-- Search Results Dropdown -->
     <div 
         id="global-search-results" 
-        class="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden hidden z-[100] transform transition-all duration-200 origin-top"
+        class="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-xl shadow-2xl overflow-hidden hidden z-[100] transform transition-all duration-200 origin-top scale-95 opacity-0"
     >
-        <div id="results-list" class="max-h-[400px] overflow-y-auto custom-scrollbar divide-y divide-slate-50">
+        <div id="results-list" class="max-h-[450px] overflow-y-auto custom-scrollbar divide-y divide-slate-100">
             <!-- Results will be injected here -->
         </div>
-        <div id="no-results" class="p-8 text-center hidden">
-            <div class="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-2 text-slate-300">
-                <i class="fas fa-search text-xs"></i>
+        <div id="no-results" class="p-10 text-center hidden">
+            <div class="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3 text-slate-300">
+                <i class="fas fa-search text-sm"></i>
             </div>
-            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest italic">Tidak ditemukan hasil</p>
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest italic">Data tidak ditemukan</p>
         </div>
     </div>
 </div>
@@ -42,16 +42,18 @@ document.addEventListener('DOMContentLoaded', () => {
     let debounceTimer;
 
     const hideResults = () => {
-        results.classList.add('hidden');
-        results.style.opacity = '0';
-        results.style.transform = 'translateY(-10px)';
+        results.classList.add('scale-95', 'opacity-0');
+        results.classList.remove('scale-100', 'opacity-100');
+        setTimeout(() => {
+            results.classList.add('hidden');
+        }, 200);
     };
 
     const showResults = () => {
         results.classList.remove('hidden');
         setTimeout(() => {
-            results.style.opacity = '1';
-            results.style.transform = 'translateY(0)';
+            results.classList.add('scale-100', 'opacity-100');
+            results.classList.remove('scale-95', 'opacity-0');
         }, 10);
     };
 
@@ -79,25 +81,25 @@ document.addEventListener('DOMContentLoaded', () => {
                     noResults.classList.add('hidden');
                     data.forEach(item => {
                         const row = `
-                            <a href="<?= site_url('email/detail/') ?>${item.user}" class="block p-4 hover:bg-slate-50 transition-colors no-underline group/item">
+                            <a href="<?= site_url('email/detail/') ?>${item.user}" class="block p-4 hover:bg-slate-50 transition-colors no-underline group/item border-b border-slate-50 last:border-0">
                                 <div class="flex items-start gap-3">
-                                    <div class="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-500 group-hover/item:bg-slate-800 group-hover/item:text-white transition-all shrink-0">
-                                        <i class="fas fa-user text-xs"></i>
+                                    <div class="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center text-slate-500 group-hover/item:bg-slate-800 group-hover/item:text-white transition-all shrink-0">
+                                        <i class="fas fa-user text-[10px]"></i>
                                     </div>
                                     <div class="flex-grow overflow-hidden">
-                                        <p class="text-sm font-bold text-slate-800 uppercase tracking-tight truncate leading-none mb-1.5">${item.name}</p>
+                                        <p class="text-xs font-black text-slate-800 uppercase tracking-tight truncate leading-none mb-1.5">${item.name}</p>
                                         <div class="flex items-center gap-2 mb-1.5 text-slate-500">
-                                            <i class="fas fa-envelope text-[10px] opacity-50"></i>
-                                            <span class="text-[11px] font-medium truncate">${item.email}</span>
+                                            <i class="fas fa-envelope text-[9px] opacity-50"></i>
+                                            <span class="text-[10px] font-bold truncate lowercase">${item.email}</span>
                                         </div>
                                         <div class="flex flex-wrap gap-x-4 gap-y-1">
                                             <div class="flex items-center gap-1.5">
-                                                <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">NIP:</span>
-                                                <span class="text-[10px] font-bold text-slate-700 font-mono tracking-tight">${item.nip || '-'}</span>
+                                                <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest">NIP:</span>
+                                                <span class="text-[10px] font-bold text-slate-700 font-mono tracking-tighter">${item.nip || '-'}</span>
                                             </div>
                                             <div class="flex items-center gap-1.5">
-                                                <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">NIK:</span>
-                                                <span class="text-[10px] font-bold text-slate-700 font-mono tracking-tight">${item.nik || '-'}</span>
+                                                <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest">NIK:</span>
+                                                <span class="text-[10px] font-bold text-slate-700 font-mono tracking-tighter">${item.nik || '-'}</span>
                                             </div>
                                         </div>
                                     </div>

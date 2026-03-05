@@ -268,7 +268,7 @@
             </div>
 
             <!-- Global Search -->
-            <div class="flex-grow flex justify-center max-w-2xl">
+            <div class="flex-grow flex justify-start max-w-xl">
                 <?= $this->include('components/global_search') ?>
             </div>
 
