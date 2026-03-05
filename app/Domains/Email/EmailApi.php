@@ -219,10 +219,12 @@ class EmailApi extends BaseController
         }
 
         $results = $this->emailModel
-            ->select('email, name')
+            ->select('email, name, user, nik, nip')
             ->like('email', $q)
             ->orLike('name', $q)
-            ->limit(20)
+            ->orLike('nik', $q)
+            ->orLike('nip', $q)
+            ->limit(10)
             ->findAll();
 
         return $this->response->setJSON($results);

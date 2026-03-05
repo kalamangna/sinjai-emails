@@ -152,6 +152,11 @@ The project adheres to a **"Slate Clean Government"** aesthetic:
 - **Vanilla JS Transition**:
     - Successfully migrated the entire sidebar navigation and submenu interaction system from Alpine.js to highly-optimized **Vanilla JavaScript**.
     - Eliminated layout flickering during page loads by implementing early state detection in the `<head>` using CSS data-attribute mapping.
+- **Global Omni-Search**:
+    - Implemented a high-performance global search bar in the top header.
+    - Real-time results: providing instant access to account details across the entire system.
+    - Context-aware matching: supports searching by Email, Name, NIP, or NIK with strict URL matching for active states.
+    - Mobile-responsive: adapts to screen size with specialized mobile layouts.
 - **Advanced Interaction Behavior**:
     - Implemented a hybrid accordion behavior: menu headers toggle independently, but clicking any child link automatically collapses unrelated menus to maintain a clean interface.
     - Added strict URL path matching (including full support for query parameters) to ensure active states are accurately identified and reflected in the UI.

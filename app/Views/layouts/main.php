@@ -248,15 +248,15 @@
     <!-- Main Wrapper -->
     <div id="main-content" class="lg:ml-64 min-h-screen flex flex-col">
         <!-- Header / Topbar -->
-        <header class="h-16 bg-white border-b border-slate-200 sticky top-0 z-40 flex items-center justify-between px-6">
-            <div class="flex items-center">
+        <header class="h-16 bg-white border-b border-slate-200 sticky top-0 z-40 flex items-center justify-between px-6 gap-6">
+            <div class="flex items-center gap-2">
                 <!-- Sidebar Toggle -->
-                <button id="sidebar-toggle" class="w-10 h-10 flex items-center justify-center text-slate-700 hover:bg-slate-50 rounded-lg mr-2 transition-colors">
+                <button id="sidebar-toggle" class="w-10 h-10 flex items-center justify-center text-slate-700 hover:bg-slate-50 rounded-lg transition-colors shrink-0">
                     <i class="fas fa-bars"></i>
                 </button>
 
-                <!-- App Title (Mobile Only) -->
-                <div class="flex items-center lg:hidden">
+                <!-- App Title (Mobile Only - hidden when searching) -->
+                <div class="flex items-center lg:hidden shrink-0" id="header-mobile-title">
                     <div class="w-8 h-8 bg-slate-800 rounded-lg flex items-center justify-center mr-3 shadow-sm">
                         <i class="fas fa-fingerprint text-white text-sm"></i>
                     </div>
@@ -267,7 +267,12 @@
                 </div>
             </div>
 
-            <div class="flex items-center gap-4">
+            <!-- Global Search -->
+            <div class="flex-grow flex justify-center max-w-2xl">
+                <?= $this->include('components/global_search') ?>
+            </div>
+
+            <div class="flex items-center gap-4 shrink-0">
                 <!-- User Information -->
                 <div class="flex items-center gap-3">
                     <div class="hidden sm:flex flex-col items-end">
