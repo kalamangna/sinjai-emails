@@ -204,25 +204,4 @@
             </div>
         <?php endif; ?>
     </nav>
-
-    <!-- User Section at Bottom -->
-    <div class="p-4 border-t border-slate-700">
-        <div class="flex items-center p-2 rounded-lg bg-slate-700/50 border border-white/5">
-            <div class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-slate-100 mr-3 shrink-0 border border-white/10">
-                <i class="fas fa-user text-xs"></i>
-            </div>
-            <div class="flex-grow overflow-hidden">
-                <p class="text-xs font-bold text-white truncate uppercase"><?= session()->get('username') ?></p>
-                <p class="text-[10px] text-slate-300 uppercase font-medium opacity-70"><?= session()->get('role') == 'super_admin' ? 'Super Admin' : 'Admin' ?></p>
-            </div>
-            <div class="flex items-center gap-1">
-                <a href="<?= site_url('user/change_password') ?>" class="w-7 h-7 flex items-center justify-center text-slate-300 hover:text-white hover:bg-slate-700/80 rounded-lg transition-colors" title="Ganti Password">
-                    <i class="fas fa-key text-[10px]"></i>
-                </a>
-                <a href="<?= site_url('logout') ?>" class="w-7 h-7 flex items-center justify-center text-slate-300 hover:text-red-600 hover:bg-red-600/10 rounded-lg transition-colors" title="Keluar">
-                    <i class="fas fa-power-off text-[10px]"></i>
-                </a>
-            </div>
-        </div>
-    </div>
 </aside>

@@ -72,13 +72,13 @@
     </div>
 
     <!-- Manual Input (Original) -->
-    <div x-data="{ showManual: false }">
-        <button @click="showManual = !showManual" class="text-xs font-bold text-slate-500 uppercase tracking-widest hover:text-slate-800 transition-colors focus:outline-none">
-            <i class="fas" :class="showManual ? 'fa-minus-square' : 'fa-plus-square'"></i> 
-            <span x-text="showManual ? 'Sembunyikan Input Manual' : 'Tampilkan Input Manual'"></span>
+    <div id="manual-input-container">
+        <button id="toggle-manual-btn" class="text-xs font-bold text-slate-500 uppercase tracking-widest hover:text-slate-800 transition-colors focus:outline-none flex items-center gap-2">
+            <i class="fas fa-plus-square" id="toggle-icon"></i> 
+            <span id="toggle-text">Tampilkan Input Manual</span>
         </button>
 
-        <div x-show="showManual" x-collapse class="mt-4">
+        <div id="manual-input-content" class="mt-4 hidden opacity-0 scale-95 transition-all duration-300 origin-top">
             <div class="bg-white border border-slate-200 rounded-lg shadow-sm">
                 <div class="p-8">
                     <form action="<?= site_url('unit_kerja/batch_store') ?>" method="post" class="space-y-6">
@@ -114,4 +114,41 @@
 
 <?= $this->section('scripts') ?>
 <script src="<?= base_url('js/unit-kerja-batch.js') ?>"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const toggleBtn = document.getElementById('toggle-manual-btn');
+        const content = document.getElementById('manual-input-content');
+        const icon = document.getElementById('toggle-icon');
+        const text = document.getElementById('toggle-text');
+
+        if (toggleBtn && content) {
+            toggleBtn.addEventListener('click', () => {
+                const isHidden = content.classList.contains('hidden');
+                
+                if (isHidden) {
+                    content.classList.remove('hidden');
+                    // Force reflow
+                    content.offsetHeight;
+                    content.classList.remove('opacity-0', 'scale-95');
+                    content.classList.add('opacity-100', 'scale-100');
+                    icon.classList.remove('fa-plus-square');
+                    icon.classList.add('fa-minus-square');
+                    text.innerText = 'Sembunyikan Input Manual';
+                } else {
+                    content.classList.add('opacity-0', 'scale-95');
+                    content.classList.remove('opacity-100', 'scale-100');
+                    icon.classList.remove('fa-minus-square');
+                    icon.classList.add('fa-plus-square');
+                    text.innerText = 'Tampilkan Input Manual';
+                    
+                    setTimeout(() => {
+                        if (content.classList.contains('opacity-0')) {
+                            content.classList.add('hidden');
+                        }
+                    }, 300);
+                }
+            });
+        }
+    });
+</script>
 <?= $this->endSection() ?>

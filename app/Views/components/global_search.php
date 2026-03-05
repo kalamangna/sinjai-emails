@@ -1,7 +1,7 @@
 <?php
 $id_suffix = $id_suffix ?? ''; // Default to empty string if not provided
 ?>
-<div class="relative flex-1 max-w-lg group" id="global-search-container<?= $id_suffix ?>">
+<div class="relative flex-1 group" id="global-search-container<?= $id_suffix ?>">
     <div class="relative">
         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <i class="fas fa-search text-slate-400 text-[10px] transition-colors group-focus-within:text-slate-800"></i>
@@ -87,9 +87,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         const row = `
                             <a href="<?= site_url('email/detail/') ?>${item.user}" class="block p-4 hover:bg-slate-50 transition-colors no-underline group/item border-b border-slate-50 last:border-0">
                                 <div class="flex items-start gap-3">
-                                    <div class="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center text-slate-500 group-hover/item:bg-slate-800 group-hover/item:text-white transition-all shrink-0">
-                                        <i class="fas fa-user text-[10px]"></i>
-                                    </div>
                                     <div class="flex-grow overflow-hidden">
                                         <p class="text-sm font-black text-slate-800 uppercase tracking-tight truncate leading-none mb-1.5">${item.name}</p>
                                         <div class="flex items-center gap-2 mb-1.5 text-slate-500">

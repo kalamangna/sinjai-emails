@@ -195,3 +195,15 @@ The project adheres to a **"Slate Clean Government"** aesthetic:
 - **Code Optimization**:
     - Migrated legacy spreadsheet logic to unified XLSX handler.
     - Cleaned up redundant Alpine.js state management in favor of native ES6 logic.
+
+# Session History - March 6, 2026
+
+## UI/UX Improvements
+- **Topbar User Menu**: Migrated the "User Management" section (Change Password, Logout) from the sidebar to a new dropdown menu in the topbar, improving accessibility and aligning with modern UI patterns.
+- **Alpine.js Removal**: Replaced all Alpine.js functionality with lightweight, high-performance Vanilla JavaScript, including the new topbar dropdown and the manual input toggle on the `unit_kerja/batch_create` page.
+- **Expanded Mobile Search**: Removed the mobile app logo and search toggle, integrating the global search bar directly into the main header for a more streamlined experience on smaller devices.
+- **Responsive Refinements**: Adjusted the responsive layout of the Account Detail page (`email/detail.php`) to ensure proper alignment, spacing, and readability on tablet and mobile devices without altering the core design or text content.
+- **Icon/Photo Cleanup**: Removed user icon placeholders ("photos") from both the global search dropdown and the Account Detail page for a cleaner, more data-focused presentation.
+
+## Housekeeping
+- **CSS Build**: Compiled production Tailwind CSS assets.

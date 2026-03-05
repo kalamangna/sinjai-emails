@@ -5,18 +5,18 @@
     <!-- Navigasi dan Aksi -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div class="flex items-center gap-4">
-            <button onclick="history.back()" class="btn btn-outline !w-10 !h-10">
+            <button onclick="history.back()" class="btn btn-outline !w-10 !h-10 shrink-0">
                 <i class="fas fa-arrow-left"></i>
             </button>
-            <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight">Detail Akun</h1>
+            <h1 class="text-xl sm:text-2xl font-bold text-slate-800 uppercase tracking-tight truncate">Detail Akun</h1>
         </div>
         <div class="grid grid-cols-2 gap-2 w-full sm:flex sm:w-auto">
             <?php if ($showPk = in_array($email['status_asn_id'] ?? 0, [2, 3])): ?>
-                <a href="<?= site_url('email/export_single_perjanjian_kerja_pdf/' . $email['user']) ?>" class="btn btn-outline no-underline justify-center">
+                <a href="<?= site_url('email/export_single_perjanjian_kerja_pdf/' . $email['user']) ?>" class="btn btn-outline no-underline justify-center flex-1 sm:flex-none">
                     <i class="fas fa-file-contract mr-2 text-slate-700"></i> Export PK
                 </a>
             <?php endif; ?>
-            <a href="https://<?= config('Cpanel')->cpanel_host ?>:2096" target="_blank" class="btn btn-solid no-underline justify-center <?= !$showPk ? 'col-span-2' : '' ?>">
+            <a href="https://<?= config('Cpanel')->cpanel_host ?>:2096" target="_blank" class="btn btn-solid no-underline justify-center <?= !$showPk ? 'col-span-2' : 'flex-1 sm:flex-none' ?>">
                 <i class="fas fa-external-link-alt mr-2 text-white/80"></i> Webmail
             </a>
         </div>

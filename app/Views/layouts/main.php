@@ -94,11 +94,6 @@
 
     <?= $this->renderSection('styles') ?>
 
-    <!-- Alpine.js Plugins -->
-    <script src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js" defer></script>
-    <!-- Alpine.js Core -->
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-
     <script>
         /**
          * Sidebar Persistence Init
@@ -255,49 +250,52 @@
                     <i class="fas fa-bars"></i>
                 </button>
 
-                <!-- Global Search (Desktop) -->
-                <div class="max-w-xl w-full hidden lg:block">
+                <!-- Global Search -->
+                <div class="flex-1 max-w-xl w-full px-2">
                     <?= $this->include('components/global_search') ?>
-                </div>
-
-                <!-- App Title (Mobile/Tablet Only) -->
-                <div class="flex items-center lg:hidden shrink-0" id="header-mobile-title">
-                    <div class="w-8 h-8 bg-slate-800 rounded-lg flex items-center justify-center mr-3 shadow-sm shrink-0">
-                        <i class="fas fa-fingerprint text-white text-sm"></i>
-                    </div>
-                    <div class="flex flex-col truncate">
-                        <span class="block text-sm font-bold tracking-tight text-slate-800 leading-none uppercase truncate">sinjai<span class="text-slate-700">emails</span></span>
-                        <span class="text-[8px] font-bold text-slate-700 uppercase tracking-widest block mt-0.5 truncate">identitas digital</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Mobile Search Toggle & Bar -->
-            <div class="lg:hidden flex items-center" id="mobile-search-wrapper">
-                <button id="mobile-search-toggle" class="w-10 h-10 flex items-center justify-center text-slate-700 hover:bg-slate-50 rounded-lg transition-colors">
-                    <i class="fas fa-search"></i>
-                </button>
-                <div id="mobile-search-container" class="fixed inset-x-0 top-0 h-16 bg-white z-50 px-4 items-center gap-3 hidden border-b border-slate-200">
-                    <button id="mobile-search-close" class="w-10 h-10 flex items-center justify-center text-slate-500 hover:text-slate-800 transition-colors">
-                        <i class="fas fa-arrow-left"></i>
-                    </button>
-                    <div class="flex-1">
-                        <?= $this->include('components/global_search', ['id_suffix' => '-mobile']) ?>
-                    </div>
                 </div>
             </div>
 
             <div class="flex items-center gap-4 shrink-0" id="header-right-section">
-                <!-- User Information -->
-                <div class="flex items-center gap-3">
-                    <div class="hidden sm:flex flex-col items-end">
-                        <p class="text-xs font-bold text-slate-800 leading-none uppercase"><?= session()->get('username') ?></p>
-                        <p class="text-[9px] font-bold text-slate-700 uppercase mt-1 tracking-widest">
-                            <?= session()->get('role') == 'super_admin' ? 'Super Admin' : 'Admin' ?>
-                        </p>
-                    </div>
-                    <div class="w-9 h-9 bg-slate-100 rounded-lg flex items-center justify-center text-slate-700 border border-slate-200 shadow-sm">
-                        <i class="fas fa-user-shield text-sm"></i>
+                <!-- User Dropdown -->
+                <div class="relative" id="user-dropdown-container">
+                    <button id="user-dropdown-button" class="flex items-center gap-3 p-1.5 rounded-xl hover:bg-slate-50 transition-all focus:outline-none">
+                        <div class="hidden sm:flex flex-col items-end">
+                            <p class="text-xs font-bold text-slate-800 leading-none uppercase"><?= session()->get('username') ?></p>
+                            <p class="text-[9px] font-bold text-slate-700 uppercase mt-1 tracking-widest">
+                                <?= session()->get('role') == 'super_admin' ? 'Super Admin' : 'Admin' ?>
+                            </p>
+                        </div>
+                        <div id="user-icon-wrapper" class="w-9 h-9 bg-slate-100 rounded-lg flex items-center justify-center text-slate-700 border border-slate-200 shadow-sm transition-transform duration-200">
+                            <i class="fas fa-user-shield text-sm"></i>
+                        </div>
+                        <i id="user-dropdown-chevron" class="fas fa-chevron-down text-[8px] text-slate-400 transition-transform duration-200"></i>
+                    </button>
+
+                    <!-- Dropdown Menu -->
+                    <div id="user-dropdown-menu" 
+                         class="absolute right-0 mt-2 w-56 bg-white border border-slate-200 rounded-xl shadow-2xl py-2 z-50 origin-top-right overflow-hidden hidden opacity-0 scale-95 translate-y-1 transition-all duration-200">
+                        
+                        <div class="px-4 py-2 mb-1 border-b border-slate-50 lg:hidden">
+                            <p class="text-xs font-bold text-slate-800 uppercase truncate"><?= session()->get('username') ?></p>
+                            <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-0.5"><?= session()->get('role') == 'super_admin' ? 'Super Admin' : 'Admin' ?></p>
+                        </div>
+
+                        <a href="<?= site_url('user/change_password') ?>" class="flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-all uppercase tracking-tight">
+                            <div class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center border border-amber-100/50">
+                                <i class="fas fa-key text-[10px]"></i>
+                            </div>
+                            Ganti Password
+                        </a>
+
+                        <div class="h-px bg-slate-50 my-1 mx-2"></div>
+
+                        <a href="<?= site_url('logout') ?>" class="flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-red-600 hover:bg-red-50 transition-all uppercase tracking-tight">
+                            <div class="w-8 h-8 rounded-lg bg-red-50 text-red-600 flex items-center justify-center border border-red-100/50">
+                                <i class="fas fa-power-off text-[10px]"></i>
+                            </div>
+                            Keluar
+                        </a>
                     </div>
                 </div>
             </div>
@@ -515,37 +513,63 @@
 
             // Remove no-transition after first paint
             setTimeout(() => { document.body.classList.remove('no-transition'); }, 100);
-            // Mobile Search Toggle Logic
-            const mobileSearchToggle = document.getElementById('mobile-search-toggle');
-            const mobileSearchClose = document.getElementById('mobile-search-close');
-            const mobileSearchContainer = document.getElementById('mobile-search-container');
-            const headerLeftSection = document.getElementById('header-left-section');
-            const headerRightSection = document.getElementById('header-right-section');
-            const mobileHeaderTitle = document.getElementById('header-mobile-title');
-            const globalSearchDesktop = document.querySelector('.max-w-xl.w-full.hidden.lg\\:block');
 
-            if (mobileSearchToggle) {
-                mobileSearchToggle.addEventListener('click', () => {
-                    mobileSearchContainer.classList.remove('hidden');
-                    mobileSearchContainer.classList.add('flex'); // Show as flex
-                    mobileHeaderTitle.classList.add('hidden'); // Hide mobile title
-                    mobileSearchToggle.classList.add('hidden'); // Hide mobile search toggle
-                    if (globalSearchDesktop) globalSearchDesktop.classList.add('hidden'); // Hide desktop search too
-                    headerLeftSection.classList.add('hidden'); // Hide sidebar toggle and mobile title
-                    headerRightSection.classList.add('hidden'); // Hide user info
-                    document.getElementById('global-search-input-mobile').focus();
+            // --- 5. USER DROPDOWN LOGIC (VANILLA JS) ---
+            const userDropdownButton = document.getElementById('user-dropdown-button');
+            const userDropdownMenu = document.getElementById('user-dropdown-menu');
+            const userDropdownChevron = document.getElementById('user-dropdown-chevron');
+            const userIconWrapper = document.getElementById('user-icon-wrapper');
+
+            if (userDropdownButton && userDropdownMenu) {
+                const toggleDropdown = (e) => {
+                    e.stopPropagation();
+                    const isOpen = !userDropdownMenu.classList.contains('hidden');
+                    
+                    if (isOpen) {
+                        closeUserDropdown();
+                    } else {
+                        openUserDropdown();
+                    }
+                };
+
+                const openUserDropdown = () => {
+                    userDropdownMenu.classList.remove('hidden');
+                    // Force reflow for transition
+                    userDropdownMenu.offsetHeight;
+                    userDropdownMenu.classList.remove('opacity-0', 'scale-95', 'translate-y-1');
+                    userDropdownMenu.classList.add('opacity-100', 'scale-100', 'translate-y-0');
+                    userDropdownChevron?.classList.add('rotate-180');
+                    userIconWrapper?.classList.add('scale-90');
+                };
+
+                const closeUserDropdown = () => {
+                    userDropdownMenu.classList.add('opacity-0', 'scale-95', 'translate-y-1');
+                    userDropdownMenu.classList.remove('opacity-100', 'scale-100', 'translate-y-0');
+                    userDropdownChevron?.classList.remove('rotate-180');
+                    userIconWrapper?.classList.remove('scale-90');
+                    
+                    // Wait for transition to finish before hiding
+                    setTimeout(() => {
+                        if (userDropdownMenu.classList.contains('opacity-0')) {
+                            userDropdownMenu.classList.add('hidden');
+                        }
+                    }, 200);
+                };
+
+                userDropdownButton.addEventListener('click', toggleDropdown);
+
+                // Close on click outside
+                document.addEventListener('click', (e) => {
+                    if (!userDropdownMenu.contains(e.target) && !userDropdownButton.contains(e.target)) {
+                        closeUserDropdown();
+                    }
                 });
-            }
 
-            if (mobileSearchClose) {
-                mobileSearchClose.addEventListener('click', () => {
-                    mobileSearchContainer.classList.add('hidden');
-                    mobileSearchContainer.classList.remove('flex'); // Hide flex
-                    mobileHeaderTitle.classList.remove('hidden'); // Show mobile title
-                    mobileSearchToggle.classList.remove('hidden'); // Show mobile search toggle
-                    if (globalSearchDesktop) globalSearchDesktop.classList.remove('hidden'); // Show desktop search
-                    headerLeftSection.classList.remove('hidden'); // Show sidebar toggle and mobile title
-                    headerRightSection.classList.remove('hidden'); // Show user info
+                // Close on Escape
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        closeUserDropdown();
+                    }
                 });
             }
         });

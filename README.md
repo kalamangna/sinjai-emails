@@ -65,8 +65,8 @@ Portal terintegrasi untuk manajemen identitas digital, sertifikat elektronik, da
 ### Frontend
 
 - **CSS Framework**: Tailwind CSS (JIT Compiler)
-- **UI Logic**: Pure Vanilla JavaScript (ES6+) for maximum performance and zero layout flicker.
-- **Interactivity**: Custom state management system replacing Alpine.js for core navigation and sidebar interactions.
+- **UI Logic**: Vanilla JavaScript (ES6+)
+- **Interactivity**: Lightweight, high-performance Vanilla JS for all core UI interactions, including navigation, dropdowns, and toggles.
 - **Charts**: ApexCharts (Data Visualization)
 - **UI Components**: Font Awesome 6, Choices.js (Searchable Selects)
 
