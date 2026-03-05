@@ -373,9 +373,9 @@
         const qrcodeCard = document.getElementById('qrcode-card');
         const qrcodeImage = document.getElementById('qrcode-image');
         const qrcodeLink = document.getElementById('qrcode-link');
+        const hash = '<?= $verification_hash ?>';
 
-        if (status === 'ISSUE') {
-            const hash = '<?= $verification_hash ?>';
+        if (status === 'ISSUE' && hash) {
             const profileUrl = `<?= site_url('verifikasi/') ?>${hash}`;
             qrcodeImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(profileUrl)}`;
             qrcodeLink.href = profileUrl;

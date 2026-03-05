@@ -65,8 +65,10 @@ class Email extends BaseController
             $data['title'] = 'Detail Akun';
             $data['back_url'] = site_url('email');
 
-            // Add secure hash for public verification
-            $data['verification_hash'] = md5($data['email']['email'] . 'sinjai_secure_salt');
+            // Add secure hash for public verification based on NIK
+            $data['verification_hash'] = !empty($data['email']['nik']) 
+                ? md5($data['email']['nik'] . 'sinjai_secure_salt') 
+                : null;
 
             return view('email/detail', $data);
         } catch (Exception $e) {
@@ -257,13 +259,12 @@ class Email extends BaseController
     public function profile($hash)
     {
         try {
-            // Find user by matching the calculated hash
-            // Since we don't store the hash, we'll lookup ISSUE status accounts.
-            $emails = $this->emailModel->where('bsre_status', 'ISSUE')->findAll();
+            // Find user by matching the calculated hash against NIK
+            $emails = $this->emailModel->where('bsre_status', 'ISSUE')->where('nik !=', null)->findAll();
             $found_user = null;
 
             foreach ($emails as $email) {
-                if (md5($email['email'] . 'sinjai_secure_salt') === $hash) {
+                if (md5($email['nik'] . 'sinjai_secure_salt') === $hash) {
                     $found_user = $email['user'];
                     break;
                 }
