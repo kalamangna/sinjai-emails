@@ -172,13 +172,21 @@ The project adheres to a **"Slate Clean Government"** aesthetic:
     - Features a full-height, large card layout designed specifically for smartphone scans.
 
 ## Technical Refinements & Housekeeping
+- **Batch Processing Optimizations**:
+    - Optimized Batch Update and Batch PK processes to skip database writes if the incoming data is identical to the existing record.
+    - Implemented robust numeric comparison for financial data (`gaji_nominal`) to handle formatting and decimal differences.
+    - Improved feedback for skipped records, clearly marking them as "no changes detected" in the results log.
 - **Global Error Handling**:
     - Implemented a unified error modal system in `main.php`.
     - Updated TTE synchronization logic to display detailed API failure reasons in a modal instead of basic tooltips.
     - Improved sequential processing feedback with live status counters.
 - **Visual Branding**:
     - Standardized application favicon across all layouts and error pages using `logo.png`.
+    - Generated a professional sidebar-themed Open Graph image for high-quality social media previews.
 - **UI Cleanup**:
     - Refined `unit_kerja_detail.php`: removed redundant table headers and moved filtered data summaries to the footer for better data density.
 - **Route Optimization**:
     - Refactored `Routes.php` to use cleaner group-based filters for role restrictions and added support for the new `/verifikasi` public route.
+- **Code Optimization**:
+    - Migrated legacy spreadsheet logic to unified XLSX handler.
+    - Cleaned up redundant Alpine.js state management in favor of native ES6 logic.

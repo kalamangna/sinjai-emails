@@ -35,6 +35,7 @@ Portal terintegrasi untuk manajemen identitas digital, sertifikat elektronik, da
 - **XLSX (Excel) Import**: Dukungan penuh impor file XLSX untuk pembuatan dan pembaruan data secara massal yang lebih andal.
 - **Mass Account Creation**: Pembuatan akun massal dengan input ala Excel dan validasi otomatis.
 - **Bulk Updates**: Pembaruan data profil dan dokumen Perjanjian Kerja (PK) secara massal, termasuk pembaruan Unit Kerja per baris.
+- **Smart Update Logic**: Sistem secara otomatis mendeteksi dan melompati pembaruan jika data yang diimpor identik dengan data yang sudah ada di database, meminimalkan operasi database yang tidak perlu.
 - **PK Export System**: Generasi otomatis dokumen Perjanjian Kerja (PPPK/Paruh Waktu) dengan format standar (A4, font Bookman Old Style).
 - **Subfolder Archive**: ZIP hasil batch yang terorganisir secara otomatis berdasarkan status kepegawaian.
 

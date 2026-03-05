@@ -65,89 +65,92 @@ class EmailBatchService
                 continue;
             }
 
+            // Fetch existing PK record for comparison if needed
+            $pkRecord = $this->pkModel->where('email', $emailRecord['email'])->first();
+
             $emailUpdateData = [];
-            if (isset($newNames[$index]) && !empty($newNames[$index])) {
-                $emailUpdateData['name'] = $newNames[$index];
-            }
-            if (isset($newGelarDepans[$index]) && !empty($newGelarDepans[$index])) {
-                $emailUpdateData['gelar_depan'] = $newGelarDepans[$index];
-            }
-            if (isset($newGelarBelakangs[$index]) && !empty($newGelarBelakangs[$index])) {
-                $emailUpdateData['gelar_belakang'] = $newGelarBelakangs[$index];
-            }
-            if (isset($newPasswords[$index]) && !empty($newPasswords[$index])) {
-                $emailUpdateData['password'] = $newPasswords[$index];
-            }
-            if (isset($newNiks[$index]) && !empty($newNiks[$index])) {
-                $emailUpdateData['nik'] = $newNiks[$index];
-            }
-            if (isset($newNips[$index]) && !empty($newNips[$index])) {
-                $emailUpdateData['nip'] = $newNips[$index];
-            }
-            if (isset($newTempatLahirs[$index]) && !empty($newTempatLahirs[$index])) {
-                $emailUpdateData['tempat_lahir'] = $newTempatLahirs[$index];
-            }
-            if (isset($newTanggalLahirs[$index]) && !empty($newTanggalLahirs[$index])) {
-                $emailUpdateData['tanggal_lahir'] = $newTanggalLahirs[$index];
-            }
-            if (isset($newPendidikans[$index]) && !empty($newPendidikans[$index])) {
-                $emailUpdateData['pendidikan'] = $newPendidikans[$index];
-            }
-            if (isset($newJabatans[$index]) && !empty($newJabatans[$index])) {
-                $emailUpdateData['jabatan'] = $newJabatans[$index];
-            }
-            if (isset($newGolongans[$index]) && !empty($newGolongans[$index])) {
-                $emailUpdateData['golongan'] = $newGolongans[$index];
-            }
-            if (isset($newUnitKerjaIds[$index]) && !empty($newUnitKerjaIds[$index])) {
+            
+            $compareAndUpdate = function($field, $newValue) use (&$emailUpdateData, $emailRecord) {
+                if ($newValue !== null && $newValue !== '' && (string)$emailRecord[$field] !== (string)$newValue) {
+                    $emailUpdateData[$field] = $newValue;
+                }
+            };
+
+            if (isset($newNames[$index])) $compareAndUpdate('name', $newNames[$index]);
+            if (isset($newGelarDepans[$index])) $compareAndUpdate('gelar_depan', $newGelarDepans[$index]);
+            if (isset($newGelarBelakangs[$index])) $compareAndUpdate('gelar_belakang', $newGelarBelakangs[$index]);
+            if (isset($newPasswords[$index])) $compareAndUpdate('password', $newPasswords[$index]);
+            if (isset($newNiks[$index])) $compareAndUpdate('nik', $newNiks[$index]);
+            if (isset($newNips[$index])) $compareAndUpdate('nip', $newNips[$index]);
+            if (isset($newTempatLahirs[$index])) $compareAndUpdate('tempat_lahir', $newTempatLahirs[$index]);
+            if (isset($newTanggalLahirs[$index])) $compareAndUpdate('tanggal_lahir', $newTanggalLahirs[$index]);
+            if (isset($newPendidikans[$index])) $compareAndUpdate('pendidikan', $newPendidikans[$index]);
+            if (isset($newJabatans[$index])) $compareAndUpdate('jabatan', $newJabatans[$index]);
+            if (isset($newGolongans[$index])) $compareAndUpdate('golongan', $newGolongans[$index]);
+            
+            if (isset($newUnitKerjaIds[$index]) && !empty($newUnitKerjaIds[$index]) && (string)$emailRecord['unit_kerja_id'] !== (string)$newUnitKerjaIds[$index]) {
                 $emailUpdateData['unit_kerja_id'] = $newUnitKerjaIds[$index];
             }
-            if (!empty($newStatusAsn)) {
+
+            if (!empty($newStatusAsn) && (string)$emailRecord['status_asn_id'] !== (string)$newStatusAsn) {
                 $emailUpdateData['status_asn_id'] = $newStatusAsn;
             }
-            if (!empty($newEselonId)) {
+            if (!empty($newEselonId) && (string)$emailRecord['eselon_id'] !== (string)$newEselonId) {
                 $emailUpdateData['eselon_id'] = $newEselonId;
             }
-            if (!empty($newBsreStatus)) {
+            if (!empty($newBsreStatus) && (string)$emailRecord['bsre_status'] !== (string)$newBsreStatus) {
                 $emailUpdateData['bsre_status'] = $newBsreStatus;
             }
-            if (isset($newPimpinan) && $newPimpinan !== '') {
+            if (isset($newPimpinan) && $newPimpinan !== '' && (int)$emailRecord['pimpinan'] !== (int)$newPimpinan) {
                 $emailUpdateData['pimpinan'] = $newPimpinan;
             }
-            if (isset($newPimpinanDesa) && $newPimpinanDesa !== '') {
+            if (isset($newPimpinanDesa) && $newPimpinanDesa !== '' && (int)$emailRecord['pimpinan_desa'] !== (int)$newPimpinanDesa) {
                 $emailUpdateData['pimpinan_desa'] = $newPimpinanDesa;
             }
             if (!empty($newUnitKerja)) {
                 $unit = $this->unitKerjaModel->where('nama_unit_kerja', $newUnitKerja)->first();
-                if ($unit) {
+                if ($unit && (string)$emailRecord['unit_kerja_id'] !== (string)$unit['id']) {
                     $emailUpdateData['unit_kerja_id'] = $unit['id'];
                 }
             }
 
 
             $pkUpdateData = [];
-            if (isset($newNomors[$index]) && !empty($newNomors[$index])) {
-                $pkUpdateData['nomor'] = $newNomors[$index];
-            }
-            if (isset($newGajiNominals[$index]) && !empty($newGajiNominals[$index])) {
-                $pkUpdateData['gaji_nominal'] = $newGajiNominals[$index];
-            }
-            if (isset($newGajiTerbilangs[$index]) && !empty($newGajiTerbilangs[$index])) {
-                $pkUpdateData['gaji_terbilang'] = $newGajiTerbilangs[$index];
-            }
-            if (isset($newTanggalKontrakAwals[$index]) && !empty($newTanggalKontrakAwals[$index])) {
-                $pkUpdateData['tanggal_kontrak_awal'] = $newTanggalKontrakAwals[$index];
-            }
-            if (isset($newTanggalKontrakAkhirs[$index]) && !empty($newTanggalKontrakAkhirs[$index])) {
-                $pkUpdateData['tanggal_kontrak_akhir'] = $newTanggalKontrakAkhirs[$index];
-            }
+            
+            $compareAndUpdatePk = function($field, $newValue) use (&$pkUpdateData, $pkRecord) {
+                $oldValue = $pkRecord ? $pkRecord[$field] : null;
+                
+                // For gaji_nominal, handle numeric comparison carefully
+                if ($field === 'gaji_nominal') {
+                    $cleanedNew = str_replace(['.', ','], '', $newValue);
+                    if ($oldValue !== null && $newValue !== '' && round((float)$oldValue) === round((float)$cleanedNew)) {
+                        return;
+                    }
+                    $newValue = $cleanedNew;
+                }
+                
+                if ($newValue !== null && $newValue !== '' && (string)$oldValue !== (string)$newValue) {
+                    $pkUpdateData[$field] = $newValue;
+                }
+            };
 
-            if (!empty($pkUpdateData)) {
+            if (isset($newNomors[$index])) $compareAndUpdatePk('nomor', $newNomors[$index]);
+            if (isset($newGajiNominals[$index])) $compareAndUpdatePk('gaji_nominal', $newGajiNominals[$index]);
+            if (isset($newGajiTerbilangs[$index])) $compareAndUpdatePk('gaji_terbilang', $newGajiTerbilangs[$index]);
+            if (isset($newTanggalKontrakAwals[$index])) $compareAndUpdatePk('tanggal_kontrak_awal', $newTanggalKontrakAwals[$index]);
+            if (isset($newTanggalKontrakAkhirs[$index])) $compareAndUpdatePk('tanggal_kontrak_akhir', $newTanggalKontrakAkhirs[$index]);
+
+            if (!empty($pkUpdateData) && $pkRecord) {
+                // Ensure status_asn_id is synced if we are updating PK
+                if ((string)$pkRecord['status_asn_id'] !== (string)$emailRecord['status_asn_id']) {
+                    $pkUpdateData['status_asn_id'] = $emailRecord['status_asn_id'];
+                }
+            } elseif (!empty($pkUpdateData) && !$pkRecord) {
                 $pkUpdateData['status_asn_id'] = $emailRecord['status_asn_id'];
             }
 
             if (empty($emailUpdateData) && empty($pkUpdateData)) {
-                $results[] = ['identifier' => $identifier, 'success' => true, 'message' => 'Skipped (no data to update).'];
+                $results[] = ['identifier' => $identifier, 'success' => true, 'message' => 'Skipped (no changes detected).'];
                 continue;
             }
 
@@ -164,7 +167,6 @@ class EmailBatchService
 
             if (!empty($pkUpdateData)) {
                 try {
-                    $pkRecord = $this->pkModel->where('email', $emailRecord['email'])->first();
                     if ($pkRecord) {
                         $updatedPk = $this->pkModel->update($pkRecord['id'], $pkUpdateData);
                     } else {
@@ -179,7 +181,7 @@ class EmailBatchService
             if ($updatedEmail || $updatedPk) {
                 $results[] = ['identifier' => $identifier, 'success' => true, 'message' => 'Successfully updated.'];
             } else {
-                $results[] = ['identifier' => $identifier, 'success' => false, 'message' => 'Failed to update (no changes or database error).'];
+                $results[] = ['identifier' => $identifier, 'success' => false, 'message' => 'Failed to update (database error).'];
             }
         }
 
