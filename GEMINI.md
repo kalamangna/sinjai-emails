@@ -83,7 +83,7 @@ The project adheres to a **"Slate Clean Government"** aesthetic:
 - **Controller Refactoring**: Decomposed the "fat" `Email` controller into four specialized, maintainable units: `Email.php`, `EmailList.php`, `EmailExport.php`, and `EmailApi.php`, strictly adhering to the Single Responsibility Principle.
 - **Service Optimization**: Refined `AssistanceExportService` to utilize fresh query builders for each request, preventing filter bleeding and ensuring data integrity in reports.
 
-## PDF Export System Refinements
+## PDF Export System Refinement
 - **Standardized Styling**: Unified all export templates (`Email`, `Pimpinan`, `Website`, `Assistance`) under the "Clean Slate Government" visual standard.
 - **Layout Stability**: Migrated from float-based positioning to robust, table-based layouts, resolving blank page and alignment issues in `Dompdf`.
 - **Data Richness**:
@@ -164,11 +164,12 @@ The project adheres to a **"Slate Clean Government"** aesthetic:
 - **Dynamic Identity QR Code**:
     - Added a QR code identity card to the Account Detail page that appears when TTE status is "ISSUE".
     - Enhanced the QR code with a centered logo overlay for a professional, integrated look.
-    - Made the QR code clickable, linking to a new public verification route (`/verifikasi/{username}`).
-- **Public Verification Page**:
+    - Made the QR code clickable, linking to a new public verification route (`/verifikasi/{hash}`).
+- **Secure Public Verification**:
     - Implemented a dedicated, mobile-optimized public verification view (`verifikasi.php`).
+    - Obfuscated public verification URLs using secure MD5 hashes to prevent account enumeration.
     - Displays formal confirmation of digital signature ownership without exposing sensitive data (NIP/NIK).
-    - Features a full-height, centered layout designed specifically for smartphone scans.
+    - Features a full-height, large card layout designed specifically for smartphone scans.
 
 ## Technical Refinements & Housekeeping
 - **Global Error Handling**:
@@ -179,9 +180,5 @@ The project adheres to a **"Slate Clean Government"** aesthetic:
     - Standardized application favicon across all layouts and error pages using `logo.png`.
 - **UI Cleanup**:
     - Refined `unit_kerja_detail.php`: removed redundant table headers and moved filtered data summaries to the footer for better data density.
-- **Navigation Optimization**:
-    - Ensured top-level navigation (Logo, Dashboard, Email) resets the sidebar state consistently.
-    - Optimized URL matching to strictly respect query parameters for active state highlighting.
-- **Code Optimization**:
-    - Migrated legacy spreadsheet logic to unified XLSX handler.
-    - Cleaned up redundant Alpine.js state management in favor of native ES6 logic.
+- **Route Optimization**:
+    - Refactored `Routes.php` to use cleaner group-based filters for role restrictions and added support for the new `/verifikasi` public route.
