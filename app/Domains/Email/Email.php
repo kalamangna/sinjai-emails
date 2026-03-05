@@ -64,6 +64,10 @@ class Email extends BaseController
             $data = $this->emailService->getEmailDetail($username);
             $data['title'] = 'Detail Akun';
             $data['back_url'] = site_url('email');
+
+            // Add secure hash for public verification
+            $data['verification_hash'] = md5($data['email']['email'] . 'sinjai_secure_salt');
+
             return view('email/detail', $data);
         } catch (Exception $e) {
             $data['error'] = $e->getMessage();
@@ -250,15 +254,31 @@ class Email extends BaseController
         }
     }
 
-    public function profile($username)
+    public function profile($hash)
     {
         try {
-            $data = $this->emailService->getEmailDetail($username);
-            $data['title'] = 'Verifikasi Identitas';
+            // Find user by matching the calculated hash
+            // Since we don't store the hash, we'll lookup ISSUE status accounts.
+            $emails = $this->emailModel->where('bsre_status', 'ISSUE')->findAll();
+            $found_user = null;
+
+            foreach ($emails as $email) {
+                if (md5($email['email'] . 'sinjai_secure_salt') === $hash) {
+                    $found_user = $email['user'];
+                    break;
+                }
+            }
+
+            if (!$found_user) {
+                throw new Exception('Data identitas tidak ditemukan atau tidak valid.');
+            }
+
+            $data = $this->emailService->getEmailDetail($found_user);
+            $data['title'] = 'Verifikasi Akun';
             return view('email/verifikasi', $data);
         } catch (Exception $e) {
             $data['error'] = $e->getMessage();
-            $data['title'] = 'Verifikasi Identitas';
+            $data['title'] = 'Verifikasi Akun';
             return view('email/error', $data);
         }
     }
