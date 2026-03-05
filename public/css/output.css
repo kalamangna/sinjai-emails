@@ -2729,8 +2729,8 @@ video {
     align-items: center;
   }
 
-  .sm\:p-12 {
-    padding: 3rem;
+  .sm\:p-10 {
+    padding: 2.5rem;
   }
 
   .sm\:px-6 {
