@@ -7,6 +7,14 @@
     <meta name="robots" content="noindex, nofollow">
     <title><?= $title ?? 'Verifikasi Akun' ?> | Sistem Identitas Digital</title>
 
+    <!-- Meta Tags -->
+    <meta property="og:title" content="<?= $title ?? 'Verifikasi Akun' ?> | Sistem Identitas Digital">
+    <meta property="og:description" content="Portal Manajemen Identitas Digital & Sertifikat Elektronik Pemerintah Kabupaten Sinjai">
+    <meta property="og:image" content="<?= base_url('og-image.png') ?>">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="<?= base_url('og-image.png') ?>">
+
     <link rel="icon" type="image/png" href="<?= base_url('logo.png') ?>">
     <link href="<?= base_url('css/output.css') ?>" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
