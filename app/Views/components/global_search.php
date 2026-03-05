@@ -80,18 +80,30 @@ document.addEventListener('DOMContentLoaded', () => {
                     data.forEach(item => {
                         const row = `
                             <a href="<?= site_url('email/detail/') ?>${item.user}" class="block p-4 hover:bg-slate-50 transition-colors no-underline group/item">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-slate-500 group-hover/item:bg-slate-800 group-hover/item:text-white transition-all">
-                                        <i class="fas fa-user text-[10px]"></i>
+                                <div class="flex items-start gap-3">
+                                    <div class="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-500 group-hover/item:bg-slate-800 group-hover/item:text-white transition-all shrink-0">
+                                        <i class="fas fa-user text-xs"></i>
                                     </div>
                                     <div class="flex-grow overflow-hidden">
-                                        <p class="text-xs font-bold text-slate-800 uppercase tracking-tight truncate">${item.name}</p>
-                                        <div class="flex items-center gap-2 mt-0.5">
-                                            <span class="text-[10px] font-medium text-slate-500 truncate">${item.email}</span>
-                                            <span class="text-[9px] font-bold text-slate-300 uppercase tracking-widest font-mono">/ ${item.nip || item.nik || '-'}</span>
+                                        <p class="text-sm font-bold text-slate-800 uppercase tracking-tight truncate leading-none mb-1.5">${item.name}</p>
+                                        <div class="flex items-center gap-2 mb-1.5 text-slate-500">
+                                            <i class="fas fa-envelope text-[10px] opacity-50"></i>
+                                            <span class="text-[11px] font-medium truncate">${item.email}</span>
+                                        </div>
+                                        <div class="flex flex-wrap gap-x-4 gap-y-1">
+                                            <div class="flex items-center gap-1.5">
+                                                <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">NIP:</span>
+                                                <span class="text-[10px] font-bold text-slate-700 font-mono tracking-tight">${item.nip || '-'}</span>
+                                            </div>
+                                            <div class="flex items-center gap-1.5">
+                                                <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">NIK:</span>
+                                                <span class="text-[10px] font-bold text-slate-700 font-mono tracking-tight">${item.nik || '-'}</span>
+                                            </div>
                                         </div>
                                     </div>
-                                    <i class="fas fa-chevron-right text-[8px] text-slate-300 group-hover/item:text-slate-800 transition-colors"></i>
+                                    <div class="h-10 flex items-center shrink-0">
+                                        <i class="fas fa-chevron-right text-[8px] text-slate-300 group-hover/item:text-slate-800 transition-colors"></i>
+                                    </div>
                                 </div>
                             </a>
                         `;
