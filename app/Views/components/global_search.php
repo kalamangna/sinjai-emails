@@ -7,7 +7,7 @@
             type="text" 
             id="global-search-input"
             class="block w-full pl-9 pr-4 py-2 bg-slate-100/50 border border-slate-200 rounded-lg text-[13px] font-bold text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:ring-4 focus:ring-slate-100 focus:border-slate-400 transition-all uppercase tracking-tight"
-            placeholder="Cari Identitas Digital..."
+            placeholder="Cari nama, NIP, atau NIK..."
             autocomplete="off"
         >
         <div id="global-search-spinner" class="absolute inset-y-0 right-0 pr-3 flex items-center hidden">
