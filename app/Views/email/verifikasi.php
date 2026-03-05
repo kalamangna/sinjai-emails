@@ -26,20 +26,11 @@
         body {
             font-family: 'Inter', sans-serif;
         }
-
-        /* Force 100% height and disable page scroll */
-        html,
-        body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-        }
     </style>
 </head>
 
-<body class="bg-slate-50 text-slate-800 antialiased flex items-center justify-center p-4">
-    <div class="w-full max-w-lg bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden flex flex-col h-full max-h-[850px] my-auto">
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-lg bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden flex flex-col my-auto">
         <!-- Header Identity -->
         <div class="bg-slate-800 p-8 sm:p-10 text-center relative overflow-hidden shrink-0">
             <div class="absolute inset-0 opacity-10 pointer-events-none">
@@ -56,8 +47,8 @@
             </div>
         </div>
 
-        <!-- Detail Data - Scrollable if content exceeds height -->
-        <div class="flex-grow p-8 sm:p-10 space-y-8 overflow-y-auto custom-scrollbar">
+        <!-- Detail Data -->
+        <div class="p-8 sm:p-10 space-y-8">
             <div class="grid grid-cols-1 gap-8">
                 <div>
                     <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Jabatan</label>
