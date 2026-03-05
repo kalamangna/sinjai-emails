@@ -2903,6 +2903,14 @@ video {
     grid-column: span 7 / span 7;
   }
 
+  .md\:block {
+    display: block;
+  }
+
+  .md\:hidden {
+    display: none;
+  }
+
   .md\:w-1\/2 {
     width: 50%;
   }
