@@ -32,7 +32,7 @@
                             <i class="fas fa-fw fa-user-tie mr-2 text-slate-700"></i> PPPK
                         </button>
                         <button onclick="openExportModal(<?= $unit_kerja['id'] ?>, 'pppk_pw')" class="w-full px-4 py-3 text-left text-[10px] font-bold text-slate-700 uppercase tracking-widest hover:bg-slate-50 transition-colors focus:outline-none">
-                            <i class="fas fa-fw fa-user-clock mr-2 text-slate-700"></i> Paruh Waktu
+                            <i class="fas fa-fw fa-user-clock mr-2 text-slate-700"></i> PPPK Paruh Waktu
                         </button>
                     </div>
                 </div>
@@ -62,7 +62,6 @@
                     <p class="text-[9px] font-bold text-emerald-600 uppercase tracking-widest">TTE Aktif</p>
                     <div class="flex items-baseline justify-center gap-1 mt-1">
                         <p class="text-2xl font-bold text-slate-800"><?= number_format($active_bsre_count ?? 0, 0, ',', '.') ?></p>
-                        <span class="text-xs font-bold text-slate-400">(<?= ($total_emails ?? 0) > 0 ? round(($active_bsre_count / $total_emails) * 100) : 0 ?>%)</span>
                     </div>
                 </div>
                 <?php $expired_count = $bsre_status_counts['EXPIRED']['count'] ?? 0; ?>
@@ -70,7 +69,6 @@
                     <p class="text-[9px] font-bold text-red-600 uppercase tracking-widest">TTE Expired</p>
                     <div class="flex items-baseline justify-center gap-1 mt-1">
                         <p class="text-2xl font-bold text-slate-800"><?= number_format($expired_count, 0, ',', '.') ?></p>
-                        <span class="text-xs font-bold text-slate-400">(<?= ($total_emails ?? 0) > 0 ? round(($expired_count / $total_emails) * 100) : 0 ?>%)</span>
                     </div>
                 </div>
             </div>
@@ -577,7 +575,7 @@
     async function syncAllBsreStatus() {
         const containers = document.querySelectorAll('[id^="bsre-status-"]');
         if (!containers.length) return;
-        
+
         if (!confirm(`Sinkronkan status sertifikat untuk ${containers.length} akun dalam unit ini?`)) {
             return;
         }
@@ -588,7 +586,10 @@
         // 1. Scroll ke tabel secara smooth
         const tableContainer = document.getElementById('email-table-container');
         if (tableContainer) {
-            tableContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            tableContainer.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
         }
 
         // 2. Disable tombol dan beri feedback visual
@@ -604,13 +605,16 @@
         for (const container of containers) {
             const email = container.getAttribute('data-email');
             const originalContent = container.innerHTML;
-            
+
             // Scroll ke container yang sedang diproses
-            container.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            
+            container.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+
             // Set loading state untuk baris ini
             container.innerHTML = '<span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase border bg-slate-50 text-slate-400 border-slate-200 animate-pulse"><i class="fas fa-spinner fa-spin mr-1"></i> SYNCING</span>';
-            
+
             try {
                 const response = await fetch('<?= site_url('bsre/sync-status') ?>', {
                     method: 'POST',
@@ -620,9 +624,9 @@
                     },
                     body: 'email=' + encodeURIComponent(email)
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (data.status === 'success') {
                     const colorClass = getJsStatusColor(data.bsre_status);
                     container.innerHTML = `<span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase border ${colorClass}">${data.bsre_status}</span>`;
@@ -647,7 +651,7 @@
         syncBtn.disabled = false;
         syncBtn.classList.remove('opacity-75', 'cursor-not-allowed');
         syncBtn.innerHTML = originalBtnContent;
-        
+
         alert(`Sinkronisasi Selesai!\nTotal: ${processed}\nBerhasil: ${success}\nGagal: ${failed}`);
     }
 </script>

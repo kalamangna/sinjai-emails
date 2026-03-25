@@ -486,12 +486,10 @@ document.addEventListener("DOMContentLoaded", function () {
         statusBadge = `<span class="${badgeBase} bg-emerald-100 text-emerald-800 border-transparent">Created</span>`;
       } else if (user.status === "failed") {
         statusBadge = `<span class="${badgeBase} bg-red-100 text-red-700 border-transparent" title="${user.errorMessage || "Failed"}">Failed</span>`;
-      } else if (user.isDuplicate) {
-        statusBadge = `<span class="${badgeBase} bg-amber-100 text-amber-700 border-transparent">Duplicate</span>`;
-      } else if (user.isAvailable) {
-        statusBadge = `<span class="${badgeBase} bg-blue-100 text-blue-700 border-transparent">Available</span>`;
+      } else if (!user.isAvailable || user.isDuplicate || user.isNikDuplicate || user.isNikInDb || user.isNipDuplicate || user.isNipInDb) {
+        statusBadge = `<span class="${badgeBase} bg-red-100 text-red-700 border-transparent">Unavailable</span>`;
       } else {
-        statusBadge = `<span class="${badgeBase} bg-gray-100 text-gray-700 border-transparent">Used</span>`;
+        statusBadge = `<span class="${badgeBase} bg-blue-100 text-blue-700 border-transparent">Available</span>`;
       }
 
       const nameCellContent = `<span contenteditable="true" class="editable-name focus:outline-none focus:text-emerald-700 transition-colors" data-name-index="${index}">${user.name}</span>`;

@@ -103,6 +103,10 @@ document.addEventListener('DOMContentLoaded', () => {
                                                 <span class="text-[10px] font-bold text-slate-700 font-mono tracking-tighter">${item.nik || '-'}</span>
                                             </div>
                                         </div>
+                                        <div class="mt-2 pt-2 border-t border-slate-50 flex items-center gap-1.5">
+                                            <i class="fas fa-building text-[9px] text-slate-300"></i>
+                                            <span class="text-[9px] font-bold text-slate-500 uppercase tracking-tight truncate">${item.unit_kerja_name || 'BELUM DISET'}</span>
+                                        </div>
                                     </div>
                                     <div class="h-10 flex items-center shrink-0">
                                         <i class="fas fa-chevron-right text-[8px] text-slate-300 group-hover/item:text-slate-800 transition-colors"></i>

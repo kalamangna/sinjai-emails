@@ -38,7 +38,7 @@
         $default_active = 'website';
     } elseif ($isActive('batch') || $isActive('batch/update') || $isActive('batch/pk')) {
         $default_active = 'batch';
-    } elseif ($isActive('unit_kerja/manage')) {
+    } elseif ($isActive('unit_kerja/manage') || strpos($full_url, site_url('auth/users')) !== false) {
         $default_active = 'master';
     }
     ?>
@@ -199,6 +199,9 @@
                 <div id="submenu-master" class="sidebar-submenu mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
                     <a href="<?= site_url('unit_kerja/manage') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('unit_kerja/manage') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
                         Unit Kerja
+                    </a>
+                    <a href="<?= site_url('auth/users') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('auth/users') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
+                        User Login
                     </a>
                 </div>
             </div>

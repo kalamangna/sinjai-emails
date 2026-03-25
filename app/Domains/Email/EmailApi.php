@@ -219,11 +219,14 @@ class EmailApi extends BaseController
         }
 
         $results = $this->emailModel
-            ->select('email, name, user, nik, nip')
-            ->like('email', $q)
-            ->orLike('name', $q)
-            ->orLike('nik', $q)
-            ->orLike('nip', $q)
+            ->select('emails.email, emails.name, emails.user, emails.nik, emails.nip, unit_kerja.nama_unit_kerja as unit_kerja_name')
+            ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
+            ->groupStart()
+                ->like('emails.email', $q)
+                ->orLike('emails.name', $q)
+                ->orLike('emails.nik', $q)
+                ->orLike('emails.nip', $q)
+            ->groupEnd()
             ->limit(10)
             ->findAll();
 

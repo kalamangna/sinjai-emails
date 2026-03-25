@@ -147,6 +147,16 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
     $routes->post('user/check_email', '\App\Domains\Auth\User::checkEmailAvailability');
     $routes->post('user/check_niknip', '\App\Domains\Auth\User::check_niknip');
     
+    // User Management (Super Admin Only)
+    $routes->group('auth/users', ['filter' => 'role:super_admin'], function ($routes) {
+        $routes->get('/', '\App\Domains\Auth\UserManagement::index');
+        $routes->get('add', '\App\Domains\Auth\UserManagement::add');
+        $routes->post('store', '\App\Domains\Auth\UserManagement::store');
+        $routes->get('edit/(:num)', '\App\Domains\Auth\UserManagement::edit/$1');
+        $routes->post('update/(:num)', '\App\Domains\Auth\UserManagement::update/$1');
+        $routes->post('delete/(:num)', '\App\Domains\Auth\UserManagement::delete/$1');
+    });
+    
     $routes->get('bsre/check-status', '\App\Domains\Email\Bsre::checkStatus');
     
     $routes->group('bsre', ['filter' => 'role:admin,super_admin'], function ($routes) {
