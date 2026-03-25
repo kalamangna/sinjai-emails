@@ -65,8 +65,7 @@ class PimpinanController extends BaseController
             $data = [
                 'title' => 'Pimpinan',
                 'emails' => $emails,
-                'total_emails' => $total_emails,
-                'pagination' => $pager,
+                'pager' => $pager,
                 'per_page' => $perPage,
                 'search' => $search,
                 'bsre_status' => $bsre_status,
@@ -131,7 +130,7 @@ class PimpinanController extends BaseController
                 'title' => 'Kepala Desa',
                 'emails' => $emails,
                 'total_emails' => $total_emails,
-                'pagination' => $pager,
+                'pager' => $pager,
                 'per_page' => $perPage,
                 'search' => $search,
                 'bsre_status' => $bsre_status,

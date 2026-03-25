@@ -482,7 +482,7 @@ class EmailService
             'active_bsre_count' => $active_bsre_count,
             'status_asn_stats' => $status_asn_stats,
             'showUnitKerjaColumn' => $showUnitKerjaColumn,
-            'pagination' => $pager,
+            'pager' => $pager,
             'status_asn_options' => $this->statusAsnModel->orderBy('nama_status_asn', 'ASC')->findAll(),
             'bsre_status_options' => $bsre_status_options,
             'bsre_status_counts' => $bsre_status_counts,

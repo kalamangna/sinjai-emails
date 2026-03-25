@@ -46,6 +46,7 @@ Portal terintegrasi untuk manajemen identitas digital, sertifikat elektronik, da
 
 ### 6. Administrasi & Keamanan
 
+- **Unified Component Architecture**: Implementasi komponen UI yang dapat digunakan kembali (reusable components) seperti sistem **Pagination Terpusat**, yang menstandarisasi pengalaman pengguna dan mempermudah pemeliharaan kode di seluruh aplikasi.
 - **Global Omni-Search**: Bar pencarian cerdas di bagian header untuk akses cepat ke data pegawai dan akun dari halaman mana saja.
 - **Role-Based Access Control (RBAC)**: Pembatasan akses antara _Super Admin_ dan _Admin_. Admin kini memiliki kemampuan untuk mengelola akun, memodifikasi informasi website, dan melakukan sinkronisasi, sementara Super Admin memegang kontrol penuh atas penghapusan data, manajemen Unit Kerja, dan Log Layanan.
 - **Manajemen User Login (Super Admin)**: Antarmuka CRUD untuk mengelola akun pengguna (Admin/Super Admin) yang dapat login ke sistem.

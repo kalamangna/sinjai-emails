@@ -303,23 +303,7 @@
             </table>
         </div>
 
-        <?php if (!empty($emails)): ?>
-            <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4">
-                <div class="text-[10px] font-bold text-slate-700 uppercase tracking-widest">
-                    <?php
-                    $start = ($pagination->getCurrentPage() - 1) * $pagination->getPerPage() + 1;
-                    $end = $start + count($emails) - 1;
-                    $total_filtered = $filtered_count ?? ($total_emails ?? 0);
-                    ?>
-                    Menampilkan <span class="text-slate-800 font-bold"><?= $start ?> - <?= $end ?></span> dari <span class="text-slate-800 font-bold"><?= number_format($total_filtered, 0, ',', '.') ?></span> data
-                </div>
-                <?php if (isset($pagination) && $pagination->getPageCount() > 1): ?>
-                    <div class="pagination-modern">
-                        <?= $pagination->links() ?>
-                    </div>
-                <?php endif; ?>
-            </div>
-        <?php endif; ?>
+        <?= view('components/pagination', ['items' => $emails, 'pager' => $pager, 'label' => 'data']) ?>
     </div>
 </div>
 
@@ -338,22 +322,6 @@
         </div>
     </div>
 </div>
-
-<style>
-    /* Pagination Style */
-    .pagination-modern ul {
-        @apply flex items-center gap-1;
-    }
-
-    .pagination-modern li a,
-    .pagination-modern li span {
-        @apply inline-flex items-center justify-center min-w-[28px] h-[28px] rounded bg-white border border-slate-200 text-[10px] font-bold text-slate-700 transition-all hover:border-slate-800 hover:text-slate-800 shadow-sm no-underline px-1.5;
-    }
-
-    .pagination-modern li.active span {
-        @apply bg-slate-800 border-slate-800 text-white shadow-sm;
-    }
-</style>
 
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>

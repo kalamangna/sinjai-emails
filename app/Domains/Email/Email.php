@@ -48,7 +48,6 @@ class Email extends BaseController
             $data['bsre_status'] = $bsre_status;
             $data['per_page'] = $perPage;
             $data['last_sync_time'] = $lastSyncSetting['value'] ?? null;
-            $data['pagination'] = $data['pager'];
             $data['bsre_status_options'] = $data['bsre_status_labels'];
 
             return view('email/index', $data);

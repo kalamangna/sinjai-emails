@@ -163,22 +163,7 @@
             </table>
         </div>
 
-        <?php if (!empty($emails)): ?>
-            <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4">
-                <div class="text-[10px] font-bold text-slate-700 uppercase tracking-widest">
-                    <?php
-                    $start = ($pager->getCurrentPage() - 1) * $pager->getPerPage() + 1;
-                    $end = $start + count($emails) - 1;
-                    ?>
-                    Menampilkan <span class="text-slate-800"><?= $start ?> - <?= $end ?></span> dari <span class="text-slate-800"><?= number_format($total_emails ?? 0, 0, ',', '.') ?></span> akun
-                </div>
-                <?php if (isset($pager) && $pager->getPageCount() > 1): ?>
-                    <div class="pagination-container">
-                        <?= $pager->links() ?>
-                    </div>
-                <?php endif; ?>
-            </div>
-        <?php endif; ?>
+        <?= view('components/pagination', ['items' => $emails, 'pager' => $pager, 'label' => 'akun']) ?>
     </div>
 </div>
 

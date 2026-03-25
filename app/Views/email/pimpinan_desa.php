@@ -146,39 +146,9 @@
             </table>
         </div>
 
-        <?php if (!empty($emails)): ?>
-            <div class="bg-slate-50 px-6 py-4 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-4">
-                <div class="text-[10px] font-bold text-slate-700 uppercase tracking-widest">
-                    <?php
-                    $start = ($pagination->getCurrentPage() - 1) * $pagination->getPerPage() + 1;
-                    $end = $start + count($emails) - 1;
-                    ?>
-                    Menampilkan <span class="text-slate-800"><?= $start ?> - <?= $end ?></span> dari <span class="text-slate-800"><?= number_format($total_emails, 0, ',', '.') ?></span> akun
-                </div>
-                <?php if (isset($pagination) && $pagination->getPageCount() > 1): ?>
-                    <div class="pagination-container">
-                        <?= $pagination->links() ?>
-                    </div>
-                <?php endif; ?>
-            </div>
-        <?php endif; ?>
+        <?= view('components/pagination', ['items' => $emails, 'pager' => $pager, 'label' => 'akun']) ?>
     </div>
 </div>
-
-<style>
-    .pagination-container ul {
-        @apply flex items-center gap-1;
-    }
-
-    .pagination-container li a,
-    .pagination-container li span {
-        @apply inline-flex items-center justify-center min-w-[28px] h-[28px] rounded bg-white border border-slate-200 text-[10px] font-bold text-slate-700 transition-all hover:border-slate-800 hover:text-slate-800 shadow-sm no-underline px-1.5;
-    }
-
-    .pagination-container li.active span {
-        @apply bg-slate-800 border-slate-800 text-white shadow-sm;
-    }
-</style>
 
 <script>
     async function syncAllBsreStatus() {

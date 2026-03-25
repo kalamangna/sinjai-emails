@@ -159,7 +159,7 @@ class EmailList extends BaseController
                 'emails' => $emails,
                 'total_emails' => $total_emails,
                 'active_bsre_count' => $active_bsre_count,
-                'pagination' => $pager,
+                'pager' => $pager,
                 'per_page' => $perPage,
                 'search' => $search,
                 'bsre_status' => $bsre_status,

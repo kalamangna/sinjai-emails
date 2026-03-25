@@ -134,11 +134,7 @@
             </table>
         </div>
 
-        <?php if (isset($pager)): ?>
-            <div class="px-6 py-4 border-t border-slate-100">
-                <?= $pager->links() ?>
-            </div>
-        <?php endif; ?>
+        <?= view('components/pagination', ['items' => $unit_kerja_list, 'pager' => $pager, 'label' => 'unit kerja']) ?>
     </div>
 </div>
 <?= $this->endSection() ?>

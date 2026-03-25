@@ -151,39 +151,9 @@
             </table>
         </div>
 
-        <?php if (!empty($websites)): ?>
-            <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4">
-                <div class="text-[10px] font-bold text-slate-700 uppercase tracking-widest">
-                    <?php
-                    $start = ($pager->getCurrentPage() - 1) * $pager->getPerPage() + 1;
-                    $end = $start + count($websites) - 1;
-                    ?>
-                    Menampilkan <span class="text-slate-800"><?= $start ?> - <?= $end ?></span> dari <span class="text-slate-800"><?= number_format($stats['total'] ?? 0, 0, ',', '.') ?></span> website
-                </div>
-                <?php if (isset($pager) && $pager->getPageCount() > 1): ?>
-                    <div class="pagination-container">
-                        <?= $pager->links() ?>
-                    </div>
-                <?php endif; ?>
-            </div>
-        <?php endif; ?>
+        <?= view('components/pagination', ['items' => $websites, 'pager' => $pager, 'label' => 'website']) ?>
     </div>
 </div>
-
-<style>
-    .pagination-container ul {
-        @apply flex items-center gap-1;
-    }
-
-    .pagination-container li a,
-    .pagination-container li span {
-        @apply inline-flex items-center justify-center min-w-[28px] h-[28px] rounded bg-white border border-slate-200 text-[10px] font-bold text-slate-700 transition-all hover:border-slate-800 hover:text-slate-800 shadow-sm no-underline px-1.5;
-    }
-
-    .pagination-container li.active span {
-        @apply bg-slate-800 border-slate-800 text-white shadow-sm;
-    }
-</style>
 
 <?= $this->endSection() ?>
 
