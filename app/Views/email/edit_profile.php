@@ -81,15 +81,15 @@
                             <label for="jabatan" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Jabatan</label>
                             <input type="text" name="jabatan" id="jabatan" value="<?= esc($email['jabatan'] ?? '') ?>" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 uppercase transition-all" placeholder="Contoh: AHLI PERTAMA - PRANATA KOMPUTER">
                         </div>
-                        <div>
+                        <div id="pangkat_container">
                             <label for="pangkat_nama" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Pangkat</label>
                             <input type="text" name="pangkat_nama" id="pangkat_nama" value="<?= esc($email['pangkat_nama'] ?? '') ?>" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 uppercase transition-all" placeholder="Contoh: PENATA MUDA">
                         </div>
-                        <div>
+                        <div id="pangkat_golruang_container">
                             <label for="pangkat_golruang" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Golongan Ruang</label>
                             <input type="text" name="pangkat_golruang" id="pangkat_golruang" value="<?= esc($email['pangkat_golruang'] ?? '') ?>" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all" placeholder="Contoh: III/a">
                         </div>
-                        <div>
+                        <div id="eselon_container">
                             <label for="eselon" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Eselon</label>
                             <select name="eselon" id="eselon" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 appearance-none cursor-pointer transition-all">
                                 <option value="">Tanpa Eselon</option>
@@ -174,6 +174,44 @@
                         .catch(err => console.error('Error fetching emails:', err));
                 }
             });
+        }
+
+        // Toggle visibility for Eselon and Golongan
+        const statusAsnSelect = document.getElementById('status_asn');
+        const eselonContainer = document.getElementById('eselon_container');
+        const golonganContainer = document.getElementById('golongan_container');
+        const pangkatContainer = document.getElementById('pangkat_container');
+        const pangkatGolruangContainer = document.getElementById('pangkat_golruang_container');
+
+        function toggleFields() {
+            const val = statusAsnSelect.value;
+            // 1: PNS, 2: PPPK, 3: PPPK PARUH WAKTU
+            if (val == '1') {
+                eselonContainer.classList.remove('hidden');
+                golonganContainer.classList.add('hidden');
+                pangkatContainer.classList.remove('hidden');
+                pangkatGolruangContainer.classList.remove('hidden');
+            } else if (val == '2') {
+                eselonContainer.classList.add('hidden');
+                golonganContainer.classList.remove('hidden');
+                pangkatContainer.classList.add('hidden');
+                pangkatGolruangContainer.classList.add('hidden');
+            } else if (val == '3') {
+                eselonContainer.classList.add('hidden');
+                golonganContainer.classList.add('hidden');
+                pangkatContainer.classList.add('hidden');
+                pangkatGolruangContainer.classList.add('hidden');
+            } else {
+                eselonContainer.classList.add('hidden');
+                golonganContainer.classList.add('hidden');
+                pangkatContainer.classList.add('hidden');
+                pangkatGolruangContainer.classList.add('hidden');
+            }
+        }
+
+        if (statusAsnSelect) {
+            statusAsnSelect.addEventListener('change', toggleFields);
+            toggleFields(); // Initial call
         }
     });
 </script>

@@ -11,9 +11,22 @@
             <a href="<?= site_url('email/export_pimpinan_desa_pdf') ?>" class="btn btn-outline no-underline">
                 <i class="fas fa-file-pdf mr-2"></i> Export PDF
             </a>
-            <button id="syncAllTteBtn" onclick="syncAllBsreStatus()" class="btn btn-solid">
-                <i class="fas fa-fingerprint mr-2 text-white/80"></i> Sync TTE
-            </button>
+            <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
+                <!-- Dropdown Sinkronisasi -->
+                <div class="relative group">
+                    <button id="mainSyncBtn" class="btn btn-solid">
+                        <i class="fas fa-sync-alt mr-2 text-white/80"></i> Sync <i class="fas fa-chevron-down ml-2 text-[8px] opacity-50 transition-transform duration-300 group-hover:rotate-180"></i>
+                    </button>
+                    <div class="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 overflow-hidden">
+                        <button id="syncAllTteBtn" onclick="syncAllBsreStatus()" class="w-full px-4 py-3 text-left text-[10px] font-bold text-slate-700 uppercase tracking-widest hover:bg-slate-50 border-b border-slate-100 transition-colors focus:outline-none">
+                            <i class="fas fa-fw fa-fingerprint mr-2 text-slate-500"></i> Sync TTE
+                        </button>
+                        <button id="syncAllPegawaiBtn" onclick="syncAllPegawai()" class="w-full px-4 py-3 text-left text-[10px] font-bold text-slate-700 uppercase tracking-widest hover:bg-slate-50 transition-colors focus:outline-none">
+                            <i class="fas fa-fw fa-user-check mr-2 text-slate-500"></i> Sync Pegawai
+                        </button>
+                    </div>
+                </div>
+            <?php endif; ?>
         </div>
     </div>
 
@@ -88,7 +101,9 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <span class="text-xs font-medium text-slate-700 uppercase tracking-tight leading-snug"><?= esc($email['jabatan']) ?: '-' ?></span>
+                                    <div class="flex flex-col gap-1" id="pegawai-container-<?= esc($email['user']) ?>" data-nip="<?= esc($email['nip']) ?>">
+                                        <span class="text-xs font-medium text-slate-700 uppercase tracking-tight jabatan-text leading-snug"><?= esc($email['jabatan']) ?: '-' ?></span>
+                                    </div>
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="flex flex-col">
@@ -159,7 +174,9 @@
             return;
         }
 
+        const mainBtn = document.getElementById('mainSyncBtn');
         const syncBtn = document.getElementById('syncAllTteBtn');
+        const originalMainContent = mainBtn.innerHTML;
         const originalBtnContent = syncBtn.innerHTML;
 
         // 1. Scroll ke tabel secara smooth
@@ -172,9 +189,10 @@
         }
 
         // 2. Disable tombol dan beri feedback visual
+        mainBtn.disabled = true;
+        mainBtn.classList.add('opacity-75', 'cursor-not-allowed', 'bg-slate-700');
         syncBtn.disabled = true;
-        syncBtn.classList.add('opacity-75', 'cursor-not-allowed');
-        syncBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Syncing...';
+        syncBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Sinkronisasi TTE...';
 
         // 3. Proses secara sekuensial
         let processed = 0;
@@ -183,8 +201,7 @@
 
         for (const container of containers) {
             const email = container.getAttribute('data-email');
-            const originalContent = container.innerHTML;
-
+            
             // Scroll ke container yang sedang diproses
             container.scrollIntoView({
                 behavior: 'smooth',
@@ -192,7 +209,7 @@
             });
 
             // Set loading state untuk baris ini
-            container.innerHTML = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-bold uppercase border bg-slate-50 text-slate-400 border-slate-200 animate-pulse"><i class="fas fa-spinner fa-spin mr-1"></i> SYNCING</span>';
+            container.innerHTML = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-bold uppercase border bg-slate-50 text-slate-400 border-slate-200 animate-pulse"><i class="fas fa-spinner fa-spin mr-1.5"></i> SYNCING</span>';
 
             try {
                 const response = await fetch('<?= site_url('bsre/sync-status') ?>', {
@@ -223,15 +240,95 @@
             }
 
             processed++;
-            syncBtn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Syncing ${processed}/${containers.length}...`;
+            mainBtn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> TTE: ${processed}/${containers.length}`;
+            syncBtn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Sinkronisasi ${processed}/${containers.length}...`;
         }
 
         // 4. Restore tombol
+        mainBtn.disabled = false;
+        mainBtn.classList.remove('opacity-75', 'cursor-not-allowed', 'bg-slate-700');
+        mainBtn.innerHTML = originalMainContent;
         syncBtn.disabled = false;
-        syncBtn.classList.remove('opacity-75', 'cursor-not-allowed');
         syncBtn.innerHTML = originalBtnContent;
 
         alert(`Sinkronisasi Selesai!\nTotal: ${processed}\nBerhasil: ${success}\nGagal: ${failed}`);
+    }
+
+    async function syncAllPegawai() {
+        const containers = document.querySelectorAll('[id^="pegawai-container-"]');
+        const validContainers = Array.from(containers).filter(c => c.getAttribute('data-nip') && c.getAttribute('data-nip').trim() !== '');
+        
+        if (!validContainers.length) {
+            alert('Tidak ada data NIP yang dapat disinkronkan.');
+            return;
+        }
+
+        if (!confirm(`Sinkronkan data pegawai dari API untuk ${validContainers.length} kepala desa yang memiliki NIP?`)) {
+            return;
+        }
+
+        const mainBtn = document.getElementById('mainSyncBtn');
+        const syncBtn = document.getElementById('syncAllPegawaiBtn');
+        const originalMainContent = mainBtn.innerHTML;
+        const originalBtnContent = syncBtn.innerHTML;
+
+        mainBtn.disabled = true;
+        mainBtn.classList.add('opacity-75', 'cursor-not-allowed', 'bg-slate-700');
+        syncBtn.disabled = true;
+        syncBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Sinkronisasi Pegawai...';
+
+        let processed = 0;
+        let success = 0;
+        let failed = 0;
+
+        for (const container of validContainers) {
+            const nip = container.getAttribute('data-nip');
+            const textElement = container.querySelector('.jabatan-text');
+            const originalJabatan = textElement.textContent;
+            
+            container.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            textElement.innerHTML = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[8px] font-bold uppercase border bg-slate-50 text-slate-400 border-slate-200 animate-pulse"><i class="fas fa-spinner fa-spin mr-1.5"></i> SYNCING</span>';
+
+            try {
+                const response = await fetch('<?= site_url('email/sync_pegawai') ?>', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: 'nip=' + encodeURIComponent(nip)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    if (data.data.jabatan) {
+                        textElement.textContent = data.data.jabatan;
+                    } else {
+                        textElement.textContent = originalJabatan;
+                    }
+                    success++;
+                } else {
+                    textElement.textContent = originalJabatan;
+                    failed++;
+                }
+            } catch (error) {
+                textElement.textContent = originalJabatan;
+                failed++;
+            }
+
+            processed++;
+            mainBtn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> PEG: ${processed}/${validContainers.length}`;
+            syncBtn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Sinkronisasi ${processed}/${validContainers.length}...`;
+        }
+
+        mainBtn.disabled = false;
+        mainBtn.classList.remove('opacity-75', 'cursor-not-allowed', 'bg-slate-700');
+        mainBtn.innerHTML = originalMainContent;
+        syncBtn.disabled = false;
+        syncBtn.innerHTML = originalBtnContent;
+
+        alert(`Sinkronisasi Data Pegawai Selesai!\nTotal: ${processed}\nBerhasil: ${success}\nGagal: ${failed}`);
     }
 </script>
 <?= $this->endSection() ?>

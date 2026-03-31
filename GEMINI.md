@@ -237,12 +237,19 @@ The project adheres to a **"Slate Clean Government"** aesthetic:
 - **Database Expansion**:
     - Added `pangkat_nama` and `pangkat_golruang` columns to the `emails` table via a new migration.
     - Integrated these fields into the `EmailModel` and the profile update logic.
+- **Pimpinan Title Standardization**:
+    - Created a data migration to automatically adjust the `jabatan` field for all organizational leaders based on their unit name (e.g., KEPALA DINAS, CAMAT, LURAH).
+    - Specifically updated the Sekretaris Daerah title.
+    - Updated the synchronization logic to **skip** updating the `jabatan` field for accounts marked as `pimpinan`, ensuring these official titles are not overwritten by generic API data.
 
 ## UI/UX Improvements
 - **Refined Detail View**:
     - Redesigned the "Kepegawaian" section on the Account Detail page to explicitly show Rank (Pangkat) and Grade (Golongan Ruang) in a structured grid.
     - Restored missing badges for **Eselon** and **Golongan (PPPK)** for a more complete profile.
+    - Implemented **Conditional Visibility**: Rank and grade fields are now dynamically shown or hidden based on the Status ASN (PNS, PPPK, or Paruh Waktu) to ensure data relevance.
     - Repositioned the "Sync Pegawai" action to the main Profil card header for better accessibility and grouping with the "Edit Profil" action.
+- **Dynamic Edit Form**:
+    - Updated the "Edit Profil" form with real-time JavaScript to toggle field visibility based on Status ASN selection, improving data entry accuracy.
 - **Simplified Unit Kerja Actions**:
     - Consolidated multiple export and sync buttons on the Unit Kerja detail page into logical dropdown menus (Export, Batch PK, and Sync).
     - This declutters the header and prevents layout wrapping on smaller screens.

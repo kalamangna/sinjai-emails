@@ -154,7 +154,7 @@
                                             <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px] font-bold uppercase border border-slate-200"><?= $email['status_asn'] ?? '-' ?></span>
                                         </p>
                                     </div>
-                                    <?php if (!empty($email['eselon_name'])): ?>
+                                    <?php if (($email['status_asn_id'] ?? 0) == 1 && !empty($email['eselon_name'])): ?>
                                         <div>
                                             <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">Eselon</label>
                                             <p class="text-sm font-semibold text-slate-800 uppercase mt-1">
@@ -163,17 +163,21 @@
                                         </div>
                                     <?php endif; ?>
                                 </div>
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">Pangkat</label>
-                                        <p id="pangkat-text" class="text-sm font-semibold text-slate-800 uppercase leading-snug"><?= esc($email['pangkat_nama'] ?? '') ?: '-' ?></p>
+
+                                <?php if (($email['status_asn_id'] ?? 0) == 1): ?>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">Pangkat</label>
+                                            <p id="pangkat-text" class="text-sm font-semibold text-slate-800 uppercase leading-snug"><?= esc($email['pangkat_nama'] ?? '') ?: '-' ?></p>
+                                        </div>
+                                        <div>
+                                            <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">Golongan Ruang</label>
+                                            <p id="golru-text" class="text-sm font-semibold text-slate-800 leading-snug"><?= esc($email['pangkat_golruang'] ?? '') ?: '-' ?></p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">Golongan Ruang</label>
-                                        <p id="golru-text" class="text-sm font-semibold text-slate-800 leading-snug"><?= esc($email['pangkat_golruang'] ?? '') ?: '-' ?></p>
-                                    </div>
-                                </div>
-                                <?php if (!empty($email['golongan'] ?? '')): ?>
+                                <?php endif; ?>
+
+                                <?php if (($email['status_asn_id'] ?? 0) == 2 && !empty($email['golongan'] ?? '')): ?>
                                     <div>
                                         <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">Golongan (PPPK)</label>
                                         <p class="text-sm font-semibold text-slate-800 uppercase mt-1">

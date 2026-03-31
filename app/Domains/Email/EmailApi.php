@@ -249,13 +249,19 @@ class EmailApi extends BaseController
             // Normalize data from array if necessary
             $source = (is_array($data) && isset($data[0])) ? $data[0] : $data;
             
+            // Get current record to check pimpinan status
+            $currentEmail = $this->emailModel->where('nip', $nip)->first();
+            $isPimpinan = ($currentEmail['pimpinan'] ?? 0) == 1;
+
             $updateData = [];
             
-            // 1. Sync Jabatan
-            if (isset($source['jabatan_nama'])) {
-                $updateData['jabatan'] = $source['jabatan_nama'];
-            } elseif (isset($source['jabatan'])) {
-                $updateData['jabatan'] = $source['jabatan'];
+            // 1. Sync Jabatan (Only if NOT pimpinan)
+            if (!$isPimpinan) {
+                if (isset($source['jabatan_nama'])) {
+                    $updateData['jabatan'] = $source['jabatan_nama'];
+                } elseif (isset($source['jabatan'])) {
+                    $updateData['jabatan'] = $source['jabatan'];
+                }
             }
 
             // 2. Sync Pangkat & Golongan

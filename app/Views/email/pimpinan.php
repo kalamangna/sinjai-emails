@@ -11,9 +11,11 @@
             <a href="<?= site_url('email/export_pimpinan_pdf') ?>" class="btn btn-outline no-underline">
                 <i class="fas fa-file-pdf mr-2"></i> Export PDF
             </a>
-            <button id="syncAllTteBtn" onclick="syncAllBsreStatus()" class="btn btn-solid">
-                <i class="fas fa-fingerprint mr-2 text-white/80"></i> Sync TTE
-            </button>
+            <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
+                <button id="syncAllTteBtn" onclick="syncAllBsreStatus()" class="btn btn-solid">
+                    <i class="fas fa-fingerprint mr-2 text-white/80"></i> Sync TTE
+                </button>
+            <?php endif; ?>
         </div>
     </div>
 
