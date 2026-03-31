@@ -41,7 +41,7 @@ class GeminiService
         try {
             $prompt = $this->buildPrompt($reportType, $data);
             return $this->callGeminiApi($prompt);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             log_message('error', '[GeminiService] Analysis generation failed: ' . $e->getMessage());
             return '';
         }

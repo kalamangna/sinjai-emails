@@ -69,7 +69,7 @@ class BsreApi
                 'data'    => $body,
                 'code'    => $statusCode
             ];
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $errorMsg = "BSrE API Error. URL: [{$fullUrl}]. Message: " . $e->getMessage();
             log_message('error', $errorMsg);
 

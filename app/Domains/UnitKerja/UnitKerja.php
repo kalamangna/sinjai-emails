@@ -148,7 +148,7 @@ class UnitKerja extends BaseController
                 ]);
                 $results[] = ['name' => $name, 'success' => true, 'message' => 'Berhasil disimpan.'];
                 $successCount++;
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 $results[] = ['name' => $name, 'success' => false, 'message' => $e->getMessage()];
                 $failCount++;
             }

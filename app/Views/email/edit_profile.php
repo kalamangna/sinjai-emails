@@ -79,7 +79,15 @@
                         </div>
                         <div>
                             <label for="jabatan" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Jabatan</label>
-                            <input type="text" name="jabatan" id="jabatan" value="<?= esc($email['jabatan']) ?>" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 uppercase transition-all" placeholder="Contoh: AHLI PERTAMA - PRANATA KOMPUTER">
+                            <input type="text" name="jabatan" id="jabatan" value="<?= esc($email['jabatan'] ?? '') ?>" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 uppercase transition-all" placeholder="Contoh: AHLI PERTAMA - PRANATA KOMPUTER">
+                        </div>
+                        <div>
+                            <label for="pangkat_nama" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Pangkat</label>
+                            <input type="text" name="pangkat_nama" id="pangkat_nama" value="<?= esc($email['pangkat_nama'] ?? '') ?>" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 uppercase transition-all" placeholder="Contoh: PENATA MUDA">
+                        </div>
+                        <div>
+                            <label for="pangkat_golruang" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Golongan Ruang</label>
+                            <input type="text" name="pangkat_golruang" id="pangkat_golruang" value="<?= esc($email['pangkat_golruang'] ?? '') ?>" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all" placeholder="Contoh: III/a">
                         </div>
                         <div>
                             <label for="eselon" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Eselon</label>
@@ -91,8 +99,8 @@
                             </select>
                         </div>
                         <div id="golongan_container">
-                            <label for="golongan" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Golongan</label>
-                            <input type="text" name="golongan" id="golongan" value="<?= esc($email['golongan']) ?>" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all uppercase" placeholder="Contoh: IX">
+                            <label for="golongan" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Golongan (PPPK)</label>
+                            <input type="text" name="golongan" id="golongan" value="<?= esc($email['golongan'] ?? '') ?>" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all uppercase" placeholder="Contoh: IX">
                         </div>
                         <div class="md:col-span-2">
                             <label for="unit_kerja_id" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Unit Kerja</label>

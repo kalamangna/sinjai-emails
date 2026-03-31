@@ -65,6 +65,7 @@ class PimpinanController extends BaseController
             $data = [
                 'title' => 'Pimpinan',
                 'emails' => $emails,
+                'total_emails' => $total_emails,
                 'pager' => $pager,
                 'per_page' => $perPage,
                 'search' => $search,
@@ -74,7 +75,7 @@ class PimpinanController extends BaseController
             ];
 
             return view('email/pimpinan', $data);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
             $data['back_url'] = site_url('email');
             return view('email/error', $data);
@@ -139,7 +140,7 @@ class PimpinanController extends BaseController
             ];
 
             return view('email/pimpinan_desa', $data);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
             $data['back_url'] = site_url('email');
             return view('email/error', $data);
@@ -158,7 +159,7 @@ class PimpinanController extends BaseController
             $filename = 'Email & TTE Pimpinan - ' . formatTanggal('now') . '.pdf';
             $dompdf->stream($filename, ["Attachment" => true]);
             exit();
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
             return view('email/error', $data);
         }
@@ -176,7 +177,7 @@ class PimpinanController extends BaseController
             $filename = 'Email & TTE Kepala Desa - ' . formatTanggal('now') . '.pdf';
             $dompdf->stream($filename, ["Attachment" => true]);
             exit();
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
             return view('email/error', $data);
         }

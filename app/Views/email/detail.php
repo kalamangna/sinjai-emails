@@ -89,11 +89,18 @@
             <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
                 <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
                     <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Profil</h3>
-                    <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
-                        <a href="<?= site_url('email/edit_profile/' . $email['user']) ?>" class="btn btn-outline btn-xs no-underline">
-                            <i class="fas fa-edit mr-1.5"></i> Edit Profil
-                        </a>
-                    <?php endif; ?>
+                    <div class="flex items-center gap-2">
+                        <?php if (in_array(session()->get('role'), ['super_admin', 'admin']) && !empty($email['nip'])): ?>
+                            <button onclick="syncPegawai('<?= esc($email['nip'], 'js') ?>', this)" class="btn btn-outline btn-xs uppercase tracking-widest transition-colors flex items-center" title="Sinkronkan Data Pegawai dari API">
+                                <i class="fas fa-sync-alt mr-1.5 text-slate-500"></i> Sync Pegawai
+                            </button>
+                        <?php endif; ?>
+                        <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
+                            <a href="<?= site_url('email/edit_profile/' . $email['user']) ?>" class="btn btn-outline btn-xs no-underline">
+                                <i class="fas fa-edit mr-1.5"></i> Edit Profil
+                            </a>
+                        <?php endif; ?>
+                    </div>
                 </div>
 
                 <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
@@ -134,37 +141,51 @@
                     <!-- Kolom 2: Kepegawaian -->
                     <div class="space-y-6">
                         <div>
-                            <span class="block text-[10px] font-bold text-slate-700 uppercase tracking-widest mb-1.5">Kepegawaian</span>
+                            <span class="block text-[10px] font-bold text-slate-700 uppercase tracking-widest mb-1.5 border-b border-slate-100 pb-1">Kepegawaian</span>
                             <div class="space-y-4">
                                 <div>
                                     <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">NIP</label>
                                     <p class="text-sm font-semibold text-slate-800 font-mono"><?= esc($email['nip']) ?: '-' ?></p>
                                 </div>
-                                <div>
-                                    <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">Status ASN</label>
-                                    <p class="text-sm font-semibold text-slate-800 uppercase mt-1">
-                                        <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px] font-bold uppercase border border-slate-200"><?= $email['status_asn'] ?? '-' ?></span>
-                                    </p>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">Status ASN</label>
+                                        <p class="text-sm font-semibold text-slate-800 uppercase mt-1">
+                                            <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px] font-bold uppercase border border-slate-200"><?= $email['status_asn'] ?? '-' ?></span>
+                                        </p>
+                                    </div>
+                                    <?php if (!empty($email['eselon_name'])): ?>
+                                        <div>
+                                            <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">Eselon</label>
+                                            <p class="text-sm font-semibold text-slate-800 uppercase mt-1">
+                                                <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px] font-bold uppercase border border-slate-200">Eselon <?= $email['eselon_name'] ?></span>
+                                            </p>
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
-                                <?php if (in_array($email['status_asn_id'] ?? 0, [2, 3])): ?>
+                                <div class="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">Golongan</label>
-                                        <p class="text-sm font-semibold text-slate-800 uppercase mt-1">
-                                            <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px] font-bold uppercase border border-slate-200"><?= esc($email['golongan'] ?? '-') ?></span>
-                                        </p>
+                                        <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">Pangkat</label>
+                                        <p id="pangkat-text" class="text-sm font-semibold text-slate-800 uppercase leading-snug"><?= esc($email['pangkat_nama'] ?? '') ?: '-' ?></p>
                                     </div>
-                                <?php endif; ?>
-                                <?php if (!empty($email['eselon_name'])): ?>
                                     <div>
-                                        <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">Eselon</label>
+                                        <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">Golongan Ruang</label>
+                                        <p id="golru-text" class="text-sm font-semibold text-slate-800 leading-snug"><?= esc($email['pangkat_golruang'] ?? '') ?: '-' ?></p>
+                                    </div>
+                                </div>
+                                <?php if (!empty($email['golongan'] ?? '')): ?>
+                                    <div>
+                                        <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">Golongan (PPPK)</label>
                                         <p class="text-sm font-semibold text-slate-800 uppercase mt-1">
-                                            <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px] font-bold uppercase border border-slate-200">Eselon <?= $email['eselon_name'] ?></span>
+                                            <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px] font-bold uppercase border border-slate-200"><?= esc($email['golongan']) ?></span>
                                         </p>
                                     </div>
                                 <?php endif; ?>
                                 <div>
-                                    <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">Jabatan</label>
-                                    <p class="text-sm font-semibold text-slate-800 uppercase leading-snug"><?= esc($email['jabatan']) ?: '-' ?></p>
+                                    <div class="flex items-center justify-between mb-1">
+                                        <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">Jabatan</label>
+                                    </div>
+                                    <p id="jabatan-text" class="text-sm font-semibold text-slate-800 uppercase leading-snug"><?= esc($email['jabatan']) ?: '-' ?></p>
                                 </div>
                                 <div>
                                     <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">Unit Kerja</label>
@@ -408,6 +429,59 @@
             .catch((err) => {
                 const errorMsg = 'Masalah Koneksi Jaringan';
                 container.innerHTML = `<button onclick="showGlobalError('Kesalahan Jaringan', '${errorMsg}')" class="px-2 py-0.5 rounded text-[9px] font-bold uppercase border bg-red-50 text-red-600 border-red-200 hover:bg-red-100 transition-colors">ERROR</button>`;
+            });
+    }
+
+    function syncPegawai(nip, btn) {
+        const originalContent = btn.innerHTML;
+        const jabatanElement = document.getElementById('jabatan-text');
+        const pangkatElement = document.getElementById('pangkat-text');
+        const golruElement = document.getElementById('golru-text');
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> SYNCING';
+        jabatanElement.classList.add('animate-pulse', 'text-slate-400');
+        pangkatElement.classList.add('animate-pulse', 'text-slate-400');
+        if (golruElement) golruElement.classList.add('animate-pulse', 'text-slate-400');
+
+        fetch('<?= site_url('email/sync_pegawai') ?>', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: 'nip=' + encodeURIComponent(nip)
+            })
+            .then(r => r.json()).then(data => {
+                btn.disabled = false;
+                btn.innerHTML = originalContent;
+                jabatanElement.classList.remove('animate-pulse', 'text-slate-400');
+                pangkatElement.classList.remove('animate-pulse', 'text-slate-400');
+                if (golruElement) golruElement.classList.remove('animate-pulse', 'text-slate-400');
+
+                if (data.success) {
+                    if (data.data.jabatan) {
+                        jabatanElement.textContent = data.data.jabatan;
+                    }
+
+                    if (data.data.pangkat_nama) {
+                        pangkatElement.textContent = data.data.pangkat_nama;
+                    }
+
+                    if (data.data.pangkat_golruang && golruElement) {
+                        golruElement.textContent = data.data.pangkat_golruang;
+                    }
+                } else {
+                    showGlobalError('Gagal Sinkronisasi Pegawai', data.message || 'Gagal mengambil data dari API');
+                }
+            })
+            .catch((err) => {
+                btn.disabled = false;
+                btn.innerHTML = originalContent;
+                jabatanElement.classList.remove('animate-pulse', 'text-slate-400');
+                pangkatElement.classList.remove('animate-pulse', 'text-slate-400');
+                if (golruElement) golruElement.classList.remove('animate-pulse', 'text-slate-400');
+                showGlobalError('Kesalahan Jaringan', 'Gagal menghubungi server API.');
             });
     }
 

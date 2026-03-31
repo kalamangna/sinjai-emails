@@ -226,3 +226,36 @@ The project adheres to a **"Slate Clean Government"** aesthetic:
 ## Housekeeping
 - **Untracked Files**: Added `app/Views/components/pagination.php` to the repository.
 - **CSS Cleanup**: Re-compiled `output.css` after removing redundant inline styles from multiple view files.
+
+# Session History - March 31, 2026
+
+## Features Added
+- **Sync Data Pegawai**:
+    - Implemented a comprehensive synchronization feature using the external Pegawai API (`http://apps.sinjaikab.go.id/api/pegawai/data_pegawai/`).
+    - Synchronizes **Jabatan**, **Pangkat**, and **Golongan Ruang** in a single operation using the employee's NIP.
+    - Added support for both individual and batch synchronization.
+- **Database Expansion**:
+    - Added `pangkat_nama` and `pangkat_golruang` columns to the `emails` table via a new migration.
+    - Integrated these fields into the `EmailModel` and the profile update logic.
+
+## UI/UX Improvements
+- **Refined Detail View**:
+    - Redesigned the "Kepegawaian" section on the Account Detail page to explicitly show Rank (Pangkat) and Grade (Golongan Ruang) in a structured grid.
+    - Restored missing badges for **Eselon** and **Golongan (PPPK)** for a more complete profile.
+    - Repositioned the "Sync Pegawai" action to the main Profil card header for better accessibility and grouping with the "Edit Profil" action.
+- **Simplified Unit Kerja Actions**:
+    - Consolidated multiple export and sync buttons on the Unit Kerja detail page into logical dropdown menus (Export, Batch PK, and Sync).
+    - This declutters the header and prevents layout wrapping on smaller screens.
+- **Standardized Loading Feedback**:
+    - Unified row-level loading indicators with animated "SYNCING" badges during batch operations.
+    - Implemented live progress counters (e.g., `PEG: 5/20`) on the main dropdown buttons during active synchronization.
+
+## Robust Error Handling
+- **Global Throwable Refactor**:
+    - Refactored over 30 `catch` blocks across Controllers, Services, and Libraries to use `\Throwable` instead of `\Exception`.
+    - This ensures that all types of PHP errors (including missing database columns, TypeErrors, and logic errors) are correctly caught and rendered within the application's themed error page instead of falling back to default server error screens.
+- **Defensive Rendering**:
+    - Added null coalescing (`??`) to all displays of the newly added rank fields to prevent application crashes during the migration transition period.
+
+## Refactoring & Naming
+- **Standardization**: Renamed all instances of "Sync Jabatan" to "Sync Data Pegawai" across the entire codebase (routes, methods, and JS functions) to accurately reflect the expanded scope of the feature.

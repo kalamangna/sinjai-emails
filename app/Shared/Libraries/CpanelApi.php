@@ -64,7 +64,7 @@ class CpanelApi
             $response = $this->make_request('Email', 'list_pops_with_disk');
             log_message('debug', 'CpanelApi: Finished get_email_accounts_detailed successfully');
             return $response['data'] ?? [];
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             log_message('error', 'Failed to get email accounts: ' . $e->getMessage());
             throw new Exception('Failed to retrieve email list: ' . $e->getMessage());
         }
@@ -82,7 +82,7 @@ class CpanelApi
             }
 
             throw new Exception('Email account tidak ditemukan: ' . $email);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             log_message('error', 'Failed to get email detail: ' . $e->getMessage());
             throw new Exception('Failed to retrieve email details: ' . $e->getMessage());
         }
@@ -103,7 +103,7 @@ class CpanelApi
                     'timestamp' => untukDatabase('now')
                 ]
             ];
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             return [
                 'success' => false,
                 'message' => 'cPanel API connection failed: ' . $e->getMessage(),
@@ -132,7 +132,7 @@ class CpanelApi
                 $error_message = $response['errors'][0] ?? 'Unknown error during email account creation.';
                 throw new Exception($error_message);
             }
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             log_message('error', 'Failed to create email account: ' . $e->getMessage());
             throw new Exception('Failed to create email account: ' . $e->getMessage());
         }
@@ -157,7 +157,7 @@ class CpanelApi
                 $error_message = $response['errors'][0] ?? 'Unknown error during password change.';
                 throw new Exception($error_message);
             }
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             log_message('error', 'Failed to change password: ' . $e->getMessage());
             throw new Exception('Failed to change password: ' . $e->getMessage());
         }
@@ -183,7 +183,7 @@ class CpanelApi
             }
 
             return $response;
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             log_message('error', 'Failed to delete email account: ' . $e->getMessage());
             throw new Exception('Failed to delete email account: ' . $e->getMessage());
         }

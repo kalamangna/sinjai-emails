@@ -68,6 +68,7 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         // Sync & Utility Routes (Admin & Super Admin)
         $routes->group('', ['filter' => 'role:admin,super_admin'], function ($routes) {
             $routes->get('sync', '\App\Domains\Email\Email::sync');
+            $routes->post('sync_pegawai', '\App\Domains\Email\EmailApi::sync_pegawai');
             $routes->post('api_generate_pdf', '\App\Domains\Email\EmailApi::api_generate_pdf');
             $routes->get('api_unit_emails/(:num)', '\App\Domains\Email\EmailApi::api_unit_emails/$1');
             $routes->get('api_download_zip/(:num)', '\App\Domains\Email\EmailApi::api_download_zip/$1');

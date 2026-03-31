@@ -66,7 +66,7 @@ class User extends BaseController
                         return $this->response->setJSON(['available' => false, 'message' => 'Email is already registered to a local user.']);
                     }
                 }
-            } catch (Exception $e) {
+            } catch (\Throwable $e) {
                 log_message('error', '[User Controller] Failed to check UserModel: ' . $e->getMessage());
                 // Don't fail the request, just log that this check couldn't be performed.
             }
@@ -81,7 +81,7 @@ class User extends BaseController
 
             return $this->response->setJSON(['available' => true, 'message' => 'Email is available.']);
 
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             log_message('error', '[User Controller] Check email availability failed: ' . $e->getMessage());
             return $this->response->setStatusCode(500)->setJSON(['available' => false, 'message' => 'An unexpected error occurred while checking email availability.']);
         }
@@ -126,7 +126,7 @@ class User extends BaseController
 
             return $this->response->setJSON(['exists' => $exists, 'message' => $message]);
 
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             log_message('error', '[User Controller] Check NIK/NIP availability failed: ' . $e->getMessage());
             return $this->response->setStatusCode(500)->setJSON(['exists' => false, 'message' => 'An unexpected error occurred while checking NIK/NIP availability.']);
         }

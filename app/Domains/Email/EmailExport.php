@@ -31,7 +31,7 @@ class EmailExport extends BaseController
             } else {
                 return $this->response->download($result['path'], null)->setFileName($result['filename']);
             }
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
             return view('email/error', $data);
         }
@@ -49,7 +49,7 @@ class EmailExport extends BaseController
             $result = $this->emailExportService->generateUnitKerjaExcel($unitKerjaId, $params);
 
             return $this->response->download($result['path'], null)->setFileName($result['filename']);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
             return view('email/error', $data);
         }
@@ -61,7 +61,7 @@ class EmailExport extends BaseController
             $result = $this->emailExportService->generatePerjanjianKerjaPdf($username);
             $result['dompdf']->stream($result['filename'], ["Attachment" => true]);
             exit();
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
             return view('email/error', $data);
         }
@@ -79,7 +79,7 @@ class EmailExport extends BaseController
             readfile($result['path']);
             unlink($result['path']);
             exit();
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
             return view('email/error', $data);
         }
@@ -103,7 +103,7 @@ class EmailExport extends BaseController
 
             $result['dompdf']->stream($result['filename'], ["Attachment" => true]);
             exit();
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
             return view('email/error', $data);
         }
@@ -127,7 +127,7 @@ class EmailExport extends BaseController
 
             $result['dompdf']->stream($result['filename'], ["Attachment" => true]);
             exit();
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
             return view('email/error', $data);
         }

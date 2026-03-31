@@ -109,7 +109,7 @@ class EmailApi extends BaseController
         try {
             $this->emailExportService->generateAndSavePerjanjianKerja($emailId, $unitId);
             return $this->response->setJSON(['success' => true]);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             return $this->response->setJSON(['success' => false, 'message' => $e->getMessage()]);
         }
     }
@@ -206,7 +206,7 @@ class EmailApi extends BaseController
         try {
             $email = $this->emailService->createSingleEmail($data);
             return $this->response->setJSON(['success' => true, 'email' => $data['email']]);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => $e->getMessage()]);
         }
     }
@@ -231,5 +231,60 @@ class EmailApi extends BaseController
             ->findAll();
 
         return $this->response->setJSON($results);
+    }
+
+    public function sync_pegawai()
+    {
+        $nip = $this->request->getVar('nip');
+        if (empty($nip)) {
+            return $this->response->setJSON(['success' => false, 'message' => 'NIP required']);
+        }
+
+        $pegawaiApi = new \App\Shared\Libraries\PegawaiApi();
+        $result = $pegawaiApi->getPegawaiData($nip);
+
+        if ($result['success']) {
+            $data = $result['data'];
+            
+            // Normalize data from array if necessary
+            $source = (is_array($data) && isset($data[0])) ? $data[0] : $data;
+            
+            $updateData = [];
+            
+            // 1. Sync Jabatan
+            if (isset($source['jabatan_nama'])) {
+                $updateData['jabatan'] = $source['jabatan_nama'];
+            } elseif (isset($source['jabatan'])) {
+                $updateData['jabatan'] = $source['jabatan'];
+            }
+
+            // 2. Sync Pangkat & Golongan
+            if (isset($source['pangkat_nama'])) {
+                $updateData['pangkat_nama'] = $source['pangkat_nama'];
+            }
+            
+            if (isset($source['pangkat_golruang'])) {
+                $updateData['pangkat_golruang'] = $source['pangkat_golruang'];
+            }
+
+            if (!empty($updateData)) {
+                // Update all emails with this NIP
+                $this->emailModel->where('nip', $nip)->set($updateData)->update();
+                
+                return $this->response->setJSON([
+                    'success' => true, 
+                    'message' => 'Data pegawai berhasil disinkronkan', 
+                    'data' => $updateData
+                ]);
+            } else {
+                return $this->response->setJSON([
+                    'success' => false, 
+                    'message' => 'Tidak ada data baru yang ditemukan di API',
+                    'raw_data' => $data
+                ]);
+            }
+        }
+
+        return $this->response->setJSON($result);
     }
 }

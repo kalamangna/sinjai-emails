@@ -8,7 +8,8 @@ Portal terintegrasi untuk manajemen identitas digital, sertifikat elektronik, da
 
 - **Integrasi cPanel API**: Pembuatan, penghapusan, dan sinkronisasi akun email secara otomatis dengan server hosting.
 - **Advanced Search**: Pencarian akun berdasarkan Nama, NIP, atau NIK secara konsisten di seluruh tabel.
-- **Manajemen Profil**: Pendataan NIK, NIP, Jabatan, Golongan (untuk PNS/PPPK), dan Unit Kerja untuk setiap pemegang akun.
+- **Integrasi Pegawai API**: Sinkronisasi data kepegawaian (Jabatan, Pangkat, dan Golongan Ruang) secara otomatis dari `apps.sinjaikab.go.id` berdasarkan NIP.
+- **Manajemen Profil**: Pendataan lengkap NIK, NIP, Jabatan, Pangkat, Golongan Ruang, dan Unit Kerja untuk setiap pemegang akun.
 - **Manajemen Pegawai**: Pengelompokan dan pemantauan khusus untuk daftar PNS, PPPK (Penuh Waktu), dan PPPK PW (Paruh Waktu) dengan fitur **Pagination** untuk efisiensi data besar.
 
 ### 2. Monitoring Sertifikat Elektronik (TTE)
@@ -47,11 +48,10 @@ Portal terintegrasi untuk manajemen identitas digital, sertifikat elektronik, da
 ### 6. Administrasi & Keamanan
 
 - **Unified Component Architecture**: Implementasi komponen UI yang dapat digunakan kembali (reusable components) seperti sistem **Pagination Terpusat**, yang menstandarisasi pengalaman pengguna dan mempermudah pemeliharaan kode di seluruh aplikasi.
+- **Robust Error Handling**: Sistem penanganan kesalahan tingkat lanjut menggunakan `\Throwable` untuk memastikan semua jenis _error_ (termasuk kesalahan database atau tipe data) ditangkap dan dirender dengan antarmuka aplikasi yang seragam.
 - **Global Omni-Search**: Bar pencarian cerdas di bagian header untuk akses cepat ke data pegawai dan akun dari halaman mana saja.
-- **Role-Based Access Control (RBAC)**: Pembatasan akses antara _Super Admin_ dan _Admin_. Admin kini memiliki kemampuan untuk mengelola akun, memodifikasi informasi website, dan melakukan sinkronisasi, sementara Super Admin memegang kontrol penuh atas penghapusan data, manajemen Unit Kerja, dan Log Layanan.
-- **Manajemen User Login (Super Admin)**: Antarmuka CRUD untuk mengelola akun pengguna (Admin/Super Admin) yang dapat login ke sistem.
-- **Eksport Data**: Generasi laporan dalam format PDF, Excel (XLSX), dan CSV yang telah dioptimasi (layout landscape/portrait, clickable domain, dan ringkasan statistik).
-- **Restructured UI**: Navigasi yang dikelompokkan secara logis (Dashboard, Email, Pegawai, Pejabat, Organisasi) untuk kemudahan penggunaan.
+- **Role-Based Access Control (RBAC)**: Pembatasan akses antara _Super Admin_ dan _Admin_. Admin memiliki kemampuan untuk mengelola akun, memodifikasi informasi website, dan melakukan sinkronisasi, sementara Super Admin memegang kontrol penuh atas penghapusan data, manajemen Unit Kerja, dan Log Layanan.
+- **Eksport Data**: Antarmuka ekspor yang telah disederhanakan melalui menu _dropdown_, menghasilkan laporan PDF, Excel (XLSX), dan CSV yang dioptimasi (layout landscape/portrait, clickable domain, dan ringkasan statistik).
 - **SEO & Privacy**: Perlindungan privasi data melalui penonaktifan pengindeksan mesin pencari (noindex, nofollow) dan pembatasan akses bot melalui `robots.txt`.
 
 ## Tech Stack
@@ -68,12 +68,13 @@ Portal terintegrasi untuk manajemen identitas digital, sertifikat elektronik, da
 
 - **CSS Framework**: Tailwind CSS (JIT Compiler)
 - **UI Logic**: Vanilla JavaScript (ES6+)
-- **Interactivity**: Lightweight, high-performance Vanilla JS for all core UI interactions, including navigation, dropdowns, and toggles.
+- **Interactivity**: Lightweight, high-performance Vanilla JS for all core UI interactions, including navigation, dropdowns, toggles, and real-time batch synchronization.
 - **Charts**: ApexCharts (Data Visualization)
 - **UI Components**: Font Awesome 6, Choices.js (Searchable Selects)
 
 ### Integrasi Eksternal
 
+- **Pegawai API**: `apps.sinjaikab.go.id` (Sinkronisasi data PNS/PPPK).
 - **cPanel UAPI**: Manajemen akun email server.
 - **BSrE API**: Validasi status sertifikat elektronik.
 - **PANDI RDAP**: Pengecekan masa aktif domain desa.

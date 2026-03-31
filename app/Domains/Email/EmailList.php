@@ -44,7 +44,7 @@ class EmailList extends BaseController
                 'back_url' => site_url('/')
             ];
             return view('email/unit_kerja_list', $data);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
             return view('email/error', $data);
         }
@@ -72,7 +72,7 @@ class EmailList extends BaseController
             $data['back_url'] = site_url('email');
 
             return view('email/unit_kerja_detail', $data);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
             $data['back_url'] = site_url('email');
             return view('email/error', $data);
@@ -168,7 +168,7 @@ class EmailList extends BaseController
             ];
 
             return view('email/eselon_detail', $data);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
             $data['back_url'] = site_url('email');
             return view('email/error', $data);
@@ -198,7 +198,7 @@ class EmailList extends BaseController
             ];
 
             return view('email/pns_list', $data);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
             $data['back_url'] = site_url('email');
             return view('email/error', $data);
@@ -242,7 +242,7 @@ class EmailList extends BaseController
             ];
 
             return view('email/pppk_list', $data);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
             $data['back_url'] = site_url('email');
             return view('email/error', $data);
@@ -274,7 +274,7 @@ class EmailList extends BaseController
             ];
 
             return view('email/pppk_pw_list', $data);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
             $data['back_url'] = site_url('email');
             return view('email/error', $data);

@@ -160,7 +160,7 @@ class EmailBatchService
             if (!empty($emailUpdateData)) {
                 try {
                     $updatedEmail = $this->emailModel->update($emailRecord['id'], $emailUpdateData);
-                } catch (Exception $e) {
+                } catch (\Throwable $e) {
                     log_message('error', 'Error updating EmailModel for ' . $identifier . ': ' . $e->getMessage());
                 }
             }
@@ -173,7 +173,7 @@ class EmailBatchService
                         $pkUpdateData['email'] = $emailRecord['email'];
                         $updatedPk = $this->pkModel->insert($pkUpdateData);
                     }
-                } catch (Exception $e) {
+                } catch (\Throwable $e) {
                     log_message('error', 'Error updating PkModel for ' . $identifier . ': ' . $e->getMessage());
                 }
             }
@@ -239,7 +239,7 @@ class EmailBatchService
                 ]);
 
                 $results[] = ['email' => $item->email, 'success' => true];
-            } catch (Exception $e) {
+            } catch (\Throwable $e) {
                 $errorMessage = $e->getMessage();
                 if (strpos($errorMessage, 'already exists') !== false) {
                     $results[] = ['email' => $item->email, 'success' => false, 'message' => 'Email already exists on cPanel.'];

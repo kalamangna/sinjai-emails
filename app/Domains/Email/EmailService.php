@@ -498,7 +498,7 @@ class EmailService
 
         try {
             $cpanelApi->create_email_account($data['email'], $data['password'], $data['quota'] ?? 1024);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             if (strpos($e->getMessage(), 'already exists') !== false) {
                 throw new Exception('Email already exists on cPanel.');
             }
@@ -535,19 +535,19 @@ class EmailService
                 // If local insert fails, we should try to remove the cPanel account to keep them in sync
                 try {
                     $cpanelApi->delete_email_account($data['email']);
-                } catch (Exception $e2) {
+                } catch (\Throwable $e2) {
                     log_message('error', 'Cleanup failed after local insert failure for ' . $data['email'] . ': ' . $e2->getMessage());
                 }
                 throw new Exception('Gagal menyimpan data ke database lokal.');
             }
 
             return $insertId;
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             // If it's a DB error (like duplicate NIK), also try to cleanup cPanel
             if (strpos($e->getMessage(), 'Duplicate entry') !== false || strpos($e->getMessage(), 'database') !== false) {
                 try {
                     $cpanelApi->delete_email_account($data['email']);
-                } catch (Exception $e2) {
+                } catch (\Throwable $e2) {
                     log_message('error', 'Cleanup failed after DB exception for ' . $data['email'] . ': ' . $e2->getMessage());
                 }
             }

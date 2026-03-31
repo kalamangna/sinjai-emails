@@ -51,7 +51,7 @@ class Email extends BaseController
             $data['bsre_status_options'] = $data['bsre_status_labels'];
 
             return view('email/index', $data);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
             return view('email/error', $data);
         }
@@ -70,7 +70,7 @@ class Email extends BaseController
                 : null;
 
             return view('email/detail', $data);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
             $data['title'] = 'Detail Akun';
             $data['back_url'] = site_url('email');
@@ -99,7 +99,7 @@ class Email extends BaseController
             } else {
                 return redirect()->to('email')->with('error', $result['message']);
             }
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $message = 'Failed to synchronize: ' . $e->getMessage();
             if (is_cli()) {
                 return ['success' => false, 'message' => $message];
@@ -114,7 +114,7 @@ class Email extends BaseController
             $data = $this->emailService->getEmailDetail($username);
             $data['title'] = 'Edit Profil';
             return view('email/edit_profile', $data);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
             return view('email/error', $data);
         }
@@ -140,6 +140,8 @@ class Email extends BaseController
             'pendidikan' => $this->request->getPost('pendidikan'),
             'jabatan' => $this->request->getPost('jabatan'),
             'golongan' => $this->request->getPost('golongan'),
+            'pangkat_golruang' => $this->request->getPost('pangkat_golruang'),
+            'pangkat_nama' => $this->request->getPost('pangkat_nama'),
             'status_asn_id' => $this->request->getPost('status_asn') ?: null,
             'eselon_id' => $this->request->getPost('eselon') ?: null,
             'unit_kerja_id' => $this->request->getPost('unit_kerja_id') ?: null,
@@ -152,8 +154,8 @@ class Email extends BaseController
             $sourceRecord = $this->emailModel->where('user', $username)->first();
             $targetRecord = $this->emailModel->where('email', $newEmail)->first();
 
-            if (!$sourceRecord) throw new Exception("Akun asal tidak ditemukan.");
-            if (!$targetRecord) throw new Exception("Akun tujuan tidak ditemukan.");
+            if (!$sourceRecord) throw new \Exception("Akun asal tidak ditemukan.");
+            if (!$targetRecord) throw new \Exception("Akun tujuan tidak ditemukan.");
 
             if ($sourceRecord['email'] !== $newEmail) {
                 $emptyData = array_fill_keys(array_keys($profileData), null);
@@ -167,7 +169,7 @@ class Email extends BaseController
             }
 
             return redirect()->to('email/detail/' . $newUser)->with('success', 'Data profil berhasil diperbarui.');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             log_message('error', 'Database error during email details update: ' . $e->getMessage());
             return redirect()->to('email/detail/' . $username)->with('error', 'Gagal memperbarui data: ' . $e->getMessage());
         }
@@ -179,7 +181,7 @@ class Email extends BaseController
             $data = $this->emailService->getEmailDetail($username);
             $data['title'] = 'Edit Password';
             return view('email/edit_password', $data);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
             return view('email/error', $data);
         }
@@ -199,7 +201,7 @@ class Email extends BaseController
         try {
             $this->emailService->updatePassword($username, $newPassword);
             return redirect()->to('email/detail/' . $username)->with('success', 'Password berhasil diperbarui.');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             log_message('error', 'Error updating password: ' . $e->getMessage());
             return redirect()->to('email/edit_password/' . $username)->with('error', 'Gagal memperbarui password: ' . $e->getMessage());
         }
@@ -212,7 +214,7 @@ class Email extends BaseController
             $data['title'] = 'Edit PK';
             $data['back_url'] = site_url('email/detail/' . $username);
             return view('email/edit_pk', $data);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
             $data['title'] = 'Edit PK';
             $data['back_url'] = site_url('email');
@@ -249,7 +251,7 @@ class Email extends BaseController
                 $this->pkModel->insert($updateData);
             }
             return redirect()->to('email/detail/' . $username)->with('success', 'Data PK berhasil diperbarui.');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             log_message('error', 'Error updating PK: ' . $e->getMessage());
             return redirect()->to('email/edit_pk/' . $username)->with('error', 'Gagal memperbarui data PK: ' . $e->getMessage());
         }
@@ -270,13 +272,13 @@ class Email extends BaseController
             }
 
             if (!$found_user) {
-                throw new Exception('Data identitas tidak ditemukan atau tidak valid.');
+                throw new \Exception('Data identitas tidak ditemukan atau tidak valid.');
             }
 
             $data = $this->emailService->getEmailDetail($found_user);
             $data['title'] = 'Verifikasi Akun';
             return view('email/verifikasi', $data);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
             $data['title'] = 'Verifikasi Akun';
             return view('email/error', $data);
@@ -292,7 +294,7 @@ class Email extends BaseController
             $cpanelApi->delete_email_account($email['email']);
             $this->emailModel->delete($id);
             return redirect()->back()->with('success', 'Email account ' . $email['email'] . ' has been deleted successfully.');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             log_message('error', 'Failed to delete email: ' . $e->getMessage());
             $this->emailModel->delete($id);
             return redirect()->back()->with('error', 'Failed to delete email account from cPanel, but removed from local list.');

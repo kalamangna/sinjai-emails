@@ -29,7 +29,7 @@ if (!function_exists('formatTanggal')) {
             ];
             
             return $time->getDay() . ' ' . $months[$time->getMonth()] . ' ' . $time->getYear();
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return $date;
         }
     }
@@ -53,7 +53,7 @@ if (!function_exists('formatTanggalWaktu')) {
             }
             $tanggal = formatTanggal($time);
             return $tanggal . ', ' . $time->format('H:i');
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return $date;
         }
     }
@@ -76,7 +76,7 @@ if (!function_exists('formatSingkat')) {
                 $time = $date instanceof Time ? $date : Time::parse($date, 'Asia/Makassar');
             }
             return $time->format('d/m/Y');
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return $date;
         }
     }
@@ -99,7 +99,7 @@ if (!function_exists('formatStrip')) {
                 $time = $date instanceof Time ? $date : Time::parse($date, 'Asia/Makassar');
             }
             return $time->format('d-m-Y');
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return $date;
         }
     }
@@ -123,7 +123,7 @@ if (!function_exists('waktuRelatif')) {
             }
             
             return $time->humanize();
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return $date;
         }
     }
@@ -156,7 +156,7 @@ if (!function_exists('namaHari')) {
             ];
             
             return $days[$time->format('l')];
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return $date;
         }
     }
@@ -175,7 +175,7 @@ if (!function_exists('untukDatabase')) {
                 $time = $date instanceof Time ? $date : Time::parse($date, 'Asia/Makassar');
             }
             return $time->format('Y-m-d H:i:s');
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return date('Y-m-d H:i:s');
         }
     }
@@ -204,7 +204,7 @@ if (!function_exists('formatBulanTahun')) {
             ];
             
             return $months[$time->getMonth()] . ' ' . $time->getYear();
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return $date;
         }
     }
@@ -223,7 +223,7 @@ if (!function_exists('formatIsiInput')) {
                 $time = $date instanceof Time ? $date : Time::parse($date, 'Asia/Makassar');
             }
             return $time->format('Y-m-d');
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return date('Y-m-d');
         }
     }

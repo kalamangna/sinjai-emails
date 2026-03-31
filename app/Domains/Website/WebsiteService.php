@@ -57,7 +57,7 @@ class WebsiteService
                     }
                 }
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             log_message('error', 'PANDI RDAP Error: ' . $e->getMessage());
         }
 

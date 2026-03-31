@@ -34,6 +34,8 @@ class EmailModel extends Model
         'pendidikan',
         'jabatan',
         'golongan',
+        'pangkat_golruang',
+        'pangkat_nama',
         'status_asn_id',
         'eselon_id',
         'bsre_status',

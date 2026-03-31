@@ -103,7 +103,7 @@ class BatchController extends BaseController
             }
 
             return $this->response->setJSON(['success' => true, 'data' => $records]);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => 'Gagal memproses file: ' . $e->getMessage()]);
         }
     }
@@ -163,7 +163,7 @@ class BatchController extends BaseController
         try {
             $results = $this->emailBatchService->processBatchCreate($data);
             return $this->response->setJSON(['success' => true, 'results' => $results]);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             return $this->response->setJSON(['success' => false, 'message' => $e->getMessage()]);
         }
     }
