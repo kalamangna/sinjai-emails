@@ -45,6 +45,7 @@ return array(
     'App\\Shared\\BaseController' => $baseDir . '/app/Shared/BaseController.php',
     'App\\Shared\\Libraries\\BsreApi' => $baseDir . '/app/Shared/Libraries/BsreApi.php',
     'App\\Shared\\Libraries\\CpanelApi' => $baseDir . '/app/Shared/Libraries/CpanelApi.php',
+    'App\\Shared\\Libraries\\PegawaiApi' => $baseDir . '/app/Shared/Libraries/PegawaiApi.php',
     'App\\Shared\\Models\\AppSettingModel' => $baseDir . '/app/Shared/Models/AppSettingModel.php',
     'App\\Shared\\Models\\EselonModel' => $baseDir . '/app/Shared/Models/EselonModel.php',
     'App\\Shared\\Models\\PlatformModel' => $baseDir . '/app/Shared/Models/PlatformModel.php',

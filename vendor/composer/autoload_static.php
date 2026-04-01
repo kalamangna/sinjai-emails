@@ -244,6 +244,7 @@ class ComposerStaticInitc5636546f89824c269aa17c25035b788
         'App\\Shared\\BaseController' => __DIR__ . '/../..' . '/app/Shared/BaseController.php',
         'App\\Shared\\Libraries\\BsreApi' => __DIR__ . '/../..' . '/app/Shared/Libraries/BsreApi.php',
         'App\\Shared\\Libraries\\CpanelApi' => __DIR__ . '/../..' . '/app/Shared/Libraries/CpanelApi.php',
+        'App\\Shared\\Libraries\\PegawaiApi' => __DIR__ . '/../..' . '/app/Shared/Libraries/PegawaiApi.php',
         'App\\Shared\\Models\\AppSettingModel' => __DIR__ . '/../..' . '/app/Shared/Models/AppSettingModel.php',
         'App\\Shared\\Models\\EselonModel' => __DIR__ . '/../..' . '/app/Shared/Models/EselonModel.php',
         'App\\Shared\\Models\\PlatformModel' => __DIR__ . '/../..' . '/app/Shared/Models/PlatformModel.php',
