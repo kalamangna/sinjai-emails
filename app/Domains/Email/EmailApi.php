@@ -257,10 +257,15 @@ class EmailApi extends BaseController
             
             // 1. Sync Jabatan (Only if NOT pimpinan)
             if (!$isPimpinan) {
+                $newJabatan = null;
                 if (isset($source['jabatan_nama'])) {
-                    $updateData['jabatan'] = $source['jabatan_nama'];
+                    $newJabatan = $source['jabatan_nama'];
                 } elseif (isset($source['jabatan'])) {
-                    $updateData['jabatan'] = $source['jabatan'];
+                    $newJabatan = $source['jabatan'];
+                }
+
+                if ($newJabatan) {
+                    $updateData['jabatan'] = mb_strtoupper($newJabatan, 'UTF-8');
                 }
             }
 

@@ -138,7 +138,7 @@ class Email extends BaseController
             'nip' => $this->request->getPost('nip'),
             'tempat_lahir' => $this->request->getPost('tempat_lahir'),
             'pendidikan' => $this->request->getPost('pendidikan'),
-            'jabatan' => $this->request->getPost('jabatan'),
+            'jabatan' => mb_strtoupper($this->request->getPost('jabatan'), 'UTF-8'),
             'golongan' => $this->request->getPost('golongan'),
             'pangkat_golruang' => $this->request->getPost('pangkat_golruang'),
             'pangkat_nama' => $this->request->getPost('pangkat_nama'),

@@ -85,7 +85,7 @@ class EmailBatchService
             if (isset($newTempatLahirs[$index])) $compareAndUpdate('tempat_lahir', $newTempatLahirs[$index]);
             if (isset($newTanggalLahirs[$index])) $compareAndUpdate('tanggal_lahir', $newTanggalLahirs[$index]);
             if (isset($newPendidikans[$index])) $compareAndUpdate('pendidikan', $newPendidikans[$index]);
-            if (isset($newJabatans[$index])) $compareAndUpdate('jabatan', $newJabatans[$index]);
+            if (isset($newJabatans[$index])) $compareAndUpdate('jabatan', mb_strtoupper($newJabatans[$index], 'UTF-8'));
             if (isset($newGolongans[$index])) $compareAndUpdate('golongan', $newGolongans[$index]);
             
             if (isset($newUnitKerjaIds[$index]) && !empty($newUnitKerjaIds[$index]) && (string)$emailRecord['unit_kerja_id'] !== (string)$newUnitKerjaIds[$index]) {
@@ -234,7 +234,7 @@ class EmailBatchService
                     'nik'        => $item->nik ?? null,
                     'nip'        => $item->nip ?? null,
                     'name'       => $item->name ?? null,
-                    'jabatan'    => $item->jabatan ?? null,
+                    'jabatan'    => !empty($item->jabatan) ? mb_strtoupper($item->jabatan, 'UTF-8') : null,
                     'status_asn_id' => $item->statusAsn ?? null,
                 ]);
 

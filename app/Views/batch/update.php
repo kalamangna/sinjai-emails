@@ -86,7 +86,7 @@
 
                         <div>
                             <label for="jabatan_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Jabatan Baru</label>
-                            <textarea id="jabatan_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px]" placeholder="Nama Jabatan..."></textarea>
+                            <textarea id="jabatan_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 uppercase transition-all custom-scrollbar min-h-[300px]" placeholder="Nama Jabatan..."></textarea>
                         </div>
                         <div>
                             <label for="pendidikan_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Pendidikan</label>

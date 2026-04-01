@@ -444,8 +444,8 @@
 
         btn.disabled = true;
         btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> SYNCING';
-        jabatanElement.classList.add('animate-pulse', 'text-slate-400');
-        pangkatElement.classList.add('animate-pulse', 'text-slate-400');
+        if (jabatanElement) jabatanElement.classList.add('animate-pulse', 'text-slate-400');
+        if (pangkatElement) pangkatElement.classList.add('animate-pulse', 'text-slate-400');
         if (golruElement) golruElement.classList.add('animate-pulse', 'text-slate-400');
 
         fetch('<?= site_url('email/sync_pegawai') ?>', {
@@ -459,16 +459,16 @@
             .then(r => r.json()).then(data => {
                 btn.disabled = false;
                 btn.innerHTML = originalContent;
-                jabatanElement.classList.remove('animate-pulse', 'text-slate-400');
-                pangkatElement.classList.remove('animate-pulse', 'text-slate-400');
+                if (jabatanElement) jabatanElement.classList.remove('animate-pulse', 'text-slate-400');
+                if (pangkatElement) pangkatElement.classList.remove('animate-pulse', 'text-slate-400');
                 if (golruElement) golruElement.classList.remove('animate-pulse', 'text-slate-400');
 
                 if (data.success) {
-                    if (data.data.jabatan) {
+                    if (data.data.jabatan && jabatanElement) {
                         jabatanElement.textContent = data.data.jabatan;
                     }
 
-                    if (data.data.pangkat_nama) {
+                    if (data.data.pangkat_nama && pangkatElement) {
                         pangkatElement.textContent = data.data.pangkat_nama;
                     }
 
@@ -482,8 +482,8 @@
             .catch((err) => {
                 btn.disabled = false;
                 btn.innerHTML = originalContent;
-                jabatanElement.classList.remove('animate-pulse', 'text-slate-400');
-                pangkatElement.classList.remove('animate-pulse', 'text-slate-400');
+                if (jabatanElement) jabatanElement.classList.remove('animate-pulse', 'text-slate-400');
+                if (pangkatElement) pangkatElement.classList.remove('animate-pulse', 'text-slate-400');
                 if (golruElement) golruElement.classList.remove('animate-pulse', 'text-slate-400');
                 showGlobalError('Kesalahan Jaringan', 'Gagal menghubungi server API.');
             });

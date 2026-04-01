@@ -266,3 +266,4 @@ The project adheres to a **"Slate Clean Government"** aesthetic:
 
 ## Refactoring & Naming
 - **Standardization**: Renamed all instances of "Sync Jabatan" to "Sync Data Pegawai" across the entire codebase (routes, methods, and JS functions) to accurately reflect the expanded scope of the feature.
+- **Casing Policy**: Standardized the `jabatan` (position) field to use **Uppercase** formatting across all views, PDFs, and database storage for institutional consistency.
