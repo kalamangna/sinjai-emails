@@ -246,6 +246,13 @@ class EmailApi extends BaseController
         if ($result['success']) {
             $data = $result['data'];
             
+            if (empty($data)) {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Data tidak ditemukan di API'
+                ]);
+            }
+            
             // Normalize data from array if necessary
             $source = (is_array($data) && isset($data[0])) ? $data[0] : $data;
             
