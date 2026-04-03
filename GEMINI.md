@@ -278,8 +278,12 @@ The project adheres to a **"Slate Clean Government"** aesthetic:
     - Introduced a "Filter NIP" dropdown on employee listing pages, allowing administrators to filter records by "With NIP", "Without NIP", or "All".
 - **API Logic Refinement**:
     - Optimized the `sync_pegawai` API handler to skip updating the `jabatan` field if the API response contains "PLT" (Acting) to prevent overwriting primary roles.
-    - Added an explicit check to return a failure status (`success: false`) if the Pegawai API returns an empty data set, ensuring these cases are correctly logged as "FAILED" in batch operations instead of silently succeeding.
+    - Added an explicit check to return a failure status (`success: false`) if the Pegawai API returns an empty data set, ensuring these cases are correctly logged as "FAILED" or "NO DATA" in batch operations instead of silently succeeding.
     - Standardized "Sekretaris" position titles: any position containing "SEKRETARIS" is now automatically simplified to "SEKRETARIS DINAS", "SEKRETARIS BADAN", "SEKRETARIS KECAMATAN", or "SEKRETARIS KELURAHAN" based on the department type.
+
+## UI/UX Improvements
+- **Standardized Sync Interface**: Simplified the "Sync" interface on the Pimpinan Desa page to match the Pimpinan page, replacing the dropdown with a single "Sync TTE" button for better consistency.
+- **Improved Batch Feedback**: Updated the batch sync UI across list pages to display a specific amber "NO DATA" badge when the API returns no profile data, providing clearer distinction from system failures.
 
 ## Documentation Improvements
 - **README Overhaul**: Rewrote and simplified the project's `README.md` title to **"Sistem Identitas Digital"**, providing content in both English and Bahasa Indonesia that accurately reflects the current domain-driven architecture, tech stack, and comprehensive feature set.

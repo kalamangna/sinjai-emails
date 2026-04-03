@@ -12,17 +12,9 @@
                 <i class="fas fa-file-pdf mr-2"></i> Export PDF
             </a>
             <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
-                <!-- Dropdown Sinkronisasi -->
-                <div class="relative group">
-                    <button id="mainSyncBtn" class="btn btn-solid">
-                        <i class="fas fa-sync-alt mr-2 text-white/80"></i> Sync <i class="fas fa-chevron-down ml-2 text-[8px] opacity-50 transition-transform duration-300 group-hover:rotate-180"></i>
-                    </button>
-                    <div class="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 overflow-hidden">
-                        <button id="syncAllTteBtn" onclick="syncAllBsreStatus()" class="w-full px-4 py-3 text-left text-[10px] font-bold text-slate-700 uppercase tracking-widest hover:bg-slate-50 transition-colors focus:outline-none">
-                            <i class="fas fa-fw fa-fingerprint mr-2 text-slate-500"></i> Sync TTE
-                        </button>
-                    </div>
-                </div>
+                <button id="syncAllTteBtn" onclick="syncAllBsreStatus()" class="btn btn-solid">
+                    <i class="fas fa-fingerprint mr-2 text-white/80"></i> Sync TTE
+                </button>
             <?php endif; ?>
         </div>
     </div>
@@ -171,9 +163,7 @@
             return;
         }
 
-        const mainBtn = document.getElementById('mainSyncBtn');
         const syncBtn = document.getElementById('syncAllTteBtn');
-        const originalMainContent = mainBtn.innerHTML;
         const originalBtnContent = syncBtn.innerHTML;
 
         // 1. Scroll ke tabel secara smooth
@@ -186,10 +176,9 @@
         }
 
         // 2. Disable tombol dan beri feedback visual
-        mainBtn.disabled = true;
-        mainBtn.classList.add('opacity-75', 'cursor-not-allowed', 'bg-slate-700');
         syncBtn.disabled = true;
-        syncBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Sinkronisasi TTE...';
+        syncBtn.classList.add('opacity-75', 'cursor-not-allowed');
+        syncBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Syncing...';
 
         // 3. Proses secara sekuensial
         let processed = 0;
@@ -206,7 +195,7 @@
             });
 
             // Set loading state untuk baris ini
-            container.innerHTML = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-bold uppercase border bg-slate-50 text-slate-400 border-slate-200 animate-pulse"><i class="fas fa-spinner fa-spin mr-1.5"></i> SYNCING</span>';
+            container.innerHTML = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-bold uppercase border bg-slate-50 text-slate-400 border-slate-200 animate-pulse"><i class="fas fa-spinner fa-spin mr-1"></i> SYNCING</span>';
 
             try {
                 const response = await fetch('<?= site_url('bsre/sync-status') ?>', {
@@ -237,15 +226,12 @@
             }
 
             processed++;
-            mainBtn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> TTE: ${processed}/${containers.length}`;
-            syncBtn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Sinkronisasi ${processed}/${containers.length}...`;
+            syncBtn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Syncing ${processed}/${containers.length}...`;
         }
 
         // 4. Restore tombol
-        mainBtn.disabled = false;
-        mainBtn.classList.remove('opacity-75', 'cursor-not-allowed', 'bg-slate-700');
-        mainBtn.innerHTML = originalMainContent;
         syncBtn.disabled = false;
+        syncBtn.classList.remove('opacity-75', 'cursor-not-allowed');
         syncBtn.innerHTML = originalBtnContent;
 
         alert(`Sinkronisasi Selesai!\nTotal: ${processed}\nBerhasil: ${success}\nGagal: ${failed}`);
