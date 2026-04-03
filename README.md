@@ -1,4 +1,4 @@
-# Sistem Manajemen Email & Identitas Digital Kabupaten Sinjai
+# Sistem Identitas Digital
 
 Platform manajemen identitas digital berbasis **CodeIgniter 4** dan **Tailwind CSS**, dirancang untuk mengelola akun email institusi dan sertifikat elektronik (TTE) bagi Pemerintah Kabupaten Sinjai.
 

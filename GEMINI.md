@@ -271,7 +271,7 @@ The project adheres to a **"Slate Clean Government"** aesthetic:
 # Session History - April 3, 2026
 
 ## Documentation Improvements
-- **README Overhaul**: Rewrote the project's `README.md` in both English and Bahasa Indonesia to accurately reflect the current domain-driven architecture, tech stack, and comprehensive feature set.
+- **README Overhaul**: Rewrote and simplified the project's `README.md` title to **"Sistem Identitas Digital"**, providing content in both English and Bahasa Indonesia that accurately reflects the current domain-driven architecture, tech stack, and comprehensive feature set.
 - **Session History Persistence**: Updated `GEMINI.md` with the latest session history to maintain a clear audit trail of project evolution.
 
 ## Technical Auditing
