@@ -282,6 +282,8 @@ The project adheres to a **"Slate Clean Government"** aesthetic:
     - Standardized "Sekretaris" position titles: any position containing "SEKRETARIS" is now automatically simplified to "SEKRETARIS DINAS", "SEKRETARIS BADAN", "SEKRETARIS KECAMATAN", or "SEKRETARIS KELURAHAN" based on the department type.
     - **Automated Eselon Assignment**: Replaced the hardcoded Eselon mapping logic with dynamic assignment. The system now extracts the `jabatan_jenis_eselon` field directly from the Pegawai API response, formats it, and automatically matches it with the internal `eselon` database table (e.g., syncing "III.a" as `IIIa`).
     - **Paruh Waktu Optimization**: The system now completely skips the external Pegawai API call for employees with the status "PPPK PARUH WAKTU", returning early with a graceful success state to conserve API resources and protect data integrity. Additionally, the "Sync Pegawai" button has been removed from the Paruh Waktu list page and the individual account detail page for these users.
+- **Database Standardization**:
+    - Created a migration to update `nama_eselon` in the `eselon` table from numeric-alpha format (e.g., "3a", "4b") to standard Roman numerals ("IIIa", "IVb") for professional consistency and better alignment with API response formatting.
 
 ## UI/UX Improvements
 - **Standardized Sync Interface**: Simplified the "Sync" interface on the Pimpinan Desa page to match the Pimpinan page, replacing the dropdown with a single "Sync TTE" button for better consistency.
