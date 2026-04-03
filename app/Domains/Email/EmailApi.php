@@ -281,11 +281,9 @@ class EmailApi extends BaseController
                     $newJabatanUpper = mb_strtoupper($newJabatan, 'UTF-8');
                     // Skip if API response contains "PLT"
                     if (stripos($newJabatanUpper, 'PLT') === false) {
-                        // Standardize Sekretaris title and Eselon
+                        // Standardize Sekretaris title and assign Eselon
+                        $targetEselonNames = [];
                         if (strpos($newJabatanUpper, 'SEKRETARIS') !== false) {
-                            $eselonModel = new \App\Shared\Models\EselonModel();
-                            $targetEselonNames = [];
-
                             if (strpos($newJabatanUpper, 'DINAS') !== false) {
                                 $newJabatanUpper = 'SEKRETARIS DINAS';
                                 $targetEselonNames = ['IIIa', '3a'];
@@ -299,12 +297,15 @@ class EmailApi extends BaseController
                                 $newJabatanUpper = 'SEKRETARIS KELURAHAN';
                                 $targetEselonNames = ['IVb', '4b'];
                             }
+                        } elseif (strpos($newJabatanUpper, 'KEPALA BIDANG') !== false) {
+                            $targetEselonNames = ['IIIb', '3b'];
+                        }
 
-                            if (!empty($targetEselonNames)) {
-                                $eselon = $eselonModel->whereIn('nama_eselon', $targetEselonNames)->first();
-                                if ($eselon) {
-                                    $updateData['eselon_id'] = $eselon['id'];
-                                }
+                        if (!empty($targetEselonNames)) {
+                            $eselonModel = new \App\Shared\Models\EselonModel();
+                            $eselon = $eselonModel->whereIn('nama_eselon', $targetEselonNames)->first();
+                            if ($eselon) {
+                                $updateData['eselon_id'] = $eselon['id'];
                             }
                         }
                         $updateData['jabatan'] = $newJabatanUpper;
