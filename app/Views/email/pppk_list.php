@@ -266,7 +266,11 @@
                     success++;
                 } else {
                     if (jabatanTarget) {
-                        jabatanTarget.innerHTML = `<span class="px-2 py-0.5 rounded text-[8px] font-bold uppercase border bg-red-50 text-red-600 border-red-200">FAILED</span>`;
+                        if (data.message && data.message.includes('tidak ditemukan')) {
+                            jabatanTarget.innerHTML = `<span class="px-2 py-0.5 rounded text-[8px] font-bold uppercase border bg-amber-50 text-amber-600 border-amber-200" title="Data tidak ditemukan di API">NO DATA</span>`;
+                        } else {
+                            jabatanTarget.innerHTML = `<span class="px-2 py-0.5 rounded text-[8px] font-bold uppercase border bg-red-50 text-red-600 border-red-200" title="${data.message || 'Sinkronisasi Gagal'}">FAILED</span>`;
+                        }
                     }
                     failed++;
                 }

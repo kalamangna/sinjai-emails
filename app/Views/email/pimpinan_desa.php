@@ -18,11 +18,8 @@
                         <i class="fas fa-sync-alt mr-2 text-white/80"></i> Sync <i class="fas fa-chevron-down ml-2 text-[8px] opacity-50 transition-transform duration-300 group-hover:rotate-180"></i>
                     </button>
                     <div class="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 overflow-hidden">
-                        <button id="syncAllTteBtn" onclick="syncAllBsreStatus()" class="w-full px-4 py-3 text-left text-[10px] font-bold text-slate-700 uppercase tracking-widest hover:bg-slate-50 border-b border-slate-100 transition-colors focus:outline-none">
+                        <button id="syncAllTteBtn" onclick="syncAllBsreStatus()" class="w-full px-4 py-3 text-left text-[10px] font-bold text-slate-700 uppercase tracking-widest hover:bg-slate-50 transition-colors focus:outline-none">
                             <i class="fas fa-fw fa-fingerprint mr-2 text-slate-500"></i> Sync TTE
-                        </button>
-                        <button id="syncAllPegawaiBtn" onclick="syncAllPegawai()" class="w-full px-4 py-3 text-left text-[10px] font-bold text-slate-700 uppercase tracking-widest hover:bg-slate-50 transition-colors focus:outline-none">
-                            <i class="fas fa-fw fa-user-check mr-2 text-slate-500"></i> Sync Pegawai
                         </button>
                     </div>
                 </div>
@@ -252,83 +249,6 @@
         syncBtn.innerHTML = originalBtnContent;
 
         alert(`Sinkronisasi Selesai!\nTotal: ${processed}\nBerhasil: ${success}\nGagal: ${failed}`);
-    }
-
-    async function syncAllPegawai() {
-        const containers = document.querySelectorAll('[id^="pegawai-container-"]');
-        const validContainers = Array.from(containers).filter(c => c.getAttribute('data-nip') && c.getAttribute('data-nip').trim() !== '');
-        
-        if (!validContainers.length) {
-            alert('Tidak ada data NIP yang dapat disinkronkan.');
-            return;
-        }
-
-        if (!confirm(`Sinkronkan data pegawai dari API untuk ${validContainers.length} kepala desa yang memiliki NIP?`)) {
-            return;
-        }
-
-        const mainBtn = document.getElementById('mainSyncBtn');
-        const syncBtn = document.getElementById('syncAllPegawaiBtn');
-        const originalMainContent = mainBtn.innerHTML;
-        const originalBtnContent = syncBtn.innerHTML;
-
-        mainBtn.disabled = true;
-        mainBtn.classList.add('opacity-75', 'cursor-not-allowed', 'bg-slate-700');
-        syncBtn.disabled = true;
-        syncBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Sinkronisasi Pegawai...';
-
-        let processed = 0;
-        let success = 0;
-        let failed = 0;
-
-        for (const container of validContainers) {
-            const nip = container.getAttribute('data-nip');
-            const textElement = container.querySelector('.jabatan-text');
-            const originalJabatan = textElement.textContent;
-            
-            container.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            textElement.innerHTML = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[8px] font-bold uppercase border bg-slate-50 text-slate-400 border-slate-200 animate-pulse"><i class="fas fa-spinner fa-spin mr-1.5"></i> SYNCING</span>';
-
-            try {
-                const response = await fetch('<?= site_url('email/sync_pegawai') ?>', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    },
-                    body: 'nip=' + encodeURIComponent(nip)
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    if (data.data.jabatan) {
-                        textElement.textContent = data.data.jabatan;
-                    } else {
-                        textElement.textContent = originalJabatan;
-                    }
-                    success++;
-                } else {
-                    textElement.textContent = originalJabatan;
-                    failed++;
-                }
-            } catch (error) {
-                textElement.textContent = originalJabatan;
-                failed++;
-            }
-
-            processed++;
-            mainBtn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> PEG: ${processed}/${validContainers.length}`;
-            syncBtn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Sinkronisasi ${processed}/${validContainers.length}...`;
-        }
-
-        mainBtn.disabled = false;
-        mainBtn.classList.remove('opacity-75', 'cursor-not-allowed', 'bg-slate-700');
-        mainBtn.innerHTML = originalMainContent;
-        syncBtn.disabled = false;
-        syncBtn.innerHTML = originalBtnContent;
-
-        alert(`Sinkronisasi Data Pegawai Selesai!\nTotal: ${processed}\nBerhasil: ${success}\nGagal: ${failed}`);
     }
 </script>
 <?= $this->endSection() ?>
