@@ -116,7 +116,22 @@ class EmailList extends BaseController
             $active_bsre_count = $getCountBuilder()->where('bsre_status', 'ISSUE')->countAllResults();
 
             // Fresh builder for pagination with details
-            $emailBuilder = $this->emailModel->withDetails()
+            $emailBuilder = $this->emailModel
+                ->select([
+                    'emails.id',
+                    'emails.name',
+                    'emails.nip',
+                    'emails.jabatan',
+                    'emails.user',
+                    'emails.email',
+                    'emails.bsre_status',
+                    'unit_kerja.nama_unit_kerja as unit_kerja_name',
+                    'parent_unit_kerja.nama_unit_kerja as parent_unit_kerja_name',
+                    'status_asn.nama_status_asn as status_asn'
+                ])
+                ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
+                ->join('unit_kerja as parent_unit_kerja', 'parent_unit_kerja.id = unit_kerja.parent_id', 'left')
+                ->join('status_asn', 'status_asn.id = emails.status_asn_id', 'left')
                 ->where('emails.eselon_id', $eselonId);
 
             if ($search) {
@@ -184,16 +199,51 @@ class EmailList extends BaseController
                 throw new Exception('Status PNS belum dikonfigurasi di sistem.');
             }
 
-            $emails = $this->emailModel->withDetails()
-                ->where('emails.status_asn_id', $statusPns['id'])
-                ->select('emails.*, unit_kerja.nama_unit_kerja as unit_kerja_name, parent_unit_kerja.nama_unit_kerja as parent_unit_kerja_name')
-                ->orderBy('emails.name', 'ASC');
+            $hasNip = $this->request->getGet('has_nip');
+
+            $emailBuilder = $this->emailModel
+                ->select([
+                    'emails.id',
+                    'emails.name',
+                    'emails.nip',
+                    'emails.jabatan',
+                    'emails.user',
+                    'emails.email',
+                    'emails.bsre_status',
+                    'unit_kerja.nama_unit_kerja as unit_kerja_name',
+                    'parent_unit_kerja.nama_unit_kerja as parent_unit_kerja_name'
+                ])
+                ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
+                ->join('unit_kerja as parent_unit_kerja', 'parent_unit_kerja.id = unit_kerja.parent_id', 'left')
+                ->where('emails.status_asn_id', $statusPns['id']);
+
+            if ($hasNip === 'yes') {
+                $emailBuilder->where('emails.nip !=', '')->where('emails.nip IS NOT NULL');
+            } elseif ($hasNip === 'no') {
+                $emailBuilder->groupStart()
+                    ->where('emails.nip', '')
+                    ->orWhere('emails.nip', null)
+                    ->groupEnd();
+            }
+
+            $emails = $emailBuilder->orderBy('emails.name', 'ASC');
+
+            $totalCountBuilder = $this->emailModel->where('emails.status_asn_id', $statusPns['id']);
+            if ($hasNip === 'yes') {
+                $totalCountBuilder->where('emails.nip !=', '')->where('emails.nip IS NOT NULL');
+            } elseif ($hasNip === 'no') {
+                $totalCountBuilder->groupStart()
+                    ->where('emails.nip', '')
+                    ->orWhere('emails.nip', null)
+                    ->groupEnd();
+            }
 
             $data = [
                 'title' => 'Daftar PNS',
                 'emails' => $emails->paginate(100, 'default'),
                 'pager' => $this->emailModel->pager,
-                'total_count' => $this->emailModel->where('status_asn_id', $statusPns['id'])->countAllResults(),
+                'total_count' => $totalCountBuilder->countAllResults(),
+                'has_nip' => $hasNip,
                 'back_url' => site_url('email')
             ];
 
@@ -214,11 +264,14 @@ class EmailList extends BaseController
                 throw new Exception('Status PPPK belum dikonfigurasi di sistem.');
             }
 
-            $emails = $this->emailModel
+            $hasNip = $this->request->getGet('has_nip');
+
+            $emailBuilder = $this->emailModel
                 ->select([
                     'emails.id',
                     'emails.name',
                     'emails.nip',
+                    'emails.jabatan',
                     'emails.user',
                     'emails.email',
                     'emails.bsre_status',
@@ -229,15 +282,36 @@ class EmailList extends BaseController
                 ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
                 ->join('unit_kerja as parent_unit_kerja', 'parent_unit_kerja.id = unit_kerja.parent_id', 'left')
                 ->join('pk', 'pk.email = emails.email', 'left')
-                ->where('emails.status_asn_id', $statusPppk['id'])
-                ->groupBy('emails.id, unit_kerja.nama_unit_kerja, parent_unit_kerja.nama_unit_kerja')
+                ->where('emails.status_asn_id', $statusPppk['id']);
+
+            if ($hasNip === 'yes') {
+                $emailBuilder->where('emails.nip !=', '')->where('emails.nip IS NOT NULL');
+            } elseif ($hasNip === 'no') {
+                $emailBuilder->groupStart()
+                    ->where('emails.nip', '')
+                    ->orWhere('emails.nip', null)
+                    ->groupEnd();
+            }
+
+            $emails = $emailBuilder->groupBy('emails.id, emails.name, emails.nip, emails.jabatan, emails.user, emails.email, emails.bsre_status, unit_kerja.nama_unit_kerja, parent_unit_kerja.nama_unit_kerja')
                 ->orderBy('CAST(MIN(pk.nomor) AS UNSIGNED)', 'ASC');
+
+            $totalCountBuilder = $this->emailModel->where('emails.status_asn_id', $statusPppk['id']);
+            if ($hasNip === 'yes') {
+                $totalCountBuilder->where('emails.nip !=', '')->where('emails.nip IS NOT NULL');
+            } elseif ($hasNip === 'no') {
+                $totalCountBuilder->groupStart()
+                    ->where('emails.nip', '')
+                    ->orWhere('emails.nip', null)
+                    ->groupEnd();
+            }
 
             $data = [
                 'title' => 'PPPK Penuh Waktu',
                 'emails' => $emails->paginate(100, 'default'),
                 'pager' => $this->emailModel->pager,
-                'total_count' => $this->emailModel->where('status_asn_id', $statusPppk['id'])->countAllResults(),
+                'total_count' => $totalCountBuilder->countAllResults(),
+                'has_nip' => $hasNip,
                 'back_url' => site_url('email')
             ];
 
@@ -258,18 +332,55 @@ class EmailList extends BaseController
                 throw new Exception('Status PPPK PARUH WAKTU belum dikonfigurasi di sistem.');
             }
 
-            $emails = $this->emailModel->withDetails()
-                ->where('emails.status_asn_id', $statusPppkPw['id'])
+            $hasNip = $this->request->getGet('has_nip');
+
+            $emailBuilder = $this->emailModel
+                ->select([
+                    'emails.id',
+                    'emails.name',
+                    'emails.nip',
+                    'emails.jabatan',
+                    'emails.user',
+                    'emails.email',
+                    'emails.bsre_status',
+                    'unit_kerja.nama_unit_kerja as unit_kerja_name',
+                    'parent_unit_kerja.nama_unit_kerja as parent_unit_kerja_name',
+                    'MIN(pk.nomor) as nomor_pk'
+                ])
+                ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
+                ->join('unit_kerja as parent_unit_kerja', 'parent_unit_kerja.id = unit_kerja.parent_id', 'left')
                 ->join('pk', 'pk.email = emails.email', 'left')
-                ->select('emails.*, unit_kerja.nama_unit_kerja as unit_kerja_name, parent_unit_kerja.nama_unit_kerja as parent_unit_kerja_name, pk.nomor as nomor_pk, pk.tanggal_kontrak_awal, pk.tanggal_kontrak_akhir')
-                ->orderBy('CAST(pk.nomor AS UNSIGNED)', 'ASC')
-                ->orderBy('pk.nomor', 'ASC');
+                ->where('emails.status_asn_id', $statusPppkPw['id']);
+
+            if ($hasNip === 'yes') {
+                $emailBuilder->where('emails.nip !=', '')->where('emails.nip IS NOT NULL');
+            } elseif ($hasNip === 'no') {
+                $emailBuilder->groupStart()
+                    ->where('emails.nip', '')
+                    ->orWhere('emails.nip', null)
+                    ->groupEnd();
+            }
+
+            $emails = $emailBuilder->groupBy('emails.id, emails.name, emails.nip, emails.jabatan, emails.user, emails.email, emails.bsre_status, unit_kerja.nama_unit_kerja, parent_unit_kerja.nama_unit_kerja')
+                ->orderBy('CAST(MIN(pk.nomor) AS UNSIGNED)', 'ASC')
+                ->orderBy('MIN(pk.nomor)', 'ASC');
+
+            $totalCountBuilder = $this->emailModel->where('emails.status_asn_id', $statusPppkPw['id']);
+            if ($hasNip === 'yes') {
+                $totalCountBuilder->where('emails.nip !=', '')->where('emails.nip IS NOT NULL');
+            } elseif ($hasNip === 'no') {
+                $totalCountBuilder->groupStart()
+                    ->where('emails.nip', '')
+                    ->orWhere('emails.nip', null)
+                    ->groupEnd();
+            }
 
             $data = [
                 'title' => 'PPPK Paruh Waktu',
                 'emails' => $emails->paginate(100, 'default'),
                 'pager' => $this->emailModel->pager,
-                'total_count' => $this->emailModel->where('status_asn_id', $statusPppkPw['id'])->countAllResults(),
+                'total_count' => $totalCountBuilder->countAllResults(),
+                'has_nip' => $hasNip,
                 'back_url' => site_url('email')
             ];
 

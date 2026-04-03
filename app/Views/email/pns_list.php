@@ -12,25 +12,50 @@
         </div>
 
         <div class="flex items-center gap-2 w-full lg:w-auto">
-            <button onclick="syncAllOnPage()" id="batchSyncBtn" class="flex-1 lg:flex-none btn btn-solid group">
-                <i class="fas fa-fingerprint mr-2 group-hover:scale-110 transition-transform"></i>
-                <span>Sync TTE</span>
-            </button>
-            <a href="<?= $back_url ?>" class="flex-1 lg:flex-none btn btn-outline no-underline">
-                <i class="fas fa-arrow-left mr-2 text-slate-700"></i> Kembali
-            </a>
+            <div class="flex-1 lg:flex-none flex gap-2">
+                <button onclick="syncAllOnPage()" id="batchSyncBtn" class="flex-1 lg:flex-none btn btn-solid group">
+                    <i class="fas fa-fingerprint mr-2 group-hover:scale-110 transition-transform"></i>
+                    <span>Sync TTE</span>
+                </button>
+                <button onclick="syncAllPegawai()" id="batchSyncPegawaiBtn" class="flex-1 lg:flex-none btn btn-outline group bg-white">
+                    <i class="fas fa-sync-alt mr-2 group-hover:rotate-180 transition-transform duration-500 text-slate-700"></i>
+                    <span class="text-slate-700">Sync Pegawai</span>
+                </button>
+            </div>
         </div>
     </div>
 
-    <!-- Tabel -->
+    <!-- Tabel dan Filter -->
     <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
+        <div class="p-6 border-b border-slate-100 bg-slate-50">
+            <form action="<?= current_url() ?>" method="GET" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+                <div class="md:col-span-10">
+                    <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Filter NIP</label>
+                    <select name="has_nip" class="block w-full px-3 py-2 bg-white border <?= !empty($has_nip) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm appearance-none cursor-pointer transition-all">
+                        <option value="">SEMUA PEGAWAI</option>
+                        <option value="yes" <?= ($has_nip ?? '') === 'yes' ? 'selected' : '' ?>>DENGAN NIP</option>
+                        <option value="no" <?= ($has_nip ?? '') === 'no' ? 'selected' : '' ?>>TANPA NIP</option>
+                    </select>
+                </div>
+
+                <div class="md:col-span-2 flex gap-2">
+                    <button type="submit" class="flex-1 btn btn-solid">
+                        <i class="fas fa-filter mr-2 text-white/80"></i> Filter
+                    </button>
+                    <a href="<?= current_url() ?>" class="btn btn-outline" title="Reset">
+                        <i class="fas fa-undo"></i>
+                    </a>
+                </div>
+            </form>
+        </div>
+
         <div class="overflow-x-auto">
             <table class="w-full text-left text-sm">
                 <thead class="bg-slate-100 text-slate-700 uppercase text-[10px] font-bold">
                     <tr>
                         <th class="px-6 py-3 border-b border-slate-200">No.</th>
                         <th class="px-6 py-3 border-b border-slate-200">Nama / NIP</th>
-                        <th class="px-6 py-3 border-b border-slate-200">Unit Kerja</th>
+                        <th class="px-6 py-3 border-b border-slate-200">Jabatan / Unit Kerja</th>
                         <th class="px-6 py-3 border-b border-slate-200">Status TTE</th>
                         <th class="px-6 py-3 border-b border-slate-200 text-center">Aksi</th>
                     </tr>
@@ -50,13 +75,14 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <div class="flex flex-col">
+                                    <div class="flex flex-col" id="pegawai-container-<?= $email['id'] ?>" data-nip="<?= esc($email['nip']) ?>">
                                         <span class="font-bold text-slate-800 uppercase tracking-tight leading-tight"><?= esc($email['name']) ?></span>
                                         <span class="text-[10px] font-bold text-slate-500 mt-0.5">NIP: <?= esc($email['nip'] ?: '-') ?></span>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="flex flex-col">
+                                        <span class="text-[10px] font-bold text-slate-500 uppercase tracking-tight mb-1 jabatan-sync-target"><?= esc($email['jabatan'] ?: '-') ?></span>
                                         <?php if (!empty($email['parent_unit_kerja_name'])): ?>
                                             <span class="text-[10px] font-bold text-slate-700 uppercase leading-none"><?= esc($email['parent_unit_kerja_name']) ?></span>
                                             <span class="text-xs font-bold text-slate-800 uppercase tracking-tight mt-1"><?= esc($email['unit_kerja_name']) ?></span>
@@ -123,20 +149,27 @@
                 },
                 body: 'email=' + encodeURIComponent(email)
             });
-            
+
             const data = await response.json();
             if (data.status === 'success') {
                 renderBsreStatus(data.bsre_status, containerId);
-                return { success: true, status: data.bsre_status };
+                return {
+                    success: true,
+                    status: data.bsre_status
+                };
             } else {
                 const errorMsg = data.message || 'Gagal';
                 container.innerHTML = `<button onclick="showGlobalError('Gagal Sinkronisasi', '${errorMsg.replace(/'/g, "\\'")}')" class="px-2 py-0.5 rounded text-[9px] font-bold uppercase border bg-red-50 text-red-600 border-red-200 hover:bg-red-100 transition-colors">ERROR</button>`;
-                return { success: false };
+                return {
+                    success: false
+                };
             }
         } catch (error) {
             const errorMsg = 'Masalah Koneksi Jaringan';
             container.innerHTML = `<button onclick="showGlobalError('Kesalahan Jaringan', '${errorMsg}')" class="px-2 py-0.5 rounded text-[9px] font-bold uppercase border bg-red-50 text-red-600 border-red-200 hover:bg-red-100 transition-colors">ERROR</button>`;
-            return { success: false };
+            return {
+                success: false
+            };
         }
     }
 
@@ -171,13 +204,91 @@
 
             btn.innerHTML = `<i class="fas fa-fingerprint animate-pulse mr-2"></i> Sinkronisasi ${processed}/${emails.length}...`;
             const result = await syncBsreStatus(email.email, email.id);
-            if (result.success) success++; else failed++;
+            if (result.success) success++;
+            else failed++;
         }
 
         btn.innerHTML = originalContent;
         btn.disabled = false;
         btn.classList.remove('opacity-75', 'cursor-not-allowed');
         alert(`Sinkronisasi Selesai!\nTotal: ${processed}\nBerhasil: ${success}\nGagal: ${failed}`);
+    }
+
+    async function syncAllPegawai() {
+        const containers = document.querySelectorAll('[id^="pegawai-container-"]');
+        const validContainers = Array.from(containers).filter(c => c.getAttribute('data-nip') && c.getAttribute('data-nip').trim() !== '');
+
+        if (!validContainers.length) {
+            alert('Tidak ada data NIP yang dapat disinkronkan.');
+            return;
+        }
+
+        if (!confirm(`Sinkronkan data pegawai dari API untuk ${validContainers.length} pegawai yang memiliki NIP?`)) {
+            return;
+        }
+
+        const btn = document.getElementById('batchSyncPegawaiBtn');
+        const originalContent = btn.innerHTML;
+
+        btn.disabled = true;
+        btn.classList.add('opacity-75', 'cursor-not-allowed');
+
+        let processed = 0;
+        let success = 0;
+        let failed = 0;
+
+        for (const container of validContainers) {
+            const nip = container.getAttribute('data-nip');
+            const row = container.closest('tr');
+            const jabatanTarget = row.querySelector('.jabatan-sync-target');
+
+            container.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+            
+            if (jabatanTarget) {
+                jabatanTarget.innerHTML = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[8px] font-bold uppercase border bg-slate-50 text-slate-400 border-slate-200 animate-pulse"><i class="fas fa-spinner fa-spin mr-1"></i> SYNCING</span>';
+            }
+
+            try {
+                const response = await fetch('<?= site_url('email/sync_pegawai') ?>', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: 'nip=' + encodeURIComponent(nip)
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    if (jabatanTarget) {
+                        const newJabatan = data.data?.jabatan || jabatanTarget.innerText;
+                        jabatanTarget.innerHTML = `<span class="text-emerald-600 font-bold">${newJabatan}</span>`;
+                    }
+                    success++;
+                } else {
+                    if (jabatanTarget) {
+                        jabatanTarget.innerHTML = `<span class="px-2 py-0.5 rounded text-[8px] font-bold uppercase border bg-red-50 text-red-600 border-red-200">FAILED</span>`;
+                    }
+                    failed++;
+                }
+            } catch (error) {
+                if (jabatanTarget) {
+                    jabatanTarget.innerHTML = `<span class="px-2 py-0.5 rounded text-[8px] font-bold uppercase border bg-red-50 text-red-600 border-red-200">ERROR</span>`;
+                }
+                failed++;
+            }
+
+            processed++;
+            btn.innerHTML = `<i class="fas fa-sync-alt animate-spin mr-2"></i> Sinkronisasi ${processed}/${validContainers.length}...`;
+        }
+
+        btn.innerHTML = originalContent;
+        btn.disabled = false;
+        btn.classList.remove('opacity-75', 'cursor-not-allowed');
+        alert(`Sinkronisasi Data Pegawai Selesai!\nTotal: ${processed}\nBerhasil: ${success}\nGagal: ${failed}`);
     }
 
     document.addEventListener('DOMContentLoaded', () => {

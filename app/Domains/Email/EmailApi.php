@@ -265,7 +265,11 @@ class EmailApi extends BaseController
                 }
 
                 if ($newJabatan) {
-                    $updateData['jabatan'] = mb_strtoupper($newJabatan, 'UTF-8');
+                    $newJabatanUpper = mb_strtoupper($newJabatan, 'UTF-8');
+                    // Skip if API response contains "PLT"
+                    if (stripos($newJabatanUpper, 'PLT') === false) {
+                        $updateData['jabatan'] = $newJabatanUpper;
+                    }
                 }
             }
 
@@ -282,16 +286,26 @@ class EmailApi extends BaseController
                 // Update all emails with this NIP
                 $this->emailModel->where('nip', $nip)->set($updateData)->update();
                 
+                // For response feedback, if pimpinan, ensure we return the OLD jabatan
+                $responseData = $updateData;
+                if ($isPimpinan) {
+                    $responseData['jabatan'] = $currentEmail['jabatan'] ?? '-';
+                }
+
                 return $this->response->setJSON([
                     'success' => true, 
-                    'message' => 'Data pegawai berhasil disinkronkan', 
-                    'data' => $updateData
+                    'message' => $isPimpinan ? 'Data pangkat disinkronkan, jabatan pimpinan dipertahankan' : 'Data pegawai berhasil disinkronkan', 
+                    'data' => $responseData
                 ]);
             } else {
                 return $this->response->setJSON([
-                    'success' => false, 
-                    'message' => 'Tidak ada data baru yang ditemukan di API',
-                    'raw_data' => $data
+                    'success' => true, // Still return true if pimpinan data is same but we want to confirm it's a leader
+                    'message' => $isPimpinan ? 'Akun Pimpinan - Data jabatan tetap dipertahankan' : 'Tidak ada data baru yang ditemukan di API',
+                    'data' => [
+                        'jabatan' => $currentEmail['jabatan'] ?? '-',
+                        'pangkat_nama' => $currentEmail['pangkat_nama'] ?? '-',
+                        'pangkat_golruang' => $currentEmail['pangkat_golruang'] ?? '-',
+                    ]
                 ]);
             }
         }
