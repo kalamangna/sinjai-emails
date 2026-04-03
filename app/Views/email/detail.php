@@ -90,7 +90,7 @@
                 <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
                     <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Profil</h3>
                     <div class="flex items-center gap-2">
-                        <?php if (in_array(session()->get('role'), ['super_admin', 'admin']) && !empty($email['nip'])): ?>
+                        <?php if (in_array(session()->get('role'), ['super_admin', 'admin']) && !empty($email['nip']) && ($email['status_asn_id'] ?? 0) != 3): ?>
                             <button onclick="syncPegawai('<?= esc($email['nip'], 'js') ?>', this)" class="btn btn-outline btn-xs uppercase tracking-widest transition-colors flex items-center" title="Sinkronkan Data Pegawai dari API">
                                 <i class="fas fa-sync-alt mr-1.5 text-slate-500"></i> Sync Pegawai
                             </button>

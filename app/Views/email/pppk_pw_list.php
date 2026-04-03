@@ -12,16 +12,10 @@
         </div>
 
         <div class="flex items-center gap-2 w-full lg:w-auto">
-            <div class="flex-1 lg:flex-none flex gap-2">
-                <button onclick="syncAllOnPage()" id="batchSyncBtn" class="flex-1 lg:flex-none btn btn-solid group">
-                    <i class="fas fa-fingerprint mr-2 group-hover:scale-110 transition-transform"></i>
-                    <span>Sync TTE</span>
-                </button>
-                <button onclick="syncAllPegawai()" id="batchSyncPegawaiBtn" class="flex-1 lg:flex-none btn btn-outline group bg-white">
-                    <i class="fas fa-sync-alt mr-2 group-hover:rotate-180 transition-transform duration-500 text-slate-700"></i>
-                    <span class="text-slate-700">Sync Pegawai</span>
-                </button>
-            </div>
+            <button onclick="syncAllOnPage()" id="batchSyncBtn" class="flex-1 lg:flex-none btn btn-solid group">
+                <i class="fas fa-fingerprint mr-2 group-hover:scale-110 transition-transform"></i>
+                <span>Sync TTE</span>
+            </button>
         </div>
     </div>
 
@@ -211,87 +205,6 @@
         btn.disabled = false;
         btn.classList.remove('opacity-75', 'cursor-not-allowed');
         alert(`Sinkronisasi Selesai!\nTotal: ${processed}\nBerhasil: ${success}\nGagal: ${failed}`);
-    }
-
-    async function syncAllPegawai() {
-        const containers = document.querySelectorAll('[id^="pegawai-container-"]');
-        const validContainers = Array.from(containers).filter(c => c.getAttribute('data-nip') && c.getAttribute('data-nip').trim() !== '');
-
-        if (!validContainers.length) {
-            alert('Tidak ada data NIP yang dapat disinkronkan.');
-            return;
-        }
-
-        if (!confirm(`Sinkronkan data pegawai dari API untuk ${validContainers.length} pegawai yang memiliki NIP?`)) {
-            return;
-        }
-
-        const btn = document.getElementById('batchSyncPegawaiBtn');
-        const originalContent = btn.innerHTML;
-
-        btn.disabled = true;
-        btn.classList.add('opacity-75', 'cursor-not-allowed');
-
-        let processed = 0;
-        let success = 0;
-        let failed = 0;
-
-        for (const container of validContainers) {
-            const nip = container.getAttribute('data-nip');
-            const row = container.closest('tr');
-            const jabatanTarget = row.querySelector('.jabatan-sync-target');
-
-            container.scrollIntoView({
-                behavior: 'smooth',
-                block: 'center'
-            });
-            
-            if (jabatanTarget) {
-                jabatanTarget.innerHTML = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[8px] font-bold uppercase border bg-slate-50 text-slate-400 border-slate-200 animate-pulse"><i class="fas fa-spinner fa-spin mr-1"></i> SYNCING</span>';
-            }
-
-            try {
-                const response = await fetch('<?= site_url('email/sync_pegawai') ?>', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    },
-                    body: 'nip=' + encodeURIComponent(nip)
-                });
-
-                const data = await response.json();
-                if (data.success) {
-                    if (jabatanTarget) {
-                        const newJabatan = data.data?.jabatan || jabatanTarget.innerText;
-                        jabatanTarget.innerHTML = `<span class="text-emerald-600 font-bold">${newJabatan}</span>`;
-                    }
-                    success++;
-                } else {
-                    if (jabatanTarget) {
-                        if (data.message && data.message.includes('tidak ditemukan')) {
-                            jabatanTarget.innerHTML = `<span class="px-2 py-0.5 rounded text-[8px] font-bold uppercase border bg-amber-50 text-amber-600 border-amber-200" title="Data tidak ditemukan di API">NO DATA</span>`;
-                        } else {
-                            jabatanTarget.innerHTML = `<span class="px-2 py-0.5 rounded text-[8px] font-bold uppercase border bg-red-50 text-red-600 border-red-200" title="${data.message || 'Sinkronisasi Gagal'}">FAILED</span>`;
-                        }
-                    }
-                    failed++;
-                }
-            } catch (error) {
-                if (jabatanTarget) {
-                    jabatanTarget.innerHTML = `<span class="px-2 py-0.5 rounded text-[8px] font-bold uppercase border bg-red-50 text-red-600 border-red-200">ERROR</span>`;
-                }
-                failed++;
-            }
-
-            processed++;
-            btn.innerHTML = `<i class="fas fa-sync-alt animate-spin mr-2"></i> Sinkronisasi ${processed}/${validContainers.length}...`;
-        }
-
-        btn.innerHTML = originalContent;
-        btn.disabled = false;
-        btn.classList.remove('opacity-75', 'cursor-not-allowed');
-        alert(`Sinkronisasi Data Pegawai Selesai!\nTotal: ${processed}\nBerhasil: ${success}\nGagal: ${failed}`);
     }
 
     document.addEventListener('DOMContentLoaded', () => {
