@@ -246,15 +246,21 @@ class EmailApi extends BaseController
         if ($result['success']) {
             $data = $result['data'];
             
-            if (empty($data)) {
+            // Normalize data from array if necessary
+            $source = (is_array($data) && isset($data[0])) ? $data[0] : $data;
+            
+            // Check if source contains actual profile data (at least one relevant field)
+            $hasActualData = isset($source['jabatan_nama']) || 
+                             isset($source['jabatan']) || 
+                             isset($source['pangkat_nama']) || 
+                             isset($source['pangkat_golruang']);
+
+            if (empty($data) || !$hasActualData) {
                 return $this->response->setJSON([
                     'success' => false,
                     'message' => 'Data tidak ditemukan di API'
                 ]);
             }
-            
-            // Normalize data from array if necessary
-            $source = (is_array($data) && isset($data[0])) ? $data[0] : $data;
             
             // Get current record to check pimpinan status
             $currentEmail = $this->emailModel->where('nip', $nip)->first();
