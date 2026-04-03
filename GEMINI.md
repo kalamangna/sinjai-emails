@@ -270,6 +270,16 @@ The project adheres to a **"Slate Clean Government"** aesthetic:
 
 # Session History - April 3, 2026
 
+## Features Added
+- **Batch Sync Data Pegawai**:
+    - Implemented batch synchronization functionality for "Data Pegawai" across all employee lists (PNS, PPPK, PPPK PW).
+    - Added a "Sync Pegawai" button to list headers that iterates through all records with a NIP on the current page.
+- **Advanced Filtering**:
+    - Introduced a "Filter NIP" dropdown on employee listing pages, allowing administrators to filter records by "With NIP", "Without NIP", or "All".
+- **API Logic Refinement**:
+    - Optimized the `sync_pegawai` API handler to skip updating the `jabatan` field if the API response contains "PLT" (Acting) to prevent overwriting primary roles.
+    - Standardized "Sekretaris" position titles: any position containing "SEKRETARIS" is now automatically simplified to either "SEKRETARIS DINAS" or "SEKRETARIS BADAN" based on the department type.
+
 ## Documentation Improvements
 - **README Overhaul**: Rewrote and simplified the project's `README.md` title to **"Sistem Identitas Digital"**, providing content in both English and Bahasa Indonesia that accurately reflects the current domain-driven architecture, tech stack, and comprehensive feature set.
 - **Session History Persistence**: Updated `GEMINI.md` with the latest session history to maintain a clear audit trail of project evolution.

@@ -268,6 +268,14 @@ class EmailApi extends BaseController
                     $newJabatanUpper = mb_strtoupper($newJabatan, 'UTF-8');
                     // Skip if API response contains "PLT"
                     if (stripos($newJabatanUpper, 'PLT') === false) {
+                        // Standardize Sekretaris title
+                        if (strpos($newJabatanUpper, 'SEKRETARIS') !== false) {
+                            if (strpos($newJabatanUpper, 'DINAS') !== false) {
+                                $newJabatanUpper = 'SEKRETARIS DINAS';
+                            } elseif (strpos($newJabatanUpper, 'BADAN') !== false) {
+                                $newJabatanUpper = 'SEKRETARIS BADAN';
+                            }
+                        }
                         $updateData['jabatan'] = $newJabatanUpper;
                     }
                 }
