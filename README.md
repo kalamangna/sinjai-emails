@@ -1,84 +1,79 @@
-# Sinjai Emails
+# Sistem Manajemen Email & Identitas Digital Kabupaten Sinjai
 
-Portal terintegrasi untuk manajemen identitas digital, sertifikat elektronik, dan monitoring infrastruktur web Pemerintah Kabupaten Sinjai. Dirancang untuk mengefisiensikan tata kelola administrasi TI di lingkungan Diskominfo-SP.
+Platform manajemen identitas digital berbasis **CodeIgniter 4** dan **Tailwind CSS**, dirancang untuk mengelola akun email institusi dan sertifikat elektronik (TTE) bagi Pemerintah Kabupaten Sinjai.
 
-## Fitur Utama
+Aplikasi ini menerapkan standar estetika **"Slate Clean Government"**—antarmuka profesional dengan kontras tinggi yang dioptimalkan untuk efisiensi administratif dan kejelasan data.
 
-### 1. Manajemen Email Institusi
+## 🚀 Fitur Utama
 
-- **Integrasi cPanel API**: Pembuatan, penghapusan, dan sinkronisasi akun email secara otomatis dengan server hosting.
-- **Advanced Search**: Pencarian akun berdasarkan Nama, NIP, atau NIK secara konsisten di seluruh tabel.
-- **Integrasi Pegawai API**: Sinkronisasi data kepegawaian (Jabatan, Pangkat, dan Golongan Ruang) secara otomatis dari `apps.sinjaikab.go.id` berdasarkan NIP.
-- **Manajemen Profil**: Pendataan lengkap NIK, NIP, Jabatan, Pangkat, Golongan Ruang, dan Unit Kerja untuk setiap pemegang akun.
-- **Manajemen Pegawai**: Pengelompokan dan pemantauan khusus untuk daftar PNS, PPPK (Penuh Waktu), dan PPPK PW (Paruh Waktu) dengan fitur **Pagination** untuk efisiensi data besar.
+### 📧 Manajemen Email & Akun
+- **Integrasi cPanel:** Sinkronisasi real-time dengan UAPI cPanel untuk pembuatan akun, pembaruan kata sandi, dan pengelolaan kuota penyimpanan.
+- **Sinkronisasi API Pegawai:** Pembaruan otomatis data **Jabatan**, **Pangkat**, dan **Golongan Ruang** melalui API Pegawai resmi.
+- **Kategorisasi Data:** Tampilan khusus untuk **PNS**, **PPPK (Penuh Waktu)**, dan **PPPK (Paruh Waktu)** dengan filter canggih.
+- **Identitas Digital:** Pembuatan QR Code otomatis untuk verifikasi identitas publik yang aman melalui rute terenkripsi (hash).
 
-### 2. Monitoring Sertifikat Elektronik (TTE)
+### ✍️ Integrasi TTE BSrE
+- **Monitoring Status:** Pelacakan status Sertifikat Elektronik secara real-time (ISSUE, EXPIRED, NO_CERTIFICATE, dll).
+- **Sinkronisasi Massal:** Sinkronisasi status TTE berurutan dengan performa tinggi untuk seluruh kategori pegawai dengan indikator progres langsung.
 
-- **Integrasi BSrE API**: Pemantauan status sertifikat digital secara _real-time_ (Aktif, Expired, Revoked, dsb).
-- **Pengelompokan Pejabat**: Akses cepat untuk monitoring TTE Pimpinan OPD dan Kepala Desa.
-- **Reporting**: Dashboard statistik status TTE di seluruh perangkat daerah dilengkapi dengan persentase capaian.
+### 📊 Pemantauan & Analitik
+- **Monitoring Website:** Pelacakan domain **OPD** dan **Desa/Kelurahan**, termasuk sinkronisasi otomatis masa berlaku SSL dan Domain.
+- **Dashboard Dinamis:** Analitik dengan grafik donut dan kartu metrik yang menampilkan persentase performa data.
+- **Log Pendampingan:** Pencatatan terpusat untuk bantuan teknis dan log layanan (khusus Super Admin).
 
-### 3. Monitoring Website & Domain
+### 📥 Operasi Batch (XLSX)
+- **Mesin Spreadsheet:** Menggunakan `PhpSpreadsheet` untuk pemrosesan file Excel yang tangguh.
+- **Handler Terpadu:** Template khusus untuk **Batch Create**, **Batch Update**, dan **Batch PK (Perjanjian Kerja)** dengan deteksi "No-Change" untuk optimasi database.
 
-- **Website OPD**: Pemantauan status pemanfaatan subdomain OPD.
-- **Website Desa & Kelurahan**: Pelacakan masa berlaku domain `.desa.id` melalui protokol **RDAP PANDI**.
-- **Visualisasi Data**: Grafik distribusi platform dan status operasional yang modern dan informatif dengan legend persentase.
+### 📄 Sistem Ekspor
+- **Mesin PDF:** Pelaporan profesional menggunakan `Dompdf`, dioptimalkan untuk standar visual "Slate Clean".
+- **Berbagai Format:** Mendukung ekspor PDF, CSV, dan ZIP untuk monitoring akun, ringkasan organisasi, dan log tanda tangan digital.
 
-### 4. Digital Identity Verification
+## 🛠 Teknologi
 
-- **Dynamic QR Code**: Generasi QR Code otomatis pada detail akun yang memiliki sertifikat elektronik aktif.
-- **Branded QR**: QR Code dilengkapi dengan logo instansi di bagian tengah untuk tampilan profesional.
-- **Public Verification Page**: Halaman verifikasi publik yang dioptimasi untuk perangkat _mobile_, memungkinkan validasi identitas digital secara instan melalui pemindaian QR Code.
+- **Backend:** PHP 8.1+, CodeIgniter 4.x
+- **Frontend:** Tailwind CSS, Vanilla JS (Performa Tinggi), Alpine.js (Utilitas), Choices.js
+- **Database:** MySQL/MariaDB
+- **Integrasi:** cPanel UAPI, BSrE API, API Pegawai
+- **Library:** PhpSpreadsheet, Dompdf, SimpleQR
 
-### 5. Batch Operations (Admin & Super Admin)
+## 🏗 Arsitektur
 
-- **Refactored Module**: Modul batch yang terorganisir untuk efisiensi pemrosesan data massal.
-- **XLSX (Excel) Import**: Dukungan penuh impor file XLSX untuk pembuatan dan pembaruan data secara massal yang lebih andal.
-- **Mass Account Creation**: Pembuatan akun massal dengan input ala Excel dan validasi otomatis.
-- **Bulk Updates**: Pembaruan data profil dan dokumen Perjanjian Kerja (PK) secara massal, termasuk pembaruan Unit Kerja per baris.
-- **Smart Update Logic**: Sistem secara otomatis mendeteksi dan melompati pembaruan jika data yang diimpor identik dengan data yang sudah ada di database, meminimalkan operasi database yang tidak perlu.
-- **PK Export System**: Generasi otomatis dokumen Perjanjian Kerja (PPPK/Paruh Waktu) dengan format standar (A4, font Bookman Old Style).
-- **Subfolder Archive**: ZIP hasil batch yang terorganisir secara otomatis berdasarkan status kepegawaian.
+Proyek ini menggunakan pendekatan **Domain-Driven Design (DDD)** di dalam direktori `app/Domains`:
 
-### 5. Log Pendampingan Teknis (Super Admin)
+- **Assistance:** Log bantuan teknis.
+- **Auth:** RBAC (Super Admin/Admin) dan manajemen sesi aman.
+- **Batch:** Logika pemrosesan data massal.
+- **Dashboard:** Portal analitik utama.
+- **Email:** Mutasi akun inti dan logika identitas.
+- **UnitKerja:** Manajemen struktur organisasi hierarkis.
+- **Website:** Pemantauan domain dan SSL.
 
-- **Documentation**: Pencatatan riwayat bantuan teknis (email, website, TTE, Srikandi) kepada instansi.
-- **Advanced Filtering**: Filter berdasarkan kategori, bulan, dan tahun untuk pelaporan periodik.
+## 🔒 Keamanan & RBAC
 
-### 6. Administrasi & Keamanan
+- **Super Admin:** Akses sistem penuh, Master Data (Unit Kerja), Log Layanan, dan operasi destruktif.
+- **Admin:** Manajemen operasional, Mutasi Akun, Operasi Batch, dan Monitoring Website.
+- **Privasi Data:** Penegakan meta tag `noindex, nofollow` global dan hash verifikasi publik yang aman.
+- **Resiliensi Error:** Penanganan `\Throwable` global memastikan stabilitas dan tampilan error yang profesional di seluruh domain.
 
-- **Unified Component Architecture**: Implementasi komponen UI yang dapat digunakan kembali (reusable components) seperti sistem **Pagination Terpusat**, yang menstandarisasi pengalaman pengguna dan mempermudah pemeliharaan kode di seluruh aplikasi.
-- **Robust Error Handling**: Sistem penanganan kesalahan tingkat lanjut menggunakan `\Throwable` untuk memastikan semua jenis _error_ (termasuk kesalahan database atau tipe data) ditangkap dan dirender dengan antarmuka aplikasi yang seragam.
-- **Global Omni-Search**: Bar pencarian cerdas di bagian header untuk akses cepat ke data pegawai dan akun dari halaman mana saja.
-- **Role-Based Access Control (RBAC)**: Pembatasan akses antara _Super Admin_ dan _Admin_. Admin memiliki kemampuan untuk mengelola akun, memodifikasi informasi website, dan melakukan sinkronisasi, sementara Super Admin memegang kontrol penuh atas penghapusan data, manajemen Unit Kerja, dan Log Layanan.
-- **Eksport Data**: Antarmuka ekspor yang telah disederhanakan melalui menu _dropdown_, menghasilkan laporan PDF, Excel (XLSX), dan CSV yang dioptimasi (layout landscape/portrait, clickable domain, dan ringkasan statistik).
-- **SEO & Privacy**: Perlindungan privasi data melalui penonaktifan pengindeksan mesin pencari (noindex, nofollow) dan pembatasan akses bot melalui `robots.txt`.
+## ⚙️ Persyaratan & Instalasi
 
-## Tech Stack
+1. **PHP 8.1+** dengan ekstensi `intl`, `mbstring`, `gd`, dan `curl`.
+2. **Composer** untuk manajemen dependensi.
+3. **Node.js** untuk kompilasi Tailwind CSS.
+4. **Token API cPanel** untuk integrasi server email.
 
-### Backend
+```bash
+# Instal dependensi
+composer install
+npm install
 
-- **Core Framework**: PHP 8.1+ (CodeIgniter 4.6)
-- **Database**: MySQL / MariaDB
-- **Spreadsheet Engine**: PhpSpreadsheet (XLSX Support)
-- **PDF Engine**: Dompdf
-- **HTTP Client**: CodeIgniter CURLRequest
+# Kompilasi CSS
+npm run build
 
-### Frontend
-
-- **CSS Framework**: Tailwind CSS (JIT Compiler)
-- **UI Logic**: Vanilla JavaScript (ES6+)
-- **Interactivity**: Lightweight, high-performance Vanilla JS for all core UI interactions, including navigation, dropdowns, toggles, and real-time batch synchronization.
-- **Charts**: ApexCharts (Data Visualization)
-- **UI Components**: Font Awesome 6, Choices.js (Searchable Selects)
-
-### Integrasi Eksternal
-
-- **Pegawai API**: `apps.sinjaikab.go.id` (Sinkronisasi data PNS/PPPK).
-- **cPanel UAPI**: Manajemen akun email server.
-- **BSrE API**: Validasi status sertifikat elektronik.
-- **PANDI RDAP**: Pengecekan masa aktif domain desa.
+# Jalankan Migrasi
+php spark migrate
+```
 
 ---
-
-© 2026 Diskominfo-SP Sinjai.
+Dikembangkan oleh **Diskominfo-SP Sinjai** | &copy; 2026
