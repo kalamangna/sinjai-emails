@@ -240,6 +240,25 @@ class EmailApi extends BaseController
             return $this->response->setJSON(['success' => false, 'message' => 'NIP required']);
         }
 
+        // Check if employee is PPPK Paruh Waktu before calling the API
+        $currentEmail = $this->emailModel->where('nip', $nip)->first();
+        if ($currentEmail) {
+            $statusAsnModel = new \App\Shared\Models\StatusAsnModel();
+            $statusPppkPw = $statusAsnModel->where('nama_status_asn', 'PPPK PARUH WAKTU')->asArray()->first();
+            
+            if ($statusPppkPw && $currentEmail['status_asn_id'] == $statusPppkPw['id']) {
+                return $this->response->setJSON([
+                    'success' => true,
+                    'message' => 'Akun PPPK Paruh Waktu - Data tidak disinkronkan',
+                    'data' => [
+                        'jabatan' => $currentEmail['jabatan'] ?? '-',
+                        'pangkat_nama' => $currentEmail['pangkat_nama'] ?? '-',
+                        'pangkat_golruang' => $currentEmail['pangkat_golruang'] ?? '-',
+                    ]
+                ]);
+            }
+        }
+
         $pegawaiApi = new \App\Shared\Libraries\PegawaiApi();
         $result = $pegawaiApi->getPegawaiData($nip);
 
