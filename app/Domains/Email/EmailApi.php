@@ -241,7 +241,12 @@ class EmailApi extends BaseController
         }
 
         // Check if employee is PPPK Paruh Waktu before calling the API
-        $currentEmail = $this->emailModel->where('nip', $nip)->first();
+        $currentEmail = $this->emailModel
+            ->select('emails.*, unit_kerja.nama_unit_kerja')
+            ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
+            ->where('emails.nip', $nip)
+            ->first();
+
         if ($currentEmail) {
             $statusAsnModel = new \App\Shared\Models\StatusAsnModel();
             $statusPppkPw = $statusAsnModel->where('nama_status_asn', 'PPPK PARUH WAKTU')->asArray()->first();
@@ -281,8 +286,7 @@ class EmailApi extends BaseController
                 ]);
             }
             
-            // Get current record to check pimpinan status
-            $currentEmail = $this->emailModel->where('nip', $nip)->first();
+            // Get current record to check pimpinan status (already queried above)
             $isPimpinan = ($currentEmail['pimpinan'] ?? 0) == 1;
 
             $updateData = [];
@@ -300,15 +304,16 @@ class EmailApi extends BaseController
                     $newJabatanUpper = mb_strtoupper($newJabatan, 'UTF-8');
                     // Skip if API response contains "PLT"
                     if (stripos($newJabatanUpper, 'PLT') === false) {
-                        // Standardize Sekretaris title
+                        // Standardize Sekretaris title based on Unit Kerja
                         if (strpos($newJabatanUpper, 'SEKRETARIS') !== false) {
-                            if (strpos($newJabatanUpper, 'DINAS') !== false) {
+                            $unitName = strtoupper($currentEmail['nama_unit_kerja'] ?? '');
+                            if (strpos($unitName, 'DINAS') !== false) {
                                 $newJabatanUpper = 'SEKRETARIS DINAS';
-                            } elseif (strpos($newJabatanUpper, 'BADAN') !== false) {
+                            } elseif (strpos($unitName, 'BADAN') !== false) {
                                 $newJabatanUpper = 'SEKRETARIS BADAN';
-                            } elseif (strpos($newJabatanUpper, 'KECAMATAN') !== false) {
+                            } elseif (strpos($unitName, 'KECAMATAN') !== false) {
                                 $newJabatanUpper = 'SEKRETARIS KECAMATAN';
-                            } elseif (strpos($newJabatanUpper, 'KELURAHAN') !== false) {
+                            } elseif (strpos($unitName, 'KELURAHAN') !== false) {
                                 $newJabatanUpper = 'SEKRETARIS KELURAHAN';
                             }
                         }
