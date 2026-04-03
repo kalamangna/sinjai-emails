@@ -274,6 +274,10 @@ class EmailApi extends BaseController
                                 $newJabatanUpper = 'SEKRETARIS DINAS';
                             } elseif (strpos($newJabatanUpper, 'BADAN') !== false) {
                                 $newJabatanUpper = 'SEKRETARIS BADAN';
+                            } elseif (strpos($newJabatanUpper, 'KECAMATAN') !== false) {
+                                $newJabatanUpper = 'SEKRETARIS KECAMATAN';
+                            } elseif (strpos($newJabatanUpper, 'KELURAHAN') !== false) {
+                                $newJabatanUpper = 'SEKRETARIS KELURAHAN';
                             }
                         }
                         $updateData['jabatan'] = $newJabatanUpper;

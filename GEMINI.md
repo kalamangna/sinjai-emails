@@ -278,7 +278,7 @@ The project adheres to a **"Slate Clean Government"** aesthetic:
     - Introduced a "Filter NIP" dropdown on employee listing pages, allowing administrators to filter records by "With NIP", "Without NIP", or "All".
 - **API Logic Refinement**:
     - Optimized the `sync_pegawai` API handler to skip updating the `jabatan` field if the API response contains "PLT" (Acting) to prevent overwriting primary roles.
-    - Standardized "Sekretaris" position titles: any position containing "SEKRETARIS" is now automatically simplified to either "SEKRETARIS DINAS" or "SEKRETARIS BADAN" based on the department type.
+    - Standardized "Sekretaris" position titles: any position containing "SEKRETARIS" is now automatically simplified to "SEKRETARIS DINAS", "SEKRETARIS BADAN", "SEKRETARIS KECAMATAN", or "SEKRETARIS KELURAHAN" based on the department type.
 
 ## Documentation Improvements
 - **README Overhaul**: Rewrote and simplified the project's `README.md` title to **"Sistem Identitas Digital"**, providing content in both English and Bahasa Indonesia that accurately reflects the current domain-driven architecture, tech stack, and comprehensive feature set.
