@@ -281,16 +281,30 @@ class EmailApi extends BaseController
                     $newJabatanUpper = mb_strtoupper($newJabatan, 'UTF-8');
                     // Skip if API response contains "PLT"
                     if (stripos($newJabatanUpper, 'PLT') === false) {
-                        // Standardize Sekretaris title
+                        // Standardize Sekretaris title and Eselon
                         if (strpos($newJabatanUpper, 'SEKRETARIS') !== false) {
+                            $eselonModel = new \App\Shared\Models\EselonModel();
+                            $targetEselonNames = [];
+
                             if (strpos($newJabatanUpper, 'DINAS') !== false) {
                                 $newJabatanUpper = 'SEKRETARIS DINAS';
+                                $targetEselonNames = ['IIIa', '3a'];
                             } elseif (strpos($newJabatanUpper, 'BADAN') !== false) {
                                 $newJabatanUpper = 'SEKRETARIS BADAN';
+                                $targetEselonNames = ['IIIa', '3a'];
                             } elseif (strpos($newJabatanUpper, 'KECAMATAN') !== false) {
                                 $newJabatanUpper = 'SEKRETARIS KECAMATAN';
+                                $targetEselonNames = ['IIIb', '3b'];
                             } elseif (strpos($newJabatanUpper, 'KELURAHAN') !== false) {
                                 $newJabatanUpper = 'SEKRETARIS KELURAHAN';
+                                $targetEselonNames = ['IVb', '4b'];
+                            }
+
+                            if (!empty($targetEselonNames)) {
+                                $eselon = $eselonModel->whereIn('nama_eselon', $targetEselonNames)->first();
+                                if ($eselon) {
+                                    $updateData['eselon_id'] = $eselon['id'];
+                                }
                             }
                         }
                         $updateData['jabatan'] = $newJabatanUpper;
