@@ -300,34 +300,29 @@ class EmailApi extends BaseController
                     $newJabatanUpper = mb_strtoupper($newJabatan, 'UTF-8');
                     // Skip if API response contains "PLT"
                     if (stripos($newJabatanUpper, 'PLT') === false) {
-                        // Standardize Sekretaris title and assign Eselon
-                        $targetEselonNames = [];
+                        // Standardize Sekretaris title
                         if (strpos($newJabatanUpper, 'SEKRETARIS') !== false) {
                             if (strpos($newJabatanUpper, 'DINAS') !== false) {
                                 $newJabatanUpper = 'SEKRETARIS DINAS';
-                                $targetEselonNames = ['IIIa', '3a'];
                             } elseif (strpos($newJabatanUpper, 'BADAN') !== false) {
                                 $newJabatanUpper = 'SEKRETARIS BADAN';
-                                $targetEselonNames = ['IIIa', '3a'];
                             } elseif (strpos($newJabatanUpper, 'KECAMATAN') !== false) {
                                 $newJabatanUpper = 'SEKRETARIS KECAMATAN';
-                                $targetEselonNames = ['IIIb', '3b'];
                             } elseif (strpos($newJabatanUpper, 'KELURAHAN') !== false) {
                                 $newJabatanUpper = 'SEKRETARIS KELURAHAN';
-                                $targetEselonNames = ['IVb', '4b'];
                             }
-                        } elseif (strpos($newJabatanUpper, 'KEPALA BIDANG') !== false) {
-                            $targetEselonNames = ['IIIb', '3b'];
                         }
+                        $updateData['jabatan'] = $newJabatanUpper;
 
-                        if (!empty($targetEselonNames)) {
+                        // Sync Eselon directly from API response
+                        if (!empty($source['jabatan_jenis_eselon'])) {
+                            $eselonStr = str_replace(['.', ' '], '', $source['jabatan_jenis_eselon']);
                             $eselonModel = new \App\Shared\Models\EselonModel();
-                            $eselon = $eselonModel->whereIn('nama_eselon', $targetEselonNames)->first();
+                            $eselon = $eselonModel->where('nama_eselon', $eselonStr)->first();
                             if ($eselon) {
                                 $updateData['eselon_id'] = $eselon['id'];
                             }
                         }
-                        $updateData['jabatan'] = $newJabatanUpper;
                     }
                 }
             }

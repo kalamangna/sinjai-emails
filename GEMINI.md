@@ -280,7 +280,7 @@ The project adheres to a **"Slate Clean Government"** aesthetic:
     - Optimized the `sync_pegawai` API handler to skip updating the `jabatan` field if the API response contains "PLT" (Acting) to prevent overwriting primary roles.
     - Added an explicit check to return a failure status (`success: false`) if the Pegawai API returns an empty data set, ensuring these cases are correctly logged as "FAILED" or "NO DATA" in batch operations instead of silently succeeding.
     - Standardized "Sekretaris" position titles: any position containing "SEKRETARIS" is now automatically simplified to "SEKRETARIS DINAS", "SEKRETARIS BADAN", "SEKRETARIS KECAMATAN", or "SEKRETARIS KELURAHAN" based on the department type.
-    - **Automated Eselon Assignment**: When synchronizing position titles, the system now automatically looks up and assigns the corresponding `eselon_id` based on the title (e.g., Eselon III.a for Sekretaris Dinas/Badan, III.b for Sekretaris Kecamatan/Kepala Bidang, and IV.b for Sekretaris Kelurahan).
+    - **Automated Eselon Assignment**: Replaced the hardcoded Eselon mapping logic with dynamic assignment. The system now extracts the `jabatan_jenis_eselon` field directly from the Pegawai API response, formats it, and automatically matches it with the internal `eselon` database table (e.g., syncing "III.a" as `IIIa`).
     - **Paruh Waktu Optimization**: The system now completely skips the external Pegawai API call for employees with the status "PPPK PARUH WAKTU", returning early with a graceful success state to conserve API resources and protect data integrity. Additionally, the "Sync Pegawai" button has been removed from the Paruh Waktu list page and the individual account detail page for these users.
 
 ## UI/UX Improvements
