@@ -10,6 +10,7 @@ Aplikasi ini menerapkan standar estetika **"Slate Clean Government"**—antarmuk
 - **Integrasi cPanel:** Sinkronisasi real-time dengan UAPI cPanel untuk pembuatan akun, pembaruan kata sandi, dan pengelolaan kuota penyimpanan.
 - **Sinkronisasi API Pegawai:** Pembaruan otomatis data **Jabatan**, **Pangkat**, dan **Golongan Ruang** melalui API Pegawai resmi.
 - **Kategorisasi Data:** Tampilan khusus untuk **PNS**, **PPPK (Penuh Waktu)**, dan **PPPK (Paruh Waktu)** dengan filter canggih.
+- **Endpoint API Internal:** Penyediaan data terstruktur (JSON) untuk integrasi data PPPK lintas sistem secara aman.
 - **Identitas Digital:** Pembuatan QR Code otomatis untuk verifikasi identitas publik yang aman melalui rute terenkripsi (hash).
 
 ### ✍️ Integrasi TTE BSrE
