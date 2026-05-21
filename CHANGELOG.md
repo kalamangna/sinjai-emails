@@ -33,7 +33,22 @@ Format didasarkan pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - Penanganan Error Global menggunakan `\Throwable` untuk menghasilkan halaman error yang profesional.
 - **Antarmuka Pengguna (UI/UX)**: 
   - Standar estetika *Slate Clean Government* menggunakan Tailwind CSS.
-  - Performa navigasi dan sidebar dioptimalkan dengan memigrasikan logika dari Alpine.js ke Vanilla JavaScript untuk performa kilat.# Session History - March 2, 2026
+  - Performa navigasi dan sidebar dioptimalkan dengan memigrasikan logika dari Alpine.js ke Vanilla JavaScript untuk performa kilat.
+
+  # Session History - May 21, 2026
+
+  ## Features Added
+  - **PPPK API Endpoints**: Created `api_pppk_list` and `api_pppk_pw_list` endpoints in `EmailApi.php` to serve structured JSON data for PPPK and PPPK Paruh Waktu employees.
+  - **API Payload Optimization**: Added `nik` to the API response and removed `user`, `bsre_status`, and the `pk` table join (`nomor_pk`) to optimize the database query.
+
+  ## UI/UX Improvements
+  - **Capitalize Button Refinement**: Relocated the "Huruf Kapital" utility button to sit directly next to the "Nama Lengkap" input labels across all form views (`email/create.php`, `batch/create.php`, `batch/update.php`) for better context and accessibility.
+  - **Website Monitoring Auto-Scroll**: Removed the static, large progress bar from the Website Desa/Kelurahan sync interface (`web_desa_kelurahan/index.php`). Replaced it with a smooth auto-scroll mechanism (`scrollIntoView`) that dynamically highlights and tracks the specific row currently being synchronized.
+
+  ## Documentation Improvements
+  - **Three Pillars Standard**: Extracted technical session histories from `GEMINI.md` into `CHANGELOG.md` to comply with the project's new "Tiga Pilar Dokumentasi" architecture.
+
+  # Session History - March 2, 2026
 
 ## Features Added
 - **Pegawai Management**: Added a new "Pegawai" menu in the sidebar with submenus for PNS, PPPK (Penuh Waktu), and PPPK PW (Paruh Waktu).
