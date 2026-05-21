@@ -356,23 +356,29 @@
     async function startBatchSync() {
         if (!confirm('Sinkronkan data sekarang?')) return;
         const btn = document.getElementById('batchSyncBtn');
-        const container = document.getElementById('syncProgressContainer');
-        const bar = document.getElementById('syncProgressBar');
-        const count = document.getElementById('syncStatusCount');
 
         btn.disabled = true;
-        container.classList.remove('hidden');
-        container.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Sinkronisasi...';
 
         const rows = document.querySelectorAll('.website-row');
         const total = rows.length;
+        
         for (let i = 0; i < total; i++) {
-            await syncExpiration(rows[i].getAttribute('data-id'));
-            const p = ((i + 1) / total) * 100;
-            bar.style.width = p + '%';
-            count.innerText = `${i + 1}/${total}`;
+            const row = rows[i];
+            
+            // Scroll to the current row so the user can see the progress
+            row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            // Add a visual cue to the active row
+            row.classList.add('bg-slate-100');
+            
+            await syncExpiration(row.getAttribute('data-id'));
+            
+            // Remove the visual cue
+            row.classList.remove('bg-slate-100');
         }
-        setTimeout(() => location.reload(), 1500);
+        
+        setTimeout(() => location.reload(), 1000);
     }
 </script>
 <?= $this->endSection() ?>

@@ -11,21 +11,23 @@
 
     <!-- Card Input -->
     <div class="bg-white border border-slate-200 rounded-lg shadow-sm">
-        <div class="bg-slate-50 px-6 py-4 border-b border-slate-200 flex justify-between items-center">
+        <div class="bg-slate-50 px-6 py-4 border-b border-slate-200">
             <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Input Data</h3>
-            <button type="button" class="btn btn-outline btn-xs" onclick="nameInput.value = nameInput.value.toUpperCase(); updateDraft();">
-                <i class="fas fa-font mr-1.5"></i> Huruf Kapital
-            </button>
         </div>
         <form id="create_single_form" class="p-6 space-y-6">
             <?= csrf_field() ?>
-            
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="md:col-span-2">
-                    <label for="name_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Nama Lengkap <span class="text-slate-700 font-normal">(Tanpa Gelar)</span></label>
-                    <input type="text" id="name_input" name="name" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 uppercase transition-all" required placeholder="Contoh: BUDI SANTOSO">
+                    <div class="flex justify-between items-end mb-1">
+                        <label for="name_input" class="block text-sm font-medium text-slate-700 uppercase tracking-tight">Nama Lengkap <span class="text-slate-700 font-normal">(Tanpa Gelar)</span></label>
+                        <button type="button" class="btn btn-outline btn-xs" onclick="nameInput.value = nameInput.value.toUpperCase(); updateDraft();">
+                            <i class="fas fa-font mr-1.5"></i> Huruf Kapital
+                        </button>
+                    </div>
+                    <input type="text" id="name_input" name="name" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all" required placeholder="Contoh: BUDI SANTOSO">
                 </div>
-                
+
                 <div>
                     <label for="nip_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">NIP</label>
                     <input type="text" id="nip_input" name="nip" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 font-mono transition-all" placeholder="Contoh: 198801082022031001" required maxlength="18">
@@ -117,11 +119,11 @@
     const nipInput = document.getElementById('nip_input');
     const statusAsnSelect = document.getElementById('status_asn_input');
     const unitKerjaSelect = document.getElementById('unit_kerja_input');
-    
+
     const previewBtn = document.getElementById('preview_btn');
     const previewSection = document.getElementById('preview_section');
     const resultsTableBody = document.querySelector('#results_table tbody');
-    
+
     const submitBtn = document.getElementById('submit_btn');
     const progressSection = document.getElementById('progress_section');
     const progressBar = document.getElementById('progress_bar');
@@ -145,7 +147,7 @@
         previewBtn.disabled = true;
         previewBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Memproses...';
         resultsTableBody.innerHTML = '<tr><td colspan="8" class="px-10 py-12 text-center text-slate-700 font-bold uppercase tracking-widest text-[10px] animate-pulse">Sedang memproses dan memeriksa email...</td></tr>';
-        
+
         // Base Draft Config
         const domain = "@sinjaikab.go.id";
         const cleanedName = name.replace(/[,.']/g, "");
@@ -153,7 +155,9 @@
         const password = generatePassword(name, nip);
 
         // Check NIK/NIP availability in DB
-        const nikCheckResult = nik ? await checkNikOnServer(nik) : { exists: false };
+        const nikCheckResult = nik ? await checkNikOnServer(nik) : {
+            exists: false
+        };
         const nipCheckResult = await checkNipOnServer(nip);
 
         // Email Fallback Loop
@@ -199,11 +203,14 @@
         }];
 
         renderResults(userBatch);
-        
+
         previewBtn.disabled = false;
         previewBtn.innerHTML = '<i class="fas fa-eye mr-2 text-white/80"></i> Preview';
         previewSection.classList.remove('hidden');
-        previewSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        previewSection.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
+        });
 
         updateSubmitButtonState();
     });
@@ -265,7 +272,12 @@
     function addEditableListeners() {
         document.querySelectorAll(".editable-name, .editable-username, .editable-password").forEach((cell) => {
             cell.addEventListener("blur", handleCellEdit);
-            cell.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); cell.blur(); } });
+            cell.addEventListener("keydown", (e) => {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    cell.blur();
+                }
+            });
         });
     }
 
@@ -296,13 +308,16 @@
 
     submitBtn.addEventListener('click', async function() {
         if (!userBatch.length) return;
-        
+
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Memproses...';
         progressSection.classList.remove('hidden');
-        progressSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        progressSection.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
+        });
         resultsLog.innerHTML = '';
-        
+
         const user = userBatch[0];
         progressText.textContent = "100% (Processing 1 / 1)";
         progressBar.style.width = '100%';
@@ -311,8 +326,14 @@
             logResult(user.email, 'INFO', 'Mengirim data ke server...');
             const response = await fetch('<?= site_url('email/create_single') ?>', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
-                body: JSON.stringify({ ...user, quota: 1024 })
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
+                    ...user,
+                    quota: 1024
+                })
             });
 
             const result = await response.json();
@@ -321,12 +342,15 @@
                 user.status = "created";
                 logResult(user.email, 'SUCCESS', 'Akun berhasil dibuat.');
                 renderResults(userBatch);
-                setTimeout(() => { alert('Akun berhasil dibuat!'); window.location.href = '<?= site_url('email') ?>'; }, 1000);
+                setTimeout(() => {
+                    alert('Akun berhasil dibuat!');
+                    window.location.href = '<?= site_url('email') ?>';
+                }, 1000);
             } else {
                 const errorMsg = result.message || 'Gagal membuat akun.';
                 user.status = "failed";
                 user.errorMessage = errorMsg;
-                
+
                 if (errorMsg.toLowerCase().includes('strength') || errorMsg.toLowerCase().includes('weak')) {
                     const altPw = generatePassword(user.name, user.nip, true);
                     if (user.password === altPw) user.password = altPw + '*';
@@ -350,30 +374,70 @@
     });
 
     function logResult(email, status, message) {
-        const colors = { 'SUCCESS': 'text-slate-500', 'FAILURE': 'text-red-500', 'WEAK PW': 'text-amber-500', 'INFO': 'text-slate-500' };
+        const colors = {
+            'SUCCESS': 'text-slate-500',
+            'FAILURE': 'text-red-500',
+            'WEAK PW': 'text-amber-500',
+            'INFO': 'text-slate-500'
+        };
         const entry = `<div>[<span class="${colors[status] || 'text-white'} font-bold">${status}</span>] ${email}: ${message}</div>`;
         resultsLog.insertAdjacentHTML("beforeend", entry);
         resultsLog.scrollTop = resultsLog.scrollHeight;
     }
 
     async function checkNikOnServer(nik) {
-        const r = await fetch('<?= site_url('user/check_niknip') ?>', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }, body: JSON.stringify({ nik }) });
+        const r = await fetch('<?= site_url('user/check_niknip') ?>', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({
+                nik
+            })
+        });
         return await r.json();
     }
 
     async function checkNipOnServer(nip) {
-        const r = await fetch('<?= site_url('user/check_niknip') ?>', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }, body: JSON.stringify({ nip }) });
+        const r = await fetch('<?= site_url('user/check_niknip') ?>', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({
+                nip
+            })
+        });
         return await r.json();
     }
 
     async function checkEmailAvailability(email) {
-        const r = await fetch('<?= site_url('user/check_email') ?>', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }, body: JSON.stringify({ email }) });
+        const r = await fetch('<?= site_url('user/check_email') ?>', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({
+                email
+            })
+        });
         return await r.json();
     }
 
-    function getNipPart(nip) { return (typeof nip === "string" && nip.length >= 4) ? nip.substring(2, 4) : ""; }
-    function getSecondNipPart(nip) { return (typeof nip === "string" && nip.length >= 8) ? nip.substring(6, 8) : ""; }
-    function getNikPart(nik) { return (typeof nik === "string" && nik.length >= 12) ? nik.substring(10, 12) : ""; }
+    function getNipPart(nip) {
+        return (typeof nip === "string" && nip.length >= 4) ? nip.substring(2, 4) : "";
+    }
+
+    function getSecondNipPart(nip) {
+        return (typeof nip === "string" && nip.length >= 8) ? nip.substring(6, 8) : "";
+    }
+
+    function getNikPart(nik) {
+        return (typeof nik === "string" && nik.length >= 12) ? nik.substring(10, 12) : "";
+    }
 
     function generatePassword(name, nip, useAltNipPart = false) {
         let suffix = new Date().getDate();
@@ -383,6 +447,7 @@
         return (namePart ? namePart.charAt(0).toUpperCase() + namePart.slice(1) : "") + `@${suffix}#`;
     }
 
-    function updateDraft() { /* Handled by preview logic now */ }
+    function updateDraft() {
+        /* Handled by preview logic now */ }
 </script>
 <?= $this->endSection() ?>

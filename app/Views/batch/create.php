@@ -32,15 +32,17 @@
     </div>
 
     <div class="bg-white border border-slate-200 rounded-lg shadow-sm">
-        <div class="bg-slate-50 px-6 py-4 border-b border-slate-200 flex justify-between items-center">
+        <div class="bg-slate-50 px-6 py-4 border-b border-slate-200">
             <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Input Data</h3>
-            <button class="btn btn-outline btn-xs" onclick="document.getElementById('name_input').value = document.getElementById('name_input').value.toUpperCase()">
-                <i class="fas fa-font mr-1.5"></i> Huruf Kapital
-            </button>
         </div>
         <div class="p-6 space-y-6">
             <div>
-                <label for="name_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Nama Lengkap</label>
+                <div class="flex justify-between items-end mb-1">
+                    <label for="name_input" class="block text-sm font-medium text-slate-700 uppercase tracking-tight">Nama Lengkap</label>
+                    <button class="btn btn-outline btn-xs" onclick="document.getElementById('name_input').value = document.getElementById('name_input').value.toUpperCase()">
+                        <i class="fas fa-font mr-1.5"></i> Huruf Kapital
+                    </button>
+                </div>
                 <textarea id="name_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px]" placeholder="Satu nama per baris..."></textarea>
             </div>
 

@@ -52,6 +52,8 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
 
         // API Routes
         $routes->get('search', '\App\Domains\Email\EmailApi::search');
+        $routes->get('api_pppk_list', '\App\Domains\Email\EmailApi::api_pppk_list');
+        $routes->get('api_pppk_pw_list', '\App\Domains\Email\EmailApi::api_pppk_pw_list');
 
         // Mutation Routes (Admin & Super Admin)
         $routes->group('', ['filter' => 'role:admin,super_admin'], function ($routes) {
