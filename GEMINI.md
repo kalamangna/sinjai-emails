@@ -7,3 +7,11 @@ Setiap pengembang wajib mengikuti standar alur kerja Git berikut sebelum melakuk
 3.  **Dokumentasi:**
     - `CHANGELOG.md`: Riwayat perubahan fitur, bugfix, dan kronologi sistem.
     - `README.md`: Rangkuman proyek, fitur utama, dan spesifikasi teknis.
+
+# Build & Asset Management
+
+Proyek ini menggunakan Tailwind CSS untuk pengelolaan gaya (styling). Pastikan aset dikelola dengan benar:
+
+1.  **Development:** Gunakan `npm run dev` saat pengembangan untuk memantau perubahan class CSS secara otomatis.
+2.  **Production/Deploy:** Selalu jalankan `npm run build` sebelum melakukan `push` atau deploy jika terdapat perubahan pada file view (`.php`) atau JavaScript (`.js`). Hal ini memastikan file `public/css/output.css` telah diperbarui dengan class CSS terbaru.
+3.  **Source Control:** File `public/css/output.css` harus ikut di-commit setelah menjalankan `npm run build` agar tampilan di server tetap sinkron dengan pengembangan lokal.
