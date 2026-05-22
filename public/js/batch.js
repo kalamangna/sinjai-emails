@@ -158,12 +158,25 @@ document.addEventListener("DOMContentLoaded", function () {
             if (nip) nipCounts[nip] = (nipCounts[nip] || 0) + 1;
         }
 
-        const initialEmails = filteredRows.map(row => {
+        const allCandidates = [];
+        filteredRows.forEach(row => {
             const cleanedName = row.name.replace(/[,.']/g, "");
-            return generateEmail(cleanedName).email;
+            const { username: originalUsername } = generateEmail(cleanedName);
+            const domain = "@sinjaikab.go.id";
+            
+            // Candidate 1: Base Email
+            allCandidates.push(`${originalUsername}${domain}`);
+            
+            // Candidate 2: Base + NIP Part 1
+            const nipPart = getNipPart(row.nip);
+            if (nipPart) allCandidates.push(`${originalUsername}${nipPart}${domain}`);
+            
+            // Candidate 3: Base + NIP Part 2
+            const secondNipPart = getSecondNipPart(row.nip);
+            if (secondNipPart) allCandidates.push(`${originalUsername}${secondNipPart}${domain}`);
         });
 
-        // 1. Batch check NIK, NIP, and Initial Emails
+        // 1. Batch check NIK, NIP, and ALL potential Email candidates
         const batchCheckResult = await fetch("/user/batch_check_availability", {
             method: "POST",
             headers: {
@@ -171,7 +184,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 "X-Requested-With": "XMLHttpRequest",
             },
             body: JSON.stringify({
-                emails: initialEmails,
+                emails: allCandidates,
                 niks: trimmedNiks,
                 nips: trimmedNips
             })
@@ -193,39 +206,63 @@ document.addEventListener("DOMContentLoaded", function () {
             const password = generatePassword(cleanedName, nip);
             
             const { username: originalUsername, email: originalEmail } = generateEmail(cleanedName);
+            const domain = "@sinjaikab.go.id";
 
             let currentUsername = originalUsername;
             let currentEmail = originalEmail;
             let isAvailable = false;
-            let attempts = 0;
-            const maxAttempts = 10;
-
-            // Use batch results for first attempt
+            
+            // TRY CANDIDATE 1 (BASE)
             if (!serverResults.emails[currentEmail] && !generatedEmails.has(currentEmail)) {
                 isAvailable = true;
             } else {
-                // Email taken, try alternatives
-                while (attempts < maxAttempts) {
-                    attempts++;
-                    let suffix = "";
-                    if (attempts === 1) suffix = getNipPart(nip);
-                    else if (attempts === 2) suffix = getSecondNipPart(nip);
-                    else if (attempts === 3) suffix = getNikPart(nik);
-                    else {
-                        let base = getNipPart(nip) || getNikPart(nik);
-                        suffix = (base || "") + attempts;
-                    }
-                    if (!suffix) suffix = attempts;
-
-                    currentUsername = `${originalUsername}${suffix}`;
-                    currentEmail = `${currentUsername}@sinjaikab.go.id`;
-
-                    if (generatedEmails.has(currentEmail)) continue;
-
-                    const result = await checkEmailAvailability(currentEmail);
-                    if (result.available) {
+                // TRY CANDIDATE 2 (NIP PART 1)
+                const nipPart = getNipPart(nip);
+                if (nipPart) {
+                    currentUsername = `${originalUsername}${nipPart}`;
+                    currentEmail = `${currentUsername}${domain}`;
+                    if (!serverResults.emails[currentEmail] && !generatedEmails.has(currentEmail)) {
                         isAvailable = true;
-                        break;
+                    }
+                }
+
+                // TRY CANDIDATE 3 (NIP PART 2)
+                if (!isAvailable) {
+                    const secondNipPart = getSecondNipPart(nip);
+                    if (secondNipPart) {
+                        currentUsername = `${originalUsername}${secondNipPart}`;
+                        currentEmail = `${currentUsername}${domain}`;
+                        if (!serverResults.emails[currentEmail] && !generatedEmails.has(currentEmail)) {
+                            isAvailable = true;
+                        }
+                    }
+                }
+
+                // FALLBACK TO SEQUENTIAL ONLY IF ALL 3 CANDIDATES ARE TAKEN (VERY RARE)
+                if (!isAvailable) {
+                    let attempts = 3; 
+                    const maxAttempts = 10;
+                    
+                    while (attempts < maxAttempts) {
+                        attempts++;
+                        let suffix = "";
+                        if (attempts === 4) suffix = getNikPart(nik);
+                        else {
+                            let baseSuffix = getNipPart(nip) || getNikPart(nik);
+                            suffix = (baseSuffix || "") + attempts;
+                        }
+                        if (!suffix) suffix = attempts;
+
+                        currentUsername = `${originalUsername}${suffix}`;
+                        currentEmail = `${currentUsername}${domain}`;
+
+                        if (generatedEmails.has(currentEmail)) continue;
+
+                        const result = await checkEmailAvailability(currentEmail);
+                        if (result.available) {
+                            isAvailable = true;
+                            break;
+                        }
                     }
                 }
             }
