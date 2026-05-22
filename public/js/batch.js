@@ -130,122 +130,141 @@ document.addEventListener("DOMContentLoaded", function () {
     else if (finalNips.some((n) => n === ""))
       validationError = "One or more rows are missing a NIP.";
     
-    // No validation for jenisFormasiInput.value or singleUnitKerja anymore, as they are optional.
-    
-    if (!validationError) {
-      for (let i = 0; i < filteredRows.length; i++) {
-        unitKerjaValues.push(singleUnitKerja);
-      }
-    }
-
     if (validationError) {
       alert(validationError);
       return;
+    }
+
+    for (let i = 0; i < filteredRows.length; i++) {
+        unitKerjaValues.push(singleUnitKerja);
     }
 
     generateBtn.disabled = true;
     generateBtn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Memproses...`;
     submitBtn.disabled = true;
     resultsTableBody.innerHTML =
-      '<tr><td colspan="8" class="px-10 py-12 text-center text-emerald-700 font-bold uppercase tracking-widest text-[10px] animate-pulse">Sedang memproses dan memeriksa email...</td></tr>';
+      '<tr><td colspan="8" class="px-10 py-12 text-center text-emerald-700 font-bold uppercase tracking-widest text-[10px] animate-pulse">Sedang memproses dan memeriksa data...</td></tr>';
 
-    const trimmedNiks = finalNiks;
-    const trimmedNips = finalNips;
+    try {
+        const trimmedNiks = finalNiks;
+        const trimmedNips = finalNips;
 
-    const nikCounts = {};
-    for (const nik of trimmedNiks) {
-      if (nik) nikCounts[nik] = (nikCounts[nik] || 0) + 1;
-    }
-    const nipCounts = {};
-    for (const nip of trimmedNips) {
-      nipCounts[nip] = (nipCounts[nip] || 0) + 1;
-    }
-
-    const generatedEmails = new Set();
-    userBatch = [];
-    for (let i = 0; i < filteredRows.length; i++) {
-      const name = finalNames[i];
-      const cleanedName = name.replace(/[,.']/g, "");
-      const nik = trimmedNiks[i] || "";
-      const nip = trimmedNips[i] || ""; // New
-      const jenisFormasi = jenisFormasiInput.value; // New
-      const unitKerja = unitKerjaValues[i];
-      const password = generatePassword(cleanedName, nip);
-      const { username: originalUsername, email: originalEmail } =
-        generateEmail(cleanedName);
-
-      let currentUsername = originalUsername;
-      let currentEmail = originalEmail;
-      let isAvailable = false;
-      let attempts = 0;
-      const maxAttempts = 10;
-
-      while (attempts < maxAttempts) {
-        attempts++;
-
-        let suffix = "";
-        if (attempts === 1) suffix = getNipPart(nip);
-        else if (attempts === 2) suffix = getSecondNipPart(nip);
-        else if (attempts === 3) suffix = getNikPart(nik);
-        else {
-          let base = getNipPart(nip) || getNikPart(nik);
-          suffix = (base || "") + attempts;
+        const nikCounts = {};
+        for (const nik of trimmedNiks) {
+            if (nik) nikCounts[nik] = (nikCounts[nik] || 0) + 1;
         }
-        if (!suffix) suffix = attempts;
-
-        if (generatedEmails.has(currentEmail)) {
-          currentUsername = `${originalUsername}${suffix}`;
-          currentEmail = `${currentUsername}@sinjaikab.go.id`;
-          continue;
+        const nipCounts = {};
+        for (const nip of trimmedNips) {
+            if (nip) nipCounts[nip] = (nipCounts[nip] || 0) + 1;
         }
 
-        const result = await checkEmailAvailability(currentEmail);
-        if (result.available) {
-          isAvailable = true;
-          break;
-        } else {
-          currentUsername = `${originalUsername}${suffix}`;
-          currentEmail = `${currentUsername}@sinjaikab.go.id`;
+        const initialEmails = filteredRows.map(row => {
+            const cleanedName = row.name.replace(/[,.']/g, "");
+            return generateEmail(cleanedName).email;
+        });
+
+        // 1. Batch check NIK, NIP, and Initial Emails
+        const batchCheckResult = await fetch("/user/batch_check_availability", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-Requested-With": "XMLHttpRequest",
+            },
+            body: JSON.stringify({
+                emails: initialEmails,
+                niks: trimmedNiks,
+                nips: trimmedNips
+            })
+        }).then(res => res.json());
+
+        const serverResults = batchCheckResult.results || { emails: {}, niks: {}, nips: {} };
+
+        const generatedEmails = new Set();
+        userBatch = [];
+
+        // 2. Process rows
+        for (let i = 0; i < filteredRows.length; i++) {
+            const name = finalNames[i];
+            const cleanedName = name.replace(/[,.']/g, "");
+            const nik = trimmedNiks[i] || "";
+            const nip = trimmedNips[i] || "";
+            const jenisFormasi = jenisFormasiInput.value;
+            const unitKerja = unitKerjaInputSingle.value;
+            const password = generatePassword(cleanedName, nip);
+            
+            const { username: originalUsername, email: originalEmail } = generateEmail(cleanedName);
+
+            let currentUsername = originalUsername;
+            let currentEmail = originalEmail;
+            let isAvailable = false;
+            let attempts = 0;
+            const maxAttempts = 10;
+
+            // Use batch results for first attempt
+            if (!serverResults.emails[currentEmail] && !generatedEmails.has(currentEmail)) {
+                isAvailable = true;
+            } else {
+                // Email taken, try alternatives
+                while (attempts < maxAttempts) {
+                    attempts++;
+                    let suffix = "";
+                    if (attempts === 1) suffix = getNipPart(nip);
+                    else if (attempts === 2) suffix = getSecondNipPart(nip);
+                    else if (attempts === 3) suffix = getNikPart(nik);
+                    else {
+                        let base = getNipPart(nip) || getNikPart(nik);
+                        suffix = (base || "") + attempts;
+                    }
+                    if (!suffix) suffix = attempts;
+
+                    currentUsername = `${originalUsername}${suffix}`;
+                    currentEmail = `${currentUsername}@sinjaikab.go.id`;
+
+                    if (generatedEmails.has(currentEmail)) continue;
+
+                    const result = await checkEmailAvailability(currentEmail);
+                    if (result.available) {
+                        isAvailable = true;
+                        break;
+                    }
+                }
+            }
+
+            const isDuplicate = generatedEmails.has(currentEmail);
+            if (isDuplicate) isAvailable = false;
+
+            userBatch.push({
+                name: cleanedName.trim(),
+                nik: nik,
+                nip: nip,
+                jabatan: "",
+                jenisFormasi: jenisFormasi,
+                unitKerja: unitKerja.trim(),
+                generatedUsername: currentUsername,
+                email: currentEmail,
+                password: password,
+                quota: 1024,
+                isDuplicate: isDuplicate,
+                isNikDuplicate: nikCounts[nik] > 1,
+                isNikInDb: serverResults.niks[nik] || false,
+                isNipDuplicate: nipCounts[nip] > 1,
+                isNipInDb: serverResults.nips[nip] || false,
+                isAvailable: isAvailable,
+                status: "pending",
+            });
+            generatedEmails.add(currentEmail);
         }
-      }
 
-      const isDuplicate = generatedEmails.has(currentEmail);
-      if (isDuplicate) isAvailable = false;
-
-      const isNikDuplicate = nikCounts[nik] > 1;
-      const nikCheckResult = await checkNikOnServer(nik);
-      const isNikInDb = nikCheckResult.exists;
-
-      const isNipDuplicate = nipCounts[nip] > 1; // New
-      const nipCheckResult = await checkNipOnServer(nip); // New
-      const isNipInDb = nipCheckResult.exists; // New
-
-      userBatch.push({
-        name: cleanedName.trim(),
-        nik: nik,
-        nip: nip, // New
-        jabatan: "", // Removed from input but kept in object for model safety if needed
-        jenisFormasi: jenisFormasi, // New
-        unitKerja: unitKerja.trim(),
-        generatedUsername: currentUsername,
-        email: currentEmail,
-        password: password,
-        quota: 1024,
-        isDuplicate: isDuplicate,
-        isNikDuplicate: isNikDuplicate,
-        isNikInDb: isNikInDb,
-        isNipDuplicate: isNipDuplicate, // New
-        isNipInDb: isNipInDb, // New
-        isAvailable: isAvailable,
-        status: "pending",
-      });
-      generatedEmails.add(currentEmail);
+        renderResults(userBatch);
+    } catch (error) {
+        console.error("Preview error:", error);
+        alert("Gagal memproses preview: " + error.message);
+        resultsTableBody.innerHTML = '<tr><td colspan="8" class="px-10 py-12 text-center text-red-500 font-bold uppercase tracking-widest text-[10px]">Gagal memproses preview. Silakan coba lagi.</td></tr>';
+    } finally {
+        generateBtn.disabled = false;
+        generateBtn.innerHTML = `<i class="fas fa-eye mr-2 text-white/80"></i> Preview`;
+        updateSubmitButtonState();
     }
-
-    renderResults(userBatch);
-    generateBtn.disabled = false;
-    generateBtn.innerHTML = `<i class="fas fa-eye mr-2 text-white/80"></i> Preview`;
-    updateSubmitButtonState();
   });
 
   submitBtn.addEventListener("click", async function () {

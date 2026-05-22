@@ -131,4 +131,67 @@ class User extends BaseController
             return $this->response->setStatusCode(500)->setJSON(['exists' => false, 'message' => 'An unexpected error occurred while checking NIK/NIP availability.']);
         }
     }
+
+    public function batch_check_availability()
+    {
+        if (strtolower($this->request->getMethod()) !== 'post') {
+            return $this->response->setStatusCode(405)->setJSON(['success' => false, 'message' => 'Method not allowed.']);
+        }
+
+        $input = $this->request->getJSON();
+        $emails = $input->emails ?? [];
+        $niks = array_filter($input->niks ?? []);
+        $nips = array_filter($input->nips ?? []);
+
+        $emailModel = new EmailModel();
+        
+        $results = [
+            'emails' => [],
+            'niks' => [],
+            'nips' => []
+        ];
+
+        try {
+            if (!empty($emails)) {
+                $existingEmails = $emailModel->whereIn('email', $emails)->findColumn('email') ?: [];
+                
+                // Also check UserModel if it exists
+                $existingUserEmails = [];
+                try {
+                    $userModel = new UserModel();
+                    if ($userModel->db->tableExists($userModel->getTable())) {
+                        $existingUserEmails = $userModel->whereIn('user_email', $emails)->findColumn('user_email') ?: [];
+                    }
+                } catch (\Throwable $e) {}
+
+                $allExistingEmails = array_unique(array_merge($existingEmails, $existingUserEmails));
+                $allExistingEmailsMap = array_flip($allExistingEmails);
+
+                foreach ($emails as $email) {
+                    $results['emails'][$email] = isset($allExistingEmailsMap[$email]);
+                }
+            }
+
+            if (!empty($niks)) {
+                $existingNiks = $emailModel->whereIn('nik', $niks)->findColumn('nik') ?: [];
+                $existingNiksMap = array_flip($existingNiks);
+                foreach ($niks as $nik) {
+                    $results['niks'][$nik] = isset($existingNiksMap[$nik]);
+                }
+            }
+
+            if (!empty($nips)) {
+                $existingNips = $emailModel->whereIn('nip', $nips)->findColumn('nip') ?: [];
+                $existingNipsMap = array_flip($existingNips);
+                foreach ($nips as $nip) {
+                    $results['nips'][$nip] = isset($existingNipsMap[$nip]);
+                }
+            }
+
+            return $this->response->setJSON(['success' => true, 'results' => $results]);
+        } catch (\Throwable $e) {
+            log_message('error', '[User Controller] Batch check failed: ' . $e->getMessage());
+            return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
 }

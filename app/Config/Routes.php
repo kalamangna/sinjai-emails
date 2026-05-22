@@ -149,6 +149,7 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
     $routes->post('user/update_password', '\App\Domains\Auth\User::updatePassword');
     $routes->post('user/check_email', '\App\Domains\Auth\User::checkEmailAvailability');
     $routes->post('user/check_niknip', '\App\Domains\Auth\User::check_niknip');
+    $routes->post('user/batch_check_availability', '\App\Domains\Auth\User::batch_check_availability');
     
     // User Management (Super Admin Only)
     $routes->group('auth/users', ['filter' => 'role:super_admin'], function ($routes) {

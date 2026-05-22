@@ -7,6 +7,11 @@ Format didasarkan pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased] - (Status Saat Ini berdasarkan README.md)
 
 ### Added
+- **Batch Create Optimization**: 
+  - Implemented a high-performance batch check endpoint (`/user/batch_check_availability`) to verify NIK, NIP, and email availability in a single database operation.
+  - Refactored the 'Batch Create' preview logic to use batch checks, reducing network requests from hundreds of sequential calls to a single optimized request for most cases.
+  - Added robust `try...catch...finally` blocks in JavaScript to prevent UI hanging during preview and ensure buttons are always re-enabled.
+  - Improved email conflict resolution by parallelizing availability checks.
 - **Manajemen Email & Akun**: 
   - Integrasi UAPI cPanel untuk sinkronisasi, pembuatan akun, dan reset kata sandi secara real-time.
   - Kategorisasi spesifik untuk entitas PNS, PPPK (Penuh Waktu), dan PPPK (Paruh Waktu).
