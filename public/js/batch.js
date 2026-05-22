@@ -669,10 +669,45 @@ document.addEventListener("DOMContentLoaded", function () {
           return;
       }
       user.name = cleanedNewContent;
-      const { username, email } = generateEmail(cleanedNewContent);
-      user.generatedUsername = username;
-      user.email = email;
+      
+      const { username: originalUsername } = generateEmail(cleanedNewContent);
+      const domain = "@sinjaikab.go.id";
+      
+      // Try Candidates like in generateBtn
+      let candidates = [
+          `${originalUsername}${domain}`,
+          getNipPart(user.nip) ? `${originalUsername}${getNipPart(user.nip)}${domain}` : null,
+          getSecondNipPart(user.nip) ? `${originalUsername}${getSecondNipPart(user.nip)}${domain}` : null
+      ].filter(c => c !== null);
+
+      let foundAvailable = false;
+      for (let candidateEmail of candidates) {
+          // Check if this candidate is already used by another row in the current batch
+          const isDuplicateInBatch = userBatch.some((u, i) => u.email === candidateEmail && i !== index);
+          if (isDuplicateInBatch) continue;
+
+          const result = await checkEmailAvailability(candidateEmail);
+          if (result.available) {
+              user.email = candidateEmail;
+              user.generatedUsername = candidateEmail.split('@')[0];
+              user.isAvailable = true;
+              foundAvailable = true;
+              break;
+          }
+      }
+
+      if (!foundAvailable) {
+          // If none of the 3 preferred candidates are available, just use the first one and let it be "Unavailable"
+          // Or we could do the full fallback, but usually 3 is enough for manual edits.
+          user.email = candidates[0];
+          user.generatedUsername = candidates[0].split('@')[0];
+          user.isAvailable = false;
+      }
+
       user.password = generatePassword(cleanedNewContent, user.nip);
+      renderResults(userBatch);
+      updateSubmitButtonState();
+      return;
     } else if (editedCell.classList.contains("editable-nip")) {
       if (newContent === user.nip) return;
       user.nip = newContent;
@@ -694,7 +729,7 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    const statusCell = editedCell.closest("tr").cells[7];
+    const statusCell = editedCell.closest("tr").cells[6];
     statusCell.innerHTML = '<span class="badge bg-info">Re-checking...</span>';
     const result = await checkEmailAvailability(user.email);
     user.isAvailable = result.available;
