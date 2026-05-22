@@ -102,6 +102,7 @@
                         <th class="px-6 py-3 border-b border-slate-200">Email</th>
                         <th class="px-6 py-3 border-b border-slate-200">Password</th>
                         <th class="px-6 py-3 border-b border-slate-200 text-center">Status</th>
+                        <th class="px-6 py-3 border-b border-slate-200 text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 bg-white">

@@ -598,6 +598,11 @@ document.addEventListener("DOMContentLoaded", function () {
             <td class="px-6 py-5 whitespace-nowrap font-bold text-gray-700 tracking-tight lowercase">${emailCellContent}</td>
             <td class="px-6 py-5 whitespace-nowrap">${passwordCellContent}</td>
             <td class="px-6 py-5 text-center whitespace-nowrap">${statusBadge}</td>
+            <td class="px-6 py-5 text-center whitespace-nowrap">
+                <button type="button" class="delete-row-btn text-red-400 hover:text-red-600 transition-colors p-2" data-index="${index}" title="Hapus baris ini">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+            </td>
         </tr>`;
       resultsTableBody.insertAdjacentHTML("beforeend", row);
 
@@ -617,6 +622,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
     addEditableListeners();
   }
+
+  resultsTableBody.addEventListener("click", function (e) {
+    const deleteBtn = e.target.closest(".delete-row-btn");
+    if (deleteBtn) {
+      const index = parseInt(deleteBtn.dataset.index);
+      if (confirm("Apakah Anda yakin ingin menghapus baris ini dari daftar preview?")) {
+        userBatch.splice(index, 1);
+        renderResults(userBatch);
+        updateSubmitButtonState();
+      }
+    }
+  });
 
   function addEditableListeners() {
     document
