@@ -160,7 +160,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const allCandidates = [];
         filteredRows.forEach(row => {
-            const cleanedName = row.name.replace(/[,.']/g, "");
+            const cleanedName = cleanName(row.name);
             const { username: originalUsername } = generateEmail(cleanedName);
             const domain = "@sinjaikab.go.id";
             
@@ -198,7 +198,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // 2. Process rows
         for (let i = 0; i < filteredRows.length; i++) {
             const name = finalNames[i];
-            const cleanedName = name.replace(/[,.']/g, "");
+            const cleanedName = cleanName(name);
             const nik = trimmedNiks[i] || "";
             const nip = trimmedNips[i] || "";
             const jenisFormasi = jenisFormasiInput.value;
@@ -418,13 +418,26 @@ document.addEventListener("DOMContentLoaded", function () {
     resultsLog.scrollTop = resultsLog.scrollHeight;
   }
 
+  function cleanName(name) {
+    if (!name) return "";
+    // 1. Remove all punctuation (keep only letters, numbers, and spaces)
+    let cleaned = name.replace(/[^a-zA-Z0-9\s]/g, "");
+    
+    // 2. Normalize spaces and check if it's a "spaced out" single word (e.g., "A H M A D")
+    let words = cleaned.trim().split(/\s+/);
+    if (words.length > 1 && words.every(w => w.length === 1)) {
+        return words.join("").toUpperCase();
+    }
+    
+    return words.join(" ").toUpperCase();
+  }
+
   function generateEmail(name) {
     const domain = "@sinjaikab.go.id";
     const maxUsernameLength = 30 - domain.length;
     const username = name
       .toLowerCase()
       .replace(/\s+/g, "")
-      .replace(/[,.]/g, "")
       .substring(0, maxUsernameLength);
     return { username: username, email: `${username}${domain}` };
   }
@@ -633,12 +646,16 @@ document.addEventListener("DOMContentLoaded", function () {
     const newContent = editedCell.textContent.trim();
 
     if (editedCell.classList.contains("editable-name")) {
-      if (newContent === user.name) return;
-      user.name = newContent;
-      const { username, email } = generateEmail(newContent);
+      const cleanedNewContent = cleanName(newContent);
+      if (cleanedNewContent === user.name) {
+          editedCell.textContent = user.name;
+          return;
+      }
+      user.name = cleanedNewContent;
+      const { username, email } = generateEmail(cleanedNewContent);
       user.generatedUsername = username;
       user.email = email;
-      user.password = generatePassword(newContent, user.nip);
+      user.password = generatePassword(cleanedNewContent, user.nip);
     } else if (editedCell.classList.contains("editable-nip")) {
       if (newContent === user.nip) return;
       user.nip = newContent;
