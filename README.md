@@ -103,7 +103,16 @@ Skrip ini secara cerdas membagi tugas:
 - **Daily**: Menyinkronkan akun **cPanel** dan status **TTE BSrE**.
 - **Monthly**: Memperbarui data **API Pegawai** dan masa aktif domain **PANDI**.
 
-Seluruh aktivitas akan dicatat dalam file log di `writable/logs/cron_sync.log`.
+### 📢 Notifikasi Telegram
+
+Sistem ini mendukung laporan otomatis ke Telegram. Untuk mengaktifkannya, tambahkan kredensial berikut ke file `.env`:
+
+```env
+TELEGRAM_BOT_TOKEN=8649414024:AAFXzhgenS3MW5ZbRg6w01DQWYR2m14xFJo
+TELEGRAM_CHAT_ID=-1003929558502
+```
+
+Seluruh aktivitas akan dicatat dalam file log di `writable/logs/cron_sync.log` dan dikirimkan sebagai ringkasan ke Telegram.
 
 ---
 Dikembangkan oleh **Diskominfo-SP Sinjai** | &copy; 2026
