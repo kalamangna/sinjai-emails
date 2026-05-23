@@ -67,8 +67,9 @@ class SyncAllCommand extends BaseCommand
      * @var array
      */
     protected $options = [
-        '--daily'   => 'Menjalankan tugas harian (cPanel dan TTE)',
-        '--monthly' => 'Menjalankan tugas bulanan (Pegawai dan Website)',
+        '--daily'   => 'Menjalankan tugas harian (Status TTE)',
+        '--weekly'  => 'Menjalankan tugas mingguan (cPanel dan Website)',
+        '--monthly' => 'Menjalankan tugas bulanan (Pegawai)',
     ];
 
     /**
@@ -79,33 +80,34 @@ class SyncAllCommand extends BaseCommand
     public function run(array $params)
     {
         $isDaily = CLI::getOption('daily') !== null;
+        $isWeekly = CLI::getOption('weekly') !== null;
         $isMonthly = CLI::getOption('monthly') !== null;
-        $runAll = !$isDaily && !$isMonthly;
+        $runAll = !$isDaily && !$isWeekly && !$isMonthly;
 
         $this->telegram = new TelegramLibrary();
-        $modeName = $runAll ? 'PENUH' : ($isDaily ? 'HARIAN' : 'BULANAN');
+        $modeName = $runAll ? 'PENUH' : ($isDaily ? 'HARIAN' : ($isWeekly ? 'MINGGUAN' : 'BULANAN'));
         
         CLI::write("Starting Synchronization Process ($modeName)...", 'blue');
         $this->telegram->sendMessage("🔄 <b>Sinkronisasi $modeName Dimulai</b>\nSistem sedang memperbarui data...");
 
+        // Phase: TTE (Harian / All)
         if ($runAll || $isDaily) {
-            // 1. cPanel Synchronization
-            $this->syncCpanel();
-            
-            // 2. TTE Status Synchronization
             $this->syncTteStatus();
         }
         
-        if ($runAll || $isMonthly) {
-            // 3. Pegawai Data Synchronization
-            $this->syncPegawaiData();
-
-            // 4. Website Expiration Synchronization
+        // Phase: cPanel & Website (Mingguan / All)
+        if ($runAll || $isWeekly) {
+            $this->syncCpanel();
             $this->syncWebExpirations();
         }
+
+        // Phase: Pegawai (Bulanan / All)
+        if ($runAll || $isMonthly) {
+            $this->syncPegawaiData();
+        }
         
-        // Record stats history after daily or full sync
-        if ($runAll || $isDaily) {
+        // Record stats history (Only after weekly or all sync, since cpanel storage data is updated weekly)
+        if ($runAll || $isWeekly) {
             $this->recordStatsHistory();
         }
 
