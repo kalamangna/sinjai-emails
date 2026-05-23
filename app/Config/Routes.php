@@ -80,6 +80,8 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         $routes->group('api/v1', ['filter' => 'api_gateway'], function ($routes) {
             $routes->get('emails', '\App\Domains\Api\GatewayController::listEmails');
             $routes->get('pppk', '\App\Domains\Api\GatewayController::listPppk');
+            $routes->get('pns', '\App\Domains\Api\GatewayController::listPns');
+            $routes->get('unit/(:num)', '\App\Domains\Api\GatewayController::listByUnit/$1');
         });
 
         // Destructive Routes (Super Admin Only)

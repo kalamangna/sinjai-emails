@@ -65,4 +65,46 @@ class GatewayController extends BaseController
             'data'   => $pppk
         ]);
     }
+
+    /**
+     * List PNS employees
+     */
+    public function listPns()
+    {
+        $statusAsnModel = new StatusAsnModel();
+        $pnsStatus = $statusAsnModel->where('nama_status_asn', 'PNS')->first();
+
+        if (!$pnsStatus) {
+            return $this->respond(['status' => 'success', 'count' => 0, 'data' => []]);
+        }
+
+        $pns = $this->emailModel->select('email, name, nip, jabatan, humandiskquota, humandiskused, bsre_status')
+            ->where('status_asn_id', $pnsStatus['id'])
+            ->orderBy('name', 'ASC')
+            ->findAll();
+
+        return $this->respond([
+            'status' => 'success',
+            'count'  => count($pns),
+            'data'   => $pns
+        ]);
+    }
+
+    /**
+     * List emails by Unit Kerja ID
+     */
+    public function listByUnit($unitId)
+    {
+        $emails = $this->emailModel->select('email, name, nip, jabatan, humandiskquota, humandiskused, bsre_status')
+            ->where('unit_kerja_id', $unitId)
+            ->orderBy('name', 'ASC')
+            ->findAll();
+
+        return $this->respond([
+            'status' => 'success',
+            'count'  => count($emails),
+            'unit_id' => $unitId,
+            'data'   => $emails
+        ]);
+    }
 }

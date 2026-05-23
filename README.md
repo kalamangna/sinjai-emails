@@ -36,7 +36,11 @@ Aplikasi ini menerapkan standar estetika **"Slate Clean Government"**—antarmuk
 
 ### 🌐 API Gateway (v1)
 Penyediaan data internal yang aman untuk integrasi lintas sektoral di Pemkab Sinjai menggunakan standar *Bearer Token*:
-- **Endpoints:** `/api/v1/emails`, `/api/v1/pppk`.
+- **Endpoints:** 
+  - `GET /api/v1/emails`: Seluruh email aktif.
+  - `GET /api/v1/pppk`: Data khusus pegawai PPPK.
+  - `GET /api/v1/pns`: Data khusus pegawai PNS.
+  - `GET /api/v1/unit/{id}`: Data email berdasarkan ID Unit Kerja.
 - **Keamanan:** Terproteksi melalui `ApiGatewayFilter` dengan validasi token di `.env`.
 
 ### 📄 Sistem Ekspor
