@@ -23,8 +23,8 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         // API Gateway (v1) - External Integration
         $routes->group('api/v1', ['filter' => 'api_gateway'], function ($routes) {
             $routes->get('emails', '\App\Domains\Api\GatewayController::listEmails');
-            $routes->get('pppk-pw', '\App\Domains\Api\GatewayController::listPppkPenuh');
-            $routes->get('pppk-pt', '\App\Domains\Api\GatewayController::listPppkParuh');
+            $routes->get('pppk', '\App\Domains\Api\GatewayController::listPppkPenuh');
+            $routes->get('pppk-pw', '\App\Domains\Api\GatewayController::listPppkParuh');
             $routes->get('pns', '\App\Domains\Api\GatewayController::listPns');
             $routes->get('unit/(:num)', '\App\Domains\Api\GatewayController::listByUnit/$1');
         });

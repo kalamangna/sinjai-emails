@@ -29,10 +29,14 @@ class GatewayController extends BaseController
         // Fallback to env if not in database yet (though sync:all should handle it)
         $displayToken = $token['value'] ?? env('API_GATEWAY_TOKEN') ?? 'BELUM_DIATUR';
 
+        $unitModel = new \App\Domains\UnitKerja\UnitKerjaModel();
+        $units = $unitModel->orderBy('nama_unit_kerja', 'ASC')->findAll();
+
         $data = [
             'title' => 'API Gateway Documentation',
             'token' => $displayToken,
-            'base_url' => base_url('api/v1')
+            'base_url' => base_url('api/v1'),
+            'units' => $units
         ];
 
         return view('api/index', $data);

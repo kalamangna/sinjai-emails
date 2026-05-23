@@ -59,22 +59,22 @@
                 'desc' => 'Mengambil daftar akun email yang berstatus sebagai Pegawai Negeri Sipil (PNS).',
             ],
             [
-                'name' => 'Data PPPK (Penuh Waktu)',
+                'name' => 'Data PPPK',
                 'method' => 'GET',
-                'path' => '/pppk-pw',
+                'path' => '/pppk',
                 'desc' => 'Mengambil daftar akun email untuk kategori PPPK Penuh Waktu.',
             ],
             [
                 'name' => 'Data PPPK (Paruh Waktu)',
                 'method' => 'GET',
-                'path' => '/pppk-pt',
+                'path' => '/pppk-pw',
                 'desc' => 'Mengambil daftar akun email untuk kategori PPPK Paruh Waktu.',
             ],
             [
                 'name' => 'Filter Per Unit Kerja',
                 'method' => 'GET',
                 'path' => '/unit/{id}',
-                'desc' => 'Mengambil daftar email yang terdaftar pada unit kerja tertentu berdasarkan ID Unit.',
+                'desc' => 'Mengambil daftar email yang terdaftar pada unit kerja tertentu berdasarkan ID Unit (Lihat daftar ID di bawah).',
             ],
         ];
 
@@ -118,6 +118,24 @@
                 </div>
             </div>
         <?php endforeach; ?>
+    </div>
+
+    <!-- Daftar ID Unit Kerja -->
+    <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Daftar ID Unit Kerja</h3>
+            <span class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Gunakan ID untuk endpoint /unit/{id}</span>
+        </div>
+        <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-2 max-h-[400px] overflow-y-auto custom-scrollbar pr-4">
+                <?php foreach ($units as $unit): ?>
+                    <div class="flex justify-between items-center border-b border-slate-50 py-1 hover:bg-slate-50 transition-colors px-2 rounded">
+                        <span class="text-[10px] font-medium text-slate-600 truncate mr-2" title="<?= esc($unit['nama_unit_kerja']) ?>"><?= esc($unit['nama_unit_kerja']) ?></span>
+                        <span class="text-[10px] font-black text-slate-800 font-mono">ID: <?= $unit['id'] ?></span>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
     </div>
 </div>
 <?php $this->endSection() ?>
