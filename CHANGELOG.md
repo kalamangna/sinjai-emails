@@ -22,6 +22,10 @@ Format didasarkan pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - Penambahan custom command `php spark sync:all` untuk otomatisasi sinkronisasi massal.
   - Skrip mencakup sinkronisasi Akun cPanel, Status TTE BSrE, dan Data Pegawai dalam satu alur kerja.
   - Dirancang untuk dijalankan melalui Cron Job guna pembaruan data berkala tanpa intervensi manual.
+- **Notifikasi Telegram**: 
+  - Implementasi `TelegramLibrary` untuk pengiriman laporan otomatis ke Channel atau Grup Telegram.
+  - Integrasi notifikasi pada skrip sinkronisasi: mengirim pesan saat proses dimulai dan ringkasan statistik detail (jumlah berhasil/gagal/tetap) saat proses selesai.
+  - Mendukung konfigurasi bot token dan chat ID secara aman melalui file `.env`.
 - **Manajemen Email & Akun**: 
   - Integrasi UAPI cPanel untuk sinkronisasi, pembuatan akun, dan reset kata sandi secara real-time.
   - Kategorisasi spesifik untuk entitas PNS, PPPK (Penuh Waktu), dan PPPK (Paruh Waktu).
