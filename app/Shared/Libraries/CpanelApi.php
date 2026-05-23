@@ -19,6 +19,10 @@ class CpanelApi
         $host = trim($this->config->cpanel_host ?? '');
         $port = trim((string)($this->config->cpanel_port ?? ''));
 
+        // Aggressively clean: Remove quotes if they exist in the string
+        $host = str_replace(['"', "'"], '', $host);
+        $port = str_replace(['"', "'"], '', $port);
+
         if (empty($host) || empty($port)) {
             throw new Exception("Konfigurasi cPanel tidak lengkap di .env (Host: '$host', Port: '$port'). Pastikan CPANEL_HOST dan CPANEL_PORT sudah diisi.");
         }
