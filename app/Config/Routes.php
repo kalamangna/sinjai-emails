@@ -74,14 +74,13 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
             $routes->post('api_generate_pdf', '\App\Domains\Email\EmailApi::api_generate_pdf');
             $routes->get('api_unit_emails/(:num)', '\App\Domains\Email\EmailApi::api_unit_emails/$1');
             $routes->get('api_download_zip/(:num)', '\App\Domains\Email\EmailApi::api_download_zip/$1');
-            });
+        });
 
-            // API Gateway (v1) - External Integration
-            $routes->group('api/v1', ['filter' => 'api_gateway'], function ($routes) {
+        // API Gateway (v1) - External Integration
+        $routes->group('api/v1', ['filter' => 'api_gateway'], function ($routes) {
             $routes->get('emails', '\App\Domains\Api\GatewayController::listEmails');
             $routes->get('pppk', '\App\Domains\Api\GatewayController::listPppk');
-            });
-            });
+        });
 
         // Destructive Routes (Super Admin Only)
         $routes->group('', ['filter' => 'role:super_admin'], function ($routes) {
