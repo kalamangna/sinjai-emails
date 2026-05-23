@@ -95,8 +95,8 @@ chmod +x sync.sh
 # 1. Setiap Hari jam 02:00 AM (cPanel & TTE)
 0 2 * * * /home/tte/sinjai-emails/sync.sh daily
 
-# 2. Setiap Tanggal 1 jam 04:00 AM (Pegawai & Website)
-0 4 1 * * /home/tte/sinjai-emails/sync.sh monthly
+# 2. Setiap Tanggal 25 jam 04:00 AM (Pegawai & Website)
+0 4 25 * * /home/tte/sinjai-emails/sync.sh monthly
 ```
 
 Skrip ini secara cerdas membagi tugas:
