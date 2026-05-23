@@ -26,6 +26,11 @@ Format didasarkan pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - Implementasi `TelegramLibrary` untuk pengiriman laporan otomatis ke Channel atau Grup Telegram.
   - Integrasi notifikasi pada skrip sinkronisasi: mengirim pesan saat proses dimulai dan ringkasan statistik detail (jumlah berhasil/gagal/tetap) saat proses selesai.
   - Mendukung konfigurasi bot token dan chat ID secara aman melalui file `.env`.
+- **Indikator Waktu Sinkronisasi Spesifik**:
+  - `SyncAllCommand` kini mencatat waktu penyelesaian secara individual untuk setiap fase (`last_sync_tte`, `last_sync_pegawai`, `last_sync_website`).
+  - Penambahan tampilan "Terakhir Sync" di Dashboard utama.
+  - Penambahan informasi waktu sinkronisasi khusus (TTE & Pegawai) pada halaman Detail Akun Email.
+  - Penambahan informasi waktu sinkronisasi masa aktif domain pada halaman Website Desa & Kelurahan.
 - **Manajemen Email & Akun**: 
   - Integrasi UAPI cPanel untuk sinkronisasi, pembuatan akun, dan reset kata sandi secara real-time.
   - Kategorisasi spesifik untuk entitas PNS, PPPK (Penuh Waktu), dan PPPK (Paruh Waktu).

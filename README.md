@@ -103,6 +103,8 @@ Skrip ini secara cerdas membagi tugas:
 - **Daily**: Menyinkronkan akun **cPanel** dan status **TTE BSrE**.
 - **Monthly**: Memperbarui data **API Pegawai** dan masa aktif domain **PANDI**.
 
+Sistem secara transparan mencatat dan menampilkan waktu terakhir masing-masing sinkronisasi tersebut di **Dashboard**, **Detail Akun**, dan **Monitoring Website** untuk memastikan kesegaran data.
+
 ### 📢 Notifikasi Telegram
 
 Sistem ini mendukung laporan otomatis ke Telegram. Untuk mengaktifkannya, tambahkan kredensial berikut ke file `.env`:
