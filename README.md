@@ -24,9 +24,14 @@ Aplikasi ini menerapkan standar estetika **"Slate Clean Government"**—antarmuk
 
 ### 📥 Operasi Batch (XLSX)
 - **Mesin Spreadsheet:** Menggunakan `PhpSpreadsheet` untuk pemrosesan file Excel yang tangguh.
-- **Preview Performa Tinggi:** Implementasi *Multi-Candidate Batch Check* yang mengoptimalkan validasi ratusan data (NIP, NIK, Email) dalam satu request, menghilangkan antrian request sekuensial.
-- **Pembersihan Nama Cerdas:** Otomatisasi pembersihan tanda baca, perbaikan format nama yang terpisah spasi, dan standarisasi casing untuk data yang bersih dan konsisten.
-- **Handler Terpadu:** Template khusus untuk **Batch Create**, **Batch Update**, dan **Batch PK (Perjanjian Kerja)** dengan deteksi "No-Change" untuk optimasi database.
+- **Preview Performa Tinggi:** Sistem *Multi-Candidate Batch Check* untuk validasi massal (NIP, NIK, Email) dalam satu permintaan, mengeliminasi antrian request sekuensial.
+- **Pembersihan Nama Cerdas:** Otomatisasi pembersihan tanda baca, perbaikan format nama yang terpisah spasi (spaced-out), dan standarisasi casing.
+- **Handler Terpadu:** Template khusus untuk **Batch Create**, **Batch Update**, dan **Batch PK** dengan deteksi perubahan data untuk optimasi database.
+
+### 🤖 Notifikasi & Otomatisasi
+- **Laporan Telegram:** Pengiriman ringkasan statistik sinkronisasi (berhasil/gagal/update) secara otomatis ke Channel Telegram.
+- **Penjadwalan Tugas:** Skrip shell terpadu (`sync.sh`) untuk otomatisasi tugas harian (cPanel/TTE) dan bulanan (Pegawai/Website) melalui Cron Job.
+- **Transparansi Data:** Pencatatan dan tampilan waktu sinkronisasi terakhir secara spesifik di setiap modul utama.
 
 ### 📄 Sistem Ekspor
 - **Mesin PDF:** Pelaporan profesional menggunakan `Dompdf`, dioptimalkan untuk standar visual "Slate Clean".
@@ -34,10 +39,10 @@ Aplikasi ini menerapkan standar estetika **"Slate Clean Government"**—antarmuk
 
 ## 🛠 Teknologi
 
-- **Backend:** PHP 8.1+, CodeIgniter 4.x
+- **Backend:** PHP 8.3+, CodeIgniter 4.x
 - **Frontend:** Tailwind CSS, Vanilla JS (Performa Tinggi), Alpine.js (Utilitas), Choices.js
 - **Database:** MySQL/MariaDB
-- **Integrasi:** cPanel UAPI, BSrE API, API Pegawai
+- **Integrasi:** cPanel UAPI, BSrE API, API Pegawai, Telegram Bot API
 - **Library:** PhpSpreadsheet, Dompdf, SimpleQR
 
 ## 🏗 Arsitektur
@@ -61,7 +66,7 @@ Proyek ini menggunakan pendekatan **Domain-Driven Design (DDD)** di dalam direkt
 
 ## ⚙️ Persyaratan & Instalasi
 
-1. **PHP 8.1+** dengan ekstensi `intl`, `mbstring`, `gd`, dan `curl`.
+1. **PHP 8.3+** dengan ekstensi `intl`, `mbstring`, `gd`, dan `curl`.
 2. **Composer** untuk manajemen dependensi.
 3. **Node.js** untuk kompilasi Tailwind CSS.
 4. **Token API cPanel** untuk integrasi server email.
