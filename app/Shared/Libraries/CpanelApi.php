@@ -16,23 +16,28 @@ class CpanelApi
 
     private function make_request(string $module, string $function, string $method = 'GET', array $parameters = [])
     {
-        $host = $this->config->cpanel_host;
-        $port = $this->config->cpanel_port;
+        $host = trim($this->config->cpanel_host ?? '');
+        $port = trim((string)($this->config->cpanel_port ?? ''));
 
         if (empty($host) || empty($port)) {
-            throw new Exception("Konfigurasi cPanel tidak lengkap di .env (Host: '$host', Port: '$port')");
+            throw new Exception("Konfigurasi cPanel tidak lengkap di .env (Host: '$host', Port: '$port'). Pastikan CPANEL_HOST dan CPANEL_PORT sudah diisi.");
         }
 
-        // Clean host from protocol if exists (preventing double https://)
+        // Deep clean host: remove protocol and trailing slashes
         $host = str_replace(['https://', 'http://'], '', $host);
-        
+        $host = rtrim($host, '/');
+
         $url = "https://{$host}:{$port}/execute/{$module}/{$function}";
+
+        // Log the actual URL being hit for debugging (safe because no tokens in URL)
+        log_message('debug', "CpanelApi Request URL: $url");
 
         $client = Services::curlrequest([
             'baseURI' => $url,
             'timeout' => 300,
             'http_errors' => false,
         ]);
+
 
         $headers = [
             'Authorization' => 'cpanel ' . $this->config->cpanel_username . ':' . $this->config->api_token,
