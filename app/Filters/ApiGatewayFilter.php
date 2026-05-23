@@ -30,24 +30,15 @@ class ApiGatewayFilter implements FilterInterface
                 ->setJSON(['status' => 'error', 'message' => 'API Gateway is not properly configured (token missing in .env).']);
         }
 
-        $providedToken = null;
-
-        // 1. Check Bearer Token in Header
         $authHeader = $request->getHeaderLine('Authorization');
-        if (!empty($authHeader) && preg_match('/Bearer\s+(.*)$/i', $authHeader, $matches)) {
-            $providedToken = $matches[1];
-        }
 
-        // 2. Fallback: Check 'token' in Query String (for browser access)
-        if (empty($providedToken)) {
-            $providedToken = $request->getGet('token');
-        }
-
-        if (empty($providedToken)) {
+        if (empty($authHeader) || !preg_match('/Bearer\s+(.*)$/i', $authHeader, $matches)) {
             return Services::response()
                 ->setStatusCode(401)
-                ->setJSON(['status' => 'error', 'message' => 'Unauthorized: Access token is missing. Please provide a Bearer token in the header or a "token" parameter in the URL.']);
+                ->setJSON(['status' => 'error', 'message' => 'Unauthorized: Bearer token is missing in the header.']);
         }
+
+        $providedToken = $matches[1];
 
         if ($providedToken !== $validToken) {
             return Services::response()
