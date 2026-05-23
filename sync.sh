@@ -26,14 +26,14 @@ LOG_FILE="writable/logs/cron_sync.log"
 MODE=$1
 
 if [ "$MODE" == "daily" ]; then
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] Memulai sinkronisasi HARIAN (cPanel & TTE)..." >> "$LOG_FILE"
-    $PHP_BIN spark sync:all --daily >> "$LOG_FILE" 2>&1
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] Memulai sinkronisasi HARIAN (cPanel & TTE)..." | tee -a "$LOG_FILE"
+    $PHP_BIN spark sync:all --daily 2>&1 | tee -a "$LOG_FILE"
 elif [ "$MODE" == "monthly" ]; then
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] Memulai sinkronisasi BULANAN (Pegawai & Website)..." >> "$LOG_FILE"
-    $PHP_BIN spark sync:all --monthly >> "$LOG_FILE" 2>&1
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] Memulai sinkronisasi BULANAN (Pegawai & Website)..." | tee -a "$LOG_FILE"
+    $PHP_BIN spark sync:all --monthly 2>&1 | tee -a "$LOG_FILE"
 else
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] Memulai sinkronisasi PENUH..." >> "$LOG_FILE"
-    $PHP_BIN spark sync:all >> "$LOG_FILE" 2>&1
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] Memulai sinkronisasi PENUH..." | tee -a "$LOG_FILE"
+    $PHP_BIN spark sync:all 2>&1 | tee -a "$LOG_FILE"
 fi
 
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] Sinkronisasi selesai." >> "$LOG_FILE"
