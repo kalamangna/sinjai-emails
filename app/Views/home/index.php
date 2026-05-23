@@ -54,16 +54,6 @@
         </a>
     </div>
 
-    <!-- Grafik Tren (History) -->
-    <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
-        <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
-            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Tren Pertumbuhan Email (30 Hari Terakhir)</h3>
-        </div>
-        <div class="p-6">
-            <div id="emailTrendChart" class="w-full h-[300px]"></div>
-        </div>
-    </div>
-
     <!-- Statistik dan Grafik -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Grafik Status Email -->
@@ -124,6 +114,16 @@
                     <?php endforeach; ?>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Grafik Tren (History) -->
+    <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Tren Pertumbuhan Email (30 Hari Terakhir)</h3>
+        </div>
+        <div class="p-6">
+            <div id="emailTrendChart" class="w-full h-[300px]"></div>
         </div>
     </div>
 </div>
