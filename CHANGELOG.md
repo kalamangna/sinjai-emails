@@ -31,6 +31,20 @@ Format didasarkan pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - Penambahan tampilan "Terakhir Sync" di Dashboard utama.
   - Penambahan informasi waktu sinkronisasi khusus (TTE & Pegawai) pada halaman Detail Akun Email.
   - Penambahan informasi waktu sinkronisasi masa aktif domain pada halaman Website Desa & Kelurahan.
+- **Peningkatan Analitik & Monitoring**:
+  - **Grafik Tren Pertumbuhan**: Implementasi grafik area pada Dashboard yang menampilkan tren pertumbuhan jumlah akun email secara tahunan (data historis 10 tahun terakhir).
+  - **Pencatatan Sejarah Statistik**: Sistem kini secara otomatis mencatat snapshot harian total akun dan penggunaan storage ke tabel baru `email_stats_history`.
+  - **Alert Kuota Otomatis**: Integrasi pengecekan kuota pada sinkronisasi cPanel; mengirimkan peringatan instan ke Telegram jika penggunaan disk akun mencapai >= 90%.
+- **API Gateway (v1)**:
+  - Implementasi *API Gateway* terpusat dengan dukungan otentikasi ganda: *Bearer Token* (untuk integrasi sistem) dan *Session-based* (untuk akses browser pengguna terdaftar).
+  - **Daftar Endpoint Terstandarisasi**:
+    - `GET /api/v1/emails`: Daftar seluruh email aktif.
+    - `GET /api/v1/pns`: Daftar akun pegawai PNS.
+    - `GET /api/v1/pppk`: Daftar akun pegawai PPPK Penuh Waktu.
+    - `GET /api/v1/pppk-pw`: Daftar akun pegawai PPPK Paruh Waktu.
+    - `GET /api/v1/unit/{id}`: Daftar akun berdasarkan ID Unit Kerja.
+  - **Halaman Dokumentasi Interaktif**: Penambahan halaman `/api-docs` yang dapat diakses oleh seluruh pengguna untuk melihat panduan integrasi dan contoh respons JSON.
+  - **Unit Kerja ID Modal**: Penambahan modal interaktif dengan fitur pencarian cepat untuk mempermudah pencarian ID Unit Kerja pada halaman dokumentasi API.
 - **Manajemen Email & Akun**: 
   - Integrasi UAPI cPanel untuk sinkronisasi, pembuatan akun, dan reset kata sandi secara real-time.
   - Kategorisasi spesifik untuk entitas PNS, PPPK (Penuh Waktu), dan PPPK (Paruh Waktu).

@@ -35,13 +35,10 @@ Aplikasi ini menerapkan standar estetika **"Slate Clean Government"**—antarmuk
 - **Transparansi Data:** Pencatatan dan tampilan waktu sinkronisasi terakhir secara spesifik di setiap modul utama.
 
 ### 🌐 API Gateway (v1)
-Penyediaan data internal yang aman untuk integrasi lintas sektoral di Pemkab Sinjai menggunakan standar *Bearer Token*:
-- **Endpoints:** 
-  - `GET /api/v1/emails`: Seluruh email aktif.
-  - `GET /api/v1/pppk`: Data khusus pegawai PPPK.
-  - `GET /api/v1/pns`: Data khusus pegawai PNS.
-  - `GET /api/v1/unit/{id}`: Data email berdasarkan ID Unit Kerja.
-- **Keamanan:** Terproteksi melalui `ApiGatewayFilter` dengan validasi token di `.env`.
+Penyediaan data internal yang aman untuk integrasi lintas sektoral di Pemkab Sinjai:
+- **Endpoints:** `/api/v1/emails`, `/api/v1/pns`, `/api/v1/pppk`, `/api/v1/pppk-pw`, `/api/v1/unit/{id}`.
+- **Keamanan:** Mendukung *Bearer Token* dan *Session-based Access* (untuk pengguna terdaftar).
+- **Dokumentasi:** Halaman panduan interaktif di `/api-docs` lengkap dengan daftar ID Unit Kerja.
 
 ### 📄 Sistem Ekspor
 - **Mesin PDF:** Pelaporan profesional menggunakan `Dompdf`, dioptimalkan untuk standar visual "Slate Clean".
