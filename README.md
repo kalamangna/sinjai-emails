@@ -80,20 +80,26 @@ php spark migrate
 
 ## 🤖 Otomatisasi (Cron Job)
 
-Untuk menjaga data tetap mutakhir, Anda dapat menjadwalkan skrip sinkronisasi massal menggunakan Cron Job:
+Untuk menjaga data tetap mutakhir, Anda dapat menggunakan skrip shell yang telah disediakan:
 
 ```bash
+# Memberikan izin eksekusi (sekali saja)
+chmod +x sync.sh
+
 # Jalankan sinkronisasi secara manual
-php spark sync:all
+./sync.sh
 
 # Contoh penjadwalan Cron Job (Setiap Hari jam 02:00 AM)
-0 2 * * * cd /path/to/your/project && php spark sync:all > writable/logs/cron_sync.log 2>&1
+0 2 * * * /path/to/your/project/sync.sh
 ```
 
 Skrip ini akan secara otomatis:
 1. Menyinkronkan seluruh akun dan kuota dari **cPanel**.
 2. Memperbarui status Sertifikat Elektronik (**BSrE**) untuk semua akun.
 3. Memperbarui data kepegawaian (Jabatan, Pangkat, Golongan) dari **API Pegawai**.
+4. Memperbarui masa aktif domain website (**PANDI/RDAP**).
+
+Seluruh aktivitas akan dicatat dalam file log di `writable/logs/cron_sync.log`.
 
 ---
 Dikembangkan oleh **Diskominfo-SP Sinjai** | &copy; 2026
