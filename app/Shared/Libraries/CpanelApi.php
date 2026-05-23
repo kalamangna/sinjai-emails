@@ -18,13 +18,17 @@ class CpanelApi
     {
         $host = trim($this->config->cpanel_host ?? '');
         $port = trim((string)($this->config->cpanel_port ?? ''));
+        $user = trim($this->config->cpanel_username ?? '');
 
-        // Aggressively clean: Remove quotes if they exist in the string
+        // Detailed logging for debugging
+        log_message('debug', "CpanelApi Config - Host: [$host], Port: [$port], User: [$user]");
+
+        // Aggressively clean: Remove quotes if they exist
         $host = str_replace(['"', "'"], '', $host);
         $port = str_replace(['"', "'"], '', $port);
 
         if (empty($host) || empty($port)) {
-            throw new Exception("Konfigurasi cPanel tidak lengkap di .env (Host: '$host', Port: '$port'). Pastikan CPANEL_HOST dan CPANEL_PORT sudah diisi.");
+            throw new Exception("Konfigurasi cPanel tidak lengkap di .env (Host: '$host', Port: '$port'). Pastikan kunci cpanel.host dan cpanel.port sudah benar.");
         }
 
         // Deep clean host: remove protocol and trailing slashes
@@ -33,15 +37,13 @@ class CpanelApi
 
         $url = "https://{$host}:{$port}/execute/{$module}/{$function}";
 
-        // Log the actual URL being hit for debugging (safe because no tokens in URL)
-        log_message('debug', "CpanelApi Request URL: $url");
+        log_message('debug', "CpanelApi Final URL: $url");
 
+        // Initialize client WITHOUT baseURI to avoid confusion
         $client = Services::curlrequest([
-            'baseURI' => $url,
             'timeout' => 300,
             'http_errors' => false,
         ]);
-
 
         $headers = [
             'Authorization' => 'cpanel ' . $this->config->cpanel_username . ':' . $this->config->api_token,
@@ -55,13 +57,14 @@ class CpanelApi
 
         if ($method === 'POST') {
             $options['form_params'] = $parameters;
-            $response = $client->post('', $options);
+            $response = $client->post($url, $options);
         } else {
             if (!empty($parameters)) {
                 $url .= '?' . http_build_query($parameters);
             }
-            $response = $client->get('', $options);
+            $response = $client->get($url, $options);
         }
+
 
         if ($response->getStatusCode() !== 200) {
             throw new Exception('HTTP Error: ' . $response->getStatusCode() . ' - ' . $response->getReasonPhrase());
