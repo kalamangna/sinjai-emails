@@ -120,7 +120,7 @@
     <!-- Grafik Tren (History) -->
     <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
         <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
-            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Tren Pertumbuhan Email (Per Bulan)</h3>
+            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Tren Pertumbuhan Email (Per Tahun)</h3>
         </div>
         <div class="p-6">
             <div id="emailTrendChart" class="w-full h-[300px]"></div>
@@ -135,10 +135,7 @@
     document.addEventListener("DOMContentLoaded", function() {
         // Chart Tren Pertumbuhan
         const historyData = <?= json_encode($history ?? []) ?>;
-        const months = historyData.map(d => {
-            const date = new Date(d.bulan_tahun + "-01");
-            return date.toLocaleString('id-ID', { month: 'short', year: 'numeric' });
-        });
+        const years = historyData.map(d => d.tahun);
         const accountCounts = historyData.map(d => d.total_akun);
 
         new ApexCharts(document.querySelector("#emailTrendChart"), {
@@ -165,7 +162,7 @@
                 }
             },
             xaxis: {
-                categories: months,
+                categories: years,
                 labels: {
                     style: { fontSize: '10px', fontWeight: 600, colors: '#64748b' }
                 }
@@ -176,7 +173,7 @@
                 }
             },
             tooltip: {
-                x: { format: 'MMMM yyyy' },
+                x: { format: 'yyyy' },
                 style: { fontSize: '10px' }
             }
         }).render();

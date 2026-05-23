@@ -124,12 +124,12 @@ class Home extends BaseController
 
             $last_sync = $appSettingModel->where('key', 'last_sync_time')->select('value')->asArray()->first();
 
-            // Monthly Historical Data (Last 12 months)
-            // Fetch the maximum (latest) total_akun for each month
-            $history_raw = $historyModel->select("DATE_FORMAT(tanggal, '%Y-%m') as bulan_tahun, MAX(total_akun) as total_akun")
-                ->groupBy('bulan_tahun')
-                ->orderBy('bulan_tahun', 'DESC')
-                ->findAll(12);
+            // Yearly Historical Data
+            // Fetch the maximum (latest) total_akun for each year
+            $history_raw = $historyModel->select("DATE_FORMAT(tanggal, '%Y') as tahun, MAX(total_akun) as total_akun")
+                ->groupBy('tahun')
+                ->orderBy('tahun', 'DESC')
+                ->findAll(10); // Show last 10 years
             
             $history = array_reverse($history_raw); // Chronological order
 
