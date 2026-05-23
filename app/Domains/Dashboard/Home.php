@@ -124,9 +124,14 @@ class Home extends BaseController
 
             $last_sync = $appSettingModel->where('key', 'last_sync_time')->select('value')->asArray()->first();
 
-            // Historical Data (Last 30 days)
-            $history = $historyModel->orderBy('tanggal', 'DESC')->findAll(30);
-            $history = array_reverse($history); // For chronological order on chart
+            // Monthly Historical Data (Last 12 months)
+            // Fetch the maximum (latest) total_akun for each month
+            $history_raw = $historyModel->select("DATE_FORMAT(tanggal, '%Y-%m') as bulan_tahun, MAX(total_akun) as total_akun")
+                ->groupBy('bulan_tahun')
+                ->orderBy('bulan_tahun', 'DESC')
+                ->findAll(12);
+            
+            $history = array_reverse($history_raw); // Chronological order
 
             $data = [
                 'email_stats' => $email_stats,
