@@ -93,10 +93,10 @@ chmod +x sync.sh
 
 # Contoh penjadwalan Cron Job
 # 1. Setiap Hari jam 02:00 AM (cPanel & TTE)
-0 2 * * * /path/to/your/project/sync.sh daily
+0 2 * * * /home/tte/sinjai-emails/sync.sh daily
 
 # 2. Setiap Tanggal 1 jam 04:00 AM (Pegawai & Website)
-0 4 1 * * /path/to/your/project/sync.sh monthly
+0 4 1 * * /home/tte/sinjai-emails/sync.sh monthly
 ```
 
 Skrip ini secara cerdas membagi tugas:
