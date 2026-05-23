@@ -59,10 +59,16 @@
                 'desc' => 'Mengambil daftar akun email yang berstatus sebagai Pegawai Negeri Sipil (PNS).',
             ],
             [
-                'name' => 'Data Pegawai PPPK',
+                'name' => 'Data PPPK (Penuh Waktu)',
                 'method' => 'GET',
-                'path' => '/pppk',
-                'desc' => 'Mengambil daftar akun email untuk kategori PPPK (Penuh Waktu dan Paruh Waktu).',
+                'path' => '/pppk-pw',
+                'desc' => 'Mengambil daftar akun email untuk kategori PPPK Penuh Waktu.',
+            ],
+            [
+                'name' => 'Data PPPK (Paruh Waktu)',
+                'method' => 'GET',
+                'path' => '/pppk-pt',
+                'desc' => 'Mengambil daftar akun email untuk kategori PPPK Paruh Waktu.',
             ],
             [
                 'name' => 'Filter Per Unit Kerja',
