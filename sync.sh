@@ -29,10 +29,10 @@ if [ "$MODE" == "daily" ]; then
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] Memulai sinkronisasi HARIAN (TTE)..." | tee -a "$LOG_FILE"
     $PHP_BIN spark sync:all --daily 2>&1 | tee -a "$LOG_FILE"
 elif [ "$MODE" == "weekly" ]; then
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] Memulai sinkronisasi MINGGUAN (cPanel & Website)..." | tee -a "$LOG_FILE"
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] Memulai sinkronisasi MINGGUAN (cPanel)..." | tee -a "$LOG_FILE"
     $PHP_BIN spark sync:all --weekly 2>&1 | tee -a "$LOG_FILE"
 elif [ "$MODE" == "monthly" ]; then
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] Memulai sinkronisasi BULANAN (Pegawai)..." | tee -a "$LOG_FILE"
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] Memulai sinkronisasi BULANAN (Pegawai & Website)..." | tee -a "$LOG_FILE"
     $PHP_BIN spark sync:all --monthly 2>&1 | tee -a "$LOG_FILE"
 else
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] Memulai sinkronisasi PENUH..." | tee -a "$LOG_FILE"

@@ -68,8 +68,8 @@ class SyncAllCommand extends BaseCommand
      */
     protected $options = [
         '--daily'   => 'Menjalankan tugas harian (Status TTE)',
-        '--weekly'  => 'Menjalankan tugas mingguan (cPanel dan Website)',
-        '--monthly' => 'Menjalankan tugas bulanan (Pegawai)',
+        '--weekly'  => 'Menjalankan tugas mingguan (cPanel)',
+        '--monthly' => 'Menjalankan tugas bulanan (Pegawai dan Website)',
     ];
 
     /**
@@ -95,15 +95,15 @@ class SyncAllCommand extends BaseCommand
             $this->syncTteStatus();
         }
         
-        // Phase: cPanel & Website (Mingguan / All)
+        // Phase: cPanel (Mingguan / All)
         if ($runAll || $isWeekly) {
             $this->syncCpanel();
-            $this->syncWebExpirations();
         }
 
-        // Phase: Pegawai (Bulanan / All)
+        // Phase: Pegawai & Website (Bulanan / All)
         if ($runAll || $isMonthly) {
             $this->syncPegawaiData();
+            $this->syncWebExpirations();
         }
         
         // Record stats history (Only after weekly or all sync, since cpanel storage data is updated weekly)
