@@ -20,10 +20,23 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
     // Portal Utama
     $routes->get('/', '\App\Domains\Dashboard\Home::index');
 
-    // Manajemen Email
-    $routes->group('email', function ($routes) {
-        // View Routes (Admin & Super Admin)
-        $routes->get('/', '\App\Domains\Email\Email::index');
+        // API Gateway (v1) - External Integration
+        $routes->group('api/v1', ['filter' => 'api_gateway'], function ($routes) {
+            $routes->get('emails', '\App\Domains\Api\GatewayController::listEmails');
+            $routes->get('pppk', '\App\Domains\Api\GatewayController::listPppk');
+            $routes->get('pns', '\App\Domains\Api\GatewayController::listPns');
+            $routes->get('unit/(:num)', '\App\Domains\Api\GatewayController::listByUnit/$1');
+        });
+
+        // API Documentation (Admin & Super Admin)
+        $routes->group('api-docs', ['filter' => 'role:admin,super_admin'], function ($routes) {
+            $routes->get('/', '\App\Domains\Api\GatewayController::index');
+        });
+
+        // Manajemen Email
+        $routes->group('email', function ($routes) {
+            // View Routes (Admin & Super Admin)
+            $routes->get('/', '\App\Domains\Email\Email::index');
         $routes->get('detail/(:any)', '\App\Domains\Email\Email::detail/$1');
         
         // List Routes
@@ -76,18 +89,6 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
             $routes->get('api_download_zip/(:num)', '\App\Domains\Email\EmailApi::api_download_zip/$1');
         });
 
-        // API Gateway (v1) - External Integration
-        $routes->group('api/v1', ['filter' => 'api_gateway'], function ($routes) {
-            $routes->get('emails', '\App\Domains\Api\GatewayController::listEmails');
-            $routes->get('pppk', '\App\Domains\Api\GatewayController::listPppk');
-            $routes->get('pns', '\App\Domains\Api\GatewayController::listPns');
-            $routes->get('unit/(:num)', '\App\Domains\Api\GatewayController::listByUnit/$1');
-        });
-
-        // API Documentation (Admin & Super Admin)
-        $routes->group('api-docs', ['filter' => 'role:admin,super_admin'], function ($routes) {
-            $routes->get('/', '\App\Domains\Api\GatewayController::index');
-        });
         // Destructive Routes (Super Admin Only)
         $routes->group('', ['filter' => 'role:super_admin'], function ($routes) {
             $routes->post('delete/(:num)', '\App\Domains\Email\Email::delete/$1');
