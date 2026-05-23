@@ -15,17 +15,22 @@
     <!-- Informasi Otentikasi -->
     <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
         <div class="px-6 py-4 border-b border-slate-100 bg-slate-50">
-            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Otentikasi (Bearer Token)</h3>
+            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Otentikasi & Akses</h3>
         </div>
         <div class="p-6">
-            <p class="text-xs text-slate-600 mb-4">Seluruh request ke API Gateway wajib menyertakan token otentikasi di dalam Header HTTP.</p>
+            <p class="text-xs text-slate-600 mb-4">Anda dapat mengakses API ini melalui dua cara:</p>
             
-            <div class="bg-slate-900 rounded-lg p-4 font-mono text-[11px] text-slate-300 space-y-2 border border-slate-800">
-                <div class="flex justify-between items-center mb-2 border-b border-slate-800 pb-2">
-                    <span class="text-slate-500 uppercase tracking-widest text-[9px] font-bold">Header Configuration</span>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-2">
+                    <span class="text-slate-800 uppercase tracking-widest text-[9px] font-black block">Metode 1: Akses Langsung (Browser)</span>
+                    <p class="text-[10px] text-slate-600 leading-relaxed">Selama Anda <b>Login sebagai Admin</b> di browser ini, Anda dapat langsung mengklik link endpoint di bawah untuk melihat data JSON.</p>
                 </div>
-                <div><span class="text-emerald-400">Authorization:</span> Bearer <?= esc($token) ?></div>
-                <div><span class="text-emerald-400">Accept:</span> application/json</div>
+
+                <div class="bg-slate-900 rounded-lg p-4 font-mono text-[11px] text-slate-300 space-y-2 border border-slate-800">
+                    <span class="text-slate-500 uppercase tracking-widest text-[9px] font-bold block border-b border-slate-800 pb-2 mb-2">Metode 2: Integrasi Aplikasi (Header)</span>
+                    <div><span class="text-emerald-400">Authorization:</span> Bearer [LIHAT_DI_ENV]</div>
+                    <div><span class="text-emerald-400">Accept:</span> application/json</div>
+                </div>
             </div>
             
             <div class="mt-4 p-4 bg-amber-50 border border-amber-100 rounded-lg flex gap-3">

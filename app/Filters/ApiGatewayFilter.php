@@ -22,6 +22,11 @@ class ApiGatewayFilter implements FilterInterface
      */
     public function before(RequestInterface $request, $arguments = null)
     {
+        // 1. Allow if user is already logged in (Session-based access for browser)
+        if (session()->get('isLoggedIn')) {
+            return;
+        }
+
         $validToken = env('API_GATEWAY_TOKEN');
 
         if (empty($validToken)) {
@@ -30,21 +35,21 @@ class ApiGatewayFilter implements FilterInterface
                 ->setJSON(['status' => 'error', 'message' => 'API Gateway is not properly configured (token missing in .env).']);
         }
 
+        // 2. Check Bearer Token in Header (for external application access)
         $authHeader = $request->getHeaderLine('Authorization');
-
-        if (empty($authHeader) || !preg_match('/Bearer\s+(.*)$/i', $authHeader, $matches)) {
-            return Services::response()
-                ->setStatusCode(401)
-                ->setJSON(['status' => 'error', 'message' => 'Unauthorized: Bearer token is missing in the header.']);
-        }
-
-        $providedToken = $matches[1];
-
-        if ($providedToken !== $validToken) {
+        if (!empty($authHeader) && preg_match('/Bearer\s+(.*)$/i', $authHeader, $matches)) {
+            $providedToken = $matches[1];
+            if ($providedToken === $validToken) {
+                return;
+            }
             return Services::response()
                 ->setStatusCode(403)
                 ->setJSON(['status' => 'error', 'message' => 'Forbidden: Invalid API Gateway token.']);
         }
+
+        return Services::response()
+            ->setStatusCode(401)
+            ->setJSON(['status' => 'error', 'message' => 'Unauthorized: Please log in or provide a valid Bearer token in the header.']);
     }
 
     /**
