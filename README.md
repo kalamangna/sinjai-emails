@@ -108,8 +108,8 @@ Skrip ini secara cerdas membagi tugas:
 Sistem ini mendukung laporan otomatis ke Telegram. Untuk mengaktifkannya, tambahkan kredensial berikut ke file `.env`:
 
 ```env
-TELEGRAM_BOT_TOKEN=8649414024:AAFXzhgenS3MW5ZbRg6w01DQWYR2m14xFJo
-TELEGRAM_CHAT_ID=-1003929558502
+TELEGRAM_BOT_TOKEN=your_bot_token_here
+TELEGRAM_CHAT_ID=your_chat_id_here
 ```
 
 Seluruh aktivitas akan dicatat dalam file log di `writable/logs/cron_sync.log` dan dikirimkan sebagai ringkasan ke Telegram.
