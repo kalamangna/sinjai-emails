@@ -29,9 +29,15 @@ Aplikasi ini menerapkan standar estetika **"Slate Clean Government"**—antarmuk
 - **Handler Terpadu:** Template khusus untuk **Batch Create**, **Batch Update**, dan **Batch PK** dengan deteksi perubahan data untuk optimasi database.
 
 ### 🤖 Notifikasi & Otomatisasi
-- **Laporan Telegram:** Pengiriman ringkasan statistik sinkronisasi (berhasil/gagal/update) secara otomatis ke Channel Telegram.
-- **Penjadwalan Tugas:** Skrip shell terpadu (`sync.sh`) untuk otomatisasi tugas harian (cPanel/TTE) dan bulanan (Pegawai/Website) melalui Cron Job.
+- **Laporan Telegram:** Pengiriman ringkasan statistik sinkronisasi secara otomatis ke Channel Telegram.
+- **Alert Kuota Email:** Notifikasi instan via Telegram jika terdapat akun dengan penggunaan penyimpanan di atas 90%.
+- **Penjadwalan Tugas:** Skrip shell terpadu (`sync.sh`) untuk otomatisasi tugas harian (cPanel/TTE) dan bulanan (Pegawai/Website).
 - **Transparansi Data:** Pencatatan dan tampilan waktu sinkronisasi terakhir secara spesifik di setiap modul utama.
+
+### 🌐 API Gateway (v1)
+Penyediaan data internal yang aman untuk integrasi lintas sektoral di Pemkab Sinjai menggunakan standar *Bearer Token*:
+- **Endpoints:** `/api/v1/emails`, `/api/v1/pppk`.
+- **Keamanan:** Terproteksi melalui `ApiGatewayFilter` dengan validasi token di `.env`.
 
 ### 📄 Sistem Ekspor
 - **Mesin PDF:** Pelaporan profesional menggunakan `Dompdf`, dioptimalkan untuk standar visual "Slate Clean".
@@ -117,6 +123,7 @@ Sistem ini mendukung laporan otomatis ke Telegram. Untuk mengaktifkannya, tambah
 ```env
 TELEGRAM_BOT_TOKEN=your_bot_token_here
 TELEGRAM_CHAT_ID=your_chat_id_here
+API_GATEWAY_TOKEN=your_secure_api_token_here
 ```
 
 Seluruh aktivitas akan dicatat dalam file log di `writable/logs/cron_sync.log` dan dikirimkan sebagai ringkasan ke Telegram.

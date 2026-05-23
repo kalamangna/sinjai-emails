@@ -11,6 +11,7 @@ use App\Shared\Libraries\TelegramLibrary;
 use App\Domains\Email\EmailModel;
 use App\Shared\Models\StatusAsnModel;
 use App\Shared\Models\EselonModel;
+use App\Shared\Models\EmailStatsHistoryModel;
 
 use App\Domains\Website\WebDesaKelurahanModel;
 use App\Domains\Website\WebsiteService;
@@ -103,6 +104,11 @@ class SyncAllCommand extends BaseCommand
             $this->syncWebExpirations();
         }
         
+        // Record stats history after daily or full sync
+        if ($runAll || $isDaily) {
+            $this->recordStatsHistory();
+        }
+
         CLI::write('Synchronization process completed!', 'green');
         $this->sendTelegramSummary($modeName);
     }
@@ -142,6 +148,9 @@ class SyncAllCommand extends BaseCommand
             if ($result['success']) {
                 CLI::write('SUCCESS: ' . $result['message'], 'green');
                 $this->syncStats['cpanel']['success'] = 1;
+                
+                // Check for high quota usage alerts
+                $this->checkQuotaAlerts();
             } else {
                 CLI::error('FAILED: ' . $result['message']);
                 $this->syncStats['cpanel']['fail'] = 1;
@@ -149,6 +158,71 @@ class SyncAllCommand extends BaseCommand
         } catch (\Throwable $e) {
             CLI::error('ERROR in Phase 1: ' . $e->getMessage());
             $this->syncStats['cpanel']['fail'] = 1;
+        }
+    }
+
+    private function checkQuotaAlerts()
+    {
+        CLI::write('Checking for High Quota Usage Alerts...', 'yellow');
+        try {
+            $emailModel = new EmailModel();
+            $highUsageAccounts = $emailModel->where('diskusedpercent_float >=', 90)
+                                            ->orderBy('diskusedpercent_float', 'DESC')
+                                            ->findAll();
+            
+            if (!empty($highUsageAccounts)) {
+                $count = count($highUsageAccounts);
+                CLI::write("Found $count accounts with high usage (>90%)", 'red');
+                
+                $msg = "⚠️ <b>PERINGATAN KUOTA EMAIL</b>\n";
+                $msg .= "Ditemukan <b>$count</b> akun dengan penggunaan > 90%:\n\n";
+                
+                foreach (array_slice($highUsageAccounts, 0, 10) as $acc) {
+                    $msg .= "📧 " . $acc['email'] . "\n";
+                    $msg .= "📊 Digunakan: <b>" . $acc['humandiskused'] . "</b> (" . round($acc['diskusedpercent_float'], 1) . "%)\n\n";
+                }
+                
+                if ($count > 10) {
+                    $msg .= "...dan " . ($count - 10) . " akun lainnya.";
+                }
+                
+                $this->telegram->sendMessage($msg);
+            } else {
+                CLI::write('No high usage accounts found.', 'green');
+            }
+        } catch (\Throwable $e) {
+            CLI::error('Error checking quota alerts: ' . $e->getMessage());
+        }
+    }
+
+    private function recordStatsHistory()
+    {
+        CLI::write('Recording Daily Stats History...', 'yellow');
+        try {
+            $emailModel = new EmailModel();
+            $historyModel = new EmailStatsHistoryModel();
+            
+            $totalAkun = $emailModel->countAllResults();
+            $totalStorageResult = $emailModel->selectSum('diskused', 'total')->first();
+            $totalStorageMb = ($totalStorageResult['total'] ?? 0) / (1024 * 1024);
+            
+            $today = date('Y-m-d');
+            
+            $existing = $historyModel->where('tanggal', $today)->first();
+            $data = [
+                'tanggal' => $today,
+                'total_akun' => $totalAkun,
+                'total_storage_mb' => $totalStorageMb
+            ];
+            
+            if ($existing) {
+                $historyModel->update($existing['id'], $data);
+            } else {
+                $historyModel->insert($data);
+            }
+            CLI::write('Stats history recorded successfully.', 'green');
+        } catch (\Throwable $e) {
+            CLI::error('Error recording stats history: ' . $e->getMessage());
         }
     }
 
