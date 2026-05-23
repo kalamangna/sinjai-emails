@@ -86,8 +86,8 @@ Untuk menjaga data tetap mutakhir, Anda dapat menjadwalkan skrip sinkronisasi ma
 # Jalankan sinkronisasi secara manual
 php spark sync:all
 
-# Contoh penjadwalan Cron Job (setiap jam)
-0 * * * * cd /path/to/your/project && php spark sync:all > /dev/null 2>&1
+# Contoh penjadwalan Cron Job (Setiap Hari jam 02:00 AM)
+0 2 * * * cd /path/to/your/project && php spark sync:all > writable/logs/cron_sync.log 2>&1
 ```
 
 Skrip ini akan secara otomatis:
