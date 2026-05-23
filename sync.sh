@@ -11,9 +11,10 @@ PROJECT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # Berpindah ke direktori proyek
 cd "$PROJECT_DIR"
 
-# Path ke PHP binary (Gunakan php83 karena dependencies butuh >= 8.3)
-# Jika 'php83' tidak ditemukan, akan mencoba 'php' standar
-if command -v php83 >/dev/null 2>&1; then
+# Path ke PHP binary (Gunakan PHP 8.3 karena dependencies butuh >= 8.3)
+if [ -f "/usr/local/bin/ea-php83" ]; then
+    PHP_BIN="/usr/local/bin/ea-php83"
+elif command -v php83 >/dev/null 2>&1; then
     PHP_BIN="php83"
 else
     PHP_BIN="php"
