@@ -68,8 +68,8 @@ class SyncAllCommand extends BaseCommand
      */
     public function run(array $params)
     {
-        $isDaily = isset($params['daily']);
-        $isMonthly = isset($params['monthly']);
+        $isDaily = CLI::getOption('daily') !== null;
+        $isMonthly = CLI::getOption('monthly') !== null;
         $runAll = !$isDaily && !$isMonthly;
 
         CLI::write('Starting Synchronization Process...', 'blue');
