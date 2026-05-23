@@ -24,6 +24,8 @@ Aplikasi ini menerapkan standar estetika **"Slate Clean Government"**—antarmuk
 
 ### 📥 Operasi Batch (XLSX)
 - **Mesin Spreadsheet:** Menggunakan `PhpSpreadsheet` untuk pemrosesan file Excel yang tangguh.
+- **Preview Performa Tinggi:** Implementasi *Multi-Candidate Batch Check* yang mengoptimalkan validasi ratusan data (NIP, NIK, Email) dalam satu request, menghilangkan antrian request sekuensial.
+- **Pembersihan Nama Cerdas:** Otomatisasi pembersihan tanda baca, perbaikan format nama yang terpisah spasi, dan standarisasi casing untuk data yang bersih dan konsisten.
 - **Handler Terpadu:** Template khusus untuk **Batch Create**, **Batch Update**, dan **Batch PK (Perjanjian Kerja)** dengan deteksi "No-Change" untuk optimasi database.
 
 ### 📄 Sistem Ekspor
