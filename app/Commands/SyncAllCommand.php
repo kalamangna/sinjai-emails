@@ -7,6 +7,7 @@ use CodeIgniter\CLI\CLI;
 use App\Shared\Services\SyncService;
 use App\Shared\Libraries\BsreApi;
 use App\Shared\Libraries\PegawaiApi;
+use App\Shared\Libraries\TelegramLibrary;
 use App\Domains\Email\EmailModel;
 use App\Shared\Models\StatusAsnModel;
 use App\Shared\Models\EselonModel;
@@ -16,6 +17,14 @@ use App\Domains\Website\WebsiteService;
 
 class SyncAllCommand extends BaseCommand
 {
+    protected $telegram;
+    protected $syncStats = [
+        'cpanel' => ['success' => 0, 'fail' => 0],
+        'tte'    => ['success' => 0, 'fail' => 0],
+        'pegawai' => ['success' => 0, 'fail' => 0, 'skipped' => 0],
+        'website' => ['success' => 0, 'fail' => 0],
+    ];
+
     /**
      * The Command's Group
      *
@@ -72,8 +81,12 @@ class SyncAllCommand extends BaseCommand
         $isMonthly = CLI::getOption('monthly') !== null;
         $runAll = !$isDaily && !$isMonthly;
 
-        CLI::write('Starting Synchronization Process...', 'blue');
+        $this->telegram = new TelegramLibrary();
+        $modeName = $runAll ? 'PENUH' : ($isDaily ? 'HARIAN' : 'BULANAN');
         
+        CLI::write("Starting Synchronization Process ($modeName)...", 'blue');
+        $this->telegram->sendMessage("🔄 <b>Sinkronisasi $modeName Dimulai</b>\nSistem sedang memperbarui data...");
+
         if ($runAll || $isDaily) {
             // 1. cPanel Synchronization
             $this->syncCpanel();
@@ -91,27 +104,58 @@ class SyncAllCommand extends BaseCommand
         }
         
         CLI::write('Synchronization process completed!', 'green');
+        $this->sendTelegramSummary($modeName);
+    }
+
+    private function sendTelegramSummary($mode)
+    {
+        $msg = "✅ <b>Sinkronisasi $mode Selesai</b>\n\n";
+
+        if (isset($this->syncStats['cpanel']['executed'])) {
+            $status = $this->syncStats['cpanel']['success'] > 0 ? "🟢 Berhasil" : "🔴 Gagal";
+            $msg .= "📧 <b>cPanel Sync</b>: $status\n";
+        }
+
+        if (isset($this->syncStats['tte']['executed'])) {
+            $msg .= "✍️ <b>TTE Sync</b>: " . $this->syncStats['tte']['success'] . " Berhasil, " . $this->syncStats['tte']['fail'] . " Gagal\n";
+        }
+
+        if (isset($this->syncStats['pegawai']['executed'])) {
+            $msg .= "👥 <b>Pegawai Sync</b>: " . $this->syncStats['pegawai']['success'] . " Update, " . $this->syncStats['pegawai']['skipped'] . " Tetap, " . $this->syncStats['pegawai']['fail'] . " Gagal\n";
+        }
+
+        if (isset($this->syncStats['website']['executed'])) {
+            $msg .= "🌐 <b>Website Sync</b>: " . $this->syncStats['website']['success'] . " Berhasil, " . $this->syncStats['website']['fail'] . " Gagal\n";
+        }
+
+        $msg .= "\n🕒 " . date('d M Y H:i:s');
+        $this->telegram->sendMessage($msg);
     }
 
     private function syncCpanel()
     {
         CLI::write('--- Phase 1: cPanel Synchronization ---', 'yellow');
+        $this->syncStats['cpanel']['executed'] = true;
         try {
             $syncService = new SyncService();
             $result = $syncService->syncFromCpanel();
             if ($result['success']) {
                 CLI::write('SUCCESS: ' . $result['message'], 'green');
+                $this->syncStats['cpanel']['success'] = 1;
             } else {
                 CLI::error('FAILED: ' . $result['message']);
+                $this->syncStats['cpanel']['fail'] = 1;
             }
         } catch (\Throwable $e) {
             CLI::error('ERROR in Phase 1: ' . $e->getMessage());
+            $this->syncStats['cpanel']['fail'] = 1;
         }
     }
 
     private function syncTteStatus()
     {
         CLI::write('--- Phase 2: TTE Status Synchronization ---', 'yellow');
+        $this->syncStats['tte']['executed'] = true;
         try {
             $emailModel = new EmailModel();
             $bsreApi = new BsreApi();
@@ -119,9 +163,6 @@ class SyncAllCommand extends BaseCommand
             $emails = $emailModel->select('id, email')->findAll();
             $total = count($emails);
             CLI::write("Total accounts to check: $total");
-            
-            $successCount = 0;
-            $failCount = 0;
             
             foreach ($emails as $index => $email) {
                 $count = $index + 1;
@@ -133,14 +174,12 @@ class SyncAllCommand extends BaseCommand
                     $statusFromBsre = $responseBody['status'] ?? ($responseBody['data']['status'] ?? 'UNKNOWN');
                     $emailModel->update($email['id'], ['bsre_status' => $statusFromBsre]);
                     CLI::write($statusFromBsre, 'green');
-                    $successCount++;
+                    $this->syncStats['tte']['success']++;
                 } else {
                     CLI::write('FAILED', 'red');
-                    $failCount++;
+                    $this->syncStats['tte']['fail']++;
                 }
             }
-            
-            CLI::write("TTE Sync Finished. Success: $successCount, Failed: $failCount", 'cyan');
         } catch (\Throwable $e) {
             CLI::error('ERROR in Phase 2: ' . $e->getMessage());
         }
@@ -149,6 +188,7 @@ class SyncAllCommand extends BaseCommand
     private function syncPegawaiData()
     {
         CLI::write('--- Phase 3: Pegawai Data Synchronization ---', 'yellow');
+        $this->syncStats['pegawai']['executed'] = true;
         try {
             $emailModel = new EmailModel();
             $pegawaiApi = new PegawaiApi();
@@ -171,9 +211,6 @@ class SyncAllCommand extends BaseCommand
             $emails = $builder->findAll();
             $total = count($emails);
             CLI::write("Total NIPs to sync: $total");
-            
-            $successCount = 0;
-            $failCount = 0;
             
             // To avoid redundant API calls for same NIP
             $nipResults = [];
@@ -201,7 +238,7 @@ class SyncAllCommand extends BaseCommand
 
                     if (empty($data) || !$hasActualData) {
                         CLI::write('DATA NOT FOUND', 'red');
-                        $failCount++;
+                        $this->syncStats['pegawai']['fail']++;
                         continue;
                     }
                     
@@ -239,17 +276,16 @@ class SyncAllCommand extends BaseCommand
                     if (!empty($updateData)) {
                         $emailModel->update($currentEmail['id'], $updateData);
                         CLI::write('SUCCESS', 'green');
-                        $successCount++;
+                        $this->syncStats['pegawai']['success']++;
                     } else {
                         CLI::write('NO CHANGES', 'blue');
+                        $this->syncStats['pegawai']['skipped']++;
                     }
                 } else {
                     CLI::write('API FAILED', 'red');
-                    $failCount++;
+                    $this->syncStats['pegawai']['fail']++;
                 }
             }
-            
-            CLI::write("Pegawai Sync Finished. Success: $successCount, Failed: $failCount", 'cyan');
         } catch (\Throwable $e) {
             CLI::error('ERROR in Phase 3: ' . $e->getMessage());
         }
@@ -258,6 +294,7 @@ class SyncAllCommand extends BaseCommand
     private function syncWebExpirations()
     {
         CLI::write('--- Phase 4: Website Expiration Synchronization ---', 'yellow');
+        $this->syncStats['website']['executed'] = true;
         try {
             $webDesaModel = new WebDesaKelurahanModel();
             $websiteService = new WebsiteService();
@@ -265,9 +302,6 @@ class SyncAllCommand extends BaseCommand
             $websites = $webDesaModel->findAll();
             $total = count($websites);
             CLI::write("Total websites to sync: $total");
-            
-            $successCount = 0;
-            $failCount = 0;
             
             foreach ($websites as $index => $website) {
                 $count = $index + 1;
@@ -282,14 +316,12 @@ class SyncAllCommand extends BaseCommand
                     ];
                     $webDesaModel->update($website['id'], $updateData);
                     CLI::write($newDate, 'green');
-                    $successCount++;
+                    $this->syncStats['website']['success']++;
                 } else {
                     CLI::write('FAILED', 'red');
-                    $failCount++;
+                    $this->syncStats['website']['fail']++;
                 }
             }
-            
-            CLI::write("Website Expiration Sync Finished. Success: $successCount, Failed: $failCount", 'cyan');
         } catch (\Throwable $e) {
             CLI::error('ERROR in Phase 4: ' . $e->getMessage());
         }
