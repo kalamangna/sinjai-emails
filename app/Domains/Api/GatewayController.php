@@ -32,7 +32,7 @@ class GatewayController extends BaseController
         $data = [
             'title' => 'API Gateway Documentation',
             'token' => $displayToken,
-            'base_url' => base_url('email/api/v1')
+            'base_url' => base_url('api/v1')
         ];
 
         return view('api/index', $data);
