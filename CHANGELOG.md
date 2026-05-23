@@ -18,6 +18,10 @@ Format didasarkan pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - **Sinkronisasi Live**: Perubahan nama pada tabel preview otomatis memicu pembuatan ulang email dan validasi ulang (termasuk kandidat alternatif).
   - **Password Nama Pendek**: Perbaikan logika password untuk nama di bawah 5 huruf dengan sistem pengulangan karakter (contoh: "ALI" -> "Alial") untuk memenuhi syarat keamanan.
 - **Standar Alur Kerja Git**: Pembaruan `GEMINI.md` dengan urutan 4 langkah wajib: Build CSS -> Update Changelog -> Update README -> Push.
+- **Otomatisasi Sinkronisasi (CLI)**: 
+  - Penambahan custom command `php spark sync:all` untuk otomatisasi sinkronisasi massal.
+  - Skrip mencakup sinkronisasi Akun cPanel, Status TTE BSrE, dan Data Pegawai dalam satu alur kerja.
+  - Dirancang untuk dijalankan melalui Cron Job guna pembaruan data berkala tanpa intervensi manual.
 - **Manajemen Email & Akun**: 
   - Integrasi UAPI cPanel untuk sinkronisasi, pembuatan akun, dan reset kata sandi secara real-time.
   - Kategorisasi spesifik untuk entitas PNS, PPPK (Penuh Waktu), dan PPPK (Paruh Waktu).
