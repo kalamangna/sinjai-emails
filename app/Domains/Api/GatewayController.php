@@ -19,6 +19,26 @@ class GatewayController extends BaseController
     }
 
     /**
+     * Display API Documentation page for administrators
+     */
+    public function index()
+    {
+        $appSettingModel = new \App\Shared\Models\AppSettingModel();
+        $token = $appSettingModel->where('key', 'api_gateway_token')->first();
+        
+        // Fallback to env if not in database yet (though sync:all should handle it)
+        $displayToken = $token['value'] ?? env('API_GATEWAY_TOKEN') ?? 'BELUM_DIATUR';
+
+        $data = [
+            'title' => 'API Gateway Documentation',
+            'token' => $displayToken,
+            'base_url' => base_url('email/api/v1')
+        ];
+
+        return view('api/index', $data);
+    }
+
+    /**
      * List all active emails with basic profile info
      */
     public function listEmails()

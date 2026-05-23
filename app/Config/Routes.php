@@ -84,6 +84,10 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
             $routes->get('unit/(:num)', '\App\Domains\Api\GatewayController::listByUnit/$1');
         });
 
+        // API Documentation (Admin & Super Admin)
+        $routes->group('api-docs', ['filter' => 'role:admin,super_admin'], function ($routes) {
+            $routes->get('/', '\App\Domains\Api\GatewayController::index');
+        });
         // Destructive Routes (Super Admin Only)
         $routes->group('', ['filter' => 'role:super_admin'], function ($routes) {
             $routes->post('delete/(:num)', '\App\Domains\Email\Email::delete/$1');
