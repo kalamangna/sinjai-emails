@@ -180,6 +180,8 @@ class SyncAllCommand extends BaseCommand
                     $this->syncStats['tte']['fail']++;
                 }
             }
+            CLI::write("TTE Sync Finished. Success: " . $this->syncStats['tte']['success'] . ", Failed: " . $this->syncStats['tte']['fail'], 'cyan');
+            $this->saveLastSyncTime('last_sync_tte');
         } catch (\Throwable $e) {
             CLI::error('ERROR in Phase 2: ' . $e->getMessage());
         }
@@ -286,6 +288,8 @@ class SyncAllCommand extends BaseCommand
                     $this->syncStats['pegawai']['fail']++;
                 }
             }
+            CLI::write("Pegawai Sync Finished. Success: " . $this->syncStats['pegawai']['success'] . ", Failed: " . $this->syncStats['pegawai']['fail'], 'cyan');
+            $this->saveLastSyncTime('last_sync_pegawai');
         } catch (\Throwable $e) {
             CLI::error('ERROR in Phase 3: ' . $e->getMessage());
         }
@@ -322,8 +326,22 @@ class SyncAllCommand extends BaseCommand
                     $this->syncStats['website']['fail']++;
                 }
             }
+            CLI::write("Website Expiration Sync Finished. Success: " . $this->syncStats['website']['success'] . ", Failed: " . $this->syncStats['website']['fail'], 'cyan');
+            $this->saveLastSyncTime('last_sync_website');
         } catch (\Throwable $e) {
             CLI::error('ERROR in Phase 4: ' . $e->getMessage());
+        }
+    }
+
+    private function saveLastSyncTime($key)
+    {
+        require_once APPPATH . 'Shared/Helpers/TanggalHelper.php';
+        $now = untukDatabase('now');
+        $appSettingModel = new \App\Shared\Models\AppSettingModel();
+
+        $appSettingModel->where('key', $key)->set(['value' => $now])->update();
+        if ($appSettingModel->affectedRows() == 0) {
+            $appSettingModel->insert(['key' => $key, 'value' => $now]);
         }
     }
 }

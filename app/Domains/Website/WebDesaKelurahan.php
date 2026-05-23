@@ -129,6 +129,9 @@ class WebDesaKelurahan extends BaseController
             ->get()
             ->getResultArray();
 
+        $appSettingModel = new \App\Shared\Models\AppSettingModel();
+        $last_sync_website = $appSettingModel->where('key', 'last_sync_website')->first();
+
         $data = [
             'websites' => $websites,
             'pager' => $pager,
@@ -142,6 +145,7 @@ class WebDesaKelurahan extends BaseController
             'filterStatus' => $filterStatus,
             'filterPlatform' => $filterPlatform,
             'filterType' => $filterType,
+            'last_sync_website' => $last_sync_website['value'] ?? null,
         ];
 
         return view('web_desa_kelurahan/index', $data);

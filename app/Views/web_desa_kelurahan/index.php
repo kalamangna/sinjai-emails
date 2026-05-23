@@ -4,7 +4,15 @@
 <div class="space-y-6">
     <!-- Header Halaman -->
     <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-        <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight">Website Desa & Kelurahan</h1>
+        <div>
+            <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight">Website Desa & Kelurahan</h1>
+            <?php if (!empty($last_sync_website)): ?>
+                <p class="text-[10px] font-bold text-slate-700 uppercase tracking-widest mt-1">
+                    <i class="fas fa-history mr-1"></i> Terakhir Sync:
+                    <span class="text-slate-800"><?= formatTanggalWaktu($last_sync_website) ?></span>
+                </p>
+            <?php endif; ?>
+        </div>
 
         <div class="flex items-center gap-2 w-full lg:w-auto">
             <a href="<?= site_url('web_desa_kelurahan/export_pdf') ?>" class="flex-1 lg:flex-none btn btn-outline no-underline">

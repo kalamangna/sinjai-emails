@@ -69,6 +69,13 @@ class Email extends BaseController
                 ? md5($data['email']['nik'] . 'sinjai_secure_salt') 
                 : null;
 
+            $appSettingModel = new \App\Shared\Models\AppSettingModel();
+            $last_sync_tte = $appSettingModel->where('key', 'last_sync_tte')->first();
+            $last_sync_pegawai = $appSettingModel->where('key', 'last_sync_pegawai')->first();
+
+            $data['last_sync_tte'] = $last_sync_tte['value'] ?? null;
+            $data['last_sync_pegawai'] = $last_sync_pegawai['value'] ?? null;
+
             return view('email/detail', $data);
         } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();

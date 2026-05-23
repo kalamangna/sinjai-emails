@@ -8,7 +8,23 @@
             <button onclick="history.back()" class="btn btn-outline !w-10 !h-10 shrink-0">
                 <i class="fas fa-arrow-left"></i>
             </button>
-            <h1 class="text-xl sm:text-2xl font-bold text-slate-800 uppercase tracking-tight truncate">Detail Akun</h1>
+            <div>
+                <h1 class="text-xl sm:text-2xl font-bold text-slate-800 uppercase tracking-tight truncate">Detail Akun</h1>
+                <div class="flex flex-wrap gap-x-4 gap-y-1 mt-1">
+                    <?php if (!empty($last_sync_tte)): ?>
+                        <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">
+                            <i class="fas fa-fingerprint mr-1"></i> TTE Sync:
+                            <span class="text-slate-700"><?= formatTanggalWaktu($last_sync_tte) ?></span>
+                        </p>
+                    <?php endif; ?>
+                    <?php if (!empty($last_sync_pegawai)): ?>
+                        <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">
+                            <i class="fas fa-user-check mr-1"></i> Pegawai Sync:
+                            <span class="text-slate-700"><?= formatTanggalWaktu($last_sync_pegawai) ?></span>
+                        </p>
+                    <?php endif; ?>
+                </div>
+            </div>
         </div>
         <div class="grid grid-cols-2 gap-2 w-full sm:flex sm:w-auto">
             <?php if ($showPk = in_array($email['status_asn_id'] ?? 0, [2, 3])): ?>
