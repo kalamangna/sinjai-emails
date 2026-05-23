@@ -47,7 +47,7 @@ class GatewayController extends BaseController
      */
     public function listEmails()
     {
-        $emails = $this->emailModel->select('email, name, nip, jabatan, humandiskquota, humandiskused, bsre_status')
+        $emails = $this->emailModel->select('email, name, nik, nip, jabatan, bsre_status')
             ->orderBy('email', 'ASC')
             ->findAll();
 
@@ -70,7 +70,7 @@ class GatewayController extends BaseController
             return $this->respond(['status' => 'success', 'count' => 0, 'data' => []]);
         }
 
-        $data = $this->emailModel->select('email, name, nip, jabatan, humandiskquota, humandiskused, bsre_status')
+        $data = $this->emailModel->select('email, name, nik, nip, jabatan, bsre_status')
             ->where('status_asn_id', $status['id'])
             ->orderBy('name', 'ASC')
             ->findAll();
@@ -94,7 +94,7 @@ class GatewayController extends BaseController
             return $this->respond(['status' => 'success', 'count' => 0, 'data' => []]);
         }
 
-        $data = $this->emailModel->select('email, name, nip, jabatan, humandiskquota, humandiskused, bsre_status')
+        $data = $this->emailModel->select('email, name, nik, nip, jabatan, bsre_status')
             ->where('status_asn_id', $status['id'])
             ->orderBy('name', 'ASC')
             ->findAll();
@@ -118,7 +118,7 @@ class GatewayController extends BaseController
             return $this->respond(['status' => 'success', 'count' => 0, 'data' => []]);
         }
 
-        $pns = $this->emailModel->select('email, name, nip, jabatan, humandiskquota, humandiskused, bsre_status')
+        $pns = $this->emailModel->select('email, name, nik, nip, jabatan, bsre_status')
             ->where('status_asn_id', $pnsStatus['id'])
             ->orderBy('name', 'ASC')
             ->findAll();
@@ -135,7 +135,7 @@ class GatewayController extends BaseController
      */
     public function listByUnit($unitId)
     {
-        $emails = $this->emailModel->select('email, name, nip, jabatan, humandiskquota, humandiskused, bsre_status')
+        $emails = $this->emailModel->select('email, name, nik, nip, jabatan, bsre_status')
             ->where('unit_kerja_id', $unitId)
             ->orderBy('name', 'ASC')
             ->findAll();

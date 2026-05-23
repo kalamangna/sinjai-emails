@@ -107,10 +107,9 @@
         {
             "email": "username@sinjaikab.go.id",
             "name": "NAMA LENGKAP",
+            "nik": "730...",
             "nip": "199...",
             "jabatan": "JABATAN PEGAWAI",
-            "humandiskquota": "1 GB",
-            "humandiskused": "150 MB",
             "bsre_status": "ISSUE"
         }
     ]

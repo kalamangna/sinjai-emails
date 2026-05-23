@@ -43,6 +43,7 @@ Format didasarkan pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
     - `GET /api/v1/pppk`: Daftar akun pegawai PPPK Penuh Waktu.
     - `GET /api/v1/pppk-pw`: Daftar akun pegawai PPPK Paruh Waktu.
     - `GET /api/v1/unit/{id}`: Daftar akun berdasarkan ID Unit Kerja.
+  - **Optimasi Payload API**: Menambahkan field `nik` dan menghapus field `humandiskquota` serta `humandiskused` untuk efisiensi data.
   - **Halaman Dokumentasi Interaktif**: Penambahan halaman `/api-docs` yang dapat diakses oleh seluruh pengguna untuk melihat panduan integrasi dan contoh respons JSON.
   - **Unit Kerja ID Modal**: Penambahan modal interaktif dengan fitur pencarian cepat untuk mempermudah pencarian ID Unit Kerja pada halaman dokumentasi API.
 - **Manajemen Email & Akun**: 
