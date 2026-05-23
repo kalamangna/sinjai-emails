@@ -11,12 +11,21 @@ PROJECT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # Berpindah ke direktori proyek
 cd "$PROJECT_DIR"
 
-# Jalankan perintah sinkronisasi spark
+# Jalankan perintah sinkronisasi spark berdasarkan argumen
 # Output akan diarahkan ke file log dengan timestamp
 LOG_FILE="writable/logs/cron_sync.log"
-echo "[$(date '+%Y-%m-%d %H:%M:%S')] Memulai sinkronisasi otomatis..." >> "$LOG_FILE"
+MODE=$1
 
-php spark sync:all >> "$LOG_FILE" 2>&1
+if [ "$MODE" == "daily" ]; then
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] Memulai sinkronisasi HARIAN (cPanel & TTE)..." >> "$LOG_FILE"
+    php spark sync:all --daily >> "$LOG_FILE" 2>&1
+elif [ "$MODE" == "monthly" ]; then
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] Memulai sinkronisasi BULANAN (Pegawai & Website)..." >> "$LOG_FILE"
+    php spark sync:all --monthly >> "$LOG_FILE" 2>&1
+else
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] Memulai sinkronisasi PENUH..." >> "$LOG_FILE"
+    php spark sync:all >> "$LOG_FILE" 2>&1
+fi
 
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] Sinkronisasi selesai." >> "$LOG_FILE"
 echo "----------------------------------------------------" >> "$LOG_FILE"

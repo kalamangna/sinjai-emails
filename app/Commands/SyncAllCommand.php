@@ -56,7 +56,10 @@ class SyncAllCommand extends BaseCommand
      *
      * @var array
      */
-    protected $options = [];
+    protected $options = [
+        '--daily'   => 'Menjalankan tugas harian (cPanel dan TTE)',
+        '--monthly' => 'Menjalankan tugas bulanan (Pegawai dan Website)',
+    ];
 
     /**
      * Actually execute a command.
@@ -65,21 +68,29 @@ class SyncAllCommand extends BaseCommand
      */
     public function run(array $params)
     {
+        $isDaily = isset($params['daily']);
+        $isMonthly = isset($params['monthly']);
+        $runAll = !$isDaily && !$isMonthly;
+
         CLI::write('Starting Synchronization Process...', 'blue');
         
-        // 1. cPanel Synchronization
-        $this->syncCpanel();
+        if ($runAll || $isDaily) {
+            // 1. cPanel Synchronization
+            $this->syncCpanel();
+            
+            // 2. TTE Status Synchronization
+            $this->syncTteStatus();
+        }
         
-        // 2. TTE Status Synchronization
-        $this->syncTteStatus();
-        
-        // 3. Pegawai Data Synchronization
-        $this->syncPegawaiData();
+        if ($runAll || $isMonthly) {
+            // 3. Pegawai Data Synchronization
+            $this->syncPegawaiData();
 
-        // 4. Website Expiration Synchronization
-        $this->syncWebExpirations();
+            // 4. Website Expiration Synchronization
+            $this->syncWebExpirations();
+        }
         
-        CLI::write('All synchronization processes completed!', 'green');
+        CLI::write('Synchronization process completed!', 'green');
     }
 
     private function syncCpanel()

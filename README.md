@@ -87,17 +87,21 @@ Untuk menjaga data tetap mutakhir, Anda dapat menggunakan skrip shell yang telah
 chmod +x sync.sh
 
 # Jalankan sinkronisasi secara manual
-./sync.sh
+./sync.sh daily    # Hanya cPanel & TTE
+./sync.sh monthly  # Hanya Pegawai & Website
+./sync.sh          # Sinkronisasi Penuh
 
-# Contoh penjadwalan Cron Job (Setiap Hari jam 02:00 AM)
-0 2 * * * /path/to/your/project/sync.sh
+# Contoh penjadwalan Cron Job
+# 1. Setiap Hari jam 02:00 AM (cPanel & TTE)
+0 2 * * * /path/to/your/project/sync.sh daily
+
+# 2. Setiap Tanggal 1 jam 04:00 AM (Pegawai & Website)
+0 4 1 * * /path/to/your/project/sync.sh monthly
 ```
 
-Skrip ini akan secara otomatis:
-1. Menyinkronkan seluruh akun dan kuota dari **cPanel**.
-2. Memperbarui status Sertifikat Elektronik (**BSrE**) untuk semua akun.
-3. Memperbarui data kepegawaian (Jabatan, Pangkat, Golongan) dari **API Pegawai**.
-4. Memperbarui masa aktif domain website (**PANDI/RDAP**).
+Skrip ini secara cerdas membagi tugas:
+- **Daily**: Menyinkronkan akun **cPanel** dan status **TTE BSrE**.
+- **Monthly**: Memperbarui data **API Pegawai** dan masa aktif domain **PANDI**.
 
 Seluruh aktivitas akan dicatat dalam file log di `writable/logs/cron_sync.log`.
 
