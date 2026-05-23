@@ -206,13 +206,14 @@
                 </div>
             </div>
 
-            <!-- API Gateway -->
-            <a href="<?= site_url('api-docs') ?>" data-sidebar-clear class="flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('api-docs') ? 'bg-slate-700 text-white shadow-lg shadow-slate-900/20' : 'text-slate-100 hover:bg-slate-700/80 hover:text-white' ?>">
-                <div class="w-5 h-5 flex items-center justify-center mr-3 shrink-0">
-                    <i class="fas fa-plug <?= $isActive('api-docs') ? 'text-white' : 'text-slate-300' ?>"></i>
-                </div>
-                API Gateway
-            </a>
         <?php endif; ?>
+
+        <!-- API Gateway -->
+        <a href="<?= site_url('api-docs') ?>" data-sidebar-clear class="flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('api-docs') ? 'bg-slate-700 text-white shadow-lg shadow-slate-900/20' : 'text-slate-100 hover:bg-slate-700/80 hover:text-white' ?>">
+            <div class="w-5 h-5 flex items-center justify-center mr-3 shrink-0">
+                <i class="fas fa-plug <?= $isActive('api-docs') ? 'text-white' : 'text-slate-300' ?>"></i>
+            </div>
+            API Gateway
+        </a>
     </nav>
 </aside>
