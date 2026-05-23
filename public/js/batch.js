@@ -454,12 +454,16 @@ document.addEventListener("DOMContentLoaded", function () {
         suffix = nip.substring(2, 4);
     }
 
-    let namePart = name.replace(/\s+/g, "").substring(0, 5).toLowerCase();
+    let baseName = name.replace(/\s+/g, "").toLowerCase();
+    let namePart = baseName;
     
-    // Handle short names by padding with 'x' until 5 characters
+    // Handle short names by repeating the name until 5 characters
     if (namePart.length > 0 && namePart.length < 5) {
-        namePart = namePart.padEnd(5, 'x');
+        while (namePart.length < 5) {
+            namePart += baseName;
+        }
     }
+    namePart = namePart.substring(0, 5);
 
     if (!namePart) return `@${suffix}#`;
     const capitalizedNamePart =
