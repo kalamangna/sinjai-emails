@@ -7,11 +7,17 @@ Format didasarkan pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased] - (Status Saat Ini berdasarkan README.md)
 
 ### Added
-- **Batch Create Optimization**: 
-  - Implemented a high-performance batch check endpoint (`/user/batch_check_availability`) to verify NIK, NIP, and email availability in a single database operation.
-  - Refactored the 'Batch Create' preview logic to use batch checks, reducing network requests from hundreds of sequential calls to a single optimized request for most cases.
-  - Added robust `try...catch...finally` blocks in JavaScript to prevent UI hanging during preview and ensure buttons are always re-enabled.
-  - Improved email conflict resolution by parallelizing availability checks.
+- **Optimasi Batch Create**: 
+  - Implementasi endpoint batch check (`/user/batch_check_availability`) untuk verifikasi NIK, NIP, dan ketersediaan email dalam satu operasi database.
+  - Refaktor logika preview 'Batch Create' untuk menggunakan batch check, mengurangi request jaringan dari ratusan panggilan sekuensial menjadi satu request yang dioptimalkan.
+  - **Multi-Candidate Batch Check**: Menyiapkan 3 kandidat email sekaligus per user dan memvalidasi semuanya dalam satu request batch, menghilangkan request sekuensial saat terjadi konflik email.
+  - Penambahan blok `try...catch...finally` pada JavaScript untuk mencegah antarmuka hang dan memastikan tombol selalu aktif kembali.
+- **Peningkatan UI/UX Preview**:
+  - **Hapus Baris**: Penambahan tombol hapus pada setiap baris tabel preview untuk kontrol data yang lebih fleksibel sebelum eksekusi.
+  - **Pembersihan Nama Otomatis**: Fitur pembersihan nama dari tanda baca dan perbaikan format nama yang terpisah spasi (contoh: "A H M A D" -> "AHMAD").
+  - **Sinkronisasi Live**: Perubahan nama pada tabel preview otomatis memicu pembuatan ulang email dan validasi ulang (termasuk kandidat alternatif).
+  - **Password Nama Pendek**: Perbaikan logika password untuk nama di bawah 5 huruf dengan sistem pengulangan karakter (contoh: "ALI" -> "Alial") untuk memenuhi syarat keamanan.
+- **Standar Alur Kerja Git**: Pembaruan `GEMINI.md` dengan urutan 4 langkah wajib: Build CSS -> Update Changelog -> Update README -> Push.
 - **Manajemen Email & Akun**: 
   - Integrasi UAPI cPanel untuk sinkronisasi, pembuatan akun, dan reset kata sandi secara real-time.
   - Kategorisasi spesifik untuk entitas PNS, PPPK (Penuh Waktu), dan PPPK (Paruh Waktu).
