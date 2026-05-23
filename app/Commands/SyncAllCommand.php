@@ -11,6 +11,9 @@ use App\Domains\Email\EmailModel;
 use App\Shared\Models\StatusAsnModel;
 use App\Shared\Models\EselonModel;
 
+use App\Domains\Website\WebDesaKelurahanModel;
+use App\Domains\Website\WebsiteService;
+
 class SyncAllCommand extends BaseCommand
 {
     /**
@@ -32,7 +35,7 @@ class SyncAllCommand extends BaseCommand
      *
      * @var string
      */
-    protected $description = 'Synchronize cPanel, TTE status, and Pegawai data automatically.';
+    protected $description = 'Synchronize cPanel, TTE status, Pegawai data, and Website expirations automatically.';
 
     /**
      * The Command's Usage
@@ -72,6 +75,9 @@ class SyncAllCommand extends BaseCommand
         
         // 3. Pegawai Data Synchronization
         $this->syncPegawaiData();
+
+        // 4. Website Expiration Synchronization
+        $this->syncWebExpirations();
         
         CLI::write('All synchronization processes completed!', 'green');
     }
@@ -235,6 +241,46 @@ class SyncAllCommand extends BaseCommand
             CLI::write("Pegawai Sync Finished. Success: $successCount, Failed: $failCount", 'cyan');
         } catch (\Throwable $e) {
             CLI::error('ERROR in Phase 3: ' . $e->getMessage());
+        }
+    }
+
+    private function syncWebExpirations()
+    {
+        CLI::write('--- Phase 4: Website Expiration Synchronization ---', 'yellow');
+        try {
+            $webDesaModel = new WebDesaKelurahanModel();
+            $websiteService = new WebsiteService();
+            
+            $websites = $webDesaModel->findAll();
+            $total = count($websites);
+            CLI::write("Total websites to sync: $total");
+            
+            $successCount = 0;
+            $failCount = 0;
+            
+            foreach ($websites as $index => $website) {
+                $count = $index + 1;
+                CLI::print("[$count/$total] Syncing {$website['domain']}... ");
+                
+                $newDate = $websiteService->determineExpirationDate($website['desa_kelurahan'], $website['domain'], null);
+                
+                if ($newDate) {
+                    $updateData = [
+                        'tanggal_berakhir' => $newDate,
+                        'sisa_hari' => $websiteService->calculateDaysRemaining($newDate)
+                    ];
+                    $webDesaModel->update($website['id'], $updateData);
+                    CLI::write($newDate, 'green');
+                    $successCount++;
+                } else {
+                    CLI::write('FAILED', 'red');
+                    $failCount++;
+                }
+            }
+            
+            CLI::write("Website Expiration Sync Finished. Success: $successCount, Failed: $failCount", 'cyan');
+        } catch (\Throwable $e) {
+            CLI::error('ERROR in Phase 4: ' . $e->getMessage());
         }
     }
 }
