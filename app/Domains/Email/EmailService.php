@@ -101,18 +101,18 @@ class EmailService
         if ($bsre_status) {
             if ($bsre_status === 'not_synced') {
                 $builder->groupStart()
-                    ->where('bsre_status', null)
+                    ->where('bsre_status IS NULL')
                     ->orWhere('bsre_status', '')
                     ->groupEnd();
             } elseif ($bsre_status === 'non_tte') {
                 $builder->groupStart()
-                    ->where('nip', null)
+                    ->where('nip IS NULL')
                     ->orWhere('nip', '')
                 ->groupEnd()
                 ->where('pimpinan', 0)
                 ->where('pimpinan_desa', 0)
                 ->groupStart()
-                    ->where('unit_kerja_id', null)
+                    ->where('unit_kerja_id IS NULL')
                     ->orWhere('unit_kerja_id', 0)
                 ->groupEnd();
             } else {
@@ -212,8 +212,12 @@ class EmailService
             }
 
             $rawBsreCounts = $this->emailModel->allowCallbacks(false)
-                ->select('bsre_status, pimpinan, pimpinan_desa, nip, COUNT(id) as count')
-                ->groupBy('bsre_status, pimpinan, pimpinan_desa, nip != "" AND nip IS NOT NULL')
+                ->select('bsre_status, pimpinan, pimpinan_desa, unit_kerja_id, nip, COUNT(id) as count')
+                ->groupBy('bsre_status')
+                ->groupBy('pimpinan')
+                ->groupBy('pimpinan_desa')
+                ->groupBy('unit_kerja_id')
+                ->groupBy('nip')
                 ->asArray()
                 ->findAll();
 
@@ -381,24 +385,24 @@ class EmailService
         if ($status_asn) {
             $emailBuilder->where('emails.status_asn_id', $status_asn);
         }
-
-        if ($bsre_status) {
-            if ($bsre_status === 'not_synced') {
-                $emailBuilder->groupStart()
-                    ->where('emails.bsre_status', null)
-                    ->orWhere('emails.bsre_status', '')
-                    ->groupEnd();
-            } elseif ($bsre_status === 'non_tte') {
-                $emailBuilder->groupStart()
-                    ->where('emails.nip', null)
-                    ->orWhere('emails.nip', '')
-                ->groupEnd()
-                ->where('emails.pimpinan', 0)
-                ->where('emails.pimpinan_desa', 0);
-            } else {
-                $emailBuilder->where('emails.bsre_status', $bsre_status);
-            }
-        }
+if ($bsre_status) {
+    if ($bsre_status === 'not_synced') {
+        $emailBuilder->groupStart()
+            ->where('emails.bsre_status IS NULL')
+            ->orWhere('emails.bsre_status', '')
+            ->groupEnd();
+    } elseif ($bsre_status === 'non_tte') {
+        $emailBuilder->groupStart()
+            ->where('emails.nip IS NULL')
+            ->orWhere('emails.nip', '')
+        ->groupEnd()
+        ->where('emails.pimpinan', 0)
+        ->where('emails.pimpinan_desa', 0)
+        ->groupStart()
+            ->where('emails.unit_kerja_id IS NULL')
+            ->orWhere('emails.unit_kerja_id', 0)
+        ->groupEnd();
+    } else {
 
         // Get filtered count BEFORE pagination
         $filtered_count = $emailBuilder->countAllResults(false);
@@ -444,8 +448,12 @@ class EmailService
         }
 
         $rawCounts = $statsBuilder->allowCallbacks(false)
-            ->select('bsre_status, pimpinan, pimpinan_desa, nip, COUNT(*) as count')
-            ->groupBy('bsre_status, pimpinan, pimpinan_desa, nip != "" AND nip IS NOT NULL')
+            ->select('bsre_status, pimpinan, pimpinan_desa, unit_kerja_id, nip, COUNT(*) as count')
+            ->groupBy('bsre_status')
+            ->groupBy('pimpinan')
+            ->groupBy('pimpinan_desa')
+            ->groupBy('unit_kerja_id')
+            ->groupBy('nip')
             ->findAll();
 
         foreach ($rawCounts as $row) {
