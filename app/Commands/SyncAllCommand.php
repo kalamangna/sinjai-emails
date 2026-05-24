@@ -250,6 +250,10 @@ class SyncAllCommand extends BaseCommand
             $expiredAccounts = $emailModel->select('emails.email, emails.name, emails.nip, emails.jabatan, unit_kerja.nama_unit_kerja as unit_name')
                                           ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
                                           ->where('emails.bsre_status', 'EXPIRED')
+                                          ->groupStart()
+                                              ->where('emails.pimpinan', 1)
+                                              ->orWhere('emails.pimpinan_desa', 1)
+                                          ->groupEnd()
                                           ->findAll();
             
             if (!empty($expiredAccounts)) {

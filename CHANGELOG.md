@@ -51,7 +51,7 @@ Format didasarkan pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - **Grafik Tren Pertumbuhan**: Fitur ini telah dihapus karena keterbatasan API eksternal dalam menyediakan data historis yang akurat (tanggal pembuatan akun).
   - **Alert Otomatis Telegram**: 
       - Integrasi pengecekan kuota pada sinkronisasi cPanel; mengirimkan peringatan instan ke Telegram jika penggunaan disk akun mencapai >= 90%. Laporan kini menyertakan data lengkap (Nama, NIP, dan Unit Kerja) untuk mempermudah identifikasi pengguna.
-      - Penambahan notifikasi otomatis untuk akun dengan status TTE 'EXPIRED' setelah proses sinkronisasi TTE selesai. Laporan kini menyertakan data lengkap (Nama, NIP, Jabatan, dan Unit Kerja) untuk memudahkan identifikasi dan tindak lanjut.
+      - Penambahan notifikasi otomatis untuk akun dengan status TTE 'EXPIRED' setelah proses sinkronisasi TTE selesai. Notifikasi ini kini dibatasi khusus untuk akun **Pimpinan** dan **Pimpinan Desa** guna memastikan fokus pada posisi strategis dan menyertakan data lengkap (Nama, NIP, Jabatan, dan Unit Kerja).
 - **Pembersihan Sistem (Cleanup)**:
     - Menghapus tabel database `email_stats_history` dan model terkait.
     - Menghapus seluruh logika pencatatan data statistik harian dan visualisasi grafik tren di Dashboard.
