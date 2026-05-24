@@ -85,7 +85,7 @@ class EmailService
         ];
     }
 
-    public function getEmailDashboardData($search = null, $bsre_status = null, $account_status = null, $perPage = 100)
+    public function getEmailDashboardData($search = null, $bsre_status = null, $perPage = 100)
     {
         $builder = $this->emailModel->withDetails();
 
@@ -96,10 +96,6 @@ class EmailService
                 ->orLike('nik', $search)
                 ->orLike('nip', $search)
                 ->groupEnd();
-        }
-
-        if ($account_status !== null && $account_status !== '') {
-            $builder->where('suspended_login', (int)$account_status);
         }
 
         if ($bsre_status) {
@@ -306,7 +302,6 @@ class EmailService
             'total_emails' => $counts['total_emails'] ?? 0,
             'filtered_count' => $filtered_count,
             'active_count' => $counts['active_count'] ?? 0,
-            'suspended_count' => $counts['suspended_count'] ?? 0,
             'active_bsre_count' => $counts['active_bsre_count'] ?? 0,
             'unit_kerja_list' => $summaryData['unit_kerja_list'],
             'status_asn_counts' => $summaryData['status_asn_counts'],
