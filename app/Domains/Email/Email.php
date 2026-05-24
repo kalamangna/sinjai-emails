@@ -48,7 +48,13 @@ class Email extends BaseController
             $data['bsre_status'] = $bsre_status;
             $data['per_page'] = $perPage;
             $data['last_sync_time'] = $lastSyncSetting['value'] ?? null;
-            $data['bsre_status_options'] = $data['bsre_status_labels'];
+            
+            // Ensure options includes non_tte explicitly if not handled by labels
+            $options = $data['bsre_status_labels'] ?? [];
+            if (!isset($options['non_tte'])) {
+                $options['non_tte'] = 'NON-TTE';
+            }
+            $data['bsre_status_options'] = $options;
 
             return view('email/index', $data);
         } catch (\Throwable $e) {
