@@ -20,12 +20,11 @@ class Home extends BaseController
             $statusAsnModel = new \App\Shared\Models\StatusAsnModel();
 
             // Email Stats (Raw Status from database/API)
-            $raw_stats = $emailModel->select('bsre_status, pimpinan, pimpinan_desa, unit_kerja_id, nip, COUNT(id) as count')
+            $raw_stats = $emailModel->select('bsre_status, pimpinan, pimpinan_desa, nip, COUNT(id) as count')
                 ->allowCallbacks(false)
                 ->groupBy('bsre_status')
                 ->groupBy('pimpinan')
                 ->groupBy('pimpinan_desa')
-                ->groupBy('unit_kerja_id')
                 ->groupBy('nip')
                 ->findAll();
 
@@ -38,9 +37,9 @@ class Home extends BaseController
             foreach ($raw_stats as $row) {
                 $count = (int)$row['count'];
                 $total_emails += $count;
-                
+
                 $isNeedTte = !empty($row['nip']) || ($row['pimpinan'] == 1) || ($row['pimpinan_desa'] == 1);
-                
+
                 if (!$isNeedTte) {
                     $non_tte_count += $count;
                 } elseif (empty($row['bsre_status'])) {

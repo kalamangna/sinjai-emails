@@ -51,7 +51,7 @@
 
                     <div class="flex flex-wrap items-center justify-center md:justify-start gap-2 mt-4">
                         <?php 
-                        $isNeedTte = !empty($email['nip']) || ($email['pimpinan'] ?? 0) == 1 || ($email['pimpinan_desa'] ?? 0) == 1 || (!empty($email['unit_kerja_id']) && $email['unit_kerja_id'] != 0);
+                        $isNeedTte = !empty($email['nip']) || ($email['pimpinan'] ?? 0) == 1 || ($email['pimpinan_desa'] ?? 0) == 1;
                         ?>
 
                         <?php if ($isNeedTte): ?>

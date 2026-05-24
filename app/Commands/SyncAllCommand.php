@@ -214,12 +214,10 @@ class SyncAllCommand extends BaseCommand
                     ->groupEnd()
                     ->orWhere('pimpinan', 1)
                     ->orWhere('pimpinan_desa', 1)
-                    ->orWhere('unit_kerja_id IS NOT NULL')
-                    ->orWhere('unit_kerja_id !=', 0)
                 ->groupEnd()
                 ->findAll();
             $total = count($emails);
-            CLI::write("Total accounts (NIP, Pimpinan, or Unit Kerja) to check: $total");
+            CLI::write("Total accounts (NIP & Pimpinan) to check: $total");
             
             foreach ($emails as $index => $email) {
                 $count = $index + 1;
@@ -263,8 +261,6 @@ class SyncAllCommand extends BaseCommand
                     ->groupEnd()
                     ->orWhere('pimpinan', 1)
                     ->orWhere('pimpinan_desa', 1)
-                    ->orWhere('unit_kerja_id IS NOT NULL')
-                    ->orWhere('unit_kerja_id !=', 0)
                 ->groupEnd()
                 ->countAllResults();
             
