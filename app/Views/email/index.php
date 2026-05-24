@@ -106,18 +106,25 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <?php
-                                    $status = $email['bsre_status'] ?? '';
-                                    $colorClass = 'bg-slate-100 text-slate-700 border-transparent';
-                                    $statusLabel = $status ?: 'NOT_SYNCED';
+                                    $isNeedTte = !empty($email['nip']) || ($email['pimpinan'] ?? 0) == 1 || ($email['pimpinan_desa'] ?? 0) == 1;
+                                    
+                                    if ($isNeedTte) {
+                                        $status = $email['bsre_status'] ?? '';
+                                        $colorClass = 'bg-slate-100 text-slate-700 border-transparent';
+                                        $statusLabel = $status ?: 'NOT_SYNCED';
 
-                                    if ($status === 'ISSUE') {
-                                        $colorClass = 'bg-emerald-100 text-emerald-800 border-transparent';
-                                    } elseif (in_array($status, ['EXPIRED', 'REVOKE', 'SUSPEND'])) {
-                                        $colorClass = 'bg-red-100 text-red-700 border-transparent';
-                                    } elseif (in_array($status, ['WAITING_FOR_VERIFICATION', 'RENEW', 'NO_CERTIFICATE'])) {
-                                        $colorClass = 'bg-amber-50 text-amber-500 border-amber-200';
-                                    } elseif ($status === 'NEW') {
-                                        $colorClass = 'bg-blue-100 text-slate-700 border-transparent';
+                                        if ($status === 'ISSUE') {
+                                            $colorClass = 'bg-emerald-100 text-emerald-800 border-transparent';
+                                        } elseif (in_array($status, ['EXPIRED', 'REVOKE', 'SUSPEND'])) {
+                                            $colorClass = 'bg-red-100 text-red-700 border-transparent';
+                                        } elseif (in_array($status, ['WAITING_FOR_VERIFICATION', 'RENEW', 'NO_CERTIFICATE'])) {
+                                            $colorClass = 'bg-amber-50 text-amber-500 border-amber-200';
+                                        } elseif ($status === 'NEW') {
+                                            $colorClass = 'bg-blue-100 text-slate-700 border-transparent';
+                                        }
+                                    } else {
+                                        $statusLabel = 'NON-TTE';
+                                        $colorClass = 'bg-slate-50 text-slate-400 border-slate-200';
                                     }
                                     ?>
                                     <span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase border <?= $colorClass ?>">

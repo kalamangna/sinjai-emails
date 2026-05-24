@@ -50,17 +50,29 @@
                     <p class="text-sm font-medium text-slate-700 uppercase tracking-tight"><?= esc($email['name']) ?></p>
 
                     <div class="flex flex-wrap items-center justify-center md:justify-start gap-2 mt-4">
-                        <div class="flex items-center gap-2 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg">
-                            <span class="text-[10px] font-bold text-slate-700 uppercase tracking-widest">Status TTE:</span>
-                            <div id="bsre-status-container" class="flex items-center">
-                                <span class="text-[10px] font-bold text-slate-700 animate-pulse uppercase">Memeriksa...</span>
+                        <?php 
+                        $isNeedTte = !empty($email['nip']) || ($email['pimpinan'] ?? 0) == 1 || ($email['pimpinan_desa'] ?? 0) == 1;
+                        ?>
+
+                        <?php if ($isNeedTte): ?>
+                            <div class="flex items-center gap-2 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg">
+                                <span class="text-[10px] font-bold text-slate-700 uppercase tracking-widest">Status TTE:</span>
+                                <div id="bsre-status-container" class="flex items-center">
+                                    <span class="text-[10px] font-bold text-slate-700 animate-pulse uppercase">Memeriksa...</span>
+                                </div>
+                                <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
+                                    <button onclick="syncBsreStatus('<?= esc($email['email'], 'js') ?>')" class="btn btn-solid btn-xs ml-2" title="Sinkronisasi">
+                                        <i class="fas fa-sync-alt"></i>
+                                    </button>
+                                <?php endif; ?>
                             </div>
-                            <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
-                                <button onclick="syncBsreStatus('<?= esc($email['email'], 'js') ?>')" class="btn btn-solid btn-xs ml-2" title="Sinkronisasi">
-                                    <i class="fas fa-sync-alt"></i>
-                                </button>
-                            <?php endif; ?>
-                        </div>
+                        <?php else: ?>
+                            <div class="flex items-center gap-2 px-3 py-1.5 bg-slate-100 border border-slate-200 rounded-lg">
+                                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                                    <i class="fas fa-info-circle mr-1 text-slate-400"></i> Akun Layanan / Non-TTE
+                                </span>
+                            </div>
+                        <?php endif; ?>
 
                         <?php if (($email['pimpinan'] ?? 0) == 1): ?>
                             <span class="px-2.5 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-700 border border-slate-200">

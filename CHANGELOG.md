@@ -13,6 +13,7 @@
     - Menghapus route dan logika controller terkait sinkronisasi manual guna memastikan pembaruan data hanya dilakukan secara efisien melalui sistem otomatis (*Cron Job*).
 - **Optimasi Sinkronisasi**:
     - **Filter TTE Berbasis NIP & Jabatan**: Mengoptimalkan proses sinkronisasi TTE dengan hanya memeriksa akun yang memiliki NIP. Namun, sistem memberikan pengecualian untuk akun yang ditandai sebagai **Pimpinan** atau **Pimpinan Desa**, yang akan selalu diperiksa status TTE-nya tanpa terkecuali untuk memastikan validitas tanda tangan elektronik pada posisi strategis.
+    - **Mapping Akun Layanan (Non-TTE)**: Mengimplementasikan klasifikasi cerdas untuk email OPD/Desa yang bersifat layanan. Akun tanpa NIP dan bukan pimpinan kini otomatis dikategorikan sebagai **"NON-TTE"**, menghilangkan kebingungan status pada dashboard dan detail akun.
 
 # Changelog
 
