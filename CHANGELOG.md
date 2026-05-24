@@ -1,26 +1,31 @@
 # Session History - 24 Mei 2026
 
-## Perbaikan Bug
+## Perbaikan Bug & Refaktor
 - **Sinkronisasi API cPanel**:
-    - Memperbaiki kesalahan "3 : Bad URL" yang terjadi selama proses sinkronisasi mingguan.
-    - **Konstruksi URL yang Kuat**: Melakukan refaktor pada metode `CpanelApi::make_request` untuk menangani kasus di mana konfigurasi host mungkin sudah menyertakan protokol (http/https), port, atau path akhiran.
-    - **Deteksi Port Otomatis**: Mengimplementasikan deteksi port cerdas yang mengekstrak port dari URL host jika tidak disediakan secara eksplisit dalam konfigurasi, dengan fallback ke port standar cPanel (2083) jika diperlukan.
-    - **Instansi Request Baru**: Beralih menggunakan instansi `CURLRequest` yang tidak dibagikan (non-shared) untuk setiap panggilan API guna mencegah kebocoran konfigurasi atau konflik dari bagian lain aplikasi.
-    - **Peningkatan Logging Kesalahan**: Menambahkan logging kesalahan yang detail yang mencatat URL final dan seluruh body respons saat terjadi kegagalan, memberikan informasi diagnostik yang lebih baik untuk pemecahan masalah di masa mendatang.
-    - **Keamanan & Reliabilitas**: Menambahkan pengabaian verifikasi SSL (`verify: false`) untuk panggilan API cPanel internal guna menangani sertifikat self-signed yang umum digunakan di lingkungan server.
-- **Otomatisasi Penghapusan Akun Pensiun**:
-    - Menambahkan fitur "Tandai Pensiun" pada profil pegawai yang memungkinkan Admin memicu proses pembersihan akun secara manual.
-    - **Pembersihan Data Instan**: Ketika ditandai pensiun, sistem kini secara otomatis menghapus data personal dan kedinasan (NIK, NIP, Jabatan, Unit Kerja, Pangkat, dan Status TTE) dari database lokal untuk menjaga akurasi statistik instansi.
-    - **Notifikasi Telegram Instan**: Mengirimkan pemberitahuan ke Telegram segera setelah Admin menandai akun sebagai pensiun, lengkap dengan identitas pegawai yang ditangguhkan.
-    - **Masa Tunggu 30 Hari**: Akun yang ditandai pensiun akan segera ditangguhkan (suspend) di cPanel dan database, namun tetap disimpan selama 30 hari untuk mencegah kehilangan data yang tidak disengaja.
-    - **Pembersihan Permanen Otomatis**: Menambahkan Phase 5 pada skrip sinkronisasi harian yang secara otomatis menghapus permanen akun dari server cPanel dan database lokal setelah melewati masa tunggu 30 hari.
-    - **Laporan Pembersihan**: Notifikasi Telegram otomatis jika terdapat akun yang dihapus permanen oleh sistem pembersihan otomatis.
-- **Penyederhanaan Antarmuka (UI/UX)**:
-    - Menghapus tombol manual "Sync cPanel" dari Dashboard utama untuk mencegah masalah *timeout* pada browser dan beban server berlebih akibat sinkronisasi massal 7.500+ akun.
-    - Menghapus route dan logika controller terkait sinkronisasi manual guna memastikan pembaruan data hanya dilakukan secara efisien melalui sistem otomatis (*Cron Job*).
-- **Optimasi Sinkronisasi**:
-    - **Filter TTE Berbasis NIP & Jabatan**: Mengoptimalkan proses sinkronisasi TTE dengan hanya memeriksa akun yang memiliki NIP. Namun, sistem memberikan pengecualian untuk akun yang ditandai sebagai **Pimpinan** atau **Pimpinan Desa**, yang akan selalu diperiksa status TTE-nya tanpa terkecuali untuk memastikan validitas tanda tangan elektronik pada posisi strategis.
-    - **Mapping Akun Layanan (NON_TTE)**: Mengimplementasikan klasifikasi cerdas untuk email OPD/Desa yang bersifat layanan. Akun tanpa NIP dan bukan pimpinan kini otomatis dikategorikan sebagai **"NON_TTE"**, menghilangkan kebingungan status pada dashboard dan detail akun.
+    - Memperbaiki kesalahan "3 : Bad URL" dengan refaktor konstruksi URL yang lebih robust (pembersihan protokol/port otomatis).
+    - Menjamin isolasi request menggunakan instansi `CURLRequest` baru untuk setiap panggilan API.
+- **Koreksi Filter TTE (Mutually Exclusive)**:
+    - Melakukan refaktor mendalam pada logika filter status TTE di `EmailService`.
+    - Memastikan status `ISSUE`, `EXPIRED`, `NOT_SYNCED`, dll. hanya menampilkan akun wajib TTE.
+    - Menghilangkan masalah "kebocoran data" dimana akun NON_TTE muncul di kategori filter lain.
+
+## Fitur Baru & Optimasi
+- **Otomatisasi Akun Pensiun**:
+    - Fitur **"Tandai Pensiun"** manual: Penangguhan akses login cPanel instan + Pembersihan data identitas/kedinasan otomatis dari database.
+    - **Pembersihan Permanen**: Fase 5 otomatis yang menghapus akun setelah masa tunggu aman 30 hari.
+- **Standarisasi Notifikasi Telegram**:
+    - **Laporan Batch**: Notifikasi audit trail instan setelah operasi Batch Create/Update selesai.
+    - **Detail Komprehensif**: Semua alert (Kuota, TTE, Pensiun) kini menyertakan Nama, NIP, Jabatan, dan Unit Kerja yang sinkron.
+    - **Pemisahan Statistik**: Laporan TTE kini membedakan angka statistik global dengan detail prioritas pimpinan.
+- **Transparansi Dashboard**:
+    - Menambahkan panel status sinkronisasi multi-modul di Dashboard utama (cPanel, TTE, Pegawai, Website).
+    - Mempermudah Admin memantau "kesegaran" data di seluruh sistem secara terpusat.
+- **Optimasi TTE Pimpinan**:
+    - Membatasi sinkronisasi harian hanya untuk akun **Pimpinan** dan **Pimpinan Desa** guna efisiensi maksimal kuota API BSrE.
+
+## Pembersihan Sistem
+- **Standardisasi NON_TTE**: Mengubah seluruh label dan kunci "NON-TTE" menjadi **"NON_TTE"** untuk konsistensi penamaan sistem.
+- **Penghapusan Fitur Tren**: Menghapus grafik tren pertumbuhan dan tabel `email_stats_history` untuk fokus pada penyajian data real-time yang akurat.
 
 # Changelog
 

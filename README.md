@@ -32,9 +32,11 @@ Aplikasi ini menerapkan standar estetika **"Slate Clean Government"**—antarmuk
 - **Laporan Telegram:** Pengiriman ringkasan statistik sinkronisasi secara otomatis ke Channel Telegram.
 - **Alert Kuota Email:** Notifikasi instan via Telegram jika terdapat akun dengan penggunaan penyimpanan di atas 90%, lengkap dengan detail data pengguna dan unit kerja.
 - **Alert TTE Expired:** Peringatan otomatis melalui Telegram untuk akun dengan status sertifikat elektronik yang kadaluwarsa, disertai detail identitas lengkap.
-- **Penjadwalan Tugas:** Skrip shell terpadu (`sync.sh`) untuk otomatisasi tugas harian (cPanel/TTE) dan bulanan (Pegawai/Website).
-- **Optimasi Sinkronisasi TTE:** Sistem secara cerdas hanya menyinkronkan akun yang memiliki NIP atau ditandai sebagai Pimpinan untuk efisiensi API.
-- **Transparansi Data:** Pencatatan dan tampilan waktu sinkronisasi terakhir secara spesifik di setiap modul utama.
+- **Notifikasi Operasi Batch:** Laporan audit trail instan ke Telegram setiap kali Admin melakukan proses impor/update data massal via Excel.
+- **Pembersihan Akun Pensiun:** Mekanisme penangguhan login instan dan penghapusan permanen otomatis setelah masa tunggu 30 hari untuk akun yang ditandai pensiun.
+- **Penjadwalan Tugas:** Skrip shell terpadu (`sync.sh`) untuk otomatisasi tugas harian (TTE), mingguan (cPanel), dan bulanan (Pegawai/Website).
+- **Optimasi Sinkronisasi TTE:** Sistem secara cerdas membatasi sinkronisasi harian hanya untuk akun Pimpinan guna efisiensi maksimal API.
+- **Transparansi Data:** Pencatatan dan tampilan waktu sinkronisasi terakhir dari berbagai modul (cPanel, TTE, Pegawai, Website) secara terpusat di Dashboard utama.
 
 ### 🌐 API Gateway (v1)
 Penyediaan data internal yang aman untuk integrasi lintas sektoral di Pemkab Sinjai:
