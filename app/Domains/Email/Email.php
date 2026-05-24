@@ -111,6 +111,32 @@ class Email extends BaseController
         }
     }
 
+    public function mark_pensiun($username)
+    {
+        try {
+            $email = $this->emailModel->where('user', $username)->first();
+            if (!$email) {
+                throw new \Exception("Akun email tidak ditemukan.");
+            }
+
+            $cpanelApi = new \App\Shared\Libraries\CpanelApi();
+            
+            // 1. Suspend in cPanel
+            $cpanelApi->suspend_email_login($email['email']);
+
+            // 2. Update DB
+            $this->emailModel->update($email['id'], [
+                'suspended_login' => 1,
+                'pensiun_at' => date('Y-m-d H:i:s')
+            ]);
+
+            return redirect()->to('email/detail/' . $username)->with('success', 'Akun telah ditandai sebagai Pensiun. Akses login telah ditangguhkan dan akun akan dihapus permanen dalam 30 hari.');
+            
+        } catch (\Throwable $e) {
+            return redirect()->to('email/detail/' . $username)->with('error', 'Gagal memproses pensiun: ' . $e->getMessage());
+        }
+    }
+
     public function update_details($username)
     {
         if (strtolower($this->request->getMethod()) !== 'post') {

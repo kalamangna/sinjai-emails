@@ -41,6 +41,7 @@ class EmailModel extends Model
         'bsre_status',
         'pimpinan',
         'pimpinan_desa',
+        'pensiun_at',
     ];
     protected $useTimestamps = true;
     protected $returnType = 'array';

@@ -99,12 +99,9 @@ class SyncAllCommand extends BaseCommand
             $this->syncCpanel();
         }
 
-        // Phase: Pegawai & Website (Bulanan / All)
-        if ($runAll || $isMonthly) {
-            $this->syncPegawaiData();
-            $this->syncWebExpirations();
-        }
-        
+        // Phase: Cleanup (Setiap kali sinkronisasi)
+        $this->cleanupRetiredAccounts();
+
         CLI::write('Synchronization process completed!', 'green');
         $this->sendTelegramSummary($modeName);
     }
@@ -496,6 +493,51 @@ class SyncAllCommand extends BaseCommand
             }
         } catch (\Throwable $e) {
             CLI::error('Error checking website expiration alerts: ' . $e->getMessage());
+        }
+    }
+
+    private function cleanupRetiredAccounts()
+    {
+        CLI::write('--- Phase 5: Cleanup Retired Accounts (30 Days Rule) ---', 'yellow');
+        try {
+            $emailModel = new EmailModel();
+            $cpanelApi = new \App\Shared\Libraries\CpanelApi();
+            
+            // Look for accounts marked as retired more than 30 days ago
+            $thirtyDaysAgo = date('Y-m-d H:i:s', strtotime('-30 days'));
+            $toDelete = $emailModel->where('pensiun_at <=', $thirtyDaysAgo)->findAll();
+            
+            if (empty($toDelete)) {
+                CLI::write('No retired accounts to cleanup.', 'green');
+                return;
+            }
+
+            $deletedList = [];
+            foreach ($toDelete as $acc) {
+                CLI::print("Deleting retired account: {$acc['email']}... ");
+                try {
+                    // 1. Delete from cPanel
+                    $cpanelApi->delete_email_account($acc['email']);
+                    
+                    // 2. Delete from local DB
+                    $emailModel->delete($acc['id']);
+                    
+                    $deletedList[] = "• " . ($acc['name'] ?: $acc['email']);
+                    CLI::write('DONE', 'green');
+                } catch (\Throwable $e) {
+                    CLI::write('FAILED: ' . $e->getMessage(), 'red');
+                }
+            }
+
+            if (!empty($deletedList)) {
+                $msg = "🧹 <b>LAPORAN PEMBERSIHAN PENSIUN</b>\n";
+                $msg .= "Akun berikut telah dihapus permanen (melewati masa tunggu 30 hari):\n\n";
+                $msg .= implode("\n", $deletedList);
+                $this->telegram->sendMessage($msg);
+            }
+
+        } catch (\Throwable $e) {
+            CLI::error('Error during cleanup: ' . $e->getMessage());
         }
     }
 

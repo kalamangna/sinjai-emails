@@ -235,4 +235,40 @@ class CpanelApi
             throw new Exception('Failed to delete email account: ' . $e->getMessage());
         }
     }
+
+    public function suspend_email_login($email)
+    {
+        try {
+            $parameters = ['email' => $email];
+            $response = $this->make_request('Email', 'suspend_login', 'POST', $parameters);
+
+            if (isset($response['status']) && $response['status'] == 1) {
+                return $response;
+            } else {
+                $error_message = $response['errors'][0] ?? 'Unknown error during email login suspension.';
+                throw new Exception($error_message);
+            }
+        } catch (\Throwable $e) {
+            log_message('error', "Failed to suspend email login for $email: " . $e->getMessage());
+            throw new Exception("Failed to suspend email login: " . $e->getMessage());
+        }
+    }
+
+    public function unsuspend_email_login($email)
+    {
+        try {
+            $parameters = ['email' => $email];
+            $response = $this->make_request('Email', 'unsuspend_login', 'POST', $parameters);
+
+            if (isset($response['status']) && $response['status'] == 1) {
+                return $response;
+            } else {
+                $error_message = $response['errors'][0] ?? 'Unknown error during email login unsuspension.';
+                throw new Exception($error_message);
+            }
+        } catch (\Throwable $e) {
+            log_message('error', "Failed to unsuspend email login for $email: " . $e->getMessage());
+            throw new Exception("Failed to unsuspend email login: " . $e->getMessage());
+        }
+    }
 }

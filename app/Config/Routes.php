@@ -72,6 +72,7 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
             $routes->get('create', '\App\Domains\Email\Email::create');
             $routes->get('edit_profile/(:any)', '\App\Domains\Email\Email::edit_profile/$1');
             $routes->post('update_details/(:any)', '\App\Domains\Email\Email::update_details/$1');
+            $routes->post('mark_pensiun/(:any)', '\App\Domains\Email\Email::mark_pensiun/$1');
             $routes->get('edit_password/(:any)', '\App\Domains\Email\Email::edit_password/$1');
             $routes->post('update_password/(:any)', '\App\Domains\Email\Email::update_password/$1');
             $routes->get('edit_pk/(:any)', '\App\Domains\Email\Email::edit_pk/$1');

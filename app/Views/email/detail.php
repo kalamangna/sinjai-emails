@@ -74,6 +74,12 @@
                             </div>
                         <?php endif; ?>
 
+                        <?php if (!empty($email['pensiun_at'])): ?>
+                            <span class="px-2.5 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-red-100 text-red-700 border border-red-200">
+                                <i class="fas fa-user-slash mr-1"></i> Pensiun (Sejak <?= formatTanggal($email['pensiun_at']) ?>)
+                            </span>
+                        <?php endif; ?>
+
                         <?php if (($email['pimpinan'] ?? 0) == 1): ?>
                             <span class="px-2.5 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-700 border border-slate-200">
                                 <i class="fas fa-user-tie mr-1"></i> Pimpinan OPD
@@ -117,6 +123,14 @@
                             <a href="<?= site_url('email/edit_profile/' . $email['user']) ?>" class="btn btn-outline btn-xs no-underline">
                                 <i class="fas fa-edit mr-1.5"></i> Edit Profil
                             </a>
+                            <?php if (empty($email['pensiun_at'])): ?>
+                                <form action="<?= site_url('email/mark_pensiun/' . $email['user']) ?>" method="POST" class="inline" onsubmit="return confirm('Tandai akun ini sebagai Pensiun? Akun akan langsung ditangguhkan dan dihapus permanen 30 hari dari sekarang.');">
+                                    <?= csrf_field() ?>
+                                    <button type="submit" class="btn btn-outline btn-xs text-red-600 border-red-200 hover:bg-red-50" title="Tandai Pensiun">
+                                        <i class="fas fa-user-slash mr-1.5"></i> Pensiun
+                                    </button>
+                                </form>
+                            <?php endif; ?>
                         <?php endif; ?>
                     </div>
                 </div>

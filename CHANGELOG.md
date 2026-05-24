@@ -8,6 +8,11 @@
     - **Instansi Request Baru**: Beralih menggunakan instansi `CURLRequest` yang tidak dibagikan (non-shared) untuk setiap panggilan API guna mencegah kebocoran konfigurasi atau konflik dari bagian lain aplikasi.
     - **Peningkatan Logging Kesalahan**: Menambahkan logging kesalahan yang detail yang mencatat URL final dan seluruh body respons saat terjadi kegagalan, memberikan informasi diagnostik yang lebih baik untuk pemecahan masalah di masa mendatang.
     - **Keamanan & Reliabilitas**: Menambahkan pengabaian verifikasi SSL (`verify: false`) untuk panggilan API cPanel internal guna menangani sertifikat self-signed yang umum digunakan di lingkungan server.
+- **Otomatisasi Penghapusan Akun Pensiun**:
+    - Menambahkan fitur "Tandai Pensiun" pada profil pegawai yang memungkinkan Admin memicu proses pembersihan akun secara manual.
+    - **Masa Tunggu 30 Hari**: Akun yang ditandai pensiun akan segera ditangguhkan (suspend) di cPanel dan database, namun tetap disimpan selama 30 hari untuk mencegah kehilangan data yang tidak disengaja.
+    - **Pembersihan Permanen Otomatis**: Menambahkan Phase 5 pada skrip sinkronisasi harian yang secara otomatis menghapus permanen akun dari server cPanel dan database lokal setelah melewati masa tunggu 30 hari.
+    - **Laporan Pembersihan**: Notifikasi Telegram otomatis jika terdapat akun yang dihapus permanen oleh sistem pembersihan otomatis.
 - **Penyederhanaan Antarmuka (UI/UX)**:
     - Menghapus tombol manual "Sync cPanel" dari Dashboard utama untuk mencegah masalah *timeout* pada browser dan beban server berlebih akibat sinkronisasi massal 7.500+ akun.
     - Menghapus route dan logika controller terkait sinkronisasi manual guna memastikan pembaruan data hanya dilakukan secara efisien melalui sistem otomatis (*Cron Job*).
