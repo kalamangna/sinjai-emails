@@ -11,12 +11,6 @@
             <div>
                 <h1 class="text-xl sm:text-2xl font-bold text-slate-800 uppercase tracking-tight truncate">Detail Akun</h1>
                 <div class="flex flex-wrap gap-x-4 gap-y-1 mt-1">
-                    <?php if (!empty($last_sync_tte)): ?>
-                        <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">
-                            <i class="fas fa-fingerprint mr-1"></i> TTE Sync:
-                            <span class="text-slate-700"><?= formatTanggalWaktu($last_sync_tte) ?></span>
-                        </p>
-                    <?php endif; ?>
                     <?php if (!empty($last_sync_pegawai)): ?>
                         <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">
                             <i class="fas fa-user-check mr-1"></i> Pegawai Sync:
@@ -90,10 +84,6 @@
                 <?php else: ?>
                     <span class="px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest bg-red-100 text-red-700 border-transparent">Ditangguhkan</span>
                 <?php endif; ?>
-
-                <p class="text-[9px] font-bold text-slate-700 uppercase tracking-tight mt-1">
-                    Terakhir diperbarui: <span class="text-slate-800"><?= formatTanggalWaktu($email['mtime'] ?? 'now') ?></span>
-                </p>
             </div>
         </div>
     </div>
