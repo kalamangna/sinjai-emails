@@ -8,6 +8,11 @@
     - **Instansi Request Baru**: Beralih menggunakan instansi `CURLRequest` yang tidak dibagikan (non-shared) untuk setiap panggilan API guna mencegah kebocoran konfigurasi atau konflik dari bagian lain aplikasi.
     - **Peningkatan Logging Kesalahan**: Menambahkan logging kesalahan yang detail yang mencatat URL final dan seluruh body respons saat terjadi kegagalan, memberikan informasi diagnostik yang lebih baik untuk pemecahan masalah di masa mendatang.
     - **Keamanan & Reliabilitas**: Menambahkan pengabaian verifikasi SSL (`verify: false`) untuk panggilan API cPanel internal guna menangani sertifikat self-signed yang umum digunakan di lingkungan server.
+- **Penyederhanaan Antarmuka (UI/UX)**:
+    - Menghapus tombol manual "Sync cPanel" dari Dashboard utama untuk mencegah masalah *timeout* pada browser dan beban server berlebih akibat sinkronisasi massal 7.500+ akun.
+    - Menghapus route dan logika controller terkait sinkronisasi manual guna memastikan pembaruan data hanya dilakukan secara efisien melalui sistem otomatis (*Cron Job*).
+- **Optimasi Sinkronisasi**:
+    - **Filter TTE Berbasis NIP & Jabatan**: Mengoptimalkan proses sinkronisasi TTE dengan hanya memeriksa akun yang memiliki NIP. Namun, sistem memberikan pengecualian untuk akun yang ditandai sebagai **Pimpinan** atau **Pimpinan Desa**, yang akan selalu diperiksa status TTE-nya tanpa terkecuali untuk memastikan validitas tanda tangan elektronik pada posisi strategis.
 
 # Changelog
 
@@ -43,9 +48,13 @@ Format didasarkan pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - Penambahan informasi waktu sinkronisasi khusus (TTE & Pegawai) pada halaman Detail Akun Email.
   - Penambahan informasi waktu sinkronisasi masa aktif domain pada halaman Website Desa & Kelurahan.
 - **Peningkatan Analitik & Monitoring**:
-  - **Grafik Tren Pertumbuhan**: Implementasi grafik area pada Dashboard yang menampilkan tren pertumbuhan jumlah akun email secara tahunan (data historis 10 tahun terakhir).
-  - **Pencatatan Sejarah Statistik**: Sistem kini secara otomatis mencatat snapshot harian total akun dan penggunaan storage ke tabel baru `email_stats_history`.
-  - **Alert Kuota Otomatis**: Integrasi pengecekan kuota pada sinkronisasi cPanel; mengirimkan peringatan instan ke Telegram jika penggunaan disk akun mencapai >= 90%.
+  - **Grafik Tren Pertumbuhan**: Fitur ini telah dihapus karena keterbatasan API eksternal dalam menyediakan data historis yang akurat (tanggal pembuatan akun).
+  - **Alert Otomatis Telegram**: 
+      - Integrasi pengecekan kuota pada sinkronisasi cPanel; mengirimkan peringatan instan ke Telegram jika penggunaan disk akun mencapai >= 90%. Laporan kini menyertakan data lengkap (Nama, NIP, dan Unit Kerja) untuk mempermudah identifikasi pengguna.
+      - Penambahan notifikasi otomatis untuk akun dengan status TTE 'EXPIRED' setelah proses sinkronisasi TTE selesai. Laporan kini menyertakan data lengkap (Nama, NIP, Jabatan, dan Unit Kerja) untuk memudahkan identifikasi dan tindak lanjut.
+- **Pembersihan Sistem (Cleanup)**:
+    - Menghapus tabel database `email_stats_history` dan model terkait.
+    - Menghapus seluruh logika pencatatan data statistik harian dan visualisasi grafik tren di Dashboard.
 - **API Gateway (v1)**:
   - Implementasi *API Gateway* terpusat dengan dukungan otentikasi ganda: *Bearer Token* (untuk integrasi sistem) dan *Session-based* (untuk akses browser pengguna terdaftar).
   - **Daftar Endpoint Terstandarisasi**:

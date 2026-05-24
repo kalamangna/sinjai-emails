@@ -93,28 +93,6 @@ class Email extends BaseController
         return view('email/create', $data);
     }
 
-    public function sync()
-    {
-        try {
-            $result = $this->syncService->syncFromCpanel();
-            if (is_cli()) {
-                return $result;
-            }
-
-            if ($result['success']) {
-                return redirect()->to('email')->with('success', $result['message']);
-            } else {
-                return redirect()->to('email')->with('error', $result['message']);
-            }
-        } catch (\Throwable $e) {
-            $message = 'Failed to synchronize: ' . $e->getMessage();
-            if (is_cli()) {
-                return ['success' => false, 'message' => $message];
-            }
-            return redirect()->to('email')->with('error', $message);
-        }
-    }
-
     public function edit_profile($username)
     {
         try {

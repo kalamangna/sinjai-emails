@@ -11,7 +11,6 @@ use App\Shared\Libraries\TelegramLibrary;
 use App\Domains\Email\EmailModel;
 use App\Shared\Models\StatusAsnModel;
 use App\Shared\Models\EselonModel;
-use App\Shared\Models\EmailStatsHistoryModel;
 
 use App\Domains\Website\WebDesaKelurahanModel;
 use App\Domains\Website\WebsiteService;
@@ -106,11 +105,6 @@ class SyncAllCommand extends BaseCommand
             $this->syncWebExpirations();
         }
         
-        // Record stats history (Only after weekly or all sync, since cpanel storage data is updated weekly)
-        if ($runAll || $isWeekly) {
-            $this->recordStatsHistory();
-        }
-
         CLI::write('Synchronization process completed!', 'green');
         $this->sendTelegramSummary($modeName);
     }
@@ -168,8 +162,10 @@ class SyncAllCommand extends BaseCommand
         CLI::write('Checking for High Quota Usage Alerts...', 'yellow');
         try {
             $emailModel = new EmailModel();
-            $highUsageAccounts = $emailModel->where('diskusedpercent_float >=', 90)
-                                            ->orderBy('diskusedpercent_float', 'DESC')
+            $highUsageAccounts = $emailModel->select('emails.*, unit_kerja.nama_unit_kerja as unit_name')
+                                            ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
+                                            ->where('emails.diskusedpercent_float >=', 90)
+                                            ->orderBy('emails.diskusedpercent_float', 'DESC')
                                             ->findAll();
             
             if (!empty($highUsageAccounts)) {
@@ -181,6 +177,8 @@ class SyncAllCommand extends BaseCommand
                 
                 foreach (array_slice($highUsageAccounts, 0, 10) as $acc) {
                     $msg .= "📧 " . $acc['email'] . "\n";
+                    $msg .= "👤 " . $acc['name'] . " (" . ($acc['nip'] ?: '-') . ")\n";
+                    $msg .= "🏛️ " . ($acc['unit_name'] ?: '-') . "\n";
                     $msg .= "📊 Digunakan: <b>" . $acc['humandiskused'] . "</b> (" . round($acc['diskusedpercent_float'], 1) . "%)\n\n";
                 }
                 
@@ -197,37 +195,6 @@ class SyncAllCommand extends BaseCommand
         }
     }
 
-    private function recordStatsHistory()
-    {
-        CLI::write('Recording Daily Stats History...', 'yellow');
-        try {
-            $emailModel = new EmailModel();
-            $historyModel = new EmailStatsHistoryModel();
-            
-            $totalAkun = $emailModel->countAllResults();
-            $totalStorageResult = $emailModel->selectSum('diskused', 'total')->first();
-            $totalStorageMb = ($totalStorageResult['total'] ?? 0) / (1024 * 1024);
-            
-            $today = date('Y-m-d');
-            
-            $existing = $historyModel->where('tanggal', $today)->first();
-            $data = [
-                'tanggal' => $today,
-                'total_akun' => $totalAkun,
-                'total_storage_mb' => $totalStorageMb
-            ];
-            
-            if ($existing) {
-                $historyModel->update($existing['id'], $data);
-            } else {
-                $historyModel->insert($data);
-            }
-            CLI::write('Stats history recorded successfully.', 'green');
-        } catch (\Throwable $e) {
-            CLI::error('Error recording stats history: ' . $e->getMessage());
-        }
-    }
-
     private function syncTteStatus()
     {
         CLI::write('--- Phase 2: TTE Status Synchronization ---', 'yellow');
@@ -236,9 +203,18 @@ class SyncAllCommand extends BaseCommand
             $emailModel = new EmailModel();
             $bsreApi = new BsreApi();
             
-            $emails = $emailModel->select('id, email')->findAll();
+            $emails = $emailModel->select('id, email')
+                ->groupStart()
+                    ->groupStart()
+                        ->where('nip IS NOT NULL')
+                        ->where('nip !=', '')
+                    ->groupEnd()
+                    ->orWhere('pimpinan', 1)
+                    ->orWhere('pimpinan_desa', 1)
+                ->groupEnd()
+                ->findAll();
             $total = count($emails);
-            CLI::write("Total accounts to check: $total");
+            CLI::write("Total accounts (NIP & Pimpinan) to check: $total");
             
             foreach ($emails as $index => $email) {
                 $count = $index + 1;
@@ -258,8 +234,48 @@ class SyncAllCommand extends BaseCommand
             }
             CLI::write("TTE Sync Finished. Success: " . $this->syncStats['tte']['success'] . ", Failed: " . $this->syncStats['tte']['fail'], 'cyan');
             $this->saveLastSyncTime('last_sync_tte');
+
+            // Check for expired TTE status alerts
+            $this->checkTteExpiredAlerts();
         } catch (\Throwable $e) {
             CLI::error('ERROR in Phase 2: ' . $e->getMessage());
+        }
+    }
+
+    private function checkTteExpiredAlerts()
+    {
+        CLI::write('Checking for Expired TTE Status Alerts...', 'yellow');
+        try {
+            $emailModel = new EmailModel();
+            $expiredAccounts = $emailModel->select('emails.email, emails.name, emails.nip, emails.jabatan, unit_kerja.nama_unit_kerja as unit_name')
+                                          ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
+                                          ->where('emails.bsre_status', 'EXPIRED')
+                                          ->findAll();
+            
+            if (!empty($expiredAccounts)) {
+                $count = count($expiredAccounts);
+                CLI::write("Found $count accounts with EXPIRED TTE status", 'red');
+                
+                $msg = "🔔 <b>PERINGATAN TTE EXPIRED</b>\n";
+                $msg .= "Ditemukan <b>$count</b> akun dengan status TTE Expired:\n\n";
+                
+                foreach (array_slice($expiredAccounts, 0, 10) as $acc) {
+                    $msg .= "📧 " . $acc['email'] . "\n";
+                    $msg .= "👤 " . $acc['name'] . " (" . ($acc['nip'] ?: '-') . ")\n";
+                    $msg .= "💼 " . ($acc['jabatan'] ?: '-') . "\n";
+                    $msg .= "🏛️ " . ($acc['unit_name'] ?: '-') . "\n\n";
+                }
+                
+                if ($count > 10) {
+                    $msg .= "...dan " . ($count - 10) . " akun lainnya.";
+                }
+                
+                $this->telegram->sendMessage($msg);
+            } else {
+                CLI::write('No expired TTE accounts found.', 'green');
+            }
+        } catch (\Throwable $e) {
+            CLI::error('Error checking TTE expired alerts: ' . $e->getMessage());
         }
     }
 

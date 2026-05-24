@@ -19,7 +19,7 @@ Aplikasi ini menerapkan standar estetika **"Slate Clean Government"**—antarmuk
 
 ### 📊 Pemantauan & Analitik
 - **Monitoring Website:** Pelacakan domain **OPD** dan **Desa/Kelurahan**, termasuk sinkronisasi otomatis masa berlaku SSL dan Domain.
-- **Dashboard Dinamis:** Analitik dengan grafik donut dan kartu metrik yang menampilkan persentase performa data.
+- **Dashboard Dinamis:** Analitik dengan kartu metrik yang menampilkan persentase performa data secara real-time.
 - **Log Pendampingan:** Pencatatan terpusat untuk bantuan teknis dan log layanan (khusus Super Admin).
 
 ### 📥 Operasi Batch (XLSX)
@@ -30,8 +30,10 @@ Aplikasi ini menerapkan standar estetika **"Slate Clean Government"**—antarmuk
 
 ### 🤖 Notifikasi & Otomatisasi
 - **Laporan Telegram:** Pengiriman ringkasan statistik sinkronisasi secara otomatis ke Channel Telegram.
-- **Alert Kuota Email:** Notifikasi instan via Telegram jika terdapat akun dengan penggunaan penyimpanan di atas 90%.
+- **Alert Kuota Email:** Notifikasi instan via Telegram jika terdapat akun dengan penggunaan penyimpanan di atas 90%, lengkap dengan detail data pengguna dan unit kerja.
+- **Alert TTE Expired:** Peringatan otomatis melalui Telegram untuk akun dengan status sertifikat elektronik yang kadaluwarsa, disertai detail identitas lengkap.
 - **Penjadwalan Tugas:** Skrip shell terpadu (`sync.sh`) untuk otomatisasi tugas harian (cPanel/TTE) dan bulanan (Pegawai/Website).
+- **Optimasi Sinkronisasi TTE:** Sistem secara cerdas hanya menyinkronkan akun yang memiliki NIP atau ditandai sebagai Pimpinan untuk efisiensi API.
 - **Transparansi Data:** Pencatatan dan tampilan waktu sinkronisasi terakhir secara spesifik di setiap modul utama.
 
 ### 🌐 API Gateway (v1)

@@ -3,7 +3,6 @@
 namespace App\Domains\Dashboard;
 
 use App\Shared\BaseController;
-use App\Shared\Models\EmailStatsHistoryModel;
 
 class Home extends BaseController
 {
@@ -19,7 +18,6 @@ class Home extends BaseController
             $assistanceModel = new \App\Domains\Assistance\AssistanceModel();
             $appSettingModel = new \App\Shared\Models\AppSettingModel();
             $statusAsnModel = new \App\Shared\Models\StatusAsnModel();
-            $historyModel = new EmailStatsHistoryModel();
 
             // Email Stats (Raw Status from database/API)
             $raw_stats = $emailModel->select('bsre_status, COUNT(id) as count')
@@ -124,15 +122,6 @@ class Home extends BaseController
 
             $last_sync = $appSettingModel->where('key', 'last_sync_time')->select('value')->asArray()->first();
 
-            // Yearly Historical Data
-            // Fetch the maximum (latest) total_akun for each year
-            $history_raw = $historyModel->select("DATE_FORMAT(tanggal, '%Y') as tahun, MAX(total_akun) as total_akun")
-                ->groupBy('tahun')
-                ->orderBy('tahun', 'DESC')
-                ->findAll(10); // Show last 10 years
-            
-            $history = array_reverse($history_raw); // Chronological order
-
             $data = [
                 'email_stats' => $email_stats,
                 'total_emails' => $total_emails,
@@ -142,7 +131,6 @@ class Home extends BaseController
                 'total_assistance' => $total_assistance,
                 'total_assistance_monthly' => $total_assistance_monthly,
                 'last_sync_time' => $last_sync['value'] ?? null,
-                'history' => $history,
                 'title' => 'Dashboard',
             ];
 

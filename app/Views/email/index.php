@@ -16,12 +16,6 @@
 
         <div class="flex items-center gap-2 w-full lg:w-auto">
             <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
-                <button onclick="confirmSyncCpanel(this)" data-href="<?= site_url('email/sync') ?>" class="flex-1 lg:flex-none btn btn-solid group" id="syncCpanelBtn">
-                    <i class="fas fa-sync-alt mr-2 group-hover:rotate-180 transition-transform duration-500"></i>
-                    <span>Sync cPanel</span>
-                </button>
-            <?php endif; ?>
-            <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
                 <a href="<?= site_url('email/create') ?>" class="flex-1 lg:flex-none btn btn-outline no-underline">
                     <i class="fas fa-plus mr-2 text-slate-700"></i> Tambah
                 </a>
@@ -171,25 +165,5 @@
 
 <?= $this->section('scripts') ?>
 <script>
-    function confirmSyncCpanel(btn) {
-        if (!confirm('Sinkronisasi akan mengambil metadata terbaru dari server cPanel. Proses ini mungkin memakan waktu beberapa saat. Lanjutkan?')) {
-            return;
-        }
-
-        const url = btn.getAttribute('data-href');
-        const icon = btn.querySelector('i');
-        const text = btn.querySelector('span');
-
-        // State: Loading
-        showGlobalLoading(true);
-        btn.disabled = true;
-        btn.classList.add('opacity-75', 'cursor-not-allowed');
-        icon.classList.remove('group-hover:rotate-180');
-        icon.classList.add('fa-spin');
-        text.innerText = 'MEMPROSES...';
-
-        // Redirect
-        window.location.href = url;
-    }
 </script>
 <?= $this->endSection() ?>
