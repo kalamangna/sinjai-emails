@@ -16,34 +16,54 @@ class CpanelApi
 
     private function make_request(string $module, string $function, string $method = 'GET', array $parameters = [])
     {
-        $host = trim($this->config->cpanel_host ?? '');
-        $port = trim((string)($this->config->cpanel_port ?? ''));
-        $user = trim($this->config->cpanel_username ?? '');
+        // 1. Get raw values
+        $rawHost = $this->config->cpanel_host ?? '';
+        $rawPort = (string)($this->config->cpanel_port ?? '');
 
-        // Detailed logging for debugging
-        log_message('debug', "CpanelApi Config - Host: [$host], Port: [$port], User: [$user]");
+        // 2. Initial cleaning
+        $host = trim(str_replace(['"', "'"], '', $rawHost));
+        $port = trim(str_replace(['"', "'"], '', $rawPort));
 
-        // Aggressively clean: Remove quotes if they exist
-        $host = str_replace(['"', "'"], '', $host);
-        $port = str_replace(['"', "'"], '', $port);
-
-        if (empty($host) || empty($port)) {
-            throw new Exception("Konfigurasi cPanel tidak lengkap di .env (Host: '$host', Port: '$port'). Pastikan kunci cpanel.host dan cpanel.port sudah benar.");
+        // 3. Handle protocol and path in host
+        if (preg_match('/^https?:\/\//', $host)) {
+            $parsedUrl = parse_url($host);
+            $host = $parsedUrl['host'] ?? '';
+            // If port was in the host URL, use it if our config port is empty
+            if (empty($port) && !empty($parsedUrl['port'])) {
+                $port = (string)$parsedUrl['port'];
+            }
+        }
+        
+        // Remove any path part if present
+        $host = explode('/', $host)[0];
+        
+        // Handle port already in host (e.g. "server.com:2083")
+        if (strpos($host, ':') !== false) {
+            list($h, $p) = explode(':', $host, 2);
+            $host = $h;
+            if (empty($port)) {
+                $port = $p;
+            }
         }
 
-        // Deep clean host: remove protocol and trailing slashes
-        $host = str_replace(['https://', 'http://'], '', $host);
-        $host = rtrim($host, '/');
+        // 4. Final validation of essential components
+        if (empty($host)) {
+            throw new Exception("Konfigurasi cPanel tidak lengkap: Host kosong.");
+        }
+        
+        // Default cPanel port if still empty
+        if (empty($port)) {
+            $port = '2083';
+        }
 
         $url = "https://{$host}:{$port}/execute/{$module}/{$function}";
 
-        log_message('debug', "CpanelApi Final URL: $url");
-
-        // Initialize client WITHOUT baseURI to avoid confusion
+        // 5. Initialize client - Use fresh instance to avoid shared config issues
         $client = Services::curlrequest([
             'timeout' => 300,
             'http_errors' => false,
-        ]);
+            'verify' => false, // cPanel often uses self-signed or internal CA
+        ], null, null, false);
 
         $headers = [
             'Authorization' => 'cpanel ' . $this->config->cpanel_username . ':' . $this->config->api_token,
@@ -55,28 +75,33 @@ class CpanelApi
             'headers' => $headers,
         ];
 
-        if ($method === 'POST') {
-            $options['form_params'] = $parameters;
-            $response = $client->post($url, $options);
-        } else {
-            if (!empty($parameters)) {
-                $url .= '?' . http_build_query($parameters);
+        try {
+            if (strtoupper($method) === 'POST') {
+                $options['form_params'] = $parameters;
+                $response = $client->post($url, $options);
+            } else {
+                if (!empty($parameters)) {
+                    $url .= (strpos($url, '?') === false ? '?' : '&') . http_build_query($parameters);
+                }
+                $response = $client->get($url, $options);
             }
-            $response = $client->get($url, $options);
+
+            if ($response->getStatusCode() !== 200) {
+                throw new Exception('HTTP Error: ' . $response->getStatusCode() . ' - ' . $response->getReasonPhrase() . ' - ' . $response->getBody());
+            }
+
+            $data = json_decode($response->getBody(), true);
+
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                throw new Exception('JSON parse error: ' . json_last_error_msg() . ' | Body: ' . substr($response->getBody(), 0, 500));
+            }
+
+            return $data;
+
+        } catch (\Throwable $e) {
+            log_message('error', "CpanelApi Request Failed. URL: [$url], Error: " . $e->getMessage());
+            throw $e;
         }
-
-
-        if ($response->getStatusCode() !== 200) {
-            throw new Exception('HTTP Error: ' . $response->getStatusCode() . ' - ' . $response->getReasonPhrase());
-        }
-
-        $data = json_decode($response->getBody(), true);
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new Exception('JSON parse error: ' . json_last_error_msg());
-        }
-
-        return $data;
     }
 
     public function get_email_accounts_detailed()

@@ -1,3 +1,14 @@
+# Session History - 24 Mei 2026
+
+## Perbaikan Bug
+- **Sinkronisasi API cPanel**:
+    - Memperbaiki kesalahan "3 : Bad URL" yang terjadi selama proses sinkronisasi mingguan.
+    - **Konstruksi URL yang Kuat**: Melakukan refaktor pada metode `CpanelApi::make_request` untuk menangani kasus di mana konfigurasi host mungkin sudah menyertakan protokol (http/https), port, atau path akhiran.
+    - **Deteksi Port Otomatis**: Mengimplementasikan deteksi port cerdas yang mengekstrak port dari URL host jika tidak disediakan secara eksplisit dalam konfigurasi, dengan fallback ke port standar cPanel (2083) jika diperlukan.
+    - **Instansi Request Baru**: Beralih menggunakan instansi `CURLRequest` yang tidak dibagikan (non-shared) untuk setiap panggilan API guna mencegah kebocoran konfigurasi atau konflik dari bagian lain aplikasi.
+    - **Peningkatan Logging Kesalahan**: Menambahkan logging kesalahan yang detail yang mencatat URL final dan seluruh body respons saat terjadi kegagalan, memberikan informasi diagnostik yang lebih baik untuk pemecahan masalah di masa mendatang.
+    - **Keamanan & Reliabilitas**: Menambahkan pengabaian verifikasi SSL (`verify: false`) untuk panggilan API cPanel internal guna menangani sertifikat self-signed yang umum digunakan di lingkungan server.
+
 # Changelog
 
 Semua perubahan penting pada proyek ini akan dicatat dalam berkas ini.
