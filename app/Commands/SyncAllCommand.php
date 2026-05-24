@@ -440,8 +440,48 @@ class SyncAllCommand extends BaseCommand
             }
             CLI::write("Website Expiration Sync Finished. Success: " . $this->syncStats['website']['success'] . ", Failed: " . $this->syncStats['website']['fail'], 'cyan');
             $this->saveLastSyncTime('last_sync_website');
+
+            // Check for expiring website domains alerts
+            $this->checkWebExpirationAlerts();
         } catch (\Throwable $e) {
             CLI::error('ERROR in Phase 4: ' . $e->getMessage());
+        }
+    }
+
+    private function checkWebExpirationAlerts()
+    {
+        CLI::write('Checking for Expiring Website Domains...', 'yellow');
+        try {
+            $webDesaModel = new WebDesaKelurahanModel();
+            
+            // Look for domains expiring in 30 days or less
+            $expiringWebs = $webDesaModel->where('sisa_hari <=', 30)
+                                         ->orderBy('sisa_hari', 'ASC')
+                                         ->findAll();
+            
+            if (!empty($expiringWebs)) {
+                $count = count($expiringWebs);
+                CLI::write("Found $count website domains expiring soon", 'red');
+                
+                $msg = "🌐 <b>PERINGATAN MASA AKTIF WEBSITE</b>\n";
+                $msg .= "Ditemukan <b>$count</b> domain desa/kelurahan yang akan kadaluwarsa dalam 30 hari:\n\n";
+                
+                foreach (array_slice($expiringWebs, 0, 10) as $web) {
+                    $msg .= "💻 <b>" . $web['domain'] . "</b>\n";
+                    $msg .= "🏛️ " . $web['desa_kelurahan'] . "\n";
+                    $msg .= "⏳ Sisa: <b>" . $web['sisa_hari'] . " Hari</b> (s.d " . date('d M Y', strtotime($web['tanggal_berakhir'])) . ")\n\n";
+                }
+                
+                if ($count > 10) {
+                    $msg .= "...dan " . ($count - 10) . " domain lainnya.";
+                }
+                
+                $this->telegram->sendMessage($msg);
+            } else {
+                CLI::write('No expiring website domains found.', 'green');
+            }
+        } catch (\Throwable $e) {
+            CLI::error('Error checking website expiration alerts: ' . $e->getMessage());
         }
     }
 

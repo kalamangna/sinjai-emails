@@ -52,6 +52,7 @@ Format didasarkan pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - **Alert Otomatis Telegram**: 
       - Integrasi pengecekan kuota pada sinkronisasi cPanel; mengirimkan peringatan instan ke Telegram jika penggunaan disk akun mencapai >= 90%. Laporan kini menyertakan data lengkap (Nama, NIP, dan Unit Kerja) untuk mempermudah identifikasi pengguna.
       - Penambahan notifikasi otomatis untuk akun dengan status TTE 'EXPIRED' setelah proses sinkronisasi TTE selesai. Notifikasi kini membedakan antara **statistik total seluruh akun** yang expired dengan **detail identitas lengkap khusus Pimpinan**, guna memberikan gambaran beban kerja sekaligus menjaga fokus pada posisi strategis.
+      - Implementasi peringatan otomatis untuk domain website Desa/Kelurahan yang akan kadaluwarsa (sisa aktif <= 30 hari) guna memastikan kontinuitas layanan publik di tingkat desa.
 - **Pembersihan Sistem (Cleanup)**:
     - Menghapus tabel database `email_stats_history` dan model terkait.
     - Menghapus seluruh logika pencatatan data statistik harian dan visualisasi grafik tren di Dashboard.
