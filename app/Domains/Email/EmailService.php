@@ -85,7 +85,7 @@ class EmailService
         ];
     }
 
-    public function getEmailDashboardData($search = null, $bsre_status = null, $perPage = 100)
+    public function getEmailDashboardData($search = null, $bsre_status = null, $account_status = null, $perPage = 100)
     {
         $builder = $this->emailModel->withDetails();
 
@@ -96,6 +96,10 @@ class EmailService
                 ->orLike('nik', $search)
                 ->orLike('nip', $search)
                 ->groupEnd();
+        }
+
+        if ($account_status !== null && $account_status !== '') {
+            $builder->where('suspended_login', (int)$account_status);
         }
 
         if ($bsre_status) {

@@ -3033,8 +3033,8 @@ video {
     grid-column: span 2 / span 2;
   }
 
-  .lg\:col-span-8 {
-    grid-column: span 8 / span 8;
+  .lg\:col-span-6 {
+    grid-column: span 6 / span 6;
   }
 
   .lg\:ml-64 {

@@ -38,8 +38,9 @@ class Email extends BaseController
             $perPage = $this->request->getGet('per_page') ?? 100;
             $search = $this->request->getGet('search');
             $bsre_status = $this->request->getGet('bsre_status');
+            $account_status = $this->request->getGet('account_status');
 
-            $data = $this->emailService->getEmailDashboardData($search, $bsre_status, $perPage);
+            $data = $this->emailService->getEmailDashboardData($search, $bsre_status, $account_status, $perPage);
 
             $appSettingModel = new AppSettingModel();
             $lastSyncSetting = $appSettingModel->where('key', 'last_sync_time')->first();
@@ -47,6 +48,7 @@ class Email extends BaseController
             $data['title'] = 'Email';
             $data['search'] = $search;
             $data['bsre_status'] = $bsre_status;
+            $data['account_status'] = $account_status;
             $data['per_page'] = $perPage;
             $data['last_sync_time'] = $lastSyncSetting['value'] ?? null;
             

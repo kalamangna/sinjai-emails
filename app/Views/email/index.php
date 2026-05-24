@@ -24,14 +24,18 @@
     </div>
 
     <!-- Metrik -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div class="bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-lg shadow-sm p-6">
             <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Total Email</p>
             <h3 class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($total_emails ?? 0, 0, ',', '.') ?></h3>
         </div>
-        <div class="bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-lg shadow-sm p-6">
-            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Email Aktif</p>
+        <div class="bg-white border border-slate-200 border-l-4 border-l-emerald-600 rounded-lg shadow-sm p-6">
+            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest text-emerald-600">Email Aktif</p>
             <h3 class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($active_count ?? 0, 0, ',', '.') ?></h3>
+        </div>
+        <div class="bg-white border border-slate-200 border-l-4 border-l-red-600 rounded-lg shadow-sm p-6">
+            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest text-red-600">Ditangguhkan</p>
+            <h3 class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($suspended_count ?? 0, 0, ',', '.') ?></h3>
         </div>
         <div class="bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-lg shadow-sm p-6">
             <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">TTE Aktif</p>
@@ -43,7 +47,7 @@
     <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
         <div class="p-6 border-b border-slate-100 bg-slate-50">
             <form method="GET" action="<?= site_url('email') ?>" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
-                <div class="md:col-span-6 lg:col-span-8">
+                <div class="md:col-span-6 lg:col-span-6">
                     <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Pencarian</label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-700">
@@ -53,13 +57,22 @@
                     </div>
                 </div>
 
-                <div class="md:col-span-4 lg:col-span-2">
+                <div class="md:col-span-3 lg:col-span-2">
                     <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Status TTE</label>
                     <select name="bsre_status" class="block w-full px-3 py-2 bg-white border <?= !empty($bsre_status) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm appearance-none cursor-pointer transition-all">
                         <option value="">Semua Status</option>
                         <?php foreach ($bsre_status_options ?? [] as $key => $label): ?>
                             <option value="<?= esc($key) ?>" <?= (($bsre_status ?? '') === $key) ? 'selected' : '' ?>><?= esc($label) ?></option>
                         <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div class="md:col-span-3 lg:col-span-2">
+                    <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Status Akun</label>
+                    <select name="account_status" class="block w-full px-3 py-2 bg-white border <?= ($account_status !== null && $account_status !== '') ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm appearance-none cursor-pointer transition-all">
+                        <option value="">Semua</option>
+                        <option value="0" <?= $account_status === '0' ? 'selected' : '' ?>>Aktif</option>
+                        <option value="1" <?= $account_status === '1' ? 'selected' : '' ?>>Ditangguhkan</option>
                     </select>
                 </div>
 
@@ -80,6 +93,7 @@
                     <tr>
                         <th class="px-6 py-3 border-b border-slate-200">Email</th>
                         <th class="px-6 py-3 border-b border-slate-200">Unit Kerja</th>
+                        <th class="px-6 py-3 border-b border-slate-200 text-center">Status Akun</th>
                         <th class="px-6 py-3 border-b border-slate-200">Status TTE</th>
                         <th class="px-6 py-3 border-b border-slate-200 text-center">Aksi</th>
                     </tr>
@@ -103,6 +117,13 @@
                                             <span class="text-xs font-bold text-slate-800 uppercase tracking-tight"><?= esc($email['unit_kerja_name']) ?></span>
                                         <?php endif; ?>
                                     </div>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <?php if (($email['suspended_login'] ?? 0) == 0): ?>
+                                        <span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase bg-emerald-100 text-emerald-800 border-transparent">Aktif</span>
+                                    <?php else: ?>
+                                        <span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase bg-red-100 text-red-700 border-transparent">Ditangguhkan</span>
+                                    <?php endif; ?>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <?php
