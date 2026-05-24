@@ -90,7 +90,12 @@
                             <tr class="hover:bg-slate-50 transition-colors">
                                 <td class="px-6 py-4">
                                     <div class="flex flex-col">
-                                        <span class="font-medium text-slate-800 lowercase leading-tight"><?= esc($email['email']) ?></span>
+                                        <div class="flex items-center gap-2">
+                                            <span class="font-medium text-slate-800 lowercase leading-tight"><?= esc($email['email']) ?></span>
+                                            <?php if (!empty($email['pensiun_at'])): ?>
+                                                <span class="px-1.5 py-0.5 rounded text-[8px] font-black uppercase bg-red-600 text-white leading-none tracking-tighter">PENSIUN</span>
+                                            <?php endif; ?>
+                                        </div>
                                         <span class="text-[10px] font-bold text-slate-700 uppercase tracking-tight mt-0.5"><?= esc($email['name']) ?></span>
                                     </div>
                                 </td>
