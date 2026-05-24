@@ -385,24 +385,28 @@ class EmailService
         if ($status_asn) {
             $emailBuilder->where('emails.status_asn_id', $status_asn);
         }
-if ($bsre_status) {
-    if ($bsre_status === 'not_synced') {
-        $emailBuilder->groupStart()
-            ->where('emails.bsre_status IS NULL')
-            ->orWhere('emails.bsre_status', '')
-            ->groupEnd();
-    } elseif ($bsre_status === 'non_tte') {
-        $emailBuilder->groupStart()
-            ->where('emails.nip IS NULL')
-            ->orWhere('emails.nip', '')
-        ->groupEnd()
-        ->where('emails.pimpinan', 0)
-        ->where('emails.pimpinan_desa', 0)
-        ->groupStart()
-            ->where('emails.unit_kerja_id IS NULL')
-            ->orWhere('emails.unit_kerja_id', 0)
-        ->groupEnd();
-    } else {
+
+        if ($bsre_status) {
+            if ($bsre_status === 'not_synced') {
+                $emailBuilder->groupStart()
+                    ->where('emails.bsre_status IS NULL')
+                    ->orWhere('emails.bsre_status', '')
+                    ->groupEnd();
+            } elseif ($bsre_status === 'non_tte') {
+                $emailBuilder->groupStart()
+                    ->where('emails.nip IS NULL')
+                    ->orWhere('emails.nip', '')
+                ->groupEnd()
+                ->where('emails.pimpinan', 0)
+                ->where('emails.pimpinan_desa', 0)
+                ->groupStart()
+                    ->where('emails.unit_kerja_id IS NULL')
+                    ->orWhere('emails.unit_kerja_id', 0)
+                ->groupEnd();
+            } else {
+                $emailBuilder->where('emails.bsre_status', $bsre_status);
+            }
+        }
 
         // Get filtered count BEFORE pagination
         $filtered_count = $emailBuilder->countAllResults(false);
