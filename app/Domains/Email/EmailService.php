@@ -110,7 +110,11 @@ class EmailService
                     ->orWhere('nip', '')
                 ->groupEnd()
                 ->where('pimpinan', 0)
-                ->where('pimpinan_desa', 0);
+                ->where('pimpinan_desa', 0)
+                ->groupStart()
+                    ->where('unit_kerja_id', null)
+                    ->orWhere('unit_kerja_id', 0)
+                ->groupEnd();
             } else {
                 $builder->where('bsre_status', $bsre_status);
             }
@@ -227,7 +231,7 @@ class EmailService
             $nonTteCount = 0;
             
             foreach ($rawBsreCounts as $row) {
-                $isNeedTte = !empty($row['nip']) || ($row['pimpinan'] == 1) || ($row['pimpinan_desa'] == 1);
+                $isNeedTte = !empty($row['nip']) || ($row['pimpinan'] == 1) || ($row['pimpinan_desa'] == 1) || (!empty($row['unit_kerja_id']) && $row['unit_kerja_id'] != 0);
                 
                 if (!$isNeedTte) {
                     $nonTteCount += $row['count'];
@@ -445,7 +449,7 @@ class EmailService
             ->findAll();
 
         foreach ($rawCounts as $row) {
-            $isNeedTte = !empty($row['nip']) || ($row['pimpinan'] == 1) || ($row['pimpinan_desa'] == 1);
+            $isNeedTte = !empty($row['nip']) || ($row['pimpinan'] == 1) || ($row['pimpinan_desa'] == 1) || (!empty($row['unit_kerja_id']) && $row['unit_kerja_id'] != 0);
             
             if (!$isNeedTte) {
                 $statusKey = 'non_tte';
