@@ -20,31 +20,52 @@ class Home extends BaseController
             $statusAsnModel = new \App\Shared\Models\StatusAsnModel();
 
             // Email Stats (Raw Status from database/API)
-            $raw_stats = $emailModel->select('bsre_status, COUNT(id) as count')
+            $raw_stats = $emailModel->select('bsre_status, pimpinan, pimpinan_desa, nip, COUNT(id) as count')
                 ->allowCallbacks(false)
-                ->groupBy('bsre_status')
+                ->groupBy('bsre_status, pimpinan, pimpinan_desa, nip != "" AND nip IS NOT NULL')
                 ->findAll();
 
-            $email_stats = [];
+            $email_stats_map = [];
             $total_emails = 0;
             $active_bsre = 0;
+            $not_synced_count = 0;
+            $non_tte_count = 0;
+
             foreach ($raw_stats as $row) {
-                $status = $row['bsre_status'] ?: 'NOT_SYNCED';
                 $count = (int)$row['count'];
-                if ($count > 0) {
-                    $email_stats[] = [
-                        'label' => strtoupper($status),
-                        'count' => $count
-                    ];
-                }
                 $total_emails += $count;
-                if ($row['bsre_status'] === 'ISSUE') {
-                    $active_bsre = $count;
+                
+                $isNeedTte = !empty($row['nip']) || ($row['pimpinan'] == 1) || ($row['pimpinan_desa'] == 1);
+                
+                if (!$isNeedTte) {
+                    $non_tte_count += $count;
+                } elseif (empty($row['bsre_status'])) {
+                    $not_synced_count += $count;
+                } else {
+                    $status = strtoupper($row['bsre_status']);
+                    if (!isset($email_stats_map[$status])) {
+                        $email_stats_map[$status] = 0;
+                    }
+                    $email_stats_map[$status] += $count;
+                    if ($status === 'ISSUE') {
+                        $active_bsre += $count;
+                    }
                 }
             }
 
+            $email_stats = [];
+            foreach ($email_stats_map as $label => $count) {
+                $email_stats[] = ['label' => $label, 'count' => $count];
+            }
+            if ($not_synced_count > 0) {
+                $email_stats[] = ['label' => 'NOT_SYNCED', 'count' => $not_synced_count];
+            }
+            if ($non_tte_count > 0) {
+                $email_stats[] = ['label' => 'NON-TTE', 'count' => $non_tte_count];
+            }
+
             // Custom sort for Email/TTE Status
-            $tteOrder = ['ISSUE', 'EXPIRED', 'NO_CERTIFICATE', 'NOT_REGISTERED', 'NOT_SYNCED'];
+            $tteOrder = ['ISSUE', 'EXPIRED', 'NO_CERTIFICATE', 'NOT_REGISTERED', 'NOT_SYNCED', 'NON-TTE'];
             usort($email_stats, function ($a, $b) use ($tteOrder) {
                 $posA = array_search(strtoupper($a['label']), $tteOrder);
                 $posB = array_search(strtoupper($b['label']), $tteOrder);

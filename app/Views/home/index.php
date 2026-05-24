@@ -102,7 +102,9 @@
                         if ($status === 'ISSUE') $bgClass = 'bg-emerald-600';
                         elseif (in_array($status, ['EXPIRED', 'REVOKE', 'SUSPEND'])) $bgClass = 'bg-red-600';
                         elseif (in_array($status, ['WAITING_FOR_VERIFICATION', 'RENEW', 'NO_CERTIFICATE'])) $bgClass = 'bg-amber-500';
-                        elseif ($status === 'NEW') $bgClass = 'bg-emerald-500';
+                        elseif ($status === 'NEW') $bgClass = 'bg-slate-600';
+                        elseif ($status === 'NON-TTE') $bgClass = 'bg-slate-300';
+                        elseif ($status === 'NOT_SYNCED') $bgClass = 'bg-slate-400';
                     ?>
                         <div class="flex justify-between items-center p-2 rounded-lg border border-slate-200 bg-slate-50">
                             <div class="flex items-center truncate">
@@ -215,6 +217,7 @@
             if (['EXPIRED', 'REVOKE', 'SUSPEND'].includes(status)) return '#dc2626'; // red-600
             if (['WAITING_FOR_VERIFICATION', 'RENEW', 'NO_CERTIFICATE'].includes(status)) return '#f59e0b'; // amber-500
             if (status === 'NEW') return '#475569'; // slate-600
+            if (status === 'NON-TTE') return '#cbd5e1'; // slate-300
             return '#94a3b8'; // slate-400
         });
 

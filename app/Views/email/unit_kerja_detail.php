@@ -274,18 +274,25 @@
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div id="bsre-status-<?= esc($email['user']) ?>" data-email="<?= esc($email['email']) ?>">
                                         <?php
-                                        $st = $email['bsre_status'] ?? '';
-                                        $colorClass = 'bg-slate-100 text-slate-700 border-transparent';
-                                        $statusLabel = $st ?: 'NOT_SYNCED';
+                                        $isNeedTte = !empty($email['nip']) || ($email['pimpinan'] ?? 0) == 1 || ($email['pimpinan_desa'] ?? 0) == 1;
 
-                                        if ($st === 'ISSUE') {
-                                            $colorClass = 'bg-emerald-100 text-emerald-800 border-transparent';
-                                        } elseif (in_array($st, ['EXPIRED', 'REVOKE', 'SUSPEND'])) {
-                                            $colorClass = 'bg-red-100 text-red-700 border-transparent';
-                                        } elseif (in_array($st, ['WAITING_FOR_VERIFICATION', 'RENEW', 'NO_CERTIFICATE'])) {
-                                            $colorClass = 'bg-amber-50 text-amber-500 border-amber-200';
-                                        } elseif ($st === 'NEW') {
-                                            $colorClass = 'bg-blue-100 text-slate-700 border-transparent';
+                                        if ($isNeedTte) {
+                                            $st = $email['bsre_status'] ?? '';
+                                            $colorClass = 'bg-slate-100 text-slate-700 border-transparent';
+                                            $statusLabel = $st ?: 'NOT_SYNCED';
+
+                                            if ($st === 'ISSUE') {
+                                                $colorClass = 'bg-emerald-100 text-emerald-800 border-transparent';
+                                            } elseif (in_array($st, ['EXPIRED', 'REVOKE', 'SUSPEND'])) {
+                                                $colorClass = 'bg-red-100 text-red-700 border-transparent';
+                                            } elseif (in_array($st, ['WAITING_FOR_VERIFICATION', 'RENEW', 'NO_CERTIFICATE'])) {
+                                                $colorClass = 'bg-amber-50 text-amber-500 border-amber-200';
+                                            } elseif ($st === 'NEW') {
+                                                $colorClass = 'bg-blue-100 text-slate-700 border-transparent';
+                                            }
+                                        } else {
+                                            $statusLabel = 'NON-TTE';
+                                            $colorClass = 'bg-slate-50 text-slate-400 border-slate-200';
                                         }
                                         ?>
                                         <span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase border <?= $colorClass ?>"><?= $statusLabel ?></span>

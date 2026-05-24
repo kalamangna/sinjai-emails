@@ -104,6 +104,13 @@ class EmailService
                     ->where('bsre_status', null)
                     ->orWhere('bsre_status', '')
                     ->groupEnd();
+            } elseif ($bsre_status === 'non_tte') {
+                $builder->groupStart()
+                    ->where('nip', null)
+                    ->orWhere('nip', '')
+                ->groupEnd()
+                ->where('pimpinan', 0)
+                ->where('pimpinan_desa', 0);
             } else {
                 $builder->where('bsre_status', $bsre_status);
             }
@@ -201,8 +208,8 @@ class EmailService
             }
 
             $rawBsreCounts = $this->emailModel->allowCallbacks(false)
-                ->select('bsre_status, COUNT(id) as count')
-                ->groupBy('bsre_status')
+                ->select('bsre_status, pimpinan, pimpinan_desa, nip, COUNT(id) as count')
+                ->groupBy('bsre_status, pimpinan, pimpinan_desa, nip != "" AND nip IS NOT NULL')
                 ->asArray()
                 ->findAll();
 
@@ -211,22 +218,37 @@ class EmailService
                 'EXPIRED' => 'EXPIRED',
                 'NO_CERTIFICATE' => 'NO_CERTIFICATE',
                 'NOT_REGISTERED' => 'NOT_REGISTERED',
-                'not_synced' => 'NOT_SYNCED'
+                'not_synced' => 'NOT_SYNCED',
+                'non_tte' => 'NON-TTE'
             ];
 
             $bsreStatusCounts = [];
             $notSyncedCount = 0;
+            $nonTteCount = 0;
+            
             foreach ($rawBsreCounts as $row) {
-                if (empty($row['bsre_status'])) {
+                $isNeedTte = !empty($row['nip']) || ($row['pimpinan'] == 1) || ($row['pimpinan_desa'] == 1);
+                
+                if (!$isNeedTte) {
+                    $nonTteCount += $row['count'];
+                } elseif (empty($row['bsre_status'])) {
                     $notSyncedCount += $row['count'];
                 } else {
-                    $bsreStatusCounts[] = [
-                        'status' => $row['bsre_status'],
-                        'label' => $bsre_status_labels[$row['bsre_status']] ?? $row['bsre_status'],
-                        'count' => (int)$row['count']
-                    ];
+                    $status = $row['bsre_status'];
+                    if (!isset($bsreStatusCounts[$status])) {
+                        $bsreStatusCounts[$status] = [
+                            'status' => $status,
+                            'label' => $bsre_status_labels[$status] ?? $status,
+                            'count' => 0
+                        ];
+                    }
+                    $bsreStatusCounts[$status]['count'] += (int)$row['count'];
                 }
             }
+            
+            // Convert to indexed array
+            $bsreStatusCounts = array_values($bsreStatusCounts);
+
             if ($notSyncedCount > 0) {
                 $bsreStatusCounts[] = [
                     'status' => 'not_synced',
@@ -234,9 +256,17 @@ class EmailService
                     'count' => $notSyncedCount
                 ];
             }
+            
+            if ($nonTteCount > 0) {
+                $bsreStatusCounts[] = [
+                    'status' => 'non_tte',
+                    'label' => 'NON-TTE',
+                    'count' => $nonTteCount
+                ];
+            }
 
             // Custom sort for BSrE Status
-            $tteOrder = ['ISSUE', 'EXPIRED', 'NO_CERTIFICATE', 'NOT_REGISTERED', 'NOT_SYNCED'];
+            $tteOrder = ['ISSUE', 'EXPIRED', 'NO_CERTIFICATE', 'NOT_REGISTERED', 'not_synced', 'non_tte'];
             usort($bsreStatusCounts, function ($a, $b) use ($tteOrder) {
                 $posA = array_search($a['status'], $tteOrder);
                 $posB = array_search($b['status'], $tteOrder);
@@ -354,6 +384,13 @@ class EmailService
                     ->where('emails.bsre_status', null)
                     ->orWhere('emails.bsre_status', '')
                     ->groupEnd();
+            } elseif ($bsre_status === 'non_tte') {
+                $emailBuilder->groupStart()
+                    ->where('emails.nip', null)
+                    ->orWhere('emails.nip', '')
+                ->groupEnd()
+                ->where('emails.pimpinan', 0)
+                ->where('emails.pimpinan_desa', 0);
             } else {
                 $emailBuilder->where('emails.bsre_status', $bsre_status);
             }
@@ -390,7 +427,8 @@ class EmailService
             'EXPIRED' => 'EXPIRED',
             'NO_CERTIFICATE' => 'NO_CERTIFICATE',
             'NOT_REGISTERED' => 'NOT_REGISTERED',
-            'not_synced' => 'NOT_SYNCED'
+            'not_synced' => 'NOT_SYNCED',
+            'non_tte' => 'NON-TTE'
         ];
 
         $bsre_status_counts = [];
@@ -402,12 +440,19 @@ class EmailService
         }
 
         $rawCounts = $statsBuilder->allowCallbacks(false)
-            ->select('bsre_status, COUNT(*) as count')
-            ->groupBy('bsre_status')
+            ->select('bsre_status, pimpinan, pimpinan_desa, nip, COUNT(*) as count')
+            ->groupBy('bsre_status, pimpinan, pimpinan_desa, nip != "" AND nip IS NOT NULL')
             ->findAll();
 
         foreach ($rawCounts as $row) {
-            $statusKey = $row['bsre_status'] ?: 'not_synced';
+            $isNeedTte = !empty($row['nip']) || ($row['pimpinan'] == 1) || ($row['pimpinan_desa'] == 1);
+            
+            if (!$isNeedTte) {
+                $statusKey = 'non_tte';
+            } else {
+                $statusKey = $row['bsre_status'] ?: 'not_synced';
+            }
+
             if (!isset($bsre_status_counts[$statusKey])) {
                 $bsre_status_counts[$statusKey] = [
                     'label' => $bsre_status_options[$statusKey] ?? $statusKey,
@@ -417,7 +462,7 @@ class EmailService
             $bsre_status_counts[$statusKey]['count'] += $row['count'];
         }
 
-        $tteOrder = ['ISSUE', 'EXPIRED', 'NO_CERTIFICATE', 'NOT_REGISTERED', 'not_synced'];
+        $tteOrder = ['ISSUE', 'EXPIRED', 'NO_CERTIFICATE', 'NOT_REGISTERED', 'not_synced', 'non_tte'];
         uksort($bsre_status_counts, function ($a, $b) use ($tteOrder) {
             $posA = array_search($a, $tteOrder);
             $posB = array_search($b, $tteOrder);
