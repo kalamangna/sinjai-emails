@@ -210,17 +210,12 @@ class SyncAllCommand extends BaseCommand
             
             $emails = $emailModel->select('id, email')
                 ->groupStart()
-                    ->groupStart()
-                        ->where('nip IS NOT NULL')
-                        ->where('nip !=', '')
-                    ->groupEnd()
-                    ->orWhere('pimpinan', 1)
+                    ->where('pimpinan', 1)
                     ->orWhere('pimpinan_desa', 1)
-                    ->orWhere('unit_kerja_id IS NOT NULL')
                 ->groupEnd()
                 ->findAll();
             $total = count($emails);
-            CLI::write("Total accounts (NIP, Pimpinan, Unit Kerja) to check: $total");
+            CLI::write("Total accounts (Pimpinan Only) to check: $total");
             
             foreach ($emails as $index => $email) {
                 $count = $index + 1;
@@ -254,17 +249,11 @@ class SyncAllCommand extends BaseCommand
         try {
             $emailModel = new EmailModel();
             
-            // 1. Get TOTAL count of all expired accounts (Staff + Leadership)
-            // Only count those who actually need TTE (NIP or Leadership)
+            // 1. Get TOTAL count of all leadership expired accounts
             $totalExpiredCount = $emailModel->where('bsre_status', 'EXPIRED')
                 ->groupStart()
-                    ->groupStart()
-                        ->where('nip IS NOT NULL')
-                        ->where('nip !=', '')
-                    ->groupEnd()
-                    ->orWhere('pimpinan', 1)
+                    ->where('pimpinan', 1)
                     ->orWhere('pimpinan_desa', 1)
-                    ->orWhere('unit_kerja_id IS NOT NULL')
                 ->groupEnd()
                 ->countAllResults();
             
@@ -287,8 +276,8 @@ class SyncAllCommand extends BaseCommand
             CLI::write("Total Expired: $totalExpiredCount, Pimpinan Expired: $pimpinanCount", 'cyan');
             
             // 3. Construct Telegram Message
-            $msg = "🔔 <b>LAPORAN TTE EXPIRED</b>\n\n";
-            $msg .= "📊 Total Expired: <b>$totalExpiredCount</b> Akun\n";
+            $msg = "🔔 <b>LAPORAN TTE PIMPINAN</b>\n\n";
+            $msg .= "📊 Pimpinan Expired: <b>$totalExpiredCount</b> Akun\n";
             $msg .= "------------------------------------------\n\n";
 
             if ($pimpinanCount > 0) {
