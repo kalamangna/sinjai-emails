@@ -123,7 +123,7 @@
                                             $colorClass = 'bg-blue-100 text-slate-700 border-transparent';
                                         }
                                     } else {
-                                        $statusLabel = 'NON-TTE';
+                                        $statusLabel = 'NON_TTE';
                                         $colorClass = 'bg-slate-50 text-slate-400 border-slate-200';
                                     }
                                     ?>

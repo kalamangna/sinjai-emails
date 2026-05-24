@@ -53,7 +53,7 @@ class Email extends BaseController
             // Ensure options includes non_tte explicitly if not handled by labels
             $options = $data['bsre_status_labels'] ?? [];
             if (!isset($options['non_tte'])) {
-                $options['non_tte'] = 'NON-TTE';
+                $options['non_tte'] = 'NON_TTE';
             }
             $data['bsre_status_options'] = $options;
 

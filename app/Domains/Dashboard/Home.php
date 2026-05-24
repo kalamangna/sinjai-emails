@@ -63,11 +63,11 @@ class Home extends BaseController
                 $email_stats[] = ['label' => 'NOT_SYNCED', 'count' => $not_synced_count];
             }
             if ($non_tte_count > 0) {
-                $email_stats[] = ['label' => 'NON-TTE', 'count' => $non_tte_count];
+                $email_stats[] = ['label' => 'NON_TTE', 'count' => $non_tte_count];
             }
 
             // Custom sort for Email/TTE Status
-            $tteOrder = ['ISSUE', 'EXPIRED', 'NO_CERTIFICATE', 'NOT_REGISTERED', 'NOT_SYNCED', 'NON-TTE'];
+            $tteOrder = ['ISSUE', 'EXPIRED', 'NO_CERTIFICATE', 'NOT_REGISTERED', 'NOT_SYNCED', 'NON_TTE'];
             usort($email_stats, function ($a, $b) use ($tteOrder) {
                 $posA = array_search(strtoupper($a['label']), $tteOrder);
                 $posB = array_search(strtoupper($b['label']), $tteOrder);

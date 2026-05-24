@@ -69,7 +69,7 @@
                         <?php else: ?>
                             <div class="flex items-center gap-2 px-3 py-1.5 bg-slate-100 border border-slate-200 rounded-lg">
                                 <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                                    <i class="fas fa-info-circle mr-1 text-slate-400"></i> Akun Layanan / Non-TTE
+                                    <i class="fas fa-info-circle mr-1 text-slate-400"></i> Akun Layanan / NON_TTE
                                 </span>
                             </div>
                         <?php endif; ?>

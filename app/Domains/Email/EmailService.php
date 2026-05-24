@@ -226,7 +226,7 @@ class EmailService
                 'NO_CERTIFICATE' => 'NO_CERTIFICATE',
                 'NOT_REGISTERED' => 'NOT_REGISTERED',
                 'not_synced' => 'NOT_SYNCED',
-                'non_tte' => 'NON-TTE'
+                'non_tte' => 'NON_TTE'
             ];
 
             $bsreStatusCounts = [];
@@ -267,7 +267,7 @@ class EmailService
             if ($nonTteCount > 0) {
                 $bsreStatusCounts[] = [
                     'status' => 'non_tte',
-                    'label' => 'NON-TTE',
+                    'label' => 'NON_TTE',
                     'count' => $nonTteCount
                 ];
             }
@@ -439,7 +439,7 @@ class EmailService
             'NO_CERTIFICATE' => 'NO_CERTIFICATE',
             'NOT_REGISTERED' => 'NOT_REGISTERED',
             'not_synced' => 'NOT_SYNCED',
-            'non_tte' => 'NON-TTE'
+            'non_tte' => 'NON_TTE'
         ];
 
         $bsre_status_counts = [];
