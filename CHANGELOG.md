@@ -10,6 +10,7 @@
     - **Keamanan & Reliabilitas**: Menambahkan pengabaian verifikasi SSL (`verify: false`) untuk panggilan API cPanel internal guna menangani sertifikat self-signed yang umum digunakan di lingkungan server.
 - **Otomatisasi Penghapusan Akun Pensiun**:
     - Menambahkan fitur "Tandai Pensiun" pada profil pegawai yang memungkinkan Admin memicu proses pembersihan akun secara manual.
+    - **Pembersihan Data Instan**: Ketika ditandai pensiun, sistem kini secara otomatis menghapus data personal dan kedinasan (NIK, NIP, Jabatan, Unit Kerja, Pangkat, dan Status TTE) dari database lokal untuk menjaga akurasi statistik instansi.
     - **Masa Tunggu 30 Hari**: Akun yang ditandai pensiun akan segera ditangguhkan (suspend) di cPanel dan database, namun tetap disimpan selama 30 hari untuk mencegah kehilangan data yang tidak disengaja.
     - **Pembersihan Permanen Otomatis**: Menambahkan Phase 5 pada skrip sinkronisasi harian yang secara otomatis menghapus permanen akun dari server cPanel dan database lokal setelah melewati masa tunggu 30 hari.
     - **Laporan Pembersihan**: Notifikasi Telegram otomatis jika terdapat akun yang dihapus permanen oleh sistem pembersihan otomatis.
