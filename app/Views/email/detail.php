@@ -76,7 +76,7 @@
 
                         <?php if (!empty($email['pensiun_at'])): ?>
                             <span class="px-2.5 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-red-100 text-red-700 border border-red-200">
-                                <i class="fas fa-user-slash mr-1"></i> Pensiun (Sejak <?= formatTanggal($email['pensiun_at']) ?>)
+                                <i class="fas fa-user-slash mr-1"></i> PENSIUN
                             </span>
                         <?php endif; ?>
 
@@ -524,6 +524,9 @@
     document.addEventListener('DOMContentLoaded', () => {
         const initialStatus = '<?= esc($email['bsre_status'] ?? '', 'js') ?>';
         renderBsreStatus(initialStatus);
+    });
+</script>
+<?= $this->endSection() ?>s);
     });
 </script>
 <?= $this->endSection() ?>
