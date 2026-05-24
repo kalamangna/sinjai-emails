@@ -249,7 +249,17 @@ class SyncAllCommand extends BaseCommand
             $emailModel = new EmailModel();
             
             // 1. Get TOTAL count of all expired accounts (Staff + Leadership)
-            $totalExpiredCount = $emailModel->where('bsre_status', 'EXPIRED')->countAllResults();
+            // Only count those who actually need TTE (NIP or Leadership)
+            $totalExpiredCount = $emailModel->where('bsre_status', 'EXPIRED')
+                ->groupStart()
+                    ->groupStart()
+                        ->where('nip IS NOT NULL')
+                        ->where('nip !=', '')
+                    ->groupEnd()
+                    ->orWhere('pimpinan', 1)
+                    ->orWhere('pimpinan_desa', 1)
+                ->groupEnd()
+                ->countAllResults();
             
             if ($totalExpiredCount === 0) {
                 CLI::write('No expired TTE accounts found.', 'green');
