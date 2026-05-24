@@ -101,9 +101,23 @@ class EmailService
         if ($bsre_status) {
             if ($bsre_status === 'not_synced') {
                 $builder->groupStart()
-                    ->where('bsre_status IS NULL')
-                    ->orWhere('bsre_status', '')
-                    ->groupEnd();
+                    ->groupStart()
+                        ->where('bsre_status IS NULL')
+                        ->orWhere('bsre_status', '')
+                    ->groupEnd()
+                    ->groupStart()
+                        ->groupStart()
+                            ->where('nip IS NOT NULL')
+                            ->where('nip !=', '')
+                        ->groupEnd()
+                        ->orWhere('pimpinan', 1)
+                        ->orWhere('pimpinan_desa', 1)
+                        ->groupStart()
+                            ->where('unit_kerja_id IS NOT NULL')
+                            ->where('unit_kerja_id !=', 0)
+                        ->groupEnd()
+                    ->groupEnd()
+                ->groupEnd();
             } elseif ($bsre_status === 'non_tte') {
                 $builder->groupStart()
                     ->where('nip IS NULL')
@@ -387,9 +401,23 @@ class EmailService
         if ($bsre_status) {
             if ($bsre_status === 'not_synced') {
                 $emailBuilder->groupStart()
-                    ->where('emails.bsre_status IS NULL')
-                    ->orWhere('emails.bsre_status', '')
-                    ->groupEnd();
+                    ->groupStart()
+                        ->where('emails.bsre_status IS NULL')
+                        ->orWhere('emails.bsre_status', '')
+                    ->groupEnd()
+                    ->groupStart()
+                        ->groupStart()
+                            ->where('emails.nip IS NOT NULL')
+                            ->where('emails.nip !=', '')
+                        ->groupEnd()
+                        ->orWhere('emails.pimpinan', 1)
+                        ->orWhere('emails.pimpinan_desa', 1)
+                        ->groupStart()
+                            ->where('emails.unit_kerja_id IS NOT NULL')
+                            ->where('emails.unit_kerja_id !=', 0)
+                        ->groupEnd()
+                    ->groupEnd()
+                ->groupEnd();
             } elseif ($bsre_status === 'non_tte') {
                 $emailBuilder->groupStart()
                     ->where('emails.nip IS NULL')
