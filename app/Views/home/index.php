@@ -14,6 +14,36 @@
         </div>
     </div>
 
+    <!-- Status Sinkronisasi -->
+    <div class="bg-slate-50 border border-slate-200 rounded-lg p-4">
+        <div class="flex flex-wrap gap-x-8 gap-y-2">
+            <div class="flex items-center">
+                <div class="w-2 h-2 rounded-full bg-emerald-500 mr-2 shrink-0"></div>
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                    cPanel: <span class="text-slate-700 ml-1"><?= !empty($last_sync_time) ? formatTanggalWaktu($last_sync_time) : '-' ?></span>
+                </p>
+            </div>
+            <div class="flex items-center">
+                <div class="w-2 h-2 rounded-full bg-blue-500 mr-2 shrink-0"></div>
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                    TTE: <span class="text-slate-700 ml-1"><?= !empty($last_sync_tte) ? formatTanggalWaktu($last_sync_tte) : '-' ?></span>
+                </p>
+            </div>
+            <div class="flex items-center">
+                <div class="w-2 h-2 rounded-full bg-indigo-500 mr-2 shrink-0"></div>
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                    Pegawai: <span class="text-slate-700 ml-1"><?= !empty($last_sync_pegawai) ? formatTanggalWaktu($last_sync_pegawai) : '-' ?></span>
+                </p>
+            </div>
+            <div class="flex items-center">
+                <div class="w-2 h-2 rounded-full bg-slate-400 mr-2 shrink-0"></div>
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                    Website: <span class="text-slate-700 ml-1"><?= !empty($last_sync_website) ? formatTanggalWaktu($last_sync_website) : '-' ?></span>
+                </p>
+            </div>
+        </div>
+    </div>
+
     <!-- Metrik Ringkasan -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <a href="<?= site_url('email') ?>" class="bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-lg p-6 shadow-sm hover:border-slate-800 transition-all no-underline group">

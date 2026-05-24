@@ -120,7 +120,18 @@ class Home extends BaseController
             $tahun = \tahunSekarang();
             $total_assistance_monthly = $assistanceModel->where('MONTH(tanggal_kegiatan)', $bulan)->where('YEAR(tanggal_kegiatan)', $tahun)->countAllResults();
 
-            $last_sync = $appSettingModel->where('key', 'last_sync_time')->select('value')->asArray()->first();
+            // Synchronization Timestamps
+            $syncSettings = $appSettingModel->whereIn('key', [
+                'last_sync_time', 
+                'last_sync_tte', 
+                'last_sync_pegawai', 
+                'last_sync_website'
+            ])->asArray()->findAll();
+            
+            $sync_map = [];
+            foreach ($syncSettings as $s) {
+                $sync_map[$s['key']] = $s['value'];
+            }
 
             $data = [
                 'email_stats' => $email_stats,
@@ -130,7 +141,10 @@ class Home extends BaseController
                 'web_stats' => $web_stats,
                 'total_assistance' => $total_assistance,
                 'total_assistance_monthly' => $total_assistance_monthly,
-                'last_sync_time' => $last_sync['value'] ?? null,
+                'last_sync_time' => $sync_map['last_sync_time'] ?? null,
+                'last_sync_tte' => $sync_map['last_sync_tte'] ?? null,
+                'last_sync_pegawai' => $sync_map['last_sync_pegawai'] ?? null,
+                'last_sync_website' => $sync_map['last_sync_website'] ?? null,
                 'title' => 'Dashboard',
             ];
 
