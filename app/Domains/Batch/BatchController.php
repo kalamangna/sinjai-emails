@@ -146,6 +146,7 @@ class BatchController extends BaseController
         }
 
         $results = $this->emailBatchService->processBatchUpdate($data);
+        $this->sendBatchNotification('UPDATE', $results);
         return $this->response->setJSON(['success' => true, 'results' => $results]);
     }
 
@@ -162,9 +163,42 @@ class BatchController extends BaseController
 
         try {
             $results = $this->emailBatchService->processBatchCreate($data);
+            $this->sendBatchNotification('CREATE', $results);
             return $this->response->setJSON(['success' => true, 'results' => $results]);
         } catch (\Throwable $e) {
             return $this->response->setJSON(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+    private function sendBatchNotification(string $type, array $results)
+    {
+        try {
+            $successCount = 0;
+            $failCount = 0;
+            
+            foreach ($results as $res) {
+                if (isset($res['success']) && $res['success']) {
+                    $successCount++;
+                } else {
+                    $failCount++;
+                }
+            }
+
+            // Only notify if there's actual activity
+            if ($successCount > 0 || $failCount > 0) {
+                $telegram = new \App\Shared\Libraries\TelegramLibrary();
+                $adminName = session()->get('name') ?? 'Admin';
+                
+                $msg = "📁 <b>LAPORAN BATCH $type</b>\n";
+                $msg .= "Operasi massal dieksekusi oleh: <b>$adminName</b>\n";
+                $msg .= "------------------------------------------\n";
+                $msg .= "✅ Berhasil: <b>$successCount</b> Akun\n";
+                $msg .= "❌ Gagal: <b>$failCount</b> Akun\n";
+                
+                $telegram->sendMessage($msg);
+            }
+        } catch (\Throwable $e) {
+            log_message('error', 'Failed to send batch Telegram notification: ' . $e->getMessage());
         }
     }
 }
