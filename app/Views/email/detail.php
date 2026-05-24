@@ -100,7 +100,7 @@
                 <?php if (($email['suspended_login'] ?? 0) == 0): ?>
                     <span class="px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest bg-emerald-100 text-emerald-800 border-transparent">Aktif</span>
                 <?php else: ?>
-                    <span class="px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest bg-red-100 text-red-700 border-transparent">Ditangguhkan</span>
+                    <span class="px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest bg-red-100 text-red-700 border-transparent">Suspended</span>
                 <?php endif; ?>
             </div>
         </div>
