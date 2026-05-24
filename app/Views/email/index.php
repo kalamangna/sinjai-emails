@@ -106,7 +106,7 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <?php
-                                    $isNeedTte = !empty($email['nip']) || ($email['pimpinan'] ?? 0) == 1 || ($email['pimpinan_desa'] ?? 0) == 1;
+                                    $isNeedTte = !empty($email['nip']) || ($email['pimpinan'] ?? 0) == 1 || ($email['pimpinan_desa'] ?? 0) == 1 || !empty($email['unit_kerja_id']);
                                     
                                     if ($isNeedTte) {
                                         $status = $email['bsre_status'] ?? '';
