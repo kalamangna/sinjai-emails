@@ -247,7 +247,17 @@ class SyncAllCommand extends BaseCommand
         CLI::write('Checking for Expired TTE Status Alerts...', 'yellow');
         try {
             $emailModel = new EmailModel();
-            $expiredAccounts = $emailModel->select('emails.email, emails.name, emails.nip, emails.jabatan, unit_kerja.nama_unit_kerja as unit_name')
+            
+            // 1. Get TOTAL count of all expired accounts (Staff + Leadership)
+            $totalExpiredCount = $emailModel->where('bsre_status', 'EXPIRED')->countAllResults();
+            
+            if ($totalExpiredCount === 0) {
+                CLI::write('No expired TTE accounts found.', 'green');
+                return;
+            }
+
+            // 2. Get detailed data for LEADERSHIP only
+            $expiredPimpinan = $emailModel->select('emails.email, emails.name, emails.nip, emails.jabatan, unit_kerja.nama_unit_kerja as unit_name')
                                           ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
                                           ->where('emails.bsre_status', 'EXPIRED')
                                           ->groupStart()
@@ -256,28 +266,34 @@ class SyncAllCommand extends BaseCommand
                                           ->groupEnd()
                                           ->findAll();
             
-            if (!empty($expiredAccounts)) {
-                $count = count($expiredAccounts);
-                CLI::write("Found $count accounts with EXPIRED TTE status", 'red');
+            $pimpinanCount = count($expiredPimpinan);
+            CLI::write("Total Expired: $totalExpiredCount, Pimpinan Expired: $pimpinanCount", 'cyan');
+            
+            // 3. Construct Telegram Message
+            $msg = "🔔 <b>LAPORAN TTE EXPIRED</b>\n\n";
+            $msg .= "📊 Total Expired: <b>$totalExpiredCount</b> Akun\n";
+            $msg .= "------------------------------------------\n\n";
+
+            if ($pimpinanCount > 0) {
+                $msg .= "⚠️ <b>DETAIL PIMPINAN EXPIRED</b>\n";
+                $msg .= "Ditemukan <b>$pimpinanCount</b> pimpinan:\n\n";
                 
-                $msg = "🔔 <b>PERINGATAN TTE EXPIRED</b>\n";
-                $msg .= "Ditemukan <b>$count</b> akun dengan status TTE Expired:\n\n";
-                
-                foreach (array_slice($expiredAccounts, 0, 10) as $acc) {
+                foreach (array_slice($expiredPimpinan, 0, 10) as $acc) {
                     $msg .= "📧 " . $acc['email'] . "\n";
                     $msg .= "👤 " . $acc['name'] . " (" . ($acc['nip'] ?: '-') . ")\n";
                     $msg .= "💼 " . ($acc['jabatan'] ?: '-') . "\n";
                     $msg .= "🏛️ " . ($acc['unit_name'] ?: '-') . "\n\n";
                 }
                 
-                if ($count > 10) {
-                    $msg .= "...dan " . ($count - 10) . " akun lainnya.";
+                if ($pimpinanCount > 10) {
+                    $msg .= "...dan " . ($pimpinanCount - 10) . " pimpinan lainnya.";
                 }
-                
-                $this->telegram->sendMessage($msg);
             } else {
-                CLI::write('No expired TTE accounts found.', 'green');
+                $msg .= "✅ Tidak ada data pimpinan yang expired.";
             }
+            
+            $this->telegram->sendMessage($msg);
+
         } catch (\Throwable $e) {
             CLI::error('Error checking TTE expired alerts: ' . $e->getMessage());
         }
