@@ -99,6 +99,12 @@ class SyncAllCommand extends BaseCommand
             $this->syncCpanel();
         }
 
+        // Phase: Pegawai & Website (Bulanan / All)
+        if ($runAll || $isMonthly) {
+            $this->syncPegawaiData();
+            $this->syncWebExpirations();
+        }
+
         // Phase: Cleanup (Setiap kali sinkronisasi)
         $this->cleanupRetiredAccounts();
 
