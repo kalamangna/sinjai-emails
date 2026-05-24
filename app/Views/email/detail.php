@@ -11,7 +11,7 @@
             <div>
                 <h1 class="text-xl sm:text-2xl font-bold text-slate-800 uppercase tracking-tight truncate">Detail Akun</h1>
                 <div class="flex flex-wrap gap-x-4 gap-y-1 mt-1">
-                    <?php if (!empty($last_sync_pegawai)): ?>
+                    <?php if (!empty($last_sync_pegawai) && empty($email['pensiun_at'])): ?>
                         <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">
                             <i class="fas fa-user-check mr-1"></i> Pegawai Sync:
                             <span class="text-slate-700"><?= formatTanggalWaktu($last_sync_pegawai) ?></span>
@@ -524,9 +524,6 @@
     document.addEventListener('DOMContentLoaded', () => {
         const initialStatus = '<?= esc($email['bsre_status'] ?? '', 'js') ?>';
         renderBsreStatus(initialStatus);
-    });
-</script>
-<?= $this->endSection() ?>s);
     });
 </script>
 <?= $this->endSection() ?>
