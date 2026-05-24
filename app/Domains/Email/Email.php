@@ -115,7 +115,10 @@ class Email extends BaseController
     public function mark_pensiun($username)
     {
         try {
-            $email = $this->emailModel->where('user', $username)->first();
+            $email = $this->emailModel->select('emails.*, unit_kerja.nama_unit_kerja as unit_kerja_name')
+                                      ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
+                                      ->where('emails.user', $username)
+                                      ->first();
             if (!$email) {
                 throw new \Exception("Akun email tidak ditemukan.");
             }
@@ -151,10 +154,12 @@ class Email extends BaseController
             // 3. Send Telegram Notification
             try {
                 $telegram = new TelegramLibrary();
-                $msg = "🚪 <b>PEMBERSIHAN AKUN (MANUAL)</b>\n\n";
-                $msg .= "Seorang pegawai telah ditandai sebagai <b>PENSIUN</b> oleh Admin:\n\n";
-                $msg .= "👤 Nama: " . ($email['name'] ?: '-') . "\n";
-                $msg .= "📧 Email: " . $email['email'] . "\n\n";
+                $msg = "🚪 <b>PEMBERSIHAN AKUN (MANUAL)</b>\n";
+                $msg .= "Seorang pegawai telah ditandai sebagai <b>PENSIUN</b> oleh Admin:\n";
+                $msg .= "------------------------------------------\n\n";
+                $msg .= "👤 " . ($email['name'] ?: '-') . " (" . ($email['nip'] ?: '-') . ")\n";
+                $msg .= "🏛️ " . ($email['unit_kerja_name'] ?? '-') . "\n";
+                $msg .= "📧 " . $email['email'] . "\n\n";
                 $msg .= "⚠️ <i>Akses login ditangguhkan. Akun akan dihapus permanen dalam 30 hari.</i>";
                 $telegram->sendMessage($msg);
             } catch (\Throwable $te) {

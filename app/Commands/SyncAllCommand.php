@@ -176,13 +176,15 @@ class SyncAllCommand extends BaseCommand
                 CLI::write("Found $count accounts with high usage (>90%)", 'red');
                 
                 $msg = "⚠️ <b>PERINGATAN KUOTA EMAIL</b>\n";
-                $msg .= "Ditemukan <b>$count</b> akun dengan penggunaan > 90%:\n\n";
+                $msg .= "Ditemukan <b>$count</b> akun dengan penggunaan > 90%:\n";
+                $msg .= "------------------------------------------\n\n";
                 
                 foreach (array_slice($highUsageAccounts, 0, 10) as $acc) {
-                    $msg .= "📧 " . $acc['email'] . "\n";
                     $msg .= "👤 " . $acc['name'] . " (" . ($acc['nip'] ?: '-') . ")\n";
+                    $msg .= "💼 " . ($acc['jabatan'] ?: '-') . "\n";
                     $msg .= "🏛️ " . ($acc['unit_name'] ?: '-') . "\n";
-                    $msg .= "📊 Digunakan: <b>" . $acc['humandiskused'] . "</b> (" . round($acc['diskusedpercent_float'], 1) . "%)\n\n";
+                    $msg .= "📧 " . $acc['email'] . "\n";
+                    $msg .= "📊 Penggunaan: <b>" . $acc['humandiskused'] . "</b> (" . round($acc['diskusedpercent_float'], 1) . "%)\n\n";
                 }
                 
                 if ($count > 10) {
@@ -294,10 +296,10 @@ class SyncAllCommand extends BaseCommand
                 $msg .= "Ditemukan <b>$pimpinanCount</b> pimpinan:\n\n";
                 
                 foreach (array_slice($expiredPimpinan, 0, 10) as $acc) {
-                    $msg .= "📧 " . $acc['email'] . "\n";
                     $msg .= "👤 " . $acc['name'] . " (" . ($acc['nip'] ?: '-') . ")\n";
                     $msg .= "💼 " . ($acc['jabatan'] ?: '-') . "\n";
-                    $msg .= "🏛️ " . ($acc['unit_name'] ?: '-') . "\n\n";
+                    $msg .= "🏛️ " . ($acc['unit_name'] ?: '-') . "\n";
+                    $msg .= "📧 " . $acc['email'] . "\n\n";
                 }
                 
                 if ($pimpinanCount > 10) {
