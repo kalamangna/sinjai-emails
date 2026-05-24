@@ -7,6 +7,7 @@ use App\Shared\Models\AppSettingModel;
 use App\Shared\Models\StatusAsnModel;
 use App\Shared\Models\EselonModel;
 use App\Domains\UnitKerja\UnitKerjaModel;
+use App\Shared\Libraries\TelegramLibrary;
 use App\Shared\Services\SyncService;
 use Exception;
 
@@ -146,6 +147,19 @@ class Email extends BaseController
                 'tanggal_lahir' => null,
                 'pendidikan' => null
             ]);
+
+            // 3. Send Telegram Notification
+            try {
+                $telegram = new TelegramLibrary();
+                $msg = "🚪 <b>PEMBERSIHAN AKUN (MANUAL)</b>\n\n";
+                $msg .= "Seorang pegawai telah ditandai sebagai <b>PENSIUN</b> oleh Admin:\n\n";
+                $msg .= "👤 Nama: " . ($email['name'] ?: '-') . "\n";
+                $msg .= "📧 Email: " . $email['email'] . "\n\n";
+                $msg .= "⚠️ <i>Akses login ditangguhkan. Akun akan dihapus permanen dalam 30 hari.</i>";
+                $telegram->sendMessage($msg);
+            } catch (\Throwable $te) {
+                log_message('error', 'Failed to send Telegram notification for retirement: ' . $te->getMessage());
+            }
 
             return redirect()->to('email/detail/' . $username)->with('success', 'Akun telah ditandai sebagai Pensiun. Data pegawai telah dihapus, akses login ditangguhkan, dan akun akan dihapus permanen dalam 30 hari.');
             
