@@ -40,7 +40,10 @@ class WebsiteService
     {
         try {
             $client = Services::curlrequest();
-            $response = $client->request('GET', "https://rdap.pandi.id/rdap/domain/{$domain}", [
+            $baseUrl = env('PANDI_RDAP_BASE_URL') ?: 'https://rdap.pandi.id/rdap/domain/';
+            $url = rtrim($baseUrl, '/') . '/' . $domain;
+            
+            $response = $client->request('GET', $url, [
                 'timeout' => 5,
                 'http_errors' => false
             ]);

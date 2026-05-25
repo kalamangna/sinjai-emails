@@ -35,7 +35,7 @@ class UserManagement extends BaseController
 
     public function store()
     {
-        $username = $this->request->getPost('username');
+        $username = trim($this->request->getPost('username') ?? '');
         $name = $this->request->getPost('name');
         
         $rules = [
@@ -63,7 +63,7 @@ class UserManagement extends BaseController
             return $this->response->setJSON(['success' => false, 'message' => 'Invalid request method.']);
         }
 
-        $nip = $this->request->getPost('nip');
+        $nip = trim($this->request->getPost('nip') ?? '');
         if (empty($nip)) {
             return $this->response->setJSON(['success' => false, 'message' => 'NIP wajib diisi.']);
         }

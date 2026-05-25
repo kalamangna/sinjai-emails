@@ -337,7 +337,7 @@ class SyncAllCommand extends BaseCommand
             
             foreach ($emails as $index => $currentEmail) {
                 $count = $index + 1;
-                $nip = $currentEmail['nip'];
+                $nip = trim($currentEmail['nip'] ?? '');
                 CLI::print("[$count/$total] Syncing NIP $nip ({$currentEmail['email']})... ");
                 
                 if (isset($nipResults[$nip])) {

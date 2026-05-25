@@ -434,7 +434,8 @@
 
         if (status === 'ISSUE' && hash) {
             const profileUrl = `<?= site_url('verifikasi/') ?>${hash}`;
-            qrcodeImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(profileUrl)}`;
+            const qrApiUrl = '<?= env('QR_API_BASE_URL') ?: 'https://api.qrserver.com/v1/create-qr-code/' ?>';
+            qrcodeImage.src = `${qrApiUrl}?size=200x200&data=${encodeURIComponent(profileUrl)}`;
             qrcodeLink.href = profileUrl;
             qrcodeCard.classList.remove('hidden');
         } else {

@@ -13,11 +13,12 @@ class GeminiService
 {
     private string $apiKey;
     private string $model = 'gemini-2.5-flash';
-    private string $baseUrl = 'https://generativelanguage.googleapis.com/v1/models/';
+    private string $baseUrl;
 
     public function __construct()
     {
         $this->apiKey = trim(env('GEMINI_API_KEY') ?: getenv('GEMINI_API_KEY') ?: ($_ENV['GEMINI_API_KEY'] ?? ''), ' "');
+        $this->baseUrl = env('GEMINI_API_BASE_URL') ?: 'https://generativelanguage.googleapis.com/v1/models/';
     }
 
     /**
