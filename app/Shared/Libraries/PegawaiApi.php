@@ -26,8 +26,8 @@ class PegawaiApi
         try {
             $authUrl = 'https://apps.sinjaikab.go.id/api/pegawai/user_auth';
             $response = $this->client->post($authUrl, [
-                'form_params' => [
-                    'nip' => $nip,
+                'query' => [
+                    'username' => $nip,
                     'password' => $password
                 ],
                 'headers' => [
@@ -39,12 +39,21 @@ class PegawaiApi
             $statusCode = $response->getStatusCode();
             $body = $response->getBody();
 
+            log_message('debug', "PegawaiAuth Response ($statusCode): " . $body);
+
             if ($statusCode === 200) {
                 $data = json_decode($body, true);
                 
-                // Assuming API returns something like ['status' => 'success'] or similar
-                // Adjust based on actual API response structure
-                if (isset($data['status']) && ($data['status'] === 'success' || $data['status'] === true)) {
+                // Flexible success check: handles 'success', true, or '1'
+                $isSuccess = false;
+                if (isset($data['status'])) {
+                    $status = $data['status'];
+                    if ($status === 'success' || $status === true || $status === 1 || $status === '1') {
+                        $isSuccess = true;
+                    }
+                }
+
+                if ($isSuccess) {
                     return [
                         'success' => true,
                         'data' => $data
@@ -53,7 +62,7 @@ class PegawaiApi
 
                 return [
                     'success' => false,
-                    'message' => $data['message'] ?? 'Kredensial eksternal tidak valid.'
+                    'message' => $data['message'] ?? $data['error'] ?? 'Kredensial eksternal tidak valid.'
                 ];
             }
 
