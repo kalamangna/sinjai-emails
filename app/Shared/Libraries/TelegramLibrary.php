@@ -8,12 +8,14 @@ class TelegramLibrary
 {
     protected $token;
     protected $chatId;
-    protected $apiUrl = 'https://api.telegram.org/bot';
+    protected $apiUrl;
 
     public function __construct()
     {
         $this->token = env('TELEGRAM_BOT_TOKEN');
         $this->chatId = env('TELEGRAM_CHAT_ID');
+        $baseUrl = env('TELEGRAM_BASE_URL') ?: 'https://api.telegram.org';
+        $this->apiUrl = rtrim($baseUrl, '/') . '/bot';
     }
 
     /**

@@ -75,6 +75,7 @@ Format didasarkan pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
     - Melakukan audit dan penyelarasan seluruh variabel lingkungan menggunakan format `UPPER_SNAKE_CASE` yang konsisten.
     - Memindahkan endpoint Pegawai API dari kode program (*hardcoded*) ke file `.env` untuk kemudahan pemeliharaan dan keamanan.
 - **Pembersihan Sistem (Cleanup)**:
+    - Menghapus fitur Gemini AI secara menyeluruh karena ketergantungan pada API Key pihak ketiga yang bersifat opsional.
     - Menghapus kolom `se_status` dari tabel `users` karena sudah tidak relevan dengan alur otentikasi baru.
     - Menghapus tabel database `email_stats_history` dan model terkait.
     - Menghapus seluruh logika pencatatan data statistik harian dan visualisasi grafik tren di Dashboard.

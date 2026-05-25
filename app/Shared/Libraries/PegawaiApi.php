@@ -12,8 +12,7 @@ class PegawaiApi
 
     public function __construct()
     {
-        $this->baseUrl = env('PEGAWAI_API_BASE_URL') ?: 'http://apps.sinjaikab.go.id/api/pegawai/data_pegawai/';
-        $this->authUrl = env('PEGAWAI_API_AUTH_URL') ?: 'https://apps.sinjaikab.go.id/api/pegawai/user_auth';
+        $this->baseUrl = rtrim(env('PEGAWAI_BASE_URL') ?: 'https://apps.sinjaikab.go.id/api/pegawai', '/') . '/';
         $this->client = Services::curlrequest();
     }
 
@@ -27,7 +26,8 @@ class PegawaiApi
         }
 
         try {
-            $response = $this->client->post($this->authUrl, [
+            $authUrl = $this->baseUrl . 'user_auth';
+            $response = $this->client->post($authUrl, [
                 'query' => [
                     'username' => $nip,
                     'password' => $password
@@ -99,7 +99,8 @@ class PegawaiApi
         }
 
         try {
-            $response = $this->client->get($this->baseUrl, [
+            $dataUrl = $this->baseUrl . 'data_pegawai/';
+            $response = $this->client->get($dataUrl, [
                 'query' => [
                     'nip' => $nip
                 ],
