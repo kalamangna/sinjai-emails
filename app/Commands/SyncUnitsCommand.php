@@ -58,7 +58,6 @@ class SyncUnitsCommand extends BaseCommand
                 $count = $index + 1;
                 $apiId = $unit['unit_id'] ?? null;
                 $apiName = trim($unit['unit_nama'] ?? '');
-                $apiAddress = trim($unit['unit_alamat'] ?? '');
 
                 if (!$apiId || !$apiName) continue;
 
@@ -73,19 +72,9 @@ class SyncUnitsCommand extends BaseCommand
                 }
 
                 if ($existing) {
-                    // Update only API ID and Address, PRESERVE local name
-                    $updateData = [
-                        'api_unit_id' => $apiId,
-                        'alamat' => $apiAddress ?: ($existing['alamat'] ?? null)
-                    ];
-
-                    // Check if anything changed
-                    $changed = false;
-                    if (($existing['api_unit_id'] ?? '') != $apiId) $changed = true;
-                    if (($existing['alamat'] ?? '') != ($updateData['alamat'] ?? '')) $changed = true;
-
-                    if ($changed) {
-                        $unitModel->update($existing['id'], $updateData);
+                    // Update ONLY API ID, PRESERVE local name and address
+                    if (($existing['api_unit_id'] ?? '') != $apiId) {
+                        $unitModel->update($existing['id'], ['api_unit_id' => $apiId]);
                         CLI::write('MAPPED ID', 'green');
                         $stats['updated']++;
                     } else {
@@ -96,8 +85,7 @@ class SyncUnitsCommand extends BaseCommand
                     // Insert new unit only if truly not found
                     $newData = [
                         'api_unit_id' => $apiId,
-                        'nama_unit_kerja' => $apiName,
-                        'alamat' => $apiAddress ?: null
+                        'nama_unit_kerja' => $apiName
                     ];
                     $unitModel->insert($newData);
                     CLI::write('ADDED', 'green');
