@@ -4,6 +4,7 @@ namespace App\Domains\Auth;
 
 use App\Shared\BaseController;
 use App\Domains\Auth\UserModel;
+use App\Shared\Libraries\PegawaiApi;
 use Exception;
 
 class UserManagement extends BaseController
@@ -34,9 +35,11 @@ class UserManagement extends BaseController
 
     public function store()
     {
+        $username = $this->request->getPost('username');
+        $name = $this->request->getPost('name');
+        
         $rules = [
             'username'   => 'required|min_length[3]|max_length[20]|is_unique[users.username]',
-            'password'   => 'required|min_length[6]',
             'role'       => 'required|in_list[admin,super_admin]'
         ];
 
@@ -44,14 +47,53 @@ class UserManagement extends BaseController
             return redirect()->back()->withInput()->with('error', 'Validasi gagal: ' . implode(', ', $this->validator->getErrors()));
         }
 
+        // Use random password as login will primarily use External API Gateway
+        // Admin can still change this later if needed for local login fallback
+        $randomPassword = bin2hex(random_bytes(8));
+
         $this->userModel->insert([
-            'username'   => $this->request->getPost('username'),
-            'password'   => $this->request->getPost('password'),
+            'username'   => $username,
+            'name'       => $name ?: null,
+            'password'   => $randomPassword,
             'role'       => $this->request->getPost('role'),
             'se_status'  => 0
         ]);
 
-        return redirect()->to('/auth/users')->with('success', 'User berhasil ditambahkan.');
+        return redirect()->to('/auth/users')->with('success', 'User berhasil ditambahkan. User kini dapat login menggunakan kredensial eksternal.');
+    }
+
+    public function check_nip()
+    {
+        if (strtolower($this->request->getMethod()) !== 'post') {
+            return $this->response->setJSON(['success' => false, 'message' => 'Invalid request method.']);
+        }
+
+        $nip = $this->request->getPost('nip');
+        if (empty($nip)) {
+            return $this->response->setJSON(['success' => false, 'message' => 'NIP wajib diisi.']);
+        }
+
+        $pegawaiApi = new PegawaiApi();
+        $result = $pegawaiApi->getPegawaiData($nip);
+
+        if ($result['success'] && !empty($result['data'])) {
+            $source = (is_array($result['data']) && isset($result['data'][0])) ? $result['data'][0] : $result['data'];
+            
+            $hasActualData = isset($source['nama']) || isset($source['name']) || isset($source['jabatan_nama']);
+
+            if (!$hasActualData) {
+                return $this->response->setJSON(['success' => false, 'message' => 'Data pegawai tidak ditemukan di API.']);
+            }
+
+            return $this->response->setJSON([
+                'success' => true,
+                'data' => [
+                    'nama' => $source['nama'] ?? ($source['name'] ?? 'PEGAWAI')
+                ]
+            ]);
+        }
+
+        return $this->response->setJSON(['success' => false, 'message' => 'Gagal mengambil data dari API: ' . ($result['message'] ?? 'Unknown error')]);
     }
 
     public function edit($id)

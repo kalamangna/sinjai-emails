@@ -168,6 +168,7 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         $routes->get('/', '\App\Domains\Auth\UserManagement::index');
         $routes->get('add', '\App\Domains\Auth\UserManagement::add');
         $routes->post('store', '\App\Domains\Auth\UserManagement::store');
+        $routes->post('check_nip', '\App\Domains\Auth\UserManagement::check_nip');
         $routes->get('edit/(:num)', '\App\Domains\Auth\UserManagement::edit/$1');
         $routes->post('update/(:num)', '\App\Domains\Auth\UserManagement::update/$1');
         $routes->post('delete/(:num)', '\App\Domains\Auth\UserManagement::delete/$1');
