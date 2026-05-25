@@ -37,16 +37,24 @@ class PegawaiApi
             ]);
 
             $statusCode = $response->getStatusCode();
-            $body = $response->getBody();
+            $body = trim($response->getBody());
 
             log_message('debug', "PegawaiAuth Response ($statusCode): " . $body);
 
             if ($statusCode === 200) {
+                // Handle plain text response '1' or 'success'
+                if ($body === '1' || strtolower($body) === 'success' || $body === 'true') {
+                    return [
+                        'success' => true,
+                        'data' => ['status' => $body]
+                    ];
+                }
+
                 $data = json_decode($body, true);
                 
-                // Flexible success check: handles 'success', true, or '1'
+                // Flexible success check for JSON responses
                 $isSuccess = false;
-                if (isset($data['status'])) {
+                if (is_array($data) && isset($data['status'])) {
                     $status = $data['status'];
                     if ($status === 'success' || $status === true || $status === 1 || $status === '1') {
                         $isSuccess = true;
@@ -62,7 +70,7 @@ class PegawaiApi
 
                 return [
                     'success' => false,
-                    'message' => $data['message'] ?? $data['error'] ?? 'Kredensial eksternal tidak valid.'
+                    'message' => (is_array($data) ? ($data['message'] ?? $data['error'] ?? null) : null) ?: 'Kredensial eksternal tidak valid.'
                 ];
             }
 
