@@ -15,6 +15,7 @@
                 <thead class="bg-slate-100 text-slate-700 uppercase text-[10px] font-bold">
                     <tr>
                         <th class="px-6 py-3 border-b border-slate-200">Username</th>
+                        <th class="px-6 py-3 border-b border-slate-200">Nama</th>
                         <th class="px-6 py-3 border-b border-slate-200">Role</th>
                         <th class="px-6 py-3 border-b border-slate-200">Dibuat Pada</th>
                         <th class="px-6 py-3 border-b border-slate-200 text-center">Aksi</th>
@@ -26,6 +27,9 @@
                             <tr class="hover:bg-slate-50 transition-colors">
                                 <td class="px-6 py-4">
                                     <span class="font-bold text-slate-800 tracking-tight"><?= esc($user['username']) ?></span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="text-slate-700 uppercase font-medium"><?= esc($user['name'] ?? '-') ?></span>
                                 </td>
                                 <td class="px-6 py-4">
                                     <span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase border <?= $user['role'] === 'super_admin' ? 'bg-slate-800 text-white border-transparent' : 'bg-slate-100 text-slate-700 border-slate-200' ?>">
@@ -54,7 +58,7 @@
                         <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="4" class="px-6 py-12 text-center text-slate-400 font-bold uppercase tracking-widest text-[10px]">
+                            <td colspan="5" class="px-6 py-12 text-center text-slate-400 font-bold uppercase tracking-widest text-[10px]">
                                 Tidak ada data user.
                             </td>
                         </tr>
