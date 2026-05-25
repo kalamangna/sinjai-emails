@@ -14,6 +14,62 @@ class PegawaiApi
         $this->client = Services::curlrequest();
     }
 
+    public function authenticate($nip, $password)
+    {
+        if (empty($nip) || empty($password)) {
+            return [
+                'success' => false,
+                'message' => 'NIP dan Password wajib diisi.'
+            ];
+        }
+
+        try {
+            $authUrl = 'https://apps.sinjaikab.go.id/api/pegawai/user_auth';
+            $response = $this->client->post($authUrl, [
+                'form_params' => [
+                    'nip' => $nip,
+                    'password' => $password
+                ],
+                'headers' => [
+                    'Accept' => 'application/json',
+                ],
+                'timeout' => 10,
+            ]);
+
+            $statusCode = $response->getStatusCode();
+            $body = $response->getBody();
+
+            if ($statusCode === 200) {
+                $data = json_decode($body, true);
+                
+                // Assuming API returns something like ['status' => 'success'] or similar
+                // Adjust based on actual API response structure
+                if (isset($data['status']) && ($data['status'] === 'success' || $data['status'] === true)) {
+                    return [
+                        'success' => true,
+                        'data' => $data
+                    ];
+                }
+
+                return [
+                    'success' => false,
+                    'message' => $data['message'] ?? 'Kredensial eksternal tidak valid.'
+                ];
+            }
+
+            return [
+                'success' => false,
+                'message' => 'API Otentikasi memberikan respon status: ' . $statusCode
+            ];
+
+        } catch (\Throwable $e) {
+            return [
+                'success' => false,
+                'message' => 'Gagal terhubung ke API Otentikasi: ' . $e->getMessage()
+            ];
+        }
+    }
+
     public function getPegawaiData($nip)
     {
         if (empty($nip)) {
