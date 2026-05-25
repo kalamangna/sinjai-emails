@@ -51,8 +51,7 @@ class UserManagement extends BaseController
             'username'   => $username,
             'name'       => $name ?: null,
             'password'   => null,
-            'role'       => $this->request->getPost('role'),
-            'se_status'  => 0
+            'role'       => $this->request->getPost('role')
         ]);
 
         return redirect()->to('/auth/users')->with('success', 'User berhasil ditambahkan. User kini dapat login menggunakan kredensial eksternal.');
