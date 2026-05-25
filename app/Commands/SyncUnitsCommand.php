@@ -72,30 +72,34 @@ class SyncUnitsCommand extends BaseCommand
                     $existing = $unitModel->where('nama_unit_kerja', $apiName)->first();
                 }
 
-                $data = [
-                    'api_unit_id' => $apiId,
-                    'nama_unit_kerja' => $apiName,
-                    'alamat' => $apiAddress ?: null
-                ];
-
                 if ($existing) {
+                    // Update only API ID and Address, PRESERVE local name
+                    $updateData = [
+                        'api_unit_id' => $apiId,
+                        'alamat' => $apiAddress ?: ($existing['alamat'] ?? null)
+                    ];
+
                     // Check if anything changed
                     $changed = false;
                     if (($existing['api_unit_id'] ?? '') != $apiId) $changed = true;
-                    if ($existing['nama_unit_kerja'] != $apiName) $changed = true;
-                    if (($existing['alamat'] ?? '') != $apiAddress) $changed = true;
+                    if (($existing['alamat'] ?? '') != ($updateData['alamat'] ?? '')) $changed = true;
 
                     if ($changed) {
-                        $unitModel->update($existing['id'], $data);
-                        CLI::write('UPDATED', 'green');
+                        $unitModel->update($existing['id'], $updateData);
+                        CLI::write('MAPPED ID', 'green');
                         $stats['updated']++;
                     } else {
                         CLI::write('NO CHANGES', 'blue');
                         $stats['unchanged']++;
                     }
                 } else {
-                    // Insert new unit
-                    $unitModel->insert($data);
+                    // Insert new unit only if truly not found
+                    $newData = [
+                        'api_unit_id' => $apiId,
+                        'nama_unit_kerja' => $apiName,
+                        'alamat' => $apiAddress ?: null
+                    ];
+                    $unitModel->insert($newData);
                     CLI::write('ADDED', 'green');
                     $stats['added']++;
                 }
