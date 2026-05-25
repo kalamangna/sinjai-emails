@@ -6,11 +6,14 @@ use Config\Services;
 
 class PegawaiApi
 {
-    protected $baseUrl = 'http://apps.sinjaikab.go.id/api/pegawai/data_pegawai/';
+    protected $baseUrl;
+    protected $authUrl;
     protected $client;
 
     public function __construct()
     {
+        $this->baseUrl = env('PEGAWAI_API_BASE_URL') ?: 'http://apps.sinjaikab.go.id/api/pegawai/data_pegawai/';
+        $this->authUrl = env('PEGAWAI_API_AUTH_URL') ?: 'https://apps.sinjaikab.go.id/api/pegawai/user_auth';
         $this->client = Services::curlrequest();
     }
 
@@ -24,8 +27,7 @@ class PegawaiApi
         }
 
         try {
-            $authUrl = 'https://apps.sinjaikab.go.id/api/pegawai/user_auth';
-            $response = $this->client->post($authUrl, [
+            $response = $this->client->post($this->authUrl, [
                 'query' => [
                     'username' => $nip,
                     'password' => $password

@@ -15,10 +15,10 @@ class Cpanel extends BaseConfig
     public function __construct()
     {
         parent::__construct();
-        $this->cpanel_host = env('cpanel.host');
-        $this->cpanel_port = env('cpanel.port');
-        $this->cpanel_username = env('cpanel.username');
-        $this->api_token = env('cpanel.api_token');
-        $this->domain = env('cpanel.domain');
+        $this->cpanel_host = env('CPANEL_HOST');
+        $this->cpanel_port = env('CPANEL_PORT');
+        $this->cpanel_username = env('CPANEL_USERNAME');
+        $this->api_token = env('CPANEL_API_TOKEN');
+        $this->domain = env('CPANEL_DOMAIN');
     }
 }
