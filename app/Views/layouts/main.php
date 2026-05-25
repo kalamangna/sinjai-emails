@@ -261,7 +261,7 @@
                 <div class="relative" id="user-dropdown-container">
                     <button id="user-dropdown-button" class="flex items-center gap-3 p-1.5 rounded-xl hover:bg-slate-50 transition-all focus:outline-none">
                         <div class="hidden sm:flex flex-col items-end">
-                            <p class="text-xs font-bold text-slate-800 leading-none uppercase"><?= session()->get('username') ?></p>
+                            <p class="text-xs font-bold text-slate-800 leading-none uppercase"><?= session()->get('name') ?: session()->get('username') ?></p>
                             <p class="text-[9px] font-bold text-slate-700 uppercase mt-1 tracking-widest">
                                 <?= session()->get('role') == 'super_admin' ? 'Super Admin' : 'Admin' ?>
                             </p>
@@ -277,7 +277,7 @@
                          class="absolute right-0 mt-2 w-56 bg-white border border-slate-200 rounded-xl shadow-2xl py-2 z-50 origin-top-right overflow-hidden hidden opacity-0 scale-95 translate-y-1 transition-all duration-200">
                         
                         <div class="px-4 py-2 mb-1 border-b border-slate-50 lg:hidden">
-                            <p class="text-xs font-bold text-slate-800 uppercase truncate"><?= session()->get('username') ?></p>
+                            <p class="text-xs font-bold text-slate-800 uppercase truncate"><?= session()->get('name') ?: session()->get('username') ?></p>
                             <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-0.5"><?= session()->get('role') == 'super_admin' ? 'Super Admin' : 'Admin' ?></p>
                         </div>
 
