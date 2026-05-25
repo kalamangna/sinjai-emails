@@ -10,6 +10,11 @@
     - Menghilangkan masalah "kebocoran data" dimana akun NON_TTE muncul di kategori filter lain.
 
 ## Fitur Baru & Optimasi
+- **API Gateway Login**:
+    - Implementasi gateway otentikasi eksternal terintegrasi dengan `apps.sinjaikab.go.id`.
+    - **Otentikasi Ganda**: Sistem memprioritaskan validasi kredensial (NIP & Password) ke API eksternal, dengan mekanisme *fallback* ke password lokal untuk menjamin reliabilitas akses.
+    - **Pendaftaran User Cerdas**: Admin kini cukup memasukkan NIP saat mendaftarkan administrator baru; sistem secara otomatis memvalidasi data dan menarik nama lengkap pegawai via API.
+    - **Login Tanpa Password Lokal**: Kolom password pada tabel user kini bersifat opsional (nullable). Untuk pendaftaran user berbasis NIP, sistem tidak lagi men-generate password acak, melainkan membiarkannya kosong karena otentikasi sepenuhnya dialihkan ke API Gateway eksternal.
 - **Otomatisasi Akun Pensiun**:
     - Fitur **"Tandai Pensiun"** manual: Penangguhan akses login cPanel instan + Pembersihan data identitas/kedinasan otomatis dari database.
     - **Pembersihan Permanen**: Fase 5 otomatis yang menghapus akun setelah masa tunggu aman 30 hari.

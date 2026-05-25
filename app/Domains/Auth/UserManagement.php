@@ -47,14 +47,10 @@ class UserManagement extends BaseController
             return redirect()->back()->withInput()->with('error', 'Validasi gagal: ' . implode(', ', $this->validator->getErrors()));
         }
 
-        // Use random password as login will primarily use External API Gateway
-        // Admin can still change this later if needed for local login fallback
-        $randomPassword = bin2hex(random_bytes(8));
-
         $this->userModel->insert([
             'username'   => $username,
             'name'       => $name ?: null,
-            'password'   => $randomPassword,
+            'password'   => null,
             'role'       => $this->request->getPost('role'),
             'se_status'  => 0
         ]);

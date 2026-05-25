@@ -55,8 +55,8 @@ class Auth extends BaseController
                 }
             }
         } else {
-            // 3. Fallback to Local Password Verification
-            if (password_verify($password, $user['password'])) {
+            // 3. Fallback to Local Password Verification (if local password exists)
+            if (!empty($user['password']) && password_verify($password, $user['password'])) {
                 $isAuthSuccessful = true;
             }
         }
