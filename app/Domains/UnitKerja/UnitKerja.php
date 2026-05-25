@@ -33,7 +33,9 @@ class UnitKerja extends BaseController
             $unitKerjaModel->where('unit_kerja.parent_id', $parentIdFilter);
         }
 
-        $unit_kerja_list = $unitKerjaModel->findAll();
+        // Apply Pagination
+        $unit_kerja_list = $unitKerjaModel->paginate(100);
+        $data['pager'] = $unitKerjaModel->pager;
 
         // Fetch parents that actually have children for the filter
         $parentsWithChildren = (new UnitKerjaModel())
@@ -43,11 +45,6 @@ class UnitKerja extends BaseController
             ->orderBy('unit_kerja.nama_unit_kerja', 'ASC')
             ->asArray()
             ->findAll();
-
-        // Sort using PHP's natural sort algorithm (case-insensitive)
-        usort($unit_kerja_list, function ($a, $b) {
-            return strnatcasecmp($a['nama_unit_kerja'], $b['nama_unit_kerja']);
-        });
 
         $data['unit_kerja_list'] = $unit_kerja_list;
         $data['parents_with_children'] = $parentsWithChildren;
