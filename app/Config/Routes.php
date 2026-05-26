@@ -14,20 +14,20 @@ $routes->get('logout', '\App\Domains\Auth\Auth::logout');
 // Public Identity Verification
 $routes->get('verifikasi/(:any)', '\App\Domains\Email\Email::profile/$1');
 
+// API Gateway (v1) - External Integration
+$routes->group('api/v1', ['filter' => 'api_gateway'], function ($routes) {
+    $routes->get('emails', '\App\Domains\Api\GatewayController::listEmails');
+    $routes->get('pppk', '\App\Domains\Api\GatewayController::listPppkPenuh');
+    $routes->get('pppk-pw', '\App\Domains\Api\GatewayController::listPppkParuh');
+    $routes->get('pns', '\App\Domains\Api\GatewayController::listPns');
+    $routes->get('unit/(:num)', '\App\Domains\Api\GatewayController::listByUnit/$1');
+});
+
 // Protected Routes
 $routes->group('', ['filter' => 'auth'], function ($routes) {
     
     // Portal Utama
     $routes->get('/', '\App\Domains\Dashboard\Home::index');
-
-        // API Gateway (v1) - External Integration
-        $routes->group('api/v1', ['filter' => 'api_gateway'], function ($routes) {
-            $routes->get('emails', '\App\Domains\Api\GatewayController::listEmails');
-            $routes->get('pppk', '\App\Domains\Api\GatewayController::listPppkPenuh');
-            $routes->get('pppk-pw', '\App\Domains\Api\GatewayController::listPppkParuh');
-            $routes->get('pns', '\App\Domains\Api\GatewayController::listPns');
-            $routes->get('unit/(:num)', '\App\Domains\Api\GatewayController::listByUnit/$1');
-        });
 
         // API Documentation (Admin & Super Admin)
         $routes->group('api-docs', ['filter' => 'role:admin,super_admin'], function ($routes) {

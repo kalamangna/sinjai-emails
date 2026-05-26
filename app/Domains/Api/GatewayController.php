@@ -47,8 +47,9 @@ class GatewayController extends BaseController
      */
     public function listEmails()
     {
-        $emails = $this->emailModel->select('email, name, nik, nip, jabatan, bsre_status')
-            ->orderBy('email', 'ASC')
+        $emails = $this->emailModel->select('emails.email, emails.name, emails.nik, emails.nip, emails.jabatan, emails.bsre_status, unit_kerja.api_unit_id')
+            ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
+            ->orderBy('emails.email', 'ASC')
             ->findAll();
 
         return $this->respond([
@@ -70,9 +71,10 @@ class GatewayController extends BaseController
             return $this->respond(['status' => 'success', 'count' => 0, 'data' => []]);
         }
 
-        $data = $this->emailModel->select('email, name, nik, nip, jabatan, bsre_status')
-            ->where('status_asn_id', $status['id'])
-            ->orderBy('name', 'ASC')
+        $data = $this->emailModel->select('emails.email, emails.name, emails.nik, emails.nip, emails.jabatan, emails.bsre_status, unit_kerja.api_unit_id')
+            ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
+            ->where('emails.status_asn_id', $status['id'])
+            ->orderBy('emails.name', 'ASC')
             ->findAll();
 
         return $this->respond([
@@ -94,9 +96,10 @@ class GatewayController extends BaseController
             return $this->respond(['status' => 'success', 'count' => 0, 'data' => []]);
         }
 
-        $data = $this->emailModel->select('email, name, nik, nip, jabatan, bsre_status')
-            ->where('status_asn_id', $status['id'])
-            ->orderBy('name', 'ASC')
+        $data = $this->emailModel->select('emails.email, emails.name, emails.nik, emails.nip, emails.jabatan, emails.bsre_status, unit_kerja.api_unit_id')
+            ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
+            ->where('emails.status_asn_id', $status['id'])
+            ->orderBy('emails.name', 'ASC')
             ->findAll();
 
         return $this->respond([
@@ -118,9 +121,10 @@ class GatewayController extends BaseController
             return $this->respond(['status' => 'success', 'count' => 0, 'data' => []]);
         }
 
-        $pns = $this->emailModel->select('email, name, nik, nip, jabatan, bsre_status')
-            ->where('status_asn_id', $pnsStatus['id'])
-            ->orderBy('name', 'ASC')
+        $pns = $this->emailModel->select('emails.email, emails.name, emails.nik, emails.nip, emails.jabatan, emails.bsre_status, unit_kerja.api_unit_id')
+            ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
+            ->where('emails.status_asn_id', $pnsStatus['id'])
+            ->orderBy('emails.name', 'ASC')
             ->findAll();
 
         return $this->respond([
@@ -131,19 +135,35 @@ class GatewayController extends BaseController
     }
 
     /**
-     * List emails by Unit Kerja ID
+     * List emails by Unit Kerja ID or External API Unit ID
      */
     public function listByUnit($unitId)
     {
+        $unitModel = new \App\Domains\UnitKerja\UnitKerjaModel();
+        
+        // 1. Try to find the unit by api_unit_id (External)
+        $unit = $unitModel->where('api_unit_id', $unitId)->first();
+        
+        // 2. Fallback to local ID if not found by api_unit_id
+        if (!$unit) {
+            $unit = $unitModel->find($unitId);
+        }
+
+        if (!$unit) {
+            return $this->failNotFound('Unit kerja tidak ditemukan.');
+        }
+
         $emails = $this->emailModel->select('email, name, nik, nip, jabatan, bsre_status')
-            ->where('unit_kerja_id', $unitId)
+            ->where('unit_kerja_id', $unit['id'])
             ->orderBy('name', 'ASC')
             ->findAll();
 
         return $this->respond([
             'status' => 'success',
             'count'  => count($emails),
-            'unit_id' => $unitId,
+            'unit_id' => $unit['id'],
+            'api_unit_id' => $unit['api_unit_id'],
+            'nama_unit_kerja' => $unit['nama_unit_kerja'],
             'data'   => $emails
         ]);
     }

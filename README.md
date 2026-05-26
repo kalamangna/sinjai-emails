@@ -41,8 +41,9 @@ Aplikasi ini menerapkan standar estetika **"Slate Clean Government"**—antarmuk
 ### 🌐 API Gateway (v1)
 Penyediaan data internal yang aman untuk integrasi lintas sektoral di Pemkab Sinjai:
 - **Endpoints:** `/api/v1/emails`, `/api/v1/pns`, `/api/v1/pppk`, `/api/v1/pppk-pw`, `/api/v1/unit/{id}`.
+- **Data Terintegrasi:** Sertifikasi `api_unit_id` (External ID) pada setiap record untuk sinkronisasi lintas platform yang presisi.
 - **Keamanan:** Mendukung *Bearer Token* dan *Session-based Access* (untuk pengguna terdaftar).
-- **Dokumentasi:** Halaman panduan interaktif di `/api-docs` lengkap dengan daftar ID Unit Kerja.
+- **Dokumentasi:** Halaman panduan interaktif di `/api-docs` lengkap dengan daftar ID Unit Kerja eksternal.
 
 ### 📄 Sistem Ekspor
 - **Mesin PDF:** Pelaporan profesional menggunakan `Dompdf`, dioptimalkan untuk standar visual "Slate Clean".

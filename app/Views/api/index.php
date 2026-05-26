@@ -122,50 +122,62 @@
 
     <!-- Tombol Modal Unit Kerja -->
     <div class="flex justify-center mt-4">
-        <button type="button" onclick="openUnitModal()" class="btn btn-outline text-[10px] font-bold uppercase tracking-widest">
+        <button type="button" onclick="openModal('unitModal')" class="btn btn-outline text-[10px] font-bold uppercase tracking-widest">
             <i class="fas fa-list-numeric mr-2"></i> Lihat Daftar ID Unit Kerja
         </button>
     </div>
 
     <!-- Modal ID Unit Kerja -->
-    <div id="unitModal" class="fixed inset-0 z-[99] hidden flex items-center justify-center bg-slate-900/60 backdrop-blur-sm px-4">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[80vh]">
-            <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center shrink-0">
-                <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Daftar ID Unit Kerja</h3>
-                <button onclick="closeUnitModal()" class="text-slate-400 hover:text-slate-600 transition-colors">
-                    <i class="fas fa-times text-sm"></i>
-                </button>
-            </div>
-            
-            <div class="p-6 shrink-0 border-b border-slate-50">
-                <div class="relative">
-                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[10px]"></i>
-                    <input type="text" id="unitSearch" onkeyup="filterUnits()" placeholder="Cari Nama Unit Kerja..." 
-                           class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[11px] font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-200 transition-all">
-                </div>
-            </div>
-
-            <div class="p-6 overflow-y-auto custom-scrollbar flex-grow">
-                <div id="unitList" class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-1">
-                    <?php foreach ($units as $unit): ?>
-                        <div class="unit-item flex justify-between items-center border-b border-slate-50 py-1.5 hover:bg-slate-50 transition-colors px-2 rounded">
-                            <span class="unit-name text-[10px] font-medium text-slate-600 truncate mr-2" title="<?= esc($unit['nama_unit_kerja']) ?>"><?= esc($unit['nama_unit_kerja']) ?></span>
-                            <span class="text-[10px] font-black text-slate-800 font-mono shrink-0">ID: <?= $unit['id'] ?></span>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-                <div id="noUnitFound" class="hidden text-center py-8 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                    Unit kerja tidak ditemukan
-                </div>
-            </div>
-
-            <div class="bg-slate-50 p-4 border-t border-slate-100 flex justify-end shrink-0">
-                <button onclick="closeUnitModal()" class="px-6 py-2 bg-slate-800 text-white text-[10px] font-bold uppercase tracking-widest rounded-lg hover:bg-slate-700 transition-colors focus:outline-none">
-                    Tutup
-                </button>
+    <?php
+    $modalContent = '
+        <div class="mb-6">
+            <div class="relative">
+                <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[10px]"></i>
+                <input type="text" id="unitSearch" onkeyup="filterUnits()" placeholder="Cari Nama Unit Kerja..." 
+                       class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[11px] font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-200 transition-all">
             </div>
         </div>
-    </div>
+
+        <div id="unitList" class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
+    ';
+    
+    foreach ($units as $unit) {
+        if ($unit['api_unit_id']) {
+            $modalContent .= '
+                <div class="unit-item flex justify-between items-center border border-slate-200 bg-white p-3 hover:border-slate-800 hover:shadow-sm transition-all rounded-lg group">
+                    <span class="unit-name text-[10px] font-bold text-slate-700 truncate mr-2" title="' . esc($unit['nama_unit_kerja']) . '">' . esc($unit['nama_unit_kerja']) . '</span>
+                    <div class="flex flex-col items-end shrink-0">
+                        <span class="text-[10px] font-black text-slate-800 font-mono">ID: ' . $unit['api_unit_id'] . '</span>
+                    </div>
+                </div>
+            ';
+        }
+    }
+
+    $modalContent .= '
+        </div>
+        <div id="noUnitFound" class="hidden text-center py-12">
+            <div class="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center mx-auto mb-3">
+                <i class="fas fa-search text-slate-200"></i>
+            </div>
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Unit kerja tidak ditemukan</span>
+        </div>
+    ';
+
+    $modalFooter = '
+        <button onclick="closeModal(\'unitModal\')" class="px-8 py-2.5 bg-slate-800 text-white text-[10px] font-bold uppercase tracking-widest rounded-lg hover:bg-slate-700 transition-colors shadow-lg shadow-slate-200 focus:outline-none">
+            Tutup
+        </button>
+    ';
+
+    echo view('components/modal', [
+        'id' => 'unitModal',
+        'title' => 'Daftar ID Unit Kerja (API Sinjai)',
+        'size' => 'xl',
+        'content' => $modalContent,
+        'footer' => $modalFooter
+    ]);
+    ?>
 </div>
 <?php $this->endSection() ?>
 
@@ -177,23 +189,9 @@
         });
     }
 
-    const modal = document.getElementById('unitModal');
     const searchInput = document.getElementById('unitSearch');
     const unitList = document.getElementById('unitList');
     const noResult = document.getElementById('noUnitFound');
-
-    function openUnitModal() {
-        modal.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-        searchInput.focus();
-    }
-
-    function closeUnitModal() {
-        modal.classList.add('hidden');
-        document.body.style.overflow = '';
-        searchInput.value = '';
-        filterUnits();
-    }
 
     function filterUnits() {
         const filter = searchInput.value.toLowerCase();
@@ -212,19 +210,5 @@
 
         noResult.classList.toggle('hidden', visibleCount > 0);
     }
-
-    // Close on Escape
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
-            closeUnitModal();
-        }
-    });
-
-    // Close on click outside
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            closeUnitModal();
-        }
-    });
 </script>
 <?php $this->endSection() ?>

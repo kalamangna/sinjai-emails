@@ -335,21 +335,25 @@
     </div>
 </div>
 
-<!-- Modal Progress Batch (Hidden by default) -->
-<div id="exportProgressModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
-    <div class="flex items-center justify-center min-h-screen p-4">
-        <div class="fixed inset-0 bg-slate-800/50 backdrop-blur-sm"></div>
-        <div class="relative bg-white rounded-lg shadow-xl w-full max-w-md p-6 border border-slate-200">
-            <h4 class="text-sm font-bold text-slate-800 uppercase tracking-tight mb-4">Pemrosesan Dokumen PK Massal</h4>
-            <div class="space-y-4">
-                <div class="w-full bg-slate-100 rounded-full h-2">
-                    <div id="exportProgressBar" class="bg-slate-700 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
-                </div>
-                <p id="exportStatusText" class="text-center text-[10px] font-bold text-slate-700 uppercase tracking-widest">Memulai...</p>
-            </div>
+<!-- Modal Progress Batch -->
+<?php
+$modalContent = '
+    <div class="space-y-4">
+        <div class="w-full bg-slate-100 rounded-full h-2">
+            <div id="exportProgressBar" class="bg-slate-700 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
         </div>
+        <p id="exportStatusText" class="text-center text-[10px] font-bold text-slate-700 uppercase tracking-widest">Memulai...</p>
     </div>
-</div>
+';
+
+echo view('components/modal', [
+    'id' => 'exportProgressModal',
+    'title' => 'Pemrosesan Dokumen PK Massal',
+    'size' => 'sm',
+    'showClose' => false,
+    'content' => $modalContent
+]);
+?>
 
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
