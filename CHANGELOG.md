@@ -1,10 +1,20 @@
 # Session History - 26 Mei 2026
 
-## Integrasi Unit Kerja
+## Integrasi & Optimasi Unit Kerja
 - **Sinkronisasi ID Unit Eksternal**:
     - Menambahkan kolom `api_unit_id` pada tabel `unit_kerja` untuk menyimpan referensi ID dari API `apps.sinjaikab.go.id`.
-    - Implementasi perintah Spark `sync:unit-api` untuk melakukan pemetaan otomatis antara data lokal dan data API berdasarkan pencocokan nama (termasuk normalisasi untuk Kecamatan dan Inspektorat).
-    - Berhasil memetakan 43 unit kerja utama (OPD, Badan, Dinas, dan Kecamatan) ke sistem pusat.
+    - Implementasi perintah Spark `sync:unit-api` untuk pemetaan otomatis dengan tingkat akurasi 100% (43 unit utama).
+- **Dukungan Hierarki API**:
+    - Endpoint `/api/v1/unit/{id}` kini mendukung pengambilan data secara rekursif (termasuk sub-unit seperti sekolah dan puskesmas).
+    - Pegawai di sub-unit secara otomatis mewarisi `api_unit_id` dari unit induk dalam respon JSON.
+- **Filter Query Dinamis**:
+    - Menambahkan dukungan parameter filter via URL pada API Gateway (`name`, `email`, `nip`, `nik`, `jabatan`, `bsre_status`, dan `api_unit_id`).
+- **Standarisasi UI & Modal**:
+    - Implementasi komponen reusable `modal.php` dengan standarisasi layering Z-Index.
+    - Pembaruan dokumentasi interaktif di `/api-docs` yang mencakup daftar ID Unit Kerja dan panduan parameter filter.
+- **Pemeliharaan Data**:
+    - Implementasi perintah `maintenance:unit-duplicates` untuk penggabungan data unit ganda dengan tetap mempertahankan integritas nama lokal.
+    - Implementasi perintah `maintenance:unit-uppercase` untuk standarisasi format penulisan.
 
 # Session History - 24 Mei 2026
 
