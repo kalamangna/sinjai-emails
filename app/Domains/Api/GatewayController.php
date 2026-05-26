@@ -47,10 +47,12 @@ class GatewayController extends BaseController
      */
     public function listEmails()
     {
-        $emails = $this->emailModel->select('emails.email, emails.name, emails.nik, emails.nip, emails.jabatan, emails.bsre_status, unit_kerja.api_unit_id')
-            ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
-            ->orderBy('emails.email', 'ASC')
-            ->findAll();
+        $builder = $this->emailModel->select('emails.email, emails.name, emails.nik, emails.nip, emails.jabatan, emails.bsre_status, COALESCE(u1.api_unit_id, u2.api_unit_id) as api_unit_id')
+            ->join('unit_kerja u1', 'u1.id = emails.unit_kerja_id', 'left')
+            ->join('unit_kerja u2', 'u2.id = u1.parent_id', 'left');
+
+        $builder = $this->applyQueryFilters($builder);
+        $emails = $builder->orderBy('emails.email', 'ASC')->findAll();
 
         return $this->respond([
             'status' => 'success',
@@ -71,11 +73,13 @@ class GatewayController extends BaseController
             return $this->respond(['status' => 'success', 'count' => 0, 'data' => []]);
         }
 
-        $data = $this->emailModel->select('emails.email, emails.name, emails.nik, emails.nip, emails.jabatan, emails.bsre_status, unit_kerja.api_unit_id')
-            ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
-            ->where('emails.status_asn_id', $status['id'])
-            ->orderBy('emails.name', 'ASC')
-            ->findAll();
+        $builder = $this->emailModel->select('emails.email, emails.name, emails.nik, emails.nip, emails.jabatan, emails.bsre_status, COALESCE(u1.api_unit_id, u2.api_unit_id) as api_unit_id')
+            ->join('unit_kerja u1', 'u1.id = emails.unit_kerja_id', 'left')
+            ->join('unit_kerja u2', 'u2.id = u1.parent_id', 'left')
+            ->where('emails.status_asn_id', $status['id']);
+
+        $builder = $this->applyQueryFilters($builder);
+        $data = $builder->orderBy('emails.name', 'ASC')->findAll();
 
         return $this->respond([
             'status' => 'success',
@@ -96,11 +100,13 @@ class GatewayController extends BaseController
             return $this->respond(['status' => 'success', 'count' => 0, 'data' => []]);
         }
 
-        $data = $this->emailModel->select('emails.email, emails.name, emails.nik, emails.nip, emails.jabatan, emails.bsre_status, unit_kerja.api_unit_id')
-            ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
-            ->where('emails.status_asn_id', $status['id'])
-            ->orderBy('emails.name', 'ASC')
-            ->findAll();
+        $builder = $this->emailModel->select('emails.email, emails.name, emails.nik, emails.nip, emails.jabatan, emails.bsre_status, COALESCE(u1.api_unit_id, u2.api_unit_id) as api_unit_id')
+            ->join('unit_kerja u1', 'u1.id = emails.unit_kerja_id', 'left')
+            ->join('unit_kerja u2', 'u2.id = u1.parent_id', 'left')
+            ->where('emails.status_asn_id', $status['id']);
+
+        $builder = $this->applyQueryFilters($builder);
+        $data = $builder->orderBy('emails.name', 'ASC')->findAll();
 
         return $this->respond([
             'status' => 'success',
@@ -121,11 +127,13 @@ class GatewayController extends BaseController
             return $this->respond(['status' => 'success', 'count' => 0, 'data' => []]);
         }
 
-        $pns = $this->emailModel->select('emails.email, emails.name, emails.nik, emails.nip, emails.jabatan, emails.bsre_status, unit_kerja.api_unit_id')
-            ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
-            ->where('emails.status_asn_id', $pnsStatus['id'])
-            ->orderBy('emails.name', 'ASC')
-            ->findAll();
+        $builder = $this->emailModel->select('emails.email, emails.name, emails.nik, emails.nip, emails.jabatan, emails.bsre_status, COALESCE(u1.api_unit_id, u2.api_unit_id) as api_unit_id')
+            ->join('unit_kerja u1', 'u1.id = emails.unit_kerja_id', 'left')
+            ->join('unit_kerja u2', 'u2.id = u1.parent_id', 'left')
+            ->where('emails.status_asn_id', $pnsStatus['id']);
+
+        $builder = $this->applyQueryFilters($builder);
+        $pns = $builder->orderBy('emails.name', 'ASC')->findAll();
 
         return $this->respond([
             'status' => 'success',
@@ -135,7 +143,7 @@ class GatewayController extends BaseController
     }
 
     /**
-     * List emails by Unit Kerja ID or External API Unit ID
+     * List emails by Unit Kerja ID or External API Unit ID (Including Descendants)
      */
     public function listByUnit($unitId)
     {
@@ -153,10 +161,18 @@ class GatewayController extends BaseController
             return $this->failNotFound('Unit kerja tidak ditemukan.');
         }
 
-        $emails = $this->emailModel->select('email, name, nik, nip, jabatan, bsre_status')
-            ->where('unit_kerja_id', $unit['id'])
-            ->orderBy('name', 'ASC')
-            ->findAll();
+        // 3. Find all child units
+        $childIds = $unitModel->where('parent_id', $unit['id'])->select('id')->findAll();
+        $targetIds = array_column($childIds, 'id');
+        $targetIds[] = $unit['id']; // Include the main unit itself
+
+        $builder = $this->emailModel->select('emails.email, emails.name, emails.nik, emails.nip, emails.jabatan, emails.bsre_status, COALESCE(u1.api_unit_id, u2.api_unit_id) as api_unit_id')
+            ->join('unit_kerja u1', 'u1.id = emails.unit_kerja_id', 'left')
+            ->join('unit_kerja u2', 'u2.id = u1.parent_id', 'left')
+            ->whereIn('emails.unit_kerja_id', $targetIds);
+
+        $builder = $this->applyQueryFilters($builder);
+        $emails = $builder->orderBy('emails.name', 'ASC')->findAll();
 
         return $this->respond([
             'status' => 'success',
@@ -166,5 +182,40 @@ class GatewayController extends BaseController
             'nama_unit_kerja' => $unit['nama_unit_kerja'],
             'data'   => $emails
         ]);
+    }
+
+    /**
+     * Apply URL query filters to the builder
+     */
+    private function applyQueryFilters($builder)
+    {
+        $request = \Config\Services::request();
+        
+        if ($name = $request->getGet('name')) {
+            $builder->like('emails.name', $name);
+        }
+        if ($email = $request->getGet('email')) {
+            $builder->like('emails.email', $email);
+        }
+        if ($nip = $request->getGet('nip')) {
+            $builder->where('emails.nip', $nip);
+        }
+        if ($nik = $request->getGet('nik')) {
+            $builder->where('emails.nik', $nik);
+        }
+        if ($jabatan = $request->getGet('jabatan')) {
+            $builder->like('emails.jabatan', $jabatan);
+        }
+        if ($status = $request->getGet('bsre_status')) {
+            $builder->where('emails.bsre_status', $status);
+        }
+        if ($apiUnitId = $request->getGet('api_unit_id')) {
+            $builder->groupStart()
+                    ->where('u1.api_unit_id', $apiUnitId)
+                    ->orWhere('u2.api_unit_id', $apiUnitId)
+                    ->groupEnd();
+        }
+
+        return $builder;
     }
 }
