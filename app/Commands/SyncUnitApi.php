@@ -74,8 +74,18 @@ class SyncUnitApi extends BaseCommand
             foreach ($localUnits as $localUnit) {
                 $localName = strtoupper(trim($localUnit['nama_unit_kerja']));
                 
-                // Direct match
-                if ($apiName === $localName) {
+                // Advanced Normalization for matching
+                $apiNorm = strtoupper(trim(preg_replace('/[^A-Z0-9]/', '', $apiName)));
+                $localNorm = strtoupper(trim(preg_replace('/[^A-Z0-9]/', '', $localName)));
+                
+                // Handle specific variations on the local side to match the API
+                $localNorm = str_replace('PERMUKIMAN', 'PEMUKIMAN', $localNorm);
+                $localNorm = str_replace('HORTIKULTURA', 'HOLTIKULTURA', $localNorm);
+                $localNorm = str_replace('USAHAMIKROKECIL', 'USAHAKECIL', $localNorm);
+                $localNorm = str_replace('PEMERINTAHKABUPATENSINJAI', 'PEMERINTAHDAERAHKABUPATENSINJAI', $localNorm);
+                
+                // Direct or normalized match
+                if ($apiName === $localName || $apiNorm === $localNorm) {
                     $matched = $localUnit;
                     break;
                 }
