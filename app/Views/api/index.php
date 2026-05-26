@@ -42,6 +42,60 @@
         </div>
     </div>
 
+    <!-- Parameter Query -->
+    <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Parameter Query (Filter)</h3>
+            <span class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Opsional</span>
+        </div>
+        <div class="p-6">
+            <p class="text-xs text-slate-600 mb-4">Anda dapat menambahkan parameter berikut pada URL untuk menyaring hasil pencarian:</p>
+            <div class="overflow-x-auto custom-scrollbar">
+                <table class="w-full text-[11px] text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50 border-b border-slate-200">
+                            <th class="px-4 py-2 font-bold text-slate-700 uppercase tracking-tight w-1/4">Parameter</th>
+                            <th class="px-4 py-2 font-bold text-slate-700 uppercase tracking-tight">Keterangan</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        <tr>
+                            <td class="px-4 py-3 font-mono text-emerald-600 font-bold">name</td>
+                            <td class="px-4 py-3 text-slate-600">Filter berdasarkan nama pegawai (Partial match).</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-mono text-emerald-600 font-bold">email</td>
+                            <td class="px-4 py-3 text-slate-600">Filter berdasarkan alamat email.</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-mono text-emerald-600 font-bold">nip</td>
+                            <td class="px-4 py-3 text-slate-600">Filter berdasarkan NIP (Exact match).</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-mono text-emerald-600 font-bold">nik</td>
+                            <td class="px-4 py-3 text-slate-600">Filter berdasarkan NIK (Exact match).</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-mono text-emerald-600 font-bold">jabatan</td>
+                            <td class="px-4 py-3 text-slate-600">Filter berdasarkan nama jabatan.</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-mono text-emerald-600 font-bold">bsre_status</td>
+                            <td class="px-4 py-3 text-slate-600">Filter status TTE (ISSUE, EXPIRED, dll).</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-mono text-emerald-600 font-bold">api_unit_id</td>
+                            <td class="px-4 py-3 text-slate-600">Filter berdasarkan ID Unit Kerja API Pusat.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-4 p-3 bg-slate-50 border border-slate-100 rounded text-[10px] font-mono text-slate-500">
+                <span class="font-bold text-slate-700">Contoh:</span> <?= $base_url ?>/emails?name=SUDARMIN&bsre_status=ISSUE
+            </div>
+        </div>
+    </div>
+
     <!-- Daftar Endpoint -->
     <div class="grid grid-cols-1 gap-6">
         <?php
