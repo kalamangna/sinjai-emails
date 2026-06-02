@@ -31,66 +31,6 @@
     <!-- Choices.js CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
 
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 4px;
-            height: 4px;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            @apply bg-slate-200;
-            border-radius: 10px;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            @apply bg-slate-300;
-        }
-
-        /* Choices.js Slate Theme Overrides */
-        .choices__inner {
-            @apply bg-white border-slate-200 rounded-lg text-sm font-medium text-slate-700 !important;
-            min-height: 38px !important;
-            padding: 4px 12px !important;
-        }
-
-        .choices__list--dropdown {
-            @apply bg-white border-slate-200 rounded-lg shadow-xl !important;
-        }
-
-        .choices__list--dropdown .choices__item--selectable.is-highlighted {
-            @apply bg-slate-100 !important;
-        }
-
-        .choices__input {
-            @apply bg-transparent text-sm !important;
-        }
-
-        .choices__placeholder {
-            @apply text-slate-700 opacity-100 !important;
-        }
-
-        /* Sidebar Desktop Collapse */
-        @media (min-width: 1024px) {
-            .sidebar-collapsed #sidebar {
-                transform: translateX(-100%);
-            }
-            .sidebar-collapsed #main-content {
-                margin-left: 0;
-            }
-        }
-        
-        #sidebar, #main-content {
-            transition: transform 0.3s ease-in-out, margin-left 0.3s ease-in-out;
-        }
-    </style>
 
     <?= $this->renderSection('styles') ?>
 
