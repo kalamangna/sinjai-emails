@@ -2,48 +2,63 @@
 
 <?= $this->section('content') ?>
 <div class="space-y-6">
-    <div class="flex items-center justify-between">
+    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
         <div>
-            <h1 class="text-2xl font-bold text-slate-800 tracking-tight uppercase">Audit Trail</h1>
-            <p class="text-sm font-medium text-slate-500 uppercase tracking-widest mt-1">Riwayat Aktivitas Sistem</p>
+            <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight">Audit Trail</h1>
+            <p class="text-[10px] font-bold text-slate-700 uppercase tracking-widest mt-1">Riwayat Aktivitas Sistem</p>
         </div>
     </div>
 
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+    <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
-                <thead>
-                    <tr class="bg-slate-50/80 border-b border-slate-200">
-                        <th class="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Waktu</th>
-                        <th class="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Pengguna</th>
-                        <th class="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Aksi</th>
-                        <th class="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Entitas</th>
-                        <th class="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Detail</th>
+            <table class="w-full text-left text-sm">
+                <thead class="bg-slate-100 text-slate-700 uppercase text-[10px] font-bold">
+                    <tr>
+                        <th class="px-6 py-3 border-b border-slate-200">Waktu</th>
+                        <th class="px-6 py-3 border-b border-slate-200">Pengguna</th>
+                        <th class="px-6 py-3 border-b border-slate-200">Aksi</th>
+                        <th class="px-6 py-3 border-b border-slate-200">Entitas</th>
+                        <th class="px-6 py-3 border-b border-slate-200">Detail</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
                     <?php if (empty($logs)): ?>
                         <tr>
-                            <td colspan="5" class="px-6 py-8 text-center text-sm font-medium text-slate-500 uppercase">Belum ada riwayat aktivitas.</td>
+                            <td colspan="5" class="px-6 py-20 text-center">
+                                <div class="flex flex-col items-center justify-center">
+                                    <div class="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center mb-3">
+                                        <i class="fas fa-search text-slate-300 text-lg"></i>
+                                    </div>
+                                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest italic">Data tidak ditemukan</span>
+                                </div>
+                            </td>
                         </tr>
                     <?php else: ?>
                         <?php foreach ($logs as $log): ?>
-                            <tr class="hover:bg-slate-50/50 transition-colors">
-                                <td class="px-6 py-4 text-xs font-bold text-slate-700 whitespace-nowrap"><?= date('d/m/Y H:i:s', strtotime($log['created_at'])) ?></td>
+                            <tr class="hover:bg-slate-50 transition-colors">
                                 <td class="px-6 py-4">
-                                    <div class="text-xs font-bold text-slate-800 uppercase"><?= esc($log['user_name'] ?? 'Sistem') ?></div>
-                                    <div class="text-[10px] text-slate-500"><?= esc($log['username'] ?? '-') ?></div>
+                                    <span class="text-xs font-bold text-slate-800 uppercase tracking-tight"><?= date('d/m/Y H:i:s', strtotime($log['created_at'])) ?></span>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <span class="inline-flex items-center px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest bg-slate-100 text-slate-700">
+                                    <div class="flex flex-col">
+                                        <span class="text-xs font-bold text-slate-800 uppercase tracking-tight"><?= esc($log['user_name'] ?? 'Sistem') ?></span>
+                                        <span class="text-[10px] font-bold text-slate-700 uppercase tracking-tight mt-0.5"><?= esc($log['username'] ?? '-') ?></span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase border bg-slate-100 text-slate-700 border-slate-200">
                                         <?= esc($log['action']) ?>
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 text-xs font-medium text-slate-600">
-                                    <?= esc($log['entity']) ?> <?php if ($log['entity_id']) echo '#' . esc($log['entity_id']); ?>
+                                <td class="px-6 py-4">
+                                    <span class="text-xs font-bold text-slate-800 uppercase tracking-tight">
+                                        <?= esc($log['entity']) ?> <?php if ($log['entity_id']) echo '#' . esc($log['entity_id']); ?>
+                                    </span>
                                 </td>
-                                <td class="px-6 py-4 text-xs font-medium text-slate-600 max-w-xs truncate" title="<?= esc($log['details']) ?>">
-                                    <?= esc($log['details']) ?>
+                                <td class="px-6 py-4">
+                                    <span class="text-xs font-medium text-slate-600 block max-w-md truncate" title="<?= esc($log['details']) ?>">
+                                        <?= esc($log['details']) ?>
+                                    </span>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
