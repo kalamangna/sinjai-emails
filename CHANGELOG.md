@@ -1,3 +1,10 @@
+# Session History - 3 Juni 2026
+
+## Perbaikan Bug & Optimasi Otomatisasi
+- **Optimasi Sinkronisasi cPanel (Mingguan)**:
+    - Memperbaiki kegagalan *timeout* pada sinkronisasi mingguan dengan menaikkan batas waktu HTTP request di `CpanelApi.php` dari 300 detik menjadi 1800 detik, mengantisipasi besarnya waktu kalkulasi disk untuk 7.500+ akun email di server cPanel.
+    - Mengimplementasikan proses *Chunking* pada metode `upsertBatch` di `EmailModel.php`. Data ribuan email kini dipecah menjadi kelompok (chunk) berisi maksimal 500 baris sebelum diproses ke database untuk mencegah error `Query too large` atau terputusnya koneksi MySQL karena beban kueri `WHERE IN` yang masif.
+
 # Session History - 26 Mei 2026
 
 ## Integrasi & Optimasi Unit Kerja

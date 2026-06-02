@@ -60,7 +60,7 @@ class CpanelApi
 
         // 5. Initialize client - Use fresh instance to avoid shared config issues
         $client = Services::curlrequest([
-            'timeout' => 300,
+            'timeout' => 1800,
             'http_errors' => false,
             'verify' => false, // cPanel often uses self-signed or internal CA
         ], null, null, false);

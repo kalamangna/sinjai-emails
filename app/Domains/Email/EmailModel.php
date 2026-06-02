@@ -93,48 +93,51 @@ class EmailModel extends Model
             return;
         }
 
-        $email_addresses = array_column($emails, 'email');
-        $existing_emails = $this->whereIn('email', $email_addresses)->findColumn('email') ?? [];
-        $existing_emails_map = array_flip($existing_emails);
+        // Process in chunks to avoid extremely large SQL queries
+        foreach (array_chunk($emails, 500) as $chunk) {
+            $email_addresses = array_column($chunk, 'email');
+            $existing_emails = $this->whereIn('email', $email_addresses)->findColumn('email') ?? [];
+            $existing_emails_map = array_flip($existing_emails);
 
-        $to_insert = [];
-        $to_update = [];
+            $to_insert = [];
+            $to_update = [];
 
-        foreach ($emails as $emailData) {
-            $data = [
-                'email' => $emailData['email'],
-                'domain' => $emailData['domain'] ?? null,
-                'mtime' => $emailData['mtime'] ?? null,
-                'suspended_login' => 0,
-                'diskquota' => $emailData['diskquota'] ?? null,
-                'humandiskquota' => $emailData['humandiskquota'] ?? null,
-                '_diskquota' => $emailData['_diskquota'] ?? null,
-                'diskused' => $emailData['diskused'] ?? null,
-                'humandiskused' => $emailData['humandiskused'] ?? null,
-                '_diskused' => $emailData['_diskused'] ?? null,
-                'diskusedpercent' => $emailData['diskusedpercent'] ?? null,
-                'diskusedpercent_float' => $emailData['diskusedpercent_float'] ?? null,
-                'user' => explode('@', $emailData['email'])[0] ?? null,
-            ];
+            foreach ($chunk as $emailData) {
+                $data = [
+                    'email' => $emailData['email'],
+                    'domain' => $emailData['domain'] ?? null,
+                    'mtime' => $emailData['mtime'] ?? null,
+                    'suspended_login' => 0,
+                    'diskquota' => $emailData['diskquota'] ?? null,
+                    'humandiskquota' => $emailData['humandiskquota'] ?? null,
+                    '_diskquota' => $emailData['_diskquota'] ?? null,
+                    'diskused' => $emailData['diskused'] ?? null,
+                    'humandiskused' => $emailData['humandiskused'] ?? null,
+                    '_diskused' => $emailData['_diskused'] ?? null,
+                    'diskusedpercent' => $emailData['diskusedpercent'] ?? null,
+                    'diskusedpercent_float' => $emailData['diskusedpercent_float'] ?? null,
+                    'user' => explode('@', $emailData['email'])[0] ?? null,
+                ];
 
-            if (isset($existing_emails_map[$emailData['email']])) {
-                // Don't update unit_kerja and password during sync
-                unset($data['unit_kerja']);
-                unset($data['password']);
-                unset($data['nik_nip']);
-                unset($data['name']);
-                $to_update[] = $data;
-            } else {
-                $to_insert[] = $data;
+                if (isset($existing_emails_map[$emailData['email']])) {
+                    // Don't update unit_kerja and password during sync
+                    unset($data['unit_kerja']);
+                    unset($data['password']);
+                    unset($data['nik_nip']);
+                    unset($data['name']);
+                    $to_update[] = $data;
+                } else {
+                    $to_insert[] = $data;
+                }
             }
-        }
 
-        if (!empty($to_insert)) {
-            $this->insertBatch($to_insert);
-        }
+            if (!empty($to_insert)) {
+                $this->insertBatch($to_insert);
+            }
 
-        if (!empty($to_update)) {
-            $this->updateBatch($to_update, 'email');
+            if (!empty($to_update)) {
+                $this->updateBatch($to_update, 'email');
+            }
         }
     }
 }
