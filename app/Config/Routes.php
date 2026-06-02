@@ -36,9 +36,14 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
 
         // Manajemen Email
         $routes->group('email', function ($routes) {
-            // View Routes (Admin & Super Admin)
-            $routes->get('/', '\App\Domains\Email\Email::index');
+        // View Routes (Admin & Super Admin)
+        $routes->get('/', '\App\Domains\Email\Email::index');
         $routes->get('detail/(:any)', '\App\Domains\Email\Email::detail/$1');
+        
+        // Trash Routes (Manajemen Sampah)
+        $routes->get('trash', '\App\Domains\Email\TrashController::index');
+        $routes->get('trash/restore/(:num)', '\App\Domains\Email\TrashController::restore/$1');
+        $routes->get('trash/force_delete/(:num)', '\App\Domains\Email\TrashController::forceDelete/$1');
         
         // List Routes
         $routes->get('unit_kerja', '\App\Domains\Email\EmailList::unit_kerja_list');

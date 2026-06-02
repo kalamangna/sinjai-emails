@@ -44,6 +44,8 @@ class EmailModel extends Model
         'pensiun_at',
     ];
     protected $useTimestamps = true;
+    protected $useSoftDeletes = true;
+    protected $deletedField  = 'deleted_at';
     protected $returnType = 'array';
     
     // Default columns to fetch for the email dashboard/detail
