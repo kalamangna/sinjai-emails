@@ -8,14 +8,16 @@ class AddApiUnitIdToUnitKerja extends Migration
 {
     public function up()
     {
-        $this->forge->addColumn('unit_kerja', [
-            'api_unit_id' => [
-                'type'       => 'VARCHAR',
-                'constraint' => 50,
-                'null'       => true,
-                'after'      => 'id',
-            ],
-        ]);
+        if (!$this->db->fieldExists('api_unit_id', 'unit_kerja')) {
+            $this->forge->addColumn('unit_kerja', [
+                'api_unit_id' => [
+                    'type'       => 'VARCHAR',
+                    'constraint' => 50,
+                    'null'       => true,
+                    'after'      => 'id',
+                ],
+            ]);
+        }
     }
 
     public function down()
