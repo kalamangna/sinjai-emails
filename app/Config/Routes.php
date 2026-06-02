@@ -178,6 +178,10 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         $routes->post('update/(:num)', '\App\Domains\Auth\UserManagement::update/$1');
         $routes->post('delete/(:num)', '\App\Domains\Auth\UserManagement::delete/$1');
     });
+
+    // Audit Logs (Super Admin Only)
+    $routes->get('audit_logs', '\App\Domains\Auth\AuditLogController::index', ['filter' => 'role:super_admin']);
+
     
     $routes->get('bsre/check-status', '\App\Domains\Email\Bsre::checkStatus');
     
