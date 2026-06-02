@@ -38,7 +38,7 @@
         $default_active = 'website';
     } elseif ($isActive('batch') || $isActive('batch/update') || $isActive('batch/pk')) {
         $default_active = 'batch';
-    } elseif ($isActive('unit_kerja/manage') || strpos($full_url, site_url('auth/users')) !== false) {
+    } elseif ($isActive('unit_kerja/manage') || strpos($full_url, site_url('auth/users')) !== false || $isActive('audit_logs')) {
         $default_active = 'master';
     }
     ?>
@@ -59,6 +59,14 @@
                 <i class="fas fa-envelope <?= $isActive('email') ? 'text-white' : 'text-slate-300' ?>"></i>
             </div>
             Email
+        </a>
+
+        <!-- Trash -->
+        <a href="<?= site_url('email/trash') ?>" data-sidebar-clear class="flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('email/trash') ? 'bg-slate-700 text-white shadow-lg shadow-slate-900/20' : 'text-slate-100 hover:bg-slate-700/80 hover:text-white' ?>">
+            <div class="w-5 h-5 flex items-center justify-center mr-3 shrink-0">
+                <i class="fas fa-trash-alt <?= $isActive('email/trash') ? 'text-white' : 'text-slate-300' ?>"></i>
+            </div>
+            Kotak Sampah
         </a>
 
         <!-- Pegawai Submenu -->
@@ -202,6 +210,9 @@
                     </a>
                     <a href="<?= site_url('auth/users') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('auth/users') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
                         User Login
+                    </a>
+                    <a href="<?= site_url('audit_logs') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('audit_logs') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
+                        Audit Trail
                     </a>
                 </div>
             </div>
