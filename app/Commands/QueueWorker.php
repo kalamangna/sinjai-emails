@@ -101,7 +101,7 @@ class QueueWorker extends BaseCommand
                 
                 // Simplified sync logic for worker
                 if (isset($source['pangkat_nama']) || isset($source['pangkat_golruang'])) {
-                    $emailModel->where('nip', $nip)->set([
+                    $emailModel->where('nip_hash', hash('sha256', $nip))->set([
                         'pangkat_nama' => $source['pangkat_nama'] ?? null,
                         'pangkat_golruang' => $source['pangkat_golruang'] ?? null
                     ])->update();

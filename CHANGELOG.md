@@ -14,9 +14,16 @@
     - Integrasi widget *real-time health check* pada Dashboard utama.
 - **Peningkatan Audit Trail**:
     - Penambahan ringkasan statistik aksi dan entitas pada halaman Audit Log untuk memudahkan pengawasan aktivitas sistem.
-- **Standarisasi UI & Perbaikan Metadata**:
+- **Standarisasi UI, SEO & Perbaikan Metadata**:
+    - Implementasi SEO Best Practices: Penambahan meta tag dinamis (title, description, robots, canonical URL) dan dukungan Open Graph/Twitter Card di seluruh halaman utama.
     - Penyesuaian meta title pada halaman Detail Unit Kerja agar konsisten dengan struktur navigasi global.
     - Pembersihan kode korup dan perbaikan logika penghapusan otomatis data pensiun yang telah melewati batas 30 hari.
+- **Perbaikan Bug Kritis & Refactoring**:
+    - **Optimasi Verifikasi Publik**: Migrasi kueri verifikasi identitas ke *Blind Index* (`nik_hash`) untuk performa maksimal (O(1)) dan memperbaiki rute `/verifikasi` yang sebelumnya tidak berfungsi.
+    - **Fix Encrypted Queries**: Memperbaiki semua kueri pencarian identitas di `EmailApi`, `User`, dan `QueueWorker` agar menggunakan hash untuk mendukung data yang terenkripsi.
+    - **Integrasi Transaksi Database**: Implementasi `transStart()` pada pembaruan profil untuk menjamin integritas data antara cPanel dan database lokal.
+    - **Keamanan AJAX**: Penambahan proteksi CSRF pada semua operasi sinkronisasi massal berbasis AJAX.
+    - **Soft Delete Fix**: Memperbaiki kegagalan pemulihan (*restore*) akun dari sampah dengan akses langsung ke query builder.
 
 # Session History - 3 Juni 2026
 

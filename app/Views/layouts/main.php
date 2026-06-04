@@ -4,16 +4,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="robots" content="noindex, nofollow">
+    <meta name="robots" content="<?= $meta_robots ?? 'noindex, nofollow' ?>">
     <title><?= $title ?? 'Dashboard' ?> | Sistem Identitas Digital</title>
 
+    <meta name="description" content="<?= $meta_description ?? 'Portal Manajemen Identitas Digital & Sertifikat Elektronik Pemerintah Kabupaten Sinjai' ?>">
+    <link rel="canonical" href="<?= current_url() ?>">
+
     <!-- Meta Tags -->
+    <meta property="og:site_name" content="Sistem Identitas Digital Sinjai">
     <meta property="og:title" content="<?= $title ?? 'Dashboard' ?> | Sistem Identitas Digital">
-    <meta property="og:description" content="Portal Manajemen Identitas Digital & Sertifikat Elektronik Pemerintah Kabupaten Sinjai">
-    <meta property="og:image" content="<?= base_url('og-image.png') ?>">
-    <meta property="og:type" content="website">
+    <meta property="og:description" content="<?= $meta_description ?? 'Portal Manajemen Identitas Digital & Sertifikat Elektronik Pemerintah Kabupaten Sinjai' ?>">
+    <meta property="og:url" content="<?= current_url() ?>">
+    <meta property="og:image" content="<?= $meta_image ?? base_url('og-image.png') ?>">
+    <meta property="og:type" content="<?= $meta_type ?? 'website' ?>">
+    
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content="<?= base_url('og-image.png') ?>">
+    <meta name="twitter:title" content="<?= $title ?? 'Dashboard' ?> | Sistem Identitas Digital">
+    <meta name="twitter:description" content="<?= $meta_description ?? 'Portal Manajemen Identitas Digital & Sertifikat Elektronik Pemerintah Kabupaten Sinjai' ?>">
+    <meta name="twitter:image" content="<?= $meta_image ?? base_url('og-image.png') ?>">
 
     <link rel="icon" type="image/png" href="<?= base_url('logo.png') ?>">
 

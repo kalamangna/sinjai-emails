@@ -71,10 +71,8 @@ class Email extends BaseController
             $data['title'] = 'Detail Akun';
             $data['back_url'] = site_url('email');
 
-            // Add secure hash for public verification based on NIK
-            $data['verification_hash'] = !empty($data['email']['nik']) 
-                ? md5($data['email']['nik'] . 'sinjai_secure_salt') 
-                : null;
+            // Add secure hash for public verification based on NIK blind index
+            $data['verification_hash'] = $data['email']['nik_hash'] ?? null;
 
             $appSettingModel = new \App\Shared\Models\AppSettingModel();
             $last_sync_tte = $appSettingModel->where('key', 'last_sync_tte')->first();
@@ -114,49 +112,137 @@ class Email extends BaseController
         }
     }
 
-    public function update_details($username)
+    public function mark_pensiun($username)
     {
         try {
+            $email = $this->emailModel->select('emails.*, unit_kerja.nama_unit_kerja as unit_kerja_name')
+                                      ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
+                                      ->where('emails.user', $username)
+                                      ->first();
+            if (!$email) {
+                throw new \Exception("Akun email tidak ditemukan.");
+            }
+
+            $cpanelApi = new \App\Shared\Libraries\CpanelApi();
+            
+            // 1. Suspend in cPanel
+            $cpanelApi->suspend_email_login($email['email']);
+
+            // 2. Update DB: Set suspended and clear employee data
+            $this->emailModel->update($email['id'], [
+                'suspended_login' => 1,
+                'pensiun_at' => date('Y-m-d H:i:s'),
+                'unit_kerja_id' => null,
+                'nik' => null,
+                'nip' => null,
+                'jabatan' => null,
+                'golongan' => null,
+                'pangkat_golruang' => null,
+                'pangkat_nama' => null,
+                'status_asn_id' => null,
+                'eselon_id' => null,
+                'bsre_status' => null,
+                'pimpinan' => 0,
+                'pimpinan_desa' => 0,
+                'gelar_depan' => null,
+                'gelar_belakang' => null,
+                'tempat_lahir' => null,
+                'tanggal_lahir' => null,
+                'pendidikan' => null
+            ]);
+
+            $this->clearEmailCaches();
+
+            // 3. Send Telegram Notification
+            try {
+                $telegram = new TelegramLibrary();
+                $msg = "🚪 <b>PEMBERSIHAN AKUN (MANUAL)</b>\n";
+                $msg .= "Seorang pegawai telah ditandai sebagai <b>PENSIUN</b> oleh Admin:\n";
+                $msg .= "------------------------------------------\n\n";
+                $msg .= "👤 " . ($email['name'] ?: '-') . " (" . ($email['nip'] ?: '-') . ")\n";
+                $msg .= "🏛️ " . ($email['unit_kerja_name'] ?? '-') . "\n";
+                $msg .= "📧 " . $email['email'] . "\n\n";
+                $msg .= "⚠️ <i>Akses login ditangguhkan. Akun akan dihapus permanen dalam 30 hari.</i>";
+                $telegram->sendMessage($msg);
+            } catch (\Throwable $te) {
+                log_message('error', 'Failed to send Telegram notification for retirement: ' . $te->getMessage());
+            }
+
+            return redirect()->to('email/detail/' . $username)->with('success', 'Akun telah ditandai sebagai Pensiun. Data pegawai telah dihapus, akses login ditangguhkan, dan akun akan dihapus permanen dalam 30 hari.');
+            
+        } catch (\Throwable $e) {
+            return redirect()->to('email/detail/' . $username)->with('error', 'Gagal memproses pensiun: ' . $e->getMessage());
+        }
+    }
+
+    public function update_details($username)
+    {
+        if (strtolower($this->request->getMethod()) !== 'post') {
+            return redirect()->to('email/detail/' . $username)->with('error', 'Metode permintaan tidak valid.');
+        }
+
+        $newEmail = $this->request->getPost('email');
+        $emailParts = explode('@', $newEmail);
+        $newUser = $emailParts[0];
+
+        $profileData = [
+            'name' => $this->request->getPost('name'),
+            'gelar_depan' => $this->request->getPost('gelar_depan'),
+            'gelar_belakang' => $this->request->getPost('gelar_belakang'),
+            'nik' => $this->request->getPost('nik'),
+            'nip' => $this->request->getPost('nip'),
+            'tempat_lahir' => $this->request->getPost('tempat_lahir'),
+            'pendidikan' => $this->request->getPost('pendidikan'),
+            'jabatan' => mb_strtoupper($this->request->getPost('jabatan'), 'UTF-8'),
+            'golongan' => $this->request->getPost('golongan'),
+            'pangkat_golruang' => $this->request->getPost('pangkat_golruang'),
+            'pangkat_nama' => $this->request->getPost('pangkat_nama'),
+            'status_asn_id' => $this->request->getPost('status_asn') ?: null,
+            'eselon_id' => $this->request->getPost('eselon') ?: null,
+            'unit_kerja_id' => $this->request->getPost('unit_kerja_id') ?: null,
+            'pimpinan' => $this->request->getPost('pimpinan'),
+            'pimpinan_desa' => $this->request->getPost('pimpinan_desa'),
+            'tanggal_lahir' => $this->request->getPost('tanggal_lahir') ?: null,
+            'user' => $newUser,
+            'email' => $newEmail
+        ];
+
+        $db = \Config\Database::connect();
+        $db->transStart();
+
+        try {
             $sourceRecord = $this->emailModel->where('user', $username)->first();
-            if (!$sourceRecord) throw new Exception('Account not found.');
+            if (!$sourceRecord) throw new \Exception("Akun asal tidak ditemukan.");
 
-            $newUser = $this->request->getPost('user');
-            $profileData = [
-                'name' => $this->request->getPost('name'),
-                'nik' => $this->request->getPost('nik'),
-                'nip' => $this->request->getPost('nip'),
-                'user' => $newUser,
-                'email' => $newUser . '@sinjaikab.go.id',
-                'jabatan' => $this->request->getPost('jabatan'),
-                'unit_kerja_id' => $this->request->getPost('unit_kerja_id'),
-                'status_asn_id' => $this->request->getPost('status_asn_id'),
-                'eselon_id' => $this->request->getPost('eselon_id') ?: null,
-                'pimpinan' => $this->request->getPost('pimpinan') ?? 0,
-                'pimpinan_desa' => $this->request->getPost('pimpinan_desa') ?? 0,
-            ];
-
-            // 1. If username changed, update in cPanel first
+            // 1. Handle username change in cPanel if needed
             if ($newUser !== $username) {
                 $cpanelApi = new \App\Shared\Libraries\CpanelApi();
                 $result = $cpanelApi->rename_email_account($username . '@sinjaikab.go.id', $newUser);
                 if (!$result['success']) {
-                    return redirect()->back()->withInput()->with('error', 'Gagal mengubah username di cPanel: ' . $result['message']);
+                    throw new \Exception('Gagal mengubah username di cPanel: ' . $result['message']);
                 }
             }
 
-            // 2. Update all records with this NIP (including source)
+            // 2. Update all records with this NIP hash (including source)
             if (!empty($profileData['nip'])) {
-                $this->emailModel->where('nip', $profileData['nip'])->set($profileData)->update();
+                $this->emailModel->where('nip_hash', hash('sha256', $profileData['nip']))->set($profileData)->update();
             } else {
                 $this->emailModel->update($sourceRecord['id'], $profileData);
+            }
+
+            $db->transComplete();
+
+            if ($db->transStatus() === false) {
+                throw new \Exception('Gagal menyimpan data ke database.');
             }
 
             $this->clearEmailCaches();
 
             return redirect()->to('email/detail/' . $newUser)->with('success', 'Data profil berhasil diperbarui.');
         } catch (\Throwable $e) {
-            log_message('error', 'Database error during email details update: ' . $e->getMessage());
-            return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
+            $db->transRollback();
+            log_message('error', 'Update error for ' . $username . ': ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Gagal memperbarui data: ' . $e->getMessage());
         }
     }
 
@@ -229,34 +315,31 @@ class Email extends BaseController
         }
     }
 
-    public function mark_pensiun($username)
+    public function profile($hash)
     {
         try {
-            $email = $this->emailModel->where('user', $username)->first();
-            if (!$email) throw new Exception('Account not found.');
+            // Optimization: Directly query by nik_hash (blind index)
+            $email = $this->emailModel->where('nik_hash', $hash)
+                                      ->where('bsre_status', 'ISSUE')
+                                      ->first();
 
-            // 1. Suspend in cPanel
-            $cpanelApi = new \App\Shared\Libraries\CpanelApi();
-            $suspendResult = $cpanelApi->suspend_email_account($email['email']);
-
-            if (!$suspendResult['success']) {
-                throw new Exception('Gagal menangguhkan akun di cPanel: ' . $suspendResult['message']);
+            if (!$email) {
+                throw new \Exception('Data identitas tidak ditemukan atau tidak valid.');
             }
 
-            // 2. Mark as retired and suspended in DB
-            $this->emailModel->update($email['id'], [
-                'pensiun_at' => date('Y-m-d H:i:s'),
-                'suspended_login' => 1
-            ]);
+            $data = $this->emailService->getEmailDetail($email['user']);
+            $data['title'] = 'Verifikasi Akun';
+            
+            // SEO for Public Profile
+            $data['meta_robots'] = 'noindex, follow'; 
+            $data['meta_description'] = 'Verifikasi Identitas Digital Pegawai: ' . $data['email']['name'] . ' - ' . $data['email']['jabatan'];
+            $data['meta_type'] = 'profile';
 
-            $this->clearEmailCaches();
-
-            helper('audit');
-            log_audit('MARK_PENSIUN', 'Email', $email['id'], 'Account marked as retired and suspended: ' . $email['email']);
-
-            return redirect()->to('email/detail/' . $username)->with('success', 'Akun berhasil ditandai sebagai Pensiun dan telah ditangguhkan.');
+            return view('email/verifikasi', $data);
         } catch (\Throwable $e) {
-            return redirect()->back()->with('error', $e->getMessage());
+            $data['error'] = $e->getMessage();
+            $data['title'] = 'Error Verifikasi';
+            return view('email/error', $data);
         }
     }
 

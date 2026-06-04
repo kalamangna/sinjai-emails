@@ -24,7 +24,9 @@ class TrashController extends BaseController
     public function restore($id)
     {
         $emailModel = new EmailModel();
-        $emailModel->update($id, ['deleted_at' => null]);
+        
+        // Fix: Use direct query builder to bypass global soft delete scope
+        $emailModel->builder()->set('deleted_at', null)->where('id', $id)->update();
         
         helper('audit');
         log_audit('RESTORE', 'Email', $id, 'Restored email from trash');

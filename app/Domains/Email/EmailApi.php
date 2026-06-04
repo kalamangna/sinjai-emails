@@ -259,7 +259,7 @@ class EmailApi extends BaseController
         $currentEmail = $this->emailModel
             ->select('emails.*, unit_kerja.nama_unit_kerja')
             ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
-            ->where('emails.nip', $nip)
+            ->where('emails.nip_hash', hash('sha256', $nip))
             ->first();
 
         if ($currentEmail) {
@@ -357,8 +357,8 @@ class EmailApi extends BaseController
             }
 
             if (!empty($updateData)) {
-                // Update all emails with this NIP
-                $this->emailModel->where('nip', $nip)->set($updateData)->update();
+                // Update all emails with this NIP hash
+                $this->emailModel->where('nip_hash', hash('sha256', $nip))->set($updateData)->update();
                 
                 // Clear Dashboard Cache
                 $cache = \Config\Services::cache();

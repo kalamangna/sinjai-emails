@@ -57,7 +57,7 @@ class EmailBatchService
             if ($mode === 'email') {
                 $emailRecord = $this->emailModel->where('email', $identifier)->first();
             } else {
-                $emailRecord = $this->emailModel->where('nik', $identifier)->first();
+                $emailRecord = $this->emailModel->where('nik_hash', hash('sha256', $identifier))->first();
             }
 
             if (!$emailRecord) {
@@ -199,7 +199,22 @@ class EmailBatchService
         }, $data));
 
         $existing_emails = $this->emailModel->whereIn('email', $emails)->findColumn('email') ?? [];
-        $existing_niks = !empty($niks) ? ($this->emailModel->whereIn('nik', $niks)->findColumn('nik') ?? []) : [];
+        
+        $existing_niks = [];
+        if (!empty($niks)) {
+            $nikHashes = array_map(fn($n) => hash('sha256', $n), $niks);
+            $existing_nik_hashes = $this->emailModel->whereIn('nik_hash', $nikHashes)->findColumn('nik_hash') ?? [];
+            if (!empty($existing_nik_hashes)) {
+                // For error message reporting, we'd ideally show the plain NIKs
+                // We'll just collect which input NIKs are already hashed in the DB
+                $hashesMap = array_flip($existing_nik_hashes);
+                foreach ($niks as $nik) {
+                    if (isset($hashesMap[hash('sha256', $nik)])) {
+                        $existing_niks[] = $nik;
+                    }
+                }
+            }
+        }
 
         if (!empty($existing_emails) || !empty($existing_niks)) {
             $errors = [];

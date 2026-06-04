@@ -170,6 +170,7 @@ class Home extends BaseController
                 'last_sync_pegawai' => $sync_map['last_sync_pegawai'] ?? null,
                 'last_sync_website' => $sync_map['last_sync_website'] ?? null,
                 'title' => 'Dashboard',
+                'meta_description' => 'Ringkasan Statistik Identitas Digital, Sertifikat Elektronik, dan Pemantauan Website Pemerintah Kabupaten Sinjai.',
             ];
 
             // Cache for 10 minutes (600 seconds)
