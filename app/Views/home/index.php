@@ -15,44 +15,70 @@
     </div>
 
     <!-- Status Sinkronisasi & Health Check -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="lg:col-span-2 bg-slate-50 border border-slate-200 rounded-lg p-4">
-            <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-3">Terakhir Sinkronisasi</h3>
-            <div class="flex flex-wrap gap-x-8 gap-y-4">
-                <div class="flex items-center">
-                    <div class="w-2 h-2 rounded-full bg-emerald-500 mr-2 shrink-0"></div>
-                    <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                        cPanel: <span class="text-slate-700 ml-1"><?= !empty($last_sync_time) ? formatTanggalWaktu($last_sync_time) : '-' ?></span>
-                    </p>
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Card Terakhir Sinkronisasi -->
+        <div class="lg:col-span-8 bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
+            <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+                <h3 class="text-[10px] font-bold text-slate-800 uppercase tracking-[0.2em]">Terakhir Sinkronisasi</h3>
+                <i class="fas fa-history text-slate-400 text-xs"></i>
+            </div>
+            <div class="p-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div class="flex items-center gap-4 p-3 bg-slate-50 border border-slate-100 rounded-xl transition-all hover:bg-slate-100/50">
+                    <div class="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-lg flex items-center justify-center shrink-0">
+                        <i class="fas fa-server"></i>
+                    </div>
+                    <div>
+                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">cPanel Storage</p>
+                        <p class="text-xs font-bold text-slate-700"><?= !empty($last_sync_time) ? formatTanggalWaktu($last_sync_time) : '-' ?></p>
+                    </div>
                 </div>
-                <div class="flex items-center">
-                    <div class="w-2 h-2 rounded-full bg-blue-500 mr-2 shrink-0"></div>
-                    <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                        TTE: <span class="text-slate-700 ml-1"><?= !empty($last_sync_tte) ? formatTanggalWaktu($last_sync_tte) : '-' ?></span>
-                    </p>
+
+                <div class="flex items-center gap-4 p-3 bg-slate-50 border border-slate-100 rounded-xl transition-all hover:bg-slate-100/50">
+                    <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center shrink-0">
+                        <i class="fas fa-fingerprint"></i>
+                    </div>
+                    <div>
+                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Status Sertifikat (TTE)</p>
+                        <p class="text-xs font-bold text-slate-700"><?= !empty($last_sync_tte) ? formatTanggalWaktu($last_sync_tte) : '-' ?></p>
+                    </div>
                 </div>
-                <div class="flex items-center">
-                    <div class="w-2 h-2 rounded-full bg-indigo-500 mr-2 shrink-0"></div>
-                    <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                        Pegawai: <span class="text-slate-700 ml-1"><?= !empty($last_sync_pegawai) ? formatTanggalWaktu($last_sync_pegawai) : '-' ?></span>
-                    </p>
+
+                <div class="flex items-center gap-4 p-3 bg-slate-50 border border-slate-100 rounded-xl transition-all hover:bg-slate-100/50">
+                    <div class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center shrink-0">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <div>
+                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Data Pegawai API</p>
+                        <p class="text-xs font-bold text-slate-700"><?= !empty($last_sync_pegawai) ? formatTanggalWaktu($last_sync_pegawai) : '-' ?></p>
+                    </div>
                 </div>
-                <div class="flex items-center">
-                    <div class="w-2 h-2 rounded-full bg-slate-400 mr-2 shrink-0"></div>
-                    <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                        Website: <span class="text-slate-700 ml-1"><?= !empty($last_sync_website) ? formatTanggalWaktu($last_sync_website) : '-' ?></span>
-                    </p>
+
+                <div class="flex items-center gap-4 p-3 bg-slate-50 border border-slate-100 rounded-xl transition-all hover:bg-slate-100/50">
+                    <div class="w-10 h-10 bg-slate-200 text-slate-600 rounded-lg flex items-center justify-center shrink-0">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <div>
+                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Monitoring Website</p>
+                        <p class="text-xs font-bold text-slate-700"><?= !empty($last_sync_website) ? formatTanggalWaktu($last_sync_website) : '-' ?></p>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="bg-white border border-slate-200 rounded-lg p-4 shadow-sm">
-            <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-3">Layanan Eksternal</h3>
-            <div id="healthCheckContent" class="space-y-3">
-                <div class="animate-pulse flex space-x-4">
-                    <div class="flex-1 space-y-2 py-1">
-                        <div class="h-2 bg-slate-100 rounded"></div>
-                        <div class="h-2 bg-slate-100 rounded w-5/6"></div>
-                    </div>
+
+        <!-- Card Layanan Eksternal -->
+        <div class="lg:col-span-4 bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
+            <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+                <h3 class="text-[10px] font-bold text-slate-800 uppercase tracking-[0.2em]">Layanan Eksternal</h3>
+                <i class="fas fa-plug text-slate-400 text-xs"></i>
+            </div>
+            <div id="healthCheckContent" class="p-6 space-y-4 flex-grow">
+                <div class="animate-pulse space-y-4">
+                    <?php for($i=0; $i<3; $i++): ?>
+                        <div class="flex justify-between items-center">
+                            <div class="h-2 bg-slate-100 rounded w-24"></div>
+                            <div class="h-4 bg-slate-50 rounded w-16"></div>
+                        </div>
+                    <?php endfor; ?>
                 </div>
             </div>
         </div>
@@ -274,15 +300,17 @@
                 ];
                 
                 services.forEach(service => {
-                    const status = data[service.key].status === 'UP' ? 'bg-emerald-500' : 'bg-red-500';
-                    const text = data[service.key].status === 'UP' ? 'Online' : 'Offline';
+                    const isUp = data[service.key].status === 'UP';
+                    const bgStatus = isUp ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-red-50 text-red-600 border-red-100';
+                    const dotStatus = isUp ? 'bg-emerald-500' : 'bg-red-500';
+                    const text = isUp ? 'Online' : 'Offline';
                     
                     const html = `
-                        <div class="flex items-center justify-between">
+                        <div class="flex items-center justify-between p-2 rounded-lg border border-transparent hover:border-slate-50 transition-colors">
                             <span class="text-[10px] font-bold text-slate-600 uppercase tracking-tight">${service.label}</span>
-                            <div class="flex items-center">
-                                <span class="text-[9px] font-bold text-slate-400 uppercase mr-2">${text}</span>
-                                <div class="w-2 h-2 rounded-full ${status}"></div>
+                            <div class="flex items-center px-2 py-0.5 rounded-full border ${bgStatus}">
+                                <div class="w-1 h-1 rounded-full ${dotStatus} mr-1.5 animate-pulse"></div>
+                                <span class="text-[8px] font-bold uppercase tracking-widest">${text}</span>
                             </div>
                         </div>
                     `;
@@ -290,7 +318,7 @@
                 });
             })
             .catch(error => {
-                document.getElementById('healthCheckContent').innerHTML = '<p class="text-[9px] text-red-500 font-bold uppercase">Gagal memuat status layanan</p>';
+                document.getElementById('healthCheckContent').innerHTML = '<div class="flex items-center justify-center h-full"><p class="text-[9px] text-red-500 font-bold uppercase">Gagal memuat status layanan</p></div>';
             });
     });
 </script>
