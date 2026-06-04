@@ -65,12 +65,16 @@ class EmailApi extends BaseController
         $builder->whereIn('emails.status_asn_id', $allowedStatusIds);
 
         if ($search) {
-            $builder->groupStart()
-                ->like('email', $search)
-                ->orLike('name', $search)
-                ->orLike('nik', $search)
-                ->orLike('nip', $search)
-                ->groupEnd();
+            $builder->groupStart();
+            if (is_numeric($search) && (strlen($search) >= 10)) {
+                $hash = hash('sha256', $search);
+                $builder->where('nik_hash', $hash)
+                        ->orWhere('nip_hash', $hash);
+            } else {
+                $builder->like('email', $search)
+                        ->orLike('name', $search);
+            }
+            $builder->groupEnd();
         }
 
         if ($bsre_status) {
@@ -205,6 +209,12 @@ class EmailApi extends BaseController
 
         try {
             $email = $this->emailService->createSingleEmail($data);
+            
+            // Clear Dashboard Cache
+            $cache = \Config\Services::cache();
+            $cache->delete('dashboard_summary_data_v3');
+            $cache->delete('email_dashboard_summary');
+
             return $this->response->setJSON(['success' => true, 'email' => $data['email']]);
         } catch (\Throwable $e) {
             return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => $e->getMessage()]);
@@ -218,17 +228,22 @@ class EmailApi extends BaseController
             return $this->response->setJSON([]);
         }
 
-        $results = $this->emailModel
+        $builder = $this->emailModel
             ->select('emails.email, emails.name, emails.user, emails.nik, emails.nip, unit_kerja.nama_unit_kerja as unit_kerja_name')
-            ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
-            ->groupStart()
-                ->like('emails.email', $q)
-                ->orLike('emails.name', $q)
-                ->orLike('emails.nik', $q)
-                ->orLike('emails.nip', $q)
-            ->groupEnd()
-            ->limit(10)
-            ->findAll();
+            ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left');
+
+        $builder->groupStart();
+        if (is_numeric($q) && (strlen($q) >= 10)) {
+            $hash = hash('sha256', $q);
+            $builder->where('emails.nik_hash', $hash)
+                    ->orWhere('emails.nip_hash', $hash);
+        } else {
+            $builder->like('emails.email', $q)
+                    ->orLike('emails.name', $q);
+        }
+        $builder->groupEnd();
+
+        $results = $builder->limit(10)->findAll();
 
         return $this->response->setJSON($results);
     }
@@ -345,6 +360,11 @@ class EmailApi extends BaseController
                 // Update all emails with this NIP
                 $this->emailModel->where('nip', $nip)->set($updateData)->update();
                 
+                // Clear Dashboard Cache
+                $cache = \Config\Services::cache();
+                $cache->delete('dashboard_summary_data_v3');
+                $cache->delete('email_dashboard_summary');
+
                 // For response feedback, if pimpinan, ensure we return the OLD jabatan
                 $responseData = $updateData;
                 if ($isPimpinan) {

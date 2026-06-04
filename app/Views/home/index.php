@@ -14,32 +14,46 @@
         </div>
     </div>
 
-    <!-- Status Sinkronisasi -->
-    <div class="bg-slate-50 border border-slate-200 rounded-lg p-4">
-        <div class="flex flex-wrap gap-x-8 gap-y-2">
-            <div class="flex items-center">
-                <div class="w-2 h-2 rounded-full bg-emerald-500 mr-2 shrink-0"></div>
-                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                    cPanel: <span class="text-slate-700 ml-1"><?= !empty($last_sync_time) ? formatTanggalWaktu($last_sync_time) : '-' ?></span>
-                </p>
+    <!-- Status Sinkronisasi & Health Check -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 bg-slate-50 border border-slate-200 rounded-lg p-4">
+            <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-3">Terakhir Sinkronisasi</h3>
+            <div class="flex flex-wrap gap-x-8 gap-y-4">
+                <div class="flex items-center">
+                    <div class="w-2 h-2 rounded-full bg-emerald-500 mr-2 shrink-0"></div>
+                    <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                        cPanel: <span class="text-slate-700 ml-1"><?= !empty($last_sync_time) ? formatTanggalWaktu($last_sync_time) : '-' ?></span>
+                    </p>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-2 h-2 rounded-full bg-blue-500 mr-2 shrink-0"></div>
+                    <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                        TTE: <span class="text-slate-700 ml-1"><?= !empty($last_sync_tte) ? formatTanggalWaktu($last_sync_tte) : '-' ?></span>
+                    </p>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-2 h-2 rounded-full bg-indigo-500 mr-2 shrink-0"></div>
+                    <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                        Pegawai: <span class="text-slate-700 ml-1"><?= !empty($last_sync_pegawai) ? formatTanggalWaktu($last_sync_pegawai) : '-' ?></span>
+                    </p>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-2 h-2 rounded-full bg-slate-400 mr-2 shrink-0"></div>
+                    <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                        Website: <span class="text-slate-700 ml-1"><?= !empty($last_sync_website) ? formatTanggalWaktu($last_sync_website) : '-' ?></span>
+                    </p>
+                </div>
             </div>
-            <div class="flex items-center">
-                <div class="w-2 h-2 rounded-full bg-blue-500 mr-2 shrink-0"></div>
-                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                    TTE: <span class="text-slate-700 ml-1"><?= !empty($last_sync_tte) ? formatTanggalWaktu($last_sync_tte) : '-' ?></span>
-                </p>
-            </div>
-            <div class="flex items-center">
-                <div class="w-2 h-2 rounded-full bg-indigo-500 mr-2 shrink-0"></div>
-                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                    Pegawai: <span class="text-slate-700 ml-1"><?= !empty($last_sync_pegawai) ? formatTanggalWaktu($last_sync_pegawai) : '-' ?></span>
-                </p>
-            </div>
-            <div class="flex items-center">
-                <div class="w-2 h-2 rounded-full bg-slate-400 mr-2 shrink-0"></div>
-                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                    Website: <span class="text-slate-700 ml-1"><?= !empty($last_sync_website) ? formatTanggalWaktu($last_sync_website) : '-' ?></span>
-                </p>
+        </div>
+        <div class="bg-white border border-slate-200 rounded-lg p-4 shadow-sm">
+            <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-3">Layanan Eksternal</h3>
+            <div id="healthCheckContent" class="space-y-3">
+                <div class="animate-pulse flex space-x-4">
+                    <div class="flex-1 space-y-2 py-1">
+                        <div class="h-2 bg-slate-100 rounded"></div>
+                        <div class="h-2 bg-slate-100 rounded w-5/6"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -245,6 +259,39 @@
             labels: asnStats.map(s => s.label),
             colors: asnColors
         }).render();
+
+        // Health Check Sync
+        fetch('<?= site_url('api/health-check') ?>')
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('healthCheckContent');
+                container.innerHTML = '';
+                
+                const services = [
+                    { key: 'cpanel', label: 'cPanel UAPI' },
+                    { key: 'bsre', label: 'BSrE Status API' },
+                    { key: 'pegawai', label: 'Pegawai API' }
+                ];
+                
+                services.forEach(service => {
+                    const status = data[service.key].status === 'UP' ? 'bg-emerald-500' : 'bg-red-500';
+                    const text = data[service.key].status === 'UP' ? 'Online' : 'Offline';
+                    
+                    const html = `
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px] font-bold text-slate-600 uppercase tracking-tight">${service.label}</span>
+                            <div class="flex items-center">
+                                <span class="text-[9px] font-bold text-slate-400 uppercase mr-2">${text}</span>
+                                <div class="w-2 h-2 rounded-full ${status}"></div>
+                            </div>
+                        </div>
+                    `;
+                    container.insertAdjacentHTML('beforeend', html);
+                });
+            })
+            .catch(error => {
+                document.getElementById('healthCheckContent').innerHTML = '<p class="text-[9px] text-red-500 font-bold uppercase">Gagal memuat status layanan</p>';
+            });
     });
 </script>
 <?= $this->endSection() ?>

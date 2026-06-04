@@ -182,6 +182,9 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
     // Audit Logs (Super Admin Only)
     $routes->get('audit_logs', '\App\Domains\Auth\AuditLogController::index', ['filter' => 'role:super_admin']);
 
+    // Health Check (Admin & Super Admin)
+    $routes->get('api/health-check', '\App\Domains\Api\GatewayController::healthCheck', ['filter' => 'role:admin,super_admin']);
+
     
     $routes->get('bsre/check-status', '\App\Domains\Email\Bsre::checkStatus');
     

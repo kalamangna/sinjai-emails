@@ -28,7 +28,9 @@ Aplikasi ini menerapkan standar estetika **"Slate Clean Government"**—antarmuk
 - **Pembersihan Nama Cerdas:** Otomatisasi pembersihan tanda baca, perbaikan format nama yang terpisah spasi (spaced-out), dan standarisasi casing.
 - **Handler Terpadu:** Template khusus untuk **Batch Create**, **Batch Update**, dan **Batch PK** dengan deteksi perubahan data untuk optimasi database.
 
-### 🤖 Notifikasi & Otomatisasi
+### 🤖 Antrean Tugas & Otomatisasi
+- **Background Queue:** Migrasi proses sinkronisasi berat (cPanel, TTE, Pegawai) ke sistem antrean latar belakang menggunakan `JobModel` untuk performa server yang lebih stabil.
+- **Worker Command:** Penambahan perintah Spark `queue:work` untuk memproses antrean secara efisien.
 - **Laporan Telegram:** Pengiriman ringkasan statistik sinkronisasi secara otomatis ke Channel Telegram.
 - **Alert Kuota Email:** Notifikasi instan via Telegram jika terdapat akun dengan penggunaan penyimpanan di atas 90%, lengkap dengan detail data pengguna dan unit kerja.
 - **Alert TTE Expired:** Peringatan otomatis melalui Telegram untuk akun dengan status sertifikat elektronik yang kadaluwarsa, disertai detail identitas lengkap.
@@ -40,6 +42,7 @@ Aplikasi ini menerapkan standar estetika **"Slate Clean Government"**—antarmuk
 
 ### 🌐 API Gateway (v1)
 Penyediaan data internal yang aman untuk integrasi lintas sektoral di Pemkab Sinjai:
+- **Health Check API:** Titik akhir internal untuk memantau konektivitas layanan eksternal (cPanel, BSrE, Pegawai API) secara real-time.
 - **Endpoints:** `/api/v1/emails`, `/api/v1/pns`, `/api/v1/pppk`, `/api/v1/pppk-pw`, `/api/v1/unit/{id}`.
 - **Data Terintegrasi:** Sertifikasi `api_unit_id` (External ID) pada setiap record untuk sinkronisasi lintas platform yang presisi.
 - **Keamanan:** Mendukung *Bearer Token* dan *Session-based Access* (untuk pengguna terdaftar).
@@ -71,6 +74,8 @@ Proyek ini menggunakan pendekatan **Domain-Driven Design (DDD)** di dalam direkt
 
 ## 🔒 Keamanan & RBAC
 
+- **Enkripsi Data Sensitif:** Penggunaan **AES-256** untuk mengenkripsi data identitas (NIK, NIP) dan password di database.
+- **Blind Index:** Implementasi indexing berbasis hash untuk pencarian data terenkripsi secara efisien tanpa menurunkan level keamanan.
 - **Super Admin:** Akses sistem penuh, Master Data (Unit Kerja), Log Layanan, dan operasi destruktif.
 - **Admin:** Manajemen operasional, Mutasi Akun, Operasi Batch, dan Monitoring Website.
 - **Privasi Data:** Penegakan meta tag `noindex, nofollow` global dan hash verifikasi publik yang aman.

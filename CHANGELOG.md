@@ -1,3 +1,23 @@
+# Session History - 4 Juni 2026
+
+## Keamanan Data, Antrean Tugas, & Pemantauan Sistem
+- **Enkripsi Data Sensitif & Blind Index**:
+    - Implementasi enkripsi dua arah (AES-256) untuk kolom `nik`, `nip`, dan `password` di `EmailModel.php`.
+    - Menambahkan fitur *Blind Index* (Hashing SHA-256) pada kolom `nik_hash` dan `nip_hash` untuk memungkinkan pencarian data sensitif secara cepat tanpa perlu mendekripsi seluruh database.
+    - Migrasi kueri pencarian pada `EmailService` dan `EmailApi` untuk menggunakan hash guna meningkatkan performa dan keamanan.
+- **Sistem Antrean (Job Queue)**:
+    - Migrasi sinkronisasi berat (cPanel, TTE Status, dan Data Pegawai) dari proses sinkron menjadi berbasis antrean (*Queued Jobs*).
+    - Penambahan `JobModel` dan tabel `jobs` untuk manajemen antrean tugas latar belakang.
+    - Pembaruan `SyncAllCommand.php` untuk mendispatch tugas ke antrean dalam bentuk *chunk* kecil guna mencegah beban server berlebih.
+- **Pemantauan Kesehatan Sistem (Health Check)**:
+    - Penambahan `SystemHealthService` untuk memantau status konektivitas layanan eksternal (cPanel UAPI, BSrE API, dan Pegawai API).
+    - Integrasi widget *real-time health check* pada Dashboard utama.
+- **Peningkatan Audit Trail**:
+    - Penambahan ringkasan statistik aksi dan entitas pada halaman Audit Log untuk memudahkan pengawasan aktivitas sistem.
+- **Standarisasi UI & Perbaikan Metadata**:
+    - Penyesuaian meta title pada halaman Detail Unit Kerja agar konsisten dengan struktur navigasi global.
+    - Pembersihan kode korup dan perbaikan logika penghapusan otomatis data pensiun yang telah melewati batas 30 hari.
+
 # Session History - 3 Juni 2026
 
 ## Perbaikan Bug & Optimasi Otomatisasi

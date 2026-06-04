@@ -147,6 +147,12 @@ class BatchController extends BaseController
 
         $results = $this->emailBatchService->processBatchUpdate($data);
         $this->sendBatchNotification('UPDATE', $results);
+        
+        // Clear Dashboard Cache
+        $cache = \Config\Services::cache();
+        $cache->delete('dashboard_summary_data_v3');
+        $cache->delete('email_dashboard_summary');
+
         return $this->response->setJSON(['success' => true, 'results' => $results]);
     }
 
@@ -164,6 +170,12 @@ class BatchController extends BaseController
         try {
             $results = $this->emailBatchService->processBatchCreate($data);
             $this->sendBatchNotification('CREATE', $results);
+
+            // Clear Dashboard Cache
+            $cache = \Config\Services::cache();
+            $cache->delete('dashboard_summary_data_v3');
+            $cache->delete('email_dashboard_summary');
+
             return $this->response->setJSON(['success' => true, 'results' => $results]);
         } catch (\Throwable $e) {
             return $this->response->setJSON(['success' => false, 'message' => $e->getMessage()]);

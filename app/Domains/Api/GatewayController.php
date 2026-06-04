@@ -5,6 +5,7 @@ namespace App\Domains\Api;
 use App\Shared\BaseController;
 use App\Domains\Email\EmailModel;
 use App\Shared\Models\StatusAsnModel;
+use App\Shared\Services\SystemHealthService;
 use CodeIgniter\API\ResponseTrait;
 
 class GatewayController extends BaseController
@@ -16,6 +17,16 @@ class GatewayController extends BaseController
     public function __construct()
     {
         $this->emailModel = new EmailModel();
+    }
+
+    /**
+     * Internal Health Check for Dashboard
+     */
+    public function healthCheck()
+    {
+        $healthService = new SystemHealthService();
+        $results = $healthService->checkAll();
+        return $this->respond($results);
     }
 
     /**

@@ -42,11 +42,73 @@ class EmailModel extends Model
         'pimpinan',
         'pimpinan_desa',
         'pensiun_at',
+        'nik_hash',
+        'nip_hash',
     ];
     protected $useTimestamps = true;
     protected $useSoftDeletes = true;
     protected $deletedField  = 'deleted_at';
     protected $returnType = 'array';
+    
+    // Callbacks for encryption and blind index
+    protected $beforeInsert = ['hashAndEncrypt'];
+    protected $beforeUpdate = ['hashAndEncrypt'];
+    protected $afterFind    = ['decryptData'];
+
+    protected function hashAndEncrypt(array $data)
+    {
+        if (isset($data['data'])) {
+            $encrypter = \Config\Services::encrypter();
+
+            // Blind Index (Hash)
+            if (isset($data['data']['nik'])) {
+                $data['data']['nik_hash'] = hash('sha256', $data['data']['nik']);
+                $data['data']['nik'] = base64_encode($encrypter->encrypt($data['data']['nik']));
+            }
+            
+            if (isset($data['data']['nip'])) {
+                $data['data']['nip_hash'] = hash('sha256', $data['data']['nip']);
+                $data['data']['nip'] = base64_encode($encrypter->encrypt($data['data']['nip']));
+            }
+
+            if (isset($data['data']['password']) && !empty($data['data']['password'])) {
+                $data['data']['password'] = base64_encode($encrypter->encrypt($data['data']['password']));
+            }
+        }
+        return $data;
+    }
+
+    protected function decryptData(array $data)
+    {
+        if (empty($data['data'])) return $data;
+        
+        $encrypter = \Config\Services::encrypter();
+        
+        $decryptRow = function(&$row) use ($encrypter) {
+            foreach (['nik', 'nip', 'password'] as $field) {
+                if (isset($row[$field]) && !empty($row[$field])) {
+                    try {
+                        $row[$field] = $encrypter->decrypt(base64_decode($row[$field]));
+                    } catch (\Throwable $e) {
+                        // Skip if decryption fails (e.g. data is not encrypted yet)
+                        log_message('debug', "Decryption failed for field $field: " . $e->getMessage());
+                    }
+                }
+            }
+        };
+
+        if (isset($data['id'])) {
+            // Single result
+            $decryptRow($data['data']);
+        } else {
+            // Multiple results
+            foreach ($data['data'] as &$row) {
+                $decryptRow($row);
+            }
+        }
+        
+        return $data;
+    }
     
     // Default columns to fetch for the email dashboard/detail
     protected $standardColumns = 'emails.*';
@@ -109,7 +171,7 @@ class EmailModel extends Model
                     'email' => $emailData['email'],
                     'domain' => $emailData['domain'] ?? null,
                     'mtime' => $emailData['mtime'] ?? null,
-                    'suspended_login' => 0,
+                    'suspended_login' => $emailData['suspended_login'] ?? ($emailData['suspended'] ?? 0),
                     'diskquota' => $emailData['diskquota'] ?? null,
                     'humandiskquota' => $emailData['humandiskquota'] ?? null,
                     '_diskquota' => $emailData['_diskquota'] ?? null,
@@ -122,10 +184,11 @@ class EmailModel extends Model
                 ];
 
                 if (isset($existing_emails_map[$emailData['email']])) {
-                    // Don't update unit_kerja and password during sync
-                    unset($data['unit_kerja']);
+                    // Don't update unit_kerja, identity, and password during sync
+                    unset($data['unit_kerja_id']);
                     unset($data['password']);
-                    unset($data['nik_nip']);
+                    unset($data['nik']);
+                    unset($data['nip']);
                     unset($data['name']);
                     $to_update[] = $data;
                 } else {

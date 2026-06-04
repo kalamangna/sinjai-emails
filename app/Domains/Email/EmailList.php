@@ -63,7 +63,7 @@ class EmailList extends BaseController
 
             $data = $this->emailService->getUnitKerjaDetail($unitKerjaId, $params);
 
-            $data['title'] = $data['unit_kerja']['nama_unit_kerja'];
+            $data['title'] = 'Detail Unit Kerja';
             $data['per_page'] = $params['per_page'] ?? 100;
             $data['search'] = $params['search'];
             $data['status_asn'] = $params['status_asn'];

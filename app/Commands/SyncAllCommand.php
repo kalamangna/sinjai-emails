@@ -11,6 +11,7 @@ use App\Shared\Libraries\TelegramLibrary;
 use App\Domains\Email\EmailModel;
 use App\Shared\Models\StatusAsnModel;
 use App\Shared\Models\EselonModel;
+use App\Shared\Models\JobModel;
 
 use App\Domains\Website\WebDesaKelurahanModel;
 use App\Domains\Website\WebsiteService;
@@ -139,21 +140,16 @@ class SyncAllCommand extends BaseCommand
 
     private function syncCpanel()
     {
-        CLI::write('--- Phase 1: cPanel Synchronization ---', 'yellow');
+        CLI::write('--- Phase 1: cPanel Synchronization (Queued) ---', 'yellow');
         $this->syncStats['cpanel']['executed'] = true;
         try {
-            $syncService = new SyncService();
-            $result = $syncService->syncFromCpanel();
-            if ($result['success']) {
-                CLI::write('SUCCESS: ' . $result['message'], 'green');
-                $this->syncStats['cpanel']['success'] = 1;
-                
-                // Check for high quota usage alerts
-                $this->checkQuotaAlerts();
-            } else {
-                CLI::error('FAILED: ' . $result['message']);
-                $this->syncStats['cpanel']['fail'] = 1;
-            }
+            $jobModel = new JobModel();
+            $jobModel->push('default', [
+                'type' => 'sync_cpanel',
+                'data' => []
+            ]);
+            CLI::write('SUCCESS: Job dispatched to queue.', 'green');
+            $this->syncStats['cpanel']['success'] = 1;
         } catch (\Throwable $e) {
             CLI::error('ERROR in Phase 1: ' . $e->getMessage());
             $this->syncStats['cpanel']['fail'] = 1;
@@ -202,42 +198,34 @@ class SyncAllCommand extends BaseCommand
 
     private function syncTteStatus()
     {
-        CLI::write('--- Phase 2: TTE Status Synchronization ---', 'yellow');
+        CLI::write('--- Phase 2: TTE Status Synchronization (Queued) ---', 'yellow');
         $this->syncStats['tte']['executed'] = true;
         try {
             $emailModel = new EmailModel();
-            $bsreApi = new BsreApi();
-            
+            $jobModel = new JobModel();
+
             $emails = $emailModel->select('id, email')
                 ->groupStart()
                     ->where('pimpinan', 1)
                     ->orWhere('pimpinan_desa', 1)
                 ->groupEnd()
                 ->findAll();
-            $total = count($emails);
-            CLI::write("Total accounts (Pimpinan Only) to check: $total");
-            
-            foreach ($emails as $index => $email) {
-                $count = $index + 1;
-                CLI::print("[$count/$total] Checking {$email['email']}... ");
-                
-                $result = $bsreApi->checkStatus($email['email'], 'email');
-                if ($result['success']) {
-                    $responseBody = $result['data'];
-                    $statusFromBsre = $responseBody['status'] ?? ($responseBody['data']['status'] ?? 'UNKNOWN');
-                    $emailModel->update($email['id'], ['bsre_status' => $statusFromBsre]);
-                    CLI::write($statusFromBsre, 'green');
-                    $this->syncStats['tte']['success']++;
-                } else {
-                    CLI::write('FAILED', 'red');
-                    $this->syncStats['tte']['fail']++;
-                }
-            }
-            CLI::write("TTE Sync Finished. Success: " . $this->syncStats['tte']['success'] . ", Failed: " . $this->syncStats['tte']['fail'], 'cyan');
-            $this->saveLastSyncTime('last_sync_tte');
 
-            // Check for expired TTE status alerts
-            $this->checkTteExpiredAlerts();
+            $total = count($emails);
+            CLI::write("Total accounts to queue: $total");
+
+            // Chunk emails into groups of 50 per job
+            $chunks = array_chunk($emails, 50);
+            foreach ($chunks as $chunk) {
+                $jobModel->push('default', [
+                    'type' => 'sync_tte_batch',
+                    'data' => $chunk
+                ]);
+            }
+
+            CLI::write("SUCCESS: " . count($chunks) . " jobs dispatched to queue.", 'green');
+            $this->syncStats['tte']['success'] = $total;
+            $this->saveLastSyncTime('last_sync_tte');
         } catch (\Throwable $e) {
             CLI::error('ERROR in Phase 2: ' . $e->getMessage());
         }
@@ -307,106 +295,41 @@ class SyncAllCommand extends BaseCommand
 
     private function syncPegawaiData()
     {
-        CLI::write('--- Phase 3: Pegawai Data Synchronization ---', 'yellow');
+        CLI::write('--- Phase 3: Pegawai Data Synchronization (Queued) ---', 'yellow');
         $this->syncStats['pegawai']['executed'] = true;
         try {
             $emailModel = new EmailModel();
-            $pegawaiApi = new PegawaiApi();
             $statusAsnModel = new StatusAsnModel();
-            $eselonModel = new EselonModel();
-            
+            $jobModel = new JobModel();
+
             $statusPppkPw = $statusAsnModel->where('nama_status_asn', 'PPPK PARUH WAKTU')->asArray()->first();
             $pppkPwId = $statusPppkPw['id'] ?? null;
-            
-            // Get all emails with NIP, excluding PPPK PW
-            $builder = $emailModel->select('emails.*, unit_kerja.nama_unit_kerja')
-                ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
+
+            $builder = $emailModel->select('nip')
                 ->where('emails.nip IS NOT NULL')
                 ->where('emails.nip !=', '');
-            
+
             if ($pppkPwId) {
                 $builder->where('emails.status_asn_id !=', $pppkPwId);
             }
-            
-            $emails = $builder->findAll();
-            $total = count($emails);
-            CLI::write("Total NIPs to sync: $total");
-            
-            // To avoid redundant API calls for same NIP
-            $nipResults = [];
-            
-            foreach ($emails as $index => $currentEmail) {
-                $count = $index + 1;
-                $nip = trim($currentEmail['nip'] ?? '');
-                CLI::print("[$count/$total] Syncing NIP $nip ({$currentEmail['email']})... ");
-                
-                if (isset($nipResults[$nip])) {
-                    $result = $nipResults[$nip];
-                } else {
-                    $result = $pegawaiApi->getPegawaiData($nip);
-                    $nipResults[$nip] = $result;
-                }
-                
-                if ($result['success']) {
-                    $data = $result['data'];
-                    $source = (is_array($data) && isset($data[0])) ? $data[0] : $data;
-                    
-                    $hasActualData = isset($source['jabatan_nama']) || 
-                                     isset($source['jabatan']) || 
-                                     isset($source['pangkat_nama']) || 
-                                     isset($source['pangkat_golruang']);
 
-                    if (empty($data) || !$hasActualData) {
-                        CLI::write('DATA NOT FOUND', 'red');
-                        $this->syncStats['pegawai']['fail']++;
-                        continue;
-                    }
-                    
-                    $isPimpinan = ($currentEmail['pimpinan'] ?? 0) == 1;
-                    $updateData = [];
-                    
-                    // 1. Sync Jabatan
-                    if (!$isPimpinan) {
-                        $newJabatan = $source['jabatan_nama'] ?? ($source['jabatan'] ?? null);
-                        if ($newJabatan) {
-                            $newJabatanUpper = mb_strtoupper($newJabatan, 'UTF-8');
-                            if (stripos($newJabatanUpper, 'PLT') === false) {
-                                if (strpos($newJabatanUpper, 'SEKRETARIS') !== false) {
-                                    $unitName = strtoupper($currentEmail['nama_unit_kerja'] ?? '');
-                                    if (strpos($unitName, 'DINAS') !== false) $newJabatanUpper = 'SEKRETARIS DINAS';
-                                    elseif (strpos($unitName, 'BADAN') !== false) $newJabatanUpper = 'SEKRETARIS BADAN';
-                                    elseif (strpos($unitName, 'KECAMATAN') !== false) $newJabatanUpper = 'SEKRETARIS KECAMATAN';
-                                    elseif (strpos($unitName, 'KELURAHAN') !== false) $newJabatanUpper = 'SEKRETARIS KELURAHAN';
-                                }
-                                $updateData['jabatan'] = $newJabatanUpper;
+            $nips = array_column($builder->findAll(), 'nip');
+            $nips = array_unique($nips);
+            $total = count($nips);
 
-                                if (!empty($source['jabatan_jenis_eselon'])) {
-                                    $eselonStr = str_replace(['.', ' '], '', $source['jabatan_jenis_eselon']);
-                                    $eselon = $eselonModel->where('nama_eselon', $eselonStr)->first();
-                                    if ($eselon) $updateData['eselon_id'] = $eselon['id'];
-                                }
-                            }
-                        }
-                    }
+            CLI::write("Total NIPs to queue: $total");
 
-                    // 2. Sync Pangkat & Golongan
-                    if (isset($source['pangkat_nama'])) $updateData['pangkat_nama'] = $source['pangkat_nama'];
-                    if (isset($source['pangkat_golruang'])) $updateData['pangkat_golruang'] = $source['pangkat_golruang'];
-
-                    if (!empty($updateData)) {
-                        $emailModel->update($currentEmail['id'], $updateData);
-                        CLI::write('SUCCESS', 'green');
-                        $this->syncStats['pegawai']['success']++;
-                    } else {
-                        CLI::write('NO CHANGES', 'blue');
-                        $this->syncStats['pegawai']['skipped']++;
-                    }
-                } else {
-                    CLI::write('API FAILED', 'red');
-                    $this->syncStats['pegawai']['fail']++;
-                }
+            // Chunk NIPs into groups of 50 per job
+            $chunks = array_chunk($nips, 50);
+            foreach ($chunks as $chunk) {
+                $jobModel->push('default', [
+                    'type' => 'sync_pegawai_batch',
+                    'data' => $chunk
+                ]);
             }
-            CLI::write("Pegawai Sync Finished. Success: " . $this->syncStats['pegawai']['success'] . ", Failed: " . $this->syncStats['pegawai']['fail'], 'cyan');
+
+            CLI::write("SUCCESS: " . count($chunks) . " jobs dispatched to queue.", 'green');
+            $this->syncStats['pegawai']['success'] = $total;
             $this->saveLastSyncTime('last_sync_pegawai');
         } catch (\Throwable $e) {
             CLI::error('ERROR in Phase 3: ' . $e->getMessage());
@@ -500,7 +423,9 @@ class SyncAllCommand extends BaseCommand
             
             // Look for accounts marked as retired more than 30 days ago
             $thirtyDaysAgo = date('Y-m-d H:i:s', strtotime('-30 days'));
-            $toDelete = $emailModel->where('pensiun_at <=', $thirtyDaysAgo)->findAll();
+            $toDelete = $emailModel->where('pensiun_at IS NOT NULL')
+                                   ->where('pensiun_at <=', $thirtyDaysAgo)
+                                   ->findAll();
             
             if (empty($toDelete)) {
                 CLI::write('No retired accounts to cleanup.', 'green');

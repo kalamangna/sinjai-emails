@@ -9,6 +9,31 @@
         </div>
     </div>
 
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-white border border-slate-200 rounded-lg p-6 shadow-sm">
+            <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-4">Ringkasan Aksi</h3>
+            <div class="flex flex-wrap gap-2">
+                <?php foreach ($action_summary as $sum): ?>
+                    <div class="bg-slate-50 border border-slate-200 rounded px-3 py-1.5 flex items-center">
+                        <span class="text-[10px] font-bold text-slate-700 uppercase tracking-tight mr-2"><?= esc($sum['action']) ?></span>
+                        <span class="bg-slate-700 text-white text-[9px] font-bold px-1.5 rounded-full"><?= $sum['count'] ?></span>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+        <div class="bg-white border border-slate-200 rounded-lg p-6 shadow-sm">
+            <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-4">Ringkasan Entitas</h3>
+            <div class="flex flex-wrap gap-2">
+                <?php foreach ($entity_summary as $sum): ?>
+                    <div class="bg-slate-50 border border-slate-200 rounded px-3 py-1.5 flex items-center">
+                        <span class="text-[10px] font-bold text-slate-700 uppercase tracking-tight mr-2"><?= esc($sum['entity']) ?></span>
+                        <span class="bg-slate-600 text-white text-[9px] font-bold px-1.5 rounded-full"><?= $sum['count'] ?></span>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </div>
+
     <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-left text-sm">

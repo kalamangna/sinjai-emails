@@ -40,7 +40,8 @@ class Home extends BaseController
 
                 $isNeedTte = !empty($row['nip']) || ($row['pimpinan'] == 1) || ($row['pimpinan_desa'] == 1) || !empty($row['unit_kerja_id']);
 
-                if (!$isNeedTte) {                    $non_tte_count += $count;
+                if (!$isNeedTte) {
+                    $non_tte_count += $count;
                 } elseif (empty($row['bsre_status'])) {
                     $not_synced_count += $count;
                 } else {

@@ -104,128 +104,67 @@ class Email extends BaseController
     {
         try {
             $data = $this->emailService->getEmailDetail($username);
+            $data['unit_kerja_options'] = $this->unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->findAll();
+            $data['status_asn_options'] = $this->statusAsnModel->orderBy('nama_status_asn', 'ASC')->findAll();
+            $data['eselon_options'] = $this->eselonModel->orderBy('nama_eselon', 'ASC')->findAll();
             $data['title'] = 'Edit Profil';
             return view('email/edit_profile', $data);
         } catch (\Throwable $e) {
-            $data['error'] = $e->getMessage();
-            return view('email/error', $data);
-        }
-    }
-
-    public function mark_pensiun($username)
-    {
-        try {
-            $email = $this->emailModel->select('emails.*, unit_kerja.nama_unit_kerja as unit_kerja_name')
-                                      ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
-                                      ->where('emails.user', $username)
-                                      ->first();
-            if (!$email) {
-                throw new \Exception("Akun email tidak ditemukan.");
-            }
-
-            $cpanelApi = new \App\Shared\Libraries\CpanelApi();
-            
-            // 1. Suspend in cPanel
-            $cpanelApi->suspend_email_login($email['email']);
-
-            // 2. Update DB: Set suspended and clear employee data
-            $this->emailModel->update($email['id'], [
-                'suspended_login' => 1,
-                'pensiun_at' => date('Y-m-d H:i:s'),
-                'unit_kerja_id' => null,
-                'nik' => null,
-                'nip' => null,
-                'jabatan' => null,
-                'golongan' => null,
-                'pangkat_golruang' => null,
-                'pangkat_nama' => null,
-                'status_asn_id' => null,
-                'eselon_id' => null,
-                'bsre_status' => null,
-                'pimpinan' => 0,
-                'pimpinan_desa' => 0,
-                'gelar_depan' => null,
-                'gelar_belakang' => null,
-                'tempat_lahir' => null,
-                'tanggal_lahir' => null,
-                'pendidikan' => null
-            ]);
-
-            // 3. Send Telegram Notification
-            try {
-                $telegram = new TelegramLibrary();
-                $msg = "🚪 <b>PEMBERSIHAN AKUN (MANUAL)</b>\n";
-                $msg .= "Seorang pegawai telah ditandai sebagai <b>PENSIUN</b> oleh Admin:\n";
-                $msg .= "------------------------------------------\n\n";
-                $msg .= "👤 " . ($email['name'] ?: '-') . " (" . ($email['nip'] ?: '-') . ")\n";
-                $msg .= "🏛️ " . ($email['unit_kerja_name'] ?? '-') . "\n";
-                $msg .= "📧 " . $email['email'] . "\n\n";
-                $msg .= "⚠️ <i>Akses login ditangguhkan. Akun akan dihapus permanen dalam 30 hari.</i>";
-                $telegram->sendMessage($msg);
-            } catch (\Throwable $te) {
-                log_message('error', 'Failed to send Telegram notification for retirement: ' . $te->getMessage());
-            }
-
-            return redirect()->to('email/detail/' . $username)->with('success', 'Akun telah ditandai sebagai Pensiun. Data pegawai telah dihapus, akses login ditangguhkan, dan akun akan dihapus permanen dalam 30 hari.');
-            
-        } catch (\Throwable $e) {
-            return redirect()->to('email/detail/' . $username)->with('error', 'Gagal memproses pensiun: ' . $e->getMessage());
+            return redirect()->to('email')->with('error', $e->getMessage());
         }
     }
 
     public function update_details($username)
     {
-        if (strtolower($this->request->getMethod()) !== 'post') {
-            return redirect()->to('email/detail/' . $username)->with('error', 'Metode permintaan tidak valid.');
-        }
-
-        $newEmail = $this->request->getPost('email');
-        $emailParts = explode('@', $newEmail);
-        $newUser = $emailParts[0];
-
-        $profileData = [
-            'name' => $this->request->getPost('name'),
-            'gelar_depan' => $this->request->getPost('gelar_depan'),
-            'gelar_belakang' => $this->request->getPost('gelar_belakang'),
-            'nik' => $this->request->getPost('nik'),
-            'nip' => $this->request->getPost('nip'),
-            'tempat_lahir' => $this->request->getPost('tempat_lahir'),
-            'pendidikan' => $this->request->getPost('pendidikan'),
-            'jabatan' => mb_strtoupper($this->request->getPost('jabatan'), 'UTF-8'),
-            'golongan' => $this->request->getPost('golongan'),
-            'pangkat_golruang' => $this->request->getPost('pangkat_golruang'),
-            'pangkat_nama' => $this->request->getPost('pangkat_nama'),
-            'status_asn_id' => $this->request->getPost('status_asn') ?: null,
-            'eselon_id' => $this->request->getPost('eselon') ?: null,
-            'unit_kerja_id' => $this->request->getPost('unit_kerja_id') ?: null,
-            'pimpinan' => $this->request->getPost('pimpinan'),
-            'pimpinan_desa' => $this->request->getPost('pimpinan_desa'),
-            'tanggal_lahir' => $this->request->getPost('tanggal_lahir') ?: null,
-        ];
-
         try {
             $sourceRecord = $this->emailModel->where('user', $username)->first();
-            $targetRecord = $this->emailModel->where('email', $newEmail)->first();
+            if (!$sourceRecord) throw new Exception('Account not found.');
 
-            if (!$sourceRecord) throw new \Exception("Akun asal tidak ditemukan.");
-            if (!$targetRecord) throw new \Exception("Akun tujuan tidak ditemukan.");
+            $newUser = $this->request->getPost('user');
+            $profileData = [
+                'name' => $this->request->getPost('name'),
+                'nik' => $this->request->getPost('nik'),
+                'nip' => $this->request->getPost('nip'),
+                'user' => $newUser,
+                'email' => $newUser . '@sinjaikab.go.id',
+                'jabatan' => $this->request->getPost('jabatan'),
+                'unit_kerja_id' => $this->request->getPost('unit_kerja_id'),
+                'status_asn_id' => $this->request->getPost('status_asn_id'),
+                'eselon_id' => $this->request->getPost('eselon_id') ?: null,
+                'pimpinan' => $this->request->getPost('pimpinan') ?? 0,
+                'pimpinan_desa' => $this->request->getPost('pimpinan_desa') ?? 0,
+            ];
 
-            if ($sourceRecord['email'] !== $newEmail) {
-                $emptyData = array_fill_keys(array_keys($profileData), null);
-                $emptyData['pimpinan'] = 0;
-                $emptyData['pimpinan_desa'] = 0;
-                $this->emailModel->update($sourceRecord['id'], $emptyData);
-                $this->emailModel->update($targetRecord['id'], $profileData);
-                $this->pkModel->where('email', $sourceRecord['email'])->set(['email' => $newEmail])->update();
+            // 1. If username changed, update in cPanel first
+            if ($newUser !== $username) {
+                $cpanelApi = new \App\Shared\Libraries\CpanelApi();
+                $result = $cpanelApi->rename_email_account($username . '@sinjaikab.go.id', $newUser);
+                if (!$result['success']) {
+                    return redirect()->back()->withInput()->with('error', 'Gagal mengubah username di cPanel: ' . $result['message']);
+                }
+            }
+
+            // 2. Update all records with this NIP (including source)
+            if (!empty($profileData['nip'])) {
+                $this->emailModel->where('nip', $profileData['nip'])->set($profileData)->update();
             } else {
                 $this->emailModel->update($sourceRecord['id'], $profileData);
             }
 
+            $this->clearEmailCaches();
+
             return redirect()->to('email/detail/' . $newUser)->with('success', 'Data profil berhasil diperbarui.');
         } catch (\Throwable $e) {
             log_message('error', 'Database error during email details update: ' . $e->getMessage());
-            return redirect()->to('email/detail/' . $username)->with('error', 'Gagal memperbarui data: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
         }
+    }
+
+    private function clearEmailCaches()
+    {
+        $cache = \Config\Services::cache();
+        $cache->delete('dashboard_summary_data_v3');
+        $cache->delete('email_dashboard_summary');
     }
 
     public function edit_password($username)
@@ -235,28 +174,27 @@ class Email extends BaseController
             $data['title'] = 'Edit Password';
             return view('email/edit_password', $data);
         } catch (\Throwable $e) {
-            $data['error'] = $e->getMessage();
-            return view('email/error', $data);
+            return redirect()->to('email')->with('error', $e->getMessage());
         }
     }
 
     public function update_password($username)
     {
-        if (strtolower($this->request->getMethod()) !== 'post') {
-            return redirect()->to('email/detail/' . $username)->with('error', 'Metode permintaan tidak valid.');
-        }
-
-        $newPassword = $this->request->getPost('password');
-        if (empty($newPassword)) {
-            return redirect()->to('email/edit_password/' . $username)->with('error', 'Password tidak boleh kosong.');
-        }
-
         try {
-            $this->emailService->updatePassword($username, $newPassword);
-            return redirect()->to('email/detail/' . $username)->with('success', 'Password berhasil diperbarui.');
+            $password = $this->request->getPost('password');
+            if (empty($password)) throw new Exception('Password cannot be empty.');
+
+            $cpanelApi = new \App\Shared\Libraries\CpanelApi();
+            $result = $cpanelApi->change_password($username . '@sinjaikab.go.id', $password);
+
+            if ($result['success']) {
+                $this->emailModel->where('user', $username)->set(['password' => $password])->update();
+                return redirect()->to('email/detail/' . $username)->with('success', 'Password berhasil diperbarui.');
+            } else {
+                return redirect()->back()->with('error', 'Gagal memperbarui password di cPanel: ' . $result['message']);
+            }
         } catch (\Throwable $e) {
-            log_message('error', 'Error updating password: ' . $e->getMessage());
-            return redirect()->to('email/edit_password/' . $username)->with('error', 'Gagal memperbarui password: ' . $e->getMessage());
+            return redirect()->back()->with('error', $e->getMessage());
         }
     }
 
@@ -265,76 +203,60 @@ class Email extends BaseController
         try {
             $data = $this->emailService->getEmailDetail($username);
             $data['title'] = 'Edit PK';
-            $data['back_url'] = site_url('email/detail/' . $username);
             return view('email/edit_pk', $data);
         } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
             $data['title'] = 'Edit PK';
-            $data['back_url'] = site_url('email');
             return view('email/error', $data);
         }
     }
 
     public function update_pk($username)
     {
-        if (strtolower($this->request->getMethod()) !== 'post') {
-            return redirect()->to('email/detail/' . $username)->with('error', 'Metode permintaan tidak valid.');
-        }
-
-        $email_detail = $this->emailModel->where('user', $username)->first();
-        if (!$email_detail) {
-            return redirect()->to('email')->with('error', 'Email tidak ditemukan.');
-        }
-
-        $updateData = [
-            'nomor' => $this->request->getPost('nomor'),
-            'status_asn_id' => $email_detail['status_asn_id'],
-            'gaji_nominal' => str_replace(['.', ','], '', $this->request->getPost('gaji_nominal')),
-            'gaji_terbilang' => $this->request->getPost('gaji_terbilang'),
-            'tanggal_kontrak_awal' => $this->request->getPost('tanggal_kontrak_awal'),
-            'tanggal_kontrak_akhir' => $this->request->getPost('tanggal_kontrak_akhir'),
-        ];
-
         try {
-            $pk = $this->pkModel->where('email', $email_detail['email'])->first();
-            if ($pk) {
-                $this->pkModel->update($pk['id'], $updateData);
-            } else {
-                $updateData['email'] = $email_detail['email'];
-                $this->pkModel->insert($updateData);
-            }
-            return redirect()->to('email/detail/' . $username)->with('success', 'Data PK berhasil diperbarui.');
+            $email = $this->emailModel->where('user', $username)->first();
+            $pkData = [
+                'email' => $email['email'],
+                'nomor' => $this->request->getPost('nomor'),
+                'tanggal_mulai' => $this->request->getPost('tanggal_mulai'),
+                'tanggal_selesai' => $this->request->getPost('tanggal_selesai'),
+            ];
+
+            $this->pkModel->savePk($pkData);
+            return redirect()->to('email/detail/' . $username)->with('success', 'Data Perjanjian Kerja berhasil diperbarui.');
         } catch (\Throwable $e) {
-            log_message('error', 'Error updating PK: ' . $e->getMessage());
-            return redirect()->to('email/edit_pk/' . $username)->with('error', 'Gagal memperbarui data PK: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', $e->getMessage());
         }
     }
 
-    public function profile($hash)
+    public function mark_pensiun($username)
     {
         try {
-            // Find user by matching the calculated hash against NIK
-            $emails = $this->emailModel->where('bsre_status', 'ISSUE')->where('nik !=', null)->findAll();
-            $found_user = null;
+            $email = $this->emailModel->where('user', $username)->first();
+            if (!$email) throw new Exception('Account not found.');
 
-            foreach ($emails as $email) {
-                if (md5($email['nik'] . 'sinjai_secure_salt') === $hash) {
-                    $found_user = $email['user'];
-                    break;
-                }
+            // 1. Suspend in cPanel
+            $cpanelApi = new \App\Shared\Libraries\CpanelApi();
+            $suspendResult = $cpanelApi->suspend_email_account($email['email']);
+
+            if (!$suspendResult['success']) {
+                throw new Exception('Gagal menangguhkan akun di cPanel: ' . $suspendResult['message']);
             }
 
-            if (!$found_user) {
-                throw new \Exception('Data identitas tidak ditemukan atau tidak valid.');
-            }
+            // 2. Mark as retired and suspended in DB
+            $this->emailModel->update($email['id'], [
+                'pensiun_at' => date('Y-m-d H:i:s'),
+                'suspended_login' => 1
+            ]);
 
-            $data = $this->emailService->getEmailDetail($found_user);
-            $data['title'] = 'Verifikasi Akun';
-            return view('email/verifikasi', $data);
+            $this->clearEmailCaches();
+
+            helper('audit');
+            log_audit('MARK_PENSIUN', 'Email', $email['id'], 'Account marked as retired and suspended: ' . $email['email']);
+
+            return redirect()->to('email/detail/' . $username)->with('success', 'Akun berhasil ditandai sebagai Pensiun dan telah ditangguhkan.');
         } catch (\Throwable $e) {
-            $data['error'] = $e->getMessage();
-            $data['title'] = 'Verifikasi Akun';
-            return view('email/error', $data);
+            return redirect()->back()->with('error', $e->getMessage());
         }
     }
 

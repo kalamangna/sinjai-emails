@@ -21,4 +21,20 @@ class AuditLogModel extends Model
                     ->limit($limit)
                     ->findAll();
     }
+
+    public function getActionSummary()
+    {
+        return $this->select('action, COUNT(id) as count')
+                    ->groupBy('action')
+                    ->orderBy('count', 'DESC')
+                    ->findAll();
+    }
+
+    public function getEntitySummary()
+    {
+        return $this->select('entity, COUNT(id) as count')
+                    ->groupBy('entity')
+                    ->orderBy('count', 'DESC')
+                    ->findAll();
+    }
 }

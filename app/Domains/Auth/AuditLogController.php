@@ -14,6 +14,8 @@ class AuditLogController extends BaseController
         $data = [
             'title' => 'Audit Trail (Log Aktivitas)',
             'logs'  => $auditModel->getLogsWithUser(200), // Get last 200 logs
+            'action_summary' => $auditModel->getActionSummary(),
+            'entity_summary' => $auditModel->getEntitySummary(),
         ];
 
         return view('audit_log/index', $data);
