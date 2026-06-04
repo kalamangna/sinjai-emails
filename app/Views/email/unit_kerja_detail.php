@@ -352,7 +352,7 @@ echo view('components/modal', [
     'size' => 'sm',
     'showClose' => false,
     'content' => $modalContent
-]);
+], ['saveData' => false]);
 ?>
 
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>

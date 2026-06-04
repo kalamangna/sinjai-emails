@@ -181,7 +181,7 @@
         'size' => 'sm',
         'content' => $errorContent,
         'footer' => $errorFooter
-    ]);
+    ], ['saveData' => false]);
     ?>
 
     <!-- Sidebar -->

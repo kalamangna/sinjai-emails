@@ -17,6 +17,7 @@
 - **Standarisasi UI, SEO & Perbaikan Metadata**:
     - Implementasi SEO Best Practices: Penambahan meta tag dinamis (title, description, robots, canonical URL) dan dukungan Open Graph/Twitter Card di seluruh halaman utama.
     - Penyesuaian meta title pada halaman Detail Unit Kerja agar konsisten dengan struktur navigasi global.
+    - Fix Meta Title Conflict: Menonaktifkan `saveData` pada komponen modal untuk mencegah judul modal menimpa judul halaman utama.
     - Pembersihan kode korup dan perbaikan logika penghapusan otomatis data pensiun yang telah melewati batas 30 hari.
 - **Perbaikan Bug Kritis & Refactoring**:
     - **Optimasi Verifikasi Publik**: Migrasi kueri verifikasi identitas ke *Blind Index* (`nik_hash`) untuk performa maksimal (O(1)) dan memperbaiki rute `/verifikasi` yang sebelumnya tidak berfungsi.

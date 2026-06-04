@@ -230,7 +230,7 @@
         'size' => 'xl',
         'content' => $modalContent,
         'footer' => $modalFooter
-    ]);
+    ], ['saveData' => false]);
     ?>
 </div>
 <?php $this->endSection() ?>
