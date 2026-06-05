@@ -1,3 +1,11 @@
+# Session History - 5 Juni 2026
+
+## Otomatisasi & Perintah CLI Baru
+- **Perintah Sinkronisasi TTE Per Unit**:
+    - Penambahan custom command `php spark sync:tte-unit {unit_id}` untuk sinkronisasi status TTE secara manual dan spesifik per unit kerja.
+    - **Eksekusi Langsung**: Berbeda dengan `sync:all`, perintah ini memproses data secara sekuensial dan sinkron (tanpa antrean) untuk memberikan umpan balik *real-time* di terminal.
+    - **Fitur Validasi**: Menyediakan pengecekan keberadaan ID Unit Kerja dan pelaporan statistik (Berhasil/Gagal) setelah proses selesai.
+
 # Session History - 4 Juni 2026
 
 ## Keamanan Data, Antrean Tugas, & Pemantauan Sistem
