@@ -7,6 +7,7 @@ use CodeIgniter\CLI\CLI;
 use App\Domains\Email\EmailModel;
 use App\Domains\UnitKerja\UnitKerjaModel;
 use App\Shared\Libraries\BsreApi;
+use App\Shared\Models\StatusAsnModel;
 
 class SyncTteUnit extends BaseCommand
 {
@@ -36,7 +37,7 @@ class SyncTteUnit extends BaseCommand
      *
      * @var string
      */
-    protected $usage = 'sync:tte-unit [unit_id]';
+    protected $usage = 'sync:tte-unit [unit_id] [options]';
 
     /**
      * The Command's Arguments
@@ -52,7 +53,9 @@ class SyncTteUnit extends BaseCommand
      *
      * @var array
      */
-    protected $options = [];
+    protected $options = [
+        '--asn' => 'Filter by ASN status (e.g., --asn=PNS or --asn="PPPK PARUH WAKTU")',
+    ];
 
     /**
      * Actually execute a command.
@@ -90,8 +93,25 @@ class SyncTteUnit extends BaseCommand
             CLI::write("Including " . (count($unitIds) - 1) . " child units.", 'cyan');
         }
 
+        $asnFilter = CLI::getOption('asn');
         $emailModel = new EmailModel();
-        $emails = $emailModel->whereIn('unit_kerja_id', $unitIds)->findAll();
+        $builder = $emailModel->whereIn('unit_kerja_id', $unitIds);
+
+        if ($asnFilter) {
+            $statusAsnModel = new StatusAsnModel();
+            $statusAsn = $statusAsnModel->where('nama_status_asn', strtoupper($asnFilter))->first();
+
+            if (!$statusAsn) {
+                CLI::error("Error: Status ASN '$asnFilter' not found.");
+                CLI::write("Available statuses: PNS, PPPK, PPPK PARUH WAKTU", 'yellow');
+                return;
+            }
+
+            $builder->where('status_asn_id', $statusAsn['id']);
+            CLI::write("Filtering by ASN Status: " . strtoupper($asnFilter), 'cyan');
+        }
+
+        $emails = $builder->findAll();
 
         if (empty($emails)) {
             CLI::write("No email accounts found for this unit.", 'cyan');
