@@ -71,7 +71,10 @@
                 <div class="w-16 h-16 bg-slate-100 border border-slate-200 rounded-lg flex items-center justify-center text-slate-700">
                     <i class="fas fa-building text-2xl"></i>
                 </div>
-                <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight"><?= esc($unit_kerja['nama_unit_kerja']) ?></h1>
+                <div class="flex flex-col">
+                    <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight"><?= esc($unit_kerja['nama_unit_kerja']) ?></h1>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">ID Unit: <?= $unit_kerja['id'] ?></p>
+                </div>
             </div>
 
             <div class="flex flex-wrap lg:flex-nowrap gap-4 min-w-full lg:min-w-[400px]">
