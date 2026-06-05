@@ -79,8 +79,19 @@ class SyncTteUnit extends BaseCommand
 
         CLI::write("Syncing TTE Status for Unit: " . $unit['nama_unit_kerja'], 'yellow');
 
+        // Mengambil semua ID Unit Kerja (Induk + Anak)
+        $unitIds = [$unitId];
+        $childUnits = $unitModel->where('parent_id', $unitId)->findAll();
+        foreach ($childUnits as $child) {
+            $unitIds[] = $child['id'];
+        }
+
+        if (count($unitIds) > 1) {
+            CLI::write("Including " . (count($unitIds) - 1) . " child units.", 'cyan');
+        }
+
         $emailModel = new EmailModel();
-        $emails = $emailModel->where('unit_kerja_id', $unitId)->findAll();
+        $emails = $emailModel->whereIn('unit_kerja_id', $unitIds)->findAll();
 
         if (empty($emails)) {
             CLI::write("No email accounts found for this unit.", 'cyan');
