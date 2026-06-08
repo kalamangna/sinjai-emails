@@ -22,30 +22,50 @@ class EncryptExistingData extends BaseCommand
         $emails = $emailModel->allowCallbacks(false)->findAll();
         $total = count($emails);
         
-        CLI::write("Starting encryption for $total records...", 'yellow');
+        CLI::write("Starting encryption and data recovery for $total records...", 'yellow');
         
         $encrypter = \Config\Services::encrypter();
         $success = 0;
+
+        $processField = function($value) use ($encrypter) {
+            if (empty($value)) return null;
+            $plainText = $value;
+            
+            // Loop to deeply decrypt if it was accidentally double or triple encrypted
+            for ($i = 0; $i < 5; $i++) {
+                try {
+                    $decrypted = $encrypter->decrypt(base64_decode($plainText));
+                    if ($decrypted !== false && $decrypted !== '') {
+                        $plainText = $decrypted;
+                        continue;
+                    }
+                } catch (\Throwable $e) {
+                    // Decryption failed, meaning we've reached the plain text
+                }
+                break;
+            }
+            return $plainText;
+        };
         
         foreach ($emails as $index => $row) {
             $count = $index + 1;
             $updateData = [];
             
-            // Check if already encrypted (very basic check by looking at base64/length)
-            // Or just re-encrypt everything since we also need to generate hashes
-            
             if (!empty($row['nik'])) {
-                $updateData['nik_hash'] = hash('sha256', $row['nik']);
-                $updateData['nik'] = base64_encode($encrypter->encrypt($row['nik']));
+                $plain = $processField($row['nik']);
+                $updateData['nik_hash'] = hash('sha256', $plain);
+                $updateData['nik'] = base64_encode($encrypter->encrypt($plain));
             }
             
             if (!empty($row['nip'])) {
-                $updateData['nip_hash'] = hash('sha256', $row['nip']);
-                $updateData['nip'] = base64_encode($encrypter->encrypt($row['nip']));
+                $plain = $processField($row['nip']);
+                $updateData['nip_hash'] = hash('sha256', $plain);
+                $updateData['nip'] = base64_encode($encrypter->encrypt($plain));
             }
             
             if (!empty($row['password'])) {
-                $updateData['password'] = base64_encode($encrypter->encrypt($row['password']));
+                $plain = $processField($row['password']);
+                $updateData['password'] = base64_encode($encrypter->encrypt($plain));
             }
             
             if (!empty($updateData)) {
@@ -56,6 +76,6 @@ class EncryptExistingData extends BaseCommand
             CLI::showProgress($count, $total);
         }
         
-        CLI::write("\nEncryption complete! $success records updated.", 'green');
+        CLI::write("\nEncryption and recovery complete! $success records updated.", 'green');
     }
 }
