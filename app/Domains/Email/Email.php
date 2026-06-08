@@ -68,14 +68,10 @@ class Email extends BaseController
     {
         $emailModel = new \App\Domains\Email\EmailModel();
         
-        // Find accounts that are missing NIP but are ASN or Pimpinan
-        // This targets the 142 ambiguous accounts skipped during the recovery process
-        $ambiguous_emails = $emailModel->select('emails.id, emails.user, emails.name, emails.email, emails.nip, emails.jabatan, unit_kerja.nama_unit_kerja')
+        // Fetch all accounts that MUST have a NIP (ASN or Pimpinan)
+        // We let the Model's afterFind callback decrypt the data automatically
+        $all_target_emails = $emailModel->select('emails.id, emails.user, emails.name, emails.email, emails.nip, emails.jabatan, unit_kerja.nama_unit_kerja')
                                        ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
-                                       ->groupStart()
-                                           ->where('emails.nip IS NULL')
-                                           ->orWhere('emails.nip', '')
-                                       ->groupEnd()
                                        ->groupStart()
                                            ->whereIn('emails.status_asn_id', [1, 2]) // PNS or PPPK
                                            ->orWhere('emails.pimpinan', 1)
@@ -84,6 +80,21 @@ class Email extends BaseController
                                        ->orderBy('unit_kerja.nama_unit_kerja', 'ASC')
                                        ->orderBy('emails.name', 'ASC')
                                        ->findAll();
+
+        $ambiguous_emails = [];
+
+        foreach ($all_target_emails as $email) {
+            $nip = $email['nip'] ?? '';
+            
+            // Clean it just in case there are spaces
+            $cleanNip = str_replace([' ', '.', '-', '\''], '', $nip);
+
+            // A valid NIP must be exactly 18 digits.
+            // If it's empty, or if its length is not 18, it's either missing or corrupted (e.g. a decrypted base64 hash)
+            if (empty($cleanNip) || strlen($cleanNip) !== 18 || !is_numeric($cleanNip)) {
+                $ambiguous_emails[] = $email;
+            }
+        }
 
         $data = [
             'title' => 'Data Ambigu (Butuh Perbaikan NIP)',
