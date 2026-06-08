@@ -57,7 +57,8 @@ class EmailBatchService
             if ($mode === 'email') {
                 $emailRecord = $this->emailModel->where('email', $identifier)->first();
             } else {
-                $emailRecord = $this->emailModel->where('nik_hash', hash('sha256', $identifier))->first();
+                $cleanIdentifier = str_replace([' ', '.', '-', '\''], '', $identifier);
+                $emailRecord = $this->emailModel->where('nik_hash', hash('sha256', $cleanIdentifier))->first();
             }
 
             if (!$emailRecord) {
@@ -195,7 +196,8 @@ class EmailBatchService
         }, $data);
 
         $niks = array_filter(array_map(function ($item) {
-            return $item->nik ?? null;
+            $val = $item->nik ?? null;
+            return $val ? str_replace([' ', '.', '-', '\''], '', $val) : null;
         }, $data));
 
         $existing_emails = $this->emailModel->whereIn('email', $emails)->findColumn('email') ?? [];

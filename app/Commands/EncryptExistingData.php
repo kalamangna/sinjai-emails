@@ -44,7 +44,9 @@ class EncryptExistingData extends BaseCommand
                 }
                 break;
             }
-            return $plainText;
+            
+            // Normalize (remove spaces, dots, etc.) before returning plain text
+            return str_replace([' ', '.', '-', '\''], '', $plainText);
         };
         
         foreach ($emails as $index => $row) {

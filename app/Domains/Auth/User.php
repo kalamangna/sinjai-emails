@@ -94,8 +94,8 @@ class User extends BaseController
         }
 
         $input = $this->request->getJSON();
-        $nik = $input->nik ?? null;
-        $nip = $input->nip ?? null;
+        $nik = isset($input->nik) ? str_replace([' ', '.', '-', '\''], '', $input->nik) : null;
+        $nip = isset($input->nip) ? str_replace([' ', '.', '-', '\''], '', $input->nip) : null;
 
         if (empty($nik) && empty($nip)) {
             return $this->response->setStatusCode(400)->setJSON(['exists' => false, 'message' => 'A NIK or NIP is required.']);
@@ -140,8 +140,8 @@ class User extends BaseController
 
         $input = $this->request->getJSON();
         $emails = $input->emails ?? [];
-        $niks = array_filter($input->niks ?? []);
-        $nips = array_filter($input->nips ?? []);
+        $niks = array_map(fn($n) => str_replace([' ', '.', '-', '\''], '', $n), array_filter($input->niks ?? []));
+        $nips = array_map(fn($n) => str_replace([' ', '.', '-', '\''], '', $n), array_filter($input->nips ?? []));
 
         $emailModel = new EmailModel();
         

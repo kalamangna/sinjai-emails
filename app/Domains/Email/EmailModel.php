@@ -55,6 +55,12 @@ class EmailModel extends Model
     protected $beforeUpdate = ['hashAndEncrypt'];
     protected $afterFind    = ['decryptData'];
 
+    protected function normalize($value)
+    {
+        if (empty($value)) return $value;
+        return str_replace([' ', '.', '-', '\''], '', $value);
+    }
+
     protected function hashAndEncrypt(array $data)
     {
         if (isset($data['data'])) {
@@ -62,13 +68,15 @@ class EmailModel extends Model
 
             // Blind Index (Hash)
             if (isset($data['data']['nik'])) {
-                $data['data']['nik_hash'] = hash('sha256', $data['data']['nik']);
-                $data['data']['nik'] = base64_encode($encrypter->encrypt($data['data']['nik']));
+                $cleanNik = $this->normalize($data['data']['nik']);
+                $data['data']['nik_hash'] = hash('sha256', $cleanNik);
+                $data['data']['nik'] = base64_encode($encrypter->encrypt($cleanNik));
             }
             
             if (isset($data['data']['nip'])) {
-                $data['data']['nip_hash'] = hash('sha256', $data['data']['nip']);
-                $data['data']['nip'] = base64_encode($encrypter->encrypt($data['data']['nip']));
+                $cleanNip = $this->normalize($data['data']['nip']);
+                $data['data']['nip_hash'] = hash('sha256', $cleanNip);
+                $data['data']['nip'] = base64_encode($encrypter->encrypt($cleanNip));
             }
 
             if (isset($data['data']['password']) && !empty($data['data']['password'])) {
