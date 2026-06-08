@@ -66,35 +66,24 @@ class Email extends BaseController
 
     public function ambiguous_list()
     {
-        $all_emails = $this->emailModel->select('emails.id, emails.user, emails.name, emails.email, emails.nip, emails.jabatan, unit_kerja.nama_unit_kerja')
+        $emailModel = new \App\Domains\Email\EmailModel();
+        
+        // Find accounts that are missing NIP but are ASN or Pimpinan
+        // This targets the 142 ambiguous accounts skipped during the recovery process
+        $ambiguous_emails = $emailModel->select('emails.id, emails.user, emails.name, emails.email, emails.nip, emails.jabatan, unit_kerja.nama_unit_kerja')
                                        ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
-                                       ->where('emails.nip IS NOT NULL')
-                                       ->where('emails.nip !=', '')
-                                       ->allowCallbacks(false) // Fetch raw database values
+                                       ->groupStart()
+                                           ->where('emails.nip IS NULL')
+                                           ->orWhere('emails.nip', '')
+                                       ->groupEnd()
+                                       ->groupStart()
+                                           ->whereIn('emails.status_asn_id', [1, 2]) // PNS or PPPK
+                                           ->orWhere('emails.pimpinan', 1)
+                                           ->orWhere('emails.pimpinan_desa', 1)
+                                       ->groupEnd()
                                        ->orderBy('unit_kerja.nama_unit_kerja', 'ASC')
                                        ->orderBy('emails.name', 'ASC')
                                        ->findAll();
-
-        $ambiguous_emails = [];
-        $encrypter = \Config\Services::encrypter();
-
-        foreach ($all_emails as $email) {
-            $isBroken = false;
-            try {
-                // Try to decode and decrypt. If it's valid, this succeeds.
-                $decrypted = $encrypter->decrypt(base64_decode($email['nip']));
-                if ($decrypted === false || $decrypted === '') {
-                    $isBroken = true;
-                }
-            } catch (\Throwable $e) {
-                // Decryption failed, meaning the data is broken/truncated
-                $isBroken = true;
-            }
-
-            if ($isBroken) {
-                $ambiguous_emails[] = $email;
-            }
-        }
 
         $data = [
             'title' => 'Data Ambigu (Butuh Perbaikan NIP)',
