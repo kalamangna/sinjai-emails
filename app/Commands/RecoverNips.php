@@ -27,12 +27,29 @@ class RecoverNips extends BaseCommand
             return;
         }
 
-        CLI::write("Starting NIP recovery for $totalUnits units...", 'yellow');
+        CLI::write("Starting NIP recovery via Name Matching for $totalUnits units...", 'yellow');
         $recoveredCount = 0;
+
+        $cleanName = function($name) {
+            // Remove everything after the first comma (academic titles)
+            $name = explode(',', $name)[0];
+            
+            // Remove common prefixes
+            $prefixes = ['H. ', 'Hj. ', 'dr. ', 'Drs. ', 'Ir. ', 'ST. '];
+            $name = str_ireplace($prefixes, '', $name);
+            
+            // Normalize
+            $name = strtoupper(trim($name));
+            // Remove double spaces
+            $name = preg_replace('/\s+/', ' ', $name);
+            
+            return $name;
+        };
 
         foreach ($units as $index => $unit) {
             $unitName = $unit['nama_unit_kerja'];
             $apiUnitId = $unit['api_unit_id'];
+            $unitId = $unit['id'];
             
             CLI::print("[" . ($index + 1) . "/$totalUnits] Fetching employees for $unitName... ");
             
@@ -53,29 +70,37 @@ class RecoverNips extends BaseCommand
                     continue;
                 }
 
+                // Fetch all local emails for this unit to match in memory (faster)
+                $localEmails = $emailModel->allowCallbacks(false)->where('unit_kerja_id', $unitId)->findAll();
+                $localMap = [];
+                foreach ($localEmails as $le) {
+                    $normLocal = $cleanName($le['name']);
+                    if (!empty($normLocal)) {
+                        $localMap[$normLocal] = $le;
+                    }
+                }
+
                 $unitMatchCount = 0;
                 foreach ($pegawaiList as $p) {
                     $apiNip = $p['nip'] ?? null;
-                    $apiNik = $p['nik'] ?? null;
+                    $apiNameRaw = $p['nama'] ?? null;
 
-                    if (empty($apiNip) || empty($apiNik)) continue;
+                    if (empty($apiNip) || empty($apiNameRaw)) continue;
 
-                    // Clean NIK/NIP for hashing
-                    $cleanNik = str_replace([' ', '.', '-', '\''], '', $apiNik);
-                    $nikHash = hash('sha256', $cleanNik);
+                    $normApiName = $cleanName($apiNameRaw);
 
-                    // Find local email records matching this NIK hash
-                    // We match by NIK hash because NIK was not truncated (VARCHAR 255)
-                    $localEmail = $emailModel->allowCallbacks(false)->where('nik_hash', $nikHash)->first();
-
-                    if ($localEmail) {
-                        // Update with fresh NIP (which will be hashed and encrypted correctly by the model)
-                        // We use the regular update() to trigger hashAndEncrypt callback
+                    if (isset($localMap[$normApiName])) {
+                        $localEmail = $localMap[$normApiName];
+                        
+                        // Update with fresh NIP
                         $emailModel->update($localEmail['id'], [
                             'nip' => $apiNip
                         ]);
                         $unitMatchCount++;
                         $recoveredCount++;
+                        
+                        // Remove from map to prevent double matching
+                        unset($localMap[$normApiName]);
                     }
                 }
 
