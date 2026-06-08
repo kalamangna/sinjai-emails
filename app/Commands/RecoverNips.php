@@ -27,23 +27,23 @@ class RecoverNips extends BaseCommand
             return;
         }
 
-        CLI::write("Starting NIP recovery via Name Matching for $totalUnits units...", 'yellow');
+        CLI::write("Starting Smart NIP recovery (Name + Jabatan matching) for $totalUnits units...", 'yellow');
         $recoveredCount = 0;
+        $ambiguousCount = 0;
 
         $cleanName = function($name) {
-            // Remove everything after the first comma (academic titles)
             $name = explode(',', $name)[0];
-            
-            // Remove common prefixes
-            $prefixes = ['H. ', 'Hj. ', 'dr. ', 'Drs. ', 'Ir. ', 'ST. '];
+            $prefixes = ['H. ', 'Hj. ', 'dr. ', 'Drs. ', 'Ir. ', 'ST. ', 'Siti ', 'Muh. '];
             $name = str_ireplace($prefixes, '', $name);
-            
-            // Normalize
             $name = strtoupper(trim($name));
-            // Remove double spaces
-            $name = preg_replace('/\s+/', ' ', $name);
-            
-            return $name;
+            return preg_replace('/\s+/', ' ', $name);
+        };
+
+        $cleanJabatan = function($jabatan) {
+            $jabatan = strtoupper(trim($jabatan));
+            $removals = ['KANTOR ', 'DINAS ', 'BADAN ', 'BAGIAN ', 'SUB ', 'PELAKSANA ', 'PENGADMINISTRASI ', 'FUNGSIONAL '];
+            $jabatan = str_replace($removals, '', $jabatan);
+            return preg_replace('/\s+/', ' ', $jabatan);
         };
 
         foreach ($units as $index => $unit) {
@@ -51,7 +51,7 @@ class RecoverNips extends BaseCommand
             $apiUnitId = $unit['api_unit_id'];
             $unitId = $unit['id'];
             
-            CLI::print("[" . ($index + 1) . "/$totalUnits] Fetching employees for $unitName... ");
+            CLI::print("[" . ($index + 1) . "/$totalUnits] Processing $unitName... ");
             
             try {
                 $response = $client->get("https://apps.sinjaikab.go.id/api/pegawai/get_pegawai", [
@@ -60,23 +60,23 @@ class RecoverNips extends BaseCommand
                 ]);
 
                 if ($response->getStatusCode() !== 200) {
-                    CLI::write("FAILED (Status {$response->getStatusCode()})", 'red');
+                    CLI::write("FAILED (API Error)", 'red');
                     continue;
                 }
 
                 $pegawaiList = json_decode($response->getBody(), true);
                 if (!is_array($pegawaiList)) {
-                    CLI::write("EMPTY/INVALID RESPONSE", 'red');
+                    CLI::write("INVALID JSON", 'red');
                     continue;
                 }
 
-                // Fetch all local emails for this unit to match in memory (faster)
+                // Map local emails by cleaned name
                 $localEmails = $emailModel->allowCallbacks(false)->where('unit_kerja_id', $unitId)->findAll();
                 $localMap = [];
                 foreach ($localEmails as $le) {
                     $normLocal = $cleanName($le['name']);
                     if (!empty($normLocal)) {
-                        $localMap[$normLocal] = $le;
+                        $localMap[$normLocal][] = $le;
                     }
                 }
 
@@ -84,34 +84,52 @@ class RecoverNips extends BaseCommand
                 foreach ($pegawaiList as $p) {
                     $apiNip = $p['nip'] ?? null;
                     $apiNameRaw = $p['nama'] ?? null;
+                    $apiJabatanRaw = $p['jabatan_nama'] ?? '';
 
                     if (empty($apiNip) || empty($apiNameRaw)) continue;
 
                     $normApiName = $cleanName($apiNameRaw);
+                    $normApiJabatan = $cleanJabatan($apiJabatanRaw);
 
                     if (isset($localMap[$normApiName])) {
-                        $localEmail = $localMap[$normApiName];
-                        
-                        // Update with fresh NIP
-                        $emailModel->update($localEmail['id'], [
-                            'nip' => $apiNip
-                        ]);
-                        $unitMatchCount++;
-                        $recoveredCount++;
-                        
-                        // Remove from map to prevent double matching
-                        unset($localMap[$normApiName]);
+                        $candidates = $localMap[$normApiName];
+                        $matchedLocalId = null;
+
+                        if (count($candidates) === 1) {
+                            $matchedLocalId = $candidates[0]['id'];
+                        } else {
+                            // Multiple candidates with same name, try matching Jabatan
+                            foreach ($candidates as $cand) {
+                                $normLocalJabatan = $cleanJabatan($cand['jabatan'] ?? '');
+                                if (!empty($normLocalJabatan) && (strpos($normApiJabatan, $normLocalJabatan) !== false || strpos($normLocalJabatan, $normApiJabatan) !== false)) {
+                                    $matchedLocalId = $cand['id'];
+                                    break;
+                                }
+                            }
+                        }
+
+                        if ($matchedLocalId) {
+                            $emailModel->update($matchedLocalId, ['nip' => $apiNip]);
+                            $unitMatchCount++;
+                            $recoveredCount++;
+                        } else {
+                            $ambiguousCount++;
+                        }
                     }
                 }
 
-                CLI::write("DONE (Matched $unitMatchCount)", 'green');
+                CLI::write("DONE (Restored $unitMatchCount)", 'green');
 
             } catch (\Throwable $e) {
                 CLI::write("ERROR: " . $e->getMessage(), 'red');
             }
         }
 
-        CLI::write("\nRecovery process finished! Total NIPs restored: $recoveredCount", 'cyan');
-        CLI::write("Please run 'php spark encrypt:data' one last time to ensure all encryption is consistent.", 'yellow');
+        CLI::write("\nRecovery process finished!", 'cyan');
+        CLI::write("- Total NIPs restored: $recoveredCount", 'green');
+        if ($ambiguousCount > 0) {
+            CLI::write("- Skipped ambiguous names: $ambiguousCount (Requires manual check)", 'yellow');
+        }
+        CLI::write("\nFinal step: Please run 'php spark encrypt:data' to finalize encryption.", 'yellow');
     }
 }
