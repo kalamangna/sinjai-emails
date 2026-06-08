@@ -264,7 +264,10 @@ class Email extends BaseController
             }
 
             // 2. Always update the primary record first
-            $this->emailModel->update($sourceRecord['id'], $profileData);
+            if ($this->emailModel->update($sourceRecord['id'], $profileData) === false) {
+                $errors = $this->emailModel->errors();
+                throw new \Exception("Gagal menyimpan data utama. " . implode(', ', $errors));
+            }
 
             // 3. If a NIP is provided, ensure other records with the same NIP (if any) are also synced
             if (!empty($profileData['nip'])) {
