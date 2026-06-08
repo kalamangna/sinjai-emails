@@ -89,7 +89,6 @@ class EmailExportService
         }
 
         $emails = $builder
-            ->allowCallbacks(false)
             ->orderBy('emails.eselon_id', 'ASC')
             ->orderBy('COALESCE(parent_unit_kerja.nama_unit_kerja, unit_kerja.nama_unit_kerja)', 'ASC', false)
             ->orderBy('unit_kerja.parent_id IS NOT NULL', 'ASC', false)
@@ -148,7 +147,6 @@ class EmailExportService
         }
 
         $emails = $builder
-            ->allowCallbacks(false)
             ->orderBy('emails.eselon_id', 'ASC')
             ->orderBy('COALESCE(parent_unit_kerja.nama_unit_kerja, unit_kerja.nama_unit_kerja)', 'ASC', false)
             ->orderBy('unit_kerja.parent_id IS NOT NULL', 'ASC', false)

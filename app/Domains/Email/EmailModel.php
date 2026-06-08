@@ -97,7 +97,7 @@ class EmailModel extends Model
             }
         };
 
-        if (isset($data['id'])) {
+        if (!empty($data['singleton'])) {
             // Single result
             $decryptRow($data['data']);
         } else {

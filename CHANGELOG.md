@@ -8,6 +8,10 @@
     - **Pencarian Multi-Kriteria**: Memastikan pencarian berdasarkan Nama dan Email tetap berjalan secara paralel meskipun input berupa angka NIK/NIP.
 - **Konsistensi Layanan**:
     - Pembaruan logika pencarian pada `EmailApi`, `EmailService`, `EmailList`, `PimpinanController`, dan `EmailExportService`.
+- **Perbaikan Dekripsi Tampilan Data**:
+    - Memperbaiki bug di mana NIK dan NIP ditampilkan dalam bentuk *hash* pada halaman Detail Akun dan file Ekspor (PDF/Excel).
+    - Mengoreksi fungsi *callback* `decryptData` di `EmailModel` agar dapat mendeteksi dan mendekripsi data *single result* maupun *multiple results* secara akurat (menggunakan identifikasi `singleton`).
+    - Menghapus penggunaan `allowCallbacks(false)` yang tidak semestinya pada `EmailExportService` agar proses dekripsi data tetap berjalan saat mengunduh dokumen.
 
 # Session History - 5 Juni 2026
 
