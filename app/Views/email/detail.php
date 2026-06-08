@@ -126,8 +126,16 @@
                             <?php if (empty($email['pensiun_at'])): ?>
                                 <form action="<?= site_url('email/mark_pensiun/' . $email['user']) ?>" method="POST" class="inline" onsubmit="return confirm('Tandai akun ini sebagai Pensiun? Akun akan langsung ditangguhkan dan dihapus permanen 30 hari dari sekarang.');">
                                     <?= csrf_field() ?>
-                                    <button type="submit" class="btn btn-outline btn-xs text-red-600 border-red-200 hover:bg-red-50" title="Tandai Pensiun">
+                                    <button type="submit" class="btn btn-outline btn-xs text-amber-600 border-amber-200 hover:bg-amber-50" title="Tandai Pensiun">
                                         <i class="fas fa-user-slash mr-1.5"></i> Pensiun
+                                    </button>
+                                </form>
+                            <?php endif; ?>
+                            <?php if (session()->get('role') === 'super_admin'): ?>
+                                <form action="<?= site_url('email/delete/' . $email['id']) ?>" method="POST" class="inline" onsubmit="return confirm('HAPUS PERMANEN akun ini beserta kotak masuk dan data di server email? Tindakan ini TIDAK BISA DIBATALKAN!');">
+                                    <?= csrf_field() ?>
+                                    <button type="submit" class="btn btn-outline btn-xs text-red-600 border-red-200 hover:bg-red-50" title="Hapus Permanen">
+                                        <i class="fas fa-trash-alt mr-1.5"></i> Hapus
                                     </button>
                                 </form>
                             <?php endif; ?>
