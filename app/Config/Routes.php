@@ -74,6 +74,7 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
 
         // Mutation Routes (Admin & Super Admin)
         $routes->group('', ['filter' => 'role:admin,super_admin'], function ($routes) {
+            $routes->get('ambiguous', '\App\Domains\Email\Email::ambiguous_list');
             $routes->get('create', '\App\Domains\Email\Email::create');
             $routes->get('edit_profile/(:any)', '\App\Domains\Email\Email::edit_profile/$1');
             $routes->post('update_details/(:any)', '\App\Domains\Email\Email::update_details/$1');

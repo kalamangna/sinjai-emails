@@ -64,6 +64,27 @@ class Email extends BaseController
         }
     }
 
+    public function ambiguous_list()
+    {
+        // Find NIPs that are truncated (length <= 100, whereas valid encrypted NIPs are > 100 chars)
+        $ambiguous_emails = $this->emailModel->select('emails.id, emails.user, emails.name, emails.email, emails.nip, emails.jabatan, unit_kerja.nama_unit_kerja')
+                                       ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
+                                       ->where('emails.nip IS NOT NULL')
+                                       ->where('emails.nip !=', '')
+                                       ->where('LENGTH(emails.nip) <=', 100)
+                                       ->allowCallbacks(false) // Don't try to decrypt broken data
+                                       ->orderBy('unit_kerja.nama_unit_kerja', 'ASC')
+                                       ->orderBy('emails.name', 'ASC')
+                                       ->findAll();
+
+        $data = [
+            'title' => 'Data Ambigu (Butuh Perbaikan NIP)',
+            'emails' => $ambiguous_emails
+        ];
+
+        return view('email/ambiguous', $data);
+    }
+
     public function detail($username)
     {
         try {
