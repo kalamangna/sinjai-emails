@@ -85,10 +85,17 @@ class EmailModel extends Model
         $encrypter = \Config\Services::encrypter();
         
         $decryptRow = function(&$row) use ($encrypter) {
+            $isArray = is_array($row);
             foreach (['nik', 'nip', 'password'] as $field) {
-                if (isset($row[$field]) && !empty($row[$field])) {
+                $value = $isArray ? ($row[$field] ?? null) : ($row->$field ?? null);
+                if (!empty($value)) {
                     try {
-                        $row[$field] = $encrypter->decrypt(base64_decode($row[$field]));
+                        $decrypted = $encrypter->decrypt(base64_decode($value));
+                        if ($isArray) {
+                            $row[$field] = $decrypted;
+                        } else {
+                            $row->$field = $decrypted;
+                        }
                     } catch (\Throwable $e) {
                         // Skip if decryption fails (e.g. data is not encrypted yet)
                         log_message('debug', "Decryption failed for field $field: " . $e->getMessage());
@@ -97,7 +104,10 @@ class EmailModel extends Model
             }
         };
 
-        if (!empty($data['singleton'])) {
+        // Determine if it is a single row or array of rows
+        $isSingleton = isset($data['singleton']) ? $data['singleton'] : !isset($data['data'][0]);
+
+        if ($isSingleton) {
             // Single result
             $decryptRow($data['data']);
         } else {
