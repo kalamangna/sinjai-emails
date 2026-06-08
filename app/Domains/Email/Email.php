@@ -229,8 +229,8 @@ class Email extends BaseController
             'name' => $this->request->getPost('name'),
             'gelar_depan' => $this->request->getPost('gelar_depan'),
             'gelar_belakang' => $this->request->getPost('gelar_belakang'),
-            'nik' => $this->request->getPost('nik'),
-            'nip' => $this->request->getPost('nip'),
+            'nik' => $this->request->getPost('nik') ?: null,
+            'nip' => $this->request->getPost('nip') ?: null,
             'tempat_lahir' => $this->request->getPost('tempat_lahir'),
             'pendidikan' => $this->request->getPost('pendidikan'),
             'jabatan' => mb_strtoupper($this->request->getPost('jabatan'), 'UTF-8'),
@@ -271,14 +271,20 @@ class Email extends BaseController
 
             // 3. If a NIP is provided, ensure other records with the same NIP (if any) are also synced
             if (!empty($profileData['nip'])) {
+                // Filter data to only sync personal info, NOT account-specific info to avoid UNIQUE errors
+                $syncData = $profileData;
+                unset($syncData['email'], $syncData['user'], $syncData['jabatan']);
+                unset($syncData['unit_kerja_id'], $syncData['eselon_id']);
+                unset($syncData['pimpinan'], $syncData['pimpinan_desa']);
+
                 // We use the normalized nip hash to find others
                 $cleanNip = str_replace([' ', '.', '-', '\''], '', $profileData['nip']);
                 $nipHash = hash('sha256', $cleanNip);
                 
-                // Exclude the current record to avoid redundant update, though harmless
+                // Exclude the current record to avoid redundant update
                 $this->emailModel->where('nip_hash', $nipHash)
                                  ->where('id !=', $sourceRecord['id'])
-                                 ->set($profileData)
+                                 ->set($syncData)
                                  ->update();
             }
 
