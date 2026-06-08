@@ -240,8 +240,8 @@ class Email extends BaseController
             'status_asn_id' => $this->request->getPost('status_asn') ?: null,
             'eselon_id' => $this->request->getPost('eselon') ?: null,
             'unit_kerja_id' => $this->request->getPost('unit_kerja_id') ?: null,
-            'pimpinan' => $this->request->getPost('pimpinan'),
-            'pimpinan_desa' => $this->request->getPost('pimpinan_desa'),
+            'pimpinan' => $this->request->getPost('pimpinan') ? 1 : 0,
+            'pimpinan_desa' => $this->request->getPost('pimpinan_desa') ? 1 : 0,
             'tanggal_lahir' => $this->request->getPost('tanggal_lahir') ?: null,
             'user' => $newUser,
             'email' => $newEmail
@@ -282,7 +282,8 @@ class Email extends BaseController
             $db->transComplete();
 
             if ($db->transStatus() === false) {
-                throw new \Exception('Gagal menyimpan data ke database.');
+                $error = $db->error();
+                throw new \Exception('Gagal menyimpan data ke database. Detail: ' . ($error['message'] ?? 'Unknown SQL error'));
             }
 
             $this->clearEmailCaches();
