@@ -69,12 +69,14 @@ class Email extends BaseController
         $emailModel = new \App\Domains\Email\EmailModel();
         
         // Fetch all accounts that MUST have a NIP.
-        // Rule: Only PNS (1) and PPPK (2) absolutely require an 18-digit NIP.
-        // Kepala Desa (pimpinan_desa = 1) DO NOT have NIPs.
-        // Non-ASN Pimpinan (e.g., Bupati) might not have NIPs either, so we restrict strictly to ASN.
+        // Rule: PNS (1), PPPK (2), and Pimpinan (1) require an 18-digit NIP.
+        // Kepala Desa (pimpinan_desa = 1) DO NOT have NIPs and are excluded.
         $all_target_emails = $emailModel->select('emails.id, emails.user, emails.name, emails.email, emails.nip, emails.jabatan, unit_kerja.nama_unit_kerja')
                                        ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
-                                       ->whereIn('emails.status_asn_id', [1, 2]) // Strictly PNS or PPPK
+                                       ->groupStart()
+                                           ->whereIn('emails.status_asn_id', [1, 2]) // PNS or PPPK
+                                           ->orWhere('emails.pimpinan', 1) // ASN Leaders
+                                       ->groupEnd()
                                        ->orderBy('unit_kerja.nama_unit_kerja', 'ASC')
                                        ->orderBy('emails.name', 'ASC')
                                        ->findAll();
