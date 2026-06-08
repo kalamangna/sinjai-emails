@@ -252,11 +252,20 @@ class Email extends BaseController
                 }
             }
 
-            // 2. Update all records with this NIP hash (including source)
+            // 2. Always update the primary record first
+            $this->emailModel->update($sourceRecord['id'], $profileData);
+
+            // 3. If a NIP is provided, ensure other records with the same NIP (if any) are also synced
             if (!empty($profileData['nip'])) {
-                $this->emailModel->where('nip_hash', hash('sha256', $profileData['nip']))->set($profileData)->update();
-            } else {
-                $this->emailModel->update($sourceRecord['id'], $profileData);
+                // We use the normalized nip hash to find others
+                $cleanNip = str_replace([' ', '.', '-', '\''], '', $profileData['nip']);
+                $nipHash = hash('sha256', $cleanNip);
+                
+                // Exclude the current record to avoid redundant update, though harmless
+                $this->emailModel->where('nip_hash', $nipHash)
+                                 ->where('id !=', $sourceRecord['id'])
+                                 ->set($profileData)
+                                 ->update();
             }
 
             $db->transComplete();
