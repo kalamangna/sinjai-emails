@@ -1,3 +1,14 @@
+# Session History - 8 Juni 2026
+
+## Perbaikan Fitur Pencarian & Keamanan Data
+- **Optimasi Pencarian NIK/NIP pada Data Terenkripsi**:
+    - Memperbaiki kegagalan pencarian NIK dan NIP di seluruh sistem (Pencarian Global, Dashboard, Unit Kerja, dan Export).
+    - Implementasi **Normalisasi Query**: Sistem kini secara otomatis membersihkan karakter non-numerik (spasi, titik, tanda hubung) dari input pencarian sebelum diproses.
+    - Implementasi **Blind Index Search**: Mengalihkan pencarian NIK/NIP dari `LIKE` query (yang tidak kompatibel dengan enkripsi) ke pencocokan tepat menggunakan `nik_hash` dan `nip_hash`.
+    - **Pencarian Multi-Kriteria**: Memastikan pencarian berdasarkan Nama dan Email tetap berjalan secara paralel meskipun input berupa angka NIK/NIP.
+- **Konsistensi Layanan**:
+    - Pembaruan logika pencarian pada `EmailApi`, `EmailService`, `EmailList`, `PimpinanController`, dan `EmailExportService`.
+
 # Session History - 5 Juni 2026
 
 ## Otomatisasi & Perintah CLI Baru

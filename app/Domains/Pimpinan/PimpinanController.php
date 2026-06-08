@@ -27,12 +27,17 @@ class PimpinanController extends BaseController
             $emailBuilder = $this->emailModel->getPimpinanBuilder();
 
             if ($search) {
-                $emailBuilder->groupStart()
-                    ->like('emails.email', $search)
-                    ->orLike('emails.name', $search)
-                    ->orLike('emails.nik', $search)
-                    ->orLike('emails.nip', $search)
-                    ->groupEnd();
+                $emailBuilder->groupStart();
+                $cleanSearch = str_replace([' ', '.', '-', '\''], '', $search);
+                $emailBuilder->like('emails.email', $search)
+                    ->orLike('emails.name', $search);
+
+                if (is_numeric($cleanSearch) && strlen($cleanSearch) >= 10) {
+                    $hash = hash('sha256', $cleanSearch);
+                    $emailBuilder->orWhere('emails.nik_hash', $hash)
+                        ->orWhere('emails.nip_hash', $hash);
+                }
+                $emailBuilder->groupEnd();
             }
 
             if ($bsre_status) {
@@ -92,12 +97,17 @@ class PimpinanController extends BaseController
             $emailBuilder = $this->emailModel->getPimpinanDesaBuilder();
 
             if ($search) {
-                $emailBuilder->groupStart()
-                    ->like('emails.email', $search)
-                    ->orLike('emails.name', $search)
-                    ->orLike('emails.nik', $search)
-                    ->orLike('emails.nip', $search)
-                    ->groupEnd();
+                $emailBuilder->groupStart();
+                $cleanSearch = str_replace([' ', '.', '-', '\''], '', $search);
+                $emailBuilder->like('emails.email', $search)
+                    ->orLike('emails.name', $search);
+
+                if (is_numeric($cleanSearch) && strlen($cleanSearch) >= 10) {
+                    $hash = hash('sha256', $cleanSearch);
+                    $emailBuilder->orWhere('emails.nik_hash', $hash)
+                        ->orWhere('emails.nip_hash', $hash);
+                }
+                $emailBuilder->groupEnd();
             }
 
             if ($bsre_status) {

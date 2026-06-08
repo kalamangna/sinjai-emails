@@ -228,19 +228,26 @@ class EmailApi extends BaseController
             return $this->response->setJSON([]);
         }
 
+        // Normalize query for numeric search (NIP/NIK often have spaces or dots)
+        $cleanQ = str_replace([' ', '.', '-', '\''], '', $q);
+
         $builder = $this->emailModel
             ->select('emails.email, emails.name, emails.user, emails.nik, emails.nip, unit_kerja.nama_unit_kerja as unit_kerja_name')
             ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left');
 
         $builder->groupStart();
-        if (is_numeric($q) && (strlen($q) >= 10)) {
-            $hash = hash('sha256', $q);
-            $builder->where('emails.nik_hash', $hash)
+        
+        // Always allow searching by name and email
+        $builder->like('emails.email', $q)
+                ->orLike('emails.name', $q);
+
+        // If numeric and looks like NIK/NIP, search by hash
+        if (is_numeric($cleanQ) && strlen($cleanQ) >= 10) {
+            $hash = hash('sha256', $cleanQ);
+            $builder->orWhere('emails.nik_hash', $hash)
                     ->orWhere('emails.nip_hash', $hash);
-        } else {
-            $builder->like('emails.email', $q)
-                    ->orLike('emails.name', $q);
         }
+        
         $builder->groupEnd();
 
         $results = $builder->limit(10)->findAll();

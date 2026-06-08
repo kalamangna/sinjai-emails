@@ -92,14 +92,18 @@ class EmailService
         if (!empty($search)) {
             $builder->groupStart();
             
-            // If search is numeric and looks like NIK/NIP, use exact match on hash
-            if (is_numeric($search) && (strlen($search) >= 10)) {
-                $hash = hash('sha256', $search);
-                $builder->where('nik_hash', $hash)
+            // Normalize query for numeric search (NIP/NIK often have spaces or dots)
+            $cleanSearch = str_replace([' ', '.', '-', '\''], '', $search);
+
+            // Always allow searching by name and email
+            $builder->like('email', $search)
+                    ->orLike('name', $search);
+
+            // If numeric and looks like NIK/NIP, use exact match on hash
+            if (is_numeric($cleanSearch) && (strlen($cleanSearch) >= 10)) {
+                $hash = hash('sha256', $cleanSearch);
+                $builder->orWhere('nik_hash', $hash)
                         ->orWhere('nip_hash', $hash);
-            } else {
-                $builder->like('email', $search)
-                        ->orLike('name', $search);
             }
             
             $builder->groupEnd();
@@ -401,13 +405,18 @@ class EmailService
         // Apply filters to the list query
         if ($search) {
             $emailBuilder->groupStart();
-            if (is_numeric($search) && (strlen($search) >= 10)) {
-                $hash = hash('sha256', $search);
-                $emailBuilder->where('nik_hash', $hash)
+            
+            // Normalize query for numeric search (NIP/NIK often have spaces or dots)
+            $cleanSearch = str_replace([' ', '.', '-', '\''], '', $search);
+
+            // Always allow searching by name and email
+            $emailBuilder->like('email', $search)
+                         ->orLike('name', $search);
+
+            if (is_numeric($cleanSearch) && (strlen($cleanSearch) >= 10)) {
+                $hash = hash('sha256', $cleanSearch);
+                $emailBuilder->orWhere('nik_hash', $hash)
                              ->orWhere('nip_hash', $hash);
-            } else {
-                $emailBuilder->like('email', $search)
-                             ->orLike('name', $search);
             }
             $emailBuilder->groupEnd();
         }

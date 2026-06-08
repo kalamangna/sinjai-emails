@@ -64,12 +64,17 @@ class EmailExportService
 
         $builder = $this->emailModel->getPimpinanBuilder();
         if ($search) {
-            $builder->groupStart()
-                ->like('email', $search)
-                ->orLike('name', $search)
-                ->orLike('nik', $search)
-                ->orLike('nip', $search)
-                ->groupEnd();
+            $builder->groupStart();
+            $cleanSearch = str_replace([' ', '.', '-', '\''], '', $search);
+            $builder->like('email', $search)
+                ->orLike('name', $search);
+
+            if (is_numeric($cleanSearch) && strlen($cleanSearch) >= 10) {
+                $hash = hash('sha256', $cleanSearch);
+                $builder->orWhere('nik_hash', $hash)
+                    ->orWhere('nip_hash', $hash);
+            }
+            $builder->groupEnd();
         }
 
         if ($bsre_status) {
@@ -118,12 +123,17 @@ class EmailExportService
 
         $builder = $this->emailModel->getPimpinanDesaBuilder();
         if ($search) {
-            $builder->groupStart()
-                ->like('email', $search)
-                ->orLike('name', $search)
-                ->orLike('nik', '' . $search . '%')
-                ->orLike('nip', '' . $search . '%')
-                ->groupEnd();
+            $builder->groupStart();
+            $cleanSearch = str_replace([' ', '.', '-', '\''], '', $search);
+            $builder->like('email', $search)
+                ->orLike('name', $search);
+
+            if (is_numeric($cleanSearch) && strlen($cleanSearch) >= 10) {
+                $hash = hash('sha256', $cleanSearch);
+                $builder->orWhere('nik_hash', $hash)
+                    ->orWhere('nip_hash', $hash);
+            }
+            $builder->groupEnd();
         }
 
         if ($bsre_status) {
@@ -190,7 +200,17 @@ class EmailExportService
 
         if ($isKecamatan && $pimpinan_desa == 0) $builder->where('pimpinan_desa', 0);
         if ($search) {
-            $builder->groupStart()->like('email', $search)->orLike('name', $search)->orLike('nik', $search)->orLike('nip', $search)->groupEnd();
+            $builder->groupStart();
+            $cleanSearch = str_replace([' ', '.', '-', '\''], '', $search);
+            $builder->like('email', $search)
+                ->orLike('name', $search);
+
+            if (is_numeric($cleanSearch) && strlen($cleanSearch) >= 10) {
+                $hash = hash('sha256', $cleanSearch);
+                $builder->orWhere('nik_hash', $hash)
+                    ->orWhere('nip_hash', $hash);
+            }
+            $builder->groupEnd();
         }
         if ($status_asn) $builder->where('emails.status_asn_id', $status_asn);
         if ($bsre_status) {
@@ -211,7 +231,17 @@ class EmailExportService
 
         if ($isKecamatan && $pimpinan_desa == 0) $builder->where('pimpinan_desa', 0);
         if ($search) {
-            $builder->groupStart()->like('email', $search)->orLike('name', $search)->orLike('nik', $search)->orLike('nip', $search)->groupEnd();
+            $builder->groupStart();
+            $cleanSearch = str_replace([' ', '.', '-', '\''], '', $search);
+            $builder->like('email', $search)
+                ->orLike('name', $search);
+
+            if (is_numeric($cleanSearch) && strlen($cleanSearch) >= 10) {
+                $hash = hash('sha256', $cleanSearch);
+                $builder->orWhere('nik_hash', $hash)
+                    ->orWhere('nip_hash', $hash);
+            }
+            $builder->groupEnd();
         }
         if ($status_asn) $builder->where('emails.status_asn_id', $status_asn);
         if ($bsre_status) {
@@ -284,7 +314,17 @@ class EmailExportService
 
         if ($isKecamatan && $pimpinan_desa == 0) $builder->where('pimpinan_desa', 0);
         if ($search) {
-            $builder->groupStart()->like('email', $search)->orLike('name', $search)->orLike('nik', $search)->orLike('nip', $search)->groupEnd();
+            $builder->groupStart();
+            $cleanSearch = str_replace([' ', '.', '-', '\''], '', $search);
+            $builder->like('email', $search)
+                ->orLike('name', $search);
+
+            if (is_numeric($cleanSearch) && strlen($cleanSearch) >= 10) {
+                $hash = hash('sha256', $cleanSearch);
+                $builder->orWhere('nik_hash', $hash)
+                    ->orWhere('nip_hash', $hash);
+            }
+            $builder->groupEnd();
         }
         if ($status_asn) $builder->where('emails.status_asn_id', $status_asn);
         if ($bsre_status) {
@@ -305,7 +345,17 @@ class EmailExportService
 
         if ($isKecamatan && $pimpinan_desa == 0) $builder->where('pimpinan_desa', 0);
         if ($search) {
-            $builder->groupStart()->like('email', $search)->orLike('name', $search)->orLike('nik', $search)->orLike('nip', $search)->groupEnd();
+            $builder->groupStart();
+            $cleanSearch = str_replace([' ', '.', '-', '\''], '', $search);
+            $builder->like('email', $search)
+                ->orLike('name', $search);
+
+            if (is_numeric($cleanSearch) && strlen($cleanSearch) >= 10) {
+                $hash = hash('sha256', $cleanSearch);
+                $builder->orWhere('nik_hash', $hash)
+                    ->orWhere('nip_hash', $hash);
+            }
+            $builder->groupEnd();
         }
         if ($status_asn) $builder->where('emails.status_asn_id', $status_asn);
         if ($bsre_status) {
@@ -525,12 +575,18 @@ class EmailExportService
 
         $builder = $this->emailModel->withDetails()->whereIn('unit_kerja_id', $allUnitIds);
         if (!empty($params['search'])) {
-            $builder->groupStart()
-                ->like('emails.email', $params['search'])
-                ->orLike('emails.name', $params['search'])
-                ->orLike('emails.nik', $params['search'])
-                ->orLike('emails.nip', $params['search'])
-                ->groupEnd();
+            $search = $params['search'];
+            $builder->groupStart();
+            $cleanSearch = str_replace([' ', '.', '-', '\''], '', $search);
+            $builder->like('emails.email', $search)
+                ->orLike('emails.name', $search);
+
+            if (is_numeric($cleanSearch) && strlen($cleanSearch) >= 10) {
+                $hash = hash('sha256', $cleanSearch);
+                $builder->orWhere('emails.nik_hash', $hash)
+                    ->orWhere('emails.nip_hash', $hash);
+            }
+            $builder->groupEnd();
         }
         if (!empty($params['status_asn'])) $builder->where('emails.status_asn_id', $params['status_asn']);
         if (!empty($params['bsre_status'])) {
@@ -602,12 +658,18 @@ class EmailExportService
 
         $builder = $this->emailModel->whereIn('unit_kerja_id', $allUnitIds);
         if (!empty($params['search'])) {
-            $builder->groupStart()
-                ->like('email', $params['search'])
-                ->orLike('name', $params['search'])
-                ->orLike('nik', $params['search'])
-                ->orLike('nip', $params['search'])
-                ->groupEnd();
+            $search = $params['search'];
+            $builder->groupStart();
+            $cleanSearch = str_replace([' ', '.', '-', '\''], '', $search);
+            $builder->like('email', $search)
+                ->orLike('name', $search);
+
+            if (is_numeric($cleanSearch) && strlen($cleanSearch) >= 10) {
+                $hash = hash('sha256', $cleanSearch);
+                $builder->orWhere('nik_hash', $hash)
+                    ->orWhere('nip_hash', $hash);
+            }
+            $builder->groupEnd();
         }
         if (!empty($params['status_asn'])) $builder->where('emails.status_asn_id', $params['status_asn']);
         if (!empty($params['bsre_status'])) {

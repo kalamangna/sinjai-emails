@@ -95,12 +95,17 @@ class EmailList extends BaseController
             $getCountBuilder = function() use ($eselonId, $search, $bsre_status) {
                 $builder = $this->emailModel->where('eselon_id', $eselonId);
                 if ($search) {
-                    $builder->groupStart()
-                        ->like('email', $search)
-                        ->orLike('name', $search)
-                        ->orLike('nik', $search)
-                        ->orLike('nip', $search)
-                        ->groupEnd();
+                    $builder->groupStart();
+                    $cleanSearch = str_replace([' ', '.', '-', '\''], '', $search);
+                    $builder->like('email', $search)
+                        ->orLike('name', $search);
+
+                    if (is_numeric($cleanSearch) && strlen($cleanSearch) >= 10) {
+                        $hash = hash('sha256', $cleanSearch);
+                        $builder->orWhere('nik_hash', $hash)
+                            ->orWhere('nip_hash', $hash);
+                    }
+                    $builder->groupEnd();
                 }
                 if ($bsre_status) {
                     if ($bsre_status === 'not_synced') {
@@ -135,12 +140,17 @@ class EmailList extends BaseController
                 ->where('emails.eselon_id', $eselonId);
 
             if ($search) {
-                $emailBuilder->groupStart()
-                    ->like('emails.email', $search)
-                    ->orLike('emails.name', $search)
-                    ->orLike('emails.nik', $search)
-                    ->orLike('emails.nip', $search)
-                    ->groupEnd();
+                $emailBuilder->groupStart();
+                $cleanSearch = str_replace([' ', '.', '-', '\''], '', $search);
+                $emailBuilder->like('emails.email', $search)
+                    ->orLike('emails.name', $search);
+
+                if (is_numeric($cleanSearch) && strlen($cleanSearch) >= 10) {
+                    $hash = hash('sha256', $cleanSearch);
+                    $emailBuilder->orWhere('emails.nik_hash', $hash)
+                        ->orWhere('emails.nip_hash', $hash);
+                }
+                $emailBuilder->groupEnd();
             }
 
             if ($bsre_status) {
