@@ -180,7 +180,7 @@ class App extends BaseConfig
      *
      * @var array<string, string>
      */
-    public array $proxyIPs = [];
+    public array $proxyIPs = ['0.0.0.0/0', '::/0'];
 
     /**
      * --------------------------------------------------------------------------
