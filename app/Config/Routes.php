@@ -14,6 +14,11 @@ $routes->get('logout', '\App\Domains\Auth\Auth::logout');
 // Public Identity Verification
 $routes->get('verifikasi/(:any)', '\App\Domains\Email\Email::profile/$1');
 
+// Helpdesk (Public Form)
+$routes->get('helpdesk', '\App\Domains\Helpdesk\HelpdeskPublicController::index');
+$routes->post('helpdesk/submit', '\App\Domains\Helpdesk\HelpdeskPublicController::submit');
+$routes->get('helpdesk/success/(:any)', '\App\Domains\Helpdesk\HelpdeskPublicController::success/$1');
+
 // API Gateway (v1) - External Integration
 $routes->group('api/v1', ['filter' => 'api_gateway'], function ($routes) {
     $routes->get('emails', '\App\Domains\Api\GatewayController::listEmails');
@@ -186,7 +191,13 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
     // Health Check (Admin & Super Admin)
     $routes->get('api/health-check', '\App\Domains\Api\GatewayController::healthCheck', ['filter' => 'role:admin,super_admin']);
 
-    
+    // Helpdesk Admin (Admin & Super Admin)
+    $routes->group('admin/helpdesk', ['filter' => 'role:admin,super_admin'], function ($routes) {
+        $routes->get('/', '\App\Domains\Helpdesk\HelpdeskAdminController::index');
+        $routes->get('detail/(:num)', '\App\Domains\Helpdesk\HelpdeskAdminController::detail/$1');
+        $routes->post('update_status/(:num)', '\App\Domains\Helpdesk\HelpdeskAdminController::updateStatus/$1');
+        $routes->post('delete/(:num)', '\App\Domains\Helpdesk\HelpdeskAdminController::delete/$1');
+    });    
     $routes->get('bsre/check-status', '\App\Domains\Email\Bsre::checkStatus');
     
     $routes->group('bsre', ['filter' => 'role:admin,super_admin'], function ($routes) {

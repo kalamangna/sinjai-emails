@@ -132,9 +132,9 @@
                                 </form>
                             <?php endif; ?>
                             <?php if (session()->get('role') === 'super_admin'): ?>
-                                <form action="<?= site_url('email/delete/' . $email['id']) ?>" method="POST" class="inline" onsubmit="return confirm('HAPUS PERMANEN akun ini beserta kotak masuk dan data di server email? Tindakan ini TIDAK BISA DIBATALKAN!');">
+                                <form action="<?= site_url('email/delete/' . $email['id']) ?>" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus akun ini?');">
                                     <?= csrf_field() ?>
-                                    <button type="submit" class="btn btn-outline btn-xs text-red-600 border-red-200 hover:bg-red-50" title="Hapus Permanen">
+                                    <button type="submit" class="btn btn-outline btn-xs text-red-600 border-red-200 hover:bg-red-50" title="Hapus Akun">
                                         <i class="fas fa-trash-alt mr-1.5"></i> Hapus
                                     </button>
                                 </form>

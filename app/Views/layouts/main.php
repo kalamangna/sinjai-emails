@@ -184,12 +184,16 @@
     ], ['saveData' => false]);
     ?>
 
+    <?php $isPublic = $isPublic ?? false; ?>
     <!-- Sidebar -->
-    <?= $this->include('components/sidebar') ?>
+    <?php if (!$isPublic): ?>
+        <?= $this->include('components/sidebar') ?>
+    <?php endif; ?>
 
     <!-- Main Wrapper -->
-    <div id="main-content" class="lg:ml-64 min-h-screen flex flex-col">
+    <div id="main-content" class="<?= !$isPublic ? 'lg:ml-64' : '' ?> min-h-screen flex flex-col">
         <!-- Header / Topbar -->
+        <?php if (!$isPublic): ?>
         <header class="h-16 bg-white border-b border-slate-200 sticky top-0 z-40 flex items-center justify-between px-6 gap-4">
             <div class="flex items-center gap-2 flex-1 min-w-0" id="header-left-section">
                 <!-- Sidebar Toggle -->
@@ -248,6 +252,8 @@
             </div>
         </header>
 
+        <?php endif; ?>
+
         <!-- Content Area -->
         <main class="flex-grow p-6">
             <!-- Global Flash Messages -->
@@ -295,6 +301,7 @@
         </main>
 
         <!-- Footer Component -->
+        <?php if (!($hideFooter ?? false)): ?>
         <footer class="py-6 px-6 border-t border-slate-200 bg-white">
             <div class="flex flex-col md:flex-row items-center justify-between gap-4">
                 <p class="text-[10px] font-bold text-slate-700 uppercase tracking-widest">
@@ -302,6 +309,7 @@
                 </p>
             </div>
         </footer>
+        <?php endif; ?>
     </div>
 
     <!-- Scripts -->

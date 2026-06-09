@@ -410,11 +410,11 @@ class Email extends BaseController
             if (!$email) return redirect()->to('email')->with('error', 'Email account not found.');
             $cpanelApi->delete_email_account($email['email']);
             $this->emailModel->delete($id);
-            return redirect()->back()->with('success', 'Email account ' . $email['email'] . ' has been deleted successfully.');
+            return redirect()->to('email')->with('success', 'Email account ' . $email['email'] . ' has been deleted successfully.');
         } catch (\Throwable $e) {
             log_message('error', 'Failed to delete email: ' . $e->getMessage());
             $this->emailModel->delete($id);
-            return redirect()->back()->with('error', 'Failed to delete email account from cPanel, but removed from local list.');
+            return redirect()->to('email')->with('error', 'Failed to delete email account from cPanel, but removed from local list.');
         }
     }
 }

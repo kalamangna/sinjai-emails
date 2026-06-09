@@ -185,6 +185,16 @@
             </a>
         <?php endif; ?>
 
+        <!-- Helpdesk Layanan -->
+        <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
+            <a href="<?= site_url('admin/helpdesk') ?>" data-sidebar-clear class="flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all <?= strpos($full_url, site_url('admin/helpdesk')) !== false ? 'bg-slate-700 text-white shadow-lg shadow-slate-900/20' : 'text-slate-100 hover:bg-slate-700/80 hover:text-white' ?>">
+                <div class="w-5 h-5 flex items-center justify-center mr-3 shrink-0">
+                    <i class="fas fa-headset <?= strpos($full_url, site_url('admin/helpdesk')) !== false ? 'text-white' : 'text-slate-300' ?>"></i>
+                </div>
+                Helpdesk Layanan
+            </a>
+        <?php endif; ?>
+
         <!-- Master Data Submenu -->
         <?php if (session()->get('role') === 'super_admin'): ?>
             <div>

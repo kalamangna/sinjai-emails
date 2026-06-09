@@ -29,6 +29,14 @@ class SystemHealthService
 
     private function checkBsre()
     {
+        // Bypass pengecekan di mode development/localhost untuk menghindari timeout 30 detik
+        if (env('CI_ENVIRONMENT') === 'development') {
+            return [
+                'status' => 'DOWN',
+                'message' => 'Offline (Local Development)',
+            ];
+        }
+
         $bsre = new BsreApi();
         // Use a lightweight check, like checking status for a known non-existent email
         $result = $bsre->checkStatus('health-check@sinjaikab.go.id', 'email');

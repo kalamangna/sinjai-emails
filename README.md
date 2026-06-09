@@ -19,6 +19,7 @@ Aplikasi ini menerapkan standar estetika **"Slate Clean Government"**—antarmuk
 
 ### 📊 Pemantauan & Analitik
 - **Monitoring Website:** Pelacakan domain **OPD** dan **Desa/Kelurahan**, termasuk sinkronisasi otomatis masa berlaku SSL dan Domain.
+- **Helpdesk Layanan:** Portal bantuan publik terpadu untuk seluruh layanan TIK (Email, Website, TTE, Srikandi) dengan sistem *ticketing* dan integrasi log otomatis.
 - **Dashboard Dinamis:** Analitik dengan kartu metrik yang menampilkan persentase performa data secara real-time.
 - **Log Pendampingan:** Pencatatan terpusat untuk bantuan teknis dan log layanan (khusus Super Admin).
 

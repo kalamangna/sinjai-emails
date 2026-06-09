@@ -1,3 +1,22 @@
+# Session History - 9 Juni 2026
+
+## Perluasan Layanan Helpdesk
+- **Transformasi Portal Helpdesk**:
+    - Mengalihkan fokus Helpdesk yang sebelumnya hanya untuk TTE menjadi portal bantuan terpadu untuk seluruh layanan (Website OPD, Email Resmi, TTE, Aplikasi Srikandi, dan Website Desa).
+    - Memperbarui `HelpdeskPublicController` untuk mendukung pemetaan kategori dan layanan secara dinamis dari domain `Assistance`.
+- **Formulir Publik Dinamis**:
+    - Implementasi **Cascading Dropdowns**: Pengguna kini memilih Kategori terlebih dahulu, diikuti Layanan Spesifik, dan terakhir Jenis Kendala yang relevan (menggunakan logic yang sama dengan Log Pendampingan).
+    - Perbaikan UI/UX pada `public_form.php` dengan penambahan kolom deskripsi detail kendala dan penyesuaian teks agar lebih inklusif untuk seluruh layanan TIK.
+- **Otomasi Integrasi Admin**:
+    - Memperbarui `HelpdeskAdminController` agar tiket yang diselesaikan secara otomatis dicatat ke Log Pendampingan (`Assistance`) dengan kategori dan layanan yang sesuai dengan pilihan pengguna, bukan lagi hardcoded sebagai TTE.
+- **Peningkatan Aksesibilitas**:
+    - Memperbarui tautan bantuan di halaman Login dari "Butuh Bantuan TTE?" menjadi "Butuh Bantuan Layanan?" untuk mencerminkan perluasan cakupan layanan.
+- **Penyederhanaan Formulir**:
+    - Menghapus field `deskripsi_kendala` dari database dan formulir helpdesk untuk mempercepat proses pelaporan bagi pengguna.
+- **Fitur Manajemen Admin Helpdesk**:
+    - Menambahkan fitur hapus permohonan pada panel admin helpdesk (tersedia di halaman index dan detail).
+    - Implementasi proteksi konfirmasi sebelum penghapusan dan pencatatan aksi hapus ke dalam Audit Trail.
+
 # Session History - 8 Juni 2026
 
 ## Perbaikan Fitur Pencarian & Keamanan Data

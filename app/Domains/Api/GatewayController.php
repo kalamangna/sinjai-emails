@@ -24,6 +24,9 @@ class GatewayController extends BaseController
      */
     public function healthCheck()
     {
+        // Tutup penulisan session agar proses ini tidak nge-block request lain (Session Lock)
+        session_write_close();
+        
         $healthService = new SystemHealthService();
         $results = $healthService->checkAll();
         return $this->respond($results);
