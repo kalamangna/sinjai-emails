@@ -249,7 +249,8 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
+                        'X-Requested-With': 'XMLHttpRequest',
+                        '<?= config('Security')->headerName ?>': '<?= csrf_hash() ?>'
                     },
                     body: JSON.stringify({
                         mode: mode,

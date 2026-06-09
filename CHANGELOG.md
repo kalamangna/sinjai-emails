@@ -1,6 +1,9 @@
 # Session History - 9 Juni 2026
 
-- **Fix Batch Route 404**: Memperbaiki kesalahan `404 Not Found` pada rute batch dengan mengubah pemanggilan URL menjadi relatif dan mengganti nama rute (`process-update`) guna menghindari konflik penamaan atau blokir WAF pada server.
+- **Fix Batch Route 404 & GET Redirect**:
+    - Mengganti nama rute (`execute-update` -> `process-update`) untuk menghindari blokir WAF.
+    - Menambahkan header CSRF (`X-CSRF-TOKEN`) pada pemanggilan `fetch` di sisi klien.
+    - Memperbarui `baseURL` di `App.php` ke HTTPS untuk mencegah pengalihan (redirect) dari POST ke GET akibat ketidakcocokan protokol.
 
 ## Reviu Proses Batch & Unit Testing
 - **Refaktor EmailBatchService**:
