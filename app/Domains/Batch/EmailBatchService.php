@@ -53,6 +53,11 @@ class EmailBatchService
 
         $results = [];
         foreach ($identifiers as $index => $identifier) {
+            if (empty($identifier)) {
+                $results[] = ['identifier' => 'Baris ' . ($index + 1), 'success' => false, 'message' => 'Identifier wajib diisi.'];
+                continue;
+            }
+
             $emailRecord = null;
             if ($mode === 'email') {
                 $emailRecord = $this->emailModel->where('email', $identifier)->first();

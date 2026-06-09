@@ -153,10 +153,10 @@
         document.getElementById('batch_update_form').addEventListener('submit', async function(e) {
             e.preventDefault();
             const mode = document.querySelector('input[name="update_mode"]:checked').value;
-            const identifiers = identifierInput.value.split('\n').map(s => s.trim()).filter(s => s);
-            if (!identifiers.length) return alert('Masukkan setidaknya satu identitas.');
-
             const mapInput = id => document.getElementById(id).value.split('\n').map(s => s.trim());
+
+            const identifiers = mapInput('identifier_input');
+            if (!identifiers.some(s => s)) return alert('Masukkan setidaknya satu identitas.');
 
             updateBtn.disabled = true;
             updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Memproses...';

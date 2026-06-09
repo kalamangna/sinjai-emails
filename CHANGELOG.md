@@ -21,6 +21,7 @@
 - **Fix Password Edit**: Memperbaiki error `Undefined array key "success"` saat mengubah password dengan menyesuaikan pengecekan status respon dari cPanel API.
 - **Fix Batch Operations JS**: Memperbaiki error `Cannot read properties of undefined (reading 'length')` pada proses Batch Update dan Batch PK dengan menambahkan validasi respon server dan penanganan error yang lebih kokoh pada sisi klien.
 - **Fix Batch Route 404**: Memperbaiki kesalahan `404 Not Found` pada rute batch dengan mengubah pemanggilan URL menjadi relatif dan mengganti nama rute (`execute-update`) guna menghindari konflik penamaan atau blokir WAF pada server.
+- **Fix Batch Payload Sync**: Memperbaiki sinkronisasi data pada proses Batch Update di mana data bergeser (index mismatch) akibat penghapusan baris kosong pada identifier. Sistem kini mewajibkan identifier di setiap baris dan memastikan pemetaan kolom tetap konsisten.
 
 # Session History - 8 Juni 2026
 
