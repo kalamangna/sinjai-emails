@@ -17,6 +17,9 @@
     - Menambahkan fitur hapus permohonan pada panel admin helpdesk (tersedia di halaman index dan detail).
     - Implementasi proteksi konfirmasi sebelum penghapusan dan pencatatan aksi hapus ke dalam Audit Trail.
 
+## Perbaikan Bug & Optimasi
+- **Fix Password Edit**: Memperbaiki error `Undefined array key "success"` saat mengubah password dengan menyesuaikan pengecekan status respon dari cPanel API.
+
 # Session History - 8 Juni 2026
 
 ## Perbaikan Fitur Pencarian & Keamanan Data

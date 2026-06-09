@@ -332,11 +332,13 @@ class Email extends BaseController
             $cpanelApi = new \App\Shared\Libraries\CpanelApi();
             $result = $cpanelApi->change_password($username . '@sinjaikab.go.id', $password);
 
-            if ($result['success']) {
+            // CpanelApi returns raw response where status == 1 means success
+            if (isset($result['status']) && $result['status'] == 1) {
                 $this->emailModel->where('user', $username)->set(['password' => $password])->update();
                 return redirect()->to('email/detail/' . $username)->with('success', 'Password berhasil diperbarui.');
             } else {
-                return redirect()->back()->with('error', 'Gagal memperbarui password di cPanel: ' . $result['message']);
+                $errorMsg = $result['errors'][0] ?? 'Gagal memperbarui password di cPanel.';
+                return redirect()->back()->with('error', $errorMsg);
             }
         } catch (\Throwable $e) {
             return redirect()->back()->with('error', $e->getMessage());
