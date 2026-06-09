@@ -137,7 +137,11 @@ class BatchController extends BaseController
     public function process_update()
     {
         if (strtolower($this->request->getMethod()) !== 'post') {
-            return $this->response->setJSON(['success' => false, 'message' => 'Invalid request method.']);
+            log_message('error', 'Batch Update received GET request. Possible server redirect issue.');
+            return $this->response->setJSON([
+                'success' => false, 
+                'message' => 'Permintaan ditolak oleh server (Metode GET tidak diizinkan untuk update). Silakan coba bersihkan cache browser atau hubungi admin jika masalah berlanjut.'
+            ]);
         }
 
         $data = $this->request->getJSON(true);

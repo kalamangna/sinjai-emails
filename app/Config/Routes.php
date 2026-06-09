@@ -115,8 +115,8 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         $routes->get('download_unit_kerja_template', '\App\Domains\Batch\BatchController::download_unit_kerja_template');
         $routes->get('update', '\App\Domains\Batch\BatchController::update');
         $routes->get('pk', '\App\Domains\Batch\BatchController::pk');
-        $routes->post('process-update', '\App\Domains\Batch\BatchController::process_update');
-        $routes->post('process-create', '\App\Domains\Batch\BatchController::process_create');
+        $routes->match(['get', 'post'], 'process-update', '\App\Domains\Batch\BatchController::process_update');
+        $routes->match(['get', 'post'], 'process-create', '\App\Domains\Batch\BatchController::process_create');
     });
 
     // Manajemen Data Induk (Unit Kerja - Super Admin Only)
