@@ -134,13 +134,18 @@ class BatchController extends BaseController
         return view('batch/pk', $data);
     }
 
-    public function process_update()
+    public function save_batch_update()
     {
-        if (strtolower($this->request->getMethod()) !== 'post') {
+        $method = $this->request->getMethod();
+        $headers = $this->request->getHeaders();
+        log_message('debug', "Batch Update Request - Method: {$method}");
+        log_message('debug', "Batch Update Headers: " . json_encode($headers));
+
+        if (strtolower($method) !== 'post') {
             log_message('error', 'Batch Update received GET request. Possible server redirect issue.');
             return $this->response->setJSON([
                 'success' => false, 
-                'message' => 'Permintaan ditolak oleh server (Metode GET tidak diizinkan untuk update). Silakan coba bersihkan cache browser atau hubungi admin jika masalah berlanjut.'
+                'message' => "Permintaan ditolak oleh server (Diterima sebagai {$method}, seharusnya POST). Silakan coba Hard Refresh (Ctrl+F5) atau hubungi admin."
             ]);
         }
 
@@ -165,7 +170,7 @@ class BatchController extends BaseController
         }
     }
 
-    public function process_create()
+    public function save_batch_create()
     {
         if (strtolower($this->request->getMethod()) !== 'post') {
             return redirect()->to('/email');

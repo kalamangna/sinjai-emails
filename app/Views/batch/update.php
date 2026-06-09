@@ -245,7 +245,7 @@
             });
 
             try {
-                const response = await fetch('<?= base_url('batch/process-update') ?>', {
+                const response = await fetch('<?= base_url('batch/save-batch-update') ?>', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
