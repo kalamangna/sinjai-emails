@@ -134,7 +134,7 @@ class BatchController extends BaseController
         return view('batch/pk', $data);
     }
 
-    public function process_update()
+    public function execute_update()
     {
         if (strtolower($this->request->getMethod()) !== 'post') {
             return $this->response->setJSON(['success' => false, 'message' => 'Invalid request method.']);
@@ -160,7 +160,7 @@ class BatchController extends BaseController
         }
     }
 
-    public function process_create()
+    public function execute_create()
     {
         if (strtolower($this->request->getMethod()) !== 'post') {
             return redirect()->to('/email');

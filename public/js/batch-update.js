@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
         showGlobalLoading(true);
 
         try {
-            const response = await fetch('/batch/import_generic_spreadsheet', {
+            const response = await fetch('import_generic_spreadsheet', {
                 method: 'POST',
                 body: formData,
                 headers: {
