@@ -143,9 +143,22 @@ class BatchController extends BaseController
 
         if (strtolower($method) !== 'post') {
             log_message('error', 'Batch Update received GET request. Possible server redirect issue.');
+            
+            $diagnostics = [
+                'received_method' => $method,
+                'uri' => (string)$this->request->getUri(),
+                'is_https' => $this->request->isSecure(),
+                'proto' => $_SERVER['HTTP_X_FORWARDED_PROTO'] ?? 'unknown',
+                'referer' => $_SERVER['HTTP_REFERER'] ?? 'none',
+                'server_addr' => $_SERVER['SERVER_ADDR'] ?? 'unknown',
+                'remote_addr' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+            ];
+
             return $this->response->setJSON([
                 'success' => false, 
-                'message' => "Permintaan ditolak oleh server (Diterima sebagai {$method}, seharusnya POST). Silakan coba Hard Refresh (Ctrl+F5) atau hubungi admin."
+                'message' => "Permintaan ditolak oleh server (Diterima sebagai {$method}, seharusnya POST).",
+                'diagnostics' => $diagnostics,
+                'hint' => 'Pastikan app.baseURL di .env server menggunakan https:// dan bersihkan cache.'
             ]);
         }
 
