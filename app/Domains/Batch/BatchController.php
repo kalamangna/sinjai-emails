@@ -156,7 +156,8 @@ class BatchController extends BaseController
 
             return $this->response->setJSON(['success' => true, 'results' => $results]);
         } catch (\Throwable $e) {
-            return $this->response->setJSON(['success' => false, 'message' => $e->getMessage()]);
+            log_message('error', 'Batch Update Failed: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
+            return $this->response->setJSON(['success' => false, 'message' => $e->getMessage() ?: 'Internal Server Error (Batch Update)']);
         }
     }
 

@@ -15,12 +15,16 @@ class EmailBatchService
     protected $unitKerjaModel;
     protected $pkModel;
 
-    public function __construct()
-    {
-        $this->cpanelApi = new CpanelApi();
-        $this->emailModel = new EmailModel();
-        $this->unitKerjaModel = new UnitKerjaModel();
-        $this->pkModel = new PkModel();
+    public function __construct(
+        CpanelApi $cpanelApi = null,
+        EmailModel $emailModel = null,
+        UnitKerjaModel $unitKerjaModel = null,
+        PkModel $pkModel = null
+    ) {
+        $this->cpanelApi = $cpanelApi ?? new CpanelApi();
+        $this->emailModel = $emailModel ?? new EmailModel();
+        $this->unitKerjaModel = $unitKerjaModel ?? new UnitKerjaModel();
+        $this->pkModel = $pkModel ?? new PkModel();
     }
 
     public function processBatchUpdate(array $data)
@@ -50,6 +54,13 @@ class EmailBatchService
         $newPimpinan = $data['pimpinan'] ?? null;
         $newPimpinanDesa = $data['pimpinan_desa'] ?? null;
         $newUnitKerja = $data['unit_kerja'] ?? null;
+        $newUnitKerjaIdFromNama = null;
+        if (!empty($newUnitKerja)) {
+            $unit = $this->unitKerjaModel->where('nama_unit_kerja', $newUnitKerja)->first();
+            if ($unit) {
+                $newUnitKerjaIdFromNama = $unit['id'];
+            }
+        }
 
         $results = [];
         foreach ($identifiers as $index => $identifier) {
@@ -77,7 +88,7 @@ class EmailBatchService
             $emailUpdateData = [];
             
             $compareAndUpdate = function($field, $newValue) use (&$emailUpdateData, $emailRecord) {
-                if ($newValue !== null && $newValue !== '' && (string)$emailRecord[$field] !== (string)$newValue) {
+                if ($newValue !== null && $newValue !== '' && (string)($emailRecord[$field] ?? '') !== (string)$newValue) {
                     $emailUpdateData[$field] = $newValue;
                 }
             };
@@ -113,11 +124,8 @@ class EmailBatchService
             if (isset($newPimpinanDesa) && $newPimpinanDesa !== '' && (int)$emailRecord['pimpinan_desa'] !== (int)$newPimpinanDesa) {
                 $emailUpdateData['pimpinan_desa'] = $newPimpinanDesa;
             }
-            if (!empty($newUnitKerja)) {
-                $unit = $this->unitKerjaModel->where('nama_unit_kerja', $newUnitKerja)->first();
-                if ($unit && (string)$emailRecord['unit_kerja_id'] !== (string)$unit['id']) {
-                    $emailUpdateData['unit_kerja_id'] = $unit['id'];
-                }
+            if ($newUnitKerjaIdFromNama && (string)$emailRecord['unit_kerja_id'] !== (string)$newUnitKerjaIdFromNama) {
+                $emailUpdateData['unit_kerja_id'] = $newUnitKerjaIdFromNama;
             }
 
 
@@ -162,11 +170,16 @@ class EmailBatchService
 
             $updatedEmail = false;
             $updatedPk = false;
+            $errorMessages = [];
 
             if (!empty($emailUpdateData)) {
                 try {
                     $updatedEmail = $this->emailModel->update($emailRecord['id'], $emailUpdateData);
+                    if (!$updatedEmail) {
+                        $errorMessages[] = 'Email update failed.';
+                    }
                 } catch (\Throwable $e) {
+                    $errorMessages[] = 'Email error: ' . $e->getMessage();
                     log_message('error', 'Error updating EmailModel for ' . $identifier . ': ' . $e->getMessage());
                 }
             }
@@ -179,13 +192,19 @@ class EmailBatchService
                         $pkUpdateData['email'] = $emailRecord['email'];
                         $updatedPk = $this->pkModel->insert($pkUpdateData);
                     }
+                    if (!$updatedPk) {
+                        $errorMessages[] = 'PK update failed.';
+                    }
                 } catch (\Throwable $e) {
+                    $errorMessages[] = 'PK error: ' . $e->getMessage();
                     log_message('error', 'Error updating PkModel for ' . $identifier . ': ' . $e->getMessage());
                 }
             }
 
             if ($updatedEmail || $updatedPk) {
                 $results[] = ['identifier' => $identifier, 'success' => true, 'message' => 'Successfully updated.'];
+            } elseif (!empty($errorMessages)) {
+                $results[] = ['identifier' => $identifier, 'success' => false, 'message' => implode(' | ', $errorMessages)];
             } else {
                 $results[] = ['identifier' => $identifier, 'success' => false, 'message' => 'Failed to update (database error).'];
             }
