@@ -144,21 +144,22 @@ class BatchController extends BaseController
         if (strtolower($method) !== 'post') {
             log_message('error', 'Batch Update received GET request. Possible server redirect issue.');
             
-            $diagnostics = [
-                'received_method' => $method,
-                'uri' => (string)$this->request->getUri(),
-                'is_https' => $this->request->isSecure(),
-                'proto' => $_SERVER['HTTP_X_FORWARDED_PROTO'] ?? 'unknown',
-                'referer' => $_SERVER['HTTP_REFERER'] ?? 'none',
-                'server_addr' => $_SERVER['SERVER_ADDR'] ?? 'unknown',
-                'remote_addr' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
-            ];
+            $proto = $_SERVER['HTTP_X_FORWARDED_PROTO'] ?? 'unknown';
+            $isSecure = $this->request->isSecure() ? 'YES' : 'NO';
+            $baseUrl = config('App')->baseURL;
+            $uri = (string)$this->request->getUri();
+
+            $msg = "Permintaan ditolak (Diterima sebagai {$method}, seharusnya POST).\n\n";
+            $msg .= "DIAGNOSA SERVER:\n";
+            $msg .= "- Proto: {$proto}\n";
+            $msg .= "- Is Secure (Detect): {$isSecure}\n";
+            $msg .= "- BaseURL Config: {$baseUrl}\n";
+            $msg .= "- Detected URI: {$uri}\n\n";
+            $msg .= "SOLUSI: Pastikan app.baseURL di .env server menggunakan https://tte.sinjaikab.go.id/ dan lakukan Hard Refresh.";
 
             return $this->response->setJSON([
                 'success' => false, 
-                'message' => "Permintaan ditolak oleh server (Diterima sebagai {$method}, seharusnya POST).",
-                'diagnostics' => $diagnostics,
-                'hint' => 'Pastikan app.baseURL di .env server menggunakan https:// dan bersihkan cache.'
+                'message' => $msg
             ]);
         }
 
