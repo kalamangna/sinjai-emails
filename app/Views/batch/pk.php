@@ -169,7 +169,7 @@
             });
 
             try {
-                const response = await fetch('execute-update', {
+                const response = await fetch('<?= site_url('batch/process-update') ?>', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

@@ -1,5 +1,7 @@
 # Session History - 9 Juni 2026
 
+- **Fix Batch Route 404**: Memperbaiki kesalahan `404 Not Found` pada rute batch dengan mengubah pemanggilan URL menjadi relatif dan mengganti nama rute (`process-update`) guna menghindari konflik penamaan atau blokir WAF pada server.
+
 ## Reviu Proses Batch & Unit Testing
 - **Refaktor EmailBatchService**:
     - Mengimplementasikan **Dependency Injection** pada constructor `EmailBatchService` untuk mempermudah unit testing dengan memungkinkan penggunaan *mock objects* untuk `CpanelApi`, `EmailModel`, `UnitKerjaModel`, dan `PkModel`.
