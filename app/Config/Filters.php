@@ -54,7 +54,7 @@ class Filters extends BaseFilters
      */
     public array $required = [
         'before' => [
-            'forcehttps', // Force Global Secure Requests
+            // 'forcehttps', // Removed to prevent POST-to-GET redirects on AJAX
         ],
         'after' => [
             'performance', // Performance Metrics
