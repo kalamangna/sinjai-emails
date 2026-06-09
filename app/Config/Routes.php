@@ -105,6 +105,9 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         });
     });
 
+    $routes->match(['get', 'post'], 'batch-update-data', '\App\Domains\Batch\BatchController::save_batch_update');
+    $routes->match(['get', 'post'], 'batch-create-data', '\App\Domains\Batch\BatchController::save_batch_create');
+
     // Batch Operations (Admin & Super Admin)
     $routes->group('batch', ['filter' => 'role:admin,super_admin'], function ($routes) {
         $routes->get('/', '\App\Domains\Batch\BatchController::index');
@@ -115,8 +118,6 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         $routes->get('download_unit_kerja_template', '\App\Domains\Batch\BatchController::download_unit_kerja_template');
         $routes->get('update', '\App\Domains\Batch\BatchController::update');
         $routes->get('pk', '\App\Domains\Batch\BatchController::pk');
-        $routes->match(['get', 'post'], 'save-batch-update', '\App\Domains\Batch\BatchController::save_batch_update');
-        $routes->match(['get', 'post'], 'save-batch-create', '\App\Domains\Batch\BatchController::save_batch_create');
     });
 
     // Manajemen Data Induk (Unit Kerja - Super Admin Only)

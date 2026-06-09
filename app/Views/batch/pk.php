@@ -169,7 +169,7 @@
             });
 
             try {
-                const response = await fetch('<?= base_url('batch/save-batch-update') ?>', {
+                const response = await fetch('<?= site_url('batch-update-data') ?>', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
