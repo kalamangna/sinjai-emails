@@ -19,6 +19,7 @@
 
 ## Perbaikan Bug & Optimasi
 - **Fix Password Edit**: Memperbaiki error `Undefined array key "success"` saat mengubah password dengan menyesuaikan pengecekan status respon dari cPanel API.
+- **Fix Batch Operations JS**: Memperbaiki error `Cannot read properties of undefined (reading 'length')` pada proses Batch Update dan Batch PK dengan menambahkan validasi respon server dan penanganan error yang lebih kokoh pada sisi klien.
 
 # Session History - 8 Juni 2026
 

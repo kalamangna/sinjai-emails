@@ -145,15 +145,19 @@ class BatchController extends BaseController
             return $this->response->setJSON(['success' => false, 'message' => 'No identifiers provided.']);
         }
 
-        $results = $this->emailBatchService->processBatchUpdate($data);
-        $this->sendBatchNotification('UPDATE', $results);
-        
-        // Clear Dashboard Cache
-        $cache = \Config\Services::cache();
-        $cache->delete('dashboard_summary_data_v3');
-        $cache->delete('email_dashboard_summary');
+        try {
+            $results = $this->emailBatchService->processBatchUpdate($data);
+            $this->sendBatchNotification('UPDATE', $results);
 
-        return $this->response->setJSON(['success' => true, 'results' => $results]);
+            // Clear Dashboard Cache
+            $cache = \Config\Services::cache();
+            $cache->delete('dashboard_summary_data_v3');
+            $cache->delete('email_dashboard_summary');
+
+            return $this->response->setJSON(['success' => true, 'results' => $results]);
+        } catch (\Throwable $e) {
+            return $this->response->setJSON(['success' => false, 'message' => $e->getMessage()]);
+        }
     }
 
     public function process_create()

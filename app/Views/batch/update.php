@@ -273,6 +273,11 @@
                     })
                 });
                 const result = await response.json();
+                
+                if (!result.success) {
+                    throw new Error(result.message || 'Gagal memproses data.');
+                }
+                
                 renderResults(result.results);
             } catch (error) {
                 alert('Gagal memperbarui: ' + error.message);
@@ -283,6 +288,7 @@
         });
 
         function renderResults(results) {
+            results = results || [];
             resultsTableBody.innerHTML = results.length ? '' : '<tr><td colspan="4" class="px-6 py-10 text-center italic text-slate-700">Tidak ada data hasil pemrosesan.</td></tr>';
             results.forEach((res, i) => {
                 const colorClass = res.success ? 'bg-emerald-100 text-emerald-800 border-transparent' : 'bg-red-100 text-red-700 border-transparent';
