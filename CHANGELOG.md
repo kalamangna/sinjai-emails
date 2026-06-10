@@ -1,6 +1,7 @@
 # Session History - 10 Juni 2026
 
 ## Debug & Fixes
+- **Fix Laporan Notifikasi Telegram**: Memperbaiki fungsi *Cron Job* `SyncAllCommand` di mana fungsi pengecekan `checkTteExpiredAlerts()` (untuk mendeteksi TTE pimpinan yang *expired*) dan `checkQuotaAlerts()` (untuk peringatan limit *cPanel*) sebelumnya terdefinisi namun terlewat untuk dieksekusi. Sekarang kedua fungsi tersebut akan dipanggil secara otomatis pada sinkronisasi harian dan mingguan.
 - **Refaktor Batch Update (EmailBatchService)**:
     - **Performa (*Pre-fetching*)**: Menghilangkan masalah *N+1 Query* dengan mengambil seluruh data `email` dan `pk` secara *bulk* di awal proses (memecah ke dalam *chunk* 500 baris) sebelum perbandingan data.
     - **Konsistensi Data**: Menerapkan *Database Transaction* (`transBegin`, `transCommit`, `transRollback`) sehingga jika salah satu pembaruan gagal, data tidak akan bentrok (setengah jalan).

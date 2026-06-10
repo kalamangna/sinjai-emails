@@ -93,11 +93,13 @@ class SyncAllCommand extends BaseCommand
         // Phase: TTE (Harian / All)
         if ($runAll || $isDaily) {
             $this->syncTteStatus();
+            $this->checkTteExpiredAlerts();
         }
         
         // Phase: cPanel (Mingguan / All)
         if ($runAll || $isWeekly) {
             $this->syncCpanel();
+            $this->checkQuotaAlerts();
         }
 
         // Phase: Pegawai & Website (Bulanan / All)
