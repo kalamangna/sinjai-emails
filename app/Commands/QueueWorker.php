@@ -56,6 +56,19 @@ class QueueWorker extends BaseCommand
             // Success: Delete job
             $jobModel->delete($job['id']);
             CLI::write("Job #{$job['id']} completed.", 'green');
+
+            // Check if this was the last job of its type
+            $remaining = $jobModel->where('type', $type)->countAllResults();
+            if ($remaining === 0) {
+                $alertService = new \App\Shared\Services\AlertService();
+                if ($type === 'sync_tte_batch') {
+                    CLI::write("All TTE batch jobs completed. Triggering alerts...", 'blue');
+                    $alertService->checkTteExpiredAlerts();
+                } elseif ($type === 'sync_cpanel') {
+                    CLI::write("All cPanel sync jobs completed. Triggering alerts...", 'blue');
+                    $alertService->checkQuotaAlerts();
+                }
+            }
         } catch (\Throwable $e) {
             CLI::error("Job #{$job['id']} failed: " . $e->getMessage());
             
@@ -68,6 +81,8 @@ class QueueWorker extends BaseCommand
             } else {
                 // Permanently failed
                 CLI::error("Job #{$job['id']} permanently failed after 3 attempts.");
+                $telegram = new \App\Shared\Libraries\TelegramLibrary();
+                $telegram->sendMessage("🚨 <b>CRITICAL ERROR: QUEUE WORKER</b>\nTugas sinkronisasi gagal secara permanen!\nID Job: {$job['id']}\nTipe: $type\nError: " . $e->getMessage());
                 $jobModel->delete($job['id']);
             }
         }
@@ -99,12 +114,15 @@ class QueueWorker extends BaseCommand
                 $data = $result['data'];
                 $source = (is_array($data) && isset($data[0])) ? $data[0] : $data;
                 
-                // Simplified sync logic for worker
                 if (isset($source['pangkat_nama']) || isset($source['pangkat_golruang'])) {
-                    $emailModel->where('nip_hash', hash('sha256', $nip))->set([
+                    $updateData = [
                         'pangkat_nama' => $source['pangkat_nama'] ?? null,
                         'pangkat_golruang' => $source['pangkat_golruang'] ?? null
-                    ])->update();
+                    ];
+                    if (isset($source['jabatan'])) {
+                        $updateData['jabatan'] = mb_strtoupper($source['jabatan'], 'UTF-8');
+                    }
+                    $emailModel->where('nip_hash', hash('sha256', $nip))->set($updateData)->update();
                 }
             }
         }

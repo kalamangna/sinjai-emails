@@ -1,6 +1,11 @@
 # Session History - 10 Juni 2026
 
 ## Debug & Fixes
+- **Refaktor Queue Worker & Sinkronisasi Notifikasi Asinkron**:
+    - Memindahkan fungsi notifikasi Telegram (`checkTteExpiredAlerts` dan `checkQuotaAlerts`) ke sebuah *service* terpusat (`AlertService`).
+    - Menghapus pemanggilan laporan dari *Cron Job* (`SyncAllCommand`) yang prematur, dan memindahkannya ke dalam `QueueWorker` agar laporan dikirimkan **hanya setelah** tugas latar belakang (API calls) tersebut benar-benar tuntas.
+    - Menambahkan notifikasi darurat (CRITICAL ERROR) otomatis ke grup Telegram apabila terdapat antrean tugas sinkronisasi yang gagal permanen setelah 3 kali percobaan.
+    - Menambahkan logika pembaruan nama `jabatan` pada proses sinkronisasi massal data pegawai di `QueueWorker`.
 - **Fix Laporan Notifikasi Telegram**: Memperbaiki fungsi *Cron Job* `SyncAllCommand` di mana fungsi pengecekan `checkTteExpiredAlerts()` (untuk mendeteksi TTE pimpinan yang *expired*) dan `checkQuotaAlerts()` (untuk peringatan limit *cPanel*) sebelumnya terdefinisi namun terlewat untuk dieksekusi. Sekarang kedua fungsi tersebut akan dipanggil secara otomatis pada sinkronisasi harian dan mingguan.
 - **Refaktor Batch Update (EmailBatchService)**:
     - **Performa (*Pre-fetching*)**: Menghilangkan masalah *N+1 Query* dengan mengambil seluruh data `email` dan `pk` secara *bulk* di awal proses (memecah ke dalam *chunk* 500 baris) sebelum perbandingan data.
