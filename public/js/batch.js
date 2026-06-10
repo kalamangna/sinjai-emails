@@ -51,7 +51,9 @@ document.addEventListener("DOMContentLoaded", function () {
     showGlobalLoading(true);
 
         try {
-            const response = await fetch(window.BASE_URL + '/batch/import_generic_spreadsheet', {
+            const form = document.getElementById('spreadsheet_import_form');
+            const targetUrl = form ? form.getAttribute('data-import-url') : (window.BASE_URL + '/batch/import_generic_spreadsheet');
+            const response = await fetch(targetUrl, {
                 method: 'POST',
                 body: formData,
                 headers: {
@@ -177,7 +179,8 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         // 1. Batch check NIK, NIP, and ALL potential Email candidates
-        const batchCheckResult = await fetch(window.BASE_URL + "/user/batch_check_availability", {
+        const checkUrl = window.BATCH_CHECK_URL || (window.BASE_URL + "/user/batch_check_availability");
+        const batchCheckResult = await fetch(checkUrl, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -330,7 +333,8 @@ document.addEventListener("DOMContentLoaded", function () {
         progressText.textContent = `${percentage}% (Processing ${i + 1} / ${totalToSubmit})`;
 
         try {
-          const response = await fetch(window.BASE_URL + "/email/create_single", {
+          const createUrl = window.EMAIL_CREATE_URL || (window.BASE_URL + "/email/create_single");
+          const response = await fetch(createUrl, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -400,7 +404,8 @@ document.addEventListener("DOMContentLoaded", function () {
         renderResults(userBatch);
         alert(`Berhasil membuat ${successCount} akun email!`);
         setTimeout(() => {
-          window.location.href = window.BASE_URL + "/email";
+          const redirectUrl = window.EMAIL_REDIRECT_URL || (window.BASE_URL + "/email");
+          window.location.href = redirectUrl;
         }, 1000);
       }
     } finally {

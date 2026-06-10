@@ -17,7 +17,7 @@
             <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Impor dari Excel (XLSX)</h3>
         </div>
         <div class="p-6 space-y-4">
-            <form id="spreadsheet_import_form" method="post" enctype="multipart/form-data">
+            <form id="spreadsheet_import_form" data-import-url="<?= site_url('batch/import_generic_spreadsheet') ?>" method="post" enctype="multipart/form-data">
                 <div>
                     <label for="spreadsheet_file" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">File Excel</label>
                     <input type="file" id="spreadsheet_file" name="spreadsheet_file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-slate-50 file:text-slate-700 hover:file:bg-slate-100 transition-colors">
@@ -137,6 +137,9 @@
     const unitKerjaOptions = <?= json_encode(array_map(function ($unit) {
                                     return ['id' => $unit['id'], 'nama_unit_kerja' => $unit['nama_unit_kerja']];
                                 }, $unit_kerja)) ?>;
+    window.BATCH_CHECK_URL = '<?= site_url('user/batch_check_availability') ?>';
+    window.EMAIL_CREATE_URL = '<?= site_url('email/create_single') ?>';
+    window.EMAIL_REDIRECT_URL = '<?= site_url('email') ?>';
 </script>
-<script src="<?= base_url('js/batch.js') ?>"></script>
+<script src="<?= base_url('js/batch.js?v=' . time()) ?>"></script>
 <?= $this->endSection() ?>
