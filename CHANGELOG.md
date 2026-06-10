@@ -1,6 +1,9 @@
 # Session History - 10 Juni 2026
 
 ## Debug & Fixes
+- **Fix Bug pada Proses Batch (`EmailBatchService`)**:
+    - **Perbaikan Sinkronisasi `status_asn_id`**: Menutup celah bug pada `processBatchUpdate` di mana tabel `pk` (Perjanjian Kerja) gagal mendapatkan nilai `status_asn_id` yang baru jika pembaruan dari UI/Excel hanya mengubah status ASN tanpa mengubah data PK lainnya.
+    - **Transaksi pada Batch Create**: Memperbaiki `processBatchCreate` yang sebelumnya tidak memiliki pelindung transaksi (*Database Transaction*). Sekarang, sistem akan memasukkan data ke database lokal terlebih dahulu; jika berhasil, barulah membuat akun di cPanel. Jika pembuatan cPanel gagal, maka rekaman di database lokal otomatis dibatalkan (*Rollback*) sehingga tidak ada *orphan account*.
 - **Refaktor Queue Worker & Sinkronisasi Notifikasi Asinkron**:
     - Memindahkan fungsi notifikasi Telegram (`checkTteExpiredAlerts` dan `checkQuotaAlerts`) ke sebuah *service* terpusat (`AlertService`).
     - Menghapus pemanggilan laporan dari *Cron Job* (`SyncAllCommand`) yang prematur, dan memindahkannya ke dalam `QueueWorker` agar laporan dikirimkan **hanya setelah** tugas latar belakang (API calls) tersebut benar-benar tuntas.

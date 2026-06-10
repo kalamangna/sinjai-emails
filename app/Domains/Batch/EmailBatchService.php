@@ -198,12 +198,11 @@ class EmailBatchService
             if (isset($newTanggalKontrakAwals[$index])) $compareAndUpdatePk('tanggal_kontrak_awal', $newTanggalKontrakAwals[$index]);
             if (isset($newTanggalKontrakAkhirs[$index])) $compareAndUpdatePk('tanggal_kontrak_akhir', $newTanggalKontrakAkhirs[$index]);
 
-            if (!empty($pkUpdateData) && $pkRecord) {
-                if ((string)$pkRecord['status_asn_id'] !== (string)$emailRecord['status_asn_id']) {
-                    $pkUpdateData['status_asn_id'] = $emailRecord['status_asn_id'];
-                }
-            } elseif (!empty($pkUpdateData) && !$pkRecord) {
-                $pkUpdateData['status_asn_id'] = $emailRecord['status_asn_id'];
+            $targetStatusAsnId = $emailUpdateData['status_asn_id'] ?? $emailRecord['status_asn_id'];
+            if ($pkRecord && (string)$pkRecord['status_asn_id'] !== (string)$targetStatusAsnId) {
+                $pkUpdateData['status_asn_id'] = $targetStatusAsnId;
+            } elseif (!$pkRecord && !empty($pkUpdateData)) {
+                $pkUpdateData['status_asn_id'] = $targetStatusAsnId;
             }
 
             if (empty($emailUpdateData) && empty($pkUpdateData)) {
@@ -299,10 +298,11 @@ class EmailBatchService
         }
 
         $results = [];
+        $db = \Config\Database::connect();
+        
         foreach ($data as $item) {
+            $db->transBegin();
             try {
-                $this->cpanelApi->create_email_account($item->email, $item->password, $item->quota);
-
                 $unitKerjaId = null;
                 if (!empty($item->unitKerja)) {
                     $unit = $this->unitKerjaModel->where('nama_unit_kerja', $item->unitKerja)->first();
@@ -311,6 +311,7 @@ class EmailBatchService
                     }
                 }
 
+                // 1. Simpan ke database lokal terlebih dahulu
                 $this->emailModel->insert([
                     'email'      => $item->email,
                     'user'       => explode('@', $item->email)[0],
@@ -324,8 +325,18 @@ class EmailBatchService
                     'status_asn_id' => $item->statusAsn ?? null,
                 ]);
 
+                // 2. Buat akun di cPanel
+                $this->cpanelApi->create_email_account($item->email, $item->password, $item->quota);
+
+                if ($db->transStatus() === false) {
+                    throw new Exception('Gagal menyimpan data ke database lokal.');
+                }
+                
+                $db->transCommit();
                 $results[] = ['email' => $item->email, 'success' => true];
             } catch (\Throwable $e) {
+                $db->transRollback();
+                
                 $errorMessage = $e->getMessage();
                 if (strpos($errorMessage, 'already exists') !== false) {
                     $results[] = ['email' => $item->email, 'success' => false, 'message' => 'Email already exists on cPanel.'];
