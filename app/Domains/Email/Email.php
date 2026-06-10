@@ -107,6 +107,7 @@ class Email extends BaseController
                                            ->whereIn('emails.status_asn_id', [1, 2]) // PNS or PPPK
                                            ->orWhere('emails.pimpinan', 1) // ASN Leaders
                                        ->groupEnd()
+                                       ->where('emails.pimpinan_desa', 0) // Kepala Desa excluded
                                        ->orderBy('unit_kerja.nama_unit_kerja', 'ASC')
                                        ->orderBy('emails.name', 'ASC')
                                        ->findAll();
