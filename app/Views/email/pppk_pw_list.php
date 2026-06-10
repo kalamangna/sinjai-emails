@@ -24,11 +24,11 @@
         <div class="p-6 border-b border-slate-100 bg-slate-50">
             <form action="<?= current_url() ?>" method="GET" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
                 <div class="md:col-span-10">
-                    <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Filter NIP</label>
+                    <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Filter NIK</label>
                     <select name="has_nip" class="block w-full px-3 py-2 bg-white border <?= !empty($has_nip) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm appearance-none cursor-pointer transition-all">
                         <option value="">SEMUA PEGAWAI</option>
-                        <option value="yes" <?= ($has_nip ?? '') === 'yes' ? 'selected' : '' ?>>DENGAN NIP</option>
-                        <option value="no" <?= ($has_nip ?? '') === 'no' ? 'selected' : '' ?>>TANPA NIP</option>
+                        <option value="yes" <?= ($has_nip ?? '') === 'yes' ? 'selected' : '' ?>>DENGAN NIK</option>
+                        <option value="no" <?= ($has_nip ?? '') === 'no' ? 'selected' : '' ?>>TANPA NIK</option>
                     </select>
                 </div>
 
@@ -48,7 +48,7 @@
                 <thead class="bg-slate-100 text-slate-700 uppercase text-[10px] font-bold">
                     <tr>
                         <th class="px-6 py-3 border-b border-slate-200">No. PK</th>
-                        <th class="px-6 py-3 border-b border-slate-200">Nama / NIP</th>
+                        <th class="px-6 py-3 border-b border-slate-200">Nama / NIK</th>
                         <th class="px-6 py-3 border-b border-slate-200">Jabatan / Unit Kerja</th>
                         <th class="px-6 py-3 border-b border-slate-200">Status TTE</th>
                         <th class="px-6 py-3 border-b border-slate-200 text-center">Aksi</th>
@@ -68,7 +68,7 @@
                                 <td class="px-6 py-4">
                                     <div class="flex flex-col" id="pegawai-container-<?= $email['id'] ?>" data-nip="<?= esc($email['nip']) ?>">
                                         <span class="font-bold text-slate-800 uppercase tracking-tight leading-tight"><?= esc($email['name']) ?></span>
-                                        <span class="text-[10px] font-bold text-slate-500 mt-0.5">NIP: <?= esc($email['nip'] ?: '-') ?></span>
+                                        <span class="text-[10px] font-bold text-slate-500 mt-0.5">NIK: <?= esc($email['nik'] ?: '-') ?></span>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">
