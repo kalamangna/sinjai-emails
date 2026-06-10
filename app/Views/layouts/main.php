@@ -57,6 +57,8 @@
             if (activeMenu) {
                 document.documentElement.setAttribute('data-sidebar-menu', activeMenu);
             }
+            
+            window.BASE_URL = '<?= rtrim(base_url(), '/') ?>';
         })();
     </script>
 

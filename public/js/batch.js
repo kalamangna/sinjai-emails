@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", function () {
     showGlobalLoading(true);
 
         try {
-            const response = await fetch('/batch/import_generic_spreadsheet', {
+            const response = await fetch(window.BASE_URL + '/batch/import_generic_spreadsheet', {
                 method: 'POST',
                 body: formData,
                 headers: {
@@ -177,7 +177,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         // 1. Batch check NIK, NIP, and ALL potential Email candidates
-        const batchCheckResult = await fetch("/user/batch_check_availability", {
+        const batchCheckResult = await fetch(window.BASE_URL + "/user/batch_check_availability", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -330,7 +330,7 @@ document.addEventListener("DOMContentLoaded", function () {
         progressText.textContent = `${percentage}% (Processing ${i + 1} / ${totalToSubmit})`;
 
         try {
-          const response = await fetch("/email/create_single", {
+          const response = await fetch(window.BASE_URL + "/email/create_single", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -400,7 +400,7 @@ document.addEventListener("DOMContentLoaded", function () {
         renderResults(userBatch);
         alert(`Berhasil membuat ${successCount} akun email!`);
         setTimeout(() => {
-          window.location.href = "/email";
+          window.location.href = window.BASE_URL + "/email";
         }, 1000);
       }
     } finally {
@@ -489,7 +489,7 @@ document.addEventListener("DOMContentLoaded", function () {
   async function checkNikOnServer(nik) {
     if (!nik) return { exists: false };
     try {
-      const response = await fetch("/user/check_niknip", {
+      const response = await fetch(window.BASE_URL + "/user/check_niknip", {
         // Updated endpoint
         method: "POST",
         headers: {
@@ -511,7 +511,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // New function for NIP check
     if (!nip) return { exists: false };
     try {
-      const response = await fetch("/user/check_niknip", {
+      const response = await fetch(window.BASE_URL + "/user/check_niknip", {
         // Using the same endpoint, backend needs to handle both
         method: "POST",
         headers: {
@@ -531,7 +531,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   async function checkEmailAvailability(email) {
     try {
-      const response = await fetch("/user/check_email", {
+      const response = await fetch(window.BASE_URL + "/user/check_email", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
