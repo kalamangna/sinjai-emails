@@ -57,8 +57,8 @@ class QueueWorker extends BaseCommand
             $jobModel->delete($job['id']);
             CLI::write("Job #{$job['id']} completed.", 'green');
 
-            // Check if this was the last job of its type
-            $remaining = $jobModel->where('type', $type)->countAllResults();
+            // Check if this was the last job of its type by checking the JSON payload
+            $remaining = $jobModel->like('payload', '"type":"' . $type . '"')->countAllResults();
             if ($remaining === 0) {
                 $alertService = new \App\Shared\Services\AlertService();
                 if ($type === 'sync_tte_batch') {
