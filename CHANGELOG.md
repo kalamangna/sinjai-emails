@@ -1,6 +1,11 @@
 # Session History - 10 Juni 2026
 
 ## Debug & Fixes
+- **Refaktor Batch Update (EmailBatchService)**:
+    - **Performa (*Pre-fetching*)**: Menghilangkan masalah *N+1 Query* dengan mengambil seluruh data `email` dan `pk` secara *bulk* di awal proses (memecah ke dalam *chunk* 500 baris) sebelum perbandingan data.
+    - **Konsistensi Data**: Menerapkan *Database Transaction* (`transBegin`, `transCommit`, `transRollback`) sehingga jika salah satu pembaruan gagal, data tidak akan bentrok (setengah jalan).
+    - **Sinkronisasi cPanel**: Mengaktifkan sinkronisasi pembaruan *password* massal langsung ke server cPanel secara *real-time*.
+    - **Fix Logika Unit Kerja & Gaji**: Memperbaiki prioritas *override* unit kerja (data Excel kini tidak tertimpa pilihan dropdown antarmuka) dan memperbaiki logika filter pemisah ribuan pada nominal gaji yang memiliki akhiran desimal `.00` atau `,00`.
 - **Halaman Debug NIP Ganda**: 
     - Menambahkan rute `/email/duplicate_nips` dan method `duplicate_nips` pada `EmailController` untuk melacak dan menampilkan secara khusus akun-akun pegawai yang memiliki NIP yang sama di dalam database.
     - Menambahkan antarmuka (view) bergaya "Slate Clean Government" khusus untuk menampilkan tabel akun-akun dengan NIP ganda tersebut beserta tautan cepat untuk mengeditnya.

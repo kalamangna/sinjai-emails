@@ -54,6 +54,7 @@ class EmailBatchService
         $newPimpinan = $data['pimpinan'] ?? null;
         $newPimpinanDesa = $data['pimpinan_desa'] ?? null;
         $newUnitKerja = $data['unit_kerja'] ?? null;
+        
         $newUnitKerjaIdFromNama = null;
         if (!empty($newUnitKerja)) {
             $unit = $this->unitKerjaModel->where('nama_unit_kerja', $newUnitKerja)->first();
@@ -62,28 +63,64 @@ class EmailBatchService
             }
         }
 
+        // PRE-FETCHING (Menghindari N+1 Query)
+        $cleanIdentifiers = [];
+        foreach ($identifiers as $identifier) {
+            if (empty($identifier)) continue;
+            if ($mode === 'email') {
+                $cleanIdentifiers[] = $identifier;
+            } else {
+                $cleanIdentifiers[] = hash('sha256', str_replace([' ', '.', '-', '\''], '', $identifier));
+            }
+        }
+
+        $existingEmails = [];
+        $existingPks = [];
+        if (!empty($cleanIdentifiers)) {
+            // Pecah menjadi chunk 500 untuk mencegah kueri terlalu besar
+            $chunks = array_chunk($cleanIdentifiers, 500);
+            foreach ($chunks as $chunk) {
+                if ($mode === 'email') {
+                    $records = $this->emailModel->whereIn('email', $chunk)->findAll();
+                } else {
+                    $records = $this->emailModel->whereIn('nik_hash', $chunk)->findAll();
+                }
+                foreach ($records as $r) {
+                    $key = ($mode === 'email') ? $r['email'] : $r['nik_hash'];
+                    $existingEmails[$key] = $r;
+                }
+            }
+            
+            $emailsList = array_column($existingEmails, 'email');
+            if (!empty($emailsList)) {
+                $pkChunks = array_chunk($emailsList, 500);
+                foreach ($pkChunks as $pChunk) {
+                    $pks = $this->pkModel->whereIn('email', $pChunk)->findAll();
+                    foreach ($pks as $p) {
+                        $existingPks[$p['email']] = $p;
+                    }
+                }
+            }
+        }
+
         $results = [];
+        $db = \Config\Database::connect();
+
         foreach ($identifiers as $index => $identifier) {
             if (empty($identifier)) {
                 $results[] = ['identifier' => 'Baris ' . ($index + 1), 'success' => false, 'message' => 'Identifier wajib diisi.'];
                 continue;
             }
 
-            $emailRecord = null;
-            if ($mode === 'email') {
-                $emailRecord = $this->emailModel->where('email', $identifier)->first();
-            } else {
-                $cleanIdentifier = str_replace([' ', '.', '-', '\''], '', $identifier);
-                $emailRecord = $this->emailModel->where('nik_hash', hash('sha256', $cleanIdentifier))->first();
-            }
-
-            if (!$emailRecord) {
+            $searchKey = ($mode === 'email') ? $identifier : hash('sha256', str_replace([' ', '.', '-', '\''], '', $identifier));
+            
+            if (!isset($existingEmails[$searchKey])) {
                 $results[] = ['identifier' => $identifier, 'success' => false, 'message' => 'Record not found in local database.'];
                 continue;
             }
 
-            // Fetch existing PK record for comparison if needed
-            $pkRecord = $this->pkModel->where('email', $emailRecord['email'])->first();
+            $emailRecord = $existingEmails[$searchKey];
+            $pkRecord = $existingPks[$emailRecord['email']] ?? null;
 
             $emailUpdateData = [];
             
@@ -105,8 +142,17 @@ class EmailBatchService
             if (isset($newJabatans[$index])) $compareAndUpdate('jabatan', mb_strtoupper($newJabatans[$index], 'UTF-8'));
             if (isset($newGolongans[$index])) $compareAndUpdate('golongan', $newGolongans[$index]);
             
-            if (isset($newUnitKerjaIds[$index]) && !empty($newUnitKerjaIds[$index]) && (string)$emailRecord['unit_kerja_id'] !== (string)$newUnitKerjaIds[$index]) {
-                $emailUpdateData['unit_kerja_id'] = $newUnitKerjaIds[$index];
+            // LOGIKA UNIT KERJA
+            $rowUnitKerjaId = $newUnitKerjaIds[$index] ?? null;
+            $finalUnitKerjaId = null;
+            if (!empty($rowUnitKerjaId)) {
+                $finalUnitKerjaId = $rowUnitKerjaId; // Prioritas ke ID dari baris Excel
+            } elseif ($newUnitKerjaIdFromNama) {
+                $finalUnitKerjaId = $newUnitKerjaIdFromNama; // Fallback ke dropdown UI
+            }
+
+            if ($finalUnitKerjaId && (string)$emailRecord['unit_kerja_id'] !== (string)$finalUnitKerjaId) {
+                $emailUpdateData['unit_kerja_id'] = $finalUnitKerjaId;
             }
 
             if (!empty($newStatusAsn) && (string)$emailRecord['status_asn_id'] !== (string)$newStatusAsn) {
@@ -124,19 +170,17 @@ class EmailBatchService
             if (isset($newPimpinanDesa) && $newPimpinanDesa !== '' && (int)$emailRecord['pimpinan_desa'] !== (int)$newPimpinanDesa) {
                 $emailUpdateData['pimpinan_desa'] = $newPimpinanDesa;
             }
-            if ($newUnitKerjaIdFromNama && (string)$emailRecord['unit_kerja_id'] !== (string)$newUnitKerjaIdFromNama) {
-                $emailUpdateData['unit_kerja_id'] = $newUnitKerjaIdFromNama;
-            }
-
 
             $pkUpdateData = [];
             
             $compareAndUpdatePk = function($field, $newValue) use (&$pkUpdateData, $pkRecord) {
                 $oldValue = $pkRecord ? $pkRecord[$field] : null;
                 
-                // For gaji_nominal, handle numeric comparison carefully
                 if ($field === 'gaji_nominal') {
-                    $cleanedNew = str_replace(['.', ','], '', $newValue);
+                    // Bersihkan dari sen koma/titik 00 dan pemisah ribuan
+                    $cleanedNew = str_replace(['.00', ',00'], '', $newValue);
+                    $cleanedNew = str_replace(['.', ','], '', $cleanedNew);
+                    
                     if ($oldValue !== null && $newValue !== '' && round((float)$oldValue) === round((float)$cleanedNew)) {
                         return;
                     }
@@ -155,7 +199,6 @@ class EmailBatchService
             if (isset($newTanggalKontrakAkhirs[$index])) $compareAndUpdatePk('tanggal_kontrak_akhir', $newTanggalKontrakAkhirs[$index]);
 
             if (!empty($pkUpdateData) && $pkRecord) {
-                // Ensure status_asn_id is synced if we are updating PK
                 if ((string)$pkRecord['status_asn_id'] !== (string)$emailRecord['status_asn_id']) {
                     $pkUpdateData['status_asn_id'] = $emailRecord['status_asn_id'];
                 }
@@ -168,24 +211,24 @@ class EmailBatchService
                 continue;
             }
 
-            $updatedEmail = false;
-            $updatedPk = false;
-            $errorMessages = [];
-
-            if (!empty($emailUpdateData)) {
-                try {
-                    $updatedEmail = $this->emailModel->update($emailRecord['id'], $emailUpdateData);
-                    if (!$updatedEmail) {
-                        $errorMessages[] = 'Email update failed.';
+            // TRANSAKSI DATABASE DAN SINKRONISASI CPANEL
+            $db->transBegin();
+            try {
+                if (!empty($emailUpdateData)) {
+                    // Sinkronisasi Password cPanel
+                    if (isset($emailUpdateData['password']) && !empty($emailUpdateData['password'])) {
+                        $cpanelRes = $this->cpanelApi->change_password($emailRecord['email'], $emailUpdateData['password']);
+                        if (!isset($cpanelRes['status']) || $cpanelRes['status'] != 1) {
+                            throw new \Exception('Gagal sinkron password ke cPanel: ' . ($cpanelRes['errors'][0] ?? 'Unknown error'));
+                        }
                     }
-                } catch (\Throwable $e) {
-                    $errorMessages[] = 'Email error: ' . $e->getMessage();
-                    log_message('error', 'Error updating EmailModel for ' . $identifier . ': ' . $e->getMessage());
-                }
-            }
 
-            if (!empty($pkUpdateData)) {
-                try {
+                    if (!$this->emailModel->update($emailRecord['id'], $emailUpdateData)) {
+                        throw new \Exception('Gagal menyimpan data Email ke database.');
+                    }
+                }
+
+                if (!empty($pkUpdateData)) {
                     if ($pkRecord) {
                         $updatedPk = $this->pkModel->update($pkRecord['id'], $pkUpdateData);
                     } else {
@@ -193,20 +236,22 @@ class EmailBatchService
                         $updatedPk = $this->pkModel->insert($pkUpdateData);
                     }
                     if (!$updatedPk) {
-                        $errorMessages[] = 'PK update failed.';
+                        throw new \Exception('Gagal menyimpan data Perjanjian Kerja ke database.');
                     }
-                } catch (\Throwable $e) {
-                    $errorMessages[] = 'PK error: ' . $e->getMessage();
-                    log_message('error', 'Error updating PkModel for ' . $identifier . ': ' . $e->getMessage());
                 }
-            }
 
-            if ($updatedEmail || $updatedPk) {
-                $results[] = ['identifier' => $identifier, 'success' => true, 'message' => 'Successfully updated.'];
-            } elseif (!empty($errorMessages)) {
-                $results[] = ['identifier' => $identifier, 'success' => false, 'message' => implode(' | ', $errorMessages)];
-            } else {
-                $results[] = ['identifier' => $identifier, 'success' => false, 'message' => 'Failed to update (database error).'];
+                if ($db->transStatus() === false) {
+                    $db->transRollback();
+                    $results[] = ['identifier' => $identifier, 'success' => false, 'message' => 'Transaksi database gagal di-commit.'];
+                } else {
+                    $db->transCommit();
+                    $results[] = ['identifier' => $identifier, 'success' => true, 'message' => 'Successfully updated.'];
+                }
+
+            } catch (\Throwable $e) {
+                $db->transRollback();
+                log_message('error', 'Batch Update Error for ' . $identifier . ': ' . $e->getMessage());
+                $results[] = ['identifier' => $identifier, 'success' => false, 'message' => $e->getMessage()];
             }
         }
 
