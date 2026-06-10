@@ -178,15 +178,15 @@ document.addEventListener("DOMContentLoaded", function () {
             if (secondNipPart) allCandidates.push(`${originalUsername}${secondNipPart}${domain}`);
         });
 
-        const checkFormData = new FormData();
+        const urlParams = new URLSearchParams();
         allCandidates.forEach((email, index) => {
-            checkFormData.append(`emails[${index}]`, email);
+            urlParams.append(`emails[${index}]`, email);
         });
         trimmedNiks.forEach((nik, index) => {
-            checkFormData.append(`niks[${index}]`, nik);
+            urlParams.append(`niks[${index}]`, nik);
         });
         trimmedNips.forEach((nip, index) => {
-            checkFormData.append(`nips[${index}]`, nip);
+            urlParams.append(`nips[${index}]`, nip);
         });
 
         // 1. Batch check NIK, NIP, and ALL potential Email candidates
@@ -194,9 +194,10 @@ document.addEventListener("DOMContentLoaded", function () {
         const batchCheckResult = await fetch(checkUrl, {
             method: "POST",
             headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
                 "X-Requested-With": "XMLHttpRequest",
             },
-            body: checkFormData
+            body: urlParams
         }).then(res => res.json());
 
         const serverResults = batchCheckResult.results || { emails: {}, niks: {}, nips: {} };
@@ -339,18 +340,19 @@ document.addEventListener("DOMContentLoaded", function () {
         progressText.textContent = `${percentage}% (Processing ${i + 1} / ${totalToSubmit})`;
 
         try {
-          const createFormData = new FormData();
+          const urlParams = new URLSearchParams();
           for (const key in user) {
-            createFormData.append(key, user[key]);
+            urlParams.append(key, user[key]);
           }
           
           const createUrl = window.EMAIL_CREATE_URL || (window.BASE_URL + "/email/create_single");
           const response = await fetch(createUrl, {
             method: "POST",
             headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
               "X-Requested-With": "XMLHttpRequest",
             },
-            body: createFormData,
+            body: urlParams,
           });
 
           const result = await response.json();

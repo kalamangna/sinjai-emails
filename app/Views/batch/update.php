@@ -245,34 +245,35 @@
             });
 
             try {
-                const formData = new FormData();
-                formData.append('mode', mode);
-                formData.append('status_asn', document.getElementById('status_asn_input').value);
-                formData.append('unit_kerja', document.getElementById('unit_kerja_input').value);
-                formData.append('eselon_id', document.getElementById('eselon_input').value);
-                formData.append('pimpinan', document.getElementById('pimpinan_input').value);
-                formData.append('pimpinan_desa', document.getElementById('pimpinan_desa_input').value);
+                const urlParams = new URLSearchParams();
+                urlParams.append('mode', mode);
+                urlParams.append('status_asn', document.getElementById('status_asn_input').value);
+                urlParams.append('unit_kerja', document.getElementById('unit_kerja_input').value);
+                urlParams.append('eselon_id', document.getElementById('eselon_input').value);
+                urlParams.append('pimpinan', document.getElementById('pimpinan_input').value);
+                urlParams.append('pimpinan_desa', document.getElementById('pimpinan_desa_input').value);
                 
-                identifiers.forEach(v => formData.append('identifiers[]', v));
-                mapInput('name_input').forEach(v => formData.append('names[]', v));
-                mapInput('nik_input').forEach(v => formData.append('niks[]', v));
-                mapInput('nip_input').forEach(v => formData.append('nips[]', v));
-                mapInput('gelar_depan_input').forEach(v => formData.append('gelar_depans[]', v));
-                mapInput('gelar_belakang_input').forEach(v => formData.append('gelar_belakangs[]', v));
-                mapInput('tempat_lahir_input').forEach(v => formData.append('tempat_lahirs[]', v));
-                mapInput('tanggal_lahir_input').forEach(v => formData.append('tanggal_lahirs[]', v));
-                mapInput('pendidikan_input').forEach(v => formData.append('pendidikans[]', v));
-                mapInput('jabatan_input').forEach(v => formData.append('jabatans[]', v));
-                mapInput('golongan_input').forEach(v => formData.append('golongans[]', v));
-                mapInput('unit_kerja_id_input').forEach(v => formData.append('unit_kerja_ids[]', v));
+                identifiers.forEach(v => urlParams.append('identifiers[]', v));
+                mapInput('name_input').forEach(v => urlParams.append('names[]', v));
+                mapInput('nik_input').forEach(v => urlParams.append('niks[]', v));
+                mapInput('nip_input').forEach(v => urlParams.append('nips[]', v));
+                mapInput('gelar_depan_input').forEach(v => urlParams.append('gelar_depans[]', v));
+                mapInput('gelar_belakang_input').forEach(v => urlParams.append('gelar_belakangs[]', v));
+                mapInput('tempat_lahir_input').forEach(v => urlParams.append('tempat_lahirs[]', v));
+                mapInput('tanggal_lahir_input').forEach(v => urlParams.append('tanggal_lahirs[]', v));
+                mapInput('pendidikan_input').forEach(v => urlParams.append('pendidikans[]', v));
+                mapInput('jabatan_input').forEach(v => urlParams.append('jabatans[]', v));
+                mapInput('golongan_input').forEach(v => urlParams.append('golongans[]', v));
+                mapInput('unit_kerja_id_input').forEach(v => urlParams.append('unit_kerja_ids[]', v));
 
                 const response = await fetch('<?= site_url('batch-update-data') ?>', {
                     method: 'POST',
                     headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
                         'X-Requested-With': 'XMLHttpRequest',
                         '<?= config('Security')->headerName ?>': '<?= csrf_hash() ?>'
                     },
-                    body: formData
+                    body: urlParams
                 });
                 const result = await response.json();
                 
