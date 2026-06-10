@@ -274,7 +274,7 @@
                 // Add a dummy file just in case WAF requires multipart/form-data to have a 'real' file extension
                 formData.append('dummy_file', new Blob(['dummy'], { type: 'text/plain' }), 'dummy.txt');
 
-                const response = await fetch('<?= site_url('batch-update-data') ?>', {
+                const response = await fetch('<?= site_url('batch_execute_update') ?>', {
                     method: 'POST',
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest',

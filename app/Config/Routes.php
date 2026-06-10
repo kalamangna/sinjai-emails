@@ -106,8 +106,9 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         });
     });
 
-    $routes->match(['get', 'post'], 'batch-update-data', '\App\Domains\Batch\BatchController::save_batch_update');
-    $routes->match(['get', 'post'], 'batch-create-data', '\App\Domains\Batch\BatchController::save_batch_create');
+    // Batch Create & Update API
+    $routes->match(['GET', 'POST'], 'batch_execute_update', '\App\Domains\Batch\BatchController::save_batch_update');
+    $routes->match(['GET', 'POST'], 'batch_execute_create', '\App\Domains\Batch\BatchController::save_batch_create');
 
     // Batch Operations (Admin & Super Admin)
     $routes->group('batch', ['filter' => 'role:admin,super_admin'], function ($routes) {
