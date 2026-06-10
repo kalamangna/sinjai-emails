@@ -178,19 +178,25 @@ document.addEventListener("DOMContentLoaded", function () {
             if (secondNipPart) allCandidates.push(`${originalUsername}${secondNipPart}${domain}`);
         });
 
+        const checkFormData = new FormData();
+        allCandidates.forEach((email, index) => {
+            checkFormData.append(`emails[${index}]`, email);
+        });
+        trimmedNiks.forEach((nik, index) => {
+            checkFormData.append(`niks[${index}]`, nik);
+        });
+        trimmedNips.forEach((nip, index) => {
+            checkFormData.append(`nips[${index}]`, nip);
+        });
+
         // 1. Batch check NIK, NIP, and ALL potential Email candidates
         const checkUrl = window.BATCH_CHECK_URL || (window.BASE_URL + "/user/batch_check_availability");
         const batchCheckResult = await fetch(checkUrl, {
             method: "POST",
             headers: {
-                "Content-Type": "application/json",
                 "X-Requested-With": "XMLHttpRequest",
             },
-            body: JSON.stringify({
-                emails: allCandidates,
-                niks: trimmedNiks,
-                nips: trimmedNips
-            })
+            body: checkFormData
         }).then(res => res.json());
 
         const serverResults = batchCheckResult.results || { emails: {}, niks: {}, nips: {} };
@@ -333,14 +339,18 @@ document.addEventListener("DOMContentLoaded", function () {
         progressText.textContent = `${percentage}% (Processing ${i + 1} / ${totalToSubmit})`;
 
         try {
+          const createFormData = new FormData();
+          for (const key in user) {
+            createFormData.append(key, user[key]);
+          }
+          
           const createUrl = window.EMAIL_CREATE_URL || (window.BASE_URL + "/email/create_single");
           const response = await fetch(createUrl, {
             method: "POST",
             headers: {
-              "Content-Type": "application/json",
               "X-Requested-With": "XMLHttpRequest",
             },
-            body: JSON.stringify(user),
+            body: createFormData,
           });
 
           const result = await response.json();

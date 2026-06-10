@@ -245,33 +245,34 @@
             });
 
             try {
+                const formData = new FormData();
+                formData.append('mode', mode);
+                formData.append('status_asn', document.getElementById('status_asn_input').value);
+                formData.append('unit_kerja', document.getElementById('unit_kerja_input').value);
+                formData.append('eselon_id', document.getElementById('eselon_input').value);
+                formData.append('pimpinan', document.getElementById('pimpinan_input').value);
+                formData.append('pimpinan_desa', document.getElementById('pimpinan_desa_input').value);
+                
+                identifiers.forEach(v => formData.append('identifiers[]', v));
+                mapInput('name_input').forEach(v => formData.append('names[]', v));
+                mapInput('nik_input').forEach(v => formData.append('niks[]', v));
+                mapInput('nip_input').forEach(v => formData.append('nips[]', v));
+                mapInput('gelar_depan_input').forEach(v => formData.append('gelar_depans[]', v));
+                mapInput('gelar_belakang_input').forEach(v => formData.append('gelar_belakangs[]', v));
+                mapInput('tempat_lahir_input').forEach(v => formData.append('tempat_lahirs[]', v));
+                mapInput('tanggal_lahir_input').forEach(v => formData.append('tanggal_lahirs[]', v));
+                mapInput('pendidikan_input').forEach(v => formData.append('pendidikans[]', v));
+                mapInput('jabatan_input').forEach(v => formData.append('jabatans[]', v));
+                mapInput('golongan_input').forEach(v => formData.append('golongans[]', v));
+                mapInput('unit_kerja_id_input').forEach(v => formData.append('unit_kerja_ids[]', v));
+
                 const response = await fetch('<?= site_url('batch-update-data') ?>', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest',
                         '<?= config('Security')->headerName ?>': '<?= csrf_hash() ?>'
                     },
-                    body: JSON.stringify({
-                        mode: mode,
-                        identifiers: identifiers,
-                        names: mapInput('name_input'),
-                        niks: mapInput('nik_input'),
-                        nips: mapInput('nip_input'),
-                        gelar_depans: mapInput('gelar_depan_input'),
-                        gelar_belakangs: mapInput('gelar_belakang_input'),
-                        tempat_lahirs: mapInput('tempat_lahir_input'),
-                        tanggal_lahirs: mapInput('tanggal_lahir_input'),
-                        pendidikans: mapInput('pendidikan_input'),
-                        jabatans: mapInput('jabatan_input'),
-                        golongans: mapInput('golongan_input'),
-                        unit_kerja_ids: mapInput('unit_kerja_id_input'),
-                        status_asn: document.getElementById('status_asn_input').value,
-                        unit_kerja: document.getElementById('unit_kerja_input').value,
-                        eselon_id: document.getElementById('eselon_input').value,
-                        pimpinan: document.getElementById('pimpinan_input').value,
-                        pimpinan_desa: document.getElementById('pimpinan_desa_input').value,
-                    })
+                    body: formData
                 });
                 const result = await response.json();
                 

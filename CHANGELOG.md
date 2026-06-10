@@ -1,7 +1,11 @@
 # Session History - 10 Juni 2026
 
 ## Debug & Fixes
-- **Fix Bug pada Proses Batch (`EmailBatchService`)**:
+- **Fix 403 Forbidden pada Batch Update**:
+    - Mengganti payload dari `application/json` ke `multipart/form-data` (menggunakan `FormData`) pada fungsi `create_single_email`, `batch_check_availability`, dan `batch-update-data`. Hal ini mencegah ModSecurity (WAF) dari memblokir payload JSON yang dikira berisi injeksi berbahaya saat menyimpan banyak data array.
+- **Fix Queue Worker Crash (Laporan Telegram TTE)**:
+    - Mengoreksi klausul pencarian dengan query builder `$jobModel->like('payload', $type)` dari sebelumnya yang menggunakan tanda kutip ganda ganda `'"type":"' . $type . '"'`. Tanda kutip ganda menyebabkan error `Unknown column 'type'` di database yang menggunakan konfigurasi `ANSI_QUOTES`.
+    - Perbaikan ini memastikan bahwa fungsi `checkTteExpiredAlerts` (pengiriman notifikasi TTE pimpinan yang expired ke Telegram) dapat dieksekusi dengan lancar setelah tugas batch sinkronisasi selesai tanpa terhenti karena _crash_ SQL.
     - **Perbaikan Sinkronisasi `status_asn_id`**: Menutup celah bug pada `processBatchUpdate` di mana tabel `pk` (Perjanjian Kerja) gagal mendapatkan nilai `status_asn_id` yang baru jika pembaruan dari UI/Excel hanya mengubah status ASN tanpa mengubah data PK lainnya.
     - **Transaksi pada Batch Create**: Memperbaiki `processBatchCreate` yang sebelumnya tidak memiliki pelindung transaksi (*Database Transaction*). Sekarang, sistem akan memasukkan data ke database lokal terlebih dahulu; jika berhasil, barulah membuat akun di cPanel. Jika pembuatan cPanel gagal, maka rekaman di database lokal otomatis dibatalkan (*Rollback*) sehingga tidak ada *orphan account*.
 - **Refaktor Queue Worker & Sinkronisasi Notifikasi Asinkron**:

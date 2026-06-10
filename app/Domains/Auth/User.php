@@ -139,6 +139,9 @@ class User extends BaseController
         }
 
         $input = $this->request->getJSON();
+        if (empty($input)) {
+            $input = (object) $this->request->getPost();
+        }
         $emails = $input->emails ?? [];
         $niks = array_map(fn($n) => str_replace([' ', '.', '-', '\''], '', $n), array_filter($input->niks ?? []));
         $nips = array_map(fn($n) => str_replace([' ', '.', '-', '\''], '', $n), array_filter($input->nips ?? []));

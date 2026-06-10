@@ -203,6 +203,9 @@ class EmailApi extends BaseController
         }
 
         $data = $this->request->getJSON(true);
+        if (empty($data)) {
+            $data = $this->request->getPost();
+        }
         if (empty($data) || !isset($data['email'])) {
             return $this->response->setStatusCode(400)->setJSON(['success' => false, 'message' => 'No data provided.']);
         }

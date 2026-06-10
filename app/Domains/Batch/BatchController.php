@@ -164,6 +164,9 @@ class BatchController extends BaseController
         }
 
         $data = $this->request->getJSON(true);
+        if (empty($data)) {
+            $data = $this->request->getPost();
+        }
         if (empty($data) || !isset($data['identifiers']) || !is_array($data['identifiers'])) {
             return $this->response->setJSON(['success' => false, 'message' => 'No identifiers provided.']);
         }
@@ -190,7 +193,10 @@ class BatchController extends BaseController
             return redirect()->to('/email');
         }
 
-        $data = $this->request->getJSON();
+        $data = $this->request->getJSON(true);
+        if (empty($data)) {
+            $data = $this->request->getPost();
+        }
         if (empty($data)) {
             return $this->response->setJSON(['success' => false, 'message' => 'No data provided.']);
         }

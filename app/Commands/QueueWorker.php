@@ -58,7 +58,7 @@ class QueueWorker extends BaseCommand
             CLI::write("Job #{$job['id']} completed.", 'green');
 
             // Check if this was the last job of its type by checking the JSON payload
-            $remaining = $jobModel->like('payload', '"type":"' . $type . '"')->countAllResults();
+            $remaining = $jobModel->like('payload', $type)->countAllResults();
             if ($remaining === 0) {
                 $alertService = new \App\Shared\Services\AlertService();
                 if ($type === 'sync_tte_batch') {
