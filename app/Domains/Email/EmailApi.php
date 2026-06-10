@@ -202,7 +202,12 @@ class EmailApi extends BaseController
             return $this->response->setStatusCode(405)->setJSON(['success' => false, 'message' => 'Invalid request method.']);
         }
 
-        $data = $this->request->getJSON(true) ?? [];
+        $data = [];
+        if (strpos($this->request->getHeaderLine('Content-Type'), 'application/json') !== false) {
+            try {
+                $data = $this->request->getJSON(true) ?? [];
+            } catch (\Exception $e) {}
+        }
         if (empty($data)) {
             $data = $this->request->getPost() ?? [];
         }

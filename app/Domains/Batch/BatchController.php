@@ -163,7 +163,12 @@ class BatchController extends BaseController
             ]);
         }
 
-        $data = $this->request->getJSON(true) ?? [];
+        $data = [];
+        if (strpos($this->request->getHeaderLine('Content-Type'), 'application/json') !== false) {
+            try {
+                $data = $this->request->getJSON(true) ?? [];
+            } catch (\Exception $e) {}
+        }
         if (empty($data)) {
             $data = $this->request->getPost() ?? [];
         }
@@ -218,9 +223,14 @@ class BatchController extends BaseController
             return redirect()->to('/email');
         }
 
-        $data = $this->request->getJSON(true);
+        $data = [];
+        if (strpos($this->request->getHeaderLine('Content-Type'), 'application/json') !== false) {
+            try {
+                $data = $this->request->getJSON(true) ?? [];
+            } catch (\Exception $e) {}
+        }
         if (empty($data)) {
-            $data = $this->request->getPost();
+            $data = $this->request->getPost() ?? [];
         }
         if (empty($data)) {
             return $this->response->setJSON(['success' => false, 'message' => 'No data provided.']);
