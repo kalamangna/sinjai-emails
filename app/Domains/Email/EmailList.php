@@ -357,7 +357,6 @@ class EmailList extends BaseController
                     'emails.user',
                     'emails.email',
                     'emails.bsre_status',
-                    'emails.nik',
                     'unit_kerja.nama_unit_kerja as unit_kerja_name',
                     'parent_unit_kerja.nama_unit_kerja as parent_unit_kerja_name',
                     'MIN(pk.nomor) as nomor_pk'
@@ -368,26 +367,26 @@ class EmailList extends BaseController
                 ->where('emails.status_asn_id', $statusPppkPw['id']);
 
             if ($hasNip === 'yes') {
-                $emailBuilder->where('emails.nik !=', '')->where('emails.nik IS NOT NULL');
+                $emailBuilder->where('emails.nip !=', '')->where('emails.nip IS NOT NULL');
             } elseif ($hasNip === 'no') {
                 $emailBuilder->groupStart()
-                    ->where('emails.nik', '')
-                    ->orWhere('emails.nik', null)
+                    ->where('emails.nip', '')
+                    ->orWhere('emails.nip', null)
                     ->groupEnd();
             }
 
-            $emails = $emailBuilder->groupBy('emails.id, emails.name, emails.nip, emails.nik, emails.jabatan, emails.user, emails.email, emails.bsre_status, unit_kerja.nama_unit_kerja, parent_unit_kerja.nama_unit_kerja')
+            $emails = $emailBuilder->groupBy('emails.id, emails.name, emails.nip, emails.jabatan, emails.user, emails.email, emails.bsre_status, unit_kerja.nama_unit_kerja, parent_unit_kerja.nama_unit_kerja')
                 ->orderBy('CAST(MIN(pk.nomor) AS UNSIGNED)', 'ASC')
                 ->orderBy('MIN(pk.nomor)', 'ASC');
 
             $countModel = new EmailModel();
             $countModel->where('emails.status_asn_id', $statusPppkPw['id']);
             if ($hasNip === 'yes') {
-                $countModel->where('emails.nik !=', '')->where('emails.nik IS NOT NULL');
+                $countModel->where('emails.nip !=', '')->where('emails.nip IS NOT NULL');
             } elseif ($hasNip === 'no') {
                 $countModel->groupStart()
-                    ->where('emails.nik', '')
-                    ->orWhere('emails.nik', null)
+                    ->where('emails.nip', '')
+                    ->orWhere('emails.nip', null)
                     ->groupEnd();
             }
             $total_count = $countModel->countAllResults();
