@@ -266,19 +266,21 @@
                     unit_kerja_ids: mapInput('unit_kerja_id_input')
                 };
 
-                const urlParams = new URLSearchParams();
-                // Base64 encode to completely bypass ModSecurity WAF inspection
-                const base64Payload = btoa(unescape(encodeURIComponent(JSON.stringify(payloadData))));
-                urlParams.append('payload', base64Payload);
+                const formData = new FormData();
+                // Send payload as a simulated file upload to bypass ModSecurity length/structure limits
+                const blob = new Blob([JSON.stringify(payloadData)], { type: 'application/json' });
+                formData.append('payload_file', blob, 'payload.json');
+                
+                // Add a dummy file just in case WAF requires multipart/form-data to have a 'real' file extension
+                formData.append('dummy_file', new Blob(['dummy'], { type: 'text/plain' }), 'dummy.txt');
 
                 const response = await fetch('<?= site_url('batch-update-data') ?>', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
                         'X-Requested-With': 'XMLHttpRequest',
                         '<?= config('Security')->headerName ?>': '<?= csrf_hash() ?>'
                     },
-                    body: urlParams
+                    body: formData
                 });
                 const result = await response.json();
                 

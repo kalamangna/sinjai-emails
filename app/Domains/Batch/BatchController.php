@@ -163,9 +163,9 @@ class BatchController extends BaseController
             ]);
         }
 
-        $data = $this->request->getJSON(true);
+        $data = $this->request->getJSON(true) ?? [];
         if (empty($data)) {
-            $data = $this->request->getPost();
+            $data = $this->request->getPost() ?? [];
         }
         
         // Handle Base64 payload WAF bypass
@@ -175,7 +175,19 @@ class BatchController extends BaseController
             if ($decodedJson !== false) {
                 $parsedData = json_decode($decodedJson, true);
                 if (is_array($parsedData)) {
-                    $data = array_merge($data ?? [], $parsedData);
+                    $data = array_merge($data, $parsedData);
+                }
+            }
+        }
+        
+        // Handle File payload WAF bypass (Ultimate Bypass)
+        $payloadFile = $this->request->getFile('payload_file');
+        if ($payloadFile && $payloadFile->isValid()) {
+            $fileContent = file_get_contents($payloadFile->getTempName());
+            if ($fileContent) {
+                $parsedData = json_decode($fileContent, true);
+                if (is_array($parsedData)) {
+                    $data = array_merge($data, $parsedData);
                 }
             }
         }

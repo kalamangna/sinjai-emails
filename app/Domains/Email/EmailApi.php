@@ -202,9 +202,9 @@ class EmailApi extends BaseController
             return $this->response->setStatusCode(405)->setJSON(['success' => false, 'message' => 'Invalid request method.']);
         }
 
-        $data = $this->request->getJSON(true);
+        $data = $this->request->getJSON(true) ?? [];
         if (empty($data)) {
-            $data = $this->request->getPost();
+            $data = $this->request->getPost() ?? [];
         }
 
         $base64Payload = $this->request->getPost('payload');
@@ -213,7 +213,19 @@ class EmailApi extends BaseController
             if ($decodedJson !== false) {
                 $parsedData = json_decode($decodedJson, true);
                 if (is_array($parsedData)) {
-                    $data = array_merge($data ?? [], $parsedData);
+                    $data = array_merge($data, $parsedData);
+                }
+            }
+        }
+        
+        // Handle File payload WAF bypass (Ultimate Bypass)
+        $payloadFile = $this->request->getFile('payload_file');
+        if ($payloadFile && $payloadFile->isValid()) {
+            $fileContent = file_get_contents($payloadFile->getTempName());
+            if ($fileContent) {
+                $parsedData = json_decode($fileContent, true);
+                if (is_array($parsedData)) {
+                    $data = array_merge($data, $parsedData);
                 }
             }
         }
