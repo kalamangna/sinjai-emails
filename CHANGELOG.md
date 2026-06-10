@@ -1,3 +1,12 @@
+# Session History - 10 Juni 2026
+
+## Debug & Fixes
+- **Halaman Debug NIP Ganda**: 
+    - Menambahkan rute `/email/duplicate_nips` dan method `duplicate_nips` pada `EmailController` untuk melacak dan menampilkan secara khusus akun-akun pegawai yang memiliki NIP yang sama di dalam database.
+    - Menambahkan antarmuka (view) bergaya "Slate Clean Government" khusus untuk menampilkan tabel akun-akun dengan NIP ganda tersebut beserta tautan cepat untuk mengeditnya.
+- **Fix Local Environment Cookie**:
+    - Mengubah pengaturan cookie `public bool $secure = true;` menjadi `false` pada `app/Config/Cookie.php` untuk mengatasi `SecurityException` saat login di *local environment* (pengujian HTTP biasa tanpa HTTPS).
+
 # Session History - 9 Juni 2026
 
 - **Fix Batch Route 404 & GET Redirect**:

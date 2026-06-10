@@ -64,6 +64,36 @@ class Email extends BaseController
         }
     }
 
+    public function duplicate_nips()
+    {
+        $db = \Config\Database::connect();
+        $builder = $db->table('emails');
+        $builder->select('nip, COUNT(*) as count');
+        $builder->where('nip IS NOT NULL');
+        $builder->where('nip !=', '');
+        $builder->groupBy('nip');
+        $builder->having('count > 1');
+        $duplicatesQuery = $builder->get()->getResultArray();
+        
+        $nips = array_column($duplicatesQuery, 'nip');
+        
+        $duplicate_emails = [];
+        if (!empty($nips)) {
+            $duplicate_emails = $this->emailModel->select('emails.id, emails.user, emails.name, emails.email, emails.nip, emails.jabatan, unit_kerja.nama_unit_kerja')
+                ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
+                ->whereIn('nip', $nips)
+                ->orderBy('nip', 'ASC')
+                ->findAll();
+        }
+
+        $data = [
+            'title' => 'Debug: NIP Ganda',
+            'emails' => $duplicate_emails
+        ];
+
+        return view('email/duplicate_nips', $data);
+    }
+
     public function ambiguous_list()
     {
         $emailModel = new \App\Domains\Email\EmailModel();
