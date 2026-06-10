@@ -254,7 +254,7 @@ class EmailList extends BaseController
                 'title' => 'Daftar PNS',
                 'emails' => $emails->paginate(100, 'default'),
                 'pager' => $this->emailModel->pager,
-                'total_count' => $totalCountBuilder->countAllResults(),
+                'total_count' => $total_count,
                 'has_nip' => $hasNip,
                 'back_url' => site_url('email')
             ];
@@ -324,7 +324,7 @@ class EmailList extends BaseController
                 'title' => 'PPPK Penuh Waktu',
                 'emails' => $emails->paginate(100, 'default'),
                 'pager' => $this->emailModel->pager,
-                'total_count' => $totalCountBuilder->countAllResults(),
+                'total_count' => $total_count,
                 'has_nip' => $hasNip,
                 'back_url' => site_url('email')
             ];
