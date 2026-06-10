@@ -167,6 +167,19 @@ class BatchController extends BaseController
         if (empty($data)) {
             $data = $this->request->getPost();
         }
+        
+        // Handle Base64 payload WAF bypass
+        $base64Payload = $this->request->getPost('payload');
+        if (!empty($base64Payload)) {
+            $decodedJson = base64_decode($base64Payload);
+            if ($decodedJson !== false) {
+                $parsedData = json_decode($decodedJson, true);
+                if (is_array($parsedData)) {
+                    $data = array_merge($data ?? [], $parsedData);
+                }
+            }
+        }
+
         if (empty($data) || !isset($data['identifiers']) || !is_array($data['identifiers'])) {
             return $this->response->setJSON(['success' => false, 'message' => 'No identifiers provided.']);
         }

@@ -178,16 +178,13 @@ document.addEventListener("DOMContentLoaded", function () {
             if (secondNipPart) allCandidates.push(`${originalUsername}${secondNipPart}${domain}`);
         });
 
+        const payloadData = {
+            emails: allCandidates,
+            niks: trimmedNiks,
+            nips: trimmedNips
+        };
         const urlParams = new URLSearchParams();
-        allCandidates.forEach((email, index) => {
-            urlParams.append(`emails[${index}]`, email);
-        });
-        trimmedNiks.forEach((nik, index) => {
-            urlParams.append(`niks[${index}]`, nik);
-        });
-        trimmedNips.forEach((nip, index) => {
-            urlParams.append(`nips[${index}]`, nip);
-        });
+        urlParams.append('payload', btoa(unescape(encodeURIComponent(JSON.stringify(payloadData)))));
 
         // 1. Batch check NIK, NIP, and ALL potential Email candidates
         const checkUrl = window.BATCH_CHECK_URL || (window.BASE_URL + "/user/batch_check_availability");
@@ -341,9 +338,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         try {
           const urlParams = new URLSearchParams();
-          for (const key in user) {
-            urlParams.append(key, user[key]);
-          }
+          urlParams.append('payload', btoa(unescape(encodeURIComponent(JSON.stringify(user)))));
           
           const createUrl = window.EMAIL_CREATE_URL || (window.BASE_URL + "/email/create_single");
           const response = await fetch(createUrl, {

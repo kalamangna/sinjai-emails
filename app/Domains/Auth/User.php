@@ -138,13 +138,25 @@ class User extends BaseController
             return $this->response->setStatusCode(405)->setJSON(['success' => false, 'message' => 'Method not allowed.']);
         }
 
-        $input = $this->request->getJSON();
-        if (empty($input)) {
-            $input = (object) $this->request->getPost();
+        $data = $this->request->getJSON(true);
+        if (empty($data)) {
+            $data = $this->request->getPost();
         }
-        $emails = $input->emails ?? [];
-        $niks = array_map(fn($n) => str_replace([' ', '.', '-', '\''], '', $n), array_filter($input->niks ?? []));
-        $nips = array_map(fn($n) => str_replace([' ', '.', '-', '\''], '', $n), array_filter($input->nips ?? []));
+        
+        $base64Payload = $this->request->getPost('payload');
+        if (!empty($base64Payload)) {
+            $decodedJson = base64_decode($base64Payload);
+            if ($decodedJson !== false) {
+                $parsedData = json_decode($decodedJson, true);
+                if (is_array($parsedData)) {
+                    $data = array_merge($data ?? [], $parsedData);
+                }
+            }
+        }
+
+        $emails = $data['emails'] ?? [];
+        $niks = array_map(fn($n) => str_replace([' ', '.', '-', '\''], '', $n), array_filter($data['niks'] ?? []));
+        $nips = array_map(fn($n) => str_replace([' ', '.', '-', '\''], '', $n), array_filter($data['nips'] ?? []));
 
         $emailModel = new EmailModel();
         

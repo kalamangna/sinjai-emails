@@ -206,6 +206,17 @@ class EmailApi extends BaseController
         if (empty($data)) {
             $data = $this->request->getPost();
         }
+
+        $base64Payload = $this->request->getPost('payload');
+        if (!empty($base64Payload)) {
+            $decodedJson = base64_decode($base64Payload);
+            if ($decodedJson !== false) {
+                $parsedData = json_decode($decodedJson, true);
+                if (is_array($parsedData)) {
+                    $data = array_merge($data ?? [], $parsedData);
+                }
+            }
+        }
         if (empty($data) || !isset($data['email'])) {
             return $this->response->setStatusCode(400)->setJSON(['success' => false, 'message' => 'No data provided.']);
         }
