@@ -238,15 +238,17 @@ class EmailList extends BaseController
 
             $emails = $emailBuilder->orderBy('emails.name', 'ASC');
 
-            $totalCountBuilder = $this->emailModel->where('emails.status_asn_id', $statusPns['id']);
+            $countModel = new EmailModel();
+            $countModel->where('emails.status_asn_id', $statusPns['id']);
             if ($hasNip === 'yes') {
-                $totalCountBuilder->where('emails.nip !=', '')->where('emails.nip IS NOT NULL');
+                $countModel->where('emails.nip !=', '')->where('emails.nip IS NOT NULL');
             } elseif ($hasNip === 'no') {
-                $totalCountBuilder->groupStart()
+                $countModel->groupStart()
                     ->where('emails.nip', '')
                     ->orWhere('emails.nip', null)
                     ->groupEnd();
             }
+            $total_count = $countModel->countAllResults();
 
             $data = [
                 'title' => 'Daftar PNS',
@@ -306,15 +308,17 @@ class EmailList extends BaseController
             $emails = $emailBuilder->groupBy('emails.id, emails.name, emails.nip, emails.jabatan, emails.user, emails.email, emails.bsre_status, unit_kerja.nama_unit_kerja, parent_unit_kerja.nama_unit_kerja')
                 ->orderBy('CAST(MIN(pk.nomor) AS UNSIGNED)', 'ASC');
 
-            $totalCountBuilder = $this->emailModel->where('emails.status_asn_id', $statusPppk['id']);
+            $countModel = new EmailModel();
+            $countModel->where('emails.status_asn_id', $statusPppk['id']);
             if ($hasNip === 'yes') {
-                $totalCountBuilder->where('emails.nip !=', '')->where('emails.nip IS NOT NULL');
+                $countModel->where('emails.nip !=', '')->where('emails.nip IS NOT NULL');
             } elseif ($hasNip === 'no') {
-                $totalCountBuilder->groupStart()
+                $countModel->groupStart()
                     ->where('emails.nip', '')
                     ->orWhere('emails.nip', null)
                     ->groupEnd();
             }
+            $total_count = $countModel->countAllResults();
 
             $data = [
                 'title' => 'PPPK Penuh Waktu',
@@ -375,21 +379,23 @@ class EmailList extends BaseController
                 ->orderBy('CAST(MIN(pk.nomor) AS UNSIGNED)', 'ASC')
                 ->orderBy('MIN(pk.nomor)', 'ASC');
 
-            $totalCountBuilder = $this->emailModel->where('emails.status_asn_id', $statusPppkPw['id']);
+            $countModel = new EmailModel();
+            $countModel->where('emails.status_asn_id', $statusPppkPw['id']);
             if ($hasNip === 'yes') {
-                $totalCountBuilder->where('emails.nip !=', '')->where('emails.nip IS NOT NULL');
+                $countModel->where('emails.nip !=', '')->where('emails.nip IS NOT NULL');
             } elseif ($hasNip === 'no') {
-                $totalCountBuilder->groupStart()
+                $countModel->groupStart()
                     ->where('emails.nip', '')
                     ->orWhere('emails.nip', null)
                     ->groupEnd();
             }
+            $total_count = $countModel->countAllResults();
 
             $data = [
                 'title' => 'PPPK Paruh Waktu',
                 'emails' => $emails->paginate(100, 'default'),
                 'pager' => $this->emailModel->pager,
-                'total_count' => $totalCountBuilder->countAllResults(),
+                'total_count' => $total_count,
                 'has_nip' => $hasNip,
                 'back_url' => site_url('email')
             ];

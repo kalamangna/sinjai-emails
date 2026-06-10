@@ -121,8 +121,8 @@ class Email extends BaseController
             $cleanNip = str_replace([' ', '.', '-', '\''], '', $nip);
 
             // A valid NIP must be exactly 18 digits.
-            // If it's empty, or if its length is not 18, it's either missing or corrupted (e.g. a decrypted base64 hash)
-            if (empty($cleanNip) || strlen($cleanNip) !== 18 || !is_numeric($cleanNip)) {
+            // Exclude empty NIPs (they can be filtered via PNS/PPPK list without NIP)
+            if (!empty($cleanNip) && (strlen($cleanNip) !== 18 || !is_numeric($cleanNip))) {
                 $ambiguous_emails[] = $email;
             }
         }
