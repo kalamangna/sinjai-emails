@@ -70,17 +70,17 @@ class EmailModel extends Model
             if (isset($data['data']['nik'])) {
                 $cleanNik = $this->normalize($data['data']['nik']);
                 $data['data']['nik_hash'] = hash('sha256', $cleanNik);
-                $data['data']['nik'] = base64_encode($encrypter->encrypt($cleanNik));
+                $data['data']['nik'] = $cleanNik; // NO ENCRYPTION
             }
             
             if (isset($data['data']['nip'])) {
                 $cleanNip = $this->normalize($data['data']['nip']);
                 $data['data']['nip_hash'] = hash('sha256', $cleanNip);
-                $data['data']['nip'] = base64_encode($encrypter->encrypt($cleanNip));
+                $data['data']['nip'] = $cleanNip; // NO ENCRYPTION
             }
 
             if (isset($data['data']['password']) && !empty($data['data']['password'])) {
-                $data['data']['password'] = base64_encode($encrypter->encrypt($data['data']['password']));
+                $data['data']['password'] = $data['data']['password']; // NO ENCRYPTION
             }
         }
         return $data;
@@ -88,43 +88,7 @@ class EmailModel extends Model
 
     protected function decryptData(array $data)
     {
-        if (empty($data['data'])) return $data;
-        
-        $encrypter = \Config\Services::encrypter();
-        
-        $decryptRow = function(&$row) use ($encrypter) {
-            $isArray = is_array($row);
-            foreach (['nik', 'nip', 'password'] as $field) {
-                $value = $isArray ? ($row[$field] ?? null) : ($row->$field ?? null);
-                if (!empty($value)) {
-                    try {
-                        $decrypted = $encrypter->decrypt(base64_decode($value));
-                        if ($isArray) {
-                            $row[$field] = $decrypted;
-                        } else {
-                            $row->$field = $decrypted;
-                        }
-                    } catch (\Throwable $e) {
-                        // Skip if decryption fails (e.g. data is not encrypted yet)
-                        log_message('debug', "Decryption failed for field $field: " . $e->getMessage());
-                    }
-                }
-            }
-        };
-
-        // Determine if it is a single row or array of rows
-        $isSingleton = isset($data['singleton']) ? $data['singleton'] : !isset($data['data'][0]);
-
-        if ($isSingleton) {
-            // Single result
-            $decryptRow($data['data']);
-        } else {
-            // Multiple results
-            foreach ($data['data'] as &$row) {
-                $decryptRow($row);
-            }
-        }
-        
+        // NO DECRYPTION - Data is now plain text
         return $data;
     }
     
