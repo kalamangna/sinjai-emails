@@ -259,7 +259,6 @@ class ComposerStaticInitc5636546f89824c269aa17c25035b788
     );
 
     public static $classMap = array (
-        'App\\Commands\\BulletproofRecovery' => __DIR__ . '/../..' . '/app/Commands/BulletproofRecovery.php',
         'App\\Commands\\CheckAudit' => __DIR__ . '/../..' . '/app/Commands/CheckAudit.php',
         'App\\Commands\\CheckDbNames' => __DIR__ . '/../..' . '/app/Commands/CheckDbNames.php',
         'App\\Commands\\CheckDbRaw' => __DIR__ . '/../..' . '/app/Commands/CheckDbRaw.php',
@@ -268,11 +267,9 @@ class ComposerStaticInitc5636546f89824c269aa17c25035b788
         'App\\Commands\\CheckOtherExcel' => __DIR__ . '/../..' . '/app/Commands/CheckOtherExcel.php',
         'App\\Commands\\CheckPk' => __DIR__ . '/../..' . '/app/Commands/CheckPk.php',
         'App\\Commands\\CheckUsers' => __DIR__ . '/../..' . '/app/Commands/CheckUsers.php',
-        'App\\Commands\\ConvertCsvToExcel' => __DIR__ . '/../..' . '/app/Commands/ConvertCsvToExcel.php',
         'App\\Commands\\CountExcel' => __DIR__ . '/../..' . '/app/Commands/CountExcel.php',
         'App\\Commands\\EncryptExistingData' => __DIR__ . '/../..' . '/app/Commands/EncryptExistingData.php',
         'App\\Commands\\FixDoubleEncrypt' => __DIR__ . '/../..' . '/app/Commands/FixDoubleEncrypt.php',
-        'App\\Commands\\GenerateRestoreExcel' => __DIR__ . '/../..' . '/app/Commands/GenerateRestoreExcel.php',
         'App\\Commands\\ListAmbiguous3' => __DIR__ . '/../..' . '/app/Commands/ListAmbiguous3.php',
         'App\\Commands\\ListTables' => __DIR__ . '/../..' . '/app/Commands/ListTables.php',
         'App\\Commands\\MaintenanceUnitDuplicates' => __DIR__ . '/../..' . '/app/Commands/MaintenanceUnitDuplicates.php',

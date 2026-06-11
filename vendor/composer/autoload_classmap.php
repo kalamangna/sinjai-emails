@@ -6,7 +6,6 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
-    'App\\Commands\\BulletproofRecovery' => $baseDir . '/app/Commands/BulletproofRecovery.php',
     'App\\Commands\\CheckAudit' => $baseDir . '/app/Commands/CheckAudit.php',
     'App\\Commands\\CheckDbNames' => $baseDir . '/app/Commands/CheckDbNames.php',
     'App\\Commands\\CheckDbRaw' => $baseDir . '/app/Commands/CheckDbRaw.php',
@@ -15,11 +14,9 @@ return array(
     'App\\Commands\\CheckOtherExcel' => $baseDir . '/app/Commands/CheckOtherExcel.php',
     'App\\Commands\\CheckPk' => $baseDir . '/app/Commands/CheckPk.php',
     'App\\Commands\\CheckUsers' => $baseDir . '/app/Commands/CheckUsers.php',
-    'App\\Commands\\ConvertCsvToExcel' => $baseDir . '/app/Commands/ConvertCsvToExcel.php',
     'App\\Commands\\CountExcel' => $baseDir . '/app/Commands/CountExcel.php',
     'App\\Commands\\EncryptExistingData' => $baseDir . '/app/Commands/EncryptExistingData.php',
     'App\\Commands\\FixDoubleEncrypt' => $baseDir . '/app/Commands/FixDoubleEncrypt.php',
-    'App\\Commands\\GenerateRestoreExcel' => $baseDir . '/app/Commands/GenerateRestoreExcel.php',
     'App\\Commands\\ListAmbiguous3' => $baseDir . '/app/Commands/ListAmbiguous3.php',
     'App\\Commands\\ListTables' => $baseDir . '/app/Commands/ListTables.php',
     'App\\Commands\\MaintenanceUnitDuplicates' => $baseDir . '/app/Commands/MaintenanceUnitDuplicates.php',
