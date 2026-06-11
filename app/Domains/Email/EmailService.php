@@ -397,76 +397,71 @@ class EmailService
         $isKecamatan = stripos($unitKerja['nama_unit_kerja'], 'Kecamatan') !== false;
 
         // Start building the query for the emails list
-        $emailBuilder = $this->emailModel->withDetails()->whereIn('unit_kerja_id', $allUnitIds);
+        $emailBuilder = $this->emailModel->withDetails()->whereIn('emails.unit_kerja_id', $allUnitIds);
         if ($isKecamatan && $pimpinan_desa == 0) {
-            $emailBuilder->where('pimpinan_desa', 0);
+            $emailBuilder->where('emails.pimpinan_desa', 0);
         }
 
-        // Apply filters to the list query
-        if ($search) {
-            $emailBuilder->groupStart();
-            
-            // Normalize query for numeric search (NIP/NIK often have spaces or dots)
-            $cleanSearch = str_replace([' ', '.', '-', '\''], '', $search);
-
-            // Always allow searching by name and email
-            $emailBuilder->like('email', $search)
-                         ->orLike('name', $search);
-
-            if (is_numeric($cleanSearch) && (strlen($cleanSearch) >= 10)) {
-                $hash = $cleanSearch;
-                $emailBuilder->orWhere('nik', $hash)
-                             ->orWhere('nip', $hash);
+        $applyFilters = function($builder) use ($search, $status_asn, $bsre_status) {
+            if ($search) {
+                $builder->groupStart();
+                $cleanSearch = str_replace([' ', '.', '-', '\''], '', $search);
+                $builder->like('emails.email', $search)
+                             ->orLike('emails.name', $search);
+                if (is_numeric($cleanSearch) && (strlen($cleanSearch) >= 10)) {
+                    $hash = $cleanSearch;
+                    $builder->orWhere('emails.nik', $hash)
+                                 ->orWhere('emails.nip', $hash);
+                }
+                $builder->groupEnd();
             }
-            $emailBuilder->groupEnd();
-        }
 
-        if ($status_asn) {
-            $emailBuilder->where('emails.status_asn_id', $status_asn);
-        }
+            if ($status_asn) {
+                $builder->where('emails.status_asn_id', $status_asn);
+            }
 
-        if ($bsre_status) {
-            $emailBuilder->groupStart();
-
-            if ($bsre_status === 'non_tte') {
-                // Criteria for accounts that DO NOT need TTE
-                $emailBuilder->groupStart()
-                                ->where('emails.nip IS NULL')
-                                ->orWhere('emails.nip', '')
-                            ->groupEnd()
-                            ->where('emails.pimpinan', 0)
-                            ->where('emails.pimpinan_desa', 0)
-                            ->groupStart()
-                                ->where('emails.unit_kerja_id IS NULL')
-                                ->orWhere('emails.unit_kerja_id', 0)
-                            ->groupEnd();
-            } else {
-                // Criteria for accounts that NEED TTE
-                $emailBuilder->groupStart()
-                                ->groupStart()
-                                    ->where('emails.nip IS NOT NULL')
-                                    ->where('emails.nip !=', '')
+            if ($bsre_status) {
+                $builder->groupStart();
+                if ($bsre_status === 'non_tte') {
+                    $builder->groupStart()
+                                    ->where('emails.nip IS NULL')
+                                    ->orWhere('emails.nip', '')
                                 ->groupEnd()
-                                ->orWhere('emails.pimpinan', 1)
-                                ->orWhere('emails.pimpinan_desa', 1)
+                                ->where('emails.pimpinan', 0)
+                                ->where('emails.pimpinan_desa', 0)
                                 ->groupStart()
-                                    ->where('emails.unit_kerja_id IS NOT NULL')
-                                    ->where('emails.unit_kerja_id !=', 0)
-                                ->groupEnd()
-                            ->groupEnd();
-
-                if ($bsre_status === 'not_synced') {
-                    $emailBuilder->groupStart()
-                                    ->where('emails.bsre_status IS NULL')
-                                    ->orWhere('emails.bsre_status', '')
+                                    ->where('emails.unit_kerja_id IS NULL')
+                                    ->orWhere('emails.unit_kerja_id', 0)
                                 ->groupEnd();
                 } else {
-                    $emailBuilder->where('emails.bsre_status', $bsre_status);
-                }
-            }
+                    $builder->groupStart()
+                                    ->groupStart()
+                                        ->where('emails.nip IS NOT NULL')
+                                        ->where('emails.nip !=', '')
+                                    ->groupEnd()
+                                    ->orWhere('emails.pimpinan', 1)
+                                    ->orWhere('emails.pimpinan_desa', 1)
+                                    ->groupStart()
+                                        ->where('emails.unit_kerja_id IS NOT NULL')
+                                        ->where('emails.unit_kerja_id !=', 0)
+                                    ->groupEnd()
+                                ->groupEnd();
 
-            $emailBuilder->groupEnd();
-        }
+                    if ($bsre_status === 'not_synced') {
+                        $builder->groupStart()
+                                        ->where('emails.bsre_status IS NULL')
+                                        ->orWhere('emails.bsre_status', '')
+                                    ->groupEnd();
+                    } else {
+                        $builder->where('emails.bsre_status', $bsre_status);
+                    }
+                }
+                $builder->groupEnd();
+            }
+        };
+
+        // Apply filters to the list query
+        $applyFilters($emailBuilder);
 
         // Get filtered count BEFORE pagination
         $filtered_count = $emailBuilder->countAllResults(false);
@@ -505,11 +500,12 @@ class EmailService
 
         $bsre_status_counts = [];
 
-        // Calculate overall stats for the unit (not affected by filters)
-        $statsBuilder = $this->emailModel->whereIn('unit_kerja_id', $allUnitIds);
+        // Calculate stats for the unit (affected by filters)
+        $statsBuilder = $this->emailModel->whereIn('emails.unit_kerja_id', $allUnitIds);
         if ($isKecamatan && $pimpinan_desa == 0) {
-            $statsBuilder->where('pimpinan_desa', 0);
+            $statsBuilder->where('emails.pimpinan_desa', 0);
         }
+        $applyFilters($statsBuilder);
 
         $rawCounts = $statsBuilder->allowCallbacks(false)
             ->select('
@@ -551,10 +547,11 @@ class EmailService
         $total_emails_in_unit = array_sum(array_column($bsre_status_counts, 'count'));
 
         // Calculate ASN Status stats for the unit
-        $asnStatsBuilder = $this->emailModel->whereIn('unit_kerja_id', $allUnitIds);
+        $asnStatsBuilder = $this->emailModel->whereIn('emails.unit_kerja_id', $allUnitIds);
         if ($isKecamatan && $pimpinan_desa == 0) {
-            $asnStatsBuilder->where('pimpinan_desa', 0);
+            $asnStatsBuilder->where('emails.pimpinan_desa', 0);
         }
+        $applyFilters($asnStatsBuilder);
         $rawAsnStats = $asnStatsBuilder->allowCallbacks(false)
             ->select('status_asn.nama_status_asn as label, COUNT(emails.id) as count')
             ->join('status_asn', 'status_asn.id = emails.status_asn_id', 'left')
@@ -583,11 +580,12 @@ class EmailService
         });
 
         // Calculate actual active count (suspended_login = 0)
-        $activeStatsBuilder = $this->emailModel->whereIn('unit_kerja_id', $allUnitIds);
+        $activeStatsBuilder = $this->emailModel->whereIn('emails.unit_kerja_id', $allUnitIds);
         if ($isKecamatan && $pimpinan_desa == 0) {
-            $activeStatsBuilder->where('pimpinan_desa', 0);
+            $activeStatsBuilder->where('emails.pimpinan_desa', 0);
         }
-        $active_count = $activeStatsBuilder->where('suspended_login', 0)->countAllResults();
+        $applyFilters($activeStatsBuilder);
+        $active_count = $activeStatsBuilder->where('emails.suspended_login', 0)->countAllResults();
 
         return [
             'unit_kerja' => $unitKerja,
