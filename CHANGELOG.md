@@ -1,5 +1,19 @@
 # Session History - 11 Juni 2026
 
+## Fitur & Refaktor
+- **Pemusnahan Enkripsi Hash (NIP/NIK)**:
+    - Membatalkan dan menghapus sepenuhnya penggunaan algoritma enkripsi (AES-256) dan indeks rahasia (*blind index*) `nip_hash` & `nik_hash` dari seluruh tabel, model, layanan, dan API.
+    - Semua data NIP dan NIK kini kembali menggunakan *plain text* asli sesuai permintaan, dan sistem pencarian global langsung disesuaikan menggunakan metode klausa `LIKE` biasa.
+    - Mengeksekusi *Migration* untuk mendrop kolom `nip_hash` dan `nik_hash` secara permanen.
+- **Refaktor Logika Pemicu Notifikasi Telegram di QueueWorker**:
+    - Mengubah logika pengecekan tugas (*job*) terakhir di `QueueWorker`. Sebelumnya, pekerja menghitung sisa baris di tabel `jobs`, yang menyebabkan bug gagal lapor jika ada *phantom job* (tugas yang gagal dan ditunda ke masa depan). 
+    - Logika baru merekam jenis tugas yang diproses di dalam memori PHP (Sesi Pekerja) dan memicu peringatan Telegram tepat saat pekerja akan mati (*queue is empty*), memastikan akurasi notifikasi 100%.
+
+## Pembersihan & UI
+- **Penyelarasan Judul Helpdesk**: Menyesuaikan judul halaman `HelpdeskAdminController` dari "Manajemen Tiket Helpdesk TTE" menjadi "Helpdesk Layanan" agar identik (sinkron) dengan judul menu di *sidebar*.
+- **Pembersihan File Temp/Debug**: Melenyapkan 22 file *script* PHP usang yang sebelumnya digunakan untuk *debugging* pemulihan data (misal: `CheckNik.php`, `RecoverNips.php`) untuk merampingkan folder `app/Commands`.
+- **Pembersihan Environment Production**: Menghapus folder `tests/`, file pengaturan `phpunit`, dan `.DS_Store` yang berserakan, untuk meringankan server *production*.
+
 ## Debug & Fixes
 - **Fix Dashboard TTE Count Bug**:
     - Memperbaiki *bug* tersembunyi pada `Home.php` di mana kolom `unit_kerja_id` tidak terpanggil dalam query `SELECT`, yang menyebabkan ribuan pegawai tanpa NIP disalahartikan sebagai "NON_TTE" (Bukan Sasaran TTE), sehingga menyembunyikan status TTE Aktif mereka dari dasbor.
