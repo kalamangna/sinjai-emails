@@ -33,9 +33,9 @@ class PimpinanController extends BaseController
                     ->orLike('emails.name', $search);
 
                 if (is_numeric($cleanSearch) && strlen($cleanSearch) >= 10) {
-                    $hash = hash('sha256', $cleanSearch);
-                    $emailBuilder->orWhere('emails.nik_hash', $hash)
-                        ->orWhere('emails.nip_hash', $hash);
+                    $hash = $cleanSearch;
+                    $emailBuilder->orWhere('emails.nik', $hash)
+                        ->orWhere('emails.nip', $hash);
                 }
                 $emailBuilder->groupEnd();
             }
@@ -103,9 +103,9 @@ class PimpinanController extends BaseController
                     ->orLike('emails.name', $search);
 
                 if (is_numeric($cleanSearch) && strlen($cleanSearch) >= 10) {
-                    $hash = hash('sha256', $cleanSearch);
-                    $emailBuilder->orWhere('emails.nik_hash', $hash)
-                        ->orWhere('emails.nip_hash', $hash);
+                    $hash = $cleanSearch;
+                    $emailBuilder->orWhere('emails.nik', $hash)
+                        ->orWhere('emails.nip', $hash);
                 }
                 $emailBuilder->groupEnd();
             }

@@ -42,8 +42,8 @@ class EmailModel extends Model
         'pimpinan',
         'pimpinan_desa',
         'pensiun_at',
-        'nik_hash',
-        'nip_hash',
+        'nik',
+        'nip',
     ];
     protected $useTimestamps = true;
     protected $useSoftDeletes = true;
@@ -69,13 +69,13 @@ class EmailModel extends Model
             // Blind Index (Hash)
             if (isset($data['data']['nik'])) {
                 $cleanNik = $this->normalize($data['data']['nik']);
-                $data['data']['nik_hash'] = hash('sha256', $cleanNik);
+                $data['data']['nik'] = $cleanNik;
                 $data['data']['nik'] = $cleanNik; // NO ENCRYPTION
             }
             
             if (isset($data['data']['nip'])) {
                 $cleanNip = $this->normalize($data['data']['nip']);
-                $data['data']['nip_hash'] = hash('sha256', $cleanNip);
+                $data['data']['nip'] = $cleanNip;
                 $data['data']['nip'] = $cleanNip; // NO ENCRYPTION
             }
 

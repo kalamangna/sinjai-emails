@@ -73,7 +73,7 @@ class Email extends BaseController
             $data['back_url'] = site_url('email');
 
             // Add secure hash for public verification based on NIK blind index
-            $data['verification_hash'] = $data['email']['nik_hash'] ?? null;
+            $data['verification_hash'] = $data['email']['nik'] ?? null;
 
             $appSettingModel = new \App\Shared\Models\AppSettingModel();
             $last_sync_tte = $appSettingModel->where('key', 'last_sync_tte')->first();
@@ -240,10 +240,10 @@ class Email extends BaseController
 
                 // We use the normalized nip hash to find others
                 $cleanNip = str_replace([' ', '.', '-', '\''], '', $profileData['nip']);
-                $nipHash = hash('sha256', $cleanNip);
+                $nipHash = $cleanNip;
                 
                 // Exclude the current record to avoid redundant update
-                $this->emailModel->where('nip_hash', $nipHash)
+                $this->emailModel->where('nip', $nipHash)
                                  ->where('id !=', $sourceRecord['id'])
                                  ->set($syncData)
                                  ->update();
@@ -340,8 +340,8 @@ class Email extends BaseController
     public function profile($hash)
     {
         try {
-            // Optimization: Directly query by nik_hash (blind index)
-            $email = $this->emailModel->where('nik_hash', $hash)
+            // Optimization: Directly query by nik (blind index)
+            $email = $this->emailModel->where('nik', $hash)
                                       ->where('bsre_status', 'ISSUE')
                                       ->first();
 

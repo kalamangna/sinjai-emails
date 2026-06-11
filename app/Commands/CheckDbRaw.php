@@ -16,7 +16,7 @@ class CheckDbRaw extends BaseCommand {
         $countEmptyStr = $builder->where('nip', '')->countAllResults();
         CLI::write("Total nip = '': $countEmptyStr");
         
-        $countHash = $builder->where('nip_hash IS NOT NULL')->countAllResults();
-        CLI::write("Total nip_hash IS NOT NULL: $countHash");
+        $countHash = $builder->where('nip IS NOT NULL')->countAllResults();
+        CLI::write("Total nip IS NOT NULL: $countHash");
     }
 }

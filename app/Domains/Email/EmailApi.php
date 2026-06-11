@@ -67,9 +67,9 @@ class EmailApi extends BaseController
         if ($search) {
             $builder->groupStart();
             if (is_numeric($search) && (strlen($search) >= 10)) {
-                $hash = hash('sha256', $search);
-                $builder->where('nik_hash', $hash)
-                        ->orWhere('nip_hash', $hash);
+                $hash = $search;
+                $builder->where('nik', $hash)
+                        ->orWhere('nip', $hash);
             } else {
                 $builder->like('email', $search)
                         ->orLike('name', $search);
@@ -274,9 +274,9 @@ class EmailApi extends BaseController
 
         // If numeric and looks like NIK/NIP, search by hash
         if (is_numeric($cleanQ) && strlen($cleanQ) >= 10) {
-            $hash = hash('sha256', $cleanQ);
-            $builder->orWhere('emails.nik_hash', $hash)
-                    ->orWhere('emails.nip_hash', $hash);
+            $hash = $cleanQ;
+            $builder->orWhere('emails.nik', $hash)
+                    ->orWhere('emails.nip', $hash);
         }
         
         $builder->groupEnd();
@@ -297,7 +297,7 @@ class EmailApi extends BaseController
         $currentEmail = $this->emailModel
             ->select('emails.*, unit_kerja.nama_unit_kerja')
             ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
-            ->where('emails.nip_hash', hash('sha256', $nip))
+            ->where('emails.nip', $nip)
             ->first();
 
         if ($currentEmail) {
@@ -396,7 +396,7 @@ class EmailApi extends BaseController
 
             if (!empty($updateData)) {
                 // Update all emails with this NIP hash
-                $this->emailModel->where('nip_hash', hash('sha256', $nip))->set($updateData)->update();
+                $this->emailModel->where('nip', $nip)->set($updateData)->update();
                 
                 // Clear Dashboard Cache
                 $cache = \Config\Services::cache();

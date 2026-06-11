@@ -212,10 +212,10 @@ class GatewayController extends BaseController
             $builder->like('emails.email', $email);
         }
         if ($nip = $request->getGet('nip')) {
-            $builder->where('emails.nip_hash', hash('sha256', $nip));
+            $builder->where('emails.nip', $nip);
         }
         if ($nik = $request->getGet('nik')) {
-            $builder->where('emails.nik_hash', hash('sha256', $nik));
+            $builder->where('emails.nik', $nik);
         }
         if ($jabatan = $request->getGet('jabatan')) {
             $builder->like('emails.jabatan', $jabatan);

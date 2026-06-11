@@ -134,7 +134,7 @@ class QueueWorker extends BaseCommand
                     if (isset($source['jabatan'])) {
                         $updateData['jabatan'] = mb_strtoupper($source['jabatan'], 'UTF-8');
                     }
-                    $emailModel->where('nip_hash', hash('sha256', $nip))->set($updateData)->update();
+                    $emailModel->where('nip', $nip)->set($updateData)->update();
                 }
             }
         }

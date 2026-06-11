@@ -70,9 +70,9 @@ class EmailExportService
                 ->orLike('name', $search);
 
             if (is_numeric($cleanSearch) && strlen($cleanSearch) >= 10) {
-                $hash = hash('sha256', $cleanSearch);
-                $builder->orWhere('nik_hash', $hash)
-                    ->orWhere('nip_hash', $hash);
+                $hash = $cleanSearch;
+                $builder->orWhere('nik', $hash)
+                    ->orWhere('nip', $hash);
             }
             $builder->groupEnd();
         }
@@ -128,9 +128,9 @@ class EmailExportService
                 ->orLike('name', $search);
 
             if (is_numeric($cleanSearch) && strlen($cleanSearch) >= 10) {
-                $hash = hash('sha256', $cleanSearch);
-                $builder->orWhere('nik_hash', $hash)
-                    ->orWhere('nip_hash', $hash);
+                $hash = $cleanSearch;
+                $builder->orWhere('nik', $hash)
+                    ->orWhere('nip', $hash);
             }
             $builder->groupEnd();
         }
@@ -204,9 +204,9 @@ class EmailExportService
                 ->orLike('name', $search);
 
             if (is_numeric($cleanSearch) && strlen($cleanSearch) >= 10) {
-                $hash = hash('sha256', $cleanSearch);
-                $builder->orWhere('nik_hash', $hash)
-                    ->orWhere('nip_hash', $hash);
+                $hash = $cleanSearch;
+                $builder->orWhere('nik', $hash)
+                    ->orWhere('nip', $hash);
             }
             $builder->groupEnd();
         }
@@ -235,9 +235,9 @@ class EmailExportService
                 ->orLike('name', $search);
 
             if (is_numeric($cleanSearch) && strlen($cleanSearch) >= 10) {
-                $hash = hash('sha256', $cleanSearch);
-                $builder->orWhere('nik_hash', $hash)
-                    ->orWhere('nip_hash', $hash);
+                $hash = $cleanSearch;
+                $builder->orWhere('nik', $hash)
+                    ->orWhere('nip', $hash);
             }
             $builder->groupEnd();
         }
@@ -318,9 +318,9 @@ class EmailExportService
                 ->orLike('name', $search);
 
             if (is_numeric($cleanSearch) && strlen($cleanSearch) >= 10) {
-                $hash = hash('sha256', $cleanSearch);
-                $builder->orWhere('nik_hash', $hash)
-                    ->orWhere('nip_hash', $hash);
+                $hash = $cleanSearch;
+                $builder->orWhere('nik', $hash)
+                    ->orWhere('nip', $hash);
             }
             $builder->groupEnd();
         }
@@ -349,9 +349,9 @@ class EmailExportService
                 ->orLike('name', $search);
 
             if (is_numeric($cleanSearch) && strlen($cleanSearch) >= 10) {
-                $hash = hash('sha256', $cleanSearch);
-                $builder->orWhere('nik_hash', $hash)
-                    ->orWhere('nip_hash', $hash);
+                $hash = $cleanSearch;
+                $builder->orWhere('nik', $hash)
+                    ->orWhere('nip', $hash);
             }
             $builder->groupEnd();
         }
@@ -580,9 +580,9 @@ class EmailExportService
                 ->orLike('emails.name', $search);
 
             if (is_numeric($cleanSearch) && strlen($cleanSearch) >= 10) {
-                $hash = hash('sha256', $cleanSearch);
-                $builder->orWhere('emails.nik_hash', $hash)
-                    ->orWhere('emails.nip_hash', $hash);
+                $hash = $cleanSearch;
+                $builder->orWhere('emails.nik', $hash)
+                    ->orWhere('emails.nip', $hash);
             }
             $builder->groupEnd();
         }
@@ -663,9 +663,9 @@ class EmailExportService
                 ->orLike('name', $search);
 
             if (is_numeric($cleanSearch) && strlen($cleanSearch) >= 10) {
-                $hash = hash('sha256', $cleanSearch);
-                $builder->orWhere('nik_hash', $hash)
-                    ->orWhere('nip_hash', $hash);
+                $hash = $cleanSearch;
+                $builder->orWhere('nik', $hash)
+                    ->orWhere('nip', $hash);
             }
             $builder->groupEnd();
         }

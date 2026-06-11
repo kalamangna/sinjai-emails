@@ -101,9 +101,9 @@ class EmailService
 
             // If numeric and looks like NIK/NIP, use exact match on hash
             if (is_numeric($cleanSearch) && (strlen($cleanSearch) >= 10)) {
-                $hash = hash('sha256', $cleanSearch);
-                $builder->orWhere('nik_hash', $hash)
-                        ->orWhere('nip_hash', $hash);
+                $hash = $cleanSearch;
+                $builder->orWhere('nik', $hash)
+                        ->orWhere('nip', $hash);
             }
             
             $builder->groupEnd();
@@ -414,9 +414,9 @@ class EmailService
                          ->orLike('name', $search);
 
             if (is_numeric($cleanSearch) && (strlen($cleanSearch) >= 10)) {
-                $hash = hash('sha256', $cleanSearch);
-                $emailBuilder->orWhere('nik_hash', $hash)
-                             ->orWhere('nip_hash', $hash);
+                $hash = $cleanSearch;
+                $emailBuilder->orWhere('nik', $hash)
+                             ->orWhere('nip', $hash);
             }
             $emailBuilder->groupEnd();
         }

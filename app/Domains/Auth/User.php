@@ -107,7 +107,7 @@ class User extends BaseController
             $message = '';
 
             if (!empty($nik)) {
-                $existingNik = $emailModel->where('nik_hash', hash('sha256', $nik))->first();
+                $existingNik = $emailModel->where('nik', $nik)->first();
                 if ($existingNik) {
                     $exists = true;
                     $message = 'NIK already exists in the database.';
@@ -115,7 +115,7 @@ class User extends BaseController
                     $message = 'NIK is available.';
                 }
             } elseif (!empty($nip)) {
-                $existingNip = $emailModel->where('nip_hash', hash('sha256', $nip))->first();
+                $existingNip = $emailModel->where('nip', $nip)->first();
                 if ($existingNip) {
                     $exists = true;
                     $message = 'NIP already exists in the database.';
@@ -205,20 +205,20 @@ class User extends BaseController
             }
 
             if (!empty($niks)) {
-                $nikHashes = array_map(fn($n) => hash('sha256', $n), $niks);
-                $existingNikHashes = $emailModel->whereIn('nik_hash', $nikHashes)->findColumn('nik_hash') ?: [];
+                $nikHashes = array_map(fn($n) => $n, $niks);
+                $existingNikHashes = $emailModel->whereIn('nik', $nikHashes)->findColumn('nik') ?: [];
                 $existingHashesMap = array_flip($existingNikHashes);
                 foreach ($niks as $nik) {
-                    $results['niks'][$nik] = isset($existingHashesMap[hash('sha256', $nik)]);
+                    $results['niks'][$nik] = isset($existingHashesMap[$nik]);
                 }
             }
 
             if (!empty($nips)) {
-                $nipHashes = array_map(fn($n) => hash('sha256', $n), $nips);
-                $existingNipHashes = $emailModel->whereIn('nip_hash', $nipHashes)->findColumn('nip_hash') ?: [];
+                $nipHashes = array_map(fn($n) => $n, $nips);
+                $existingNipHashes = $emailModel->whereIn('nip', $nipHashes)->findColumn('nip') ?: [];
                 $existingHashesMap = array_flip($existingNipHashes);
                 foreach ($nips as $nip) {
-                    $results['nips'][$nip] = isset($existingHashesMap[hash('sha256', $nip)]);
+                    $results['nips'][$nip] = isset($existingHashesMap[$nip]);
                 }
             }
 

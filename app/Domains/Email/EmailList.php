@@ -101,9 +101,9 @@ class EmailList extends BaseController
                         ->orLike('name', $search);
 
                     if (is_numeric($cleanSearch) && strlen($cleanSearch) >= 10) {
-                        $hash = hash('sha256', $cleanSearch);
-                        $builder->orWhere('nik_hash', $hash)
-                            ->orWhere('nip_hash', $hash);
+                        $hash = $cleanSearch;
+                        $builder->orWhere('nik', $hash)
+                            ->orWhere('nip', $hash);
                     }
                     $builder->groupEnd();
                 }
@@ -146,9 +146,9 @@ class EmailList extends BaseController
                     ->orLike('emails.name', $search);
 
                 if (is_numeric($cleanSearch) && strlen($cleanSearch) >= 10) {
-                    $hash = hash('sha256', $cleanSearch);
-                    $emailBuilder->orWhere('emails.nik_hash', $hash)
-                        ->orWhere('emails.nip_hash', $hash);
+                    $hash = $cleanSearch;
+                    $emailBuilder->orWhere('emails.nik', $hash)
+                        ->orWhere('emails.nip', $hash);
                 }
                 $emailBuilder->groupEnd();
             }

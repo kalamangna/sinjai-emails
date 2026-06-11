@@ -83,10 +83,10 @@ class EmailBatchService
                 if ($mode === 'email') {
                     $records = $this->emailModel->whereIn('email', $chunk)->findAll();
                 } else {
-                    $records = $this->emailModel->whereIn('nik_hash', $chunk)->findAll();
+                    $records = $this->emailModel->whereIn('nik', $chunk)->findAll();
                 }
                 foreach ($records as $r) {
-                    $key = ($mode === 'email') ? $r['email'] : $r['nik_hash'];
+                    $key = ($mode === 'email') ? $r['email'] : $r['nik'];
                     $existingEmails[$key] = $r;
                 }
             }
@@ -272,14 +272,14 @@ class EmailBatchService
         
         $existing_niks = [];
         if (!empty($niks)) {
-            $nikHashes = array_map(fn($n) => hash('sha256', $n), $niks);
-            $existing_nik_hashes = $this->emailModel->whereIn('nik_hash', $nikHashes)->findColumn('nik_hash') ?? [];
-            if (!empty($existing_nik_hashes)) {
+            $nikHashes = array_map(fn($n) => $n, $niks);
+            $existing_nikes = $this->emailModel->whereIn('nik', $nikHashes)->findColumn('nik') ?? [];
+            if (!empty($existing_nikes)) {
                 // For error message reporting, we'd ideally show the plain NIKs
                 // We'll just collect which input NIKs are already hashed in the DB
-                $hashesMap = array_flip($existing_nik_hashes);
+                $hashesMap = array_flip($existing_nikes);
                 foreach ($niks as $nik) {
-                    if (isset($hashesMap[hash('sha256', $nik)])) {
+                    if (isset($hashesMap[$nik])) {
                         $existing_niks[] = $nik;
                     }
                 }
