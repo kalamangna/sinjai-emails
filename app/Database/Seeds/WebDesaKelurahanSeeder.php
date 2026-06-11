@@ -4,8 +4,8 @@ namespace App\Database\Seeds;
 
 use CodeIgniter\Database\Seeder;
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use App\Domains\Website\WebDesaKelurahanModel;
-use App\Domains\UnitKerja\UnitKerjaModel;
+use App\Domains\Website\Models\WebDesaKelurahanModel;
+use App\Domains\UnitKerja\Models\UnitKerjaModel;
 use App\Shared\Models\PlatformModel;
 use Config\Services;
 

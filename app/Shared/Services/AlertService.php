@@ -2,8 +2,8 @@
 
 namespace App\Shared\Services;
 
-use App\Domains\Email\EmailModel;
-use App\Domains\Website\WebDesaKelurahanModel;
+use App\Domains\Email\Models\EmailModel;
+use App\Domains\Website\Models\WebDesaKelurahanModel;
 use App\Shared\Libraries\TelegramLibrary;
 use CodeIgniter\CLI\CLI;
 

@@ -4,8 +4,8 @@ namespace App\Commands;
 
 use CodeIgniter\CLI\BaseCommand;
 use CodeIgniter\CLI\CLI;
-use App\Domains\Email\EmailModel;
-use App\Domains\UnitKerja\UnitKerjaModel;
+use App\Domains\Email\Models\EmailModel;
+use App\Domains\UnitKerja\Models\UnitKerjaModel;
 use App\Shared\Libraries\BsreApi;
 use App\Shared\Models\StatusAsnModel;
 

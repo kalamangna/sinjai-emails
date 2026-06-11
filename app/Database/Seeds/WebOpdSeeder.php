@@ -3,8 +3,8 @@
 namespace App\Database\Seeds;
 
 use CodeIgniter\Database\Seeder;
-use App\Domains\UnitKerja\UnitKerjaModel;
-use App\Domains\Website\WebOpdModel;
+use App\Domains\UnitKerja\Models\UnitKerjaModel;
+use App\Domains\Website\Models\WebOpdModel;
 
 class WebOpdSeeder extends Seeder
 {

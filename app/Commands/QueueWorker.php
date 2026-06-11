@@ -105,7 +105,7 @@ class QueueWorker extends BaseCommand
 
     private function handleSyncTte($emailList)
     {
-        $emailModel = new \App\Domains\Email\EmailModel();
+        $emailModel = new \App\Domains\Email\Controllers\EmailModel();
         $bsreApi = new \App\Shared\Libraries\BsreApi();
         
         foreach ($emailList as $email) {
@@ -120,7 +120,7 @@ class QueueWorker extends BaseCommand
 
     private function handleSyncPegawai($nipList)
     {
-        $emailModel = new \App\Domains\Email\EmailModel();
+        $emailModel = new \App\Domains\Email\Controllers\EmailModel();
         $pegawaiApi = new \App\Shared\Libraries\PegawaiApi();
         
         foreach ($nipList as $nip) {

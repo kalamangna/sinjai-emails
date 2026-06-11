@@ -8,13 +8,13 @@ use App\Shared\Services\SyncService;
 use App\Shared\Libraries\BsreApi;
 use App\Shared\Libraries\PegawaiApi;
 use App\Shared\Libraries\TelegramLibrary;
-use App\Domains\Email\EmailModel;
+use App\Domains\Email\Models\EmailModel;
 use App\Shared\Models\StatusAsnModel;
 use App\Shared\Models\EselonModel;
 use App\Shared\Models\JobModel;
 
-use App\Domains\Website\WebDesaKelurahanModel;
-use App\Domains\Website\WebsiteService;
+use App\Domains\Website\Models\WebDesaKelurahanModel;
+use App\Domains\Website\Services\WebsiteService;
 
 class SyncAllCommand extends BaseCommand
 {

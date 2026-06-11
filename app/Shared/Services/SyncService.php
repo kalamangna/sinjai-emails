@@ -3,7 +3,7 @@
 namespace App\Shared\Services;
 
 use App\Shared\Libraries\CpanelApi;
-use App\Domains\Email\EmailModel;
+use App\Domains\Email\Models\EmailModel;
 use App\Shared\Models\AppSettingModel;
 use Exception;
 
