@@ -12,12 +12,20 @@ class QueueWorker extends BaseCommand
     protected $name        = 'queue:work';
     protected $description = 'Process background jobs from the queue.';
 
+    protected $options = [
+        '--stop-when-empty' => 'Stop the worker when the queue is empty instead of sleeping forever.'
+    ];
+
     public function run(array $params)
     {
         $jobModel = new JobModel();
         $queue = $params[0] ?? 'default';
+        $stopWhenEmpty = CLI::getOption('stop-when-empty') !== null;
 
         CLI::write("Queue worker started for queue: [$queue]", 'green');
+        if ($stopWhenEmpty) {
+            CLI::write("Mode: Stop when empty (Cron mode)", 'yellow');
+        }
         
         while (true) {
             $job = $jobModel->getNextJob($queue);
@@ -25,6 +33,10 @@ class QueueWorker extends BaseCommand
             if ($job) {
                 $this->process($job, $jobModel);
             } else {
+                if ($stopWhenEmpty) {
+                    CLI::write("Queue is empty. Stopping worker.", 'yellow');
+                    break;
+                }
                 // Sleep for 2 seconds if no jobs found to save CPU
                 sleep(2);
             }
