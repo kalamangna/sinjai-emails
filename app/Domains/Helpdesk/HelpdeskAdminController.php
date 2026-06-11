@@ -27,7 +27,7 @@ class HelpdeskAdminController extends BaseController
         $tickets = $builder->orderBy('created_at', 'DESC')->paginate($perPage);
 
         $data = [
-            'title' => 'Manajemen Tiket Helpdesk TTE',
+            'title' => 'Manajemen Tiket Helpdesk TIK',
             'tickets' => $tickets,
             'pager' => $this->helpdeskModel->pager,
             'statusFilter' => $statusFilter,
@@ -47,7 +47,7 @@ class HelpdeskAdminController extends BaseController
         if (!$ticket) return redirect()->to('admin/helpdesk')->with('error', 'Tiket tidak ditemukan');
 
         $data = [
-            'title' => 'Detail Tiket TTE',
+            'title' => 'Detail Tiket Helpdesk TIK',
             'ticket' => $ticket
         ];
 
