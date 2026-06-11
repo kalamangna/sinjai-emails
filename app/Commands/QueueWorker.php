@@ -21,6 +21,7 @@ class QueueWorker extends BaseCommand
         $jobModel = new JobModel();
         $queue = $params[0] ?? 'default';
         $stopWhenEmpty = CLI::getOption('stop-when-empty') !== null;
+        $processedTypes = [];
 
         CLI::write("Queue worker started for queue: [$queue]", 'green');
         if ($stopWhenEmpty) {
@@ -31,10 +32,22 @@ class QueueWorker extends BaseCommand
             $job = $jobModel->getNextJob($queue);
 
             if ($job) {
-                $this->process($job, $jobModel);
+                $this->process($job, $jobModel, $processedTypes);
             } else {
                 if ($stopWhenEmpty) {
                     CLI::write("Queue is empty. Stopping worker.", 'yellow');
+                    
+                    // Trigger alerts based on what we processed
+                    $alertService = new \App\Shared\Services\AlertService();
+                    if (isset($processedTypes['sync_tte_batch'])) {
+                        CLI::write("Triggering TTE alerts...", 'blue');
+                        $alertService->checkTteExpiredAlerts();
+                    }
+                    if (isset($processedTypes['sync_cpanel'])) {
+                        CLI::write("Triggering cPanel alerts...", 'blue');
+                        $alertService->checkQuotaAlerts();
+                    }
+                    
                     break;
                 }
                 // Sleep for 2 seconds if no jobs found to save CPU
@@ -43,10 +56,11 @@ class QueueWorker extends BaseCommand
         }
     }
 
-    private function process($job, $jobModel)
+    private function process($job, $jobModel, &$processedTypes)
     {
         $payload = json_decode($job['payload'], true);
         $type = $payload['type'] ?? 'unknown';
+        $processedTypes[$type] = true;
 
         CLI::write("[" . date('H:i:s') . "] Processing job #{$job['id']} ($type)...", 'yellow');
 
@@ -68,20 +82,8 @@ class QueueWorker extends BaseCommand
             // Success: Delete job
             $jobModel->delete($job['id']);
             CLI::write("Job #{$job['id']} completed.", 'green');
-
-            // Check if this was the last job of its type by checking the JSON payload
-            $remaining = (int) $jobModel->like('payload', $type)->countAllResults();
-            CLI::write("DEBUG: Remaining jobs for $type = $remaining", 'cyan');
-            if ($remaining === 0) {
-                $alertService = new \App\Shared\Services\AlertService();
-                if ($type === 'sync_tte_batch') {
-                    CLI::write("All TTE batch jobs completed. Triggering alerts...", 'blue');
-                    $alertService->checkTteExpiredAlerts();
-                } elseif ($type === 'sync_cpanel') {
-                    CLI::write("All cPanel sync jobs completed. Triggering alerts...", 'blue');
-                    $alertService->checkQuotaAlerts();
-                }
-            }
+            
+            // Alerts will be triggered at the end when queue is empty
         } catch (\Throwable $e) {
             CLI::error("Job #{$job['id']} failed: " . $e->getMessage());
             
