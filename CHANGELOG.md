@@ -1,3 +1,11 @@
+# Session History - 11 Juni 2026
+
+## Debug & Fixes
+- **Fix Dashboard TTE Count Bug**:
+    - Memperbaiki *bug* tersembunyi pada `Home.php` di mana kolom `unit_kerja_id` tidak terpanggil dalam query `SELECT`, yang menyebabkan ribuan pegawai tanpa NIP disalahartikan sebagai "NON_TTE" (Bukan Sasaran TTE), sehingga menyembunyikan status TTE Aktif mereka dari dasbor.
+- **Cleanup Temporary Routes**:
+    - Menghapus rute, *controller*, dan *view* sementara (`duplicate_nips` dan `ambiguous`) yang sebelumnya digunakan untuk *debugging* pemulihan data NIP.
+
 # Session History - 10 Juni 2026
 
 ## Debug & Fixes

@@ -20,12 +20,13 @@ class Home extends BaseController
             $statusAsnModel = new \App\Shared\Models\StatusAsnModel();
 
             // Email Stats (Raw Status from database/API)
-            $raw_stats = $emailModel->select('bsre_status, pimpinan, pimpinan_desa, nip, COUNT(id) as count')
+            $raw_stats = $emailModel->select('bsre_status, pimpinan, pimpinan_desa, nip, unit_kerja_id, COUNT(id) as count')
                 ->allowCallbacks(false)
                 ->groupBy('bsre_status')
                 ->groupBy('pimpinan')
                 ->groupBy('pimpinan_desa')
                 ->groupBy('nip')
+                ->groupBy('unit_kerja_id')
                 ->findAll();
 
             $email_stats_map = [];
