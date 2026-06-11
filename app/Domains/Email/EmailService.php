@@ -512,21 +512,19 @@ class EmailService
         }
 
         $rawCounts = $statsBuilder->allowCallbacks(false)
-            ->select('bsre_status, pimpinan, pimpinan_desa, nip, COUNT(*) as count')
-            ->groupBy('bsre_status')
-            ->groupBy('pimpinan')
-            ->groupBy('pimpinan_desa')
-            ->groupBy('nip')
+            ->select('
+                CASE 
+                    WHEN (nip IS NULL OR nip = "") AND pimpinan = 0 AND pimpinan_desa = 0 AND (unit_kerja_id IS NULL OR unit_kerja_id = 0) THEN "non_tte"
+                    WHEN (bsre_status IS NULL OR bsre_status = "") THEN "not_synced"
+                    ELSE bsre_status 
+                END as derived_status,
+                COUNT(id) as count
+            ')
+            ->groupBy('derived_status')
             ->findAll();
 
         foreach ($rawCounts as $row) {
-            $isNeedTte = !empty($row['nip']) || ($row['pimpinan'] == 1) || ($row['pimpinan_desa'] == 1) || !empty($row['unit_kerja_id']);
-            
-            if (!$isNeedTte) {
-                $statusKey = 'non_tte';
-            } else {
-                $statusKey = $row['bsre_status'] ?: 'not_synced';
-            }
+            $statusKey = $row['derived_status'];
 
             if (!isset($bsre_status_counts[$statusKey])) {
                 $bsre_status_counts[$statusKey] = [
@@ -534,7 +532,7 @@ class EmailService
                     'count' => 0
                 ];
             }
-            $bsre_status_counts[$statusKey]['count'] += $row['count'];
+            $bsre_status_counts[$statusKey]['count'] += (int)$row['count'];
         }
 
         $tteOrder = ['ISSUE', 'EXPIRED', 'NO_CERTIFICATE', 'NOT_REGISTERED', 'not_synced', 'non_tte'];
