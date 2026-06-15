@@ -2,6 +2,8 @@
 
 namespace App\Domains\Email\Controllers;
 
+use App\Domains\Email\Models\EmailModel;
+
 use App\Shared\BaseController;
 
 class TrashController extends BaseController

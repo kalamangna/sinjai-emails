@@ -2,6 +2,8 @@
 
 namespace App\Domains\Helpdesk\Controllers;
 
+use App\Domains\Helpdesk\Models\HelpdeskModel;
+
 use App\Shared\BaseController;
 use App\Domains\Assistance\Models\AssistanceModel;
 

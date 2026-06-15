@@ -2,6 +2,12 @@
 
 namespace App\Domains\Email\Controllers;
 
+use App\Domains\Email\Services\EmailService;
+
+use App\Domains\Email\Models\PkModel;
+
+use App\Domains\Email\Models\EmailModel;
+
 use App\Shared\BaseController;
 use App\Shared\Models\AppSettingModel;
 use App\Shared\Models\StatusAsnModel;
