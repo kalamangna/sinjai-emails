@@ -185,7 +185,13 @@ class SyncAllCommand extends BaseCommand
                 ]);
             }
 
-            CLI::write("SUCCESS: " . count($chunks) . " jobs dispatched to queue.", 'green');
+            // Push a final job to generate and send the Telegram report for EXPIRED TTEs
+            $jobModel->push('default', [
+                'type' => 'sync_tte_report',
+                'data' => []
+            ]);
+
+            CLI::write("SUCCESS: " . count($chunks) . " jobs dispatched to queue, plus 1 report job.", 'green');
             $this->syncStats['tte']['success'] = $total;
             $this->saveLastSyncTime('last_sync_tte');
         } catch (\Throwable $e) {

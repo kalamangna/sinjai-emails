@@ -75,6 +75,9 @@ class QueueWorker extends BaseCommand
                 case 'sync_cpanel':
                     $this->handleSyncCpanel();
                     break;
+                case 'sync_tte_report':
+                    $this->handleSyncTteReport();
+                    break;
                 default:
                     CLI::error("Unknown job type: $type");
             }
@@ -147,5 +150,63 @@ class QueueWorker extends BaseCommand
     {
         $syncService = new \App\Shared\Services\SyncService();
         $syncService->syncFromCpanel();
+    }
+
+    private function handleSyncTteReport()
+    {
+        $emailModel = new \App\Domains\Email\Models\EmailModel();
+        $telegram = new \App\Shared\Libraries\TelegramLibrary();
+
+        // Ambil data yang expired
+        $expiredEmails = $emailModel->where('bsre_status', 'EXPIRED')->findAll();
+        
+        // Ambil data NO_CERTIFICATE yang mungkin penting (pimpinan/nip terisi)
+        $noCertEmails = $emailModel->where('bsre_status', 'NO_CERTIFICATE')
+                                   ->groupStart()
+                                      ->where('pimpinan', 1)
+                                      ->orWhere('pimpinan_desa', 1)
+                                      ->orWhere('nip !=', '')
+                                   ->groupEnd()
+                                   ->findAll();
+
+        if (empty($expiredEmails) && empty($noCertEmails)) {
+            // Jika tidak ada yang expired atau no_certificate, tidak perlu spam Telegram
+            return;
+        }
+
+        $msg = "⚠️ <b>Laporan TTE Pegawai / Pimpinan Bermasalah</b>\n\n";
+
+        if (!empty($expiredEmails)) {
+            $msg .= "🔴 <b>EXPIRED (" . count($expiredEmails) . " Akun)</b>\n";
+            $limit = 10;
+            $count = 0;
+            foreach ($expiredEmails as $e) {
+                $count++;
+                if ($count > $limit) {
+                    $msg .= "<i>...dan " . (count($expiredEmails) - $limit) . " lainnya</i>\n";
+                    break;
+                }
+                $nama = $e['nama'] ?: $e['email'];
+                $msg .= "- $nama\n";
+            }
+            $msg .= "\n";
+        }
+
+        if (!empty($noCertEmails)) {
+            $msg .= "🟡 <b>NO_CERTIFICATE (" . count($noCertEmails) . " Akun)</b>\n";
+            $limit = 10;
+            $count = 0;
+            foreach ($noCertEmails as $e) {
+                $count++;
+                if ($count > $limit) {
+                    $msg .= "<i>...dan " . (count($noCertEmails) - $limit) . " lainnya</i>\n";
+                    break;
+                }
+                $nama = $e['nama'] ?: $e['email'];
+                $msg .= "- $nama\n";
+            }
+        }
+
+        $telegram->sendMessage($msg);
     }
 }
