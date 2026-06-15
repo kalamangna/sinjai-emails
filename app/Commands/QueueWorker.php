@@ -36,18 +36,6 @@ class QueueWorker extends BaseCommand
             } else {
                 if ($stopWhenEmpty) {
                     CLI::write("Queue is empty. Stopping worker.", 'yellow');
-                    
-                    // Trigger alerts based on what we processed
-                    $alertService = new \App\Shared\Services\AlertService();
-                    if (isset($processedTypes['sync_tte_batch'])) {
-                        CLI::write("Triggering TTE alerts...", 'blue');
-                        $alertService->checkTteExpiredAlerts();
-                    }
-                    if (isset($processedTypes['sync_cpanel'])) {
-                        CLI::write("Triggering cPanel alerts...", 'blue');
-                        $alertService->checkQuotaAlerts();
-                    }
-                    
                     break;
                 }
                 // Sleep for 2 seconds if no jobs found to save CPU
@@ -74,6 +62,10 @@ class QueueWorker extends BaseCommand
                     break;
                 case 'sync_cpanel':
                     $this->handleSyncCpanel();
+                    break;
+                case 'sync_quota_report':
+                    $alertService = new \App\Shared\Services\AlertService();
+                    $alertService->checkQuotaAlerts();
                     break;
                 case 'sync_tte_report':
                     $this->handleSyncTteReport();

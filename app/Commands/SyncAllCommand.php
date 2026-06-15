@@ -148,6 +148,10 @@ class SyncAllCommand extends BaseCommand
                 'type' => 'sync_cpanel',
                 'data' => []
             ]);
+            $jobModel->push('default', [
+                'type' => 'sync_quota_report',
+                'data' => []
+            ]);
             CLI::write('SUCCESS: Job dispatched to queue.', 'green');
             $this->syncStats['cpanel']['success'] = 1;
         } catch (\Throwable $e) {
