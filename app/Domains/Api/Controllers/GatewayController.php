@@ -43,7 +43,7 @@ class GatewayController extends BaseController
         // Fallback to env if not in database yet (though sync:all should handle it)
         $displayToken = $token['value'] ?? env('API_GATEWAY_TOKEN') ?? 'BELUM_DIATUR';
 
-        $unitModel = new \App\Domains\UnitKerja\Controllers\UnitKerjaModel();
+        $unitModel = new \App\Domains\UnitKerja\Models\UnitKerjaModel();
         $units = $unitModel->orderBy('nama_unit_kerja', 'ASC')->findAll();
 
         $data = [
@@ -161,7 +161,7 @@ class GatewayController extends BaseController
      */
     public function listByUnit($unitId)
     {
-        $unitModel = new \App\Domains\UnitKerja\Controllers\UnitKerjaModel();
+        $unitModel = new \App\Domains\UnitKerja\Models\UnitKerjaModel();
         
         // 1. Try to find the unit by api_unit_id (External)
         $unit = $unitModel->where('api_unit_id', $unitId)->first();

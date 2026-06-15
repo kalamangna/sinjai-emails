@@ -114,8 +114,8 @@ class AssistanceExportService
 
     public function getAgencyOptions()
     {
-        $unitKerjaModel = new \App\Domains\UnitKerja\Controllers\UnitKerjaModel();
-        $desaModel = new \App\Domains\Website\Controllers\WebDesaKelurahanModel();
+        $unitKerjaModel = new \App\Domains\UnitKerja\Models\UnitKerjaModel();
+        $desaModel = new \App\Domains\Website\Models\WebDesaKelurahanModel();
 
         // 1. Get OPDs (Only those present in web_opd)
         $opds = $unitKerjaModel

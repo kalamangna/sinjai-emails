@@ -70,7 +70,7 @@ class Assistance extends BaseController
         $this->assistanceModel = new AssistanceModel();
         $this->unitKerjaModel = new UnitKerjaModel();
         $this->desaModel = new WebDesaKelurahanModel();
-        $this->exportService = new \App\Domains\Assistance\Controllers\AssistanceExportService();
+        $this->exportService = new \App\Domains\Assistance\Services\AssistanceExportService();
     }
 
     public function index()

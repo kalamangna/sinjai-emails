@@ -59,7 +59,7 @@ class SyncUnitApi extends BaseCommand
             return;
         }
 
-        $unitModel = new \App\Domains\UnitKerja\Controllers\UnitKerjaModel();
+        $unitModel = new \App\Domains\UnitKerja\Models\UnitKerjaModel();
         $localUnits = $unitModel->findAll();
 
         CLI::write("Processing " . count($apiData) . " API records...", 'yellow');
