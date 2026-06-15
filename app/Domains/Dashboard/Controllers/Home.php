@@ -12,7 +12,7 @@ class Home extends BaseController
         $cacheKey = 'dashboard_summary_data_v3';
 
         if (!$data = $cache->get($cacheKey)) {
-            $emailModel = new \App\Domains\Email\Controllers\EmailModel();
+            $emailModel = new \App\Domains\Email\Models\EmailModel();
             $webOpdModel = new \App\Domains\Website\Controllers\WebOpdModel();
             $webDesaModel = new \App\Domains\Website\Controllers\WebDesaKelurahanModel();
             $assistanceModel = new \App\Domains\Assistance\Controllers\AssistanceModel();

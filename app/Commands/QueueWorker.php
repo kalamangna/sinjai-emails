@@ -19,8 +19,8 @@ class QueueWorker extends BaseCommand
     public function run(array $params)
     {
         $jobModel = new JobModel();
-        $queue = $params[0] ?? 'default';
-        $stopWhenEmpty = CLI::getOption('stop-when-empty') !== null;
+        $queue = $params['queue'] ?? 'default';
+        $stopWhenEmpty = \CodeIgniter\CLI\CLI::getOption('stop-when-empty') !== null;
         $processedTypes = [];
 
         CLI::write("Queue worker started for queue: [$queue]", 'green');
@@ -105,7 +105,7 @@ class QueueWorker extends BaseCommand
 
     private function handleSyncTte($emailList)
     {
-        $emailModel = new \App\Domains\Email\Controllers\EmailModel();
+        $emailModel = new \App\Domains\Email\Models\EmailModel();
         $bsreApi = new \App\Shared\Libraries\BsreApi();
         
         foreach ($emailList as $email) {
@@ -120,7 +120,7 @@ class QueueWorker extends BaseCommand
 
     private function handleSyncPegawai($nipList)
     {
-        $emailModel = new \App\Domains\Email\Controllers\EmailModel();
+        $emailModel = new \App\Domains\Email\Models\EmailModel();
         $pegawaiApi = new \App\Shared\Libraries\PegawaiApi();
         
         foreach ($nipList as $nip) {

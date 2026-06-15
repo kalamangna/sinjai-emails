@@ -92,7 +92,7 @@ class Bsre extends BaseController
         }
 
         $bsreApi = new BsreApi();
-        $emailModel = new \App\Domains\Email\Controllers\EmailModel(); // Use EmailModel
+        $emailModel = new \App\Domains\Email\Models\EmailModel(); // Use EmailModel
 
         // Call the BSrE API
         $result = $bsreApi->checkStatus($emailAddress, 'email');
@@ -136,7 +136,7 @@ class Bsre extends BaseController
         }
 
         set_time_limit(0);
-        $emailModel = new \App\Domains\Email\Controllers\EmailModel();
+        $emailModel = new \App\Domains\Email\Models\EmailModel();
         $bsreApi = new BsreApi();
 
         $search = $this->request->getGet('search');
