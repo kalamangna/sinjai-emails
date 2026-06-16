@@ -28,7 +28,17 @@ class TrashController extends BaseController
         $emailModel = new EmailModel();
         
         // Fix: Use direct query builder to bypass global soft delete scope
-        $emailModel->builder()->set('deleted_at', null)->where('id', $id)->update();
+        $email = $emailModel->onlyDeleted()->find($id);
+        
+        if ($email) {
+            try {
+                $cpanelApi = new \App\Shared\Libraries\CpanelApi();
+                $cpanelApi->unsuspend_email_login($email['email']);
+            } catch (\Throwable $e) {
+                // Ignore cpanel error, proceed with DB restore
+            }
+            $emailModel->builder()->set('deleted_at', null)->set('suspended_login', 0)->where('id', $id)->update();
+        }
         
         helper('audit');
         log_audit('RESTORE', 'Email', $id, 'Restored email from trash');

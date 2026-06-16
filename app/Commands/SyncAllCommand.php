@@ -300,8 +300,17 @@ class SyncAllCommand extends BaseCommand
             
             // Look for accounts marked as retired more than 30 days ago
             $thirtyDaysAgo = date('Y-m-d H:i:s', strtotime('-30 days'));
-            $toDelete = $emailModel->where('pensiun_at IS NOT NULL')
-                                   ->where('pensiun_at <=', $thirtyDaysAgo)
+            $toDelete = $emailModel->withDeleted()
+                                   ->groupStart()
+                                       ->groupStart()
+                                           ->where('pensiun_at IS NOT NULL')
+                                           ->where('pensiun_at <=', $thirtyDaysAgo)
+                                       ->groupEnd()
+                                       ->orGroupStart()
+                                           ->where('deleted_at IS NOT NULL')
+                                           ->where('deleted_at <=', $thirtyDaysAgo)
+                                       ->groupEnd()
+                                   ->groupEnd()
                                    ->findAll();
             
             if (empty($toDelete)) {
