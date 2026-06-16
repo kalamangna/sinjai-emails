@@ -37,7 +37,7 @@ class BackupCommand extends BaseCommand
 
         // Perintah mysqldump
         $passwordArg = empty($password) ? '' : "-p" . escapeshellarg($password);
-        $command = "mysqldump -h " . escapeshellarg($hostname) . " -P " . escapeshellarg($port) . " -u " . escapeshellarg($username) . " {$passwordArg} " . escapeshellarg($database) . " > " . escapeshellarg($filepath . '.tmp');
+        $command = "mysqldump --no-tablespaces -h " . escapeshellarg($hostname) . " -P " . escapeshellarg($port) . " -u " . escapeshellarg($username) . " {$passwordArg} " . escapeshellarg($database) . " > " . escapeshellarg($filepath . '.tmp') . " 2>/dev/null";
 
         // Eksekusi mysqldump
         $output = [];
