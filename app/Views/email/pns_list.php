@@ -21,9 +21,9 @@
                     <i class="fas fa-sync-alt mr-2 group-hover:rotate-180 transition-transform duration-500 text-slate-700"></i>
                     <span class="text-slate-700">Sync Pegawai</span>
                 </button>
-                <a href="<?= site_url('email/export_pns_excel?' . $_SERVER['QUERY_STRING']) ?>" class="flex-1 lg:flex-none btn btn-outline border-emerald-600 text-emerald-600 hover:bg-emerald-600 hover:text-white group bg-white">
-                    <i class="fas fa-file-excel mr-2 group-hover:scale-110 transition-transform"></i>
-                    <span>Export Excel</span>
+                <a href="<?= site_url('email/export_pns_excel?' . $_SERVER['QUERY_STRING']) ?>" class="flex-1 lg:flex-none btn btn-outline group bg-white">
+                    <i class="fas fa-file-excel mr-2 text-emerald-600 group-hover:scale-110 transition-transform"></i>
+                    <span class="text-slate-700">Export Excel</span>
                 </a>
             </div>
         </div>
