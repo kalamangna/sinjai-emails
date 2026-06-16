@@ -257,6 +257,7 @@
             const nip = container.getAttribute('data-nip');
             const row = container.closest('tr');
             const jabatanTarget = row.querySelector('.jabatan-sync-target');
+            let originalJabatan = '';
 
             container.scrollIntoView({
                 behavior: 'smooth',
@@ -264,6 +265,8 @@
             });
             
             if (jabatanTarget) {
+                originalJabatan = jabatanTarget.getAttribute('data-original') || jabatanTarget.innerText.trim();
+                jabatanTarget.setAttribute('data-original', originalJabatan);
                 jabatanTarget.innerHTML = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[8px] font-bold uppercase border bg-slate-50 text-slate-400 border-slate-200 animate-pulse"><i class="fas fa-spinner fa-spin mr-1"></i> SYNCING</span>';
             }
 
@@ -280,23 +283,24 @@
                 const data = await response.json();
                 if (data.success) {
                     if (jabatanTarget) {
-                        const newJabatan = data.data?.jabatan || jabatanTarget.innerText;
+                        const newJabatan = data.data?.jabatan || originalJabatan;
                         jabatanTarget.innerHTML = `<span class="text-emerald-600 font-bold">${newJabatan}</span>`;
+                        jabatanTarget.setAttribute('data-original', newJabatan);
                     }
                     success++;
                 } else {
                     if (jabatanTarget) {
                         if (data.message && data.message.includes('tidak ditemukan')) {
-                            jabatanTarget.innerHTML = `<span class="px-2 py-0.5 rounded text-[8px] font-bold uppercase border bg-amber-50 text-amber-600 border-amber-200" title="Data tidak ditemukan di API">NO DATA</span>`;
+                            jabatanTarget.innerHTML = `${originalJabatan} <span class="ml-1 px-1.5 py-0.5 rounded text-[8px] font-bold uppercase border bg-amber-50 text-amber-600 border-amber-200" title="Data tidak ditemukan di API">NO DATA</span>`;
                         } else {
-                            jabatanTarget.innerHTML = `<span class="px-2 py-0.5 rounded text-[8px] font-bold uppercase border bg-red-50 text-red-600 border-red-200" title="${data.message || 'Sinkronisasi Gagal'}">FAILED</span>`;
+                            jabatanTarget.innerHTML = `${originalJabatan} <span class="ml-1 px-1.5 py-0.5 rounded text-[8px] font-bold uppercase border bg-red-50 text-red-600 border-red-200" title="${data.message || 'Sinkronisasi Gagal'}">FAILED</span>`;
                         }
                     }
                     failed++;
                 }
             } catch (error) {
                 if (jabatanTarget) {
-                    jabatanTarget.innerHTML = `<span class="px-2 py-0.5 rounded text-[8px] font-bold uppercase border bg-red-50 text-red-600 border-red-200">ERROR</span>`;
+                    jabatanTarget.innerHTML = `${originalJabatan} <span class="ml-1 px-1.5 py-0.5 rounded text-[8px] font-bold uppercase border bg-red-50 text-red-600 border-red-200">ERROR</span>`;
                 }
                 failed++;
             }
