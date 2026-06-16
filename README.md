@@ -117,6 +117,10 @@ chmod +x sync.sh
 ./sync.sh          # Sinkronisasi Penuh
 
 # Contoh penjadwalan Cron Job
+# Buka editor cron dengan mengetikkan perintah berikut di terminal:
+# crontab -e
+# Kemudian copy-paste konfigurasi di bawah ini:
+
 # Skrip sync.sh sudah otomatis menjalankan 'queue:work' di akhir prosesnya.
 
 # 1. Setiap Hari jam 02:00 AM (Status TTE)
