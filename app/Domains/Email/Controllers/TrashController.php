@@ -37,7 +37,12 @@ class TrashController extends BaseController
             } catch (\Throwable $e) {
                 // Ignore cpanel error, proceed with DB restore
             }
-            $emailModel->builder()->set('deleted_at', null)->set('suspended_login', 0)->where('id', $id)->update();
+            $emailModel->builder()
+                       ->set('deleted_at', null)
+                       ->set('suspended_login', 0)
+                       ->set('pensiun_at', null)
+                       ->where('id', $id)
+                       ->update();
         }
         
         helper('audit');
