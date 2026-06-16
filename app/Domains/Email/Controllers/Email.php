@@ -166,13 +166,13 @@ class Email extends BaseController
             // 3. Send Telegram Notification
             try {
                 $telegram = new TelegramLibrary();
-                $msg = "🚪 <b>PEMBERSIHAN AKUN (MANUAL)</b>\n";
-                $msg .= "Seorang pegawai telah ditandai sebagai <b>PENSIUN</b> oleh Admin:\n";
+                $msg = "♻️ <b>AKUN DIPINDAHKAN KE TEMPAT SAMPAH</b>\n";
+                $msg .= "Seorang pegawai telah ditandai <b>PENSIUN / KELUAR</b>:\n";
                 $msg .= "------------------------------------------\n\n";
                 $msg .= "👤 " . ($email['name'] ?: '-') . " (" . ($email['nip'] ?: '-') . ")\n";
                 $msg .= "🏛️ " . ($email['unit_kerja_name'] ?? '-') . "\n";
                 $msg .= "📧 " . $email['email'] . "\n\n";
-                $msg .= "⚠️ <i>Akses login ditangguhkan. Akun akan dihapus permanen dalam 30 hari.</i>";
+                $msg .= "⚠️ <i>Akses ditangguhkan (Soft Delete). Akun mengendap di Manajemen Sampah dan akan dihapus permanen dalam 30 hari.</i>";
                 $telegram->sendMessage($msg);
             } catch (\Throwable $te) {
                 log_message('error', 'Failed to send Telegram notification for retirement: ' . $te->getMessage());
@@ -387,12 +387,12 @@ class Email extends BaseController
             // Send Telegram Notification
             try {
                 $telegram = new \App\Shared\Libraries\TelegramLibrary();
-                $msg = "🗑️ <b>PENGHAPUSAN AKUN PERMANEN</b>\n";
-                $msg .= "Admin telah menghapus sebuah akun secara manual (Bypass):\n";
+                $msg = "🔥 <b>PENGHAPUSAN AKUN PERMANEN</b>\n";
+                $msg .= "Admin telah mengeksekusi Hapus Permanen (Hard Delete):\n";
                 $msg .= "------------------------------------------\n\n";
                 $msg .= "👤 " . ($email['name'] ?: '-') . " (" . ($email['nip'] ?: '-') . ")\n";
                 $msg .= "📧 " . $email['email'] . "\n\n";
-                $msg .= "⚠️ <i>Data telah dihapus bersih dari Database dan cPanel.</i>";
+                $msg .= "⚠️ <i>Data telah dibumihanguskan dari Database maupun server cPanel. (Bypass Trash)</i>";
                 $telegram->sendMessage($msg);
             } catch (\Throwable $te) {
                 log_message('error', 'Failed to send Telegram notification for deletion: ' . $te->getMessage());
