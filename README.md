@@ -117,16 +117,15 @@ chmod +x sync.sh
 ./sync.sh          # Sinkronisasi Penuh
 
 # Contoh penjadwalan Cron Job
-# 1. (WAJIB) Queue Worker: Berjalan setiap menit untuk mengeksekusi antrean di latar belakang
-* * * * * php /home/tte/sinjai-emails/spark queue:work --stop-when-empty >> /dev/null 2>&1
+# Skrip sync.sh sudah otomatis menjalankan 'queue:work' di akhir prosesnya.
 
-# 2. Setiap Hari jam 02:00 AM (Status TTE)
+# 1. Setiap Hari jam 02:00 AM (Status TTE)
 0 2 * * * /home/tte/sinjai-emails/sync.sh daily
 
-# 3. Setiap Hari Minggu jam 03:00 AM (cPanel)
+# 2. Setiap Hari Minggu jam 03:00 AM (cPanel)
 0 3 * * 0 /home/tte/sinjai-emails/sync.sh weekly
 
-# 4. Setiap Tanggal 25 jam 04:00 AM (Pegawai & Website)
+# 3. Setiap Tanggal 25 jam 04:00 AM (Pegawai & Website)
 0 4 25 * * /home/tte/sinjai-emails/sync.sh monthly
 ```
 

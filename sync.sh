@@ -39,5 +39,8 @@ else
     $PHP_BIN spark sync:all 2>&1 | tee -a "$LOG_FILE"
 fi
 
-echo "[$(date '+%Y-%m-%d %H:%M:%S')] Sinkronisasi selesai." >> "$LOG_FILE"
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] Memproses antrean sinkronisasi latar belakang..." | tee -a "$LOG_FILE"
+$PHP_BIN spark queue:work --stop-when-empty 2>&1 | tee -a "$LOG_FILE"
+
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] Semua proses sinkronisasi dan laporan selesai." >> "$LOG_FILE"
 echo "----------------------------------------------------" >> "$LOG_FILE"
