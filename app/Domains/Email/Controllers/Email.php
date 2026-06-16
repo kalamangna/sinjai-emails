@@ -379,6 +379,21 @@ class Email extends BaseController
             if (!$email) return redirect()->to('email')->with('error', 'Email account not found.');
             $cpanelApi->delete_email_account($email['email']);
             $this->emailModel->delete($id);
+
+            // Send Telegram Notification
+            try {
+                $telegram = new \App\Shared\Libraries\TelegramLibrary();
+                $msg = "🗑️ <b>PENGHAPUSAN AKUN PERMANEN</b>\n";
+                $msg .= "Admin telah menghapus sebuah akun secara manual (Bypass):\n";
+                $msg .= "------------------------------------------\n\n";
+                $msg .= "👤 " . ($email['name'] ?: '-') . " (" . ($email['nip'] ?: '-') . ")\n";
+                $msg .= "📧 " . $email['email'] . "\n\n";
+                $msg .= "⚠️ <i>Data telah dihapus bersih dari Database dan cPanel.</i>";
+                $telegram->sendMessage($msg);
+            } catch (\Throwable $te) {
+                log_message('error', 'Failed to send Telegram notification for deletion: ' . $te->getMessage());
+            }
+
             return redirect()->to('email')->with('success', 'Email account ' . $email['email'] . ' has been deleted successfully.');
         } catch (\Throwable $e) {
             log_message('error', 'Failed to delete email: ' . $e->getMessage());
