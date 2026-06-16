@@ -672,28 +672,24 @@ class EmailExportService
         $sheet = $spreadsheet->getActiveSheet();
         
         $sheet->setCellValue('A1', 'DATA PNS');
-        $sheet->mergeCells('A1:G1');
+        $sheet->mergeCells('A1:C1');
         $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
         $sheet->getStyle('A1')->getAlignment()->setHorizontal('center');
 
-        $headers = ['No', 'Nama Pegawai', 'NIP', 'NIK', 'Email', 'Jabatan', 'Unit Kerja'];
+        $headers = ['No', 'Nama Pegawai', 'Email'];
         $sheet->fromArray($headers, NULL, 'A3');
-        $sheet->getStyle('A3:G3')->getFont()->setBold(true);
+        $sheet->getStyle('A3:C3')->getFont()->setBold(true);
 
         $row = 4;
         $no = 1;
         foreach ($emails as $email) {
             $sheet->setCellValue('A' . $row, $no++);
             $sheet->setCellValue('B' . $row, $email['name']);
-            $sheet->setCellValueExplicit('C' . $row, $email['nip'] ?? '', \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-            $sheet->setCellValueExplicit('D' . $row, $email['nik'] ?? '', \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-            $sheet->setCellValue('E' . $row, $email['email']);
-            $sheet->setCellValue('F' . $row, $email['jabatan']);
-            $sheet->setCellValue('G' . $row, $email['unit_kerja_name'] ?? '');
+            $sheet->setCellValue('C' . $row, $email['email']);
             $row++;
         }
 
-        foreach (range('A', 'G') as $col) {
+        foreach (range('A', 'C') as $col) {
             $sheet->getColumnDimension($col)->setAutoSize(true);
         }
 
