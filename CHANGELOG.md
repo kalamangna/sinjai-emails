@@ -1,6 +1,23 @@
-# Session History - 11 Juni 2026
+# Session History - 16 Juni 2026
 
 ## Fitur & Refaktor
+- **Integrasi Backup Database Otomatis**:
+    - Menambahkan `BackupCommand.php` untuk mencadangkan database otomatis (termasuk kompresi GZIP).
+    - Menambahkan fitur auto-cleanup untuk menghapus file backup yang berumur lebih dari 7 hari.
+    - Menambahkan notifikasi Telegram apabila eksekusi *mysqldump* gagal atau *error*.
+    - Menambahkan parameter `--no-tablespaces` pada *mysqldump* untuk mencegah error hak akses PROCESS di environment cPanel / Shared Hosting.
+- **Pembaruan Alur Eksekusi Antrean (*Queue Worker*)**:
+    - Memindahkan pemanggilan eksekusi `queue:work --stop-when-empty` langsung ke dalam skrip `sync.sh`. Hal ini mengefisiensikan tugas *cronjob* di sisi server agar tidak perlu dipanggil setiap menit, dan menjamin laporan hanya diproses tepat setelah *job* utama selesai.
+
+## Debug & Fixes
+- **Fix Pengiriman Laporan TTE & Kuota**:
+    - Memisahkan pembuatan laporan `checkQuotaAlerts` dan `checkTteExpiredAlerts` menjadi dua pekerjaan (Job) independen (`sync_quota_report` & `sync_tte_report`) yang dijadwalkan secara pasti dalam `SyncAllCommand`.
+    - Sebelumnya, laporan ini bergantung pada logika `stopWhenEmpty` yang tidak pernah terpicu jika *worker* dijalankan sebagai daemon.
+    - Memperbaiki salah ketik (*typo*) variabel `$e['nama']` menjadi `$e['name']` pada *builder* pesan laporan TTE, yang sebelumnya dapat menyebabkan *worker* *crash* karena *Undefined array key*.
+- **Fix Internal Server Error (HTTP 500) & Parse Error**:
+    - Memperbaiki *Parse Error* pada PHP 8.1+ akibat dari sintaks *Closure* atau ekspresi *Regex* variabel `$1` yang disalahgunakan sebagai variabel di dalam namespace (*use*) berbagai *Controller*.
+
+# Session History - 11 Juni 2026
 - **Pemusnahan Enkripsi Hash (NIP/NIK)**:
     - Membatalkan dan menghapus sepenuhnya penggunaan algoritma enkripsi (AES-256) dan indeks rahasia (*blind index*) `nip_hash` & `nik_hash` dari seluruh tabel, model, layanan, dan API.
     - Semua data NIP dan NIK kini kembali menggunakan *plain text* asli sesuai permintaan, dan sistem pencarian global langsung disesuaikan menggunakan metode klausa `LIKE` biasa.
