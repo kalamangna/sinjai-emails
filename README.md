@@ -119,7 +119,14 @@ chmod +x sync.sh
 # Contoh penjadwalan Cron Job
 # Buka editor cron dengan mengetikkan perintah berikut di terminal:
 # crontab -e
-# Kemudian copy-paste konfigurasi di bawah ini:
+#
+# Tips Editor (Jika menggunakan Vim):
+# 1. Hapus semua data lama: Tekan 'Esc', ketik 'gg', lalu ketik 'dG' (D kecil, G besar).
+# 2. Masuk mode edit: Tekan huruf 'i'.
+# 3. Paste konfigurasi di bawah ini ke dalam terminal.
+# 4. Simpan & Keluar: Tekan 'Esc', ketik ':wq', lalu tekan 'Enter'.
+#
+# ---------------------------------------------------------
 
 # Skrip sync.sh sudah otomatis menjalankan 'queue:work' di akhir prosesnya.
 
