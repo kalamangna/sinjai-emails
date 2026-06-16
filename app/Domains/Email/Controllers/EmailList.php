@@ -210,6 +210,10 @@ class EmailList extends BaseController
             }
 
             $hasNip = $this->request->getGet('has_nip');
+            $parentUnitKerjaId = $this->request->getGet('parent_unit_kerja_id');
+
+            $unitKerjaModel = new \App\Domains\UnitKerja\Models\UnitKerjaModel();
+            $parentUnitKerjas = $unitKerjaModel->where('parent_id', null)->orderBy('nama_unit_kerja', 'ASC')->findAll();
 
             $emailBuilder = $this->emailModel
                 ->select([
@@ -236,6 +240,11 @@ class EmailList extends BaseController
                     ->groupEnd();
             }
 
+            if (!empty($parentUnitKerjaId)) {
+                $db = \Config\Database::connect();
+                $emailBuilder->where('(unit_kerja.parent_id = ' . $db->escape($parentUnitKerjaId) . ' OR emails.unit_kerja_id = ' . $db->escape($parentUnitKerjaId) . ')');
+            }
+
             $emails = $emailBuilder->orderBy('emails.name', 'ASC');
 
             $countModel = new EmailModel();
@@ -248,6 +257,12 @@ class EmailList extends BaseController
                     ->orWhere('emails.nip', null)
                     ->groupEnd();
             }
+
+            if (!empty($parentUnitKerjaId)) {
+                $db = \Config\Database::connect();
+                $countModel->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left');
+                $countModel->where('(unit_kerja.parent_id = ' . $db->escape($parentUnitKerjaId) . ' OR emails.unit_kerja_id = ' . $db->escape($parentUnitKerjaId) . ')');
+            }
             $total_count = $countModel->countAllResults();
 
             $data = [
@@ -256,6 +271,8 @@ class EmailList extends BaseController
                 'pager' => $this->emailModel->pager,
                 'total_count' => $total_count,
                 'has_nip' => $hasNip,
+                'parent_unit_kerja_id' => $parentUnitKerjaId,
+                'parent_unit_kerjas' => $parentUnitKerjas,
                 'back_url' => site_url('email')
             ];
 
