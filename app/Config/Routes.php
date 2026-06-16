@@ -55,6 +55,7 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         $routes->get('unit_kerja/(:num)', '\App\Domains\Email\Controllers\EmailList::unit_kerja_detail/$1');
         $routes->get('eselon_detail/(:num)', '\App\Domains\Email\Controllers\EmailList::eselon_detail/$1');
         $routes->get('pns_list', '\App\Domains\Email\Controllers\EmailList::pns_list');
+    $routes->get('export_pns_excel', '\App\Domains\Email\Controllers\EmailExport::export_pns_excel');
         $routes->get('pppk_list', '\App\Domains\Email\Controllers\EmailList::pppk_list');
         $routes->get('pppk_pw_list', '\App\Domains\Email\Controllers\EmailList::pppk_pw_list');
         $routes->get('eselon_list', '\App\Domains\Email\Controllers\EmailList::eselon_list');

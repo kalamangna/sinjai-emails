@@ -639,7 +639,70 @@ class EmailExportService
         $writer = new XlsxWriter($spreadsheet);
         $writer->save($path);
         
-        return ['path' => $path, 'filename' => $filename];
+        return ['type' => 'excel', 'path' => $path, 'filename' => $filename];
+    }
+
+    public function generatePnsExcel($params = [])
+    {
+        set_time_limit(0);
+        ini_set('memory_limit', '-1');
+
+        $statusPns = $this->statusAsnModel->where('nama_status_asn', 'PNS')->asArray()->first();
+        if (!$statusPns) throw new Exception('Status PNS belum dikonfigurasi.');
+
+        $builder = $this->emailModel->withDetails()->where('emails.status_asn_id', $statusPns['id']);
+
+        if (!empty($params['has_nip'])) {
+            if ($params['has_nip'] === 'yes') {
+                $builder->where('emails.nip !=', '')->where('emails.nip IS NOT NULL');
+            } elseif ($params['has_nip'] === 'no') {
+                $builder->groupStart()->where('emails.nip', '')->orWhere('emails.nip', null)->groupEnd();
+            }
+        }
+
+        if (!empty($params['parent_unit_kerja_id'])) {
+            $db = \Config\Database::connect();
+            $parentId = $params['parent_unit_kerja_id'];
+            $builder->where('(unit_kerja.parent_id = ' . $db->escape($parentId) . ' OR emails.unit_kerja_id = ' . $db->escape($parentId) . ')');
+        }
+
+        $emails = $builder->orderBy('emails.name', 'ASC')->findAll();
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        
+        $sheet->setCellValue('A1', 'DATA PNS');
+        $sheet->mergeCells('A1:G1');
+        $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
+        $sheet->getStyle('A1')->getAlignment()->setHorizontal('center');
+
+        $headers = ['No', 'Nama Pegawai', 'NIP', 'NIK', 'Email', 'Jabatan', 'Unit Kerja'];
+        $sheet->fromArray($headers, NULL, 'A3');
+        $sheet->getStyle('A3:G3')->getFont()->setBold(true);
+
+        $row = 4;
+        $no = 1;
+        foreach ($emails as $email) {
+            $sheet->setCellValue('A' . $row, $no++);
+            $sheet->setCellValue('B' . $row, $email['name']);
+            $sheet->setCellValueExplicit('C' . $row, $email['nip'] ?? '', \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit('D' . $row, $email['nik'] ?? '', \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $sheet->setCellValue('E' . $row, $email['email']);
+            $sheet->setCellValue('F' . $row, $email['jabatan']);
+            $sheet->setCellValue('G' . $row, $email['unit_kerja_name'] ?? '');
+            $row++;
+        }
+
+        foreach (range('A', 'G') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        $writer = new XlsxWriter($spreadsheet);
+        $filename = 'Data_PNS_' . date('YmdHis') . '.xlsx';
+        $filepath = WRITEPATH . 'uploads/' . $filename;
+        $writer->save($filepath);
+
+        return ['type' => 'excel', 'path' => $filepath, 'filename' => $filename];
     }
 
     public function generateUnitKerjaCsv($unitKerjaId, $params = [])

@@ -37,6 +37,23 @@ class EmailExport extends BaseController
         }
     }
 
+    public function export_pns_excel()
+    {
+        try {
+            $params = [
+                'has_nip' => $this->request->getGet('has_nip'),
+                'parent_unit_kerja_id' => $this->request->getGet('parent_unit_kerja_id'),
+            ];
+
+            $result = $this->emailExportService->generatePnsExcel($params);
+
+            return $this->response->download($result['path'], null)->setFileName($result['filename']);
+        } catch (\Throwable $e) {
+            $data['error'] = $e->getMessage();
+            return view('email/error', $data);
+        }
+    }
+
     public function export_unit_kerja_excel($unitKerjaId)
     {
         try {
