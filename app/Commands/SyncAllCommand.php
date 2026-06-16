@@ -316,8 +316,8 @@ class SyncAllCommand extends BaseCommand
                     // 1. Delete from cPanel
                     $cpanelApi->delete_email_account($acc['email']);
                     
-                    // 2. Delete from local DB
-                    $emailModel->delete($acc['id']);
+                    // 2. Delete from local DB (Hard Delete)
+                    $emailModel->delete($acc['id'], true);
                     
                     $deletedList[] = "• " . ($acc['name'] ?: $acc['email']);
                     CLI::write('DONE', 'green');

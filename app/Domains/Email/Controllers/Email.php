@@ -378,7 +378,7 @@ class Email extends BaseController
             $email = $this->emailModel->find($id);
             if (!$email) return redirect()->to('email')->with('error', 'Email account not found.');
             $cpanelApi->delete_email_account($email['email']);
-            $this->emailModel->delete($id);
+            $this->emailModel->delete($id, true); // True to purge from soft deletes
 
             // Send Telegram Notification
             try {
@@ -397,7 +397,7 @@ class Email extends BaseController
             return redirect()->to('email')->with('success', 'Email account ' . $email['email'] . ' has been deleted successfully.');
         } catch (\Throwable $e) {
             log_message('error', 'Failed to delete email: ' . $e->getMessage());
-            $this->emailModel->delete($id);
+            $this->emailModel->delete($id, true); // True to purge from soft deletes
             return redirect()->to('email')->with('error', 'Failed to delete email account from cPanel, but removed from local list.');
         }
     }
