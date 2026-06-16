@@ -178,7 +178,7 @@ class QueueWorker extends BaseCommand
                     $msg .= "<i>...dan " . (count($expiredEmails) - $limit) . " lainnya</i>\n";
                     break;
                 }
-                $nama = $e['nama'] ?: $e['email'];
+                $nama = $e['name'] ?: $e['email'];
                 $msg .= "- $nama\n";
             }
             $msg .= "\n";
@@ -194,7 +194,7 @@ class QueueWorker extends BaseCommand
                     $msg .= "<i>...dan " . (count($noCertEmails) - $limit) . " lainnya</i>\n";
                     break;
                 }
-                $nama = $e['nama'] ?: $e['email'];
+                $nama = $e['name'] ?: $e['email'];
                 $msg .= "- $nama\n";
             }
         }
