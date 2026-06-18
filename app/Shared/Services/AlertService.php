@@ -31,12 +31,12 @@ class AlertService
                 $count = count($highUsageAccounts);
                 if (is_cli()) CLI::write("Found $count accounts with high usage (>90%)", 'red');
                 
-                $msg = "⚠️ <b>PERINGATAN KUOTA EMAIL</b>\n";
+                $msg = "⚠️ <b>PERINGATAN KUOTA EMAIL PENUH</b>\n";
                 $msg .= "Ditemukan <b>$count</b> akun dengan penggunaan > 90%:\n";
                 $msg .= "------------------------------------------\n\n";
                 
                 foreach (array_slice($highUsageAccounts, 0, 10) as $acc) {
-                    $msg .= "👤 " . $acc['name'] . " (" . ($acc['nip'] ?: '-') . ")\n";
+                    $msg .= "👤 " . $acc['name'] . " (NIP: " . ($acc['nip'] ?: '-') . ")\n";
                     $msg .= "💼 " . ($acc['jabatan'] ?: '-') . "\n";
                     $msg .= "🏛️ " . ($acc['unit_name'] ?: '-') . "\n";
                     $msg .= "📧 " . $acc['email'] . "\n";
@@ -44,7 +44,7 @@ class AlertService
                 }
                 
                 if ($count > 10) {
-                    $msg .= "...dan " . ($count - 10) . " akun lainnya.";
+                    $msg .= "<i>...dan " . ($count - 10) . " akun lainnya.</i>";
                 }
                 
                 $this->telegram->sendMessage($msg);
@@ -89,26 +89,23 @@ class AlertService
             if (is_cli()) CLI::write("Total Expired: $totalExpiredCount, Pimpinan Expired: $pimpinanCount", 'cyan');
             
             // 3. Construct Telegram Message
-            $msg = "🔔 <b>LAPORAN TTE PIMPINAN</b>\n\n";
-            $msg .= "📊 Pimpinan Expired: <b>$totalExpiredCount</b> Akun\n";
+            $msg = "🔔 <b>LAPORAN TTE PIMPINAN EXPIRED</b>\n";
+            $msg .= "Ditemukan <b>$pimpinanCount</b> pimpinan Expired:\n";
             $msg .= "------------------------------------------\n\n";
 
             if ($pimpinanCount > 0) {
-                $msg .= "⚠️ <b>DETAIL PIMPINAN EXPIRED</b>\n";
-                $msg .= "Ditemukan <b>$pimpinanCount</b> pimpinan:\n\n";
-                
                 foreach (array_slice($expiredPimpinan, 0, 10) as $acc) {
-                    $msg .= "👤 " . $acc['name'] . " (" . ($acc['nip'] ?: '-') . ")\n";
+                    $msg .= "👤 " . $acc['name'] . " (NIP: " . ($acc['nip'] ?: '-') . ")\n";
                     $msg .= "💼 " . ($acc['jabatan'] ?: '-') . "\n";
                     $msg .= "🏛️ " . ($acc['unit_name'] ?: '-') . "\n";
                     $msg .= "📧 " . $acc['email'] . "\n\n";
                 }
                 
                 if ($pimpinanCount > 10) {
-                    $msg .= "...dan " . ($pimpinanCount - 10) . " pimpinan lainnya.";
+                    $msg .= "<i>...dan " . ($pimpinanCount - 10) . " pimpinan lainnya.</i>";
                 }
             } else {
-                $msg .= "✅ Tidak ada data pimpinan yang expired.";
+                $msg .= "✅ Seluruh TTE pimpinan dalam kondisi aman.";
             }
             
             $this->telegram->sendMessage($msg);
@@ -134,7 +131,8 @@ class AlertService
                 if (is_cli()) CLI::write("Found $count website domains expiring soon", 'red');
                 
                 $msg = "🌐 <b>PERINGATAN MASA AKTIF WEBSITE</b>\n";
-                $msg .= "Ditemukan <b>$count</b> domain desa/kelurahan yang akan kadaluwarsa dalam 30 hari:\n\n";
+                $msg .= "Ditemukan <b>$count</b> domain akan kadaluwarsa (< 30 Hari):\n";
+                $msg .= "------------------------------------------\n\n";
                 
                 foreach (array_slice($expiringWebs, 0, 10) as $web) {
                     $msg .= "💻 <b>" . $web['domain'] . "</b>\n";
@@ -143,7 +141,7 @@ class AlertService
                 }
                 
                 if ($count > 10) {
-                    $msg .= "...dan " . ($count - 10) . " domain lainnya.";
+                    $msg .= "<i>...dan " . ($count - 10) . " domain lainnya.</i>";
                 }
                 
                 $this->telegram->sendMessage($msg);

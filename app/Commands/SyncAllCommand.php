@@ -88,7 +88,7 @@ class SyncAllCommand extends BaseCommand
         $modeName = $runAll ? 'PENUH' : ($isDaily ? 'HARIAN' : ($isWeekly ? 'MINGGUAN' : 'BULANAN'));
         
         CLI::write("Starting Synchronization Process ($modeName)...", 'blue');
-        $this->telegram->sendMessage("🔄 <b>Sinkronisasi $modeName Dimulai</b>\nSistem sedang memperbarui data...");
+        $this->telegram->sendMessage("🔄 <b>SINKRONISASI SISTEM BERJALAN</b>\nSistem mengeksekusi sinkronisasi $modeName...\n------------------------------------------");
 
         // Phase: TTE (Harian / All)
         if ($runAll || $isDaily) {
@@ -115,26 +115,27 @@ class SyncAllCommand extends BaseCommand
 
     private function sendTelegramSummary($mode)
     {
-        $msg = "✅ <b>Sinkronisasi $mode Selesai</b>\n\n";
+        $msg = "✅ <b>SINKRONISASI $mode SELESAI</b>\n";
+        $msg .= "------------------------------------------\n";
 
         if (isset($this->syncStats['cpanel']['executed'])) {
             $status = $this->syncStats['cpanel']['success'] > 0 ? "🟢 Berhasil" : "🔴 Gagal";
-            $msg .= "📧 <b>cPanel Sync</b>: $status\n";
+            $msg .= "📧 cPanel Sync: $status\n";
         }
 
         if (isset($this->syncStats['tte']['executed'])) {
-            $msg .= "✍️ <b>TTE Sync</b>: " . $this->syncStats['tte']['success'] . " Berhasil, " . $this->syncStats['tte']['fail'] . " Gagal\n";
+            $msg .= "✍️ TTE Sync: " . $this->syncStats['tte']['success'] . " Berhasil, " . $this->syncStats['tte']['fail'] . " Gagal\n";
         }
 
         if (isset($this->syncStats['pegawai']['executed'])) {
-            $msg .= "👥 <b>Pegawai Sync</b>: " . $this->syncStats['pegawai']['success'] . " Update, " . $this->syncStats['pegawai']['skipped'] . " Tetap, " . $this->syncStats['pegawai']['fail'] . " Gagal\n";
+            $msg .= "👥 Pegawai Sync: " . $this->syncStats['pegawai']['success'] . " Update, " . $this->syncStats['pegawai']['skipped'] . " Tetap, " . $this->syncStats['pegawai']['fail'] . " Gagal\n";
         }
 
         if (isset($this->syncStats['website']['executed'])) {
-            $msg .= "🌐 <b>Website Sync</b>: " . $this->syncStats['website']['success'] . " Berhasil, " . $this->syncStats['website']['fail'] . " Gagal\n";
+            $msg .= "🌐 Website Sync: " . $this->syncStats['website']['success'] . " Berhasil, " . $this->syncStats['website']['fail'] . " Gagal\n";
         }
 
-        $msg .= "\n🕒 " . date('d M Y H:i:s');
+        $msg .= "\n🕒 " . date('d M Y, H:i:s');
         $this->telegram->sendMessage($msg);
     }
 
@@ -336,8 +337,9 @@ class SyncAllCommand extends BaseCommand
             }
 
             if (!empty($deletedList)) {
-                $msg = "🧹 <b>LAPORAN PEMBERSIHAN PENSIUN</b>\n";
-                $msg .= "Akun berikut telah dihapus permanen (melewati masa tunggu 30 hari):\n\n";
+                $msg = "🧹 <b>LAPORAN PEMBERSIHAN OTOMATIS</b>\n";
+                $msg .= "Akun berikut telah dihapus permanen (melewati masa tunggu 30 hari):\n";
+                $msg .= "------------------------------------------\n\n";
                 $msg .= implode("\n", $deletedList);
                 $this->telegram->sendMessage($msg);
             }

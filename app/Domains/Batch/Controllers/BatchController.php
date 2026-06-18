@@ -272,7 +272,7 @@ class BatchController extends BaseController
                 
                 $msg = "📁 <b>LAPORAN BATCH $type</b>\n";
                 $msg .= "Operasi massal dieksekusi oleh: <b>$adminName</b>\n";
-                $msg .= "------------------------------------------\n";
+                $msg .= "------------------------------------------\n\n";
                 $msg .= "✅ Berhasil: <b>$successCount</b> Akun\n";
                 $msg .= "❌ Gagal: <b>$failCount</b> Akun\n";
                 

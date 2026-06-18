@@ -92,7 +92,13 @@ class QueueWorker extends BaseCommand
                 // Permanently failed
                 CLI::error("Job #{$job['id']} permanently failed after 3 attempts.");
                 $telegram = new \App\Shared\Libraries\TelegramLibrary();
-                $telegram->sendMessage("🚨 <b>CRITICAL ERROR: QUEUE WORKER</b>\nTugas sinkronisasi gagal secara permanen!\nID Job: {$job['id']}\nTipe: $type\nError: " . $e->getMessage());
+                $msg = "🚨 <b>CRITICAL ERROR: QUEUE WORKER</b>\n";
+                $msg .= "Tugas sinkronisasi gagal secara permanen!\n";
+                $msg .= "------------------------------------------\n";
+                $msg .= "📋 ID Job: <b>{$job['id']}</b>\n";
+                $msg .= "🔄 Tipe: <b>$type</b>\n";
+                $msg .= "❌ Error: " . $e->getMessage();
+                $telegram->sendMessage($msg);
                 $jobModel->delete($job['id']);
             }
         }
