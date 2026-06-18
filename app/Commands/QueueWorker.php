@@ -156,21 +156,13 @@ class QueueWorker extends BaseCommand
                                         ->orWhere('pimpinan_desa', 1)
                                     ->groupEnd()
                                     ->findAll();
-        
-        // Ambil data NO_CERTIFICATE HANYA untuk pimpinan
-        $noCertEmails = $emailModel->where('bsre_status', 'NO_CERTIFICATE')
-                                   ->groupStart()
-                                      ->where('pimpinan', 1)
-                                      ->orWhere('pimpinan_desa', 1)
-                                   ->groupEnd()
-                                   ->findAll();
 
-        if (empty($expiredEmails) && empty($noCertEmails)) {
-            // Jika tidak ada yang expired atau no_certificate, tidak perlu spam Telegram
+        if (empty($expiredEmails)) {
+            // Jika tidak ada yang expired, tidak perlu spam Telegram
             return;
         }
 
-        $msg = "⚠️ <b>Laporan TTE Pegawai / Pimpinan Bermasalah</b>\n\n";
+        $msg = "⚠️ <b>Laporan TTE Pimpinan Bermasalah</b>\n\n";
 
         if (!empty($expiredEmails)) {
             $msg .= "🔴 <b>EXPIRED (" . count($expiredEmails) . " Akun)</b>\n";
@@ -186,21 +178,6 @@ class QueueWorker extends BaseCommand
                 $msg .= "- $nama\n";
             }
             $msg .= "\n";
-        }
-
-        if (!empty($noCertEmails)) {
-            $msg .= "🟡 <b>NO_CERTIFICATE (" . count($noCertEmails) . " Akun)</b>\n";
-            $limit = 10;
-            $count = 0;
-            foreach ($noCertEmails as $e) {
-                $count++;
-                if ($count > $limit) {
-                    $msg .= "<i>...dan " . (count($noCertEmails) - $limit) . " lainnya</i>\n";
-                    break;
-                }
-                $nama = $e['name'] ?: $e['email'];
-                $msg .= "- $nama\n";
-            }
         }
 
         $telegram->sendMessage($msg);
