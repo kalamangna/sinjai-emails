@@ -35,9 +35,12 @@ class BackupCommand extends BaseCommand
         $filename = "db_backup_{$date}.sql.gz";
         $filepath = $backupDir . $filename;
 
+        // Coba deteksi lokasi mysqldump (cPanel biasanya di /usr/bin/mysqldump)
+        $mysqldump = file_exists('/usr/bin/mysqldump') ? '/usr/bin/mysqldump' : 'mysqldump';
+        
         // Perintah mysqldump
         $passwordArg = empty($password) ? '' : "-p" . escapeshellarg($password);
-        $command = "mysqldump --no-tablespaces -h " . escapeshellarg($hostname) . " -P " . escapeshellarg($port) . " -u " . escapeshellarg($username) . " {$passwordArg} " . escapeshellarg($database) . " > " . escapeshellarg($filepath . '.tmp') . " 2>/dev/null";
+        $command = escapeshellcmd($mysqldump) . " --no-tablespaces -h " . escapeshellarg($hostname) . " -P " . escapeshellarg($port) . " -u " . escapeshellarg($username) . " {$passwordArg} " . escapeshellarg($database) . " > " . escapeshellarg($filepath . '.tmp') . " 2>/dev/null";
 
         // Eksekusi mysqldump
         $output = [];
@@ -48,7 +51,8 @@ class BackupCommand extends BaseCommand
 
         if ($returnVar === 0 && file_exists($filepath . '.tmp')) {
             // Kompresi dengan gzip
-            exec("gzip -c " . escapeshellarg($filepath . '.tmp') . " > " . escapeshellarg($filepath), $output, $zipReturn);
+            $gzip = file_exists('/usr/bin/gzip') ? '/usr/bin/gzip' : 'gzip';
+            exec(escapeshellcmd($gzip) . " -c " . escapeshellarg($filepath . '.tmp') . " > " . escapeshellarg($filepath), $output, $zipReturn);
             unlink($filepath . '.tmp');
 
             if ($zipReturn !== 0 || !file_exists($filepath)) {
