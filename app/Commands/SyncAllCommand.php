@@ -220,7 +220,9 @@ class SyncAllCommand extends BaseCommand
 
             $builder = $emailModel->select('nip')
                 ->where('emails.nip IS NOT NULL')
-                ->where('emails.nip !=', '');
+                ->where('emails.nip !=', '')
+                ->where('(emails.pimpinan = 0 OR emails.pimpinan IS NULL)')
+                ->where('(emails.pimpinan_desa = 0 OR emails.pimpinan_desa IS NULL)');
 
             if ($pppkPwId) {
                 $builder->where('emails.status_asn_id !=', $pppkPwId);
