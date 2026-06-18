@@ -73,6 +73,20 @@ class TrashController extends BaseController
             helper('audit');
             log_audit('FORCE_DELETE', 'Email', $id, 'Permanently deleted email: ' . $email['email']);
             
+            // Send Telegram Notification
+            try {
+                $telegram = new \App\Shared\Libraries\TelegramLibrary();
+                $msg = "🔥 <b>PENGHAPUSAN AKUN PERMANEN</b>\n";
+                $msg .= "Admin mengeksekusi Hapus Permanen dari Tempat Sampah:\n";
+                $msg .= "------------------------------------------\n\n";
+                $msg .= "👤 " . ($email['name'] ?: '-') . " (NIP: " . ($email['nip'] ?: '-') . ")\n";
+                $msg .= "📧 " . $email['email'] . "\n\n";
+                $msg .= "⚠️ <i>Data telah dibumihanguskan dari Database maupun server cPanel.</i>";
+                $telegram->sendMessage($msg);
+            } catch (\Throwable $te) {
+                log_message('error', 'Failed to send Telegram notification for force delete: ' . $te->getMessage());
+            }
+            
             return redirect()->to('/email/trash')->with('success', 'Akun berhasil dihapus permanen.');
         }
         

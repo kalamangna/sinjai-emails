@@ -48,7 +48,7 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         // Trash Routes (Manajemen Sampah)
         $routes->get('trash', '\App\Domains\Email\Controllers\TrashController::index');
         $routes->get('trash/restore/(:num)', '\App\Domains\Email\Controllers\TrashController::restore/$1');
-        $routes->get('trash/force_delete/(:num)', '\App\Domains\Email\Controllers\TrashController::forceDelete/$1');
+        $routes->post('trash/force_delete/(:num)', '\App\Domains\Email\Controllers\TrashController::forceDelete/$1');
         
         // List Routes
         $routes->get('unit_kerja', '\App\Domains\Email\Controllers\EmailList::unit_kerja_list');
