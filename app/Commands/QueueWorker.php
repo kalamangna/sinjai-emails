@@ -149,15 +149,19 @@ class QueueWorker extends BaseCommand
         $emailModel = new \App\Domains\Email\Models\EmailModel();
         $telegram = new \App\Shared\Libraries\TelegramLibrary();
 
-        // Ambil data yang expired
-        $expiredEmails = $emailModel->where('bsre_status', 'EXPIRED')->findAll();
+        // Ambil data yang expired HANYA untuk pimpinan
+        $expiredEmails = $emailModel->where('bsre_status', 'EXPIRED')
+                                    ->groupStart()
+                                        ->where('pimpinan', 1)
+                                        ->orWhere('pimpinan_desa', 1)
+                                    ->groupEnd()
+                                    ->findAll();
         
-        // Ambil data NO_CERTIFICATE yang mungkin penting (pimpinan/nip terisi)
+        // Ambil data NO_CERTIFICATE HANYA untuk pimpinan
         $noCertEmails = $emailModel->where('bsre_status', 'NO_CERTIFICATE')
                                    ->groupStart()
                                       ->where('pimpinan', 1)
                                       ->orWhere('pimpinan_desa', 1)
-                                      ->orWhere('nip !=', '')
                                    ->groupEnd()
                                    ->findAll();
 
