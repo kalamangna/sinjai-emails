@@ -307,9 +307,9 @@ class SyncAllCommand extends BaseCommand
             $emailModel = new EmailModel();
             $cpanelApi = new \App\Shared\Libraries\CpanelApi();
             
-            // Look for accounts marked as retired more than 30 days ago that are NOT suspended yet
+            // Look for accounts marked as retired more than 30 days ago
             $thirtyDaysAgo = date('Y-m-d H:i:s', strtotime('-30 days'));
-            $toSuspend = $emailModel->withDeleted()
+            $toDelete = $emailModel->withDeleted()
                                    ->groupStart()
                                        ->groupStart()
                                            ->where('pensiun_at IS NOT NULL')
@@ -320,42 +320,40 @@ class SyncAllCommand extends BaseCommand
                                            ->where('deleted_at <=', $thirtyDaysAgo)
                                        ->groupEnd()
                                    ->groupEnd()
-                                   ->where('suspended_login', 0)
                                    ->findAll();
             
-            if (empty($toSuspend)) {
-                CLI::write('No retired accounts to suspend.', 'green');
+            if (empty($toDelete)) {
+                CLI::write('No retired accounts to cleanup.', 'green');
                 return;
             }
 
-            $suspendedList = [];
-            foreach ($toSuspend as $acc) {
-                CLI::print("Suspending retired account: {$acc['email']}... ");
+            $deletedList = [];
+            foreach ($toDelete as $acc) {
+                CLI::print("Deleting retired account: {$acc['email']}... ");
                 try {
-                    // 1. Suspend on cPanel instead of deleting
-                    $cpanelApi->suspend_email_login($acc['email']);
+                    // 1. Delete from cPanel
+                    $cpanelApi->delete_email_account($acc['email']);
                     
-                    // 2. Mark as suspended in local DB (Do not Hard Delete)
-                    $emailModel->update($acc['id'], ['suspended_login' => 1]);
+                    // 2. Delete from local DB (Hard Delete)
+                    $emailModel->delete($acc['id'], true);
                     
-                    $suspendedList[] = "• " . ($acc['name'] ?: $acc['email']);
+                    $deletedList[] = "• " . ($acc['name'] ?: $acc['email']);
                     CLI::write('DONE', 'green');
                 } catch (\Throwable $e) {
                     CLI::write('FAILED: ' . $e->getMessage(), 'red');
                 }
             }
 
-            if (!empty($suspendedList)) {
+            if (!empty($deletedList)) {
                 $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
-                $builder->setTitle('LAPORAN PENANGGUHAN OTOMATIS', '🧹')
-                        ->addText("Akun berikut telah ditangguhkan (melewati masa tunggu pensiun 30 hari):")
+                $builder->setTitle('LAPORAN PEMBERSIHAN OTOMATIS', '🧹')
+                        ->addText("Akun berikut telah dihapus permanen (melewati masa tunggu pensiun 30 hari):")
                         ->addDivider();
                 
-                foreach ($suspendedList as $item) {
+                foreach ($deletedList as $item) {
                     $builder->addText($item);
                 }
                 
-                $builder->addText("\n<i>Akun tidak dihapus permanen, hanya ditangguhkan untuk keperluan arsip.</i>");
                 $this->telegram->sendMessage($builder->build());
             }
 
