@@ -152,44 +152,8 @@ class QueueWorker extends BaseCommand
 
     private function handleSyncTteReport()
     {
-        $emailModel = new \App\Domains\Email\Models\EmailModel();
-        $telegram = new \App\Shared\Libraries\TelegramLibrary();
-
-        // Ambil data yang expired HANYA untuk pimpinan
-        $expiredEmails = $emailModel->select('emails.email, emails.name, emails.nip, emails.nik, emails.jabatan, unit_kerja.nama_unit_kerja as unit_name')
-                                    ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
-                                    ->where('emails.bsre_status', 'EXPIRED')
-                                    ->groupStart()
-                                        ->where('emails.pimpinan', 1)
-                                        ->orWhere('emails.pimpinan_desa', 1)
-                                    ->groupEnd()
-                                    ->findAll();
-
-        if (empty($expiredEmails)) {
-            // Jika tidak ada yang expired, tidak perlu spam Telegram
-            return;
-        }
-
-        $pimpinanCount = count($expiredEmails);
-        $msg = "🔔 <b>LAPORAN TTE PIMPINAN EXPIRED</b>\n";
-        $msg .= "Ditemukan <b>$pimpinanCount</b> pimpinan Expired:\n";
-        $msg .= "------------------------------------------\n\n";
-
-        foreach (array_slice($expiredEmails, 0, 10) as $acc) {
-            $identitas = !empty($acc['nip']) ? "NIP: {$acc['nip']}" : (!empty($acc['nik']) ? "NIK: {$acc['nik']}" : "Tanpa NIP/NIK");
-            $jabatan = !empty($acc['jabatan']) ? $acc['jabatan'] : 'Jabatan Belum Diisi';
-            $unitKerja = !empty($acc['unit_name']) ? $acc['unit_name'] : 'Instansi Belum Diisi';
-            
-            $msg .= "👤 <b>" . $acc['name'] . "</b> ($identitas)\n";
-            $msg .= "💼 $jabatan\n";
-            $msg .= "🏛️ $unitKerja\n";
-            $msg .= "📧 " . $acc['email'] . "\n\n";
-        }
-        
-        if ($pimpinanCount > 10) {
-            $msg .= "<i>...dan " . ($pimpinanCount - 10) . " pimpinan lainnya.</i>";
-        }
-
-        $telegram->sendMessage($msg);
+        // Panggil logika terpusat dari AlertService (jangan kirim pesan 'aman' jika kosong agar tidak spam)
+        $alertService = new \App\Shared\Services\AlertService();
+        $alertService->checkTteExpiredAlerts(false);
     }
 }

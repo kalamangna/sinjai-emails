@@ -60,13 +60,13 @@ class AlertService
         }
     }
 
-    public function checkTteExpiredAlerts()
+    public function checkTteExpiredAlerts($sendIfSafe = true)
     {
-        if (is_cli()) CLI::write('Checking for Expired TTE Status Alerts...', 'yellow');
+        if (is_cli()) CLI::write('Checking for Expired TTE Alerts...', 'yellow');
         try {
             $emailModel = new EmailModel();
             
-            // 1. Get TOTAL count of all leadership expired accounts
+            // 1. Get total expired accounts
             $totalExpiredCount = $emailModel->where('bsre_status', 'EXPIRED')
                 ->groupStart()
                     ->where('pimpinan', 1)
@@ -76,6 +76,13 @@ class AlertService
             
             if ($totalExpiredCount === 0) {
                 if (is_cli()) CLI::write('No expired TTE accounts found.', 'green');
+                
+                if ($sendIfSafe) {
+                    $msg = "🔔 <b>LAPORAN TTE PIMPINAN EXPIRED</b>\n";
+                    $msg .= "------------------------------------------\n\n";
+                    $msg .= "✅ Seluruh TTE pimpinan dalam kondisi aman.";
+                    $this->telegram->sendMessage($msg);
+                }
                 return;
             }
 
@@ -97,23 +104,19 @@ class AlertService
             $msg .= "Ditemukan <b>$pimpinanCount</b> pimpinan Expired:\n";
             $msg .= "------------------------------------------\n\n";
 
-            if ($pimpinanCount > 0) {
-                foreach (array_slice($expiredPimpinan, 0, 10) as $acc) {
-                    $identitas = !empty($acc['nip']) ? "NIP: {$acc['nip']}" : (!empty($acc['nik']) ? "NIK: {$acc['nik']}" : "Tanpa NIP/NIK");
-                    $jabatan = !empty($acc['jabatan']) ? $acc['jabatan'] : 'Jabatan Belum Diisi';
-                    $unitKerja = !empty($acc['unit_name']) ? $acc['unit_name'] : 'Instansi Belum Diisi';
-                    
-                    $msg .= "👤 <b>" . $acc['name'] . "</b> ($identitas)\n";
-                    $msg .= "💼 $jabatan\n";
-                    $msg .= "🏛️ $unitKerja\n";
-                    $msg .= "📧 " . $acc['email'] . "\n\n";
-                }
+            foreach (array_slice($expiredPimpinan, 0, 10) as $acc) {
+                $identitas = !empty($acc['nip']) ? "NIP: {$acc['nip']}" : (!empty($acc['nik']) ? "NIK: {$acc['nik']}" : "Tanpa NIP/NIK");
+                $jabatan = !empty($acc['jabatan']) ? $acc['jabatan'] : 'Jabatan Belum Diisi';
+                $unitKerja = !empty($acc['unit_name']) ? $acc['unit_name'] : 'Instansi Belum Diisi';
                 
-                if ($pimpinanCount > 10) {
-                    $msg .= "<i>...dan " . ($pimpinanCount - 10) . " pimpinan lainnya.</i>";
-                }
-            } else {
-                $msg .= "✅ Seluruh TTE pimpinan dalam kondisi aman.";
+                $msg .= "👤 <b>" . $acc['name'] . "</b> ($identitas)\n";
+                $msg .= "💼 $jabatan\n";
+                $msg .= "🏛️ $unitKerja\n";
+                $msg .= "📧 " . $acc['email'] . "\n\n";
+            }
+            
+            if ($pimpinanCount > 10) {
+                $msg .= "<i>...dan " . ($pimpinanCount - 10) . " pimpinan lainnya.</i>";
             }
             
             $this->telegram->sendMessage($msg);
