@@ -691,4 +691,113 @@ class EmailService
         // If successful, update locally
         return $this->emailModel->update($email['id'], ['password' => $newPassword]);
     }
+
+    public function getEselonDetail($eselonId, $params)
+    {
+        $eselon = $this->eselonModel->find($eselonId);
+        if (!$eselon) {
+            throw new Exception('Eselon not found.');
+        }
+
+        $perPage = $params['per_page'] ?? 100;
+        $search = $params['search'] ?? null;
+        $bsre_status = $params['bsre_status'] ?? null;
+
+        $builder = $this->emailModel->withDetails()->where('emails.eselon_id', $eselonId);
+
+        if ($search) {
+            $builder->groupStart();
+            $cleanSearch = str_replace([' ', '.', '-', '\''], '', $search);
+            $builder->like('emails.email', $search)
+                ->orLike('emails.name', $search);
+
+            if (is_numeric($cleanSearch) && strlen($cleanSearch) >= 10) {
+                $hash = $cleanSearch;
+                $builder->orWhere('emails.nik', $hash)
+                    ->orWhere('emails.nip', $hash);
+            }
+            $builder->groupEnd();
+        }
+
+        if ($bsre_status) {
+            if ($bsre_status === 'not_synced') {
+                $builder->groupStart()
+                    ->where('emails.bsre_status', null)
+                    ->orWhere('emails.bsre_status', '')
+                    ->groupEnd();
+            } else {
+                $builder->where('emails.bsre_status', $bsre_status);
+            }
+        }
+
+        $total_emails = $builder->countAllResults(false);
+        
+        $tempBuilder = clone $builder;
+        $active_bsre_count = $tempBuilder->where('emails.bsre_status', 'ISSUE')->countAllResults(false);
+
+        $emails = $builder->orderBy('unit_kerja.nama_unit_kerja', 'ASC')
+            ->orderBy('emails.jabatan', 'ASC')
+            ->orderBy('emails.name', 'ASC')
+            ->paginate($perPage);
+
+        return [
+            'eselon' => $eselon,
+            'emails' => $emails,
+            'total_emails' => $total_emails,
+            'active_bsre_count' => $active_bsre_count,
+            'pager' => $this->emailModel->pager,
+        ];
+    }
+
+    public function getAsnList($asnStatusName, $params)
+    {
+        $statusAsn = $this->statusAsnModel->where('nama_status_asn', $asnStatusName)->asArray()->first();
+        if (!$statusAsn) {
+            throw new Exception("Status {$asnStatusName} belum dikonfigurasi di sistem.");
+        }
+
+        $hasNip = $params['has_nip'] ?? null;
+        $parentUnitKerjaId = $params['parent_unit_kerja_id'] ?? null;
+        $usePkJoin = $params['use_pk_join'] ?? false;
+        $perPage = $params['per_page'] ?? 100;
+
+        $builder = $this->emailModel->withDetails()->where('emails.status_asn_id', $statusAsn['id']);
+        
+        $countModel = new EmailModel();
+        $countModel->where('emails.status_asn_id', $statusAsn['id']);
+
+        if ($hasNip === 'yes') {
+            $builder->where('emails.nip !=', '')->where('emails.nip IS NOT NULL');
+            $countModel->where('emails.nip !=', '')->where('emails.nip IS NOT NULL');
+        } elseif ($hasNip === 'no') {
+            $builder->groupStart()->where('emails.nip', '')->orWhere('emails.nip', null)->groupEnd();
+            $countModel->groupStart()->where('emails.nip', '')->orWhere('emails.nip', null)->groupEnd();
+        }
+
+        if (!empty($parentUnitKerjaId)) {
+            $db = \Config\Database::connect();
+            $builder->where('(unit_kerja.parent_id = ' . $db->escape($parentUnitKerjaId) . ' OR emails.unit_kerja_id = ' . $db->escape($parentUnitKerjaId) . ')');
+            
+            $countModel->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left');
+            $countModel->where('(unit_kerja.parent_id = ' . $db->escape($parentUnitKerjaId) . ' OR emails.unit_kerja_id = ' . $db->escape($parentUnitKerjaId) . ')');
+        }
+
+        if ($usePkJoin) {
+            $builder->select('MIN(pk.nomor) as nomor_pk')
+                    ->join('pk', 'pk.email = emails.email', 'left')
+                    ->groupBy('emails.id, emails.name, emails.nip, emails.jabatan, emails.user, emails.email, emails.bsre_status, unit_kerja.nama_unit_kerja, parent_unit_kerja.nama_unit_kerja, status_asn.nama_status_asn, eselon.nama_eselon')
+                    ->orderBy('CAST(MIN(pk.nomor) AS UNSIGNED)', 'ASC');
+        } else {
+            $builder->orderBy('emails.name', 'ASC');
+        }
+
+        $total_count = $countModel->countAllResults();
+        $emails = $builder->paginate($perPage, 'default');
+
+        return [
+            'emails' => $emails,
+            'total_count' => $total_count,
+            'pager' => $this->emailModel->pager,
+        ];
+    }
 }
