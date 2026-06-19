@@ -50,10 +50,8 @@ class EmailModel extends Model
     protected $deletedField  = 'deleted_at';
     protected $returnType = 'array';
     
-    // Callbacks for encryption and blind index
-    protected $beforeInsert = ['hashAndEncrypt'];
-    protected $beforeUpdate = ['hashAndEncrypt'];
-    protected $afterFind    = ['decryptData'];
+    protected $beforeInsert = ['normalizeData'];
+    protected $beforeUpdate = ['normalizeData'];
 
     protected function normalize($value)
     {
@@ -61,34 +59,17 @@ class EmailModel extends Model
         return str_replace([' ', '.', '-', '\''], '', $value);
     }
 
-    protected function hashAndEncrypt(array $data)
+    protected function normalizeData(array $data)
     {
         if (isset($data['data'])) {
-            $encrypter = \Config\Services::encrypter();
-
-            // Blind Index (Hash)
             if (isset($data['data']['nik'])) {
-                $cleanNik = $this->normalize($data['data']['nik']);
-                $data['data']['nik'] = $cleanNik;
-                $data['data']['nik'] = $cleanNik; // NO ENCRYPTION
+                $data['data']['nik'] = $this->normalize($data['data']['nik']);
             }
             
             if (isset($data['data']['nip'])) {
-                $cleanNip = $this->normalize($data['data']['nip']);
-                $data['data']['nip'] = $cleanNip;
-                $data['data']['nip'] = $cleanNip; // NO ENCRYPTION
-            }
-
-            if (isset($data['data']['password']) && !empty($data['data']['password'])) {
-                $data['data']['password'] = $data['data']['password']; // NO ENCRYPTION
+                $data['data']['nip'] = $this->normalize($data['data']['nip']);
             }
         }
-        return $data;
-    }
-
-    protected function decryptData(array $data)
-    {
-        // NO DECRYPTION - Data is now plain text
         return $data;
     }
     
