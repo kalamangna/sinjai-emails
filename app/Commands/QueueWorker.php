@@ -55,20 +55,25 @@ class QueueWorker extends BaseCommand
         try {
             switch ($type) {
                 case 'sync_tte_batch':
-                    $this->handleSyncTte($payload['data']);
+                    $tteService = new \App\Shared\Services\TteSyncService();
+                    $tteService->processBatch($payload['data']);
                     break;
                 case 'sync_pegawai_batch':
-                    $this->handleSyncPegawai($payload['data']);
+                    $pegawaiService = new \App\Shared\Services\PegawaiSyncService();
+                    $pegawaiService->processBatch($payload['data']);
                     break;
                 case 'sync_cpanel':
-                    $this->handleSyncCpanel();
+                    $syncService = new \App\Shared\Services\SyncService();
+                    $syncService->syncFromCpanel();
                     break;
                 case 'sync_quota_report':
                     $alertService = new \App\Shared\Services\AlertService();
                     $alertService->checkQuotaAlerts();
                     break;
                 case 'sync_tte_report':
-                    $this->handleSyncTteReport();
+                    // Panggil logika terpusat dari AlertService (jangan kirim pesan 'aman' jika kosong agar tidak spam)
+                    $alertService = new \App\Shared\Services\AlertService();
+                    $alertService->checkTteExpiredAlerts(false);
                     break;
                 default:
                     CLI::error("Unknown job type: $type");
@@ -102,58 +107,5 @@ class QueueWorker extends BaseCommand
                 $jobModel->delete($job['id']);
             }
         }
-    }
-
-    private function handleSyncTte($emailList)
-    {
-        $emailModel = new \App\Domains\Email\Models\EmailModel();
-        $bsreApi = new \App\Shared\Libraries\BsreApi();
-        
-        foreach ($emailList as $email) {
-            $result = $bsreApi->checkStatus($email['email'], 'email');
-            if ($result['success']) {
-                $responseBody = $result['data'];
-                $statusFromBsre = $responseBody['status'] ?? ($responseBody['data']['status'] ?? 'UNKNOWN');
-                $emailModel->update($email['id'], ['bsre_status' => $statusFromBsre]);
-            }
-        }
-    }
-
-    private function handleSyncPegawai($nipList)
-    {
-        $emailModel = new \App\Domains\Email\Models\EmailModel();
-        $pegawaiApi = new \App\Shared\Libraries\PegawaiApi();
-        
-        foreach ($nipList as $nip) {
-            $result = $pegawaiApi->getPegawaiData($nip);
-            if ($result['success']) {
-                $data = $result['data'];
-                $source = (is_array($data) && isset($data[0])) ? $data[0] : $data;
-                
-                if (isset($source['pangkat_nama']) || isset($source['pangkat_golruang'])) {
-                    $updateData = [
-                        'pangkat_nama' => $source['pangkat_nama'] ?? null,
-                        'pangkat_golruang' => $source['pangkat_golruang'] ?? null
-                    ];
-                    if (isset($source['jabatan'])) {
-                        $updateData['jabatan'] = mb_strtoupper($source['jabatan'], 'UTF-8');
-                    }
-                    $emailModel->where('nip', $nip)->set($updateData)->update();
-                }
-            }
-        }
-    }
-
-    private function handleSyncCpanel()
-    {
-        $syncService = new \App\Shared\Services\SyncService();
-        $syncService->syncFromCpanel();
-    }
-
-    private function handleSyncTteReport()
-    {
-        // Panggil logika terpusat dari AlertService (jangan kirim pesan 'aman' jika kosong agar tidak spam)
-        $alertService = new \App\Shared\Services\AlertService();
-        $alertService->checkTteExpiredAlerts(false);
     }
 }
