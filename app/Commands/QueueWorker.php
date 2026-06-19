@@ -156,10 +156,12 @@ class QueueWorker extends BaseCommand
         $telegram = new \App\Shared\Libraries\TelegramLibrary();
 
         // Ambil data yang expired HANYA untuk pimpinan
-        $expiredEmails = $emailModel->where('bsre_status', 'EXPIRED')
+        $expiredEmails = $emailModel->select('emails.email, emails.name, emails.nip, emails.nik, emails.jabatan, unit_kerja.nama_unit_kerja as unit_name')
+                                    ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
+                                    ->where('emails.bsre_status', 'EXPIRED')
                                     ->groupStart()
-                                        ->where('pimpinan', 1)
-                                        ->orWhere('pimpinan_desa', 1)
+                                        ->where('emails.pimpinan', 1)
+                                        ->orWhere('emails.pimpinan_desa', 1)
                                     ->groupEnd()
                                     ->findAll();
 
@@ -168,22 +170,24 @@ class QueueWorker extends BaseCommand
             return;
         }
 
-        $msg = "⚠️ <b>Laporan TTE Pimpinan Bermasalah</b>\n\n";
+        $pimpinanCount = count($expiredEmails);
+        $msg = "🔔 <b>LAPORAN TTE PIMPINAN EXPIRED</b>\n";
+        $msg .= "Ditemukan <b>$pimpinanCount</b> pimpinan Expired:\n";
+        $msg .= "------------------------------------------\n\n";
 
-        if (!empty($expiredEmails)) {
-            $msg .= "🔴 <b>EXPIRED (" . count($expiredEmails) . " Akun)</b>\n";
-            $limit = 10;
-            $count = 0;
-            foreach ($expiredEmails as $e) {
-                $count++;
-                if ($count > $limit) {
-                    $msg .= "<i>...dan " . (count($expiredEmails) - $limit) . " lainnya</i>\n";
-                    break;
-                }
-                $nama = $e['name'] ?: $e['email'];
-                $msg .= "- $nama\n";
-            }
-            $msg .= "\n";
+        foreach (array_slice($expiredEmails, 0, 10) as $acc) {
+            $identitas = !empty($acc['nip']) ? "NIP: {$acc['nip']}" : (!empty($acc['nik']) ? "NIK: {$acc['nik']}" : "Tanpa NIP/NIK");
+            $jabatan = !empty($acc['jabatan']) ? $acc['jabatan'] : 'Jabatan Belum Diisi';
+            $unitKerja = !empty($acc['unit_name']) ? $acc['unit_name'] : 'Instansi Belum Diisi';
+            
+            $msg .= "👤 <b>" . $acc['name'] . "</b> ($identitas)\n";
+            $msg .= "💼 $jabatan\n";
+            $msg .= "🏛️ $unitKerja\n";
+            $msg .= "📧 " . $acc['email'] . "\n\n";
+        }
+        
+        if ($pimpinanCount > 10) {
+            $msg .= "<i>...dan " . ($pimpinanCount - 10) . " pimpinan lainnya.</i>";
         }
 
         $telegram->sendMessage($msg);
