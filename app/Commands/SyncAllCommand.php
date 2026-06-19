@@ -88,7 +88,12 @@ class SyncAllCommand extends BaseCommand
         $modeName = $runAll ? 'PENUH' : ($isDaily ? 'HARIAN' : ($isWeekly ? 'MINGGUAN' : 'BULANAN'));
         
         CLI::write("Starting Synchronization Process ($modeName)...", 'blue');
-        $this->telegram->sendMessage("🔄 <b>SINKRONISASI SISTEM BERJALAN</b>\nSistem mengeksekusi sinkronisasi $modeName...\n------------------------------------------");
+        $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
+        $builder->setTitle('SINKRONISASI SISTEM BERJALAN', '🔄')
+                ->addText("Sistem mengeksekusi sinkronisasi $modeName...")
+                ->addDivider();
+                
+        $this->telegram->sendMessage($builder->build());
 
         // Phase: TTE (Harian / All)
         if ($runAll || $isDaily) {
@@ -115,28 +120,29 @@ class SyncAllCommand extends BaseCommand
 
     private function sendTelegramSummary($mode)
     {
-        $msg = "✅ <b>SINKRONISASI $mode SELESAI</b>\n";
-        $msg .= "------------------------------------------\n";
+        $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
+        $builder->setTitle("SINKRONISASI $mode SELESAI", '✅')
+                ->addDivider();
 
         if (isset($this->syncStats['cpanel']['executed'])) {
             $status = $this->syncStats['cpanel']['success'] > 0 ? "🟢 Berhasil" : "🔴 Gagal";
-            $msg .= "📧 cPanel Sync: $status\n";
+            $builder->addKeyValue('cPanel Sync', $status, '📧');
         }
 
         if (isset($this->syncStats['tte']['executed'])) {
-            $msg .= "✍️ TTE Sync: " . $this->syncStats['tte']['success'] . " Berhasil, " . $this->syncStats['tte']['fail'] . " Gagal\n";
+            $builder->addKeyValue('TTE Sync', $this->syncStats['tte']['success'] . " Berhasil, " . $this->syncStats['tte']['fail'] . " Gagal", '✍️');
         }
 
         if (isset($this->syncStats['pegawai']['executed'])) {
-            $msg .= "👥 Pegawai Sync: " . $this->syncStats['pegawai']['success'] . " Update, " . $this->syncStats['pegawai']['skipped'] . " Tetap, " . $this->syncStats['pegawai']['fail'] . " Gagal\n";
+            $builder->addKeyValue('Pegawai Sync', $this->syncStats['pegawai']['success'] . " Update, " . $this->syncStats['pegawai']['skipped'] . " Tetap, " . $this->syncStats['pegawai']['fail'] . " Gagal", '👥');
         }
 
         if (isset($this->syncStats['website']['executed'])) {
-            $msg .= "🌐 Website Sync: " . $this->syncStats['website']['success'] . " Berhasil, " . $this->syncStats['website']['fail'] . " Gagal\n";
+            $builder->addKeyValue('Website Sync', $this->syncStats['website']['success'] . " Berhasil, " . $this->syncStats['website']['fail'] . " Gagal", '🌐');
         }
 
-        $msg .= "\n🕒 " . date('d M Y, H:i:s');
-        $this->telegram->sendMessage($msg);
+        $builder->addText("\n🕒 " . date('d M Y, H:i:s'));
+        $this->telegram->sendMessage($builder->build());
     }
 
     private function syncCpanel()

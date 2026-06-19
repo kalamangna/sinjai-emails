@@ -31,27 +31,25 @@ class AlertService
                 $count = count($highUsageAccounts);
                 if (is_cli()) CLI::write("Found $count accounts with high usage (>90%)", 'red');
                 
-                $msg = "⚠️ <b>PERINGATAN KUOTA EMAIL PENUH</b>\n";
-                $msg .= "Ditemukan <b>$count</b> akun dengan penggunaan > 90%:\n";
-                $msg .= "------------------------------------------\n\n";
+                $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
+                $builder->setTitle('PERINGATAN KUOTA EMAIL PENUH', '⚠️')
+                        ->addText("Ditemukan <b>$count</b> akun dengan penggunaan > 90%:")
+                        ->addDivider();
                 
                 foreach (array_slice($highUsageAccounts, 0, 10) as $acc) {
                     $identitas = !empty($acc['nip']) ? "NIP: {$acc['nip']}" : (!empty($acc['nik']) ? "NIK: {$acc['nik']}" : "Tanpa NIP/NIK");
                     $jabatan = !empty($acc['jabatan']) ? $acc['jabatan'] : 'Jabatan Belum Diisi';
                     $unitKerja = !empty($acc['unit_name']) ? $acc['unit_name'] : 'Instansi Belum Diisi';
+                    $extraData = "📊 Penggunaan: <b>" . $acc['humandiskused'] . "</b> (" . round($acc['diskusedpercent_float'], 1) . "%)";
                     
-                    $msg .= "👤 <b>" . $acc['name'] . "</b> ($identitas)\n";
-                    $msg .= "💼 $jabatan\n";
-                    $msg .= "🏛️ $unitKerja\n";
-                    $msg .= "📧 " . $acc['email'] . "\n";
-                    $msg .= "📊 Penggunaan: <b>" . $acc['humandiskused'] . "</b> (" . round($acc['diskusedpercent_float'], 1) . "%)\n\n";
+                    $builder->addUserProfile($acc['name'], $identitas, $jabatan, $unitKerja, $acc['email'], $extraData);
                 }
                 
                 if ($count > 10) {
-                    $msg .= "<i>...dan " . ($count - 10) . " akun lainnya.</i>";
+                    $builder->addItalicText("...dan " . ($count - 10) . " akun lainnya.");
                 }
                 
-                $this->telegram->sendMessage($msg);
+                $this->telegram->sendMessage($builder->build());
             } else {
                 if (is_cli()) CLI::write('No high usage accounts found.', 'green');
             }
@@ -66,7 +64,6 @@ class AlertService
         try {
             $emailModel = new EmailModel();
             
-            // 1. Get total expired accounts
             $totalExpiredCount = $emailModel->where('bsre_status', 'EXPIRED')
                 ->groupStart()
                     ->where('pimpinan', 1)
@@ -78,15 +75,15 @@ class AlertService
                 if (is_cli()) CLI::write('No expired TTE accounts found.', 'green');
                 
                 if ($sendIfSafe) {
-                    $msg = "🔔 <b>LAPORAN TTE PIMPINAN EXPIRED</b>\n";
-                    $msg .= "------------------------------------------\n\n";
-                    $msg .= "✅ Seluruh TTE pimpinan dalam kondisi aman.";
-                    $this->telegram->sendMessage($msg);
+                    $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
+                    $builder->setTitle('LAPORAN TTE PIMPINAN EXPIRED', '🔔')
+                            ->addDivider()
+                            ->addText("✅ Seluruh TTE pimpinan dalam kondisi aman.");
+                    $this->telegram->sendMessage($builder->build());
                 }
                 return;
             }
 
-            // 2. Get detailed data for LEADERSHIP only
             $expiredPimpinan = $emailModel->select('emails.email, emails.name, emails.nip, emails.nik, emails.jabatan, unit_kerja.nama_unit_kerja as unit_name')
                                           ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
                                           ->where('emails.bsre_status', 'EXPIRED')
@@ -99,27 +96,24 @@ class AlertService
             $pimpinanCount = count($expiredPimpinan);
             if (is_cli()) CLI::write("Total Expired: $totalExpiredCount, Pimpinan Expired: $pimpinanCount", 'cyan');
             
-            // 3. Construct Telegram Message
-            $msg = "🔔 <b>LAPORAN TTE PIMPINAN EXPIRED</b>\n";
-            $msg .= "Ditemukan <b>$pimpinanCount</b> pimpinan Expired:\n";
-            $msg .= "------------------------------------------\n\n";
+            $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
+            $builder->setTitle('LAPORAN TTE PIMPINAN EXPIRED', '🔔')
+                    ->addText("Ditemukan <b>$pimpinanCount</b> pimpinan Expired:")
+                    ->addDivider();
 
             foreach (array_slice($expiredPimpinan, 0, 10) as $acc) {
                 $identitas = !empty($acc['nip']) ? "NIP: {$acc['nip']}" : (!empty($acc['nik']) ? "NIK: {$acc['nik']}" : "Tanpa NIP/NIK");
                 $jabatan = !empty($acc['jabatan']) ? $acc['jabatan'] : 'Jabatan Belum Diisi';
                 $unitKerja = !empty($acc['unit_name']) ? $acc['unit_name'] : 'Instansi Belum Diisi';
                 
-                $msg .= "👤 <b>" . $acc['name'] . "</b> ($identitas)\n";
-                $msg .= "💼 $jabatan\n";
-                $msg .= "🏛️ $unitKerja\n";
-                $msg .= "📧 " . $acc['email'] . "\n\n";
+                $builder->addUserProfile($acc['name'], $identitas, $jabatan, $unitKerja, $acc['email']);
             }
             
             if ($pimpinanCount > 10) {
-                $msg .= "<i>...dan " . ($pimpinanCount - 10) . " pimpinan lainnya.</i>";
+                $builder->addItalicText("...dan " . ($pimpinanCount - 10) . " pimpinan lainnya.");
             }
             
-            $this->telegram->sendMessage($msg);
+            $this->telegram->sendMessage($builder->build());
 
         } catch (\Throwable $e) {
             if (is_cli()) CLI::error('Error checking TTE expired alerts: ' . $e->getMessage());
@@ -132,7 +126,6 @@ class AlertService
         try {
             $webDesaModel = new WebDesaKelurahanModel();
             
-            // Look for domains expiring in 30 days or less
             $expiringWebs = $webDesaModel->where('sisa_hari <=', 30)
                                          ->orderBy('sisa_hari', 'ASC')
                                          ->findAll();
@@ -141,21 +134,23 @@ class AlertService
                 $count = count($expiringWebs);
                 if (is_cli()) CLI::write("Found $count website domains expiring soon", 'red');
                 
-                $msg = "🌐 <b>PERINGATAN MASA AKTIF WEBSITE</b>\n";
-                $msg .= "Ditemukan <b>$count</b> domain akan kadaluwarsa (< 30 Hari):\n";
-                $msg .= "------------------------------------------\n\n";
+                $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
+                $builder->setTitle('PERINGATAN MASA AKTIF WEBSITE', '🌐')
+                        ->addText("Ditemukan <b>$count</b> domain akan kadaluwarsa (< 30 Hari):")
+                        ->addDivider();
                 
                 foreach (array_slice($expiringWebs, 0, 10) as $web) {
-                    $msg .= "💻 <b>" . $web['domain'] . "</b>\n";
-                    $msg .= "🏛️ " . $web['desa_kelurahan'] . "\n";
-                    $msg .= "⏳ Sisa: <b>" . $web['sisa_hari'] . " Hari</b> (s.d " . date('d M Y', strtotime($web['tanggal_berakhir'])) . ")\n\n";
+                    $item = "💻 <b>" . $web['domain'] . "</b>\n";
+                    $item .= "🏛️ " . $web['desa_kelurahan'] . "\n";
+                    $item .= "⏳ Sisa: <b>" . $web['sisa_hari'] . " Hari</b> (s.d " . date('d M Y', strtotime($web['tanggal_berakhir'])) . ")\n";
+                    $builder->addText($item);
                 }
                 
                 if ($count > 10) {
-                    $msg .= "<i>...dan " . ($count - 10) . " domain lainnya.</i>";
+                    $builder->addItalicText("...dan " . ($count - 10) . " domain lainnya.");
                 }
                 
-                $this->telegram->sendMessage($msg);
+                $this->telegram->sendMessage($builder->build());
             } else {
                 if (is_cli()) CLI::write('No expiring website domains found.', 'green');
             }
