@@ -36,9 +36,13 @@ class AlertService
                 $msg .= "------------------------------------------\n\n";
                 
                 foreach (array_slice($highUsageAccounts, 0, 10) as $acc) {
-                    $msg .= "👤 " . $acc['name'] . " (NIP: " . ($acc['nip'] ?: '-') . ")\n";
-                    $msg .= "💼 " . ($acc['jabatan'] ?: '-') . "\n";
-                    $msg .= "🏛️ " . ($acc['unit_name'] ?: '-') . "\n";
+                    $identitas = !empty($acc['nip']) ? "NIP: {$acc['nip']}" : (!empty($acc['nik']) ? "NIK: {$acc['nik']}" : "Tanpa NIP/NIK");
+                    $jabatan = !empty($acc['jabatan']) ? $acc['jabatan'] : 'Jabatan Belum Diisi';
+                    $unitKerja = !empty($acc['unit_name']) ? $acc['unit_name'] : 'Instansi Belum Diisi';
+                    
+                    $msg .= "👤 <b>" . $acc['name'] . "</b> ($identitas)\n";
+                    $msg .= "💼 $jabatan\n";
+                    $msg .= "🏛️ $unitKerja\n";
                     $msg .= "📧 " . $acc['email'] . "\n";
                     $msg .= "📊 Penggunaan: <b>" . $acc['humandiskused'] . "</b> (" . round($acc['diskusedpercent_float'], 1) . "%)\n\n";
                 }
@@ -76,7 +80,7 @@ class AlertService
             }
 
             // 2. Get detailed data for LEADERSHIP only
-            $expiredPimpinan = $emailModel->select('emails.email, emails.name, emails.nip, emails.jabatan, unit_kerja.nama_unit_kerja as unit_name')
+            $expiredPimpinan = $emailModel->select('emails.email, emails.name, emails.nip, emails.nik, emails.jabatan, unit_kerja.nama_unit_kerja as unit_name')
                                           ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
                                           ->where('emails.bsre_status', 'EXPIRED')
                                           ->groupStart()
@@ -95,9 +99,13 @@ class AlertService
 
             if ($pimpinanCount > 0) {
                 foreach (array_slice($expiredPimpinan, 0, 10) as $acc) {
-                    $msg .= "👤 " . $acc['name'] . " (NIP: " . ($acc['nip'] ?: '-') . ")\n";
-                    $msg .= "💼 " . ($acc['jabatan'] ?: '-') . "\n";
-                    $msg .= "🏛️ " . ($acc['unit_name'] ?: '-') . "\n";
+                    $identitas = !empty($acc['nip']) ? "NIP: {$acc['nip']}" : (!empty($acc['nik']) ? "NIK: {$acc['nik']}" : "Tanpa NIP/NIK");
+                    $jabatan = !empty($acc['jabatan']) ? $acc['jabatan'] : 'Jabatan Belum Diisi';
+                    $unitKerja = !empty($acc['unit_name']) ? $acc['unit_name'] : 'Instansi Belum Diisi';
+                    
+                    $msg .= "👤 <b>" . $acc['name'] . "</b> ($identitas)\n";
+                    $msg .= "💼 $jabatan\n";
+                    $msg .= "🏛️ $unitKerja\n";
                     $msg .= "📧 " . $acc['email'] . "\n\n";
                 }
                 
