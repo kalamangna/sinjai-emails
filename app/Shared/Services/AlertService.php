@@ -102,7 +102,7 @@ class AlertService
                     ->addDivider();
 
             foreach (array_slice($expiredPimpinan, 0, 10) as $acc) {
-                $identitas = !empty($acc['nip']) ? "NIP: {$acc['nip']}" : (!empty($acc['nik']) ? "NIK: {$acc['nik']}" : "Tanpa NIP/NIK");
+                $identitas = ''; // Dihapus sesuai permintaan pengguna
                 $jabatan = !empty($acc['jabatan']) ? $acc['jabatan'] : 'Jabatan Belum Diisi';
                 $unitKerja = !empty($acc['unit_name']) ? $acc['unit_name'] : 'Instansi Belum Diisi';
                 
