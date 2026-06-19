@@ -101,9 +101,9 @@ class QueueWorker extends BaseCommand
                 $builder->setTitle('CRITICAL ERROR: QUEUE WORKER', '🚨')
                         ->addText("Tugas sinkronisasi gagal secara permanen!")
                         ->addDivider()
-                        ->addKeyValue('ID Job', "<b>{$job['id']}</b>", '📋')
-                        ->addKeyValue('Tipe', "<b>$type</b>", '🔄')
-                        ->addKeyValue('Error', $e->getMessage(), '❌');
+                        ->addKeyValue('ID Job', "<b>{$job['id']}</b>")
+                        ->addKeyValue('Tipe', "<b>$type</b>")
+                        ->addKeyValue('Error', $e->getMessage());
                 
                 $telegram->sendMessage($builder->build());
                 $jobModel->delete($job['id']);

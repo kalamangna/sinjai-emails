@@ -125,20 +125,20 @@ class SyncAllCommand extends BaseCommand
                 ->addDivider();
 
         if (isset($this->syncStats['cpanel']['executed'])) {
-            $status = $this->syncStats['cpanel']['success'] > 0 ? "🟢 Berhasil" : "🔴 Gagal";
-            $builder->addKeyValue('cPanel Sync', $status, '📧');
+            $status = $this->syncStats['cpanel']['success'] > 0 ? "Berhasil" : "Gagal";
+            $builder->addKeyValue('cPanel Sync', $status);
         }
 
         if (isset($this->syncStats['tte']['executed'])) {
-            $builder->addKeyValue('TTE Sync', $this->syncStats['tte']['success'] . " Berhasil, " . $this->syncStats['tte']['fail'] . " Gagal", '✍️');
+            $builder->addKeyValue('TTE Sync', $this->syncStats['tte']['success'] . " Berhasil, " . $this->syncStats['tte']['fail'] . " Gagal");
         }
 
         if (isset($this->syncStats['pegawai']['executed'])) {
-            $builder->addKeyValue('Pegawai Sync', $this->syncStats['pegawai']['success'] . " Update, " . $this->syncStats['pegawai']['skipped'] . " Tetap, " . $this->syncStats['pegawai']['fail'] . " Gagal", '👥');
+            $builder->addKeyValue('Pegawai Sync', $this->syncStats['pegawai']['success'] . " Update, " . $this->syncStats['pegawai']['skipped'] . " Tetap, " . $this->syncStats['pegawai']['fail'] . " Gagal");
         }
 
         if (isset($this->syncStats['website']['executed'])) {
-            $builder->addKeyValue('Website Sync', $this->syncStats['website']['success'] . " Berhasil, " . $this->syncStats['website']['fail'] . " Gagal", '🌐');
+            $builder->addKeyValue('Website Sync', $this->syncStats['website']['success'] . " Berhasil, " . $this->syncStats['website']['fail'] . " Gagal");
         }
 
         $builder->addText("\n🕒 " . date('d M Y, H:i:s'));

@@ -29,10 +29,9 @@ class TelegramMessageBuilder
 
     public function addUserProfile(string $name, string $identitas, string $jabatan, string $unitKerja, string $email, string $extraData = null)
     {
-        $profile = "👤 <b>" . $name . "</b> ($identitas)\n";
-        $profile .= "💼 " . $jabatan . "\n";
-        $profile .= "🏛️ " . $unitKerja . "\n";
-        $profile .= "📧 " . $email;
+        $profile = "▪️ <b>" . $name . "</b> ($identitas)\n";
+        $profile .= $jabatan . " | " . $unitKerja . "\n";
+        $profile .= $email;
         
         if ($extraData !== null) {
             $profile .= "\n" . $extraData;
@@ -42,9 +41,9 @@ class TelegramMessageBuilder
         return $this;
     }
 
-    public function addKeyValue(string $key, string $value, string $emoji = '🔹')
+    public function addKeyValue(string $key, string $value)
     {
-        $this->parts[] = "$emoji $key: $value";
+        $this->parts[] = "▪️ $key: $value";
         return $this;
     }
 

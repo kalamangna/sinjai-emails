@@ -33,14 +33,14 @@ class AlertService
                 
                 $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
                 $builder->setTitle('PERINGATAN KUOTA EMAIL PENUH', '⚠️')
-                        ->addText("Ditemukan <b>$count</b> akun dengan penggunaan > 90%:")
+                        ->addText("<b>$count Akun Kuota Hampir Penuh (>90%):</b>")
                         ->addDivider();
                 
                 foreach (array_slice($highUsageAccounts, 0, 10) as $acc) {
                     $identitas = !empty($acc['nip']) ? "NIP: {$acc['nip']}" : (!empty($acc['nik']) ? "NIK: {$acc['nik']}" : "Tanpa NIP/NIK");
                     $jabatan = !empty($acc['jabatan']) ? $acc['jabatan'] : 'Jabatan Belum Diisi';
                     $unitKerja = !empty($acc['unit_name']) ? $acc['unit_name'] : 'Instansi Belum Diisi';
-                    $extraData = "📊 Penggunaan: <b>" . $acc['humandiskused'] . "</b> (" . round($acc['diskusedpercent_float'], 1) . "%)";
+                    $extraData = "Penggunaan: " . $acc['humandiskused'] . " (" . round($acc['diskusedpercent_float'], 1) . "%)";
                     
                     $builder->addUserProfile($acc['name'], $identitas, $jabatan, $unitKerja, $acc['email'], $extraData);
                 }
@@ -98,7 +98,7 @@ class AlertService
             
             $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
             $builder->setTitle('LAPORAN TTE PIMPINAN EXPIRED', '🔔')
-                    ->addText("Ditemukan <b>$pimpinanCount</b> pimpinan Expired:")
+                    ->addText("<b>$pimpinanCount Pimpinan TTE Expired:</b>")
                     ->addDivider();
 
             foreach (array_slice($expiredPimpinan, 0, 10) as $acc) {
@@ -136,13 +136,13 @@ class AlertService
                 
                 $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
                 $builder->setTitle('PERINGATAN MASA AKTIF WEBSITE', '🌐')
-                        ->addText("Ditemukan <b>$count</b> domain akan kadaluwarsa (< 30 Hari):")
+                        ->addText("<b>$count Domain Akan Kedaluwarsa (<30 Hari):</b>")
                         ->addDivider();
                 
                 foreach (array_slice($expiringWebs, 0, 10) as $web) {
-                    $item = "💻 <b>" . $web['domain'] . "</b>\n";
-                    $item .= "🏛️ " . $web['desa_kelurahan'] . "\n";
-                    $item .= "⏳ Sisa: <b>" . $web['sisa_hari'] . " Hari</b> (s.d " . date('d M Y', strtotime($web['tanggal_berakhir'])) . ")\n";
+                    $item = "▪️ <b>" . $web['domain'] . "</b>\n";
+                    $item .= $web['desa_kelurahan'] . "\n";
+                    $item .= "Sisa: " . $web['sisa_hari'] . " hari (" . date('d M Y', strtotime($web['tanggal_berakhir'])) . ")\n";
                     $builder->addText($item);
                 }
                 
