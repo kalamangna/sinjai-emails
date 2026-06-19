@@ -40,7 +40,7 @@ class AlertService
                     $identitas = !empty($acc['nip']) ? "NIP: {$acc['nip']}" : (!empty($acc['nik']) ? "NIK: {$acc['nik']}" : "Tanpa NIP/NIK");
                     $jabatan = !empty($acc['jabatan']) ? $acc['jabatan'] : 'Jabatan Belum Diisi';
                     $unitKerja = !empty($acc['unit_name']) ? $acc['unit_name'] : 'Instansi Belum Diisi';
-                    $extraData = "Penggunaan: " . $acc['humandiskused'] . " (" . round($acc['diskusedpercent_float'], 1) . "%)";
+                    $extraData = "📊 Penggunaan: " . $acc['humandiskused'] . " (" . round($acc['diskusedpercent_float'], 1) . "%)";
                     
                     $builder->addUserProfile($acc['name'], $identitas, $jabatan, $unitKerja, $acc['email'], $extraData);
                 }
@@ -140,9 +140,9 @@ class AlertService
                         ->addDivider();
                 
                 foreach (array_slice($expiringWebs, 0, 10) as $web) {
-                    $item = "▪️ <b>" . $web['domain'] . "</b>\n";
-                    $item .= $web['desa_kelurahan'] . "\n";
-                    $item .= "Sisa: " . $web['sisa_hari'] . " hari (" . date('d M Y', strtotime($web['tanggal_berakhir'])) . ")\n";
+                    $item = "💻 <b>" . $web['domain'] . "</b>\n";
+                    $item .= "🏛️ " . $web['desa_kelurahan'] . "\n";
+                    $item .= "⏳ Sisa: " . $web['sisa_hari'] . " hari (" . date('d M Y', strtotime($web['tanggal_berakhir'])) . ")\n";
                     $builder->addText($item);
                 }
                 
