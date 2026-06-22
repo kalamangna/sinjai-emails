@@ -1,3 +1,43 @@
+# Session History - 22 Juni 2026
+
+## Fitur Baru
+- **Notifikasi Telegram saat Tambah 1 Akun Email Baru**:
+    - Menambahkan notifikasi Telegram otomatis di `EmailService::createSingleEmail()` setelah akun berhasil dibuat.
+    - Format notifikasi menggunakan `TelegramMessageBuilder` yang sudah terstandarisasi (menampilkan nama, jabatan, unit kerja, email, dan waktu pembuatan).
+    - Baris yang kosong (nama/jabatan/unit kerja) otomatis disembunyikan, bukan digantikan teks *fallback*.
+    - Notifikasi dibungkus `try-catch` terpisah agar kegagalan Telegram tidak mengganggu proses pembuatan akun.
+
+## Refaktor
+- **Diet Controller Website (`WebDesaKelurahan.php` & `WebOpd.php`)**:
+    - Memindahkan logika *query* agregasi statistik (total, aktif, nonaktif) dan logika *sorting* distribusi platform ke dalam `WebsiteService.php` (fungsi baru: `getDesaKelurahanStats()`, `getDesaKelurahanPlatformStats()`, `getOpdStats()`).
+    - Kedua *controller* kini hanya memanggil metode *service* tanpa logika *query* langsung.
+- **Format Notifikasi Telegram (Baris Kosong)**:
+    - Mengubah perilaku `TelegramMessageBuilder::addUserProfile()` agar baris yang nilainya kosong (nama, jabatan, unit kerja) **tidak dicetak sama sekali** (tidak lagi menampilkan teks *fallback* seperti "Tanpa Nama" atau "Jabatan Belum Diisi").
+    - Berlaku untuk semua notifikasi: kuota penuh dan TTE Pimpinan *expired*.
+- **Pembersihan Cache Otomatis Pasca Sinkronisasi**:
+    - Menambahkan pembersihan `cache` dashboard (`dashboard_summary_data_v3` & `email_dashboard_summary`) secara otomatis di akhir eksekusi `SyncAllCommand` (setelah semua fase sinkronisasi selesai).
+    - Menambahkan pembersihan `cache` di `QueueWorker` saat antrean habis (`stopWhenEmpty`), memastikan data *dashboard* selalu *real-time* setelah proses *background job* tuntas.
+
+## Bug Fixes
+- **Fix Tanggal Terakhir Sinkronisasi cPanel Tidak Berubah di Dashboard**:
+    - Akar masalah #1: `SyncAllCommand::syncCpanel()` kelupaan memanggil `$this->saveLastSyncTime('last_sync_cpanel')` setelah antrean berhasil dibuat.
+    - Akar masalah #2: `DashboardService` tidak mengambil kunci `last_sync_cpanel` dari database (hanya mengambil `last_sync_time` yang sudah usang).
+    - Akar masalah #3: `app/Views/home/index.php` masih menggunakan variabel `$last_sync_time` (usang) untuk menampilkan tanggal cPanel, bukan `$last_sync_cpanel`.
+    - Ketiga akar masalah telah diperbaiki secara bersamaan.
+- **Fix `Duplicate Entry` pada Sinkronisasi cPanel (`sync_cpanel`)**:
+    - Akun email yang sudah di-*soft-delete* tidak terdeteksi saat proses pengecekan `upsertBatch`, sehingga sistem mencoba memasukkan data baru dan terkena error duplikasi.
+    - Diperbaiki dengan menambahkan `->withDeleted()` pada query pengecekan eksistensi, sehingga sistem akan melakukan *update* (bukan *insert*) meskipun akunnya berada di tong sampah.
+- **Fix `null` Error pada Notifikasi Kuota (`sync_quota_report`)**:
+    - `TelegramMessageBuilder::addUserProfile()` menerima `null` pada argumen `$name` untuk akun yang belum diisi namanya, menyebabkan *fatal error*.
+    - Diperbaiki dengan sanitasi nilai `null` sebelum dikirim ke *builder*.
+
+## Optimasi Database (Performance)
+- **Migrasi Indeks Baru (`2026-06-22-140700_AddMissingIndexes`)**:
+    - Menambahkan `INDEX deleted_at_idx` pada tabel `emails` untuk mempercepat semua *query* yang menggunakan fitur *soft delete* (digunakan hampir di seluruh sistem).
+    - Menambahkan *composite index* `bsre_status_deleted_at_idx` pada tabel `emails` untuk mempercepat *query* dashboard TTE.
+    - Menambahkan `INDEX status_idx` pada tabel `web_opd` dan `web_desa_kelurahan`.
+    - Menambahkan `INDEX kecamatan_idx` pada tabel `web_desa_kelurahan` untuk mempercepat fitur filter.
+
 # Session History - 16 Juni 2026
 
 ## Fitur & Refaktor
