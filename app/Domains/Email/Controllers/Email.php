@@ -371,4 +371,24 @@ class Email extends BaseController
             return redirect()->to('email')->with('error', 'Failed to delete email account from cPanel, but removed from local list.');
         }
     }
+
+    public function swap_form()
+    {
+        $data['title'] = 'Tukar Data Akun (Swap)';
+        return view('email/swap_data', $data);
+    }
+
+    public function swap_process()
+    {
+        $email1 = $this->request->getPost('email_1');
+        $email2 = $this->request->getPost('email_2');
+        
+        try {
+            $this->emailService->swapAccountData($email1, $email2);
+            log_audit('SWAP_DATA', 'emails', null, "Tukar data profil antara $email1 dan $email2");
+            return redirect()->to('email')->with('success', "Berhasil menukar data profil antara akun $email1 dan $email2.");
+        } catch (\Throwable $e) {
+            return redirect()->back()->with('error', $e->getMessage())->withInput();
+        }
+    }
 }

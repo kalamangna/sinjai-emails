@@ -90,6 +90,10 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
             $routes->get('edit_pk/(:any)', '\App\Domains\Email\Controllers\Email::edit_pk/$1');
             $routes->post('update_pk/(:any)', '\App\Domains\Email\Controllers\Email::update_pk/$1');
             $routes->post('create_single', '\App\Domains\Email\Controllers\EmailApi::create_single_email');
+            
+            // Swap Data
+            $routes->get('swap_data', '\App\Domains\Email\Controllers\Email::swap_form');
+            $routes->post('swap_process', '\App\Domains\Email\Controllers\Email::swap_process');
         });
 
         // Sync & Utility Routes (Admin & Super Admin)

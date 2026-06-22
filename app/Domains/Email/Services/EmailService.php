@@ -1053,4 +1053,50 @@ class EmailService
             ],
         ];
     }
+
+    public function swapAccountData(string $email1, string $email2)
+    {
+        if ($email1 === $email2) {
+            throw new Exception('Alamat email pertama dan kedua tidak boleh sama.');
+        }
+
+        $record1 = $this->emailModel->where('email', $email1)->first();
+        $record2 = $this->emailModel->where('email', $email2)->first();
+
+        if (!$record1) throw new Exception("Akun $email1 tidak ditemukan di database.");
+        if (!$record2) throw new Exception("Akun $email2 tidak ditemukan di database.");
+
+        // Define which fields to swap (excluding email, password, domain, user, bsre_status, etc.)
+        $fields = [
+            'nik', 'nip', 'name', 'jabatan', 'pangkat_nama', 'pangkat_golruang',
+            'unit_kerja_id', 'eselon_id', 'status_asn_id', 'pimpinan', 'pimpinan_desa',
+            'hp', 'golongan', 'masa_kerja', 'is_pensiun', 'is_operator'
+        ];
+
+        $data1 = [];
+        $data2 = [];
+
+        foreach ($fields as $field) {
+            $data1[$field] = $record2[$field];
+            $data2[$field] = $record1[$field];
+        }
+
+        $db = \Config\Database::connect();
+        $db->transStart();
+
+        // Perform the swap updates
+        $this->emailModel->update($record1['id'], $data1);
+        $this->emailModel->update($record2['id'], $data2);
+
+        $db->transComplete();
+
+        if ($db->transStatus() === false) {
+            throw new Exception('Terjadi kesalahan pada database saat menukar data. Proses dibatalkan.');
+        }
+
+        // Clear dashboard caches
+        $cache = \Config\Services::cache();
+        $cache->delete('dashboard_summary_data_v3');
+        $cache->delete('email_dashboard_summary');
+    }
 }
