@@ -697,6 +697,55 @@ class EmailService
         }
     }
 
+    public function updateProfileDetails(string $username, array $profileData)
+    {
+        $newUser = explode('@', $profileData['email'])[0];
+
+        $db = \Config\Database::connect();
+        $db->transStart();
+
+        $sourceRecord = $this->emailModel->where('user', $username)->first();
+        if (!$sourceRecord) throw new Exception('Akun asal tidak ditemukan.');
+
+        // 1. Handle username change in cPanel if needed
+        if ($newUser !== $username) {
+            $cpanelApi = new \App\Shared\Libraries\CpanelApi();
+            $result = $cpanelApi->rename_email_account($username . '@sinjaikab.go.id', $newUser);
+            if (!$result['success']) {
+                throw new Exception('Gagal mengubah username di cPanel: ' . $result['message']);
+            }
+        }
+
+        // 2. Update primary record
+        if ($this->emailModel->update($sourceRecord['id'], $profileData) === false) {
+            $errors = $this->emailModel->errors();
+            throw new Exception('Gagal menyimpan data utama. ' . implode(', ', $errors));
+        }
+
+        // 3. Sync personal data to other records sharing the same NIP
+        if (!empty($profileData['nip'])) {
+            $syncData = $profileData;
+            unset($syncData['email'], $syncData['user'], $syncData['jabatan']);
+            unset($syncData['unit_kerja_id'], $syncData['eselon_id']);
+            unset($syncData['pimpinan'], $syncData['pimpinan_desa']);
+
+            $cleanNip = str_replace([' ', '.', '-', "'"], '', $profileData['nip']);
+            $this->emailModel->where('nip', $cleanNip)
+                             ->where('id !=', $sourceRecord['id'])
+                             ->set($syncData)
+                             ->update();
+        }
+
+        $db->transComplete();
+
+        if ($db->transStatus() === false) {
+            $error = $db->error();
+            throw new Exception('Gagal menyimpan data ke database. Detail: ' . ($error['message'] ?? 'Unknown SQL error'));
+        }
+
+        return $newUser;
+    }
+
     public function updateEmailDetails($username, array $updateData)
     {
         $email = $this->emailModel->where('user', $username)->first();

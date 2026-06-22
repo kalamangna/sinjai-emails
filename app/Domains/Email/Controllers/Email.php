@@ -42,21 +42,16 @@ class Email extends BaseController
     {
         try {
             $perPage = $this->request->getGet('per_page') ?? 100;
-            $search = $this->request->getGet('search');
+            $search  = $this->request->getGet('search');
             $bsre_status = $this->request->getGet('bsre_status');
 
             $data = $this->emailService->getEmailDashboardData($search, $bsre_status, $perPage);
 
-            $appSettingModel = new AppSettingModel();
-            $lastSyncSetting = $appSettingModel->where('key', 'last_sync_time')->first();
-
-            $data['title'] = 'Email';
-            $data['search'] = $search;
+            $data['title']       = 'Email';
+            $data['search']      = $search;
             $data['bsre_status'] = $bsre_status;
-            $data['per_page'] = $perPage;
-            $data['last_sync_time'] = $lastSyncSetting['value'] ?? null;
-            
-            // Ensure options includes non_tte explicitly if not handled by labels
+            $data['per_page']    = $perPage;
+
             $options = $data['bsre_status_labels'] ?? [];
             if (!isset($options['non_tte'])) {
                 $options['non_tte'] = 'NON_TTE';
@@ -201,88 +196,40 @@ class Email extends BaseController
         }
 
         $newEmail = $this->request->getPost('email');
-        $emailParts = explode('@', $newEmail);
-        $newUser = $emailParts[0];
+        $newUser  = explode('@', $newEmail)[0];
 
         $profileData = [
-            'name' => $this->request->getPost('name'),
-            'gelar_depan' => $this->request->getPost('gelar_depan'),
+            'name'           => $this->request->getPost('name'),
+            'gelar_depan'    => $this->request->getPost('gelar_depan'),
             'gelar_belakang' => $this->request->getPost('gelar_belakang'),
-            'nik' => $this->request->getPost('nik') ?: null,
-            'nip' => $this->request->getPost('nip') ?: null,
-            'tempat_lahir' => $this->request->getPost('tempat_lahir'),
-            'pendidikan' => $this->request->getPost('pendidikan'),
-            'jabatan' => mb_strtoupper($this->request->getPost('jabatan'), 'UTF-8'),
-            'golongan' => $this->request->getPost('golongan'),
+            'nik'            => $this->request->getPost('nik') ?: null,
+            'nip'            => $this->request->getPost('nip') ?: null,
+            'tempat_lahir'   => $this->request->getPost('tempat_lahir'),
+            'pendidikan'     => $this->request->getPost('pendidikan'),
+            'jabatan'        => mb_strtoupper($this->request->getPost('jabatan'), 'UTF-8'),
+            'golongan'       => $this->request->getPost('golongan'),
             'pangkat_golruang' => $this->request->getPost('pangkat_golruang'),
-            'pangkat_nama' => $this->request->getPost('pangkat_nama'),
-            'status_asn_id' => $this->request->getPost('status_asn') ?: null,
-            'eselon_id' => $this->request->getPost('eselon') ?: null,
-            'unit_kerja_id' => $this->request->getPost('unit_kerja_id') ?: null,
-            'pimpinan' => $this->request->getPost('pimpinan') ? 1 : 0,
-            'pimpinan_desa' => $this->request->getPost('pimpinan_desa') ? 1 : 0,
-            'tanggal_lahir' => $this->request->getPost('tanggal_lahir') ?: null,
-            'user' => $newUser,
-            'email' => $newEmail
+            'pangkat_nama'   => $this->request->getPost('pangkat_nama'),
+            'status_asn_id'  => $this->request->getPost('status_asn') ?: null,
+            'eselon_id'      => $this->request->getPost('eselon') ?: null,
+            'unit_kerja_id'  => $this->request->getPost('unit_kerja_id') ?: null,
+            'pimpinan'       => $this->request->getPost('pimpinan') ? 1 : 0,
+            'pimpinan_desa'  => $this->request->getPost('pimpinan_desa') ? 1 : 0,
+            'tanggal_lahir'  => $this->request->getPost('tanggal_lahir') ?: null,
+            'user'           => $newUser,
+            'email'          => $newEmail,
         ];
 
-        $db = \Config\Database::connect();
-        $db->transStart();
-
         try {
-            $sourceRecord = $this->emailModel->where('user', $username)->first();
-            if (!$sourceRecord) throw new \Exception("Akun asal tidak ditemukan.");
-
-            // 1. Handle username change in cPanel if needed
-            if ($newUser !== $username) {
-                $cpanelApi = new \App\Shared\Libraries\CpanelApi();
-                $result = $cpanelApi->rename_email_account($username . '@sinjaikab.go.id', $newUser);
-                if (!$result['success']) {
-                    throw new \Exception('Gagal mengubah username di cPanel: ' . $result['message']);
-                }
-            }
-
-            // 2. Always update the primary record first
-            if ($this->emailModel->update($sourceRecord['id'], $profileData) === false) {
-                $errors = $this->emailModel->errors();
-                throw new \Exception("Gagal menyimpan data utama. " . implode(', ', $errors));
-            }
-
-            // 3. If a NIP is provided, ensure other records with the same NIP (if any) are also synced
-            if (!empty($profileData['nip'])) {
-                // Filter data to only sync personal info, NOT account-specific info to avoid UNIQUE errors
-                $syncData = $profileData;
-                unset($syncData['email'], $syncData['user'], $syncData['jabatan']);
-                unset($syncData['unit_kerja_id'], $syncData['eselon_id']);
-                unset($syncData['pimpinan'], $syncData['pimpinan_desa']);
-
-                // We use the normalized nip hash to find others
-                $cleanNip = str_replace([' ', '.', '-', '\''], '', $profileData['nip']);
-                $nipHash = $cleanNip;
-                
-                // Exclude the current record to avoid redundant update
-                $this->emailModel->where('nip', $nipHash)
-                                 ->where('id !=', $sourceRecord['id'])
-                                 ->set($syncData)
-                                 ->update();
-            }
-
-            $db->transComplete();
-
-            if ($db->transStatus() === false) {
-                $error = $db->error();
-                throw new \Exception('Gagal menyimpan data ke database. Detail: ' . ($error['message'] ?? 'Unknown SQL error'));
-            }
+            $newUser = $this->emailService->updateProfileDetails($username, $profileData);
 
             $this->clearEmailCaches();
 
-            // Audit Log
             helper('audit');
-            log_audit('UPDATE', 'Email', $sourceRecord['id'], 'Profil diperbarui: ' . $newEmail);
+            log_audit('UPDATE', 'Email', null, 'Profil diperbarui: ' . $newEmail);
 
             return redirect()->to('email/detail/' . $newUser)->with('success', 'Data profil berhasil diperbarui.');
         } catch (\Throwable $e) {
-            $db->transRollback();
             log_message('error', 'Update error for ' . $username . ': ' . $e->getMessage());
             return redirect()->back()->withInput()->with('error', 'Gagal memperbarui data: ' . $e->getMessage());
         }
@@ -399,14 +346,20 @@ class Email extends BaseController
 
             // Send Telegram Notification
             try {
+                $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
+                $builder->setTitle('AKUN EMAIL DIHAPUS PERMANEN', '🔥')
+                        ->addDivider()
+                        ->addUserProfile(
+                            $email['name'] ?? '',
+                            !empty($email['nip']) ? 'NIP: ' . $email['nip'] : (!empty($email['nik']) ? 'NIK: ' . $email['nik'] : ''),
+                            '',
+                            '',
+                            $email['email']
+                        )
+                        ->addText("\n⚠️ <i>Dihapus permanen dari Database dan cPanel. (Bypass Trash)</i>");
+
                 $telegram = new \App\Shared\Libraries\TelegramLibrary();
-                $msg = "🔥 <b>PENGHAPUSAN AKUN PERMANEN</b>\n";
-                $msg .= "Admin telah mengeksekusi Hapus Permanen (Hard Delete):\n";
-                $msg .= "------------------------------------------\n\n";
-                $msg .= "👤 " . ($email['name'] ?: '-') . " (" . ($email['nip'] ?: '-') . ")\n";
-                $msg .= "📧 " . $email['email'] . "\n\n";
-                $msg .= "⚠️ <i>Data telah dibumihanguskan dari Database maupun server cPanel. (Bypass Trash)</i>";
-                $telegram->sendMessage($msg);
+                $telegram->sendMessage($builder->build());
             } catch (\Throwable $te) {
                 log_message('error', 'Failed to send Telegram notification for deletion: ' . $te->getMessage());
             }
