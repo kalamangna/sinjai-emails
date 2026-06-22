@@ -375,6 +375,7 @@ class Email extends BaseController
     public function swap_form()
     {
         $data['title'] = 'Tukar Data Akun (Swap)';
+        $data['emails'] = $this->emailModel->select('email, name, nip, nik')->orderBy('email', 'ASC')->findAll();
         return view('email/swap_data', $data);
     }
 

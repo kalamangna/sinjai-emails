@@ -52,9 +52,14 @@
                         </div>
                         <div class="relative text-left">
                             <label class="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-2">Alamat Email 1</label>
-                            <input type="email" name="email_1" value="<?= old('email_1') ?>" required
-                                class="w-full bg-white text-xs border border-slate-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 rounded-lg px-3 py-2.5 outline-none transition-all"
-                                placeholder="contoh1@sinjaikab.go.id">
+                            <select name="email_1" class="choices-search w-full" required>
+                                <option value="">Pilih Email Pertama...</option>
+                                <?php foreach ($emails as $em): ?>
+                                    <option value="<?= esc($em['email']) ?>" <?= old('email_1') == $em['email'] ? 'selected' : '' ?>>
+                                        <?= esc($em['email']) ?> - <?= esc($em['name']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -75,9 +80,14 @@
                         </div>
                         <div class="relative text-left">
                             <label class="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-2">Alamat Email 2</label>
-                            <input type="email" name="email_2" value="<?= old('email_2') ?>" required
-                                class="w-full bg-white text-xs border border-slate-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 rounded-lg px-3 py-2.5 outline-none transition-all"
-                                placeholder="contoh2@sinjaikab.go.id">
+                            <select name="email_2" class="choices-search w-full" required>
+                                <option value="">Pilih Email Kedua...</option>
+                                <?php foreach ($emails as $em): ?>
+                                    <option value="<?= esc($em['email']) ?>" <?= old('email_2') == $em['email'] ? 'selected' : '' ?>>
+                                        <?= esc($em['email']) ?> - <?= esc($em['name']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
                         </div>
                     </div>
                 </div>
