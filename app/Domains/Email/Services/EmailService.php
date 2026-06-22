@@ -870,9 +870,187 @@ class EmailService
         $emails = $builder->paginate($perPage, 'default');
 
         return [
-            'emails' => $emails,
+            'emails'      => $emails,
             'total_count' => $total_count,
-            'pager' => $this->emailModel->pager,
+            'pager'       => $this->emailModel->pager,
+        ];
+    }
+
+    public function searchEmails(string $q): array
+    {
+        $cleanQ = str_replace([' ', '.', '-', "'"], '', $q);
+
+        $builder = $this->emailModel
+            ->select('emails.email, emails.name, emails.user, emails.nik, emails.nip, unit_kerja.nama_unit_kerja as unit_kerja_name')
+            ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left');
+
+        $builder->groupStart()
+                ->like('emails.email', $q)
+                ->orLike('emails.name', $q);
+
+        if (is_numeric($cleanQ) && strlen($cleanQ) >= 10) {
+            $builder->orWhere('emails.nik', $cleanQ)
+                    ->orWhere('emails.nip', $cleanQ);
+        }
+
+        $builder->groupEnd();
+
+        return $builder->limit(10)->findAll();
+    }
+
+    public function getUnitEmails(int $unitKerjaId, array $params): array
+    {
+        $pkType = $params['pk_type'] ?? null;
+
+        $statusPppk   = $this->statusAsnModel->where('nama_status_asn', 'PPPK')->asArray()->first();
+        $statusPppkPw = $this->statusAsnModel->where('nama_status_asn', 'PPPK PARUH WAKTU')->asArray()->first();
+
+        $allowedStatusIds = [];
+        if ($pkType === 'pppk') {
+            if ($statusPppk) $allowedStatusIds[] = $statusPppk['id'];
+        } elseif ($pkType === 'pppk_pw') {
+            if ($statusPppkPw) $allowedStatusIds[] = $statusPppkPw['id'];
+        } else {
+            if ($statusPppk)   $allowedStatusIds[] = $statusPppk['id'];
+            if ($statusPppkPw) $allowedStatusIds[] = $statusPppkPw['id'];
+        }
+
+        if (empty($allowedStatusIds)) {
+            throw new Exception('Status PPPK belum dikonfigurasi di sistem.');
+        }
+
+        $children   = $this->unitKerjaModel->where('parent_id', $unitKerjaId)->asArray()->findAll();
+        $allUnitIds = array_merge([$unitKerjaId], array_column($children, 'id'));
+
+        $builder = $this->emailModel->withDetails()->whereIn('unit_kerja_id', $allUnitIds);
+        $builder->whereIn('emails.status_asn_id', $allowedStatusIds);
+
+        if (!empty($params['search'])) {
+            $search = $params['search'];
+            $builder->groupStart();
+            if (is_numeric($search) && strlen($search) >= 10) {
+                $builder->where('nik', $search)->orWhere('nip', $search);
+            } else {
+                $builder->like('email', $search)->orLike('name', $search);
+            }
+            $builder->groupEnd();
+        }
+
+        if (!empty($params['bsre_status'])) {
+            $bsreStatus = $params['bsre_status'];
+            if ($bsreStatus === 'not_synced') {
+                $builder->groupStart()
+                        ->where('emails.bsre_status', null)
+                        ->orWhere('emails.bsre_status', '')
+                        ->groupEnd();
+            } else {
+                $builder->where('emails.bsre_status', $bsreStatus);
+            }
+        }
+
+        return $builder
+            ->orderBy('emails.eselon_id IS NULL', 'ASC', false)
+            ->orderBy('emails.eselon_id', 'ASC')
+            ->orderBy('emails.status_asn_id IS NULL', 'ASC', false)
+            ->orderBy('emails.status_asn_id', 'ASC')
+            ->orderBy('emails.jabatan IS NULL', 'ASC', false)
+            ->orderBy('emails.jabatan', 'ASC')
+            ->orderBy('emails.name', 'ASC')
+            ->findAll();
+    }
+
+    public function syncPegawaiFromApi(string $nip): array
+    {
+        $currentEmail = $this->emailModel
+            ->select('emails.*, unit_kerja.nama_unit_kerja')
+            ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
+            ->where('emails.nip', $nip)
+            ->first();
+
+        // Guard: PPPK Paruh Waktu is not synced
+        if ($currentEmail) {
+            $statusPppkPw = $this->statusAsnModel->where('nama_status_asn', 'PPPK PARUH WAKTU')->asArray()->first();
+            if ($statusPppkPw && $currentEmail['status_asn_id'] == $statusPppkPw['id']) {
+                return ['skipped' => true, 'reason' => 'pppk_pw', 'current' => $currentEmail];
+            }
+        }
+
+        $pegawaiApi = new \App\Shared\Libraries\PegawaiApi();
+        $result     = $pegawaiApi->getPegawaiData($nip);
+
+        if (!$result['success']) {
+            return ['success' => false, 'message' => $result['message'] ?? 'Gagal menghubungi API pegawai'];
+        }
+
+        $data   = $result['data'];
+        $source = (is_array($data) && isset($data[0])) ? $data[0] : $data;
+
+        $hasActualData = isset($source['jabatan_nama']) || isset($source['jabatan'])
+                      || isset($source['pangkat_nama']) || isset($source['pangkat_golruang']);
+
+        if (empty($data) || !$hasActualData) {
+            return ['success' => false, 'message' => 'Data tidak ditemukan di API'];
+        }
+
+        $isPimpinan = ($currentEmail['pimpinan'] ?? 0) == 1;
+        $updateData = [];
+
+        // 1. Sync Jabatan (skip for pimpinan)
+        if (!$isPimpinan) {
+            $newJabatan = $source['jabatan_nama'] ?? $source['jabatan'] ?? null;
+            if ($newJabatan) {
+                $newJabatanUpper = mb_strtoupper($newJabatan, 'UTF-8');
+                if (stripos($newJabatanUpper, 'PLT') === false) {
+                    if (strpos($newJabatanUpper, 'SEKRETARIS') !== false) {
+                        $unitName = strtoupper($currentEmail['nama_unit_kerja'] ?? '');
+                        if (strpos($unitName, 'DINAS') !== false)       $newJabatanUpper = 'SEKRETARIS DINAS';
+                        elseif (strpos($unitName, 'BADAN') !== false)   $newJabatanUpper = 'SEKRETARIS BADAN';
+                        elseif (strpos($unitName, 'KECAMATAN') !== false) $newJabatanUpper = 'SEKRETARIS KECAMATAN';
+                        elseif (strpos($unitName, 'KELURAHAN') !== false) $newJabatanUpper = 'SEKRETARIS KELURAHAN';
+                    }
+                    $updateData['jabatan'] = $newJabatanUpper;
+
+                    if (!empty($source['jabatan_jenis_eselon'])) {
+                        $eselonStr   = str_replace(['.', ' '], '', $source['jabatan_jenis_eselon']);
+                        $eselonModel = new \App\Shared\Models\EselonModel();
+                        $eselon      = $eselonModel->where('nama_eselon', $eselonStr)->first();
+                        if ($eselon) $updateData['eselon_id'] = $eselon['id'];
+                    }
+                }
+            }
+        }
+
+        // 2. Sync Pangkat & Golongan
+        if (isset($source['pangkat_nama']))    $updateData['pangkat_nama']    = $source['pangkat_nama'];
+        if (isset($source['pangkat_golruang'])) $updateData['pangkat_golruang'] = $source['pangkat_golruang'];
+
+        if (!empty($updateData)) {
+            $this->emailModel->where('nip', $nip)->set($updateData)->update();
+
+            $cache = \Config\Services::cache();
+            $cache->delete('dashboard_summary_data_v3');
+            $cache->delete('email_dashboard_summary');
+
+            $responseData = $updateData;
+            if ($isPimpinan) $responseData['jabatan'] = $currentEmail['jabatan'] ?? '-';
+
+            return [
+                'success' => true,
+                'message' => $isPimpinan
+                    ? 'Data pangkat disinkronkan, jabatan pimpinan dipertahankan'
+                    : 'Data pegawai berhasil disinkronkan',
+                'data' => $responseData,
+            ];
+        }
+
+        return [
+            'success' => true,
+            'message' => $isPimpinan ? 'Akun Pimpinan - Data jabatan tetap dipertahankan' : 'Tidak ada data baru yang ditemukan di API',
+            'data'    => [
+                'jabatan'          => $currentEmail['jabatan'] ?? '-',
+                'pangkat_nama'     => $currentEmail['pangkat_nama'] ?? '-',
+                'pangkat_golruang' => $currentEmail['pangkat_golruang'] ?? '-',
+            ],
         ];
     }
 }
