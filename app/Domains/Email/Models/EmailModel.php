@@ -123,7 +123,7 @@ class EmailModel extends Model
         // Process in chunks to avoid extremely large SQL queries
         foreach (array_chunk($emails, 500) as $chunk) {
             $email_addresses = array_column($chunk, 'email');
-            $existing_emails = $this->whereIn('email', $email_addresses)->findColumn('email') ?? [];
+            $existing_emails = $this->withDeleted()->whereIn('email', $email_addresses)->findColumn('email') ?? [];
             $existing_emails_map = array_flip($existing_emails);
 
             $to_insert = [];

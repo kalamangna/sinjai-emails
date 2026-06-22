@@ -41,8 +41,9 @@ class AlertService
                     $jabatan = !empty($acc['jabatan']) ? $acc['jabatan'] : 'Jabatan Belum Diisi';
                     $unitKerja = !empty($acc['unit_name']) ? $acc['unit_name'] : 'Instansi Belum Diisi';
                     $extraData = "📊 Penggunaan: " . $acc['humandiskused'] . " (" . round($acc['diskusedpercent_float'], 1) . "%)";
+                    $name = !empty($acc['name']) ? $acc['name'] : 'Tanpa Nama';
                     
-                    $builder->addUserProfile($acc['name'], $identitas, $jabatan, $unitKerja, $acc['email'], $extraData);
+                    $builder->addUserProfile($name, $identitas, $jabatan, $unitKerja, $acc['email'], $extraData);
                 }
                 
                 if ($count > 10) {
