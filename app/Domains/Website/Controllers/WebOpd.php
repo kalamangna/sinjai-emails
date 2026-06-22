@@ -11,10 +11,12 @@ use Config\Services;
 class WebOpd extends BaseController
 {
     protected $exportService;
+    protected $websiteService;
 
     public function __construct()
     {
         $this->exportService = new \App\Domains\Website\Services\WebMonitoringExportService();
+        $this->websiteService = new \App\Domains\Website\Services\WebsiteService();
     }
 
     public function index()
@@ -24,19 +26,8 @@ class WebOpd extends BaseController
         $search = trim($this->request->getGet('search') ?? '');
         $filterStatus = trim($this->request->getGet('status') ?? '');
 
-        // Use aggregated counts for stats - single query
-        $statsRaw = $model->select("COUNT(id) as total, SUM(CASE WHEN status = 'AKTIF' THEN 1 ELSE 0 END) as aktif, SUM(CASE WHEN status = 'NONAKTIF' THEN 1 ELSE 0 END) as nonaktif")->asArray()->first();
-        $total = (int)($statsRaw['total'] ?? 0);
-        $aktif = (int)($statsRaw['aktif'] ?? 0);
-        $nonaktif = (int)($statsRaw['nonaktif'] ?? 0);
-
-        $stats = [
-            'total' => $total,
-            'aktif' => $aktif,
-            'nonaktif' => $nonaktif,
-            'aktif_percentage' => $total > 0 ? (int)(($aktif / $total) * 100) : 0,
-            'nonaktif_percentage' => $total > 0 ? (int)(($nonaktif / $total) * 100) : 0,
-        ];
+        // Use service for stats
+        $stats = $this->websiteService->getOpdStats();
 
         // Build Query with Joins for paginated list
         $model->select('web_opd.id, web_opd.domain, web_opd.status, web_opd.unit_kerja_id, web_opd.keterangan, unit_kerja.nama_unit_kerja')
