@@ -150,7 +150,8 @@ class DashboardService
             'last_sync_time', 
             'last_sync_tte', 
             'last_sync_pegawai', 
-            'last_sync_website'
+            'last_sync_website',
+            'last_sync_cpanel'
         ])->asArray()->findAll();
         
         $sync_map = [];
@@ -167,6 +168,7 @@ class DashboardService
             'total_assistance' => $total_assistance,
             'total_assistance_monthly' => $total_assistance_monthly,
             'last_sync_time' => $sync_map['last_sync_time'] ?? null,
+            'last_sync_cpanel' => $sync_map['last_sync_cpanel'] ?? null,
             'last_sync_tte' => $sync_map['last_sync_tte'] ?? null,
             'last_sync_pegawai' => $sync_map['last_sync_pegawai'] ?? null,
             'last_sync_website' => $sync_map['last_sync_website'] ?? null,

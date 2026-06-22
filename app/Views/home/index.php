@@ -29,7 +29,7 @@
                     </div>
                     <div>
                         <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">cPanel Storage</p>
-                        <p class="text-xs font-bold text-slate-700"><?= !empty($last_sync_time) ? formatTanggalWaktu($last_sync_time) : '-' ?></p>
+                        <p class="text-xs font-bold text-slate-700"><?= !empty($last_sync_cpanel) ? formatTanggalWaktu($last_sync_cpanel) : '-' ?></p>
                     </div>
                 </div>
 
