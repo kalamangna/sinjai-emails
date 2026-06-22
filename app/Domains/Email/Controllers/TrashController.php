@@ -80,7 +80,7 @@ class TrashController extends BaseController
                         ->addDivider()
                         ->addUserProfile(
                             $email['name'] ?? '',
-                            '',
+                            !empty($email['nip']) ? 'NIP: ' . $email['nip'] : (!empty($email['nik']) ? 'NIK: ' . $email['nik'] : ''),
                             '',
                             '',
                             $email['email']

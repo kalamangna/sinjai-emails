@@ -174,7 +174,7 @@ class Email extends BaseController
                         ->addDivider()
                         ->addUserProfile(
                             $email['name'] ?? '',
-                            '',
+                            !empty($email['nip']) ? 'NIP: ' . $email['nip'] : (!empty($email['nik']) ? 'NIK: ' . $email['nik'] : ''),
                             $email['jabatan'] ?? '',
                             $email['unit_kerja_name'] ?? '',
                             $email['email']
