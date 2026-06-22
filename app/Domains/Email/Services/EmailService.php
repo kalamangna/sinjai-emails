@@ -1077,16 +1077,24 @@ class EmailService
         $data2 = [];
 
         foreach ($fields as $field) {
-            $data1[$field] = $record2[$field];
-            $data2[$field] = $record1[$field];
+            $data1[$field] = array_key_exists($field, $record2) ? $record2[$field] : null;
+            $data2[$field] = array_key_exists($field, $record1) ? $record1[$field] : null;
         }
+
+        log_message('info', "Swap Data 1 (to be saved to {$email1}): " . json_encode($data1));
+        log_message('info', "Swap Data 2 (to be saved to {$email2}): " . json_encode($data2));
 
         $db = \Config\Database::connect();
         $db->transStart();
 
-        // Perform the swap updates
-        $this->emailModel->update($record1['id'], $data1);
-        $this->emailModel->update($record2['id'], $data2);
+        // Gunakan Query Builder langsung untuk bypass Model allowedFields / callbacks
+        // yang kadang menyebabkan update gagal secara diam-diam di CI4.
+        $status1 = $db->table('emails')->where('id', $record1['id'])->update($data1);
+        $status2 = $db->table('emails')->where('id', $record2['id'])->update($data2);
+
+        if (!$status1 || !$status2) {
+            throw new Exception("Gagal mengupdate profil akun ke database.");
+        }
 
         $db->transComplete();
 
