@@ -29,17 +29,21 @@ class TelegramMessageBuilder
 
     public function addUserProfile(string $name, string $identitas, string $jabatan, string $unitKerja, string $email, string $extraData = null)
     {
-        $identitasStr = !empty($identitas) ? " ($identitas)" : "";
-        $profile = "👤 <b>" . $name . "</b>" . $identitasStr;
+        $profile = "";
+        
+        if (!empty($name)) {
+            $identitasStr = !empty($identitas) ? " ($identitas)" : "";
+            $profile .= "👤 <b>" . $name . "</b>" . $identitasStr;
+        }
         
         if (!empty($jabatan)) {
-            $profile .= "\n💼 " . $jabatan;
+            $profile .= ($profile === "" ? "" : "\n") . "💼 " . $jabatan;
         }
         if (!empty($unitKerja)) {
-            $profile .= "\n🏛️ " . $unitKerja;
+            $profile .= ($profile === "" ? "" : "\n") . "🏛️ " . $unitKerja;
         }
         
-        $profile .= "\n📧 " . $email;
+        $profile .= ($profile === "" ? "" : "\n") . "📧 " . $email;
         
         if (!empty($extraData)) {
             $profile .= "\n" . $extraData;
