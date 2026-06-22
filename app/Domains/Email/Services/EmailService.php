@@ -657,6 +657,32 @@ class EmailService
                 throw new Exception('Gagal menyimpan data ke database lokal.');
             }
 
+            // Send Telegram Notification
+            try {
+                $unitKerjaName = '';
+                if ($unitKerjaId) {
+                    $unit = $this->unitKerjaModel->find($unitKerjaId);
+                    $unitKerjaName = $unit['nama_unit_kerja'] ?? '';
+                }
+
+                $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
+                $builder->setTitle('AKUN EMAIL BARU DIBUAT', '✅')
+                        ->addDivider()
+                        ->addUserProfile(
+                            $data['name'] ?? '',
+                            '',
+                            $data['jabatan'] ?? '',
+                            $unitKerjaName,
+                            $data['email']
+                        )
+                        ->addText("\n🕒 " . date('d M Y, H:i:s'));
+
+                $telegram = new \App\Shared\Libraries\TelegramLibrary();
+                $telegram->sendMessage($builder->build());
+            } catch (\Throwable $te) {
+                log_message('error', 'Failed to send Telegram notification for new account: ' . $te->getMessage());
+            }
+
             return $insertId;
         } catch (\Throwable $e) {
             // If it's a DB error (like duplicate NIK), also try to cleanup cPanel
