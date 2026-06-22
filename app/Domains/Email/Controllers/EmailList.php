@@ -3,27 +3,21 @@
 namespace App\Domains\Email\Controllers;
 
 use App\Shared\BaseController;
-use App\Domains\Email\Models\EmailModel;
 use App\Domains\Email\Services\EmailService;
 use App\Domains\UnitKerja\Models\UnitKerjaModel;
 use App\Shared\Models\EselonModel;
-use App\Shared\Models\StatusAsnModel;
 use Exception;
 
 class EmailList extends BaseController
 {
-    private $emailModel;
     private $eselonModel;
     private $unitKerjaModel;
-    private $statusAsnModel;
     private $emailService;
 
     public function __construct()
     {
-        $this->emailModel = new EmailModel();
         $this->eselonModel = new EselonModel();
         $this->unitKerjaModel = new UnitKerjaModel();
-        $this->statusAsnModel = new StatusAsnModel();
         $this->emailService = new EmailService();
     }
 
@@ -125,8 +119,7 @@ class EmailList extends BaseController
 
             $data = $this->emailService->getAsnList('PNS', $params);
 
-            $unitKerjaModel = new \App\Domains\UnitKerja\Models\UnitKerjaModel();
-            $data['parent_unit_kerjas'] = $unitKerjaModel->where('parent_id', null)->orderBy('nama_unit_kerja', 'ASC')->findAll();
+            $data['parent_unit_kerjas'] = $this->unitKerjaModel->where('parent_id', null)->orderBy('nama_unit_kerja', 'ASC')->findAll();
 
             $data['title'] = 'Daftar PNS';
             $data['has_nip'] = $params['has_nip'];
