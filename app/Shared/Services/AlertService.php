@@ -103,11 +103,11 @@ class AlertService
                     ->addDivider();
 
             foreach (array_slice($expiredPimpinan, 0, 10) as $acc) {
-                $identitas = ''; // Dihapus sesuai permintaan pengguna
+                $identitas = !empty($acc['nip']) ? "NIP: {$acc['nip']}" : (!empty($acc['nik']) ? "NIK: {$acc['nik']}" : "");
                 $jabatan = !empty($acc['jabatan']) ? $acc['jabatan'] : "";
                 $unitKerja = !empty($acc['unit_name']) ? $acc['unit_name'] : "";
                 
-                $builder->addUserProfile($acc['name'], $identitas, $jabatan, $unitKerja, $acc['email']);
+                $builder->addUserProfile($acc['name'] ?? '', $identitas, $jabatan, $unitKerja, $acc['email']);
             }
             
             if ($pimpinanCount > 10) {
