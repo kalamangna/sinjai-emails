@@ -13,6 +13,9 @@ use Psr\Log\LoggerInterface;
 if (file_exists(APPPATH . 'Shared/Helpers/TanggalHelper.php')) {
     require_once APPPATH . 'Shared/Helpers/TanggalHelper.php';
 }
+if (file_exists(APPPATH . 'Helpers/audit_helper.php')) {
+    require_once APPPATH . 'Helpers/audit_helper.php';
+}
 
 /**
  * Class BaseController
