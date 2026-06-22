@@ -36,6 +36,13 @@ class QueueWorker extends BaseCommand
             } else {
                 if ($stopWhenEmpty) {
                     CLI::write("Queue is empty. Stopping worker.", 'yellow');
+                    
+                    // Clear caches because background sync changed data
+                    $cache = \Config\Services::cache();
+                    $cache->delete('dashboard_summary_data_v3');
+                    $cache->delete('email_dashboard_summary');
+                    CLI::write("Dashboard caches cleared.", 'green');
+                    
                     break;
                 }
                 // Sleep for 2 seconds if no jobs found to save CPU
