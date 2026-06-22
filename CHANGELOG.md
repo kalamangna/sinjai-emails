@@ -52,10 +52,15 @@
     - Tambah `log_audit('BATCH_CREATE')` saat pembuatan akun massal (`BatchController::save_batch_create`).
     - Tambah `log_audit('BATCH_UPDATE')` saat pembaruan akun massal (`BatchController::save_batch_update`).
     - *Restore* dan *Force Delete* dari Trash sudah tercatat sejak sebelumnya.
-- **Diet Controller `Email.php`**:
+- **Implementasi Keamanan (Rate Limiting)**:
+    - Membuat filter `Throttle.php` untuk membatasi *request* berlebih (*rate limit*).
+    - Dikonfigurasi dengan batas **120 *request* per menit** per alamat IP.
+    - Diterapkan pada *endpoint* pencarian `email/search` dan seluruh layanan API di bawah *group* `api/v1/*` untuk mencegah eksploitasi dan *scraping* data menggunakan *bot/script*.
+- **Diet Controller `Email.php` & `EmailList.php`**:
     - Memindahkan seluruh logika bisnis `update_details()` (rename cPanel, transaksi DB, sinkronisasi NIP ke akun lain) ke `EmailService::updateProfileDetails()`.
     - *Controller* `update_details()` dipangkas dari ~90 baris menjadi ~45 baris.
     - Menghapus pemanggilan `AppSettingModel` yang tidak terpakai dari `index()`.
+    - Membersihkan `EmailList.php` dari *dependency injection* model yang tidak terpakai (EselonModel, StatusAsnModel).
 - **Diet Controller `EmailApi.php`**:
     - Memindahkan logika pencarian email (`search`) ke `EmailService::searchEmails()`.
     - Memindahkan logika query email per unit kerja (`api_unit_emails`) ke `EmailService::getUnitEmails()`.
