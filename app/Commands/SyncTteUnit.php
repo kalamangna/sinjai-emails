@@ -93,7 +93,19 @@ class SyncTteUnit extends BaseCommand
             CLI::write("Including " . (count($unitIds) - 1) . " child units.", 'cyan');
         }
 
-        $asnFilter = CLI::getOption('asn');
+        // CI4 CLI parser sometimes parses --asn=PNS as key 'asn=PNS' with null value.
+        // Or properly as key 'asn' with value 'PNS'.
+        $asnFilter = CLI::getOption('asn') ?? $params['asn'] ?? null;
+        if (empty($asnFilter)) {
+            // Check for key 'asn=X' inside $params
+            foreach ($params as $key => $val) {
+                if (strpos($key, 'asn=') === 0) {
+                    $asnFilter = substr($key, 4);
+                    break;
+                }
+            }
+        }
+        
         $emailModel = new EmailModel();
         $builder = $emailModel->whereIn('unit_kerja_id', $unitIds);
 
