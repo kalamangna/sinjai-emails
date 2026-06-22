@@ -163,17 +163,26 @@ class Email extends BaseController
 
             $this->clearEmailCaches();
 
-            // 3. Send Telegram Notification
+            // 3. Audit Log
+            helper('audit');
+            log_audit('PENSIUN', 'Email', $email['id'], 'Akun ditandai pensiun: ' . $email['email']);
+
+            // 4. Send Telegram Notification
             try {
+                $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
+                $builder->setTitle('AKUN PEGAWAI PENSIUN / KELUAR', '♻️')
+                        ->addDivider()
+                        ->addUserProfile(
+                            $email['name'] ?? '',
+                            '',
+                            $email['jabatan'] ?? '',
+                            $email['unit_kerja_name'] ?? '',
+                            $email['email']
+                        )
+                        ->addText("\n⚠️ <i>Akses ditangguhkan. Akan dihapus permanen dalam 30 hari.</i>");
+
                 $telegram = new TelegramLibrary();
-                $msg = "♻️ <b>AKUN DIPINDAHKAN KE TEMPAT SAMPAH</b>\n";
-                $msg .= "Seorang pegawai telah ditandai <b>PENSIUN / KELUAR</b>:\n";
-                $msg .= "------------------------------------------\n\n";
-                $msg .= "👤 " . ($email['name'] ?: '-') . " (" . ($email['nip'] ?: '-') . ")\n";
-                $msg .= "🏛️ " . ($email['unit_kerja_name'] ?? '-') . "\n";
-                $msg .= "📧 " . $email['email'] . "\n\n";
-                $msg .= "⚠️ <i>Akses ditangguhkan (Soft Delete). Akun mengendap di Manajemen Sampah dan akan dihapus permanen dalam 30 hari.</i>";
-                $telegram->sendMessage($msg);
+                $telegram->sendMessage($builder->build());
             } catch (\Throwable $te) {
                 log_message('error', 'Failed to send Telegram notification for retirement: ' . $te->getMessage());
             }
@@ -266,6 +275,10 @@ class Email extends BaseController
             }
 
             $this->clearEmailCaches();
+
+            // Audit Log
+            helper('audit');
+            log_audit('UPDATE', 'Email', $sourceRecord['id'], 'Profil diperbarui: ' . $newEmail);
 
             return redirect()->to('email/detail/' . $newUser)->with('success', 'Data profil berhasil diperbarui.');
         } catch (\Throwable $e) {

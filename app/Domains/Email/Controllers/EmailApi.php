@@ -240,7 +240,11 @@ class EmailApi extends BaseController
 
         try {
             $email = $this->emailService->createSingleEmail($data);
-            
+
+            // Audit Log
+            helper('audit');
+            log_audit('CREATE', 'Email', $email, 'Akun baru dibuat: ' . $data['email']);
+
             // Clear Dashboard Cache
             $cache = \Config\Services::cache();
             $cache->delete('dashboard_summary_data_v3');

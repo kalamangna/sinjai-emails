@@ -205,6 +205,11 @@ class BatchController extends BaseController
             $results = $this->emailBatchService->processBatchUpdate($data);
             $this->sendBatchNotification('UPDATE', $results);
 
+            // Audit Log
+            helper('audit');
+            $successCount = count(array_filter($results, fn($r) => $r['success'] ?? false));
+            log_audit('BATCH_UPDATE', 'Email', null, "Batch update: $successCount akun berhasil diperbarui.");
+
             // Clear Dashboard Cache
             $cache = \Config\Services::cache();
             $cache->delete('dashboard_summary_data_v3');
@@ -240,6 +245,11 @@ class BatchController extends BaseController
             $results = $this->emailBatchService->processBatchCreate($data);
             $this->sendBatchNotification('CREATE', $results);
 
+            // Audit Log
+            helper('audit');
+            $successCount = count(array_filter($results, fn($r) => $r['success'] ?? false));
+            log_audit('BATCH_CREATE', 'Email', null, "Batch create: $successCount akun berhasil dibuat.");
+
             // Clear Dashboard Cache
             $cache = \Config\Services::cache();
             $cache->delete('dashboard_summary_data_v3');
@@ -265,18 +275,21 @@ class BatchController extends BaseController
                 }
             }
 
-            // Only notify if there's actual activity
             if ($successCount > 0 || $failCount > 0) {
-                $telegram = new \App\Shared\Libraries\TelegramLibrary();
                 $adminName = session()->get('name') ?? 'Admin';
-                
-                $msg = "📁 <b>LAPORAN BATCH $type</b>\n";
-                $msg .= "Operasi massal dieksekusi oleh: <b>$adminName</b>\n";
-                $msg .= "------------------------------------------\n\n";
-                $msg .= "✅ Berhasil: <b>$successCount</b> Akun\n";
-                $msg .= "❌ Gagal: <b>$failCount</b> Akun\n";
-                
-                $telegram->sendMessage($msg);
+                $emoji = $type === 'CREATE' ? '✅' : '🔄';
+                $label = $type === 'CREATE' ? 'BUAT AKUN MASSAL' : 'UPDATE AKUN MASSAL';
+
+                $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
+                $builder->setTitle($label, $emoji)
+                        ->addDivider()
+                        ->addKeyValue('Dieksekusi oleh', "<b>$adminName</b>", '👤')
+                        ->addKeyValue('Berhasil', "<b>$successCount</b> Akun", '✅')
+                        ->addKeyValue('Gagal', "<b>$failCount</b> Akun", '❌')
+                        ->addText("\n🕒 " . date('d M Y, H:i:s'));
+
+                $telegram = new \App\Shared\Libraries\TelegramLibrary();
+                $telegram->sendMessage($builder->build());
             }
         } catch (\Throwable $e) {
             log_message('error', 'Failed to send batch Telegram notification: ' . $e->getMessage());

@@ -75,14 +75,20 @@ class TrashController extends BaseController
             
             // Send Telegram Notification
             try {
+                $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
+                $builder->setTitle('AKUN EMAIL DIHAPUS PERMANEN', '🔥')
+                        ->addDivider()
+                        ->addUserProfile(
+                            $email['name'] ?? '',
+                            '',
+                            '',
+                            '',
+                            $email['email']
+                        )
+                        ->addText("\n⚠️ <i>Data telah dibumihanguskan dari Database dan cPanel.</i>");
+
                 $telegram = new \App\Shared\Libraries\TelegramLibrary();
-                $msg = "🔥 <b>PENGHAPUSAN AKUN PERMANEN</b>\n";
-                $msg .= "Admin mengeksekusi Hapus Permanen dari Tempat Sampah:\n";
-                $msg .= "------------------------------------------\n\n";
-                $msg .= "👤 " . ($email['name'] ?: '-') . " (NIP: " . ($email['nip'] ?: '-') . ")\n";
-                $msg .= "📧 " . $email['email'] . "\n\n";
-                $msg .= "⚠️ <i>Data telah dibumihanguskan dari Database maupun server cPanel.</i>";
-                $telegram->sendMessage($msg);
+                $telegram->sendMessage($builder->build());
             } catch (\Throwable $te) {
                 log_message('error', 'Failed to send Telegram notification for force delete: ' . $te->getMessage());
             }
