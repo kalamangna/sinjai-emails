@@ -1068,9 +1068,9 @@ class EmailService
 
         // Define which fields to swap (excluding email, password, domain, user, bsre_status, etc.)
         $fields = [
-            'nik', 'nip', 'name', 'jabatan', 'pangkat_nama', 'pangkat_golruang',
-            'unit_kerja_id', 'eselon_id', 'status_asn_id', 'pimpinan', 'pimpinan_desa',
-            'hp', 'golongan', 'masa_kerja', 'is_pensiun', 'is_operator'
+            'nik', 'nip', 'name', 'gelar_depan', 'gelar_belakang', 'tempat_lahir', 'tanggal_lahir', 'pendidikan',
+            'jabatan', 'golongan', 'pangkat_nama', 'pangkat_golruang',
+            'unit_kerja_id', 'eselon_id', 'status_asn_id', 'pimpinan', 'pimpinan_desa', 'pensiun_at'
         ];
 
         $data1 = [];
