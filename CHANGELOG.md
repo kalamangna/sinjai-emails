@@ -38,6 +38,30 @@
     - Menambahkan `INDEX status_idx` pada tabel `web_opd` dan `web_desa_kelurahan`.
     - Menambahkan `INDEX kecamatan_idx` pada tabel `web_desa_kelurahan` untuk mempercepat fitur filter.
 
+## Refaktor Lanjutan (Babak 2)
+- **Standarisasi Semua Notifikasi Telegram ke `TelegramMessageBuilder`**:
+    - Notifikasi *Pensiun* (`mark_pensiun`): Diubah dari *raw string* ke `TelegramMessageBuilder`. NIP/NIK kembali ditampilkan (jika ada).
+    - Notifikasi *Hapus Permanen dari Trash* (`forceDelete`): Diubah dari *raw string* ke `TelegramMessageBuilder`. NIP/NIK kembali ditampilkan.
+    - Notifikasi *Hapus Permanen Direct* (`delete`): Diubah dari *raw string* ke `TelegramMessageBuilder`. NIP/NIK kembali ditampilkan.
+    - Notifikasi *Batch Create & Update* (`sendBatchNotification`): Diubah dari *raw string* ke `TelegramMessageBuilder`. Kini menampilkan nama admin yang mengeksekusi dan *timestamp*.
+    - **Aturan NIP/NIK berlaku seragam** di semua notifikasi: ditampilkan jika ada (NIP prioritas, NIK cadangan, jika kosong baris otomatis hilang).
+- **Audit Log Konsisten di Semua Titik Aksi Kritis**:
+    - Tambah `log_audit('CREATE')` saat buat 1 akun (`EmailApi::create_single_email`).
+    - Tambah `log_audit('UPDATE')` saat edit profil (`Email::update_details`).
+    - Tambah `log_audit('PENSIUN')` saat akun ditandai pensiun (`Email::mark_pensiun`).
+    - Tambah `log_audit('BATCH_CREATE')` saat pembuatan akun massal (`BatchController::save_batch_create`).
+    - Tambah `log_audit('BATCH_UPDATE')` saat pembaruan akun massal (`BatchController::save_batch_update`).
+    - *Restore* dan *Force Delete* dari Trash sudah tercatat sejak sebelumnya.
+- **Diet Controller `Email.php`**:
+    - Memindahkan seluruh logika bisnis `update_details()` (rename cPanel, transaksi DB, sinkronisasi NIP ke akun lain) ke `EmailService::updateProfileDetails()`.
+    - *Controller* `update_details()` dipangkas dari ~90 baris menjadi ~45 baris.
+    - Menghapus pemanggilan `AppSettingModel` yang tidak terpakai dari `index()`.
+- **Diet Controller `EmailApi.php`**:
+    - Memindahkan logika pencarian email (`search`) ke `EmailService::searchEmails()`.
+    - Memindahkan logika query email per unit kerja (`api_unit_emails`) ke `EmailService::getUnitEmails()`.
+    - Memindahkan logika sinkronisasi data pegawai dari API eksternal (`sync_pegawai`) ke `EmailService::syncPegawaiFromApi()`.
+    - `EmailApi.php` berkurang dari **437 baris** menjadi **~260 baris** — murni hanya sebagai *dispatcher* tipis.
+
 # Session History - 16 Juni 2026
 
 ## Fitur & Refaktor
