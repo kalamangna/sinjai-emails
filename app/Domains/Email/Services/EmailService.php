@@ -1087,19 +1087,19 @@ class EmailService
         $db = \Config\Database::connect();
         $db->transStart();
 
-        // Gunakan Query Builder langsung untuk bypass Model allowedFields / callbacks
-        // yang kadang menyebabkan update gagal secara diam-diam di CI4.
-        $status1 = $db->table('emails')->where('id', $record1['id'])->update($data1);
+        // 1. Kosongkan sementara field unik (nik/nip) di record 1 agar tidak bentrok (Duplicate Entry)
+        $db->table('emails')->where('id', $record1['id'])->update(['nik' => 'temp_' . $record1['id'], 'nip' => 'temp_' . $record1['id']]);
+
+        // 2. Sekarang record 2 bisa aman mengambil data record 1
         $status2 = $db->table('emails')->where('id', $record2['id'])->update($data2);
 
-        if (!$status1 || !$status2) {
-            throw new Exception("Gagal mengupdate profil akun ke database.");
-        }
+        // 3. Terakhir, record 1 bisa aman mengambil data record 2
+        $status1 = $db->table('emails')->where('id', $record1['id'])->update($data1);
 
         $db->transComplete();
 
-        if ($db->transStatus() === false) {
-            throw new Exception('Terjadi kesalahan pada database saat menukar data. Proses dibatalkan.');
+        if ($db->transStatus() === false || !$status1 || !$status2) {
+            throw new Exception("Terjadi kesalahan pada database saat menukar data. Proses dibatalkan.");
         }
 
         // Clear dashboard caches
