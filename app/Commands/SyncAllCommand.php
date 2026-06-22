@@ -161,6 +161,7 @@ class SyncAllCommand extends BaseCommand
             ]);
             CLI::write('SUCCESS: Job dispatched to queue.', 'green');
             $this->syncStats['cpanel']['success'] = 1;
+            $this->saveLastSyncTime('last_sync_cpanel');
         } catch (\Throwable $e) {
             CLI::error('ERROR in Phase 1: ' . $e->getMessage());
             $this->syncStats['cpanel']['fail'] = 1;
