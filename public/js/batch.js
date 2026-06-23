@@ -246,22 +246,20 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
                 // FALLBACK — semua kandidat utama habis (sangat jarang)
-                // Gunakan kombinasi NIP yang berbeda-beda secara berurutan:
-                // [NIP 3-4 + NIP 5-6], [NIP 3-4 + NIP 7-8], [NIP 7-8 + NIP 5-6],
-                // [NIP 3-4 + NIP 9-10], dst.
+                // Urutan: bulan lahir dulu, lalu kombinasi NIP
                 if (!isAvailable) {
                     const nipA = getNipPart(nip);          // 3-4: tahun lahir
                     const nipB = getNipMonth(nip);         // 5-6: bulan lahir
-                    const nipC = getSecondNipPart(nip);    // 7-8: (sudah coba)
+                    const nipC = getSecondNipPart(nip);    // 7-8: tanggal lahir
                     const nipD = getNipSeq(nip);           // 9-10
 
                     const fallbackSuffixes = [
-                        nipA + nipB,            // e.g. 9012
-                        nipB + nipC,            // e.g. 1274  
-                        nipA + nipC,            // e.g. 9074 (bukan duplikat kandidat 2/3)
-                        nipA + nipD,            // e.g. 9001
-                        nipB + nipD,            // e.g. 1201
-                        nipA + nipB + nipC,     // e.g. 901274
+                        nipB,                   // bulan lahir saja, e.g. "10"
+                        nipA + nipB,            // tahun + bulan, e.g. "9610"
+                        nipB + nipC,            // bulan + tanggal, e.g. "1007"
+                        nipA + nipC,            // tahun + tanggal, e.g. "9607"
+                        nipA + nipD,            // tahun + seq, e.g. "9620"
+                        nipA + nipB + nipC,     // tahun + bulan + tanggal, e.g. "961007"
                     ].filter(s => s && s.length > 0);
 
                     for (const suffix of fallbackSuffixes) {
