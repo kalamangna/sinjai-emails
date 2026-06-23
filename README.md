@@ -152,22 +152,26 @@ Sistem secara transparan mencatat dan menampilkan waktu terakhir masing-masing s
 
 ### 🛠 Sinkronisasi Manual (Per Unit Kerja)
 
-Selain penjadwalan otomatis, Anda dapat melakukan sinkronisasi status TTE secara manual untuk unit kerja tertentu melalui terminal. Perintah ini mendukung fitur **Child Unit** (anak unit akan ikut tersinkronisasi otomatis) dan **Filter Status ASN**.
+Selain penjadwalan otomatis, Anda dapat melakukan sinkronisasi status TTE dan data Pegawai secara manual untuk unit kerja tertentu melalui terminal. Perintah ini mendukung fitur **Child Unit** (anak unit akan ikut tersinkronisasi otomatis) dan **Filter Status ASN**.
 
 ID Unit dapat dilihat langsung di halaman **Detail Unit Kerja** pada Dashboard.
 
+#### 1. Sinkronisasi TTE BSrE
 ```bash
 # Sinkronisasi TTE untuk unit ID 5 (Dinas Pendidikan)
 php spark sync:tte-unit 5
 
 # Sinkronisasi hanya untuk PNS di unit tersebut
 php spark sync:tte-unit 5 --asn=PNS
+```
 
-# Sinkronisasi hanya untuk PPPK di unit tersebut
-php spark sync:tte-unit 5 --asn=PPPK
+#### 2. Sinkronisasi Data Pegawai (Pangkat, Golongan, Jabatan)
+```bash
+# Sinkronisasi data kepegawaian untuk unit ID 5
+php spark sync:pegawai-unit 5
 
 # Sinkronisasi hanya untuk PPPK Paruh Waktu
-php spark sync:tte-unit 5 --asn="PPPK PARUH WAKTU"
+php spark sync:pegawai-unit 5 --asn="PPPK PARUH WAKTU"
 ```
 
 ### 📢 Notifikasi Telegram
