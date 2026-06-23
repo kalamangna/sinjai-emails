@@ -311,37 +311,44 @@ class EmailBatchService
                     }
                 }
 
-                // Urutan kandidat password: sama dengan email
-                // [0] = password asli dari frontend
-                // [1] = tambah NIP[7-8] (tanggal lahir)
-                // [2] = tambah NIP[7-8] + NIP[5-6] (tanggal + bulan)
-                $nip = $item->nip ?? '';
-                $nipTanggal  = strlen($nip) >= 8  ? substr($nip, 6, 2) : '';
-                $nipBulan    = strlen($nip) >= 6  ? substr($nip, 4, 2) : '';
+                // Bangun kandidat password: suffix diganti, bukan ditambah
+                // Urutan: tahun lahir → tanggal lahir → random (sama dengan email)
+                $nip        = $item->nip ?? '';
+                $nipTahun   = strlen($nip) >= 4 ? substr($nip, 2, 4) : '';
+                $nipTanggal = strlen($nip) >= 8 ? substr($nip, 6, 2) : '';
 
-                $passwordCandidates = array_filter([
-                    $item->password,
-                    $nipTanggal  ? $item->password . $nipTanggal  : null,
-                    ($nipTanggal && $nipBulan) ? $item->password . $nipTanggal . $nipBulan : null,
-                ]);
+                // Rekonstruksi nama part (5 huruf, diulang jika pendek)
+                $baseName = strtolower(preg_replace('/\s+/', '', $item->name ?? ''));
+                $namePart = $baseName;
+                while (strlen($namePart) > 0 && strlen($namePart) < 5) {
+                    $namePart .= $baseName;
+                }
+                $namePart = substr($namePart, 0, 5);
+                $namedPart = $namePart ? ucfirst($namePart) : 'user';
+
+                $buildPwd = fn($suffix) => "{$namedPart}@{$suffix}#";
+
+                $passwordCandidates = array_values(array_filter([
+                    $item->password,                                          // [0] tahun lahir (dari frontend)
+                    $nipTanggal ? $buildPwd($nipTanggal) : null,             // [1] tanggal lahir
+                    $buildPwd(str_pad(rand(10, 99), 2, '0', STR_PAD_LEFT)), // [2] random 2 digit
+                ]));
 
                 $finalPassword = null;
-                $lastError = null;
+                $lastError     = null;
 
-                // Coba satu per satu kandidat password ke cPanel
                 foreach ($passwordCandidates as $candidate) {
                     try {
                         $this->cpanelApi->create_email_account($item->email, $candidate, $item->quota);
                         $finalPassword = $candidate;
-                        break; // Berhasil, hentikan loop
+                        break;
                     } catch (\Throwable $e) {
-                        $lastError = $e->getMessage();
-                        // Hanya retry jika error adalah weak password
+                        $lastError      = $e->getMessage();
                         $isWeakPassword = stripos($lastError, 'weak') !== false
                             || stripos($lastError, 'strength') !== false
                             || stripos($lastError, 'password') !== false;
                         if (!$isWeakPassword) {
-                            throw $e; // Error lain (misal: email sudah ada) langsung lempar
+                            throw $e; // Error lain langsung lempar
                         }
                         // Lanjut ke kandidat berikutnya
                     }
@@ -357,7 +364,7 @@ class EmailBatchService
                     'user'          => explode('@', $item->email)[0],
                     'domain'        => explode('@', $item->email)[1],
                     'unit_kerja_id' => $unitKerjaId,
-                    'password'      => $finalPassword, // simpan password yang akhirnya diterima
+                    'password'      => $finalPassword,
                     'nik'           => $item->nik ?? null,
                     'nip'           => $item->nip ?? null,
                     'name'          => $item->name ?? null,
