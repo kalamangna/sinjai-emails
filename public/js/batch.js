@@ -245,28 +245,33 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
                 }
 
-                // FALLBACK TO SEQUENTIAL ONLY IF ALL 3 CANDIDATES ARE TAKEN (VERY RARE)
+                // FALLBACK — semua kandidat utama habis (sangat jarang)
+                // Gunakan kombinasi NIP yang berbeda-beda secara berurutan:
+                // [NIP 3-4 + NIP 5-6], [NIP 3-4 + NIP 7-8], [NIP 7-8 + NIP 5-6],
+                // [NIP 3-4 + NIP 9-10], dst.
                 if (!isAvailable) {
-                    let attempts = 3; 
-                    const maxAttempts = 10;
-                    
-                    while (attempts < maxAttempts) {
-                        attempts++;
-                        let suffix = "";
-                        if (attempts === 4) suffix = getNikPart(nik);
-                        else {
-                            let baseSuffix = getNipPart(nip) || getNikPart(nik);
-                            suffix = (baseSuffix || "") + attempts;
-                        }
-                        if (!suffix) suffix = attempts;
+                    const nipA = getNipPart(nip);          // 3-4: tahun lahir
+                    const nipB = getNipMonth(nip);         // 5-6: bulan lahir
+                    const nipC = getSecondNipPart(nip);    // 7-8: (sudah coba)
+                    const nipD = getNipSeq(nip);           // 9-10
 
-                        currentUsername = `${originalUsername}${suffix}`;
-                        currentEmail = `${currentUsername}${domain}`;
+                    const fallbackSuffixes = [
+                        nipA + nipB,            // e.g. 9012
+                        nipB + nipC,            // e.g. 1274  
+                        nipA + nipC,            // e.g. 9074 (bukan duplikat kandidat 2/3)
+                        nipA + nipD,            // e.g. 9001
+                        nipB + nipD,            // e.g. 1201
+                        nipA + nipB + nipC,     // e.g. 901274
+                    ].filter(s => s && s.length > 0);
 
-                        if (generatedEmails.has(currentEmail)) continue;
+                    for (const suffix of fallbackSuffixes) {
+                        const candidateEmail = `${originalUsername}${suffix}${domain}`;
+                        if (generatedEmails.has(candidateEmail)) continue;
 
-                        const result = await checkEmailAvailability(currentEmail);
+                        const result = await checkEmailAvailability(candidateEmail);
                         if (result.available) {
+                            currentUsername = `${originalUsername}${suffix}`;
+                            currentEmail = candidateEmail;
                             isAvailable = true;
                             break;
                         }
@@ -492,18 +497,27 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function getSecondNipPart(nip) {
+    // NIP karakter ke-7 & 8
     if (typeof nip !== "string" || nip.length < 8) return "";
     return nip.substring(6, 8);
   }
 
   function getNipPart(nip) {
+    // NIP karakter ke-3 & 4 (2 digit terakhir tahun lahir)
     if (typeof nip !== "string" || nip.length < 4) return "";
     return nip.substring(2, 4);
   }
 
-  function getNikPart(nik) {
-    if (typeof nik !== "string" || nik.length < 8) return "";
-    return nik.substring(10, 12);
+  function getNipMonth(nip) {
+    // NIP karakter ke-5 & 6 (bulan lahir)
+    if (typeof nip !== "string" || nip.length < 6) return "";
+    return nip.substring(4, 6);
+  }
+
+  function getNipSeq(nip) {
+    // NIP karakter ke-9 & 10
+    if (typeof nip !== "string" || nip.length < 10) return "";
+    return nip.substring(8, 10);
   }
 
   async function checkNikOnServer(nik) {
