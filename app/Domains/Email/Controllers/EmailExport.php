@@ -219,9 +219,32 @@ class EmailExport extends BaseController
         $historyModel = new \App\Shared\Models\ExportHistoryModel();
         
         $data['title'] = 'Riwayat Export Laporan';
-        // Only show latest 100 for performance
-        $data['histories'] = $historyModel->orderBy('created_at', 'DESC')->limit(100)->find();
         
+        $role = session()->get('role');
+        if ($role !== 'super_admin') {
+            $historyModel->where('user_id', session()->get('user_id'));
+        }
+
+        $histories = $historyModel->orderBy('created_at', 'DESC')->limit(100)->find();
+        
+        $unitKerjaModel = new \App\Domains\UnitKerja\Models\UnitKerjaModel();
+        foreach ($histories as &$h) {
+            $filters = json_decode($h['filters'], true);
+            $readable = [];
+            if (is_array($filters)) {
+                if (!empty($filters['unitKerjaId'])) {
+                    $unit = $unitKerjaModel->find($filters['unitKerjaId']);
+                    if ($unit) $readable[] = "Unit: " . $unit['nama_unit_kerja'];
+                }
+                if (!empty($filters['search'])) $readable[] = "Cari: " . $filters['search'];
+                if (!empty($filters['status_asn'])) $readable[] = "ASN: " . $filters['status_asn'];
+                if (!empty($filters['bsre_status'])) $readable[] = "BSrE: " . $filters['bsre_status'];
+                if (isset($filters['pimpinan_desa']) && $filters['pimpinan_desa'] == 0) $readable[] = "Inc. Desa: Tidak";
+            }
+            $h['readable_filters'] = !empty($readable) ? implode(' | ', $readable) : 'Semua Data';
+        }
+        
+        $data['histories'] = $histories;
         return view('email/exports/history', $data);
     }
 
@@ -240,5 +263,31 @@ class EmailExport extends BaseController
         } else {
             throw new \CodeIgniter\Exceptions\PageNotFoundException('File fisik tidak ditemukan, mungkin sudah dihapus otomatis.');
         }
+    }
+    public function delete_history($id)
+    {
+        $historyModel = new \App\Shared\Models\ExportHistoryModel();
+        $history = $historyModel->find($id);
+
+        if (!$history) {
+            session()->setFlashdata('error', 'Riwayat tidak ditemukan.');
+            return redirect()->to('reports/history');
+        }
+
+        if (session()->get('role') !== 'super_admin' && $history['user_id'] !== session()->get('user_id')) {
+            session()->setFlashdata('error', 'Akses ditolak.');
+            return redirect()->to('reports/history');
+        }
+
+        if (!empty($history['file_path'])) {
+            $path = WRITEPATH . $history['file_path'];
+            if (file_exists($path)) {
+                unlink($path);
+            }
+        }
+
+        $historyModel->delete($id);
+        session()->setFlashdata('success', 'Riwayat laporan berhasil dihapus.');
+        return redirect()->to('reports/history');
     }
 }

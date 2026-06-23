@@ -118,6 +118,7 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
     // Reports History
     $routes->get('reports/history', '\App\Domains\Email\Controllers\EmailExport::history');
     $routes->get('reports/download/(:num)', '\App\Domains\Email\Controllers\EmailExport::download_history/$1');
+    $routes->post('reports/delete/(:num)', '\App\Domains\Email\Controllers\EmailExport::delete_history/$1');
 
     // Batch Create & Update API
     $routes->match(['GET', 'POST'], 'batch_execute_update', '\App\Domains\Batch\Controllers\BatchController::save_batch_update');

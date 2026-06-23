@@ -60,7 +60,7 @@
                                         </div>
                                         <div>
                                             <p class="text-sm font-bold text-slate-700"><?= esc($h['type']) ?></p>
-                                            <p class="text-[11px] text-slate-400 font-mono truncate max-w-[200px]" title="<?= esc($h['filters']) ?>">Filter: <?= esc($h['filters']) ?></p>
+                                            <p class="text-[11px] text-slate-500 font-medium mt-0.5" title="<?= esc($h['filters']) ?>"><?= esc($h['readable_filters'] ?? 'Semua Data') ?></p>
                                         </div>
                                     </div>
                                 </td>
@@ -95,19 +95,27 @@
                                     <p class="text-[11px] text-slate-500 font-medium"><?= date('H:i', strtotime($h['created_at'])) ?> WIB</p>
                                 </td>
                                 <td class="py-4 px-6 text-right">
-                                    <?php if ($h['status'] === 'COMPLETED' && $h['file_path']) : ?>
-                                        <a href="<?= site_url('reports/download/' . $h['id']) ?>" class="inline-flex items-center justify-center px-3 py-1.5 bg-indigo-50 text-indigo-600 rounded text-xs font-bold hover:bg-indigo-100 transition-colors">
-                                            <i class="fas fa-download mr-1.5"></i> Download
-                                        </a>
-                                    <?php elseif ($h['status'] === 'FAILED') : ?>
-                                        <button onclick="alert('Error: <?= addslashes($h['error_message']) ?>')" class="inline-flex items-center justify-center px-3 py-1.5 bg-slate-50 text-slate-600 rounded text-xs font-bold hover:bg-slate-100 transition-colors">
-                                            <i class="fas fa-info-circle mr-1.5"></i> Info Error
-                                        </button>
-                                    <?php else : ?>
-                                        <button disabled class="inline-flex items-center justify-center px-3 py-1.5 bg-slate-50 text-slate-400 rounded text-xs font-bold cursor-not-allowed">
-                                            <i class="fas fa-hourglass-half mr-1.5"></i> Proses
-                                        </button>
-                                    <?php endif; ?>
+                                    <div class="flex items-center justify-end gap-2">
+                                        <?php if ($h['status'] === 'COMPLETED' && $h['file_path']) : ?>
+                                            <a href="<?= site_url('reports/download/' . $h['id']) ?>" id="download-btn-<?= $h['id'] ?>" class="inline-flex items-center justify-center px-3 py-1.5 bg-indigo-50 text-indigo-600 rounded text-xs font-bold hover:bg-indigo-100 transition-colors">
+                                                <i class="fas fa-download mr-1.5"></i> Download
+                                            </a>
+                                        <?php elseif ($h['status'] === 'FAILED') : ?>
+                                            <button onclick="alert('Error: <?= addslashes($h['error_message']) ?>')" class="inline-flex items-center justify-center px-3 py-1.5 bg-slate-50 text-slate-600 rounded text-xs font-bold hover:bg-slate-100 transition-colors">
+                                                <i class="fas fa-info-circle mr-1.5"></i> Info Error
+                                            </button>
+                                        <?php else : ?>
+                                            <button disabled class="inline-flex items-center justify-center px-3 py-1.5 bg-slate-50 text-slate-400 rounded text-xs font-bold cursor-not-allowed">
+                                                <i class="fas fa-hourglass-half mr-1.5"></i> Proses
+                                            </button>
+                                        <?php endif; ?>
+                                        
+                                        <form action="<?= site_url('reports/delete/' . $h['id']) ?>" method="post" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus riwayat ini? File PDF juga akan terhapus.')">
+                                            <button type="submit" class="inline-flex items-center justify-center px-2 py-1.5 bg-rose-50 text-rose-600 rounded text-xs font-bold hover:bg-rose-100 transition-colors" title="Hapus">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -141,5 +149,24 @@ if ($needsRefresh):
     }, 15000);
 </script>
 <?php endif; ?>
+
+<script>
+    // Auto-download new completed PDFs
+    const completedJobs = document.querySelectorAll('a[id^="download-btn-"]');
+    const autoDownloaded = JSON.parse(localStorage.getItem('auto_downloaded') || '[]');
+    
+    completedJobs.forEach(btn => {
+        const id = btn.id.replace('download-btn-', '');
+        if (!autoDownloaded.includes(id)) {
+            autoDownloaded.push(id);
+            localStorage.setItem('auto_downloaded', JSON.stringify(autoDownloaded));
+            
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.src = btn.href;
+            document.body.appendChild(iframe);
+        }
+    });
+</script>
 
 <?= $this->endSection() ?>
