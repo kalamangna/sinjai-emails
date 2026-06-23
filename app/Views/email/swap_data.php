@@ -1,16 +1,16 @@
 <?= $this->extend('layouts/main') ?>
 
 <?= $this->section('content') ?>
-<div class="max-w-3xl mx-auto space-y-6">
-    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-        <div>
-            <div class="flex items-center gap-3">
-                <a href="<?= site_url('email') ?>" class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-700 transition-colors">
-                    <i class="fas fa-arrow-left text-sm"></i>
-                </a>
+<div class="max-w-4xl mx-auto space-y-6">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="flex items-center gap-4">
+            <a href="<?= site_url('email') ?>" class="btn btn-outline no-underline">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <div>
                 <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight">Tukar Data Akun</h1>
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">Menukar profil NIK, NIP, Nama, dll antar dua email</p>
             </div>
-            <p class="text-[10px] font-bold text-slate-700 uppercase tracking-widest mt-1 ml-11">Menukar profil NIK, NIP, Nama, dll antar dua email</p>
         </div>
     </div>
 
@@ -24,22 +24,27 @@
         </div>
     <?php endif; ?>
 
-    <div class="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
-        <div class="p-6 border-b border-slate-100 bg-slate-50/50">
-            <div class="flex items-start gap-4">
-                <div class="w-10 h-10 rounded-lg bg-blue-100 border border-blue-200 text-blue-600 flex items-center justify-center shrink-0">
-                    <i class="fas fa-exchange-alt"></i>
-                </div>
-                <div>
-                    <h3 class="text-sm font-bold text-slate-800 uppercase tracking-tight">Konfigurasi Swap</h3>
-                    <p class="text-xs text-slate-500 mt-1 leading-relaxed">
-                        Fitur ini digunakan jika ada dua orang yang salah mengaktivasi TTE (tertukar email). Biodata mereka (NIP, NIK, Nama, dll) akan disilangkan tanpa mengubah alamat email asli dan *password*-nya.
-                    </p>
+    <div class="bg-white border border-slate-200 rounded-lg shadow-sm">
+        <div class="bg-slate-50 px-6 py-4 border-b border-slate-200">
+            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Konfigurasi Swap</h3>
+        </div>
+        
+        <form action="<?= site_url('email/swap_process') ?>" method="POST" class="p-6 space-y-6" onsubmit="return confirm('Apakah Anda yakin ingin menukar data profil kedua email ini? Proses ini akan langsung tercatat di Audit Trail.');">
+            <div class="bg-blue-50/50 border border-blue-100 rounded-lg p-4">
+                <div class="flex items-start gap-3">
+                    <i class="fas fa-info-circle text-blue-500 mt-0.5"></i>
+                    <div>
+                        <p class="text-xs text-slate-600 leading-relaxed mb-2">
+                            Fitur ini digunakan jika ada dua orang yang salah mengaktivasi TTE (tertukar email). Biodata mereka akan disilangkan tanpa mengubah alamat email asli dan <em>password</em>-nya.
+                        </p>
+                        <ul class="text-[11px] text-blue-800 space-y-1 list-disc list-inside">
+                            <li>Data yang disilang: <span class="font-bold">NIK, NIP, Nama, Jabatan, Golongan, Unit Kerja.</span></li>
+                            <li>Data yang <strong>TETAP</strong>: Email, Password, Status TTE.</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <form action="<?= site_url('email/swap_process') ?>" method="POST" class="p-6 space-y-8" onsubmit="return confirm('Apakah Anda yakin ingin menukar data profil kedua email ini? Proses ini akan langsung tercatat di Audit Trail.');">
             <?= csrf_field() ?>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
@@ -93,15 +98,7 @@
                 </div>
             </div>
 
-            <div class="bg-blue-50/50 border border-blue-100 rounded-lg p-4">
-                <div class="flex items-start gap-3">
-                    <i class="fas fa-info-circle text-blue-500 mt-0.5"></i>
-                    <ul class="text-[11px] text-blue-800 space-y-1 list-disc list-inside">
-                        <li>Data yang akan disilang: <span class="font-bold">NIK, NIP, Nama Lengkap, Jabatan, Golongan, Unit Kerja.</span></li>
-                        <li>Data yang <strong>TIDAK</strong> ikut disilang: Email, Password, Status BSrE.</li>
-                    </ul>
-                </div>
-            </div>
+
 
             <div class="flex justify-end pt-4 border-t border-slate-100 gap-2">
                 <a href="<?= site_url('email') ?>" class="btn btn-outline no-underline">
