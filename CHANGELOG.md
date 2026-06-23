@@ -17,6 +17,9 @@
     - Menggunakan *Query Builder* langsung (bukan `Model::update()`) untuk memastikan eksekusi tidak di-*block* oleh CodeIgniter *callbacks*.
     - Audit log `SWAP_DATA` dicatat setiap eksekusi.
 
+## Perbaikan Bug (Bug Fixes)
+- **404 Not Found pada Riwayat Laporan**: Memperbaiki rute `/reports/history` dan `/reports/download/(:num)` yang sebelumnya tidak bisa diakses karena secara tidak sengaja terdaftar di dalam *group* rute `email`.
+
 ## Refaktor
 - **Pembersihan File Redundan**:
     - Menghapus file skrip percobaan sisa pengembangan fitur Swap (`test_swap.php`).
