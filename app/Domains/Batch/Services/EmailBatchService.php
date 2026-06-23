@@ -311,32 +311,70 @@ class EmailBatchService
                     }
                 }
 
-                // 1. Simpan ke database lokal terlebih dahulu
-                $this->emailModel->insert([
-                    'email'      => $item->email,
-                    'user'       => explode('@', $item->email)[0],
-                    'domain'     => explode('@', $item->email)[1],
-                    'unit_kerja_id' => $unitKerjaId,
-                    'password'   => $item->password ?? null,
-                    'nik'        => $item->nik ?? null,
-                    'nip'        => $item->nip ?? null,
-                    'name'       => $item->name ?? null,
-                    'jabatan'    => !empty($item->jabatan) ? mb_strtoupper($item->jabatan, 'UTF-8') : null,
-                    'status_asn_id' => $item->statusAsn ?? null,
+                // Urutan kandidat password: sama dengan email
+                // [0] = password asli dari frontend
+                // [1] = tambah NIP[7-8] (tanggal lahir)
+                // [2] = tambah NIP[7-8] + NIP[5-6] (tanggal + bulan)
+                $nip = $item->nip ?? '';
+                $nipTanggal  = strlen($nip) >= 8  ? substr($nip, 6, 2) : '';
+                $nipBulan    = strlen($nip) >= 6  ? substr($nip, 4, 2) : '';
+
+                $passwordCandidates = array_filter([
+                    $item->password,
+                    $nipTanggal  ? $item->password . $nipTanggal  : null,
+                    ($nipTanggal && $nipBulan) ? $item->password . $nipTanggal . $nipBulan : null,
                 ]);
 
-                // 2. Buat akun di cPanel
-                $this->cpanelApi->create_email_account($item->email, $item->password, $item->quota);
+                $finalPassword = null;
+                $lastError = null;
+
+                // Coba satu per satu kandidat password ke cPanel
+                foreach ($passwordCandidates as $candidate) {
+                    try {
+                        $this->cpanelApi->create_email_account($item->email, $candidate, $item->quota);
+                        $finalPassword = $candidate;
+                        break; // Berhasil, hentikan loop
+                    } catch (\Throwable $e) {
+                        $lastError = $e->getMessage();
+                        // Hanya retry jika error adalah weak password
+                        $isWeakPassword = stripos($lastError, 'weak') !== false
+                            || stripos($lastError, 'strength') !== false
+                            || stripos($lastError, 'password') !== false;
+                        if (!$isWeakPassword) {
+                            throw $e; // Error lain (misal: email sudah ada) langsung lempar
+                        }
+                        // Lanjut ke kandidat berikutnya
+                    }
+                }
+
+                if ($finalPassword === null) {
+                    throw new \Exception('Password ditolak cPanel (terlalu lemah): ' . $lastError);
+                }
+
+                // 1. Simpan ke database lokal
+                $this->emailModel->insert([
+                    'email'         => $item->email,
+                    'user'          => explode('@', $item->email)[0],
+                    'domain'        => explode('@', $item->email)[1],
+                    'unit_kerja_id' => $unitKerjaId,
+                    'password'      => $finalPassword, // simpan password yang akhirnya diterima
+                    'nik'           => $item->nik ?? null,
+                    'nip'           => $item->nip ?? null,
+                    'name'          => $item->name ?? null,
+                    'jabatan'       => !empty($item->jabatan) ? mb_strtoupper($item->jabatan, 'UTF-8') : null,
+                    'status_asn_id' => $item->statusAsn ?? null,
+                ]);
 
                 if ($db->transStatus() === false) {
                     throw new Exception('Gagal menyimpan data ke database lokal.');
                 }
-                
+
                 $db->transCommit();
-                $results[] = ['email' => $item->email, 'success' => true];
+                $results[] = ['email' => $item->email, 'success' => true, 'password' => $finalPassword];
+
             } catch (\Throwable $e) {
                 $db->transRollback();
-                
+
                 $errorMessage = $e->getMessage();
                 if (strpos($errorMessage, 'already exists') !== false) {
                     $results[] = ['email' => $item->email, 'success' => false, 'message' => 'Email already exists on cPanel.'];
