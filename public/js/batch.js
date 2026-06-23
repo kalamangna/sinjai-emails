@@ -275,7 +275,15 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             const isDuplicate = generatedEmails.has(currentEmail);
-            if (isDuplicate) isAvailable = false;
+            const isNikInDb = serverResults.niks[nik] || false;
+            const isNipInDb = serverResults.nips[nip] || false;
+            const isNikDuplicate = nikCounts[nik] > 1;
+            const isNipDuplicate = nipCounts[nip] > 1;
+
+            // Jika NIK atau NIP sudah ada di DB, paksa isAvailable = false
+            if (isDuplicate || isNikInDb || isNipInDb || isNikDuplicate || isNipDuplicate) {
+                isAvailable = false;
+            }
 
             userBatch.push({
                 name: cleanedName.trim(),
@@ -289,10 +297,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 password: password,
                 quota: 1024,
                 isDuplicate: isDuplicate,
-                isNikDuplicate: nikCounts[nik] > 1,
-                isNikInDb: serverResults.niks[nik] || false,
-                isNipDuplicate: nipCounts[nip] > 1,
-                isNipInDb: serverResults.nips[nip] || false,
+                isNikDuplicate: isNikDuplicate,
+                isNikInDb: isNikInDb,
+                isNipDuplicate: isNipDuplicate,
+                isNipInDb: isNipInDb,
                 isAvailable: isAvailable,
                 status: "pending",
             });
@@ -577,10 +585,21 @@ document.addEventListener("DOMContentLoaded", function () {
         statusBadge = `<span class="${badgeBase} bg-emerald-100 text-emerald-800 border-transparent">Created</span>`;
       } else if (user.status === "failed") {
         statusBadge = `<span class="${badgeBase} bg-red-100 text-red-700 border-transparent" title="${user.errorMessage || "Failed"}">Failed</span>`;
-      } else if (!user.isAvailable || user.isDuplicate || user.isNikDuplicate || user.isNikInDb || user.isNipDuplicate || user.isNipInDb) {
-        statusBadge = `<span class="${badgeBase} bg-red-100 text-red-700 border-transparent">Unavailable</span>`;
+      } else if (user.isNikInDb || user.isNipInDb) {
+        // NIK atau NIP pegawai sudah terdaftar di database
+        let hints = [];
+        if (user.isNikInDb) hints.push('NIK sudah ada di database');
+        if (user.isNipInDb) hints.push('NIP sudah ada di database');
+        statusBadge = `<span class="${badgeBase} bg-orange-100 text-orange-700 border-transparent" title="${hints.join(' | ')}"><i class="fas fa-exclamation-triangle mr-1"></i>Existing</span>`;
+      } else if (user.isNikDuplicate || user.isNipDuplicate) {
+        let hints = [];
+        if (user.isNikDuplicate) hints.push('NIK duplikat dalam batch ini');
+        if (user.isNipDuplicate) hints.push('NIP duplikat dalam batch ini');
+        statusBadge = `<span class="${badgeBase} bg-amber-100 text-amber-700 border-transparent" title="${hints.join(' | ')}"><i class="fas fa-copy mr-1"></i>Duplikat</span>`;
+      } else if (!user.isAvailable || user.isDuplicate) {
+        statusBadge = `<span class="${badgeBase} bg-red-100 text-red-700 border-transparent"><i class="fas fa-times mr-1"></i>Unavailable</span>`;
       } else {
-        statusBadge = `<span class="${badgeBase} bg-blue-100 text-blue-700 border-transparent">Available</span>`;
+        statusBadge = `<span class="${badgeBase} bg-blue-100 text-blue-700 border-transparent"><i class="fas fa-check mr-1"></i>Available</span>`;
       }
 
       const nameCellContent = `<span contenteditable="true" class="editable-name focus:outline-none focus:text-emerald-700 transition-colors" data-name-index="${index}">${user.name}</span>`;
@@ -769,43 +788,38 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function updateSubmitButtonState() {
-    const hasNikDuplicates = userBatch.some(
-      (user) => user.status !== "created" && user.isNikDuplicate,
-    );
-    const hasNikInDb = userBatch.some(
-      (user) => user.status !== "created" && user.isNikInDb,
-    );
-    const hasNipDuplicates = userBatch.some(
-      // New
-      (user) => user.status !== "created" && user.isNipDuplicate,
-    );
-    const hasNipInDb = userBatch.some(
-      // New
-      (user) => user.status !== "created" && user.isNipInDb,
+    // Kumpulkan semua baris yang bermasalah (pending, belum created)
+    const pendingRows = userBatch.filter(u => u.status !== 'created');
+
+    const hasAnyConflict = pendingRows.some(u =>
+      !u.isAvailable ||
+      u.isDuplicate ||
+      u.isNikDuplicate ||
+      u.isNikInDb ||
+      u.isNipDuplicate ||
+      u.isNipInDb
     );
 
-    validUserBatch = userBatch.filter(
-      (user) =>
-        !user.isDuplicate &&
-        !user.isNikDuplicate &&
-        !user.isNikInDb &&
-        !user.isNipDuplicate && // New
-        !user.isNipInDb && // New
-        user.isAvailable &&
-        user.status !== "created",
+    // validUserBatch = baris yang benar-benar bisa dieksekusi
+    validUserBatch = userBatch.filter(u =>
+      !u.isDuplicate &&
+      !u.isNikDuplicate &&
+      !u.isNikInDb &&
+      !u.isNipDuplicate &&
+      !u.isNipInDb &&
+      u.isAvailable &&
+      u.status !== 'created'
     );
 
-    const hasProblematicPendingEmails = userBatch.some(
-      (user) =>
-        user.status !== "created" && (!user.isAvailable || user.isDuplicate),
-    );
+    // Disable tombol eksekusi jika ada konflik APAPUN atau tidak ada data valid
+    submitBtn.disabled = validUserBatch.length === 0 || hasAnyConflict;
 
-    submitBtn.disabled =
-      validUserBatch.length === 0 ||
-      hasProblematicPendingEmails ||
-      hasNikDuplicates ||
-      hasNikInDb ||
-      hasNipDuplicates || // New
-      hasNipInDb; // New
+    if (hasAnyConflict) {
+      submitBtn.title = 'Hapus semua baris yang berstatus Existing, Duplikat, atau Unavailable sebelum melanjutkan.';
+    } else if (validUserBatch.length === 0) {
+      submitBtn.title = 'Tidak ada data yang valid untuk dieksekusi.';
+    } else {
+      submitBtn.title = '';
+    }
   }
 });
