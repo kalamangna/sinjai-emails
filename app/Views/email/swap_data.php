@@ -18,16 +18,16 @@
         <div class="p-4 bg-red-50 border border-red-200 rounded-lg flex items-start">
             <i class="fas fa-exclamation-circle text-red-500 mt-0.5 mr-3"></i>
             <div>
-                <h4 class="text-xs font-bold text-red-800 uppercase tracking-wider mb-1">Gagal</h4>
+                <h4 class="text-[10px] font-bold text-red-800 uppercase tracking-wider mb-1">Gagal</h4>
                 <p class="text-xs text-red-600"><?= session()->getFlashdata('error') ?></p>
             </div>
         </div>
     <?php endif; ?>
 
-    <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+    <div class="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
         <div class="p-6 border-b border-slate-100 bg-slate-50/50">
             <div class="flex items-start gap-4">
-                <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
+                <div class="w-10 h-10 rounded-lg bg-blue-100 border border-blue-200 text-blue-600 flex items-center justify-center shrink-0">
                     <i class="fas fa-exchange-alt"></i>
                 </div>
                 <div>
@@ -103,10 +103,12 @@
                 </div>
             </div>
 
-            <div class="flex justify-end pt-4 border-t border-slate-100">
-                <button type="submit" class="bg-slate-800 hover:bg-slate-900 text-white px-6 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider shadow-sm flex items-center gap-2 transition-all">
-                    <i class="fas fa-sync-alt"></i>
-                    Eksekusi Tukar Data
+            <div class="flex justify-end pt-4 border-t border-slate-100 gap-2">
+                <a href="<?= site_url('email') ?>" class="btn btn-outline no-underline">
+                    Batal
+                </a>
+                <button type="submit" class="btn btn-solid">
+                    <i class="fas fa-sync-alt mr-2"></i> Eksekusi Tukar Data
                 </button>
             </div>
         </form>
