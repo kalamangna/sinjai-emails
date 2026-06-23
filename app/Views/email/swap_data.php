@@ -57,13 +57,8 @@
                         </div>
                         <div class="relative text-left">
                             <label class="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-2">Alamat Email 1</label>
-                            <select name="email_1" class="choices-search w-full" required>
-                                <option value="">Pilih Email Pertama...</option>
-                                <?php foreach ($emails as $em): ?>
-                                    <option value="<?= esc($em['email']) ?>" <?= old('email_1') == $em['email'] ? 'selected' : '' ?>>
-                                        <?= esc($em['email']) ?> - <?= esc($em['name']) ?>
-                                    </option>
-                                <?php endforeach; ?>
+                            <select id="email_1_select" name="email_1" class="w-full" required>
+                                <option value="">Ketik NIP/Nama/Email...</option>
                             </select>
                         </div>
                     </div>
@@ -85,13 +80,8 @@
                         </div>
                         <div class="relative text-left">
                             <label class="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-2">Alamat Email 2</label>
-                            <select name="email_2" class="choices-search w-full" required>
-                                <option value="">Pilih Email Kedua...</option>
-                                <?php foreach ($emails as $em): ?>
-                                    <option value="<?= esc($em['email']) ?>" <?= old('email_2') == $em['email'] ? 'selected' : '' ?>>
-                                        <?= esc($em['email']) ?> - <?= esc($em['name']) ?>
-                                    </option>
-                                <?php endforeach; ?>
+                            <select id="email_2_select" name="email_2" class="w-full" required>
+                                <option value="">Ketik NIP/Nama/Email...</option>
                             </select>
                         </div>
                     </div>
@@ -111,4 +101,48 @@
         </form>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const initAjaxSelect = (elementId) => {
+        const element = document.getElementById(elementId);
+        if (!element) return;
+
+        const choices = new Choices(element, {
+            searchEnabled: true,
+            placeholder: true,
+            placeholderValue: 'Ketik NIP/Nama/Email...',
+            searchPlaceholderValue: 'Minimal 2 karakter...',
+            shouldSort: false,
+            loadingText: 'Memuat...',
+            noResultsText: 'Tidak ditemukan',
+            noChoicesText: 'Ketik untuk mencari...',
+            searchResultLimit: 20
+        });
+
+        element.addEventListener('search', function(event) {
+            const query = event.detail.value;
+            if (query.length < 2) return;
+
+            choices.setChoices(function() {
+                return fetch(`<?= site_url('search') ?>?q=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        return data.map(item => {
+                            const nipNik = item.nip ? item.nip : (item.nik ? item.nik : '');
+                            const label = nipNik 
+                                ? `${item.email} - ${item.name} (${nipNik})`
+                                : `${item.email} - ${item.name}`;
+                            return { value: item.email, label: label };
+                        });
+                    });
+            }, 'value', 'label', true);
+        });
+    };
+
+    initAjaxSelect('email_1_select');
+    initAjaxSelect('email_2_select');
+});
+</script>
+
 <?= $this->endSection() ?>
