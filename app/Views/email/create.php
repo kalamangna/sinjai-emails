@@ -3,7 +3,7 @@
 <?= $this->section('content') ?>
 <div class="max-w-4xl mx-auto space-y-6">
     <div class="flex items-center gap-4">
-        <a href="<?= site_url('email') ?>" class="btn btn-outline no-underline">
+        <a href="<?= site_url('email') ?>" class="btn btn-outline !w-10 !h-10 !p-0 no-underline">
             <i class="fas fa-arrow-left"></i>
         </a>
         <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight">Buat Akun Tunggal</h1>

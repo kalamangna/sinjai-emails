@@ -5,7 +5,7 @@
     <!-- Navigasi dan Aksi -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div class="flex items-center gap-4">
-            <button onclick="history.back()" class="btn btn-outline !w-10 !h-10 shrink-0">
+            <button onclick="history.back()" class="btn btn-outline !w-10 !h-10 !p-0 shrink-0">
                 <i class="fas fa-arrow-left"></i>
             </button>
             <div>

@@ -16,6 +16,17 @@
     - Mencegah `Duplicate Entry` NIK/NIP saat swap dengan menggunakan nilai sementara (`temp_`) sebelum update final.
     - Menggunakan *Query Builder* langsung (bukan `Model::update()`) untuk memastikan eksekusi tidak di-*block* oleh CodeIgniter *callbacks*.
     - Audit log `SWAP_DATA` dicatat setiap eksekusi.
+## Perbaikan Desain & UX (Desain UI/UX)
+- **Standarisasi UI Komponen (Back Button):**
+    - Menyeragamkan ukuran tombol kembali (*back button*) pada halaman form (`create`, `detail`, `edit_profile`, `edit_password`, `edit_pk`, `swap_data`) menjadi bentuk kotak simetris sempurna (`!w-10 !h-10 !p-0`).
+- **Optimalisasi Form Tukar Data (Swap Data)**:
+    - Melakukan sinkronisasi tata letak (grid layout) halaman Tukar Data agar sepenuhnya selaras dengan halaman Buat Akun.
+    - Mengganti pemuatan *dropdown* `<select>` statis ribuan email menjadi pencarian dinamis (AJAX *lazy-loading*) via endpoint `api/search` untuk meningkatkan kecepatan muat (load) halaman secara drastis (Perf Optimization).
+- **Perbaikan Kinerja Antrean (Queue Worker) di cPanel**:
+    - **Session Locking Fix**: Mengakhiri sesi PHP lebih awal (`session_write_close()`) pada `api_trigger_queue` agar permintaan AJAX tidak memblokir antarmuka pengguna (UI) saat *worker* berjalan di *background*.
+    - **Bypass Command Helper**: Menghindari bug CodeIgniter `command()` yang gagal mem-*parsing* opsi CLI dari pemanggilan *web*, dengan memanggil objek `QueueWorker` secara langsung.
+    - **Memory Limit Bypass**: Menaikkan batas memori menjadi 512MB di `api_trigger_queue` secara spesifik untuk memfasilitasi kebutuhan memori *mPDF* yang tinggi tanpa mengubah batas global.
+    - **Auto-Trigger Cerdas**: Menambahkan fitur auto-trigger pada halaman `Riwayat Laporan` jika masih terdapat pekerjaan berstatus `PENDING` atau `PROCESSING` untuk menjamin stabilitas penyelesaian tugas.
 
 ## Perbaikan Bug (Bug Fixes)
 - **404 Not Found pada Riwayat Laporan**: Memperbaiki rute `/reports/history` dan `/reports/download/(:num)` yang sebelumnya tidak bisa diakses karena secara tidak sengaja terdaftar di dalam *group* rute `email`.

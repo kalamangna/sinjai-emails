@@ -3,7 +3,7 @@
 <?= $this->section('content') ?>
 <div class="max-w-3xl mx-auto space-y-6">
     <div class="flex items-center gap-4">
-        <a href="<?= site_url('email/detail/' . $email['user']) ?>" class="btn btn-outline !w-10 !h-10 no-underline">
+        <a href="<?= site_url('email/detail/' . $email['user']) ?>" class="btn btn-outline !w-10 !h-10 !p-0 no-underline">
             <i class="fas fa-arrow-left"></i>
         </a>
         <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight">Edit Profil</h1>
