@@ -47,9 +47,9 @@
 
             <?= csrf_field() ?>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            <div class="flex flex-col md:flex-row items-center gap-6">
                 <!-- Akun 1 -->
-                <div class="space-y-4">
+                <div class="w-full flex-1">
                     <div class="bg-slate-50 border border-slate-200 rounded-lg p-4 text-center">
                         <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Akun Pertama</span>
                         <div class="w-12 h-12 bg-white rounded-full border border-slate-200 flex items-center justify-center mx-auto shadow-sm mb-3">
@@ -64,15 +64,15 @@
                     </div>
                 </div>
 
-                <!-- Icon Swap (Desktop) -->
-                <div class="hidden md:flex justify-center -mx-4 z-10">
+                <!-- Icon Swap (Desktop & Mobile) -->
+                <div class="flex justify-center z-10 my-2 md:my-0">
                     <div class="w-10 h-10 rounded-full bg-slate-800 text-white flex items-center justify-center shadow-lg transform hover:rotate-180 transition-transform duration-500">
-                        <i class="fas fa-exchange-alt"></i>
+                        <i class="fas fa-exchange-alt md:rotate-0 rotate-90"></i>
                     </div>
                 </div>
 
                 <!-- Akun 2 -->
-                <div class="space-y-4">
+                <div class="w-full flex-1">
                     <div class="bg-slate-50 border border-slate-200 rounded-lg p-4 text-center">
                         <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Akun Kedua</span>
                         <div class="w-12 h-12 bg-white rounded-full border border-slate-200 flex items-center justify-center mx-auto shadow-sm mb-3">
