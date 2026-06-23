@@ -1,6 +1,10 @@
 # Session History - 23 Juni 2026
 
 ## Fitur Baru
+- **CLI Sync Pegawai per Unit Kerja (`sync:pegawai-unit`)**:
+    - Menambahkan perintah Spark baru `sync:pegawai-unit [unit_id] [--asn=...]` untuk melakukan sinkronisasi massal data kepegawaian (Jabatan, Pangkat, Golongan) langsung dari API Simpeg berdasarkan Unit Kerja.
+    - Menggunakan fungsi batch yang sudah ada di `PegawaiSyncService`.
+    - Mendukung filter status ASN secara spesifik (misal: PNS, PPPK).
 - **Tukar Data Akun (Swap)**:
     - Tambah form swap data antar dua akun menggunakan dropdown dengan fitur pencarian (`Choices.js`).
     - Data yang ditukar: NIK, NIP, nama, gelar, tempat/tanggal lahir, jabatan, golongan, pangkat, unit kerja, eselon, status ASN, pimpinan, dan pensiun_at. Email tidak ikut ditukar.
@@ -9,6 +13,9 @@
     - Audit log `SWAP_DATA` dicatat setiap eksekusi.
 
 ## Refaktor
+- **Pembersihan File Redundan**:
+    - Menghapus file skrip percobaan sisa pengembangan fitur Swap (`test_swap.php`).
+    - Menghapus sisa *temporary file* dari proses backup database yang pernah gagal/terputus di dalam direktori `writable/backups`.
 - **Generator Email Batch Create**:
     - Urutan kandidat email disederhanakan: base → tahun lahir (NIP[3-4]) → tanggal lahir (NIP[7-8]) → random 2 digit.
     - Menghapus fungsi `getNikPart()` yang redundan (sama dengan tahun lahir NIP).
