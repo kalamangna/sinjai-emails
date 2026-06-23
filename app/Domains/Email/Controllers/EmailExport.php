@@ -135,11 +135,6 @@ class EmailExport extends BaseController
                 'filters' => $filters
             ]);
 
-            // Trigger Queue Worker Asynchronously
-            $phpPath = PHP_BINARY;
-            $sparkPath = ROOTPATH . 'spark';
-            exec("$phpPath $sparkPath queue:work --stop-when-empty > /dev/null 2>&1 &");
-
             session()->setFlashdata('success', 'Permintaan Export PDF berhasil ditambahkan ke antrean. File akan segera tersedia di Riwayat Laporan.');
             return redirect()->to('reports/history');
         } catch (\Throwable $e) {
@@ -180,11 +175,6 @@ class EmailExport extends BaseController
                 'history_id' => $historyId,
                 'filters' => $filters
             ]);
-
-            // Trigger Queue Worker Asynchronously
-            $phpPath = PHP_BINARY;
-            $sparkPath = ROOTPATH . 'spark';
-            exec("$phpPath $sparkPath queue:work --stop-when-empty > /dev/null 2>&1 &");
 
             session()->setFlashdata('success', 'Permintaan Export Detail Akun PDF berhasil ditambahkan ke antrean. File akan segera tersedia di Riwayat Laporan.');
             return redirect()->to('reports/history');
