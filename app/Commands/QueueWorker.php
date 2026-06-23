@@ -102,6 +102,14 @@ class QueueWorker extends BaseCommand
                                 $filters['bsre_status'] ?? null,
                                 $filters['pimpinan_desa'] ?? 1
                             );
+                        } elseif ($task === 'export_account_detail_pdf') {
+                            $result = $exportService->generateAccountDetailPdf(
+                                $filters['unitKerjaId'],
+                                $filters['search'] ?? null,
+                                $filters['status_asn'] ?? null,
+                                $filters['bsre_status'] ?? null,
+                                $filters['pimpinan_desa'] ?? 1
+                            );
                         }
 
                         if ($result && isset($result['dompdf'])) {
