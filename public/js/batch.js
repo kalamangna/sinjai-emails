@@ -268,8 +268,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             }
 
-            // Generate password SETELAH email dipilih, suffix sama dengan email
-            const password = generatePassword(cleanedName, emailSuffix);
+            // Generate password: urutan sama dengan kandidat email
+            // (tahun lahir → tanggal lahir → random), tapi independen dari email yang terpilih
+            const password = generatePassword(cleanedName, nip);
 
             const isDuplicate = generatedEmails.has(currentEmail);
             const isNikInDb = serverResults.niks[nik] || false;
@@ -459,9 +460,19 @@ document.addEventListener("DOMContentLoaded", function () {
     return { username: username, email: `${username}${domain}` };
   }
 
-  function generatePassword(name, suffix) {
-    // Jika suffix kosong (kandidat 1/base), gunakan tanggal hari ini sebagai fallback
-    const numericSuffix = suffix || String(new Date().getDate()).padStart(2, '0');
+  function generatePassword(name, nip) {
+    // Urutan kandidat suffix sama dengan email:
+    // 1. Tahun lahir (NIP[3-4])
+    // 2. Tanggal lahir (NIP[7-8])
+    // 3. Random 2 digit
+    let suffix;
+    if (nip && nip.length >= 8) {
+      suffix = nip.substring(2, 4); // tahun lahir (NIP[3-4])
+    } else if (nip && nip.length >= 4) {
+      suffix = nip.substring(2, 4); // tahun lahir jika NIP pendek
+    } else {
+      suffix = String(Math.floor(Math.random() * 90) + 10); // random
+    }
 
     let baseName = name.replace(/\s+/g, "").toLowerCase();
     let namePart = baseName;
@@ -474,9 +485,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     namePart = namePart.substring(0, 5);
 
-    if (!namePart) return `@${numericSuffix}#`;
+    if (!namePart) return `@${suffix}#`;
     const capitalizedNamePart = namePart.charAt(0).toUpperCase() + namePart.slice(1);
-    return `${capitalizedNamePart}@${numericSuffix}#`;
+    return `${capitalizedNamePart}@${suffix}#`;
   }
 
   function getSecondNipPart(nip) {
