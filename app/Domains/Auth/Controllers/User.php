@@ -185,7 +185,8 @@ class User extends BaseController
 
         try {
             if (!empty($emails)) {
-                $existingEmails = $emailModel->whereIn('email', $emails)->findColumn('email') ?: [];
+                // withDeleted() ensures soft-deleted accounts are also flagged as taken
+                $existingEmails = $emailModel->withDeleted()->whereIn('email', $emails)->findColumn('email') ?: [];
                 
                 // Also check UserModel if it exists
                 $existingUserEmails = [];
@@ -206,7 +207,7 @@ class User extends BaseController
 
             if (!empty($niks)) {
                 $nikHashes = array_map(fn($n) => $n, $niks);
-                $existingNikHashes = $emailModel->whereIn('nik', $nikHashes)->findColumn('nik') ?: [];
+                $existingNikHashes = $emailModel->withDeleted()->whereIn('nik', $nikHashes)->findColumn('nik') ?: [];
                 $existingHashesMap = array_flip($existingNikHashes);
                 foreach ($niks as $nik) {
                     $results['niks'][$nik] = isset($existingHashesMap[$nik]);
@@ -215,7 +216,7 @@ class User extends BaseController
 
             if (!empty($nips)) {
                 $nipHashes = array_map(fn($n) => $n, $nips);
-                $existingNipHashes = $emailModel->whereIn('nip', $nipHashes)->findColumn('nip') ?: [];
+                $existingNipHashes = $emailModel->withDeleted()->whereIn('nip', $nipHashes)->findColumn('nip') ?: [];
                 $existingHashesMap = array_flip($existingNipHashes);
                 foreach ($nips as $nip) {
                     $results['nips'][$nip] = isset($existingHashesMap[$nip]);
