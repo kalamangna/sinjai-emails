@@ -210,6 +210,11 @@
             </div>
 
             <div class="flex items-center gap-4 shrink-0" id="header-right-section">
+                <!-- Riwayat Laporan -->
+                <a href="<?= site_url('reports/history') ?>" title="Riwayat Laporan" class="w-10 h-10 flex items-center justify-center text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors border border-transparent hover:border-indigo-100">
+                    <i class="fas fa-history text-lg"></i>
+                </a>
+
                 <!-- User Dropdown -->
                 <div class="relative" id="user-dropdown-container">
                     <button id="user-dropdown-button" class="flex items-center gap-3 p-1.5 rounded-xl hover:bg-slate-50 transition-all focus:outline-none">

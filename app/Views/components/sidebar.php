@@ -61,15 +61,6 @@
             Email
         </a>
 
-        <!-- Riwayat Laporan -->
-        <a href="<?= site_url('reports/history') ?>" data-sidebar-clear class="flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('reports/history') ? 'bg-slate-700 text-white shadow-lg shadow-slate-900/20' : 'text-slate-100 hover:bg-slate-700/80 hover:text-white' ?>">
-            <div class="w-5 h-5 flex items-center justify-center mr-3 shrink-0">
-                <i class="fas fa-history <?= $isActive('reports/history') ? 'text-white' : 'text-slate-300' ?>"></i>
-            </div>
-            Riwayat Laporan
-        </a>
-
-
         <!-- Pegawai Submenu -->
         <div>
             <button data-sidebar-toggle="pegawai" aria-expanded="<?= $default_active === 'pegawai' ? 'true' : 'false' ?>" class="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-slate-100 rounded-lg hover:bg-slate-700/80 hover:text-white transition-all focus:outline-none">
