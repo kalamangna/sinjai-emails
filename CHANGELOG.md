@@ -1,6 +1,11 @@
 # Session History - 23 Juni 2026
 
 ## Fitur Baru
+- **Antrean Ekspor Laporan PDF (Background Job)**:
+    - Memindahkan proses *rendering* PDF berukuran besar (khususnya Detail Unit Kerja) ke antrean latar belakang (QueueWorker) untuk mengatasi kendala *504 Gateway Timeout* pada server saat mengekspor ribuan data.
+    - Menambahkan tabel `export_histories` untuk mencatat riwayat dan status *export*.
+    - Menambahkan antarmuka (UI) khusus "Riwayat Laporan" yang dapat diakses melalui Sidebar untuk memantau status *rendering* (PENDING, PROCESSING, COMPLETED) dan tombol *download* jika PDF sudah siap.
+    - Menambahkan perintah Spark baru `queue:clean-exports` yang bertugas membersihkan entri riwayat beserta file fisik PDF yang umurnya lebih dari 3 hari.
 - **CLI Sync Pegawai per Unit Kerja (`sync:pegawai-unit`)**:
     - Menambahkan perintah Spark baru `sync:pegawai-unit [unit_id] [--asn=...]` untuk melakukan sinkronisasi massal data kepegawaian (Jabatan, Pangkat, Golongan) langsung dari API Simpeg berdasarkan Unit Kerja.
     - Menggunakan fungsi batch yang sudah ada di `PegawaiSyncService`.

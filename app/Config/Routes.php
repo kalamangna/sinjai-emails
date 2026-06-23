@@ -75,6 +75,10 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         $routes->get('export_single_perjanjian_kerja_pdf/(:any)', '\App\Domains\Email\Controllers\EmailExport::export_single_perjanjian_kerja_pdf/$1');
         $routes->get('download_zip_file/(:any)', '\App\Domains\Email\Controllers\EmailExport::download_zip_file/$1');
 
+        // Reports History
+        $routes->get('reports/history', '\App\Domains\Email\Controllers\EmailExport::history');
+        $routes->get('reports/download/(:num)', '\App\Domains\Email\Controllers\EmailExport::download_history/$1');
+
         // API Routes
         $routes->get('search', '\App\Domains\Email\Controllers\EmailApi::search');
 

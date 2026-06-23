@@ -82,6 +82,57 @@ class QueueWorker extends BaseCommand
                     $alertService = new \App\Shared\Services\AlertService();
                     $alertService->checkTteExpiredAlerts(false);
                     break;
+                case 'export_pdf':
+                    $historyModel = new \App\Shared\Models\ExportHistoryModel();
+                    $historyId = $payload['history_id'];
+                    $task = $payload['task'];
+                    $filters = $payload['filters'];
+
+                    $historyModel->update($historyId, ['status' => 'PROCESSING']);
+
+                    try {
+                        $exportService = new \App\Domains\Email\Services\EmailExportService();
+                        $result = null;
+
+                        if ($task === 'export_unit_kerja_pdf') {
+                            $result = $exportService->generateUnitKerjaPdf(
+                                $filters['unitKerjaId'],
+                                $filters['search'] ?? null,
+                                $filters['status_asn'] ?? null,
+                                $filters['bsre_status'] ?? null,
+                                $filters['pimpinan_desa'] ?? 1
+                            );
+                        }
+
+                        if ($result && isset($result['dompdf'])) {
+                            // Save the dompdf output to file
+                            $output = $result['dompdf']->output();
+                            
+                            $saveDir = WRITEPATH . 'uploads/exports/';
+                            if (!is_dir($saveDir)) {
+                                mkdir($saveDir, 0755, true);
+                            }
+                            
+                            $filepath = $saveDir . $result['filename'];
+                            file_put_contents($filepath, $output);
+
+                            $historyModel->update($historyId, [
+                                'status' => 'COMPLETED',
+                                'file_name' => $result['filename'],
+                                'file_path' => 'uploads/exports/' . $result['filename']
+                            ]);
+                        } else {
+                            throw new \Exception("Export task '$task' did not return a valid PDF.");
+                        }
+
+                    } catch (\Throwable $e) {
+                        $historyModel->update($historyId, [
+                            'status' => 'FAILED',
+                            'error_message' => $e->getMessage()
+                        ]);
+                        throw $e;
+                    }
+                    break;
                 default:
                     CLI::error("Unknown job type: $type");
             }

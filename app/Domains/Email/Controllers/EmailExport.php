@@ -110,16 +110,33 @@ class EmailExport extends BaseController
             $bsre_status = $this->request->getGet('bsre_status');
             $pimpinan_desa = $this->request->getGet('pimpinan_desa') ?? 1;
 
-            $result = $this->emailExportService->generateUnitKerjaPdf(
-                $unitKerjaId,
-                $search,
-                $status_asn,
-                $bsre_status,
-                $pimpinan_desa
-            );
+            $filters = [
+                'unitKerjaId'   => $unitKerjaId,
+                'search'        => $search,
+                'status_asn'    => $status_asn,
+                'bsre_status'   => $bsre_status,
+                'pimpinan_desa' => $pimpinan_desa
+            ];
 
-            $result['dompdf']->stream($result['filename'], ["Attachment" => true]);
-            exit();
+            $historyModel = new \App\Shared\Models\ExportHistoryModel();
+            $jobModel = new \App\Shared\Models\JobModel();
+
+            $historyId = $historyModel->insert([
+                'user_id' => session()->get('user_id'),
+                'type' => 'PDF_UNIT_KERJA',
+                'status' => 'PENDING',
+                'filters' => json_encode($filters)
+            ]);
+
+            $jobModel->push('default', [
+                'type' => 'export_pdf',
+                'task' => 'export_unit_kerja_pdf',
+                'history_id' => $historyId,
+                'filters' => $filters
+            ]);
+
+            session()->setFlashdata('success', 'Permintaan Export PDF berhasil ditambahkan ke antrean. File akan segera tersedia di Riwayat Laporan.');
+            return redirect()->to('reports/history');
         } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
             return view('email/error', $data);
@@ -161,6 +178,34 @@ class EmailExport extends BaseController
             return $this->response->download($path, null);
         } else {
             throw new \CodeIgniter\Exceptions\PageNotFoundException($filename . ' not found');
+        }
+    }
+
+    public function history()
+    {
+        $historyModel = new \App\Shared\Models\ExportHistoryModel();
+        
+        $data['title'] = 'Riwayat Export Laporan';
+        // Only show latest 100 for performance
+        $data['histories'] = $historyModel->orderBy('created_at', 'DESC')->limit(100)->find();
+        
+        return view('email/exports/history', $data);
+    }
+
+    public function download_history($id)
+    {
+        $historyModel = new \App\Shared\Models\ExportHistoryModel();
+        $history = $historyModel->find($id);
+
+        if (!$history || $history['status'] !== 'COMPLETED' || empty($history['file_path'])) {
+            throw new \CodeIgniter\Exceptions\PageNotFoundException('File belum siap atau sudah kadaluwarsa.');
+        }
+
+        $path = WRITEPATH . $history['file_path'];
+        if (file_exists($path)) {
+            return $this->response->download($path, null)->setFileName($history['file_name']);
+        } else {
+            throw new \CodeIgniter\Exceptions\PageNotFoundException('File fisik tidak ditemukan, mungkin sudah dihapus otomatis.');
         }
     }
 }
