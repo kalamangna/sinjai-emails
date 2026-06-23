@@ -35,12 +35,39 @@ class BackupCommand extends BaseCommand
         $filename = "db_backup_{$date}.sql.gz";
         $filepath = $backupDir . $filename;
 
-        // Coba deteksi lokasi mysqldump (cPanel biasanya di /usr/bin/mysqldump)
-        $mysqldump = file_exists('/usr/bin/mysqldump') ? '/usr/bin/mysqldump' : 'mysqldump';
-        
+        // Coba deteksi lokasi mysqldump di berbagai path umum (termasuk cPanel)
+        $mysqldumpPath = 'mysqldump';
+        $commonPaths = [
+            '/usr/bin/mysqldump',
+            '/usr/local/bin/mysqldump',
+            '/usr/local/mysql/bin/mysqldump',
+            '/opt/cpanel/ea-mariadb103/bin/mysqldump',
+            '/opt/cpanel/ea-mariadb105/bin/mysqldump',
+            '/opt/cpanel/ea-mariadb106/bin/mysqldump',
+            '/opt/cpanel/ea-mariadb107/bin/mysqldump',
+            '/opt/cpanel/ea-mariadb110/bin/mysqldump',
+            '/bin/mysqldump',
+        ];
+
+        $found = false;
+        foreach ($commonPaths as $path) {
+            if (file_exists($path)) {
+                $mysqldumpPath = escapeshellcmd($path);
+                $found = true;
+                break;
+            }
+        }
+
+        if (!$found) {
+            $whichDump = trim(shell_exec('which mysqldump 2>/dev/null'));
+            if (!empty($whichDump) && file_exists($whichDump)) {
+                $mysqldumpPath = escapeshellcmd($whichDump);
+            }
+        }
+
         // Perintah mysqldump
         $passwordArg = empty($password) ? '' : "-p" . escapeshellarg($password);
-        $command = escapeshellcmd($mysqldump) . " --no-tablespaces -h " . escapeshellarg($hostname) . " -P " . escapeshellarg($port) . " -u " . escapeshellarg($username) . " {$passwordArg} " . escapeshellarg($database) . " > " . escapeshellarg($filepath . '.tmp') . " 2>/dev/null";
+        $command = $mysqldumpPath . " --no-tablespaces -h " . escapeshellarg($hostname) . " -P " . escapeshellarg($port) . " -u " . escapeshellarg($username) . " {$passwordArg} " . escapeshellarg($database) . " > " . escapeshellarg($filepath . '.tmp') . " 2>/dev/null";
 
         // Eksekusi mysqldump
         $output = [];
@@ -51,8 +78,30 @@ class BackupCommand extends BaseCommand
 
         if ($returnVar === 0 && file_exists($filepath . '.tmp')) {
             // Kompresi dengan gzip
-            $gzip = file_exists('/usr/bin/gzip') ? '/usr/bin/gzip' : 'gzip';
-            exec(escapeshellcmd($gzip) . " -c " . escapeshellarg($filepath . '.tmp') . " > " . escapeshellarg($filepath), $output, $zipReturn);
+            $gzipPath = 'gzip';
+            $commonGzipPaths = [
+                '/usr/bin/gzip',
+                '/bin/gzip',
+                '/usr/local/bin/gzip',
+            ];
+
+            $foundGzip = false;
+            foreach ($commonGzipPaths as $path) {
+                if (file_exists($path)) {
+                    $gzipPath = escapeshellcmd($path);
+                    $foundGzip = true;
+                    break;
+                }
+            }
+
+            if (!$foundGzip) {
+                $whichGzip = trim(shell_exec('which gzip 2>/dev/null'));
+                if (!empty($whichGzip) && file_exists($whichGzip)) {
+                    $gzipPath = escapeshellcmd($whichGzip);
+                }
+            }
+
+            exec($gzipPath . " -c " . escapeshellarg($filepath . '.tmp') . " > " . escapeshellarg($filepath), $output, $zipReturn);
             unlink($filepath . '.tmp');
 
             if ($zipReturn !== 0 || !file_exists($filepath)) {
