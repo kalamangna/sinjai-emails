@@ -210,30 +210,32 @@ document.addEventListener("DOMContentLoaded", function () {
             const nip = trimmedNips[i] || "";
             const jenisFormasi = jenisFormasiInput.value;
             const unitKerja = unitKerjaInputSingle.value;
-            const password = generatePassword(cleanedName, nip);
-            
+
             const { username: originalUsername, email: originalEmail } = generateEmail(cleanedName);
             const domain = "@sinjaikab.go.id";
 
             let currentUsername = originalUsername;
             let currentEmail = originalEmail;
             let isAvailable = false;
-            
+            let emailSuffix = ""; // suffix yang akhirnya dipakai
+
             // TRY CANDIDATE 1 (BASE)
             if (!serverResults.emails[currentEmail] && !generatedEmails.has(currentEmail)) {
                 isAvailable = true;
+                emailSuffix = "";
             } else {
-                // TRY CANDIDATE 2 (NIP PART 1)
+                // TRY CANDIDATE 2 — tahun lahir (NIP[3-4])
                 const nipPart = getNipPart(nip);
                 if (nipPart) {
                     currentUsername = `${originalUsername}${nipPart}`;
                     currentEmail = `${currentUsername}${domain}`;
                     if (!serverResults.emails[currentEmail] && !generatedEmails.has(currentEmail)) {
                         isAvailable = true;
+                        emailSuffix = nipPart;
                     }
                 }
 
-                // TRY CANDIDATE 3 (NIP PART 2)
+                // TRY CANDIDATE 3 — tanggal lahir (NIP[7-8])
                 if (!isAvailable) {
                     const secondNipPart = getSecondNipPart(nip);
                     if (secondNipPart) {
@@ -241,6 +243,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         currentEmail = `${currentUsername}${domain}`;
                         if (!serverResults.emails[currentEmail] && !generatedEmails.has(currentEmail)) {
                             isAvailable = true;
+                            emailSuffix = secondNipPart;
                         }
                     }
                 }
@@ -257,12 +260,16 @@ document.addEventListener("DOMContentLoaded", function () {
                             currentUsername = `${originalUsername}${rand}`;
                             currentEmail = candidateEmail;
                             isAvailable = true;
+                            emailSuffix = rand;
                             break;
                         }
                         tries++;
                     }
                 }
             }
+
+            // Generate password SETELAH email dipilih, suffix sama dengan email
+            const password = generatePassword(cleanedName, emailSuffix);
 
             const isDuplicate = generatedEmails.has(currentEmail);
             const isNikInDb = serverResults.niks[nik] || false;
@@ -452,22 +459,14 @@ document.addEventListener("DOMContentLoaded", function () {
     return { username: username, email: `${username}${domain}` };
   }
 
-  function generatePassword(name, nip, useAltNipPart = false) {
-    let suffix = new Date().getDate();
-    if (nip && nip.length >= 8) {
-      if (useAltNipPart) {
-        suffix = nip.substring(6, 8); // 7th & 8th
-      } else {
-        suffix = nip.substring(2, 4); // 3rd & 4th
-      }
-    } else if (nip && nip.length >= 4) {
-        suffix = nip.substring(2, 4);
-    }
+  function generatePassword(name, suffix) {
+    // Jika suffix kosong (kandidat 1/base), gunakan tanggal hari ini sebagai fallback
+    const numericSuffix = suffix || String(new Date().getDate()).padStart(2, '0');
 
     let baseName = name.replace(/\s+/g, "").toLowerCase();
     let namePart = baseName;
-    
-    // Handle short names by repeating the name until 5 characters
+
+    // Nama pendek diulang hingga 5 karakter
     if (namePart.length > 0 && namePart.length < 5) {
         while (namePart.length < 5) {
             namePart += baseName;
@@ -475,10 +474,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     namePart = namePart.substring(0, 5);
 
-    if (!namePart) return `@${suffix}#`;
-    const capitalizedNamePart =
-      namePart.charAt(0).toUpperCase() + namePart.slice(1);
-    return `${capitalizedNamePart}@${suffix}#`;
+    if (!namePart) return `@${numericSuffix}#`;
+    const capitalizedNamePart = namePart.charAt(0).toUpperCase() + namePart.slice(1);
+    return `${capitalizedNamePart}@${numericSuffix}#`;
   }
 
   function getSecondNipPart(nip) {
