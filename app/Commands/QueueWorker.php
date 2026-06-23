@@ -20,7 +20,7 @@ class QueueWorker extends BaseCommand
     {
         $jobModel = new JobModel();
         $queue = $params['queue'] ?? 'default';
-        $stopWhenEmpty = \CodeIgniter\CLI\CLI::getOption('stop-when-empty') !== null;
+        $stopWhenEmpty = \CodeIgniter\CLI\CLI::getOption('stop-when-empty') !== null || array_key_exists('stop-when-empty', $params);
         $processedTypes = [];
 
         CLI::write("Queue worker started for queue: [$queue]", 'green');

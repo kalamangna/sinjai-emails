@@ -48,9 +48,11 @@ class EmailApi extends BaseController
 
     public function api_trigger_queue()
     {
+        log_message('info', 'api_trigger_queue called via HTTP');
         // Safe fast-cgi response
         ignore_user_abort(true);
         set_time_limit(0);
+        ini_set('memory_limit', '512M');
 
         ob_start();
         echo json_encode(['success' => true]);
@@ -64,8 +66,14 @@ class EmailApi extends BaseController
             fastcgi_finish_request();
         }
 
-        // Execute background queue runner via CI command, not OS exec
-        command('queue:work --stop-when-empty');
+        try {
+            log_message('info', 'Executing QueueWorker directly from api_trigger_queue');
+            $worker = new \App\Commands\QueueWorker(service('logger'), service('commands'));
+            $worker->run(['stop-when-empty' => true]);
+            log_message('info', 'Queue worker finished successfully');
+        } catch (\Throwable $e) {
+            log_message('error', 'Queue worker failed: ' . $e->getMessage());
+        }
         exit();
     }
 

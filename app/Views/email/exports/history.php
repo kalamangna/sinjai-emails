@@ -150,7 +150,19 @@ if ($needsRefresh):
 </script>
 <?php endif; ?>
 
-<?php if (session()->getFlashdata('trigger_worker')): ?>
+<?php 
+// Check if we need to trigger the worker (either from flashdata or if there are pending jobs)
+$hasPendingJobs = false;
+foreach ($histories as $h) {
+    if ($h['status'] === 'PENDING' || $h['status'] === 'PROCESSING') {
+        $hasPendingJobs = true;
+        break;
+    }
+}
+$shouldTriggerWorker = session()->getFlashdata('trigger_worker') || $hasPendingJobs;
+?>
+
+<?php if ($shouldTriggerWorker): ?>
 <!-- Trigger the background queue worker via client-side AJAX to bypass server loopback restrictions -->
 <script>
     fetch('<?= site_url('api_trigger_queue') ?>').catch(e => console.error(e));
