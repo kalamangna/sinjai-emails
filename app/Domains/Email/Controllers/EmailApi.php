@@ -46,6 +46,29 @@ class EmailApi extends BaseController
         }
     }
 
+    public function api_trigger_queue()
+    {
+        // Safe fast-cgi response
+        ignore_user_abort(true);
+        set_time_limit(0);
+
+        ob_start();
+        echo json_encode(['success' => true]);
+        header('Connection: close');
+        header('Content-Length: ' . ob_get_length());
+        @ob_end_flush();
+        @ob_flush();
+        @flush();
+
+        if (function_exists('fastcgi_finish_request')) {
+            fastcgi_finish_request();
+        }
+
+        // Execute background queue runner via CI command, not OS exec
+        command('queue:work --stop-when-empty');
+        exit();
+    }
+
     public function api_generate_pdf()
     {
         $unitId = $this->request->getPost('unit_id');
