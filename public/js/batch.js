@@ -245,34 +245,21 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
                 }
 
-                // FALLBACK — semua kandidat utama habis (sangat jarang)
-                // Urutan: bulan lahir dulu, lalu kombinasi NIP
+                // FALLBACK — random 2 digit, cek ke server satu per satu
                 if (!isAvailable) {
-                    const nipA = getNipPart(nip);          // 3-4: tahun lahir
-                    const nipB = getNipMonth(nip);         // 5-6: bulan lahir
-                    const nipC = getSecondNipPart(nip);    // 7-8: tanggal lahir
-                    const nipD = getNipSeq(nip);           // 9-10
-
-                    const fallbackSuffixes = [
-                        nipB,                   // bulan lahir saja, e.g. "10"
-                        nipA + nipB,            // tahun + bulan, e.g. "9610"
-                        nipB + nipC,            // bulan + tanggal, e.g. "1007"
-                        nipA + nipC,            // tahun + tanggal, e.g. "9607"
-                        nipA + nipD,            // tahun + seq, e.g. "9620"
-                        nipA + nipB + nipC,     // tahun + bulan + tanggal, e.g. "961007"
-                    ].filter(s => s && s.length > 0);
-
-                    for (const suffix of fallbackSuffixes) {
-                        const candidateEmail = `${originalUsername}${suffix}${domain}`;
-                        if (generatedEmails.has(candidateEmail)) continue;
-
+                    let tries = 0;
+                    while (tries < 20) {
+                        const rand = String(Math.floor(Math.random() * 90) + 10); // 10-99
+                        const candidateEmail = `${originalUsername}${rand}${domain}`;
+                        if (generatedEmails.has(candidateEmail)) { tries++; continue; }
                         const result = await checkEmailAvailability(candidateEmail);
                         if (result.available) {
-                            currentUsername = `${originalUsername}${suffix}`;
+                            currentUsername = `${originalUsername}${rand}`;
                             currentEmail = candidateEmail;
                             isAvailable = true;
                             break;
                         }
+                        tries++;
                     }
                 }
             }
@@ -495,7 +482,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function getSecondNipPart(nip) {
-    // NIP karakter ke-7 & 8
+    // NIP karakter ke-7 & 8 (tanggal lahir)
     if (typeof nip !== "string" || nip.length < 8) return "";
     return nip.substring(6, 8);
   }
@@ -504,18 +491,6 @@ document.addEventListener("DOMContentLoaded", function () {
     // NIP karakter ke-3 & 4 (2 digit terakhir tahun lahir)
     if (typeof nip !== "string" || nip.length < 4) return "";
     return nip.substring(2, 4);
-  }
-
-  function getNipMonth(nip) {
-    // NIP karakter ke-5 & 6 (bulan lahir)
-    if (typeof nip !== "string" || nip.length < 6) return "";
-    return nip.substring(4, 6);
-  }
-
-  function getNipSeq(nip) {
-    // NIP karakter ke-9 & 10
-    if (typeof nip !== "string" || nip.length < 10) return "";
-    return nip.substring(8, 10);
   }
 
   async function checkNikOnServer(nik) {
