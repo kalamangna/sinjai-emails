@@ -142,9 +142,23 @@ class SyncPegawaiUnit extends BaseCommand
 
         $pegawaiSyncService = new PegawaiSyncService();
         
-        // PegawaiSyncService->processBatch expects an array of NIPs
-        $pegawaiSyncService->processBatch($nips);
+        $successCount = 0;
+        $failCount = 0;
+
+        // Pass a callback to print progress for each NIP
+        $pegawaiSyncService->processBatch($nips, function($curr, $total, $nip, $success, $statusMessage) use (&$successCount, &$failCount) {
+            CLI::print("[$curr/$total] Syncing NIP $nip... ");
+            if ($success) {
+                CLI::write($statusMessage, 'green');
+                $successCount++;
+            } else {
+                CLI::write($statusMessage, 'red');
+                $failCount++;
+            }
+        });
 
         CLI::write("\nSync Completed for $totalNips NIPs!", 'green');
+        CLI::write("Success: $successCount", 'green');
+        CLI::write("Failed: $failCount", 'red');
     }
 }

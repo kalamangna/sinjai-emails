@@ -12,12 +12,16 @@ class PegawaiSyncService
      * 
      * @param array $nipList Array berisi daftar NIP
      */
-    public function processBatch(array $nipList)
+    public function processBatch(array $nipList, ?callable $onProgress = null)
     {
         $emailModel = new EmailModel();
         $pegawaiApi = new PegawaiApi();
         
-        foreach ($nipList as $nip) {
+        $total = count($nipList);
+        foreach ($nipList as $index => $nip) {
+            $success = false;
+            $statusMessage = 'Gagal / Tidak ditemukan';
+            
             $result = $pegawaiApi->getPegawaiData($nip);
             if ($result['success']) {
                 $data = $result['data'];
@@ -37,7 +41,13 @@ class PegawaiSyncService
                     
                     // Update ke database
                     $emailModel->where('nip', $nip)->set($updateData)->update();
+                    $success = true;
+                    $statusMessage = 'Sukses';
                 }
+            }
+
+            if (is_callable($onProgress)) {
+                $onProgress($index + 1, $total, $nip, $success, $statusMessage);
             }
         }
     }
