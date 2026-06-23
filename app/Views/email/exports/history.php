@@ -150,6 +150,13 @@ if ($needsRefresh):
 </script>
 <?php endif; ?>
 
+<?php if (session()->getFlashdata('trigger_worker')): ?>
+<!-- Trigger the background queue worker via client-side AJAX to bypass server loopback restrictions -->
+<script>
+    fetch('<?= site_url('api_trigger_queue') ?>').catch(e => console.error(e));
+</script>
+<?php endif; ?>
+
 <script>
     // Auto-download new completed PDFs
     const completedJobs = document.querySelectorAll('a[id^="download-btn-"]');

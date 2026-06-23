@@ -135,14 +135,8 @@ class EmailExport extends BaseController
                 'filters' => $filters
             ]);
 
-            // Trigger worker non-blocking
-            $url = site_url('api_trigger_queue');
-            $ch = curl_init($url);
-            curl_setopt($ch, CURLOPT_TIMEOUT, 1);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_exec($ch);
-            curl_close($ch);
-
+            // Instead of cURL, tell the history page to trigger the worker via AJAX
+            session()->setFlashdata('trigger_worker', true);
             session()->setFlashdata('success', 'Permintaan Export PDF berhasil ditambahkan ke antrean. File akan segera tersedia di Riwayat Laporan.');
             return redirect()->to('reports/history');
         } catch (\Throwable $e) {
@@ -184,14 +178,7 @@ class EmailExport extends BaseController
                 'filters' => $filters
             ]);
 
-            // Trigger worker non-blocking
-            $url = site_url('api_trigger_queue');
-            $ch = curl_init($url);
-            curl_setopt($ch, CURLOPT_TIMEOUT, 1);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_exec($ch);
-            curl_close($ch);
-
+            session()->setFlashdata('trigger_worker', true);
             session()->setFlashdata('success', 'Permintaan Export Detail Akun PDF berhasil ditambahkan ke antrean. File akan segera tersedia di Riwayat Laporan.');
             return redirect()->to('reports/history');
         } catch (\Throwable $e) {
