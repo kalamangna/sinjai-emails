@@ -49,6 +49,11 @@ class EmailApi extends BaseController
     public function api_trigger_queue()
     {
         log_message('info', 'api_trigger_queue called via HTTP');
+        // Release session lock to prevent blocking other user requests
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            session_write_close();
+        }
+
         // Safe fast-cgi response
         ignore_user_abort(true);
         set_time_limit(0);
