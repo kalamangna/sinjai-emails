@@ -1,4 +1,41 @@
+# Session History - 23 Juni 2026
+
+## Fitur Baru
+- **Tukar Data Akun (Swap)**:
+    - Tambah form swap data antar dua akun menggunakan dropdown dengan fitur pencarian (`Choices.js`).
+    - Data yang ditukar: NIK, NIP, nama, gelar, tempat/tanggal lahir, jabatan, golongan, pangkat, unit kerja, eselon, status ASN, pimpinan, dan pensiun_at. Email tidak ikut ditukar.
+    - Mencegah `Duplicate Entry` NIK/NIP saat swap dengan menggunakan nilai sementara (`temp_`) sebelum update final.
+    - Menggunakan *Query Builder* langsung (bukan `Model::update()`) untuk memastikan eksekusi tidak di-*block* oleh CodeIgniter *callbacks*.
+    - Audit log `SWAP_DATA` dicatat setiap eksekusi.
+
+## Refaktor
+- **Generator Email Batch Create**:
+    - Urutan kandidat email disederhanakan: base → tahun lahir (NIP[3-4]) → tanggal lahir (NIP[7-8]) → random 2 digit.
+    - Menghapus fungsi `getNikPart()` yang redundan (sama dengan tahun lahir NIP).
+    - Menghapus `getNipMonth()` dan `getNipSeq()` dari fallback, diganti random 2 digit yang lebih sederhana.
+    - Password suffix sekarang mengikuti urutan kandidat yang sama secara independen (tahun lahir dulu, tanggal lahir, random).
+- **Retry Password Weak di Batch Create**:
+    - Backend otomatis mencoba kandidat password berikutnya jika cPanel menolak karena *weak password*.
+    - Urutan retry: tahun lahir → tanggal lahir (NIP[7-8]) → random 2 digit. Suffix **diganti**, bukan ditambahkan.
+    - Password yang akhirnya berhasil disimpan ke database lokal.
+
+## Bug Fixes
+- **Fix `Undefined array key "hp"`** di `swapAccountData`: Menghapus field `hp`, `masa_kerja`, `is_pensiun`, `is_operator` yang tidak ada di skema database.
+- **Fix `Call to undefined function log_audit()`**: Menambahkan `require_once audit_helper.php` di `BaseController` agar fungsi tersedia secara global di semua controller.
+- **Fix Swap Data Tidak Berubah**: Beralih dari `Model::update()` ke *Query Builder* langsung untuk mencegah update diam-diam yang diblokir oleh CodeIgniter model *callbacks*.
+- **Fix Filter `--asn=PNS` Tidak Bekerja di CLI**: Menambahkan parsing fallback untuk format `--asn=PNS` (dengan tanda `=`) yang tidak dikenali `CLI::getOption()` di CodeIgniter 4.
+- **Fix Status "Available" Palsu di Batch Preview**:
+    - Menambahkan `->withDeleted()` pada semua query di `batch_check_availability` agar akun yang sudah di-*soft-delete* tetap ditandai sebagai tidak tersedia.
+    - Memaksa `isAvailable = false` jika NIK atau NIP sudah ada di database, walaupun email-nya belum dipakai.
+- **Fix Badge Status Preview Batch**:
+    - Menambahkan badge **Existing** (oranye) untuk NIK/NIP sudah ada di DB.
+    - Menambahkan badge **Duplikat** (kuning) untuk NIK/NIP duplikat dalam satu batch.
+    - Tombol **Eksekusi** dinonaktifkan selama ada baris berstatus Existing, Duplikat, atau Unavailable.
+
+---
+
 # Session History - 22 Juni 2026
+
 
 ## Fitur Baru
 - **Notifikasi Telegram saat Tambah 1 Akun Email Baru**:
