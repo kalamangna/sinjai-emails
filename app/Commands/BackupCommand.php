@@ -35,100 +35,54 @@ class BackupCommand extends BaseCommand
         $filename = "db_backup_{$date}.sql.gz";
         $filepath = $backupDir . $filename;
 
-        // Coba deteksi lokasi mysqldump di berbagai path umum (termasuk cPanel)
-        $mysqldumpPath = 'mysqldump';
-        $commonPaths = [
-            '/usr/bin/mysqldump',
-            '/usr/local/bin/mysqldump',
-            '/usr/local/mysql/bin/mysqldump',
-            '/opt/cpanel/ea-mariadb103/bin/mysqldump',
-            '/opt/cpanel/ea-mariadb105/bin/mysqldump',
-            '/opt/cpanel/ea-mariadb106/bin/mysqldump',
-            '/opt/cpanel/ea-mariadb107/bin/mysqldump',
-            '/opt/cpanel/ea-mariadb110/bin/mysqldump',
-            '/bin/mysqldump',
-        ];
-
-        $found = false;
-        foreach ($commonPaths as $path) {
-            if (file_exists($path)) {
-                $mysqldumpPath = escapeshellcmd($path);
-                $found = true;
-                break;
-            }
-        }
-
-        if (!$found) {
-            $whichDump = trim(shell_exec('which mysqldump 2>/dev/null'));
-            if (!empty($whichDump) && file_exists($whichDump)) {
-                $mysqldumpPath = escapeshellcmd($whichDump);
-            }
-        }
-
-        // Perintah mysqldump
-        $passwordArg = empty($password) ? '' : "-p" . escapeshellarg($password);
-        $command = $mysqldumpPath . " --no-tablespaces -h " . escapeshellarg($hostname) . " -P " . escapeshellarg($port) . " -u " . escapeshellarg($username) . " {$passwordArg} " . escapeshellarg($database) . " > " . escapeshellarg($filepath . '.tmp') . " 2>/dev/null";
-
-        // Eksekusi mysqldump
-        $output = [];
-        $returnVar = 0;
-        exec($command, $output, $returnVar);
-
         $telegram = new TelegramLibrary();
 
-        if ($returnVar === 0 && file_exists($filepath . '.tmp')) {
-            // Kompresi dengan gzip
-            $gzipPath = 'gzip';
-            $commonGzipPaths = [
-                '/usr/bin/gzip',
-                '/bin/gzip',
-                '/usr/local/bin/gzip',
+        try {
+            $dumpSettings = [
+                'compress' => \Ifsnop\Mysqldump\Mysqldump::GZIP,
+                'no-data' => false,
+                'add-drop-table' => true,
+                'single-transaction' => true,
+                'lock-tables' => false,
+                'add-locks' => true,
+                'extended-insert' => true,
+                'disable-keys' => true,
+                'skip-definer' => true,
+                'skip-comments' => false,
+                'skip-tz-utc' => false,
             ];
 
-            $foundGzip = false;
-            foreach ($commonGzipPaths as $path) {
-                if (file_exists($path)) {
-                    $gzipPath = escapeshellcmd($path);
-                    $foundGzip = true;
-                    break;
-                }
-            }
+            $dsn = "mysql:host={$hostname};port={$port};dbname={$database}";
+            $dump = new \Ifsnop\Mysqldump\Mysqldump($dsn, $username, $password, $dumpSettings);
+            $dump->start($filepath);
 
-            if (!$foundGzip) {
-                $whichGzip = trim(shell_exec('which gzip 2>/dev/null'));
-                if (!empty($whichGzip) && file_exists($whichGzip)) {
-                    $gzipPath = escapeshellcmd($whichGzip);
-                }
-            }
+            $size = filesize($filepath);
+            $sizeFormatted = number_format($size / 1024 / 1024, 2) . ' MB';
 
-            exec($gzipPath . " -c " . escapeshellarg($filepath . '.tmp') . " > " . escapeshellarg($filepath), $output, $zipReturn);
-            unlink($filepath . '.tmp');
-
-            if ($zipReturn !== 0 || !file_exists($filepath)) {
-                CLI::error("Gagal melakukan kompresi backup!");
-                return;
-            }
-
-            $filesize = filesize($filepath);
-            $sizeFormatted = number_format($filesize / 1024 / 1024, 2) . ' MB';
             CLI::write("Backup berhasil disimpan di: {$filepath} ({$sizeFormatted})", 'green');
 
             // Hapus backup yang lebih tua dari 7 hari
             $this->cleanOldBackups($backupDir, 7);
 
             $msg = "✅ <b>BACKUP DATABASE BERHASIL</b>\n";
-            $msg .= "File: <code>{$filename}</code>\n";
-            $msg .= "Ukuran: <b>{$sizeFormatted}</b>\n";
-            $msg .= "Waktu: " . date('d M Y, H:i:s');
+            $msg .= "----------------------------------------\n";
+            $msg .= "<b>Waktu:</b> " . date('d/m/Y H:i:s') . "\n";
+            $msg .= "<b>File:</b> {$filename}\n";
+            $msg .= "<b>Ukuran:</b> {$sizeFormatted}\n";
+            $msg .= "<b>Status:</b> Auto Backup (cPanel Compatible)\n";
+            $msg .= "----------------------------------------";
             
-            // Opsional: Jika ingin selalu lapor sukses, hilangkan komentar di bawah
-            // $telegram->sendMessage($msg);
-        } else {
-            CLI::error("Backup gagal! Return Code: {$returnVar}");
+            $telegram->sendMessage($msg);
+
+        } catch (\Exception $e) {
+            CLI::error("Backup gagal! Error: " . $e->getMessage());
             
             $msg = "🚨 <b>GAGAL BACKUP DATABASE</b>\n";
-            $msg .= "Proses eksekusi <i>mysqldump</i> gagal pada " . date('d M Y, H:i:s') . ".\n";
-            $msg .= "Mohon segera periksa server cPanel Anda!";
+            $msg .= "----------------------------------------\n";
+            $msg .= "<b>Waktu:</b> " . date('d/m/Y H:i:s') . "\n";
+            $msg .= "<b>Error:</b> " . htmlspecialchars($e->getMessage()) . "\n";
+            $msg .= "----------------------------------------";
+            
             $telegram->sendMessage($msg);
         }
     }
