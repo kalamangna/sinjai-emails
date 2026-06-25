@@ -1,3 +1,9 @@
+# Session History - 25 Juni 2026
+
+## Dokumentasi & Infrastruktur
+- **Pembaruan Panduan Cron Job (README.md)**:
+    - Memperbarui perintah Cron Job untuk `app:backup` dan `queue:clean-exports` pada dokumentasi dengan menggunakan *absolute path* PHP cPanel (`/opt/cpanel/ea-php83/root/usr/bin/php`) agar kompatibel dengan lingkungan cron production.
+
 # Session History - 23 Juni 2026
 
 ## Fitur Baru

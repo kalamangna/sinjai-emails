@@ -140,10 +140,10 @@ chmod +x sync.sh
 0 4 25 * * /home/tte/sinjai-emails/sync.sh monthly
 
 # 4. Backup Database Harian (Jam 00:00)
-0 0 * * * php /home/tte/sinjai-emails/spark app:backup >> /dev/null 2>&1
+0 0 * * * /opt/cpanel/ea-php83/root/usr/bin/php /home/tte/sinjai-emails/spark app:backup >> /dev/null 2>&1
 
 # 5. Pembersihan File & Riwayat Laporan PDF Harian (Jam 01:00)
-0 1 * * * php /home/tte/sinjai-emails/spark queue:clean-exports >> /dev/null 2>&1
+0 1 * * * /opt/cpanel/ea-php83/root/usr/bin/php /home/tte/sinjai-emails/spark queue:clean-exports >> /dev/null 2>&1
 ```
 
 Skrip ini secara cerdas membagi tugas:
