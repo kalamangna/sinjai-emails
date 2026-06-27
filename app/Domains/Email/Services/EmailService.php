@@ -612,6 +612,15 @@ class EmailService
         $existing_email = $this->emailModel->where('email', $data['email'])->first();
         if ($existing_email) throw new Exception('Email already exists in local database.');
 
+        if (!empty($data['nik'])) {
+            $cleanNik = str_replace([' ', '.', '-', '\''], '', $data['nik']);
+            $existing_nik = $this->emailModel->where('nik', $cleanNik)->first();
+            if ($existing_nik) {
+                throw new Exception('NIK already exists in local database.');
+            }
+            $data['nik'] = $cleanNik;
+        }
+
         try {
             $cpanelApi->create_email_account($data['email'], $data['password'], $data['quota'] ?? 1024);
         } catch (\Throwable $e) {
@@ -636,8 +645,8 @@ class EmailService
                 'password'   => $data['password'] ?? null,
                 'nik'        => $data['nik'] ?? null,
                 'nip'        => $data['nip'] ?? null,
-                'name'       => $data['name'] ?? null,
-                'jabatan'    => $data['jabatan'] ?? null,
+                'name'       => !empty($data['name']) ? mb_strtoupper($data['name'], 'UTF-8') : null,
+                'jabatan'    => !empty($data['jabatan']) ? mb_strtoupper($data['jabatan'], 'UTF-8') : null,
                 'status_asn_id' => $data['jenisFormasi'] ?? null,
                 'gelar_depan' => $data['gelar_depan'] ?? null,
                 'gelar_belakang' => $data['gelar_belakang'] ?? null,

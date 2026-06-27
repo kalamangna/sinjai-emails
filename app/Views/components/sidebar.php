@@ -2,9 +2,7 @@
     <!-- Logo Section -->
     <div class="flex items-center h-16 px-6 border-b border-slate-700 flex-shrink-0">
         <a href="<?= site_url('/') ?>" data-sidebar-clear class="flex items-center no-underline">
-            <div class="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center mr-3 shadow-sm border border-white/10">
-                <i class="fas fa-fingerprint text-white text-sm"></i>
-            </div>
+            <img src="<?= base_url('logo.png') ?>" alt="Logo" class="w-8 h-8 object-contain mr-3">
             <div>
                 <span class="block text-xs font-bold tracking-tight text-white leading-none uppercase">sinjai<span class="text-slate-300">emails</span></span>
                 <span class="text-[8px] font-bold text-slate-300 uppercase tracking-widest block mt-0.5">identitas digital</span>
@@ -235,6 +233,5 @@
                 <i class="fas fa-plug <?= $isActive('api-docs') ? 'text-white' : 'text-slate-300' ?>"></i>
             </div>
             API Gateway
-        </a>
-    </nav>
+        </a>    </nav>
 </aside>

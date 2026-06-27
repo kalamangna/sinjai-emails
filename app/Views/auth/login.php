@@ -15,13 +15,13 @@
     <meta property="og:title" content="<?= $title ?? 'Masuk' ?> | Sistem Identitas Digital">
     <meta property="og:description" content="<?= $meta_description ?? 'Portal Manajemen Identitas Digital & Sertifikat Elektronik Pemerintah Kabupaten Sinjai' ?>">
     <meta property="og:url" content="<?= current_url() ?>">
-    <meta property="og:image" content="<?= $meta_image ?? base_url('og-image.png') ?>">
+    <meta property="og:image" content="<?= $meta_image ?? base_url('meta.png') ?>">
     <meta property="og:type" content="<?= $meta_type ?? 'website' ?>">
     
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="<?= $title ?? 'Masuk' ?> | Sistem Identitas Digital">
     <meta name="twitter:description" content="<?= $meta_description ?? 'Portal Manajemen Identitas Digital & Sertifikat Elektronik Pemerintah Kabupaten Sinjai' ?>">
-    <meta name="twitter:image" content="<?= $meta_image ?? base_url('og-image.png') ?>">
+    <meta name="twitter:image" content="<?= $meta_image ?? base_url('meta.png') ?>">
 
     <link rel="icon" type="image/png" href="<?= base_url('logo.png') ?>">
 
@@ -47,9 +47,7 @@
     <div class="w-full max-w-sm">
         <!-- Branding -->
         <div class="text-center mb-8">
-            <div class="inline-flex items-center justify-center w-12 h-12 bg-slate-800 rounded-lg shadow-sm mb-4">
-                <i class="fas fa-fingerprint text-white text-xl"></i>
-            </div>
+            <img src="<?= base_url('logo.png') ?>" alt="Logo" class="w-12 h-12 object-contain mx-auto mb-4">
             <h1 class="text-xl font-bold text-slate-800 uppercase tracking-tight">sinjai<span class="text-slate-700">emails</span></h1>
             <p class="text-[10px] font-bold text-slate-700 uppercase tracking-widest mt-1">identitas digital</p>
         </div>

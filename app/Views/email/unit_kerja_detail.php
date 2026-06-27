@@ -46,6 +46,11 @@
                     </div>
                 </div>
 
+                <!-- Batch Register BSrE -->
+                <button id="batchRegisterBsreBtn" onclick="batchRegisterBsre()" class="btn btn-outline">
+                    <i class="fas fa-user-plus mr-2 text-slate-600"></i> Register BSrE
+                </button>
+
                 <!-- Dropdown Sinkronisasi -->
                 <div class="relative group">
                     <button id="mainSyncBtn" class="btn btn-solid">
@@ -275,7 +280,7 @@
                                     </td>
                                 <?php endif; ?>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div id="bsre-status-<?= esc($email['user']) ?>" data-email="<?= esc($email['email']) ?>">
+                                    <div id="bsre-status-<?= esc($email['user']) ?>" data-email="<?= esc($email['email']) ?>" data-name="<?= esc($email['name']) ?>" data-status="<?= esc($email['bsre_status'] ?? '') ?>">
                                         <?php
                                         $isNeedTte = !empty($email['nip']) || ($email['pimpinan'] ?? 0) == 1 || ($email['pimpinan_desa'] ?? 0) == 1 || !empty($email['unit_kerja_id']);
 
@@ -744,6 +749,113 @@ echo view('components/modal', [
         syncBtn.innerHTML = originalBtnContent;
 
         alert(`Sinkronisasi Data Pegawai Selesai!\nTotal: ${processed}\nBerhasil: ${success}\nGagal: ${failed}`);
+    }
+
+    async function batchRegisterBsre() {
+        const containers = document.querySelectorAll('[id^="bsre-status-"]');
+        const validContainers = Array.from(containers).filter(c => c.getAttribute('data-status') === 'NOT_REGISTERED');
+        
+        if (!validContainers.length) {
+            alert('Tidak ada data pegawai dengan status NOT_REGISTERED di unit kerja ini.');
+            return;
+        }
+
+        if (!confirm(`Apakah Anda yakin ingin mendaftarkan ${validContainers.length} pegawai yang berstatus NOT_REGISTERED ke BSrE?`)) {
+            return;
+        }
+
+        const mainBtn = document.getElementById('mainSyncBtn');
+        const syncBtn = document.getElementById('batchRegisterBsreBtn');
+        const originalMainContent = mainBtn.innerHTML;
+        const originalBtnContent = syncBtn.innerHTML;
+
+        // Disable tombol dan beri feedback visual
+        mainBtn.disabled = true;
+        mainBtn.classList.add('opacity-75', 'cursor-not-allowed', 'bg-slate-700');
+        syncBtn.disabled = true;
+        syncBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Mendaftarkan...';
+
+        let processed = 0;
+        let success = 0;
+        let failed = 0;
+
+        for (const container of validContainers) {
+            const email = container.getAttribute('data-email');
+            const name = container.getAttribute('data-name');
+            
+            // Scroll ke container yang sedang diproses
+            container.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+
+            // Set loading state untuk baris ini
+            container.innerHTML = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-bold uppercase border bg-slate-50 text-slate-400 border-slate-200 animate-pulse"><i class="fas fa-spinner fa-spin mr-1.5"></i> REGISTERING</span>';
+
+            const formData = new FormData();
+            formData.append('nama', name);
+            formData.append('email', email);
+            formData.append('<?= csrf_token() ?>', '<?= csrf_hash() ?>');
+
+            try {
+                const response = await fetch('<?= site_url('bsre/register') ?>', {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.status === 'success') {
+                    // Jalankan sinkronisasi status otomatis pasca pendaftaran
+                    const syncResponse = await fetch('<?= site_url('bsre/sync-status') ?>', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRF-TOKEN': '<?= csrf_hash() ?>'
+                        },
+                        body: 'email=' + encodeURIComponent(email)
+                    });
+                    const syncData = await syncResponse.json();
+                    
+                    if (syncData.status === 'success') {
+                        const colorClass = getJsStatusColor(syncData.bsre_status);
+                        container.innerHTML = `<span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase border ${colorClass}">${syncData.bsre_status}</span>`;
+                        container.setAttribute('data-status', syncData.bsre_status);
+                    } else {
+                        container.innerHTML = `<span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase border bg-emerald-100 text-emerald-800 border-transparent">REGISTERED</span>`;
+                        container.setAttribute('data-status', 'REGISTERED');
+                    }
+                    success++;
+                } else {
+                    const errorMsg = data.message || 'Gagal';
+                    container.innerHTML = `<button onclick="showGlobalError('Gagal Mendaftarkan', '${errorMsg.replace(/'/g, "\\'")}')" class="px-2 py-0.5 rounded text-[9px] font-bold uppercase border bg-red-50 text-red-600 border-red-200 hover:bg-red-100 transition-colors">ERROR</button>`;
+                    failed++;
+                }
+            } catch (error) {
+                console.error('Registration failed for ' + email, error);
+                const errorMsg = 'Masalah Koneksi Jaringan';
+                container.innerHTML = `<button onclick="showGlobalError('Kesalahan Jaringan', '${errorMsg}')" class="px-2 py-0.5 rounded text-[9px] font-bold uppercase border bg-red-50 text-red-600 border-red-200 hover:bg-red-100 transition-colors">ERROR</button>`;
+                failed++;
+            }
+
+            processed++;
+            mainBtn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> REG: ${processed}/${validContainers.length}`;
+            syncBtn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Mendaftarkan ${processed}/${validContainers.length}...`;
+        }
+
+        // Restore tombol
+        mainBtn.disabled = false;
+        mainBtn.classList.remove('opacity-75', 'cursor-not-allowed', 'bg-slate-700');
+        mainBtn.innerHTML = originalMainContent;
+        syncBtn.disabled = false;
+        syncBtn.innerHTML = originalBtnContent;
+
+        alert(`Registrasi Massal Selesai!\nTotal: ${processed}\nBerhasil: ${success}\nGagal: ${failed}\n\nHalaman akan disegarkan.`);
+        window.location.reload();
     }
 </script>
 <?= $this->endSection() ?>

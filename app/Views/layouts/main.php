@@ -15,13 +15,13 @@
     <meta property="og:title" content="<?= $title ?? 'Dashboard' ?> | Sistem Identitas Digital">
     <meta property="og:description" content="<?= $meta_description ?? 'Portal Manajemen Identitas Digital & Sertifikat Elektronik Pemerintah Kabupaten Sinjai' ?>">
     <meta property="og:url" content="<?= current_url() ?>">
-    <meta property="og:image" content="<?= $meta_image ?? base_url('og-image.png') ?>">
+    <meta property="og:image" content="<?= $meta_image ?? base_url('meta.png') ?>">
     <meta property="og:type" content="<?= $meta_type ?? 'website' ?>">
     
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="<?= $title ?? 'Dashboard' ?> | Sistem Identitas Digital">
     <meta name="twitter:description" content="<?= $meta_description ?? 'Portal Manajemen Identitas Digital & Sertifikat Elektronik Pemerintah Kabupaten Sinjai' ?>">
-    <meta name="twitter:image" content="<?= $meta_image ?? base_url('og-image.png') ?>">
+    <meta name="twitter:image" content="<?= $meta_image ?? base_url('meta.png') ?>">
 
     <link rel="icon" type="image/png" href="<?= base_url('logo.png') ?>">
 

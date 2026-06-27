@@ -1,8 +1,6 @@
-# Git Workflow Standards
+# 🏛️ Sistem Identitas Digital — Instruksi Pengembangan & Catatan Kerja
 
-Setiap pengembang wajib mengikuti standar alur kerja Git berikut secara berurutan sebelum melakukan `push` ke repositori:
-
-1.  **Build CSS:** Jalankan `npm run build` jika terdapat perubahan pada file view atau JavaScript untuk memastikan aset CSS terbaru telah terkompilasi ke dalam `public/css/output.css`.
-2.  **Update Changelog:** Simpan riwayat perubahan teknis dan kronologi pengembangan pada berkas `CHANGELOG.md` di root direktori.
-3.  **Update README:** Pastikan `README.md` diperbarui jika terdapat perubahan fitur utama, cara instalasi, atau konfigurasi sistem.
-4.  **Push:** Setelah semua langkah di atas selesai, lakukan commit (termasuk file `output.css` jika berubah) dan push ke repositori.
+*   **Pencatatan Perubahan:** Setiap sebelum melakukan *push*, pastikan untuk mencatat semua perubahan yang telah dilakukan di dalam berkas CHANGELOG.md sesuai dengan format Keep a Changelog.
+*   **Pembaruan Dokumentasi:** Perbarui berkas README.md jika terdapat perubahan atau penambahan fitur baru yang memerlukan instruksi/konfigurasi tambahan.
+*   **Kompilasi CSS:** Jika terdapat perubahan pada berkas CSS, pastikan untuk melakukan proses *build* CSS (`npm run build`) sebelum melakukan *push*.
+*   **Dependensi Composer:** Jika terdapat perubahan pada berkas `composer.json` atau `composer.lock`, pastikan untuk menjalankan perintah `composer install --no-dev --optimize-autoloader` sebelum melakukan *push*.

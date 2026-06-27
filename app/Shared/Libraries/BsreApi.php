@@ -47,12 +47,12 @@ class BsreApi
         }
 
         try {
-            // Manual URL construction
             $fullUrl = rtrim($this->baseUrl, '/') . '/api/v2/user/check/status';
 
             $response = $this->client->request('POST', $fullUrl, [
                 'auth' => [$this->username, $this->password],
                 'json' => $payload,
+                'http_errors' => false,
                 'headers' => [
                     'Content-Type' => 'application/json'
                 ]
@@ -61,16 +61,143 @@ class BsreApi
             $body = json_decode($response->getBody(), true);
             $statusCode = $response->getStatusCode();
 
-            // log hasil response untuk debugging
-            log_message('info', 'BSrE API Response: ' . print_r($body, true));
+            log_message('info', 'BSrE API Response (Check Status): ' . print_r($body, true));
+
+            if ($statusCode >= 200 && $statusCode < 300) {
+                return [
+                    'success' => true,
+                    'data'    => $body,
+                    'code'    => $statusCode
+                ];
+            } else {
+                $msg = $body['message'] ?? $body['error'] ?? 'Gagal mengambil status dari BSrE';
+                return [
+                    'success' => false,
+                    'message' => $msg,
+                    'code'    => $statusCode
+                ];
+            }
+        } catch (\Throwable $e) {
+            $errorMsg = "BSrE API Error (Check Status). URL: [{$fullUrl}]. Message: " . $e->getMessage();
+            log_message('error', $errorMsg);
 
             return [
-                'success' => true,
-                'data'    => $body,
-                'code'    => $statusCode
+                'success' => false,
+                'message' => $errorMsg,
+                'code'    => 500
             ];
+        }
+    }
+
+    /**
+     * Register User Baru (API V2)
+     * Endpoint: /api/v2/user/registration
+     * 
+     * @param string $nama Nama Lengkap
+     * @param string $email Email Dinas/Resmi
+     * @return array
+     */
+    public function registerUser(string $nama, string $email): array
+    {
+        $payload = [
+            'nama'  => $nama,
+            'email' => $email
+        ];
+
+        try {
+            $fullUrl = rtrim($this->baseUrl, '/') . '/api/v2/user/registration';
+
+            $response = $this->client->request('POST', $fullUrl, [
+                'auth' => [$this->username, $this->password],
+                'json' => $payload,
+                'http_errors' => false,
+                'headers' => [
+                    'Content-Type' => 'application/json'
+                ]
+            ]);
+
+            $body = json_decode($response->getBody(), true);
+            $statusCode = $response->getStatusCode();
+
+            log_message('info', 'BSrE API Response (Register User): ' . print_r($body, true));
+
+            if ($statusCode >= 200 && $statusCode < 300) {
+                return [
+                    'success' => true,
+                    'data'    => $body,
+                    'code'    => $statusCode
+                ];
+            } else {
+                $msg = $body['message'] ?? $body['error'] ?? 'Gagal mendaftarkan user ke BSrE';
+                return [
+                    'success' => false,
+                    'message' => $msg,
+                    'code'    => $statusCode
+                ];
+            }
         } catch (\Throwable $e) {
-            $errorMsg = "BSrE API Error. URL: [{$fullUrl}]. Message: " . $e->getMessage();
+            $errorMsg = "BSrE API Error (Register User). URL: [{$fullUrl}]. Message: " . $e->getMessage();
+            log_message('error', $errorMsg);
+
+            return [
+                'success' => false,
+                'message' => $errorMsg,
+                'code'    => 500
+            ];
+        }
+    }
+
+    /**
+     * Verify PDF (API V2)
+     * Endpoint: /api/v2/verify/pdf
+     * 
+     * @param string $fileBase64 File PDF dikodekan dalam Base64
+     * @param string|null $password Sandi enkripsi PDF jika ada
+     * @return array
+     */
+    public function verifyPdf(string $fileBase64, ?string $password = null): array
+    {
+        $payload = [
+            'file' => $fileBase64
+        ];
+
+        if (!empty($password)) {
+            $payload['password'] = $password;
+        }
+
+        try {
+            $fullUrl = rtrim($this->baseUrl, '/') . '/api/v2/verify/pdf';
+
+            $response = $this->client->request('POST', $fullUrl, [
+                'auth' => [$this->username, $this->password],
+                'json' => $payload,
+                'http_errors' => false,
+                'headers' => [
+                    'Content-Type' => 'application/json'
+                ]
+            ]);
+
+            $body = json_decode($response->getBody(), true);
+            $statusCode = $response->getStatusCode();
+
+            log_message('info', 'BSrE API Response (Verify PDF): ' . print_r($body, true));
+
+            if ($statusCode >= 200 && $statusCode < 300) {
+                return [
+                    'success' => true,
+                    'data'    => $body,
+                    'code'    => $statusCode
+                ];
+            } else {
+                $msg = $body['message'] ?? $body['error'] ?? 'Gagal melakukan verifikasi PDF';
+                return [
+                    'success' => false,
+                    'message' => $msg,
+                    'code'    => $statusCode
+                ];
+            }
+        } catch (\Throwable $e) {
+            $errorMsg = "BSrE API Error (Verify PDF). URL: [{$fullUrl}]. Message: " . $e->getMessage();
             log_message('error', $errorMsg);
 
             return [

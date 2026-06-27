@@ -130,7 +130,7 @@ class EmailBatchService
                 }
             };
 
-            if (isset($newNames[$index])) $compareAndUpdate('name', $newNames[$index]);
+            if (isset($newNames[$index])) $compareAndUpdate('name', mb_strtoupper($newNames[$index], 'UTF-8'));
             if (isset($newGelarDepans[$index])) $compareAndUpdate('gelar_depan', $newGelarDepans[$index]);
             if (isset($newGelarBelakangs[$index])) $compareAndUpdate('gelar_belakang', $newGelarBelakangs[$index]);
             if (isset($newPasswords[$index])) $compareAndUpdate('password', $newPasswords[$index]);
@@ -367,7 +367,7 @@ class EmailBatchService
                     'password'      => $finalPassword,
                     'nik'           => $item->nik ?? null,
                     'nip'           => $item->nip ?? null,
-                    'name'          => $item->name ?? null,
+                    'name'          => !empty($item->name) ? mb_strtoupper($item->name, 'UTF-8') : null,
                     'jabatan'       => !empty($item->jabatan) ? mb_strtoupper($item->jabatan, 'UTF-8') : null,
                     'status_asn_id' => $item->statusAsn ?? null,
                 ]);

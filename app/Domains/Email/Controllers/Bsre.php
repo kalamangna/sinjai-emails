@@ -8,6 +8,18 @@ use App\Domains\Auth\Models\UserModel;
 
 class Bsre extends BaseController
 {
+    /**
+     * Halaman Publik Verifikasi PDF
+     * GET /verifikasi-pdf
+     */
+    public function publicVerify()
+    {
+        return view('email/verify_pdf', [
+            'title' => 'Verifikasi PDF',
+            'isPublic' => true,
+        ]);
+    }
+
     public function checkStatus()
     {
         // Validasi input sederhana
@@ -162,7 +174,7 @@ class Bsre extends BaseController
         }
 
         $emails = $builder->findAll();
-        
+
         $successCount = 0;
         $failCount = 0;
 
@@ -179,5 +191,84 @@ class Bsre extends BaseController
         }
 
         return redirect()->to('email')->with('success', "Berhasil menyinkronkan status TTE untuk $successCount akun. Gagal: $failCount.");
+    }
+
+    /**
+     * Mendaftarkan User Baru di BSrE (API v2)
+     * POST /bsre/register
+     */
+    public function registerUser()
+    {
+        $nama = $this->request->getVar('nama');
+        $email = $this->request->getVar('email');
+
+        if (empty($nama) || empty($email)) {
+            return $this->response->setJSON([
+                'status' => 'error',
+                'message' => 'Nama dan Email wajib diisi'
+            ])->setStatusCode(400);
+        }
+
+        $bsreApi = new BsreApi();
+        $result = $bsreApi->registerUser($nama, $email);
+
+        if ($result['success']) {
+            return $this->response->setJSON([
+                'status' => 'success',
+                'data' => $result['data']
+            ]);
+        } else {
+            return $this->response->setJSON([
+                'status' => 'error',
+                'message' => $result['message']
+            ])->setStatusCode($result['code'] ?: 500);
+        }
+    }
+
+    /**
+     * Verifikasi TTE File PDF (API v2)
+     * POST /bsre/verify
+     */
+    public function verifyPdf()
+    {
+        $fileBase64 = '';
+        $password = $this->request->getVar('password');
+
+        // Dukung upload file biner (multipart) atau string base64 langsung
+        $uploadedFile = $this->request->getFile('file');
+        if ($uploadedFile && $uploadedFile->isValid() && !$uploadedFile->hasMoved()) {
+            if ($uploadedFile->getMimeType() !== 'application/pdf') {
+                return $this->response->setJSON([
+                    'status' => 'error',
+                    'message' => 'File harus berupa dokumen PDF'
+                ])->setStatusCode(400);
+            }
+            $fileData = file_get_contents($uploadedFile->getTempName());
+            $fileBase64 = base64_encode($fileData);
+        } else {
+            $fileBase64 = $this->request->getVar('file');
+        }
+
+        if (empty($fileBase64)) {
+            return $this->response->setJSON([
+                'status' => 'error',
+                'message' => 'File PDF (dalam format file upload atau string Base64) wajib disertakan'
+            ])->setStatusCode(400);
+        }
+
+        $bsreApi = new BsreApi();
+        $result = $bsreApi->verifyPdf($fileBase64, $password);
+
+        if ($result['success']) {
+            return $this->response->setJSON([
+                'status' => 'success',
+                'data' => $result['data']
+            ]);
+        } else {
+            return $this->response->setJSON([
+                'status' => 'error',
+                'message' => $result['message']
+            ])->setStatusCode($result['code'] ?: 500);
+        }
     }
 }

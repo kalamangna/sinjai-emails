@@ -19,6 +19,10 @@ $routes->get('helpdesk', '\App\Domains\Helpdesk\Controllers\HelpdeskPublicContro
 $routes->post('helpdesk/submit', '\App\Domains\Helpdesk\Controllers\HelpdeskPublicController::submit');
 $routes->get('helpdesk/success/(:any)', '\App\Domains\Helpdesk\Controllers\HelpdeskPublicController::success/$1');
 
+// Public PDF Verification
+$routes->get('verifikasi-pdf', '\App\Domains\Email\Controllers\Bsre::publicVerify');
+$routes->post('verifikasi-pdf', '\App\Domains\Email\Controllers\Bsre::verifyPdf');
+
 // API Gateway (v1) - External Integration
 $routes->group('api/v1', ['filter' => 'api_gateway'], function ($routes) {
     $routes->get('emails', '\App\Domains\Api\Controllers\GatewayController::listEmails');
@@ -221,5 +225,7 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         $routes->get('sync-all', '\App\Domains\Email\Controllers\Bsre::syncAllStatus');
         $routes->get('sync-status', '\App\Domains\Email\Controllers\Bsre::syncStatus');
         $routes->post('sync-status', '\App\Domains\Email\Controllers\Bsre::syncStatus');
+        $routes->post('register', '\App\Domains\Email\Controllers\Bsre::registerUser');
+        $routes->post('verify', '\App\Domains\Email\Controllers\Bsre::verifyPdf');
     });
 });

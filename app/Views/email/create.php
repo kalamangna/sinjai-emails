@@ -19,11 +19,8 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="md:col-span-2">
-                    <div class="flex justify-between items-end mb-1">
+                    <div class="mb-1">
                         <label for="name_input" class="block text-sm font-medium text-slate-700 uppercase tracking-tight">Nama Lengkap <span class="text-slate-700 font-normal">(Tanpa Gelar)</span></label>
-                        <button type="button" class="btn btn-outline btn-xs" onclick="nameInput.value = nameInput.value.toUpperCase(); updateDraft();">
-                            <i class="fas fa-font mr-1.5"></i> Huruf Kapital
-                        </button>
                     </div>
                     <input type="text" id="name_input" name="name" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all" required placeholder="Contoh: BUDI SANTOSO">
                 </div>
@@ -216,7 +213,7 @@
     });
 
     function updateSubmitButtonState() {
-        const canExecute = userBatch.every(u => u.isAvailable && !u.isNipInDb);
+        const canExecute = userBatch.every(u => u.isAvailable && !u.isNipInDb && !u.isNikInDb);
         submitBtn.disabled = !canExecute;
     }
 

@@ -1,3 +1,43 @@
+# Session History - 28 Juni 2026
+
+## Fitur Baru
+- **Fitur Batch Register BSrE di Detail Unit Kerja**:
+    - Menambahkan tombol mandiri "Register BSrE" (ikon `user-plus`) pada jajaran tombol aksi di halaman **Detail Unit Kerja** (`app/Views/email/unit_kerja_detail.php`).
+    - Menambahkan logika AJAX (*fetch*) sekuensial asinkron untuk mendaftarkan secara massal semua akun pegawai berstatus "NOT_REGISTERED" ke BSrE, disusul dengan pembaruan status TTE secara otomatis per baris tabel, serta penyegaran halaman.
+- **Integrasi Pendaftaran BSrE Langsung di Detail Akun**:
+    - Menambahkan tombol "Daftarkan BSrE" (ikon `user-plus`) pada baris informasi status TTE di halaman **Detail Akun** (`app/Views/email/detail.php`).
+    - Tombol ini akan otomatis muncul hanya jika status BSrE pegawai saat ini bernilai "NOT_REGISTERED" (ditangani secara dinamis melalui JavaScript).
+    - Menambahkan AJAX (*fetch*) asinkron untuk mendaftarkan nama & email pegawai ke BSrE secara langsung, disusul dengan *auto-sync* status TTE yang akan memperbarui antarmuka pengguna tanpa memicu muat ulang (*reload*) halaman.
+- **Penyelarasan Validasi Single & Batch Create Email**:
+    - Menambahkan pembersihan format NIK (menghapus spasi, titik, tanda hubung) dan validasi keunikan NIK di database lokal pada metode `createSingleEmail` (`app/Domains/Email/Services/EmailService.php`).
+    - Menambahkan otomatisasi kapitalisasi (uppercase) nama Jabatan (`mb_strtoupper`) pada pembuatan email tunggal agar konsisten dengan format batch.
+    - Menyesuaikan tombol eksekusi di halaman pembuatan akun tunggal (`app/Views/email/create.php`) agar otomatis terkunci (disabled) jika NIK yang dimasukkan sudah terdaftar di database lokal.
+- **Penetapan Huruf Kapital Otomatis untuk Nama Pegawai**:
+    - Menghapus tombol pembantu manual "Huruf Kapital" di halaman pendaftaran tunggal (`create.php`), pendaftaran massal (`batch/create.php`), dan pembaruan massal (`batch/update.php`).
+    - Memastikan nama pegawai secara otomatis dikonversi ke huruf kapital (`mb_strtoupper`) di sisi server sebelum disimpan ke database, baik pada proses pembuatan akun tunggal, pembuatan massal, maupun pembaruan massal.
+- **Implementasi Logo.png sebagai Brand dan Favicon**:
+    - Menambahkan representasi visual logo Pemerintah Daerah (`public/logo.png`) sebagai brand di bagian header sidebar (`sidebar.php`) dan halaman masuk (`login.php`).
+    - Memastikan favicon di semua templat (Layout Utama, Halaman Login, Verifikasi Publik, dan Halaman Error) merujuk secara konsisten ke berkas `logo.png`.
+    - Menetapkan berkas `public/meta.png` yang telah disiapkan sebagai gambar *Open Graph* (meta image) utama yang akan ditampilkan ketika situs web dibagikan di media sosial.
+- **Halaman Verifikasi PDF Publik (`GET /verifikasi-pdf` & `POST /verifikasi-pdf`)**:
+    - Menyediakan halaman verifikasi publik mandiri di `app/Views/email/verify_pdf.php` yang dapat diakses oleh publik tanpa otentikasi.
+    - Halaman ini memfasilitasi dropzone unggahan PDF dan pengujian tanda tangan elektronik ter-TTE serta integritas berkas secara instan.
+- **Endpoint Registrasi User BSrE (`POST bsre/register`)**:
+    - Menambahkan rute dan metode pengiriman pendaftaran user baru ke BSrE API v2 (`POST /api/v2/user/registration`).
+- **Endpoint Verifikasi TTE PDF (`POST bsre/verify`)**:
+    - Menambahkan rute dan metode verifikasi keaslian file PDF ter-TTE ke BSrE API v2 (`POST /api/v2/verify/pdf`), mendukung *upload* file langsung (*multipart*) atau *string* Base64 beserta sandi enkripsi (opsional).
+
+- **Penyelarasan & Standarisasi Halaman Verifikasi Publik**:
+    - Mengubah nama berkas view `verifikasi.php` menjadi `verify.php` agar konsisten menggunakan Bahasa Inggris, serta menyelaraskan pemanggilannya di controller `Email.php`.
+    - Merestrukturisasi `verify.php` (verifikasi akun) agar menampilkan logo resmi daerah (`logo.png`), menyederhanakan konten agar lebih padat (*to the point*), menambahkan lencana status verifikasi hijau yang informatif, dan memperlebar kartu (`max-w-xl`) guna mengakomodasi nama unit kerja yang panjang.
+    - Merestrukturisasi `verify_pdf.php` (verifikasi berkas PDF) menjadi halaman publik mandiri (*standalone*) seutuhnya yang tidak mengekor tata letak admin panel (`layouts/main.php`), menampilkan header minimalis berlogo resmi, dan mengoptimalkan tinggi elemen agar muat tanpa perlu melakukan *scrolling*.
+- **Penyempurnaan Penanganan Kesalahan Integrasi BSrE API**:
+    - Mengonfigurasi cURL request pada `BsreApi.php` agar tidak melempar eksepsi pada status HTTP non-2xx (`http_errors => false`), sehingga pesan kesalahan rinci/spesifik (seperti "NIK/Email sudah terdaftar") dari server BSrE dapat didekode dan diteruskan secara transparan ke frontend.
+
+## Dokumentasi & Infrastruktur
+- **Pembaruan Panduan Pengembangan (GEMINI.md)**:
+    - Menyesuaikan nama proyek pada judul dari "PANRITA" menjadi "Sistem Identitas Digital".
+
 # Session History - 25 Juni 2026
 
 ## Dokumentasi & Infrastruktur
