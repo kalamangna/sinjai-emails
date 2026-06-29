@@ -35,19 +35,19 @@
         body {
             font-family: 'Inter', sans-serif;
         }
-        /* Choices.js customization to match rounded-xl outline slate inputs */
+        /* Choices.js customization to match rounded-lg outline slate inputs */
         .choices {
             margin-bottom: 0 !important;
         }
         .choices__inner { 
-            background-color: rgba(248, 250, 252, 0.5) !important; 
+            background-color: white !important; 
             border: 1px solid rgb(226, 232, 240) !important; 
-            border-radius: 0.75rem !important; 
-            font-size: 0.75rem !important; 
-            font-weight: 600 !important; 
+            border-radius: 0.5rem !important; 
+            font-size: 0.875rem !important; 
+            font-weight: 500 !important; 
             color: rgb(30, 41, 59) !important; 
             min-height: 38px !important; 
-            padding: 4px 14px !important; 
+            padding: 4px 12px !important; 
             display: flex;
             align-items: center;
             transition: all 0.2s ease-in-out;
@@ -59,7 +59,7 @@
         .choices__list--dropdown { 
             background-color: white !important; 
             border: 1px solid rgb(226, 232, 240) !important; 
-            border-radius: 0.75rem !important; 
+            border-radius: 0.5rem !important; 
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
             overflow: hidden;
             z-index: 50 !important;
@@ -92,7 +92,7 @@
 
         <!-- Form Body -->
         <div class="p-6 sm:p-8 space-y-6">
-            <div class="flex items-start gap-3 p-4 bg-indigo-50/50 border border-indigo-100 rounded-xl text-left">
+            <div class="flex items-start gap-3 p-4 bg-indigo-50 border border-indigo-100 rounded-lg text-left">
                 <i class="fas fa-info-circle text-indigo-600 text-lg shrink-0 mt-0.5"></i>
                 <div>
                     <h2 class="text-xs font-bold text-indigo-800 uppercase tracking-wider">Pusat Bantuan & Laporan</h2>
@@ -101,7 +101,7 @@
             </div>
 
             <?php if (session()->has('errors')): ?>
-                <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl relative shadow-sm" role="alert">
+                <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg relative shadow-sm" role="alert">
                     <strong class="font-bold text-xs uppercase tracking-wider flex items-center gap-2"><i class="fas fa-exclamation-triangle"></i> Terjadi Kesalahan!</strong>
                     <ul class="list-disc pl-5 mt-1 text-[10px] leading-relaxed">
                         <?php foreach (session('errors') as $error): ?>
@@ -117,42 +117,42 @@
                 <div class="space-y-6">
                     <!-- Sesi 1: Informasi Pemohon -->
                     <div class="space-y-4">
-                        <h3 class="text-xs font-bold text-slate-700 uppercase tracking-widest border-b border-slate-100 pb-2 flex items-center gap-2">
+                        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-widest border-b border-slate-100 pb-2 flex items-center gap-2">
                             <i class="fas fa-user-circle text-slate-500 text-sm"></i> Informasi Pemohon
                         </h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label for="nama_pemohon" class="block text-[9px] font-bold text-slate-400 mb-1.5 uppercase tracking-widest">Nama Lengkap</label>
+                                <label for="nama_pemohon" class="block text-xs font-medium text-slate-700 mb-1 uppercase tracking-wider">Nama Lengkap</label>
                                 <div class="relative">
-                                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                                        <i class="fas fa-user text-[11px]"></i>
-                                    </div>
-                                    <input type="text" class="block w-full pl-9 pr-3.5 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-700 text-xs font-semibold text-slate-800 transition-all uppercase placeholder:text-slate-400 placeholder:font-normal" id="nama_pemohon" name="nama_pemohon" value="<?= old('nama_pemohon') ?>" required placeholder="Contoh: BUDI SANTOSO, S.Kom">
+                                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-700">
+                                        <i class="fas fa-user text-xs"></i>
+                                    </span>
+                                    <input type="text" class="block w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all uppercase placeholder:text-slate-400 placeholder:font-normal" id="nama_pemohon" name="nama_pemohon" value="<?= old('nama_pemohon') ?>" required placeholder="Contoh: BUDI SANTOSO, S.Kom">
                                 </div>
                             </div>
                             <div>
-                                <label for="nip_pemohon" class="block text-[9px] font-bold text-slate-400 mb-1.5 uppercase tracking-widest">NIP / NIK <span class="text-slate-300 font-normal">(Opsional)</span></label>
+                                <label for="nip_pemohon" class="block text-xs font-medium text-slate-700 mb-1 uppercase tracking-wider">NIP / NIK <span class="text-slate-400 font-normal">(Opsional)</span></label>
                                 <div class="relative">
-                                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                                        <i class="fas fa-id-card text-[11px]"></i>
-                                    </div>
-                                    <input type="text" class="block w-full pl-9 pr-3.5 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-700 text-xs font-semibold text-slate-800 transition-all font-mono placeholder:text-slate-400 placeholder:font-normal" id="nip_pemohon" name="nip_pemohon" value="<?= old('nip_pemohon') ?>" placeholder="19800101...">
+                                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-700">
+                                        <i class="fas fa-id-card text-xs"></i>
+                                    </span>
+                                    <input type="text" class="block w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all font-mono placeholder:text-slate-400 placeholder:font-normal" id="nip_pemohon" name="nip_pemohon" value="<?= old('nip_pemohon') ?>" placeholder="19800101...">
                                 </div>
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label for="kontak_whatsapp" class="block text-[9px] font-bold text-slate-400 mb-1.5 uppercase tracking-widest">Nomor WhatsApp Aktif</label>
+                                <label for="kontak_whatsapp" class="block text-xs font-medium text-slate-700 mb-1 uppercase tracking-wider">Nomor WhatsApp Aktif</label>
                                 <div class="relative">
-                                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-700">
                                         <i class="fab fa-whatsapp text-xs"></i>
-                                    </div>
-                                    <input type="text" class="block w-full pl-9 pr-3.5 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-700 text-xs font-semibold text-slate-800 transition-all font-mono placeholder:text-slate-400 placeholder:font-normal" id="kontak_whatsapp" name="kontak_whatsapp" value="<?= old('kontak_whatsapp') ?>" required placeholder="Contoh: 08123456789">
+                                    </span>
+                                    <input type="text" class="block w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all font-mono placeholder:text-slate-400 placeholder:font-normal" id="kontak_whatsapp" name="kontak_whatsapp" value="<?= old('kontak_whatsapp') ?>" required placeholder="Contoh: 08123456789">
                                 </div>
                             </div>
                             <div>
-                                <label class="block text-[9px] font-bold text-slate-400 mb-1.5 uppercase tracking-widest">Unit Kerja / Instansi</label>
+                                <label class="block text-xs font-medium text-slate-700 mb-1 uppercase tracking-wider">Unit Kerja / Instansi</label>
                                 <div class="relative">
                                     <select id="agency_info" name="agency_info" required>
                                         <option value="">Pilih Unit Kerja Anda...</option>
@@ -176,13 +176,13 @@
 
                     <!-- Sesi 2: Layanan & Kendala -->
                     <div class="space-y-4 pt-4 border-t border-slate-100">
-                        <h3 class="text-xs font-bold text-slate-700 uppercase tracking-widest border-b border-slate-100 pb-2 flex items-center gap-2">
+                        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-widest border-b border-slate-100 pb-2 flex items-center gap-2">
                             <i class="fas fa-exclamation-circle text-slate-500 text-sm"></i> Detail Kendala & Layanan
                         </h3>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
-                                <label for="category" class="block text-[9px] font-bold text-slate-400 mb-1.5 uppercase tracking-widest">Kategori</label>
-                                <select class="block w-full px-3 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-700 text-xs font-semibold text-slate-800 cursor-pointer transition-all animate-none" id="category" name="category" onchange="updateServicesDropdown()" required>
+                                <label for="category" class="block text-xs font-medium text-slate-700 mb-1 uppercase tracking-wider">Kategori</label>
+                                <select class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 cursor-pointer transition-all animate-none" id="category" name="category" onchange="updateServicesDropdown()" required>
                                     <option value="">Pilih Kategori...</option>
                                     <?php foreach ($categoryMap as $id => $label): ?>
                                         <option value="<?= $id ?>" <?= old('category') == $id ? 'selected' : '' ?>><?= esc($label) ?></option>
@@ -190,14 +190,14 @@
                                 </select>
                             </div>
                             <div>
-                                <label for="service" class="block text-[9px] font-bold text-slate-400 mb-1.5 uppercase tracking-widest">Layanan Spesifik</label>
-                                <select class="block w-full px-3 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-700 text-xs font-semibold text-slate-800 cursor-pointer transition-all animate-none" id="service" name="service" onchange="updateKeteranganOptions()" required>
+                                <label for="service" class="block text-xs font-medium text-slate-700 mb-1 uppercase tracking-wider">Layanan Spesifik</label>
+                                <select class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 cursor-pointer transition-all animate-none" id="service" name="service" onchange="updateKeteranganOptions()" required>
                                     <option value="">Pilih Layanan...</option>
                                 </select>
                             </div>
                             <div>
-                                <label for="kategori_layanan" class="block text-[9px] font-bold text-slate-400 mb-1.5 uppercase tracking-widest">Jenis Masalah</label>
-                                <select class="block w-full px-3 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-700 text-xs font-semibold text-slate-800 cursor-pointer transition-all animate-none" id="kategori_layanan" name="kategori_layanan" required>
+                                <label for="kategori_layanan" class="block text-xs font-medium text-slate-700 mb-1 uppercase tracking-wider">Jenis Masalah</label>
+                                <select class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 cursor-pointer transition-all animate-none" id="kategori_layanan" name="kategori_layanan" required>
                                     <option value="">Pilih Kendala...</option>
                                 </select>
                             </div>
@@ -206,7 +206,7 @@
                 </div>
 
                 <div class="pt-6 border-t border-slate-100 flex justify-end">
-                    <button type="submit" class="w-full sm:w-auto btn btn-solid !px-8 !py-3 rounded-xl flex items-center justify-center gap-2 hover:scale-[1.01] active:scale-[0.99] transition-all">
+                    <button type="submit" class="w-full sm:w-auto btn btn-solid !px-8 !py-2.5 rounded-lg flex items-center justify-center gap-2 hover:scale-[1.01] active:scale-[0.99] transition-all">
                         <i class="fas fa-paper-plane text-xs text-white/80"></i> Kirim Laporan
                     </button>
                 </div>

@@ -55,13 +55,13 @@
         <div class="p-6 sm:p-8 space-y-6">
             <div>
                 <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1 block">Nomor Tiket Anda</span>
-                <span class="text-2xl font-bold text-slate-800 font-mono tracking-wider bg-slate-50 border border-slate-200 px-4 py-2 rounded-xl inline-block shadow-sm">
+                <span class="text-2xl font-bold text-slate-800 font-mono tracking-wider bg-slate-50 border border-slate-200 px-4 py-2 rounded-lg inline-block shadow-sm">
                     <?= esc($ticket['tiket_id']) ?>
                 </span>
             </div>
 
             <!-- Detail Laporan -->
-            <div class="bg-slate-50/50 border border-slate-200 rounded-xl p-4 text-left space-y-3 text-[11px] leading-relaxed">
+            <div class="bg-slate-50/50 border border-slate-200 rounded-lg p-4 text-left space-y-3 text-[11px] leading-relaxed">
                 <div class="flex justify-between items-start border-b border-slate-100 pb-2">
                     <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest w-20 shrink-0">Pemohon:</span>
                     <span class="font-bold text-slate-800 uppercase text-right truncate" title="<?= esc($ticket['nama_pemohon']) ?>"><?= esc($ticket['nama_pemohon']) ?></span>
@@ -83,7 +83,7 @@
             <p class="text-[11px] text-slate-550 leading-relaxed">Terima kasih. Tim Helpdesk Diskominfo-SP akan segera memproses laporan Anda. Kami akan menghubungi Anda melalui nomor WhatsApp yang terdaftar untuk koordinasi lebih lanjut.</p>
             
             <div class="pt-4">
-                <a href="<?= site_url('helpdesk') ?>" class="w-full btn btn-solid !bg-slate-850 hover:!bg-slate-900 !text-white !py-3 rounded-xl flex items-center justify-center gap-2 hover:scale-[1.01] active:scale-[0.99] transition-all no-underline text-xs font-bold uppercase tracking-wider">
+                <a href="<?= site_url('helpdesk') ?>" class="w-full btn btn-solid !bg-slate-850 hover:!bg-slate-900 !text-white !py-2.5 rounded-lg flex items-center justify-center gap-2 hover:scale-[1.01] active:scale-[0.99] transition-all no-underline text-xs font-bold uppercase tracking-wider">
                     <i class="fas fa-plus text-xs text-white/80"></i> Buat Laporan Baru
                 </a>
             </div>

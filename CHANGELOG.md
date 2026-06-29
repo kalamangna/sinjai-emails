@@ -12,6 +12,7 @@
     - Mempertahankan dan merapikan panel tajuk "Jumlah TTE" serta daftar "Detail Penandatangan" yang menyajikan informasi "Detail Transaksi" (Waktu TTE, Lokasi, Alasan) dan "Sertifikat Digital" (Common Name, Penerbit, Serial Number) secara bersih dan responsif.
 - **Penyelarasan Desain Halaman Helpdesk Publik**:
     - Merancang ulang halaman formulir helpdesk (`app/Views/helpdesk/public_form.php`) dan halaman sukses (`app/Views/helpdesk/public_success.php`) sebagai halaman mandiri (*standalone centered card*) berlatar belakang `bg-slate-50` dengan header gelap `bg-slate-800` (atau bergradasi emerald pada sukses) persis seperti gaya desain halaman Verifikasi Akun dan Verifikasi PDF demi konsistensi antarmuka publik yang seragam.
+    - Menyelaraskan seluruh gaya input form (background putih `bg-white`, border radius `rounded-lg`, serta warna label dan ikon `text-slate-700`) agar seragam dengan standar input halaman login dan formulir sistem utama.
 - **Pembaruan Meta Deskripsi & Penyelarasan Judul**:
     - Menyatukan dan menyederhanakan deskripsi default, OpenGraph, dan Twitter Card di seluruh halaman publik (Layout Utama, Halaman Login, Verifikasi Akun, dan Verifikasi PDF) menggunakan satu format deskripsi yang seragam: "Sistem Identitas Digital & Sertifikat Elektronik Pemerintah Kabupaten Sinjai".
     - Menghapus penimpa (*override*) deskripsi kustom di Controller `Email.php` agar halaman profil verifikasi akun sepenuhnya konsisten menggunakan deskripsi seragam dari tingkat layout.
