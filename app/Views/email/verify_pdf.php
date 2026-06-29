@@ -238,33 +238,96 @@
                     const conclusion = bsreData.conclusion || 'NO_SIGNATURE';
                     const count = bsreData.signatureCount || 0;
                     
-                    let badgeClass = 'bg-slate-100 text-slate-700';
-                    let conclusionText = conclusion;
-
-                    if (conclusion === 'NO_SIGNATURE') {
-                        badgeClass = 'bg-red-50 text-red-700 border border-red-200';
-                        conclusionText = 'Tidak Memiliki Tanda Tangan Elektronik';
-                    } else if (conclusion === 'SUCCESS') {
-                        badgeClass = 'bg-emerald-50 text-emerald-800 border border-emerald-200';
-                        conclusionText = 'Tanda Tangan Elektronik Valid';
+                    // 1. Status Card Html
+                    let statusCardHtml = '';
+                    if (conclusion === 'SUCCESS' && bsreData.integrityValid) {
+                        statusCardHtml = `
+                            <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-5 flex items-start gap-4 shadow-sm">
+                                <div class="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-600 shrink-0">
+                                    <i class="fas fa-check-double text-lg"></i>
+                                </div>
+                                <div class="space-y-1">
+                                    <h3 class="text-xs font-bold text-emerald-900 uppercase tracking-tight leading-tight">Dokumen Valid & Asli</h3>
+                                    <p class="text-[11px] text-emerald-700 leading-relaxed">Tanda tangan elektronik valid, diterbitkan oleh otoritas terpercaya, dan isi dokumen dijamin utuh (tidak mengalami perubahan sejak ditandatangani).</p>
+                                </div>
+                            </div>
+                        `;
+                    } else if (conclusion === 'NO_SIGNATURE') {
+                        statusCardHtml = `
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 flex items-start gap-4 shadow-sm">
+                                <div class="w-10 h-10 rounded-lg bg-slate-500/10 flex items-center justify-center text-slate-500 shrink-0">
+                                    <i class="fas fa-file-excel text-lg"></i>
+                                </div>
+                                <div class="space-y-1">
+                                    <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight leading-tight">Tidak Ada Tanda Tangan</h3>
+                                    <p class="text-[11px] text-slate-600 leading-relaxed">Dokumen PDF ini tidak memiliki tanda tangan elektronik (TTE) tersertifikasi yang terdeteksi.</p>
+                                </div>
+                            </div>
+                        `;
                     } else {
-                        badgeClass = 'bg-amber-50 text-amber-800 border border-amber-200';
+                        let title = 'TTE Terdeteksi (Perlu Perhatian)';
+                        let desc = 'Dokumen memiliki tanda tangan elektronik, namun keutuhan berkas atau status sertifikat tidak sepenuhnya terverifikasi.';
+                        let bgClass = 'bg-amber-50 border-amber-200 text-amber-700';
+                        let titleClass = 'text-amber-900';
+                        let iconClass = 'bg-amber-500/10 text-amber-600';
+                        let icon = 'fas fa-exclamation-triangle';
+
+                        if (!bsreData.integrityValid) {
+                            title = 'Dokumen Telah Dimodifikasi';
+                            desc = 'PENTING: Isi dokumen ini telah mengalami perubahan atau modifikasi setelah ditandatangani secara elektronik.';
+                            bgClass = 'bg-red-50 border-red-200 text-red-700';
+                            titleClass = 'text-red-900';
+                            iconClass = 'bg-red-500/10 text-red-600';
+                            icon = 'fas fa-file-signature';
+                        }
+
+                        statusCardHtml = `
+                            <div class="${bgClass} border rounded-xl p-5 flex items-start gap-4 shadow-sm">
+                                <div class="w-10 h-10 rounded-lg ${iconClass} flex items-center justify-center shrink-0">
+                                    <i class="${icon} text-lg"></i>
+                                </div>
+                                <div class="space-y-1">
+                                    <h3 class="text-xs font-bold ${titleClass} uppercase tracking-tight leading-tight">${title}</h3>
+                                    <p class="text-[11px] leading-relaxed">${desc}</p>
+                                </div>
+                            </div>
+                        `;
                     }
 
-                    // Integrity & Trust Badges
+                    // 2. Integrity & Trust Badges in Grid
                     const integrityBadge = bsreData.integrityValid 
-                        ? '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 uppercase tracking-wider">Keutuhan Dokumen Terjamin (Utuh)</span>'
-                        : '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-50 text-red-700 border border-red-200 uppercase tracking-wider">Dokumen Rusak / Telah Dimodifikasi</span>';
+                        ? '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 uppercase tracking-wider"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Utuh (Original)</span>'
+                        : '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-50 text-red-700 border border-red-200 uppercase tracking-wider"><span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>Telah Dimodifikasi</span>';
 
                     const trustBadge = bsreData.certificateTrusted 
-                        ? '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 uppercase tracking-wider">Sertifikat Terpercaya</span>'
-                        : '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200 uppercase tracking-wider">Sertifikat Tidak Terpercaya / Lokal</span>';
+                        ? '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 uppercase tracking-wider"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Terpercaya (BSSN)</span>'
+                        : '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200 uppercase tracking-wider"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>Lokal / Tidak Terpercaya</span>';
 
+                    const summaryGridHtml = `
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 border border-slate-200 rounded-xl p-4 bg-slate-50/50">
+                            <div class="space-y-1">
+                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block">Jumlah TTE</span>
+                                <span class="text-xs font-bold text-slate-700 block">${count} Tanda Tangan</span>
+                            </div>
+                            <div class="space-y-1">
+                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block">Keutuhan Berkas</span>
+                                <div class="block mt-0.5">${integrityBadge}</div>
+                            </div>
+                            <div class="space-y-1">
+                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block">Kepercayaan Sertifikat</span>
+                                <div class="block mt-0.5">${trustBadge}</div>
+                            </div>
+                        </div>
+                    `;
+
+                    // 3. Signers List Html
                     let signersListHtml = '';
                     if (bsreData.signatureInformations && bsreData.signatureInformations.length > 0) {
                         signersListHtml += `
                             <div class="space-y-4">
-                                <h4 class="text-xs font-bold text-slate-700 uppercase tracking-widest border-b border-slate-100 pb-2">Daftar Penandatangan</h4>
+                                <h4 class="text-xs font-bold text-slate-700 uppercase tracking-widest border-b border-slate-100 pb-2 flex items-center gap-2">
+                                    <i class="fas fa-file-signature text-slate-500"></i> Detail Penandatangan
+                                </h4>
                                 <div class="space-y-3">
                         `;
                         
@@ -272,31 +335,73 @@
                             const dateSigned = info.signatureDate ? info.signatureDate : '-';
                             const location = info.location ? info.location : '-';
                             const reason = info.reason ? info.reason : '-';
+                            const format = info.signatureFormat || 'PKCS7';
+                            const issuerName = info.certificateDetails?.[0]?.issuerName || '-';
+                            const commonName = info.certificateDetails?.[0]?.commonName || 'BSrE BSSN';
+                            const serialNumber = info.certificateDetails?.[0]?.serialNumber || '-';
                             
                             signersListHtml += `
-                                <div class="p-4 bg-slate-50 border border-slate-200 rounded-lg flex flex-col md:flex-row justify-between gap-4">
-                                    <div class="space-y-2">
-                                        <div class="flex items-center gap-2 flex-wrap">
-                                            <span class="text-xs font-bold text-slate-800">${info.signerName}</span>
-                                            <span class="px-1.5 py-0.5 rounded bg-slate-200 text-slate-700 text-[8px] font-bold uppercase">${info.signatureFormat || 'PKCS7'}</span>
+                                <div class="bg-white border border-slate-200 rounded-xl overflow-hidden hover:border-slate-300 transition-all shadow-sm">
+                                    <!-- Header Card -->
+                                    <div class="bg-slate-50/50 px-4 py-3 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                                        <div class="flex items-center gap-2 min-w-0">
+                                            <div class="w-6 h-6 rounded-lg bg-slate-800 text-white flex items-center justify-center text-xs shrink-0 font-bold">
+                                                ${index + 1}
+                                            </div>
+                                            <div class="min-w-0">
+                                                <span class="block text-xs font-bold text-slate-800 truncate">${info.signerName}</span>
+                                            </div>
                                         </div>
-                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-1 text-[11px] text-slate-600">
-                                            <div><span class="font-semibold text-slate-400 uppercase tracking-widest text-[9px] mr-1">Waktu:</span> ${dateSigned}</div>
-                                            <div><span class="font-semibold text-slate-400 uppercase tracking-widest text-[9px] mr-1">Lokasi:</span> ${location}</div>
-                                            <div><span class="font-semibold text-slate-400 uppercase tracking-widest text-[9px] mr-1">Alasan:</span> ${reason}</div>
-                                            <div><span class="font-semibold text-slate-400 uppercase tracking-widest text-[9px] mr-1">Field TTE:</span> ${info.fieldName}</div>
+                                        <div class="flex gap-1.5 shrink-0">
+                                            <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-600 text-[8px] font-bold uppercase tracking-wider border border-slate-200">${format}</span>
+                                            <span class="px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 text-[8px] font-bold uppercase tracking-wider border border-indigo-100">${info.fieldName}</span>
                                         </div>
                                     </div>
-                                    <div class="flex flex-col gap-1 items-start md:items-end justify-center shrink-0">
-                                        <span class="text-[9px] font-semibold text-slate-400 uppercase tracking-widest">Penerbit Sertifikat:</span>
-                                        <span class="text-[11px] font-medium text-slate-700 truncate max-w-xs md:text-right" title="${info.certificateDetails?.[0]?.issuerName || '-'}">
-                                            ${info.certificateDetails?.[0]?.commonName || 'BSrE BSSN'}
-                                        </span>
+
+                                    <!-- Content Card -->
+                                    <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-[11px] leading-relaxed">
+                                        <!-- Kiri: Informasi Tanda Tangan -->
+                                        <div class="space-y-2">
+                                            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block border-b border-slate-50 pb-1">Detail Transaksi</span>
+                                            <div class="space-y-1">
+                                                <div class="flex justify-between md:justify-start gap-4">
+                                                    <span class="text-slate-500 font-medium w-20 shrink-0">Waktu TTE:</span>
+                                                    <span class="text-slate-800 font-semibold break-all">${dateSigned}</span>
+                                                </div>
+                                                <div class="flex justify-between md:justify-start gap-4">
+                                                    <span class="text-slate-500 font-medium w-20 shrink-0">Lokasi:</span>
+                                                    <span class="text-slate-800">${location}</span>
+                                                </div>
+                                                <div class="flex justify-between md:justify-start gap-4">
+                                                    <span class="text-slate-500 font-medium w-20 shrink-0">Alasan:</span>
+                                                    <span class="text-slate-700 italic">${reason}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Kanan: Sertifikat Elektronik -->
+                                        <div class="space-y-2">
+                                            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block border-b border-slate-50 pb-1">Sertifikat Digital</span>
+                                            <div class="space-y-1">
+                                                <div class="flex justify-between md:justify-start gap-4">
+                                                    <span class="text-slate-500 font-medium w-20 shrink-0">Common Name:</span>
+                                                    <span class="text-slate-800 font-semibold truncate" title="${commonName}">${commonName}</span>
+                                                </div>
+                                                <div class="flex justify-between md:justify-start gap-4">
+                                                    <span class="text-slate-500 font-medium w-20 shrink-0">Penerbit:</span>
+                                                    <span class="text-slate-700 truncate" title="${issuerName}">${issuerName}</span>
+                                                </div>
+                                                <div class="flex justify-between md:justify-start gap-4">
+                                                    <span class="text-slate-500 font-medium w-20 shrink-0">Serial:</span>
+                                                    <span class="text-slate-600 font-mono text-[10px] break-all">${serialNumber}</span>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             `;
                         });
-
+ 
                         signersListHtml += `
                                 </div>
                             </div>
@@ -304,20 +409,8 @@
                     }
 
                     resultContainer.innerHTML = `
-                        <div class="border-b border-slate-100 pb-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                            <div>
-                                <span class="text-[9px] font-semibold text-slate-400 uppercase tracking-widest">Hasil Analisis Dokumen</span>
-                                <div class="flex items-center gap-3 mt-1 flex-wrap">
-                                    <span class="px-2.5 py-1 rounded text-xs font-black uppercase tracking-wider ${badgeClass}">${conclusionText}</span>
-                                    <span class="text-xs text-slate-600">Terdeteksi <strong>${count}</strong> Tanda Tangan Elektronik</span>
-                                </div>
-                            </div>
-                            <div class="flex gap-2 flex-wrap">
-                                ${integrityBadge}
-                                ${trustBadge}
-                            </div>
-                        </div>
-                        
+                        ${statusCardHtml}
+                        ${summaryGridHtml}
                         ${signersListHtml}
                     `;
                     

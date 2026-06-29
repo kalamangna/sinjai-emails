@@ -6,6 +6,11 @@
     - Menambahkan tombol **Verifikasi PDF** (ikon `file-signature`) pada bagian kanan atas navbar header (`app/Views/layouts/main.php`).
     - Menambahkan tombol **Verifikasi PDF** berdampingan dengan tombol **Layanan Helpdesk** di halaman masuk/login (`app/Views/auth/login.php`) dengan struktur grid responsif.
     - Mengonfigurasi seluruh tautan **Verifikasi PDF** dan **Layanan Helpdesk** agar terbuka di tab browser baru (`target="_blank"` dan `rel="noopener noreferrer"`) demi kenyamanan pengguna.
+- **Peningkatan Hasil Verifikasi PDF**:
+    - Merestrukturisasi tampilan hasil verifikasi tanda tangan elektronik PDF di `app/Views/email/verify_pdf.php`.
+    - Menggunakan *Status Card* berwarna dinamis berdasarkan hasil analisis (Hijau untuk Valid, Abu-abu untuk Tidak Ada TTE, Merah untuk Dokumen Telah Dimodifikasi/Rusak).
+    - Menambahkan *Metadata Grid* 3 kolom untuk menyajikan data statistik Jumlah TTE, Keutuhan Berkas, dan Tingkat Kepercayaan Sertifikat secara elegan.
+    - Merancang ulang *Signer Cards* terperinci untuk memisahkan informasi "Detail Transaksi" (Waktu TTE, Lokasi, Alasan) dan "Sertifikat Digital" (Common Name, Penerbit, Serial Number) dengan format yang rapi dan responsif.
 - **Pembersihan Aset Sementara**:
     - Menghapus berkas spreadsheet sampah/cadangan di folder `public/` (`batch_restore.csv`, `batch_restore.xlsx`, `restore_data.xlsx`) untuk menghemat penyimpanan proyek.
 
