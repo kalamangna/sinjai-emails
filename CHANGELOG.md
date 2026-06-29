@@ -1,5 +1,10 @@
 # Session History - 29 Juni 2026
 
+## UI/UX & Konsistensi Desain
+- **Pembersihan Menu Sidebar**:
+    - Menghapus entri menu **Verifikasi PDF** dari sidebar navigasi (`app/Views/components/sidebar.php`) agar navigasi samping lebih ringkas dan fokus pada menu internal sistem.
+    - Tombol **Verifikasi PDF** tetap tersedia di bagian kanan atas navbar untuk akses cepat tanpa mengotori sidebar.
+
 ## Perbaikan Bug
 - **Sinkronisasi Jumlah Email Database vs cPanel**:
     - Menemukan akar masalah ketidaksinkronan: metode `syncFromCpanel()` di `app/Shared/Services/SyncService.php` sebelumnya hanya melakukan *upsert* (tambah/perbarui) data dari cPanel ke database, **tanpa pernah menghapus** record email yang sudah tidak ada di cPanel.
