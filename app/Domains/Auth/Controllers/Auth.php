@@ -16,7 +16,7 @@ class Auth extends BaseController
         }
 
         $data = [
-            'title' => 'Login | Sinjai Emails'
+            'title' => 'Login'
         ];
 
         return view('auth/login', $data);

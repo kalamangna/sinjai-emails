@@ -10,9 +10,10 @@
     - Merestrukturisasi dan menyederhanakan tampilan hasil verifikasi tanda tangan elektronik PDF di `app/Views/email/verify_pdf.php`.
     - Menghapus tampilan status "Dokumen Telah Dimodifikasi", status "Keutuhan Berkas", dan "Kepercayaan Sertifikat".
     - Mempertahankan dan merapikan panel tajuk "Jumlah TTE" serta daftar "Detail Penandatangan" yang menyajikan informasi "Detail Transaksi" (Waktu TTE, Lokasi, Alasan) dan "Sertifikat Digital" (Common Name, Penerbit, Serial Number) secara bersih dan responsif.
-- **Pembaruan Meta Deskripsi**:
+- **Pembaruan Meta Deskripsi & Penyelarasan Judul**:
     - Menyatukan dan menyederhanakan deskripsi default, OpenGraph, dan Twitter Card di seluruh halaman publik (Layout Utama, Halaman Login, Verifikasi Akun, dan Verifikasi PDF) menggunakan satu format deskripsi yang seragam: "Sistem Identitas Digital & Sertifikat Elektronik Pemerintah Kabupaten Sinjai".
     - Menghapus penimpa (*override*) deskripsi kustom di Controller `Email.php` agar halaman profil verifikasi akun sepenuhnya konsisten menggunakan deskripsi seragam dari tingkat layout.
+    - Menyelaraskan struktur judul halaman `<title>` pada Halaman Login agar seragam menggunakan format `Login | Sistem Identitas Digital` (menghapus format repititif 'Sinjai Emails').
 - **Pembersihan Aset Sementara**:
     - Menghapus berkas spreadsheet sampah/cadangan di folder `public/` (`batch_restore.csv`, `batch_restore.xlsx`, `restore_data.xlsx`) untuk menghemat penyimpanan proyek.
 
