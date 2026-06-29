@@ -238,95 +238,36 @@
                     const conclusion = bsreData.conclusion || 'NO_SIGNATURE';
                     const count = bsreData.signatureCount || 0;
                     
-                    // 1. Status Card Html
-                    let statusCardHtml = '';
-                    if (conclusion === 'SUCCESS' && bsreData.integrityValid) {
-                        statusCardHtml = `
-                            <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-5 flex items-start gap-4 shadow-sm">
-                                <div class="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-600 shrink-0">
-                                    <i class="fas fa-check-double text-lg"></i>
-                                </div>
-                                <div class="space-y-1">
-                                    <h3 class="text-xs font-bold text-emerald-900 uppercase tracking-tight leading-tight">Dokumen Valid & Asli</h3>
-                                    <p class="text-[11px] text-emerald-700 leading-relaxed">Tanda tangan elektronik valid, diterbitkan oleh otoritas terpercaya, dan isi dokumen dijamin utuh (tidak mengalami perubahan sejak ditandatangani).</p>
-                                </div>
-                            </div>
-                        `;
-                    } else if (conclusion === 'NO_SIGNATURE') {
-                        statusCardHtml = `
-                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 flex items-start gap-4 shadow-sm">
-                                <div class="w-10 h-10 rounded-lg bg-slate-500/10 flex items-center justify-center text-slate-500 shrink-0">
-                                    <i class="fas fa-file-excel text-lg"></i>
-                                </div>
-                                <div class="space-y-1">
-                                    <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight leading-tight">Tidak Ada Tanda Tangan</h3>
-                                    <p class="text-[11px] text-slate-600 leading-relaxed">Dokumen PDF ini tidak memiliki tanda tangan elektronik (TTE) tersertifikasi yang terdeteksi.</p>
-                                </div>
+                    // 1. Header Jumlah TTE Html
+                    let headerHtml = '';
+                    if (count === 0) {
+                        headerHtml = `
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 flex items-center justify-center gap-3 shadow-sm">
+                                <i class="fas fa-file-excel text-slate-400 text-lg"></i>
+                                <span class="text-xs font-semibold text-slate-600">Tidak ditemukan tanda tangan elektronik pada dokumen ini.</span>
                             </div>
                         `;
                     } else {
-                        let title = 'TTE Terdeteksi (Perlu Perhatian)';
-                        let desc = 'Dokumen memiliki tanda tangan elektronik, namun keutuhan berkas atau status sertifikat tidak sepenuhnya terverifikasi.';
-                        let bgClass = 'bg-amber-50 border-amber-200 text-amber-700';
-                        let titleClass = 'text-amber-900';
-                        let iconClass = 'bg-amber-500/10 text-amber-600';
-                        let icon = 'fas fa-exclamation-triangle';
-
-                        if (!bsreData.integrityValid) {
-                            title = 'Dokumen Telah Dimodifikasi';
-                            desc = 'PENTING: Isi dokumen ini telah mengalami perubahan atau modifikasi setelah ditandatangani secara elektronik.';
-                            bgClass = 'bg-red-50 border-red-200 text-red-700';
-                            titleClass = 'text-red-900';
-                            iconClass = 'bg-red-500/10 text-red-600';
-                            icon = 'fas fa-file-signature';
-                        }
-
-                        statusCardHtml = `
-                            <div class="${bgClass} border rounded-xl p-5 flex items-start gap-4 shadow-sm">
-                                <div class="w-10 h-10 rounded-lg ${iconClass} flex items-center justify-center shrink-0">
-                                    <i class="${icon} text-lg"></i>
+                        headerHtml = `
+                            <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4 flex items-center gap-3 shadow-sm">
+                                <div class="w-9 h-9 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-600 shrink-0">
+                                    <i class="fas fa-file-signature text-sm"></i>
                                 </div>
-                                <div class="space-y-1">
-                                    <h3 class="text-xs font-bold ${titleClass} uppercase tracking-tight leading-tight">${title}</h3>
-                                    <p class="text-[11px] leading-relaxed">${desc}</p>
+                                <div>
+                                    <span class="text-[9px] font-bold text-indigo-400 uppercase tracking-widest block">Hasil Analisis</span>
+                                    <span class="text-xs font-bold text-indigo-900 block">Terdeteksi ${count} Tanda Tangan Elektronik</span>
                                 </div>
                             </div>
                         `;
                     }
 
-                    // 2. Integrity & Trust Badges in Grid
-                    const integrityBadge = bsreData.integrityValid 
-                        ? '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 uppercase tracking-wider"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Utuh (Original)</span>'
-                        : '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-50 text-red-700 border border-red-200 uppercase tracking-wider"><span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>Telah Dimodifikasi</span>';
-
-                    const trustBadge = bsreData.certificateTrusted 
-                        ? '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 uppercase tracking-wider"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Terpercaya (BSSN)</span>'
-                        : '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200 uppercase tracking-wider"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>Lokal / Tidak Terpercaya</span>';
-
-                    const summaryGridHtml = `
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 border border-slate-200 rounded-xl p-4 bg-slate-50/50">
-                            <div class="space-y-1">
-                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block">Jumlah TTE</span>
-                                <span class="text-xs font-bold text-slate-700 block">${count} Tanda Tangan</span>
-                            </div>
-                            <div class="space-y-1">
-                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block">Keutuhan Berkas</span>
-                                <div class="block mt-0.5">${integrityBadge}</div>
-                            </div>
-                            <div class="space-y-1">
-                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block">Kepercayaan Sertifikat</span>
-                                <div class="block mt-0.5">${trustBadge}</div>
-                            </div>
-                        </div>
-                    `;
-
-                    // 3. Signers List Html
+                    // 2. Signers List Html
                     let signersListHtml = '';
                     if (bsreData.signatureInformations && bsreData.signatureInformations.length > 0) {
                         signersListHtml += `
                             <div class="space-y-4">
                                 <h4 class="text-xs font-bold text-slate-700 uppercase tracking-widest border-b border-slate-100 pb-2 flex items-center gap-2">
-                                    <i class="fas fa-file-signature text-slate-500"></i> Detail Penandatangan
+                                    <i class="fas fa-users text-slate-500"></i> Detail Penandatangan
                                 </h4>
                                 <div class="space-y-3">
                         `;
@@ -409,8 +350,7 @@
                     }
 
                     resultContainer.innerHTML = `
-                        ${statusCardHtml}
-                        ${summaryGridHtml}
+                        ${headerHtml}
                         ${signersListHtml}
                     `;
                     
