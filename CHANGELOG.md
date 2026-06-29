@@ -1,6 +1,23 @@
 # Session History - 29 Juni 2026
 
+## Perbaikan Bug
+- **Sinkronisasi Jumlah Email Database vs cPanel**:
+    - Menemukan akar masalah ketidaksinkronan: metode `syncFromCpanel()` di `app/Shared/Services/SyncService.php` sebelumnya hanya melakukan *upsert* (tambah/perbarui) data dari cPanel ke database, **tanpa pernah menghapus** record email yang sudah tidak ada di cPanel.
+    - Menambahkan logika **Soft-Delete Sinkron**: setelah proses *upsert* selesai, sistem kini membandingkan seluruh daftar email aktif di database dengan daftar email dari cPanel. Akun yang ada di database namun **tidak ditemukan** di cPanel akan otomatis di-*soft delete* (`deleted_at`).
+    - Proses penghapusan dilakukan per batch (500 record) untuk efisiensi query dan dicatat ke log sistem untuk keperluan audit.
+    - Nilai kembalian `syncFromCpanel()` diperbarui untuk menyertakan informasi jumlah akun yang disinkronkan (`synced`) dan jumlah akun yang dihapus (`deleted`).
+
+## UI/UX & Konsistensi Desain
+- **Penyelarasan Halaman Error Verifikasi Akun**:
+    - Mendesain ulang `app/Views/email/error.php` dari tata letak yang sebelumnya memperluas `layouts/main` (dashboard internal) menjadi halaman mandiri (*standalone centered card*) berlatar belakang `bg-slate-50` dengan header gelap `bg-slate-800`, selaras 100% dengan desain `verify.php`, `verify_pdf.php`, dan halaman `login.php`.
+- **Penambahan Panel "Detail Kendala & Layanan" pada Halaman Admin Helpdesk**:
+    - Menambahkan kartu baru "Detail Kendala & Layanan" pada `app/Views/helpdesk/admin_detail.php` yang menampilkan tiga kolom: **Kategori**, **Layanan Spesifik**, dan **Jenis Masalah** dari data tiket — informasi ini sebelumnya tidak ditampilkan sama sekali di halaman detail.
+- **Pembaruan Panduan Pengembangan (GEMINI.md)**:
+    - Menambahkan aturan bahwa seluruh proses kompilasi CSS, pencatatan CHANGELOG, dan push hanya dijalankan saat ada instruksi eksplisit "push" dari pengguna.
+    - Menambahkan catatan bahwa pengguna menjalankan `npm run dev` (*watch mode*) secara aktif sehingga build manual tidak diperlukan.
+
 ## Fitur Baru & UI/UX
+
 - **Integrasi Tombol Verifikasi PDF & Helpdesk**:
     - Menambahkan tombol **Verifikasi PDF** di menu navigasi utama sidebar (`app/Views/components/sidebar.php`).
     - Menambahkan tombol **Verifikasi PDF** (ikon `file-signature`) pada bagian kanan atas navbar header (`app/Views/layouts/main.php`).

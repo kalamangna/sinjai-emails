@@ -51,6 +51,27 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Card Detail Kendala & Layanan -->
+            <div class="bg-white border border-slate-200 rounded-lg shadow-sm">
+                <div class="px-6 py-4 border-b border-slate-100 bg-slate-50">
+                    <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Detail Kendala & Layanan</h3>
+                </div>
+                <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <span class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Kategori</span>
+                        <p class="text-sm font-bold text-slate-850 uppercase"><?= esc($ticket['category']) ?></p>
+                    </div>
+                    <div>
+                        <span class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Layanan Spesifik</span>
+                        <p class="text-sm font-semibold text-slate-800 uppercase"><?= esc($ticket['service']) ?></p>
+                    </div>
+                    <div>
+                        <span class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Jenis Masalah</span>
+                        <p class="text-sm font-semibold text-slate-800 uppercase"><?= esc($ticket['kategori_layanan']) ?></p>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div>
