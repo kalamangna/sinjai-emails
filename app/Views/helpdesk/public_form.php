@@ -76,7 +76,7 @@
 </head>
 
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex items-center justify-center p-4">
-    <div class="w-full max-w-2xl bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden flex flex-col my-auto">
+    <div class="w-full max-w-3xl bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden flex flex-col my-auto">
         <!-- Header Identity -->
         <div class="bg-slate-800 p-8 text-center relative overflow-hidden shrink-0">
             <div class="absolute inset-0 opacity-10 pointer-events-none">
@@ -131,12 +131,12 @@
                                 </div>
                             </div>
                             <div>
-                                <label for="nip_pemohon" class="block text-xs font-medium text-slate-700 mb-1 uppercase tracking-wider">NIP / NIK <span class="text-slate-400 font-normal">(Opsional)</span></label>
+                                <label for="nip_pemohon" class="block text-xs font-medium text-slate-700 mb-1 uppercase tracking-wider">NIP / NIK</label>
                                 <div class="relative">
                                     <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-700">
                                         <i class="fas fa-id-card text-xs"></i>
                                     </span>
-                                    <input type="text" class="block w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all font-mono placeholder:text-slate-400 placeholder:font-normal" id="nip_pemohon" name="nip_pemohon" value="<?= old('nip_pemohon') ?>" placeholder="19800101...">
+                                    <input type="text" class="block w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all font-mono placeholder:text-slate-400 placeholder:font-normal" id="nip_pemohon" name="nip_pemohon" value="<?= old('nip_pemohon') ?>" required placeholder="Contoh: 19800101...">
                                 </div>
                             </div>
                         </div>

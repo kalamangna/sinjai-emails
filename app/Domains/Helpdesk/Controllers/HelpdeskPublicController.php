@@ -37,6 +37,7 @@ class HelpdeskPublicController extends BaseController
     {
         $rules = [
             'nama_pemohon' => 'required',
+            'nip_pemohon' => 'required',
             'kontak_whatsapp' => 'required',
             'agency_info' => 'required',
             'category' => 'required',
