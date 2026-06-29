@@ -13,6 +13,23 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
     - Progress bar dirancang dinamis dengan pewarnaan visual (Merah jika ≥ 85%, Jingga jika ≥ 70%, dan Slate gelap jika normal) konsisten dengan detail akun.
     - Menambahkan filter pencarian **Penggunaan Disk** di form atas untuk menyaring akun berstatus *Kritis* (≥ 85%) atau *Penuh* (≥ 95%).
     - Memperbarui `EmailService.php` dan `Email.php` controller untuk memproses parameter `disk_usage` dan melakukan filter query builder di database.
+- **Statistik Top 10 OPD Teraktif Sertifikat TTE**:
+    - Menambahkan tabel data statistik **Top 10 OPD Teraktif Sertifikat TTE** di bagian bawah halaman Dashboard utama (`app/Views/home/index.php`) dengan layout lebar penuh (*full-width card*).
+    - Tabel menampilkan peringkat OPD berdasarkan persentase TTE aktif tertinggi dari seluruh akun berstatus wajib TTE (yang memiliki NIP, status pimpinan, atau terkait unit kerja).
+    - Menambahkan klausul filter `HAVING COUNT(e.id) >= 5` untuk **mengecualikan OPD yang memiliki total akun wajib TTE di bawah 5**, menjaga relevansi peringkat.
+    - Mengintegrasikan fungsi penggabungan (*roll-up*) data email sub-unit (seperti sekolah atau puskesmas) secara otomatis ke OPD induknya (seperti Dinas Pendidikan atau Dinas Kesehatan) agar persentase valid.
+    - Menambahkan tautan (*hyperlink*) langsung pada nama OPD di tabel menuju halaman **Detail Unit Kerja** terkait untuk pemantauan instan.
+    - Dilengkapi progress bar visual berwarna dinamis (hijau $\ge 85\%$, jingga $\ge 50\%$, abu-abu jika di bawahnya) serta informasi total wajib TTE dan jumlah aktif.
+    - Memperbarui `DashboardService.php` untuk memproses perhitungan SQL ini dan membersihkan cache sistem secara otomatis.
+- **Grafik Top 10 Persentase Penggunaan Disk Terbesar**:
+    - Menambahkan widget grafik **Top 10 Persentase Penggunaan Disk Terbesar** menggunakan diagram batang horizontal (Horizontal Bar Chart) ApexCharts di halaman Dashboard utama (`app/Views/home/index.php`) secara bertumpuk (*stacked*) langsung di bawah tabel TTE teraktif.
+    - Menampilkan 10 akun email dengan persentase penggunaan penyimpanan terbesar terhadap kapasitas kuotanya, diurutkan menurun (`diskusedpercent_float DESC`).
+    - Mengintegrasikan filter pencarian untuk **mengecualikan seluruh email dengan kuota tak terbatas (unlimited)** agar grafik fokus pada akun berkapasitas berbatas.
+    - Kategori bar menggunakan nama email lengkap secara utuh sebagai label visual pada sumbu diagram.
+    - Menambahkan interaksi klik (**event listener**) pada batang diagram (bars) dan label teks alamat email untuk mengarahkan pengguna langsung ke halaman **Detail Email** terkait.
+    - Tooltip interaktif kustom yang menampilkan informasi nama lengkap, alamat email lengkap, ukuran penyimpanan terpakai, dan persentase penggunaan.
+    - Memproses data di `DashboardService.php` dengan pembagian bytes ke Megabytes.
+    - Menambahkan dekorasi CSS kustom untuk memberikan penunjuk cursor pointer dan underline visual pada label yang dapat diklik.
 
 ## Perbaikan Bug
 - **Sinkronisasi Jumlah Email Database vs cPanel**:

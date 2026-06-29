@@ -2,6 +2,22 @@
 
 <?= $this->section('content') ?>
 <div class="space-y-6">
+    <style>
+        .apexcharts-bar-series rect {
+            cursor: pointer !important;
+        }
+
+        .apexcharts-yaxis-label {
+            cursor: pointer !important;
+            text-decoration: underline !important;
+            text-underline-offset: 2px;
+        }
+
+        .apexcharts-yaxis-label:hover {
+            fill: #1e293b !important;
+            font-weight: 700 !important;
+        }
+    </style>
     <!-- Header Halaman -->
     <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
         <div>
@@ -73,7 +89,7 @@
             </div>
             <div id="healthCheckContent" class="p-6 space-y-4 flex-grow">
                 <div class="animate-pulse space-y-4">
-                    <?php for($i=0; $i<3; $i++): ?>
+                    <?php for ($i = 0; $i < 3; $i++): ?>
                         <div class="flex justify-between items-center">
                             <div class="h-2 bg-slate-100 rounded w-24"></div>
                             <div class="h-4 bg-slate-50 rounded w-16"></div>
@@ -114,11 +130,11 @@
             <div class="flex items-baseline gap-2 mt-1">
                 <h3 class="text-2xl font-bold text-slate-800"><?= number_format($web_stats['desa_aktif'] + $web_stats['kelurahan_aktif'], 0, ',', '.') ?></h3>
                 <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">
-                    Aktif <span class="text-slate-400 ml-1">(<?php 
-                    $total_web_dk = ($web_stats['desa_total'] ?? 0) + ($web_stats['kelurahan_total'] ?? 0);
-                    $aktif_web_dk = ($web_stats['desa_aktif'] ?? 0) + ($web_stats['kelurahan_aktif'] ?? 0);
-                    echo $total_web_dk > 0 ? round(($aktif_web_dk / $total_web_dk) * 100) : 0;
-                    ?>%)</span>
+                    Aktif <span class="text-slate-400 ml-1">(<?php
+                                                                $total_web_dk = ($web_stats['desa_total'] ?? 0) + ($web_stats['kelurahan_total'] ?? 0);
+                                                                $aktif_web_dk = ($web_stats['desa_aktif'] ?? 0) + ($web_stats['kelurahan_aktif'] ?? 0);
+                                                                echo $total_web_dk > 0 ? round(($aktif_web_dk / $total_web_dk) * 100) : 0;
+                                                                ?>%)</span>
                 </span>
             </div>
         </a>
@@ -186,6 +202,77 @@
                     <?php endforeach; ?>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Top 10 OPD Teraktif TTE -->
+    <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
+        <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">TTE Teraktif</h3>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm whitespace-nowrap">
+                <thead class="bg-slate-100 text-slate-700 uppercase text-[10px] font-bold">
+                    <tr>
+                        <th class="px-6 py-3 border-b border-slate-200 w-12 text-center">No</th>
+                        <th class="px-6 py-3 border-b border-slate-200">Nama OPD</th>
+                        <th class="px-6 py-3 border-b border-slate-200 text-center">Total Akun</th>
+                        <th class="px-6 py-3 border-b border-slate-200 text-center">TTE Aktif</th>
+                        <th class="px-6 py-3 border-b border-slate-200">Persentase</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    <?php if (!empty($top_opd_tte)): ?>
+                        <?php foreach ($top_opd_tte as $index => $opd):
+                            $percent = round($opd['active_percentage'] ?? 0, 1);
+                            $progress_color = ($percent >= 85) ? 'bg-emerald-600' : (($percent >= 50) ? 'bg-amber-500' : 'bg-slate-600');
+                        ?>
+                            <tr class="hover:bg-slate-50 transition-colors">
+                                <td class="px-6 py-4 text-center font-bold text-slate-500 text-xs w-12">
+                                    <?= $index + 1 ?>
+                                </td>
+                                <td class="px-6 py-4 font-semibold text-slate-800 uppercase text-xs">
+                                    <a href="<?= site_url('email/unit_kerja/' . $opd['opd_id']) ?>" class="hover:text-slate-900 hover:underline underline-offset-2 transition-colors">
+                                        <?= esc($opd['opd_name']) ?>
+                                    </a>
+                                </td>
+                                <td class="px-6 py-4 text-center font-medium text-slate-700 text-xs">
+                                    <?= number_format($opd['total_wajib_tte'] ?? 0, 0, ',', '.') ?>
+                                </td>
+                                <td class="px-6 py-4 text-center font-bold text-slate-800 text-xs">
+                                    <?= number_format($opd['total_active_tte'] ?? 0, 0, ',', '.') ?>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center gap-3 min-w-[150px]">
+                                        <div class="flex-grow bg-slate-100 rounded-full h-2 overflow-hidden">
+                                            <div class="<?= $progress_color ?> h-full rounded-full transition-all duration-1000" style="width: <?= $percent ?>%"></div>
+                                        </div>
+                                        <span class="text-[11px] font-black text-slate-800 w-10 text-right shrink-0">
+                                            <?= $percent ?>%
+                                        </span>
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="5" class="px-6 py-10 text-center">
+                                <span class="text-xs font-medium text-slate-400 italic">Data tidak tersedia</span>
+                            </td>
+                        </tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Top 10 Persentase Penggunaan Disk -->
+    <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
+        <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Penggunaan Disk Terbesar</h3>
+        </div>
+        <div class="p-6">
+            <div id="diskUsageChart" class="w-full"></div>
         </div>
     </div>
 </div>
@@ -286,25 +373,136 @@
             colors: asnColors
         }).render();
 
+        // Chart Penggunaan Disk Terbesar (Top 10)
+        const diskStats = <?= json_encode($top_disk_emails ?? []) ?>;
+        new ApexCharts(document.querySelector("#diskUsageChart"), {
+            chart: {
+                type: 'bar',
+                height: 420,
+                fontFamily: 'Inter, sans-serif',
+                toolbar: {
+                    show: false
+                },
+                events: {
+                    dataPointSelection: function(event, chartContext, config) {
+                        if (config.dataPointIndex !== -1 && diskStats[config.dataPointIndex]) {
+                            const item = diskStats[config.dataPointIndex];
+                            window.location.href = '<?= site_url("email/detail/") ?>' + item.prefix;
+                        }
+                    }
+                }
+            },
+            plotOptions: {
+                bar: {
+                    horizontal: true,
+                    barHeight: '55%',
+                    borderRadius: 4,
+                }
+            },
+            colors: ['#475569'], // slate-600
+            dataLabels: {
+                enabled: true,
+                formatter: function(val, opt) {
+                    return diskStats[opt.dataPointIndex] ? diskStats[opt.dataPointIndex].percentage + '%' : '';
+                },
+                style: {
+                    fontSize: '9px',
+                    fontFamily: 'Inter, sans-serif',
+                    fontWeight: 700,
+                    colors: ['#ffffff']
+                },
+                offsetX: -6
+            },
+            series: [{
+                name: 'Persentase Digunakan',
+                data: diskStats.map(item => item.percentage)
+            }],
+            xaxis: {
+                categories: diskStats.map(item => item.email),
+                labels: {
+                    style: {
+                        fontSize: '9px',
+                        fontWeight: 600,
+                        colors: '#64748b'
+                    },
+                    formatter: function(val) {
+                        return val + '%';
+                    }
+                }
+            },
+            yaxis: {
+                labels: {
+                    style: {
+                        fontSize: '9px',
+                        fontWeight: 600,
+                        colors: '#475569'
+                    }
+                }
+            },
+            tooltip: {
+                y: {
+                    formatter: function(val, opt) {
+                        if (!diskStats[opt.dataPointIndex]) return '';
+                        const item = diskStats[opt.dataPointIndex];
+                        return item.human_size + ' (' + item.percentage + '%)';
+                    }
+                },
+                custom: function({
+                    series,
+                    seriesIndex,
+                    dataPointIndex,
+                    w
+                }) {
+                    if (!diskStats[dataPointIndex]) return '';
+                    const item = diskStats[dataPointIndex];
+                    return '<div class="p-2 text-[10px] font-medium bg-slate-800 text-white rounded shadow-md border border-slate-700">' +
+                        '<div class="font-bold text-slate-200">' + item.email + '</div>' +
+                        '<div class="text-slate-400 mt-0.5">' + item.name + '</div>' +
+                        '<div class="mt-1 font-bold text-emerald-400">Digunakan: ' + item.human_size + ' (' + item.percentage + '%)</div>' +
+                        '</div>';
+                }
+            }
+        }).render();
+
+        // Handle clicks on Y-axis labels for full email redirection
+        document.querySelector("#diskUsageChart").addEventListener('click', function(e) {
+            const yLabel = e.target.closest('.apexcharts-yaxis-label');
+            if (yLabel) {
+                const labelText = yLabel.textContent.trim();
+                const item = diskStats.find(d => d.email === labelText);
+                if (item) {
+                    window.location.href = '<?= site_url("email/detail/") ?>' + item.prefix;
+                }
+            }
+        });
+
         // Health Check Sync
         fetch('<?= site_url('api/health-check') ?>')
             .then(response => response.json())
             .then(data => {
                 const container = document.getElementById('healthCheckContent');
                 container.innerHTML = '';
-                
-                const services = [
-                    { key: 'cpanel', label: 'cPanel UAPI' },
-                    { key: 'bsre', label: 'BSrE Status API' },
-                    { key: 'pegawai', label: 'Pegawai API' }
+
+                const services = [{
+                        key: 'cpanel',
+                        label: 'cPanel UAPI'
+                    },
+                    {
+                        key: 'bsre',
+                        label: 'BSrE Status API'
+                    },
+                    {
+                        key: 'pegawai',
+                        label: 'Pegawai API'
+                    }
                 ];
-                
+
                 services.forEach(service => {
                     const isUp = data[service.key].status === 'UP';
                     const bgStatus = isUp ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-red-50 text-red-600 border-red-100';
                     const dotStatus = isUp ? 'bg-emerald-500' : 'bg-red-500';
                     const text = isUp ? 'Online' : 'Offline';
-                    
+
                     const html = `
                         <div class="flex items-center justify-between p-2 rounded-lg border border-transparent hover:border-slate-50 transition-colors">
                             <span class="text-[10px] font-bold text-slate-600 uppercase tracking-tight">${service.label}</span>

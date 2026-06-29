@@ -159,6 +159,51 @@ class DashboardService
             $sync_map[$s['key']] = $s['value'];
         }
 
+        // 6. Top 10 OPD dengan persentase TTE aktif tertinggi
+        $db = \Config\Database::connect();
+        $top_opd_tte = $db->query("
+            SELECT 
+                COALESCE(u.parent_id, u.id) as opd_id,
+                p.nama_unit_kerja as opd_name,
+                COUNT(e.id) as total_wajib_tte,
+                SUM(CASE WHEN e.bsre_status = 'ISSUE' THEN 1 ELSE 0 END) as total_active_tte,
+                (SUM(CASE WHEN e.bsre_status = 'ISSUE' THEN 1 ELSE 0 END) / COUNT(e.id)) * 100 as active_percentage
+            FROM emails e
+            JOIN unit_kerja u ON u.id = e.unit_kerja_id
+            JOIN unit_kerja p ON p.id = COALESCE(u.parent_id, u.id)
+            WHERE e.deleted_at IS NULL
+            GROUP BY opd_id, opd_name
+            HAVING COUNT(e.id) >= 5
+            ORDER BY active_percentage DESC, total_active_tte DESC, opd_name ASC
+            LIMIT 10
+        ")->getResultArray();
+
+        // 7. Top 10 Email dengan penggunaan disk terbesar (persentase) - Mengecualikan kuota unlimited
+        $raw_disk_emails = $emailModel->select('email, name, _diskused, humandiskused, diskusedpercent_float')
+            ->allowCallbacks(false)
+            ->where('deleted_at IS NULL')
+            ->where('_diskused IS NOT NULL')
+            ->where('diskquota !=', 'unlimited')
+            ->where('_diskquota IS NOT NULL')
+            ->where('_diskquota >', 0)
+            ->orderBy('diskusedpercent_float', 'DESC')
+            ->limit(10)
+            ->findAll();
+
+        $top_disk_emails = [];
+        foreach ($raw_disk_emails as $item) {
+            $bytes = (int)$item['_diskused'];
+            $mb = round($bytes / (1024 * 1024), 2);
+            $top_disk_emails[] = [
+                'email' => $item['email'],
+                'prefix' => explode('@', $item['email'])[0],
+                'name' => $item['name'] ?: 'Tanpa Nama',
+                'value_mb' => $mb,
+                'human_size' => $item['humandiskused'] ?: '0 KB',
+                'percentage' => round($item['diskusedpercent_float'] ?? 0, 1)
+            ];
+        }
+
         return [
             'email_stats' => $email_stats,
             'total_emails' => $total_emails,
@@ -172,6 +217,8 @@ class DashboardService
             'last_sync_tte' => $sync_map['last_sync_tte'] ?? null,
             'last_sync_pegawai' => $sync_map['last_sync_pegawai'] ?? null,
             'last_sync_website' => $sync_map['last_sync_website'] ?? null,
+            'top_opd_tte' => $top_opd_tte,
+            'top_disk_emails' => $top_disk_emails,
             'title' => 'Dashboard',
             'meta_description' => 'Ringkasan Statistik Identitas Digital, Sertifikat Elektronik, dan Pemantauan Website Pemerintah Kabupaten Sinjai.',
         ];
