@@ -323,7 +323,6 @@ class Email extends BaseController
             
             // SEO for Public Profile
             $data['meta_robots'] = 'noindex, follow'; 
-            $data['meta_description'] = 'Verifikasi Identitas Digital Pegawai: ' . $data['email']['name'] . ' - ' . $data['email']['jabatan'];
             $data['meta_type'] = 'profile';
 
             return view('email/verify', $data);

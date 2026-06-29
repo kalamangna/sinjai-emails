@@ -12,6 +12,7 @@
     - Mempertahankan dan merapikan panel tajuk "Jumlah TTE" serta daftar "Detail Penandatangan" yang menyajikan informasi "Detail Transaksi" (Waktu TTE, Lokasi, Alasan) dan "Sertifikat Digital" (Common Name, Penerbit, Serial Number) secara bersih dan responsif.
 - **Pembaruan Meta Deskripsi**:
     - Menyatukan dan menyederhanakan deskripsi default, OpenGraph, dan Twitter Card di seluruh halaman publik (Layout Utama, Halaman Login, Verifikasi Akun, dan Verifikasi PDF) menggunakan satu format deskripsi yang seragam: "Sistem Identitas Digital & Sertifikat Elektronik Pemerintah Kabupaten Sinjai".
+    - Menghapus penimpa (*override*) deskripsi kustom di Controller `Email.php` agar halaman profil verifikasi akun sepenuhnya konsisten menggunakan deskripsi seragam dari tingkat layout.
 - **Pembersihan Aset Sementara**:
     - Menghapus berkas spreadsheet sampah/cadangan di folder `public/` (`batch_restore.csv`, `batch_restore.xlsx`, `restore_data.xlsx`) untuk menghemat penyimpanan proyek.
 
