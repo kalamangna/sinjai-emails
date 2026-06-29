@@ -132,6 +132,37 @@
     ?>
 
     <script>
+        // Formatting helper for Indonesian date format
+        function formatIndonesianDate(dateStr) {
+            if (!dateStr || dateStr === '-') return '-';
+            try {
+                let cleanStr = dateStr.trim();
+                let dateObj = new Date(cleanStr);
+                if (isNaN(dateObj.getTime())) {
+                    // Try parsing "YYYY-MM-DD HH:MM:SS" manually
+                    const parts = cleanStr.split(/[- : T Z]/);
+                    if (parts.length >= 6) {
+                        dateObj = new Date(parts[0], parts[1]-1, parts[2], parts[3], parts[4], parts[5]);
+                    }
+                }
+                if (isNaN(dateObj.getTime())) {
+                    return dateStr;
+                }
+                const months = [
+                    'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+                ];
+                const day = dateObj.getDate();
+                const month = months[dateObj.getMonth()];
+                const year = dateObj.getFullYear();
+                const hours = String(dateObj.getHours()).padStart(2, '0');
+                const minutes = String(dateObj.getMinutes()).padStart(2, '0');
+                const seconds = String(dateObj.getSeconds()).padStart(2, '0');
+                return `${day} ${month} ${year}, ${hours}:${minutes}:${seconds} WIB`;
+            } catch (e) {
+                return dateStr;
+            }
+        }
         // File Drag & Drop Handlers
         const dropzone = document.getElementById('dropzone');
         const fileInput = document.getElementById('pdf-file');
@@ -310,42 +341,36 @@
                                     </div>
 
                                     <!-- Content Card -->
-                                    <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-[11px] leading-relaxed">
-                                        <!-- Kiri: Informasi Tanda Tangan -->
-                                        <div class="space-y-2">
-                                            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block border-b border-slate-50 pb-1">Detail Transaksi</span>
-                                            <div class="space-y-1">
-                                                <div class="flex justify-between md:justify-start gap-4">
-                                                    <span class="text-slate-500 font-medium w-20 shrink-0">Waktu TTE:</span>
-                                                    <span class="text-slate-800 font-semibold break-all">${dateSigned}</span>
-                                                </div>
-                                                <div class="flex justify-between md:justify-start gap-4">
-                                                    <span class="text-slate-500 font-medium w-20 shrink-0">Lokasi:</span>
-                                                    <span class="text-slate-800">${location}</span>
-                                                </div>
-                                                <div class="flex justify-between md:justify-start gap-4">
-                                                    <span class="text-slate-500 font-medium w-20 shrink-0">Alasan:</span>
-                                                    <span class="text-slate-700 italic">${reason}</span>
-                                                </div>
+                                    <div class="p-4 space-y-4 text-[11px] leading-relaxed">
+                                        <!-- Detail Transaksi -->
+                                        <div class="space-y-1.5">
+                                            <div class="flex flex-col sm:flex-row border-b border-slate-50 pb-1.5 gap-1 sm:gap-4">
+                                                <span class="text-slate-500 font-medium w-28 shrink-0">Waktu TTE:</span>
+                                                <span class="text-slate-800 font-bold">${formatIndonesianDate(dateSigned)}</span>
+                                            </div>
+                                            <div class="flex flex-col sm:flex-row border-b border-slate-50 pb-1.5 gap-1 sm:gap-4">
+                                                <span class="text-slate-500 font-medium w-28 shrink-0">Lokasi:</span>
+                                                <span class="text-slate-800 font-semibold">${location}</span>
+                                            </div>
+                                            <div class="flex flex-col sm:flex-row border-b border-slate-50 pb-1.5 gap-1 sm:gap-4">
+                                                <span class="text-slate-500 font-medium w-28 shrink-0">Alasan:</span>
+                                                <span class="text-slate-700 font-semibold italic">${reason}</span>
                                             </div>
                                         </div>
 
-                                        <!-- Kanan: Sertifikat Elektronik -->
-                                        <div class="space-y-2">
-                                            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block border-b border-slate-50 pb-1">Sertifikat Digital</span>
-                                            <div class="space-y-1">
-                                                <div class="flex justify-between md:justify-start gap-4">
-                                                    <span class="text-slate-500 font-medium w-20 shrink-0">Common Name:</span>
-                                                    <span class="text-slate-800 font-semibold truncate" title="${commonName}">${commonName}</span>
-                                                </div>
-                                                <div class="flex justify-between md:justify-start gap-4">
-                                                    <span class="text-slate-500 font-medium w-20 shrink-0">Penerbit:</span>
-                                                    <span class="text-slate-700 truncate" title="${issuerName}">${issuerName}</span>
-                                                </div>
-                                                <div class="flex justify-between md:justify-start gap-4">
-                                                    <span class="text-slate-500 font-medium w-20 shrink-0">Serial:</span>
-                                                    <span class="text-slate-600 font-mono text-[10px] break-all">${serialNumber}</span>
-                                                </div>
+                                        <!-- Sertifikat Digital -->
+                                        <div class="space-y-1.5 pt-2 border-t border-dashed border-slate-100">
+                                            <div class="flex flex-col sm:flex-row border-b border-slate-50 pb-1.5 gap-1 sm:gap-4">
+                                                <span class="text-slate-500 font-medium w-28 shrink-0">Common Name:</span>
+                                                <span class="text-slate-850 font-bold truncate" title="${commonName}">${commonName}</span>
+                                            </div>
+                                            <div class="flex flex-col sm:flex-row border-b border-slate-50 pb-1.5 gap-1 sm:gap-4">
+                                                <span class="text-slate-500 font-medium w-28 shrink-0">Penerbit:</span>
+                                                <span class="text-slate-700 font-semibold truncate" title="${issuerName}">${issuerName}</span>
+                                            </div>
+                                            <div class="flex flex-col sm:flex-row gap-1 sm:gap-4">
+                                                <span class="text-slate-500 font-medium w-28 shrink-0">Serial:</span>
+                                                <span class="text-slate-650 font-mono text-[10px] break-all">${serialNumber}</span>
                                             </div>
                                         </div>
                                     </div>
