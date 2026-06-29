@@ -6,10 +6,11 @@
     - Menambahkan tombol **Verifikasi PDF** (ikon `file-signature`) pada bagian kanan atas navbar header (`app/Views/layouts/main.php`).
     - Menambahkan tombol **Verifikasi PDF** berdampingan dengan tombol **Layanan Helpdesk** di halaman masuk/login (`app/Views/auth/login.php`) dengan struktur grid responsif.
     - Mengonfigurasi seluruh tautan **Verifikasi PDF** dan **Layanan Helpdesk** agar terbuka di tab browser baru (`target="_blank"` dan `rel="noopener noreferrer"`) demi kenyamanan pengguna.
-- **Penyederhanaan Hasil Verifikasi PDF**:
+- **Penyederhanaan Hasil Verifikasi PDF & Penyesuaian Warna Dinamis**:
     - Merestrukturisasi dan menyederhanakan tampilan hasil verifikasi tanda tangan elektronik PDF di `app/Views/email/verify_pdf.php`.
     - Menghapus tampilan status "Dokumen Telah Dimodifikasi", status "Keutuhan Berkas", dan "Kepercayaan Sertifikat".
     - Mempertahankan dan merapikan panel tajuk "Jumlah TTE" serta daftar "Detail Penandatangan" yang menyajikan informasi "Detail Transaksi" (Waktu TTE, Lokasi, Alasan) dan "Sertifikat Digital" (Common Name, Penerbit, Serial Number) secara bersih dan responsif.
+    - Menambahkan transisi warna dinamis pada **Header Card** utama dan **Hasil Analisis** berdasarkan ada/tidaknya tanda tangan elektronik (TTE) pada dokumen PDF: warna hijau (*emerald*) jika terdeteksi TTE (> 0) dan warna jingga (*amber*) jika tidak terdeteksi TTE (0).
 - **Penyelarasan Desain Halaman Helpdesk Publik**:
     - Merancang ulang halaman formulir helpdesk (`app/Views/helpdesk/public_form.php`) dan halaman sukses (`app/Views/helpdesk/public_success.php`) sebagai halaman mandiri (*standalone centered card*) berlatar belakang `bg-slate-50` dengan header gelap `bg-slate-800` (atau bergradasi emerald pada sukses) persis seperti gaya desain halaman Verifikasi Akun dan Verifikasi PDF demi konsistensi antarmuka publik yang seragam.
     - Menyelaraskan seluruh gaya input form (background putih `bg-white`, border radius `rounded-lg`, serta warna label dan ikon `text-slate-700`) agar seragam dengan standar input halaman login dan formulir sistem utama.

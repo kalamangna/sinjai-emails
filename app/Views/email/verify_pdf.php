@@ -40,7 +40,7 @@
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex items-center justify-center p-4">
     <div class="w-full max-w-2xl bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden flex flex-col my-auto">
         <!-- Header Identity -->
-        <div class="bg-slate-800 p-8 text-center relative overflow-hidden shrink-0">
+        <div id="header-card" class="bg-slate-800 p-8 text-center relative overflow-hidden shrink-0 transition-all duration-500">
             <div class="absolute inset-0 opacity-10 pointer-events-none">
                 <i class="fas fa-shield-alt text-white text-[120px] absolute -right-8 -bottom-8 rotate-12"></i>
             </div>
@@ -181,6 +181,15 @@
             fileInput.value = '';
             dropzone.classList.remove('hidden');
             selectedFileInfo.classList.add('hidden');
+            const headerCard = document.getElementById('header-card');
+            if (headerCard) {
+                headerCard.className = 'bg-slate-800 p-8 text-center relative overflow-hidden shrink-0 transition-all duration-500';
+            }
+            const resultContainer = document.getElementById('result-verify');
+            if (resultContainer) {
+                resultContainer.classList.add('hidden');
+                resultContainer.innerHTML = '';
+            }
         }
 
         // Global loading helper
@@ -210,6 +219,11 @@
             resultContainer.classList.add('hidden');
             resultContainer.innerHTML = '';
 
+            const headerCard = document.getElementById('header-card');
+            if (headerCard) {
+                headerCard.className = 'bg-slate-800 p-8 text-center relative overflow-hidden shrink-0 transition-all duration-500';
+            }
+
             if (!fileInput.files.length) {
                 showGlobalError('File Kosong', 'Harap pilih file PDF terlebih dahulu.');
                 return;
@@ -238,24 +252,38 @@
                     const conclusion = bsreData.conclusion || 'NO_SIGNATURE';
                     const count = bsreData.signatureCount || 0;
                     
+                    // Dynamically update header card color
+                    if (headerCard) {
+                        if (count > 0) {
+                            headerCard.className = 'bg-gradient-to-br from-emerald-800 via-slate-900 to-emerald-950 p-8 text-center relative overflow-hidden shrink-0 transition-all duration-500';
+                        } else {
+                            headerCard.className = 'bg-gradient-to-br from-amber-700 via-slate-900 to-amber-950 p-8 text-center relative overflow-hidden shrink-0 transition-all duration-500';
+                        }
+                    }
+                    
                     // 1. Header Jumlah TTE Html
                     let headerHtml = '';
                     if (count === 0) {
                         headerHtml = `
-                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 flex items-center justify-center gap-3 shadow-sm">
-                                <i class="fas fa-file-excel text-slate-400 text-lg"></i>
-                                <span class="text-xs font-semibold text-slate-600">Tidak ditemukan tanda tangan elektronik pada dokumen ini.</span>
+                            <div class="bg-amber-50 border border-amber-100 rounded-xl p-4 flex items-center gap-3 shadow-sm">
+                                <div class="w-9 h-9 rounded-lg bg-amber-550/10 flex items-center justify-center text-amber-600 shrink-0">
+                                    <i class="fas fa-exclamation-triangle text-sm"></i>
+                                </div>
+                                <div>
+                                    <span class="text-[9px] font-bold text-amber-450 uppercase tracking-widest block">Hasil Analisis</span>
+                                    <span class="text-xs font-bold text-amber-900 block">Tidak ditemukan tanda tangan elektronik pada dokumen ini.</span>
+                                </div>
                             </div>
                         `;
                     } else {
                         headerHtml = `
-                            <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4 flex items-center gap-3 shadow-sm">
-                                <div class="w-9 h-9 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-600 shrink-0">
+                            <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-4 flex items-center gap-3 shadow-sm">
+                                <div class="w-9 h-9 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-600 shrink-0">
                                     <i class="fas fa-file-signature text-sm"></i>
                                 </div>
                                 <div>
-                                    <span class="text-[9px] font-bold text-indigo-400 uppercase tracking-widest block">Hasil Analisis</span>
-                                    <span class="text-xs font-bold text-indigo-900 block">Terdeteksi ${count} Tanda Tangan Elektronik</span>
+                                    <span class="text-[9px] font-bold text-emerald-450 uppercase tracking-widest block">Hasil Analisis</span>
+                                    <span class="text-xs font-bold text-emerald-900 block">Terdeteksi ${count} Tanda Tangan Elektronik</span>
                                 </div>
                             </div>
                         `;
