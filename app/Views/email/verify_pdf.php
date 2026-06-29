@@ -132,35 +132,55 @@
     ?>
 
     <script>
-        // Formatting helper for Indonesian date format
+        // Formatting helper for Indonesian date format (WITA timezone)
         function formatIndonesianDate(dateStr) {
             if (!dateStr || dateStr === '-') return '-';
             try {
                 let cleanStr = dateStr.trim();
+                // If it is a standard date format without offset, assume WIB (+07:00)
+                if (/^\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}:\d{2}$/.test(cleanStr)) {
+                    cleanStr = cleanStr.replace(' ', 'T') + '+07:00';
+                }
+                
                 let dateObj = new Date(cleanStr);
                 if (isNaN(dateObj.getTime())) {
-                    // Try parsing "YYYY-MM-DD HH:MM:SS" manually
-                    const parts = cleanStr.split(/[- : T Z]/);
+                    const parts = cleanStr.split(/[- : T Z +]/);
                     if (parts.length >= 6) {
                         dateObj = new Date(parts[0], parts[1]-1, parts[2], parts[3], parts[4], parts[5]);
                     }
                 }
+                
                 if (isNaN(dateObj.getTime())) {
-                    return dateStr;
+                    return dateStr + ' WITA';
                 }
-                const months = [
-                    'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-                    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
-                ];
-                const day = dateObj.getDate();
-                const month = months[dateObj.getMonth()];
-                const year = dateObj.getFullYear();
-                const hours = String(dateObj.getHours()).padStart(2, '0');
-                const minutes = String(dateObj.getMinutes()).padStart(2, '0');
-                const seconds = String(dateObj.getSeconds()).padStart(2, '0');
-                return `${day} ${month} ${year}, ${hours}:${minutes}:${seconds} WIB`;
+                
+                const options = {
+                    timeZone: 'Asia/Makassar',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false
+                };
+                
+                const formatter = new Intl.DateTimeFormat('id-ID', options);
+                const parts = formatter.formatToParts(dateObj);
+                
+                let day = '', month = '', year = '', hour = '', minute = '', second = '';
+                for (const part of parts) {
+                    if (part.type === 'day') day = part.value;
+                    else if (part.type === 'month') month = part.value;
+                    else if (part.type === 'year') year = part.value;
+                    else if (part.type === 'hour') hour = part.value;
+                    else if (part.type === 'minute') minute = part.value;
+                    else if (part.type === 'second') second = part.value;
+                }
+                
+                return `${day} ${month} ${year}, ${hour}:${minute}:${second} WITA`;
             } catch (e) {
-                return dateStr;
+                return dateStr + ' WITA';
             }
         }
         // File Drag & Drop Handlers
@@ -283,7 +303,7 @@
                                     <i class="fas fa-exclamation-triangle text-sm"></i>
                                 </div>
                                 <div>
-                                    <span class="text-[9px] font-bold text-amber-450 uppercase tracking-widest block">Hasil Analisis</span>
+                                    <span class="text-[9px] font-bold text-amber-450 uppercase tracking-widest block">Hasil Verifikasi</span>
                                     <span class="text-xs font-bold text-amber-900 block">Tidak ditemukan tanda tangan elektronik pada dokumen ini.</span>
                                 </div>
                             </div>
@@ -295,7 +315,7 @@
                                     <i class="fas fa-file-signature text-sm"></i>
                                 </div>
                                 <div>
-                                    <span class="text-[9px] font-bold text-emerald-450 uppercase tracking-widest block">Hasil Analisis</span>
+                                    <span class="text-[9px] font-bold text-emerald-450 uppercase tracking-widest block">Hasil Verifikasi</span>
                                     <span class="text-xs font-bold text-emerald-900 block">Terdeteksi ${count} Tanda Tangan Elektronik</span>
                                 </div>
                             </div>
