@@ -22,7 +22,7 @@ class HelpdeskPublicController extends BaseController
     public function index()
     {
         $data = [
-            'title' => 'Formulir Layanan Helpdesk',
+            'title' => 'Helpdesk',
             'agencies' => $this->assistanceExportService->getAgencyOptions(),
             'categoryMap' => Assistance::CATEGORY_MAP,
             'servicesMap' => Assistance::SERVICES_MAP,
@@ -84,7 +84,7 @@ class HelpdeskPublicController extends BaseController
         }
 
         $data = [
-            'title' => 'Tiket Berhasil Dikirim',
+            'title' => 'Helpdesk',
             'ticket' => $ticket,
             'isPublic' => true
         ];

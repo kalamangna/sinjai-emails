@@ -328,7 +328,7 @@ class Email extends BaseController
             return view('email/verify', $data);
         } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
-            $data['title'] = 'Error Verifikasi';
+            $data['title'] = 'Verifikasi Akun';
             return view('email/error', $data);
         }
     }
