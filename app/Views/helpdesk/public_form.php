@@ -1,79 +1,116 @@
-<?= $this->extend('layouts/main') ?>
+<!DOCTYPE html>
+<html lang="id" class="h-full">
 
-<?= $this->section('styles') ?>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
-<style>
-    /* Choices.js customization to match rounded-xl outline slate inputs */
-    .choices {
-        margin-bottom: 0 !important;
-    }
-    .choices__inner { 
-        background-color: rgba(248, 250, 252, 0.5) !important; 
-        border: 1px solid rgb(226, 232, 240) !important; 
-        border-radius: 0.75rem !important; 
-        font-size: 0.75rem !important; 
-        font-weight: 600 !important; 
-        color: rgb(30, 41, 59) !important; 
-        min-height: 38px !important; 
-        padding: 4px 14px !important; 
-        display: flex;
-        align-items: center;
-        transition: all 0.2s ease-in-out;
-    }
-    .choices.is-focused .choices__inner {
-        border-color: rgb(51, 65, 85) !important;
-        box-shadow: 0 0 0 2px rgba(51, 65, 85, 0.15) !important;
-    }
-    .choices__list--dropdown { 
-        background-color: white !important; 
-        border: 1px solid rgb(226, 232, 240) !important; 
-        border-radius: 0.75rem !important; 
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
-        overflow: hidden;
-        z-index: 50 !important;
-    }
-    .choices__list--dropdown .choices__item--selectable.is-highlighted { 
-        background-color: rgb(241, 245, 249) !important; 
-        color: rgb(15, 23, 42) !important;
-    }
-    .choices__placeholder {
-        opacity: 0.65;
-        font-weight: 400 !important;
-    }
-</style>
-<?= $this->endSection() ?>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="robots" content="<?= $meta_robots ?? 'noindex, follow' ?>">
+    <title><?= $title ?? 'Helpdesk' ?> | Sistem Identitas Digital</title>
 
-<?= $this->section('content') ?>
-<div class="max-w-2xl mx-auto space-y-6 pb-12 pt-8 px-4">
-    <!-- Header Premium -->
-    <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 text-white rounded-2xl p-6 sm:p-8 shadow-md relative overflow-hidden flex flex-col md:flex-row items-center gap-6">
-        <div class="absolute inset-0 opacity-10 pointer-events-none">
-            <i class="fas fa-headset text-white text-[150px] absolute -right-6 -bottom-10 rotate-12"></i>
-        </div>
-        <div class="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center text-white shrink-0 border border-white/20 shadow-inner">
-            <i class="fas fa-headset text-2xl"></i>
-        </div>
-        <div class="space-y-1 text-center md:text-left relative z-10">
-            <h1 class="text-lg font-bold uppercase tracking-tight">Helpdesk Layanan</h1>
-            <p class="text-[9px] font-bold text-indigo-200 uppercase tracking-widest leading-relaxed">Pusat Bantuan & Laporan Kendala TIK Kabupaten Sinjai</p>
-            <p class="text-[11px] text-slate-300 leading-relaxed max-w-lg">Silakan isi formulir di bawah ini untuk melaporkan kendala teknis atau pengajuan layanan TIK (Email, TTE/E-Sign, dll.). Tim kami akan segera menindaklanjuti laporan Anda.</p>
-        </div>
-    </div>
+    <meta name="description" content="<?= $meta_description ?? 'Sistem Identitas Digital & Sertifikat Elektronik Pemerintah Kabupaten Sinjai' ?>">
+    <link rel="canonical" href="<?= current_url() ?>">
 
-    <?php if (session()->has('errors')): ?>
-        <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl relative shadow-sm" role="alert">
-            <strong class="font-bold text-xs uppercase tracking-wider flex items-center gap-2"><i class="fas fa-exclamation-triangle"></i> Terjadi Kesalahan!</strong>
-            <ul class="list-disc pl-5 mt-1 text-[11px] leading-relaxed">
-                <?php foreach (session('errors') as $error): ?>
-                    <li><?= esc($error) ?></li>
-                <?php endforeach; ?>
-            </ul>
-        </div>
-    <?php endif; ?>
+    <!-- Meta Tags -->
+    <meta property="og:site_name" content="Sistem Identitas Digital Sinjai">
+    <meta property="og:title" content="<?= $title ?? 'Helpdesk' ?> | Sistem Identitas Digital">
+    <meta property="og:description" content="<?= $meta_description ?? 'Sistem Identitas Digital & Sertifikat Elektronik Pemerintah Kabupaten Sinjai' ?>">
+    <meta property="og:url" content="<?= current_url() ?>">
+    <meta property="og:image" content="<?= $meta_image ?? base_url('meta.png') ?>">
+    <meta property="og:type" content="<?= $meta_type ?? 'website' ?>">
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<?= $title ?? 'Helpdesk' ?> | Sistem Identitas Digital">
+    <meta name="twitter:description" content="<?= $meta_description ?? 'Sistem Identitas Digital & Sertifikat Elektronik Pemerintah Kabupaten Sinjai' ?>">
+    <meta name="twitter:image" content="<?= $meta_image ?? base_url('meta.png') ?>">
 
-    <!-- Card Form -->
-    <div class="bg-white border border-slate-200 rounded-2xl shadow-xl shadow-slate-100/50 overflow-hidden">
-        <div class="p-6 sm:p-8">
+    <link rel="icon" type="image/png" href="<?= base_url('logo.png') ?>">
+    <link href="<?= base_url('css/output.css') ?>" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Choices.js customization to match rounded-xl outline slate inputs */
+        .choices {
+            margin-bottom: 0 !important;
+        }
+        .choices__inner { 
+            background-color: rgba(248, 250, 252, 0.5) !important; 
+            border: 1px solid rgb(226, 232, 240) !important; 
+            border-radius: 0.75rem !important; 
+            font-size: 0.75rem !important; 
+            font-weight: 600 !important; 
+            color: rgb(30, 41, 59) !important; 
+            min-height: 38px !important; 
+            padding: 4px 14px !important; 
+            display: flex;
+            align-items: center;
+            transition: all 0.2s ease-in-out;
+        }
+        .choices.is-focused .choices__inner {
+            border-color: rgb(51, 65, 85) !important;
+            box-shadow: 0 0 0 2px rgba(51, 65, 85, 0.15) !important;
+        }
+        .choices__list--dropdown { 
+            background-color: white !important; 
+            border: 1px solid rgb(226, 232, 240) !important; 
+            border-radius: 0.75rem !important; 
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+            overflow: hidden;
+            z-index: 50 !important;
+        }
+        .choices__list--dropdown .choices__item--selectable.is-highlighted { 
+            background-color: rgb(241, 245, 249) !important; 
+            color: rgb(15, 23, 42) !important;
+        }
+        .choices__placeholder {
+            opacity: 0.65;
+            font-weight: 400 !important;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-2xl bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden flex flex-col my-auto">
+        <!-- Header Identity -->
+        <div class="bg-slate-800 p-8 text-center relative overflow-hidden shrink-0">
+            <div class="absolute inset-0 opacity-10 pointer-events-none">
+                <i class="fas fa-headset text-white text-[120px] absolute -right-8 -bottom-8 rotate-12"></i>
+            </div>
+            
+            <div class="relative z-10 text-white">
+                <img src="<?= base_url('logo.png') ?>" alt="Logo" class="w-16 h-16 object-contain mx-auto mb-4 drop-shadow-md">
+                <p class="text-[10px] font-bold text-slate-300 uppercase tracking-widest mb-1">Sistem Identitas Digital</p>
+                <h1 class="text-lg font-bold uppercase tracking-tight leading-tight">Helpdesk Layanan</h1>
+            </div>
+        </div>
+
+        <!-- Form Body -->
+        <div class="p-6 sm:p-8 space-y-6">
+            <div class="flex items-start gap-3 p-4 bg-indigo-50/50 border border-indigo-100 rounded-xl text-left">
+                <i class="fas fa-info-circle text-indigo-600 text-lg shrink-0 mt-0.5"></i>
+                <div>
+                    <h2 class="text-xs font-bold text-indigo-800 uppercase tracking-wider">Pusat Bantuan & Laporan</h2>
+                    <p class="text-[10px] text-indigo-700 leading-normal mt-0.5">Silakan isi formulir di bawah ini untuk melaporkan kendala teknis atau pengajuan layanan TIK (Email, TTE/E-Sign, dll.). Tim kami akan segera menindaklanjuti laporan Anda.</p>
+                </div>
+            </div>
+
+            <?php if (session()->has('errors')): ?>
+                <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl relative shadow-sm" role="alert">
+                    <strong class="font-bold text-xs uppercase tracking-wider flex items-center gap-2"><i class="fas fa-exclamation-triangle"></i> Terjadi Kesalahan!</strong>
+                    <ul class="list-disc pl-5 mt-1 text-[10px] leading-relaxed">
+                        <?php foreach (session('errors') as $error): ?>
+                            <li><?= esc($error) ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+            <?php endif; ?>
+
             <form action="<?= site_url('helpdesk/submit') ?>" method="post" class="space-y-6">
                 <?= csrf_field() ?>
 
@@ -176,10 +213,8 @@
             </form>
         </div>
     </div>
-</div>
-<?= $this->endSection() ?>
+</body>
 
-<?= $this->section('scripts') ?>
 <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 <script>
     const servicesMap = <?= json_encode($servicesMap) ?>;
@@ -240,4 +275,5 @@
         if (document.getElementById('category').value) updateServicesDropdown();
     });
 </script>
-<?= $this->endSection() ?>
+
+</html>
