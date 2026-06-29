@@ -7,20 +7,20 @@
     <meta name="robots" content="<?= $meta_robots ?? 'noindex, nofollow' ?>">
     <title><?= $title ?? 'Masuk' ?> | Sistem Identitas Digital</title>
 
-    <meta name="description" content="<?= $meta_description ?? 'Portal Manajemen Identitas Digital & Sertifikat Elektronik Pemerintah Kabupaten Sinjai' ?>">
+    <meta name="description" content="<?= $meta_description ?? 'Sistem Identitas Digital & Sertifikat Elektronik Pemerintah Kabupaten Sinjai' ?>">
     <link rel="canonical" href="<?= current_url() ?>">
 
     <!-- Meta Tags -->
     <meta property="og:site_name" content="Sistem Identitas Digital Sinjai">
     <meta property="og:title" content="<?= $title ?? 'Masuk' ?> | Sistem Identitas Digital">
-    <meta property="og:description" content="<?= $meta_description ?? 'Portal Manajemen Identitas Digital & Sertifikat Elektronik Pemerintah Kabupaten Sinjai' ?>">
+    <meta property="og:description" content="<?= $meta_description ?? 'Sistem Identitas Digital & Sertifikat Elektronik Pemerintah Kabupaten Sinjai' ?>">
     <meta property="og:url" content="<?= current_url() ?>">
     <meta property="og:image" content="<?= $meta_image ?? base_url('meta.png') ?>">
     <meta property="og:type" content="<?= $meta_type ?? 'website' ?>">
     
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="<?= $title ?? 'Masuk' ?> | Sistem Identitas Digital">
-    <meta name="twitter:description" content="<?= $meta_description ?? 'Portal Manajemen Identitas Digital & Sertifikat Elektronik Pemerintah Kabupaten Sinjai' ?>">
+    <meta name="twitter:description" content="<?= $meta_description ?? 'Sistem Identitas Digital & Sertifikat Elektronik Pemerintah Kabupaten Sinjai' ?>">
     <meta name="twitter:image" content="<?= $meta_image ?? base_url('meta.png') ?>">
 
     <link rel="icon" type="image/png" href="<?= base_url('logo.png') ?>">
