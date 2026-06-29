@@ -40,7 +40,7 @@
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex items-center justify-center p-4">
     <div class="w-full max-w-2xl bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden flex flex-col my-auto">
         <!-- Header Identity -->
-        <div id="header-card" class="bg-slate-800 p-8 text-center relative overflow-hidden shrink-0 transition-all duration-500">
+        <div class="bg-slate-800 p-8 text-center relative overflow-hidden shrink-0">
             <div class="absolute inset-0 opacity-10 pointer-events-none">
                 <i class="fas fa-shield-alt text-white text-[120px] absolute -right-8 -bottom-8 rotate-12"></i>
             </div>
@@ -181,10 +181,6 @@
             fileInput.value = '';
             dropzone.classList.remove('hidden');
             selectedFileInfo.classList.add('hidden');
-            const headerCard = document.getElementById('header-card');
-            if (headerCard) {
-                headerCard.className = 'bg-slate-800 p-8 text-center relative overflow-hidden shrink-0 transition-all duration-500';
-            }
             const resultContainer = document.getElementById('result-verify');
             if (resultContainer) {
                 resultContainer.classList.add('hidden');
@@ -219,11 +215,6 @@
             resultContainer.classList.add('hidden');
             resultContainer.innerHTML = '';
 
-            const headerCard = document.getElementById('header-card');
-            if (headerCard) {
-                headerCard.className = 'bg-slate-800 p-8 text-center relative overflow-hidden shrink-0 transition-all duration-500';
-            }
-
             if (!fileInput.files.length) {
                 showGlobalError('File Kosong', 'Harap pilih file PDF terlebih dahulu.');
                 return;
@@ -251,15 +242,6 @@
                     const bsreData = result.data;
                     const conclusion = bsreData.conclusion || 'NO_SIGNATURE';
                     const count = bsreData.signatureCount || 0;
-                    
-                    // Dynamically update header card color
-                    if (headerCard) {
-                        if (count > 0) {
-                            headerCard.className = 'bg-gradient-to-br from-emerald-800 via-slate-900 to-emerald-950 p-8 text-center relative overflow-hidden shrink-0 transition-all duration-500';
-                        } else {
-                            headerCard.className = 'bg-gradient-to-br from-amber-700 via-slate-900 to-amber-950 p-8 text-center relative overflow-hidden shrink-0 transition-all duration-500';
-                        }
-                    }
                     
                     // 1. Header Jumlah TTE Html
                     let headerHtml = '';
