@@ -1,3 +1,14 @@
+# Session History - 29 Juni 2026
+
+## Fitur Baru & UI/UX
+- **Integrasi Tombol Verifikasi PDF & Helpdesk**:
+    - Menambahkan tombol **Verifikasi PDF** di menu navigasi utama sidebar (`app/Views/components/sidebar.php`).
+    - Menambahkan tombol **Verifikasi PDF** (ikon `file-signature`) pada bagian kanan atas navbar header (`app/Views/layouts/main.php`).
+    - Menambahkan tombol **Verifikasi PDF** berdampingan dengan tombol **Layanan Helpdesk** di halaman masuk/login (`app/Views/auth/login.php`) dengan struktur grid responsif.
+    - Mengonfigurasi seluruh tautan **Verifikasi PDF** dan **Layanan Helpdesk** agar terbuka di tab browser baru (`target="_blank"` dan `rel="noopener noreferrer"`) demi kenyamanan pengguna.
+- **Pembersihan Aset Sementara**:
+    - Menghapus berkas spreadsheet sampah/cadangan di folder `public/` (`batch_restore.csv`, `batch_restore.xlsx`, `restore_data.xlsx`) untuk menghemat penyimpanan proyek.
+
 # Session History - 28 Juni 2026
 
 ## Fitur Baru

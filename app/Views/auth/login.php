@@ -103,10 +103,15 @@
             </form>
 
             <div class="mt-8 pt-6 border-t border-slate-100 text-center">
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Butuh Bantuan Layanan?</p>
-                <a href="<?= site_url('helpdesk') ?>" class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition-all uppercase tracking-tight">
-                    <i class="fas fa-headset text-slate-500"></i> Layanan Helpdesk
-                </a>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Layanan & Utilitas Publik</p>
+                <div class="grid grid-cols-2 gap-2">
+                    <a href="<?= site_url('verifikasi-pdf') ?>" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition-all uppercase tracking-tight">
+                        <i class="fas fa-file-signature text-slate-500"></i> Verifikasi PDF
+                    </a>
+                    <a href="<?= site_url('helpdesk') ?>" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition-all uppercase tracking-tight">
+                        <i class="fas fa-headset text-slate-500"></i> Helpdesk
+                    </a>
+                </div>
             </div>
         </div>
 
