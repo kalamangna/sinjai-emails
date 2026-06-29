@@ -44,12 +44,14 @@ class Email extends BaseController
             $perPage = $this->request->getGet('per_page') ?? 100;
             $search  = $this->request->getGet('search');
             $bsre_status = $this->request->getGet('bsre_status');
+            $disk_usage = $this->request->getGet('disk_usage');
 
-            $data = $this->emailService->getEmailDashboardData($search, $bsre_status, $perPage);
+            $data = $this->emailService->getEmailDashboardData($search, $bsre_status, $perPage, $disk_usage);
 
             $data['title']       = 'Email';
             $data['search']      = $search;
             $data['bsre_status'] = $bsre_status;
+            $data['disk_usage']  = $disk_usage;
             $data['per_page']    = $perPage;
 
             $options = $data['bsre_status_labels'] ?? [];

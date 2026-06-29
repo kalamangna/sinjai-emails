@@ -85,7 +85,7 @@ class EmailService
         ];
     }
 
-    public function getEmailDashboardData($search = null, $bsre_status = null, $perPage = 100)
+    public function getEmailDashboardData($search = null, $bsre_status = null, $perPage = 100, $disk_usage = null)
     {
         $builder = $this->emailModel->withDetails();
 
@@ -150,6 +150,15 @@ class EmailService
             }
             
             $builder->groupEnd();
+        }
+
+        // Filter berdasarkan penggunaan disk
+        if (!empty($disk_usage)) {
+            if ($disk_usage === 'critical') {
+                $builder->where('emails.diskusedpercent_float >=', 85);
+            } elseif ($disk_usage === 'full') {
+                $builder->where('emails.diskusedpercent_float >=', 95);
+            }
         }
 
         // Get filtered count BEFORE pagination

@@ -1173,6 +1173,10 @@ video {
   height: 100vh;
 }
 
+.h-1\.5 {
+  height: 0.375rem;
+}
+
 .max-h-48 {
   max-height: 12rem;
 }
@@ -1315,6 +1319,10 @@ video {
 
 .min-w-full {
   min-width: 100%;
+}
+
+.min-w-\[120px\] {
+  min-width: 120px;
 }
 
 .max-w-2xl {
@@ -3497,6 +3505,10 @@ video {
 
   .lg\:col-span-8 {
     grid-column: span 8 / span 8;
+  }
+
+  .lg\:col-span-6 {
+    grid-column: span 6 / span 6;
   }
 
   .lg\:ml-64 {

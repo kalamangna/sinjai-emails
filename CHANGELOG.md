@@ -1,844 +1,395 @@
-# Session History - 29 Juni 2026
+# Riwayat Perubahan — Sistem Identitas Digital Sinjai
 
-## UI/UX & Konsistensi Desain
-- **Pembersihan Menu Sidebar**:
-    - Menghapus entri menu **Verifikasi PDF** dari sidebar navigasi (`app/Views/components/sidebar.php`) agar navigasi samping lebih ringkas dan fokus pada menu internal sistem.
-    - Tombol **Verifikasi PDF** tetap tersedia di bagian kanan atas navbar untuk akses cepat tanpa mengotori sidebar.
-
-## Perbaikan Bug
-- **Sinkronisasi Jumlah Email Database vs cPanel**:
-    - Menemukan akar masalah ketidaksinkronan: metode `syncFromCpanel()` di `app/Shared/Services/SyncService.php` sebelumnya hanya melakukan *upsert* (tambah/perbarui) data dari cPanel ke database, **tanpa pernah menghapus** record email yang sudah tidak ada di cPanel.
-    - Menambahkan logika **Soft-Delete Sinkron**: setelah proses *upsert* selesai, sistem kini membandingkan seluruh daftar email aktif di database dengan daftar email dari cPanel. Akun yang ada di database namun **tidak ditemukan** di cPanel akan otomatis di-*soft delete* (`deleted_at`).
-    - Proses penghapusan dilakukan per batch (500 record) untuk efisiensi query dan dicatat ke log sistem untuk keperluan audit.
-    - Nilai kembalian `syncFromCpanel()` diperbarui untuk menyertakan informasi jumlah akun yang disinkronkan (`synced`) dan jumlah akun yang dihapus (`deleted`).
-
-## UI/UX & Konsistensi Desain
-- **Penyelarasan Halaman Error Verifikasi Akun**:
-    - Mendesain ulang `app/Views/email/error.php` dari tata letak yang sebelumnya memperluas `layouts/main` (dashboard internal) menjadi halaman mandiri (*standalone centered card*) berlatar belakang `bg-slate-50` dengan header gelap `bg-slate-800`, selaras 100% dengan desain `verify.php`, `verify_pdf.php`, dan halaman `login.php`.
-- **Penambahan Panel "Detail Kendala & Layanan" pada Halaman Admin Helpdesk**:
-    - Menambahkan kartu baru "Detail Kendala & Layanan" pada `app/Views/helpdesk/admin_detail.php` yang menampilkan tiga kolom: **Kategori**, **Layanan Spesifik**, dan **Jenis Masalah** dari data tiket — informasi ini sebelumnya tidak ditampilkan sama sekali di halaman detail.
-- **Pembaruan Panduan Pengembangan (GEMINI.md)**:
-    - Menambahkan aturan bahwa seluruh proses kompilasi CSS, pencatatan CHANGELOG, dan push hanya dijalankan saat ada instruksi eksplisit "push" dari pengguna.
-    - Menambahkan catatan bahwa pengguna menjalankan `npm run dev` (*watch mode*) secara aktif sehingga build manual tidak diperlukan.
-
-## Fitur Baru & UI/UX
-
-- **Integrasi Tombol Verifikasi PDF & Helpdesk**:
-    - Menambahkan tombol **Verifikasi PDF** di menu navigasi utama sidebar (`app/Views/components/sidebar.php`).
-    - Menambahkan tombol **Verifikasi PDF** (ikon `file-signature`) pada bagian kanan atas navbar header (`app/Views/layouts/main.php`).
-    - Menambahkan tombol **Verifikasi PDF** berdampingan dengan tombol **Layanan Helpdesk** di halaman masuk/login (`app/Views/auth/login.php`) dengan struktur grid responsif.
-    - Mengonfigurasi seluruh tautan **Verifikasi PDF** dan **Layanan Helpdesk** agar terbuka di tab browser baru (`target="_blank"` dan `rel="noopener noreferrer"`) demi kenyamanan pengguna.
-- **Penyederhanaan Hasil Verifikasi PDF & Penyesuaian Warna Dinamis**:
-    - Merestrukturisasi dan menyederhanakan tampilan hasil verifikasi tanda tangan elektronik PDF di `app/Views/email/verify_pdf.php`.
-    - Menghapus tampilan status "Dokumen Telah Dimodifikasi", status "Keutuhan Berkas", dan "Kepercayaan Sertifikat".
-    - Mempertahankan dan merapikan panel tajuk "Jumlah TTE" serta daftar "Detail Penandatangan" yang menyajikan informasi "Detail Transaksi" (Waktu TTE, Lokasi, Alasan) dan "Sertifikat Digital" (Common Name, Penerbit, Serial Number) secara bersih dan responsif.
-    - Menambahkan penyesuaian warna dinamis pada panel **Hasil Verifikasi** (sebelumnya bernama "Hasil Analisis") berdasarkan ada/tidaknya tanda tangan elektronik (TTE) pada dokumen PDF: warna hijau (*emerald*) jika terdeteksi TTE (> 0) dan warna jingga (*amber*) jika tidak terdeteksi TTE (0), dengan mempertahankan header utama tetap abu-abu gelap (`bg-slate-800`).
-    - Merancang ulang tata letak panel "Detail Penandatangan" menjadi format 1 kolom vertikal yang mengalir rapi dengan pelabelan teratur.
-    - Menambahkan fungsi pembantu JavaScript `formatIndonesianDate` yang mengonversi waktu TTE ke zona waktu lokal WITA (Asia/Makassar) secara otomatis dan memformatnya menjadi tanggal bahasa Indonesia yang indah (Contoh: "27 Juni 2026, 18:36:42 WITA").
-- **Penyelarasan Desain Halaman Helpdesk Publik**:
-    - Merancang ulang halaman formulir helpdesk (`app/Views/helpdesk/public_form.php`) dan halaman sukses (`app/Views/helpdesk/public_success.php`) sebagai halaman mandiri (*standalone centered card*) berlatar belakang `bg-slate-50` dengan header gelap `bg-slate-800` (atau bergradasi emerald pada sukses) persis seperti gaya desain halaman Verifikasi Akun dan Verifikasi PDF demi konsistensi antarmuka publik yang seragam.
-    - Menyelaraskan seluruh gaya input form (background putih `bg-white`, border radius `rounded-lg`, serta warna label dan ikon `text-slate-700`) agar seragam dengan standar input halaman login dan formulir sistem utama.
-    - Memperlebar wadah kartu formulir helpdesk dari `max-w-2xl` menjadi `max-w-3xl` agar tata letak input lebih leluasa dan proporsional.
-    - Mengubah status input **NIP / NIK** pemohon dari sebelumnya opsional menjadi wajib (*required*), serta menambahkan aturan validasi terkait (`nip_pemohon => 'required'`) di sisi server (`HelpdeskPublicController.php`).
-- **Pembaruan Meta Deskripsi & Penyelarasan Judul**:
-    - Menyatukan dan menyederhanakan deskripsi default, OpenGraph, dan Twitter Card di seluruh halaman publik (Layout Utama, Halaman Login, Verifikasi Akun, dan Verifikasi PDF) menggunakan satu format deskripsi yang seragam: "Sistem Identitas Digital & Sertifikat Elektronik Pemerintah Kabupaten Sinjai".
-    - Menghapus penimpa (*override*) deskripsi kustom di Controller `Email.php` agar halaman profil verifikasi akun sepenuhnya konsisten menggunakan deskripsi seragam dari tingkat layout.
-    - Menyederhanakan penamaan judul halaman `<title>` pada halaman publik: Login menjadi `Login`, formulir dan sukses Helpdesk disederhanakan menjadi `Helpdesk`, serta halaman error verifikasi disamakan menjadi `Verifikasi Akun`.
-- **Pembersihan Aset Sementara**:
-    - Menghapus berkas spreadsheet sampah/cadangan di folder `public/` (`batch_restore.csv`, `batch_restore.xlsx`, `restore_data.xlsx`) untuk menghemat penyimpanan proyek.
-
-# Session History - 28 Juni 2026
-
-## Fitur Baru
-- **Fitur Batch Register BSrE di Detail Unit Kerja**:
-    - Menambahkan tombol mandiri "Register BSrE" (ikon `user-plus`) pada jajaran tombol aksi di halaman **Detail Unit Kerja** (`app/Views/email/unit_kerja_detail.php`).
-    - Menambahkan logika AJAX (*fetch*) sekuensial asinkron untuk mendaftarkan secara massal semua akun pegawai berstatus "NOT_REGISTERED" ke BSrE, disusul dengan pembaruan status TTE secara otomatis per baris tabel, serta penyegaran halaman.
-- **Integrasi Pendaftaran BSrE Langsung di Detail Akun**:
-    - Menambahkan tombol "Daftarkan BSrE" (ikon `user-plus`) pada baris informasi status TTE di halaman **Detail Akun** (`app/Views/email/detail.php`).
-    - Tombol ini akan otomatis muncul hanya jika status BSrE pegawai saat ini bernilai "NOT_REGISTERED" (ditangani secara dinamis melalui JavaScript).
-    - Menambahkan AJAX (*fetch*) asinkron untuk mendaftarkan nama & email pegawai ke BSrE secara langsung, disusul dengan *auto-sync* status TTE yang akan memperbarui antarmuka pengguna tanpa memicu muat ulang (*reload*) halaman.
-- **Penyelarasan Validasi Single & Batch Create Email**:
-    - Menambahkan pembersihan format NIK (menghapus spasi, titik, tanda hubung) dan validasi keunikan NIK di database lokal pada metode `createSingleEmail` (`app/Domains/Email/Services/EmailService.php`).
-    - Menambahkan otomatisasi kapitalisasi (uppercase) nama Jabatan (`mb_strtoupper`) pada pembuatan email tunggal agar konsisten dengan format batch.
-    - Menyesuaikan tombol eksekusi di halaman pembuatan akun tunggal (`app/Views/email/create.php`) agar otomatis terkunci (disabled) jika NIK yang dimasukkan sudah terdaftar di database lokal.
-- **Penetapan Huruf Kapital Otomatis untuk Nama Pegawai**:
-    - Menghapus tombol pembantu manual "Huruf Kapital" di halaman pendaftaran tunggal (`create.php`), pendaftaran massal (`batch/create.php`), dan pembaruan massal (`batch/update.php`).
-    - Memastikan nama pegawai secara otomatis dikonversi ke huruf kapital (`mb_strtoupper`) di sisi server sebelum disimpan ke database, baik pada proses pembuatan akun tunggal, pembuatan massal, maupun pembaruan massal.
-- **Implementasi Logo.png sebagai Brand dan Favicon**:
-    - Menambahkan representasi visual logo Pemerintah Daerah (`public/logo.png`) sebagai brand di bagian header sidebar (`sidebar.php`) dan halaman masuk (`login.php`).
-    - Memastikan favicon di semua templat (Layout Utama, Halaman Login, Verifikasi Publik, dan Halaman Error) merujuk secara konsisten ke berkas `logo.png`.
-    - Menetapkan berkas `public/meta.png` yang telah disiapkan sebagai gambar *Open Graph* (meta image) utama yang akan ditampilkan ketika situs web dibagikan di media sosial.
-- **Halaman Verifikasi PDF Publik (`GET /verifikasi-pdf` & `POST /verifikasi-pdf`)**:
-    - Menyediakan halaman verifikasi publik mandiri di `app/Views/email/verify_pdf.php` yang dapat diakses oleh publik tanpa otentikasi.
-    - Halaman ini memfasilitasi dropzone unggahan PDF dan pengujian tanda tangan elektronik ter-TTE serta integritas berkas secara instan.
-- **Endpoint Registrasi User BSrE (`POST bsre/register`)**:
-    - Menambahkan rute dan metode pengiriman pendaftaran user baru ke BSrE API v2 (`POST /api/v2/user/registration`).
-- **Endpoint Verifikasi TTE PDF (`POST bsre/verify`)**:
-    - Menambahkan rute dan metode verifikasi keaslian file PDF ter-TTE ke BSrE API v2 (`POST /api/v2/verify/pdf`), mendukung *upload* file langsung (*multipart*) atau *string* Base64 beserta sandi enkripsi (opsional).
-
-- **Penyelarasan & Standarisasi Halaman Verifikasi Publik**:
-    - Mengubah nama berkas view `verifikasi.php` menjadi `verify.php` agar konsisten menggunakan Bahasa Inggris, serta menyelaraskan pemanggilannya di controller `Email.php`.
-    - Merestrukturisasi `verify.php` (verifikasi akun) agar menampilkan logo resmi daerah (`logo.png`), menyederhanakan konten agar lebih padat (*to the point*), menambahkan lencana status verifikasi hijau yang informatif, dan memperlebar kartu (`max-w-xl`) guna mengakomodasi nama unit kerja yang panjang.
-    - Merestrukturisasi `verify_pdf.php` (verifikasi berkas PDF) menjadi halaman publik mandiri (*standalone*) seutuhnya yang tidak mengekor tata letak admin panel (`layouts/main.php`), menampilkan header minimalis berlogo resmi, dan mengoptimalkan tinggi elemen agar muat tanpa perlu melakukan *scrolling*.
-- **Penyempurnaan Penanganan Kesalahan Integrasi BSrE API**:
-    - Mengonfigurasi cURL request pada `BsreApi.php` agar tidak melempar eksepsi pada status HTTP non-2xx (`http_errors => false`), sehingga pesan kesalahan rinci/spesifik (seperti "NIK/Email sudah terdaftar") dari server BSrE dapat didekode dan diteruskan secara transparan ke frontend.
-
-## Dokumentasi & Infrastruktur
-- **Pembaruan Panduan Pengembangan (GEMINI.md)**:
-    - Menyesuaikan nama proyek pada judul dari "PANRITA" menjadi "Sistem Identitas Digital".
-
-# Session History - 25 Juni 2026
-
-## Dokumentasi & Infrastruktur
-- **Pembaruan Panduan Cron Job (README.md)**:
-    - Memperbarui perintah Cron Job untuk `app:backup` dan `queue:clean-exports` pada dokumentasi dengan menggunakan *absolute path* PHP cPanel (`/opt/cpanel/ea-php83/root/usr/bin/php`) agar kompatibel dengan lingkungan cron production.
-
-# Session History - 23 Juni 2026
-
-## Fitur Baru
-- **Antrean Ekspor Laporan PDF (Background Job)**:
-    - Memindahkan proses *rendering* PDF berukuran besar (khususnya Detail Unit Kerja) ke antrean latar belakang (QueueWorker) untuk mengatasi kendala *504 Gateway Timeout* pada server saat mengekspor ribuan data.
-    - Menambahkan tabel `export_histories` untuk mencatat riwayat dan status *export*.
-    - Menambahkan antarmuka (UI) khusus "Riwayat Laporan" yang dapat diakses melalui Sidebar untuk memantau status *rendering* (PENDING, PROCESSING, COMPLETED) dan tombol *download* jika PDF sudah siap.
-    - Menambahkan perintah Spark baru `queue:clean-exports` yang bertugas membersihkan entri riwayat beserta file fisik PDF yang umurnya lebih dari 3 hari.
-- **CLI Sync Pegawai per Unit Kerja (`sync:pegawai-unit`)**:
-    - Menambahkan perintah Spark baru `sync:pegawai-unit [unit_id] [--asn=...]` untuk melakukan sinkronisasi massal data kepegawaian (Jabatan, Pangkat, Golongan) langsung dari API Simpeg berdasarkan Unit Kerja.
-    - Menggunakan fungsi batch yang sudah ada di `PegawaiSyncService`.
-    - Mendukung filter status ASN secara spesifik (misal: PNS, PPPK).
-- **Tukar Data Akun (Swap)**:
-    - Tambah form swap data antar dua akun menggunakan dropdown dengan fitur pencarian (`Choices.js`).
-    - Data yang ditukar: NIK, NIP, nama, gelar, tempat/tanggal lahir, jabatan, golongan, pangkat, unit kerja, eselon, status ASN, pimpinan, dan pensiun_at. Email tidak ikut ditukar.
-    - Mencegah `Duplicate Entry` NIK/NIP saat swap dengan menggunakan nilai sementara (`temp_`) sebelum update final.
-    - Menggunakan *Query Builder* langsung (bukan `Model::update()`) untuk memastikan eksekusi tidak di-*block* oleh CodeIgniter *callbacks*.
-    - Audit log `SWAP_DATA` dicatat setiap eksekusi.
-## Perbaikan Desain & UX (Desain UI/UX)
-- **Standarisasi UI Komponen (Back Button):**
-    - Menyeragamkan ukuran tombol kembali (*back button*) pada halaman form (`create`, `detail`, `edit_profile`, `edit_password`, `edit_pk`, `swap_data`) menjadi bentuk kotak simetris sempurna (`!w-10 !h-10 !p-0`).
-- **Optimalisasi Form Tukar Data (Swap Data)**:
-    - Melakukan sinkronisasi tata letak (grid layout) halaman Tukar Data agar sepenuhnya selaras dengan halaman Buat Akun.
-    - Mengganti pemuatan *dropdown* `<select>` statis ribuan email menjadi pencarian dinamis (AJAX *lazy-loading*) via endpoint `api/search` untuk meningkatkan kecepatan muat (load) halaman secara drastis (Perf Optimization).
-- **Perbaikan Kinerja Antrean (Queue Worker) di cPanel**:
-    - **Session Locking Fix**: Mengakhiri sesi PHP lebih awal (`session_write_close()`) pada `api_trigger_queue` agar permintaan AJAX tidak memblokir antarmuka pengguna (UI) saat *worker* berjalan di *background*.
-    - **Bypass Command Helper**: Menghindari bug CodeIgniter `command()` yang gagal mem-*parsing* opsi CLI dari pemanggilan *web*, dengan memanggil objek `QueueWorker` secara langsung.
-    - **Memory Limit Bypass**: Menaikkan batas memori menjadi 512MB di `api_trigger_queue` secara spesifik untuk memfasilitasi kebutuhan memori *mPDF* yang tinggi tanpa mengubah batas global.
-    - **Auto-Trigger Cerdas**: Menambahkan fitur auto-trigger pada halaman `Riwayat Laporan` jika masih terdapat pekerjaan berstatus `PENDING` atau `PROCESSING` untuk menjamin stabilitas penyelesaian tugas.
-
-## Perbaikan Bug (Bug Fixes)
-- **404 Not Found pada Riwayat Laporan**: Memperbaiki rute `/reports/history` dan `/reports/download/(:num)` yang sebelumnya tidak bisa diakses karena secara tidak sengaja terdaftar di dalam *group* rute `email`.
-
-## Refaktor
-- **Pembersihan File Redundan**:
-    - Menghapus file skrip percobaan sisa pengembangan fitur Swap (`test_swap.php`).
-    - Menghapus sisa *temporary file* dari proses backup database yang pernah gagal/terputus di dalam direktori `writable/backups`.
-- **Generator Email Batch Create**:
-    - Urutan kandidat email disederhanakan: base → tahun lahir (NIP[3-4]) → tanggal lahir (NIP[7-8]) → random 2 digit.
-    - Menghapus fungsi `getNikPart()` yang redundan (sama dengan tahun lahir NIP).
-    - Menghapus `getNipMonth()` dan `getNipSeq()` dari fallback, diganti random 2 digit yang lebih sederhana.
-    - Password suffix sekarang mengikuti urutan kandidat yang sama secara independen (tahun lahir dulu, tanggal lahir, random).
-- **Retry Password Weak di Batch Create**:
-    - Backend otomatis mencoba kandidat password berikutnya jika cPanel menolak karena *weak password*.
-    - Urutan retry: tahun lahir → tanggal lahir (NIP[7-8]) → random 2 digit. Suffix **diganti**, bukan ditambahkan.
-    - Password yang akhirnya berhasil disimpan ke database lokal.
-
-## Bug Fixes
-- **Fix `Undefined array key "hp"`** di `swapAccountData`: Menghapus field `hp`, `masa_kerja`, `is_pensiun`, `is_operator` yang tidak ada di skema database.
-- **Fix `Call to undefined function log_audit()`**: Menambahkan `require_once audit_helper.php` di `BaseController` agar fungsi tersedia secara global di semua controller.
-- **Fix Swap Data Tidak Berubah**: Beralih dari `Model::update()` ke *Query Builder* langsung untuk mencegah update diam-diam yang diblokir oleh CodeIgniter model *callbacks*.
-- **Fix Filter `--asn=PNS` Tidak Bekerja di CLI**: Menambahkan parsing fallback untuk format `--asn=PNS` (dengan tanda `=`) yang tidak dikenali `CLI::getOption()` di CodeIgniter 4.
-- **Fix Status "Available" Palsu di Batch Preview**:
-    - Menambahkan `->withDeleted()` pada semua query di `batch_check_availability` agar akun yang sudah di-*soft-delete* tetap ditandai sebagai tidak tersedia.
-    - Memaksa `isAvailable = false` jika NIK atau NIP sudah ada di database, walaupun email-nya belum dipakai.
-- **Fix Badge Status Preview Batch**:
-    - Menambahkan badge **Existing** (oranye) untuk NIK/NIP sudah ada di DB.
-    - Menambahkan badge **Duplikat** (kuning) untuk NIK/NIP duplikat dalam satu batch.
-    - Tombol **Eksekusi** dinonaktifkan selama ada baris berstatus Existing, Duplikat, atau Unavailable.
+Semua perubahan penting pada proyek ini dicatat di berkas ini.
+Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
-# Session History - 22 Juni 2026
-
+# [29 Juni 2026]
 
 ## Fitur Baru
-- **Notifikasi Telegram saat Tambah 1 Akun Email Baru**:
-    - Menambahkan notifikasi Telegram otomatis di `EmailService::createSingleEmail()` setelah akun berhasil dibuat.
-    - Format notifikasi menggunakan `TelegramMessageBuilder` yang sudah terstandarisasi (menampilkan nama, jabatan, unit kerja, email, dan waktu pembuatan).
-    - Baris yang kosong (nama/jabatan/unit kerja) otomatis disembunyikan, bukan digantikan teks *fallback*.
-    - Notifikasi dibungkus `try-catch` terpisah agar kegagalan Telegram tidak mengganggu proses pembuatan akun.
+- **Indikator & Filter Penggunaan Disk di Daftar Email**:
+    - Menambahkan kolom **Penggunaan Disk** pada tabel daftar email utama (`app/Views/email/index.php`) berupa progress bar mini dan persentase yang menunjukkan sisa kuota penyimpanan email.
+    - Progress bar dirancang dinamis dengan pewarnaan visual (Merah jika ≥ 85%, Jingga jika ≥ 70%, dan Slate gelap jika normal) konsisten dengan detail akun.
+    - Menambahkan filter pencarian **Penggunaan Disk** di form atas untuk menyaring akun berstatus *Kritis* (≥ 85%) atau *Penuh* (≥ 95%).
+    - Memperbarui `EmailService.php` dan `Email.php` controller untuk memproses parameter `disk_usage` dan melakukan filter query builder di database.
+
+## Perbaikan Bug
+- **Sinkronisasi Jumlah Email Database vs cPanel**:
+    - Menemukan akar masalah ketidaksinkronan: metode `syncFromCpanel()` di `SyncService.php` sebelumnya hanya melakukan *upsert* (tambah/perbarui) tanpa pernah menghapus akun yang sudah tidak ada di cPanel.
+    - Menambahkan logika **Soft-Delete Sinkron**: setelah proses *upsert* selesai, sistem kini membandingkan seluruh daftar email aktif di database dengan daftar dari cPanel. Akun yang ada di database namun tidak ditemukan di cPanel akan otomatis di-*soft delete*.
+    - Proses penghapusan dilakukan per batch 500 record untuk efisiensi query dan dicatat ke log sistem untuk keperluan audit.
+    - Nilai kembalian `syncFromCpanel()` diperbarui untuk menyertakan informasi jumlah akun yang disinkronkan (`synced`) dan dihapus (`deleted`).
+
+## Antarmuka & Konsistensi Desain
+- **Pembersihan Menu Sidebar**:
+    - Menghapus entri menu **Verifikasi PDF** dari sidebar agar navigasi samping lebih ringkas.
+    - Tombol **Verifikasi PDF** tetap tersedia di bagian kanan atas navbar untuk akses cepat.
+- **Penyelarasan Halaman Error Verifikasi Akun**:
+    - Mendesain ulang `app/Views/email/error.php` menjadi halaman mandiri (*standalone centered card*) berlatar belakang `bg-slate-50` dengan header gelap `bg-slate-800`, selaras dengan desain `verify.php`, `verify_pdf.php`, dan `login.php`.
+- **Penambahan Panel "Detail Kendala & Layanan" di Halaman Admin Helpdesk**:
+    - Menambahkan kartu "Detail Kendala & Layanan" pada `app/Views/helpdesk/admin_detail.php` yang menampilkan **Kategori**, **Layanan Spesifik**, dan **Jenis Masalah** — informasi ini sebelumnya tidak ditampilkan di halaman detail.
+
+## Panduan Pengembangan
+- **Pembaruan `GEMINI.md`**:
+    - Menambahkan aturan bahwa kompilasi CSS, pencatatan CHANGELOG, dan push hanya dijalankan saat ada instruksi eksplisit "push" dari pengguna.
+    - Menambahkan catatan bahwa pengguna menjalankan `npm run dev` (*watch mode*) secara aktif sehingga build manual tidak diperlukan.
+
+---
+
+# [28 Juni 2026]
+
+## Antarmuka & Konsistensi Desain
+- **Halaman Verifikasi PDF**:
+    - Menyederhanakan tampilan hasil verifikasi: menghapus status "Dokumen Telah Dimodifikasi", "Keutuhan Berkas", dan "Kepercayaan Sertifikat".
+    - Mengubah label panel "Hasil Analisis" menjadi **"Hasil Verifikasi"**.
+    - Menambahkan penyesuaian warna dinamis: hijau (*emerald*) jika terdeteksi TTE, jingga (*amber*) jika tidak ada TTE. Header utama tetap abu-abu gelap.
+    - Mengubah tata letak Detail Penandatangan menjadi 1 kolom vertikal yang rapi.
+    - Menambahkan fungsi `formatIndonesianDate` untuk menampilkan waktu TTE dalam zona waktu **WITA** (contoh: "27 Juni 2026, 18:36:42 WITA").
+- **Halaman Helpdesk Publik**:
+    - Mendesain ulang halaman formulir (`public_form.php`) dan sukses (`public_success.php`) menjadi halaman mandiri (*standalone centered card*) selaras dengan gaya halaman Verifikasi Akun.
+    - Menyelaraskan gaya input form (`bg-white`, `rounded-lg`, warna label `text-slate-700`).
+    - Memperlebar kartu formulir dari `max-w-2xl` menjadi `max-w-3xl`.
+    - Mengubah status input **NIP / NIK** dari opsional menjadi wajib (*required*), beserta validasi server-side di `HelpdeskPublicController.php`.
+- **Tombol Verifikasi PDF & Helpdesk**:
+    - Menambahkan tombol Verifikasi PDF di navbar dan halaman login dengan struktur grid responsif.
+    - Mengonfigurasi seluruh tautan publik agar terbuka di tab baru (`target="_blank"`).
+- **Penyelarasan Meta & Judul**:
+    - Menyatukan deskripsi OpenGraph, Twitter Card, dan deskripsi default di seluruh halaman publik menjadi satu format seragam.
+    - Menyederhanakan judul halaman: Login → `Login`, Helpdesk → `Helpdesk`, Error Verifikasi → `Verifikasi Akun`.
+- **Pembersihan Aset**:
+    - Menghapus berkas spreadsheet sementara di folder `public/` (`batch_restore.csv`, `batch_restore.xlsx`, `restore_data.xlsx`).
+
+## Fitur Baru
+- **Batch Registrasi BSrE di Detail Unit Kerja**:
+    - Menambahkan tombol "Register BSrE" pada halaman Detail Unit Kerja untuk mendaftarkan massal seluruh akun berstatus `NOT_REGISTERED` ke BSrE secara sekuensial via AJAX.
+- **Registrasi BSrE Langsung di Detail Akun**:
+    - Tombol "Daftarkan BSrE" muncul otomatis hanya jika status BSrE pegawai bernilai `NOT_REGISTERED`.
+    - Setelah registrasi berhasil, status TTE otomatis di-sync tanpa memuat ulang halaman.
+- **Validasi Pembuatan Akun Tunggal**:
+    - Menambahkan pembersihan format NIK dan validasi keunikan NIK di database lokal pada `createSingleEmail`.
+    - Tombol eksekusi otomatis terkunci jika NIK sudah terdaftar.
+- **Kapitalisasi Nama Otomatis**:
+    - Nama pegawai kini secara otomatis dikonversi ke huruf kapital (`mb_strtoupper`) di sisi server pada semua proses (tunggal, massal, pembaruan massal).
+- **Logo & Favicon**:
+    - Menambahkan logo daerah (`logo.png`) di sidebar dan halaman login.
+    - Menetapkan `meta.png` sebagai gambar Open Graph utama.
+- **Halaman Verifikasi PDF Publik** (`GET /verifikasi-pdf`):
+    - Menyediakan halaman verifikasi publik mandiri yang dapat diakses tanpa otentikasi.
+- **Endpoint BSrE**:
+    - `POST /bsre/register` — pendaftaran user baru ke BSrE API v2.
+    - `POST /bsre/verify` — verifikasi keaslian PDF ter-TTE, mendukung upload file langsung atau string Base64.
+- **Penanganan Kesalahan BSrE API**:
+    - Mengonfigurasi cURL agar tidak melempar eksepsi pada HTTP non-2xx sehingga pesan error rinci dari server BSrE dapat diteruskan ke frontend.
+
+## Panduan Pengembangan
+- **Pembaruan `GEMINI.md`**: Menyesuaikan nama proyek dari "PANRITA" menjadi "Sistem Identitas Digital".
+
+---
+
+# [25 Juni 2026]
+
+## Panduan & Infrastruktur
+- **Pembaruan `README.md`**: Memperbarui perintah Cron Job dengan *absolute path* PHP cPanel (`/opt/cpanel/ea-php83/root/usr/bin/php`) agar kompatibel dengan lingkungan cron production.
+
+---
+
+# [23 Juni 2026]
+
+## Fitur Baru
+- **Antrean Ekspor PDF Latar Belakang**:
+    - Memindahkan proses *rendering* PDF besar ke antrean latar belakang (QueueWorker) untuk mengatasi *504 Gateway Timeout*.
+    - Menambahkan tabel `export_histories` untuk mencatat status ekspor.
+    - Menambahkan antarmuka "Riwayat Laporan" di sidebar untuk memantau status (PENDING, PROCESSING, COMPLETED) dan mengunduh PDF yang sudah siap.
+    - Menambahkan perintah Spark `queue:clean-exports` untuk membersihkan riwayat dan file PDF yang berumur lebih dari 3 hari.
+- **Sinkronisasi Pegawai per Unit Kerja via CLI** (`sync:pegawai-unit`):
+    - Mendukung filter status ASN (contoh: PNS, PPPK).
+    - Menggunakan fungsi batch yang sudah ada di `PegawaiSyncService`.
+- **Tukar Data Akun (Swap)**:
+    - Formulir swap data antar dua akun menggunakan dropdown dengan fitur pencarian (Choices.js).
+    - Data yang ditukar: NIK, NIP, nama, gelar, tempat/tanggal lahir, jabatan, golongan, pangkat, unit kerja, eselon, status ASN, pimpinan, dan pensiun_at. Email tidak ikut ditukar.
+    - Mencegah `Duplicate Entry` NIK/NIP saat swap dengan nilai sementara (`temp_`) sebelum update final.
+    - Audit log `SWAP_DATA` dicatat setiap eksekusi.
+
+## Perbaikan Bug
+- **Halaman 404 pada Riwayat Laporan**: Memperbaiki rute `/reports/history` dan `/reports/download/(:num)` yang tidak bisa diakses karena terdaftar di dalam *group* rute `email`.
+- **Fix `Undefined array key "hp"`** di `swapAccountData`: Menghapus field yang tidak ada di skema database.
+- **Fix `Call to undefined function log_audit()`**: Menambahkan `require_once audit_helper.php` di `BaseController`.
+- **Fix Swap Data Tidak Berubah**: Beralih dari `Model::update()` ke *Query Builder* langsung untuk mencegah update yang diblokir oleh CodeIgniter model *callbacks*.
+- **Fix Filter `--asn=PNS` di CLI**: Menambahkan parsing fallback untuk format `--asn=PNS` (dengan tanda `=`).
+- **Fix Badge Status Preview Batch**:
+    - Menambahkan badge **Existing** (jingga) untuk NIK/NIP yang sudah ada di DB.
+    - Menambahkan badge **Duplikat** (kuning) untuk NIK/NIP duplikat dalam satu batch.
+    - Tombol Eksekusi dinonaktifkan selama ada baris berstatus Existing, Duplikat, atau Unavailable.
+
+## Antarmuka & Desain
+- **Standarisasi Tombol Kembali**: Menyeragamkan ukuran tombol kembali menjadi kotak simetris (`!w-10 !h-10 !p-0`) di semua halaman form.
+- **Optimasi Formulir Tukar Data**: Mengganti dropdown statis ribuan email menjadi pencarian dinamis AJAX via `api/search` untuk mempercepat pemuatan halaman.
+
+## Optimasi Antrean (Queue Worker)
+- **Session Locking Fix**: Mengakhiri sesi PHP lebih awal (`session_write_close()`) agar request AJAX tidak memblokir antarmuka.
+- **Bypass Command Helper**: Memanggil objek `QueueWorker` secara langsung untuk menghindari bug parsing opsi CLI di CodeIgniter.
+- **Memory Limit Bypass**: Menaikkan batas memori menjadi 512MB pada `api_trigger_queue` khusus untuk kebutuhan mPDF.
+- **Auto-Trigger Cerdas**: Menambahkan fitur auto-trigger pada halaman Riwayat Laporan jika masih terdapat pekerjaan berstatus PENDING atau PROCESSING.
 
 ## Refaktor
-- **Diet Controller Website (`WebDesaKelurahan.php` & `WebOpd.php`)**:
-    - Memindahkan logika *query* agregasi statistik (total, aktif, nonaktif) dan logika *sorting* distribusi platform ke dalam `WebsiteService.php` (fungsi baru: `getDesaKelurahanStats()`, `getDesaKelurahanPlatformStats()`, `getOpdStats()`).
-    - Kedua *controller* kini hanya memanggil metode *service* tanpa logika *query* langsung.
-- **Format Notifikasi Telegram (Baris Kosong)**:
-    - Mengubah perilaku `TelegramMessageBuilder::addUserProfile()` agar baris yang nilainya kosong (nama, jabatan, unit kerja) **tidak dicetak sama sekali** (tidak lagi menampilkan teks *fallback* seperti "Tanpa Nama" atau "Jabatan Belum Diisi").
-    - Berlaku untuk semua notifikasi: kuota penuh dan TTE Pimpinan *expired*.
-- **Pembersihan Cache Otomatis Pasca Sinkronisasi**:
-    - Menambahkan pembersihan `cache` dashboard (`dashboard_summary_data_v3` & `email_dashboard_summary`) secara otomatis di akhir eksekusi `SyncAllCommand` (setelah semua fase sinkronisasi selesai).
-    - Menambahkan pembersihan `cache` di `QueueWorker` saat antrean habis (`stopWhenEmpty`), memastikan data *dashboard* selalu *real-time* setelah proses *background job* tuntas.
+- **Generator Email Batch Create**: Urutan kandidat disederhanakan — base → tahun lahir → tanggal lahir → random 2 digit. Password suffix mengikuti urutan yang sama.
+- **Retry Password Weak di Batch Create**: Backend otomatis mencoba kandidat password berikutnya jika cPanel menolak karena password lemah.
 
-## Bug Fixes
+---
+
+# [22 Juni 2026]
+
+## Fitur Baru
+- **Notifikasi Telegram saat Pembuatan Akun Email Baru**:
+    - Notifikasi otomatis dikirim setelah akun berhasil dibuat via `EmailService::createSingleEmail()`.
+    - Baris kosong (nama/jabatan/unit kerja) otomatis disembunyikan.
+    - Notifikasi dibungkus `try-catch` terpisah agar kegagalan Telegram tidak mengganggu pembuatan akun.
+
+## Refaktor
+- **Diet Controller Website**: Memindahkan logika query agregasi statistik ke `WebsiteService.php`.
+- **Format Notifikasi Telegram**: Baris yang nilainya kosong tidak dicetak sama sekali (tidak lagi menampilkan teks *fallback*). Berlaku untuk semua notifikasi.
+- **Pembersihan Cache Otomatis**: Cache dashboard dibersihkan otomatis di akhir eksekusi `SyncAllCommand` dan saat antrean `QueueWorker` habis.
+
+## Perbaikan Bug
 - **Fix Tanggal Terakhir Sinkronisasi cPanel Tidak Berubah di Dashboard**:
-    - Akar masalah #1: `SyncAllCommand::syncCpanel()` kelupaan memanggil `$this->saveLastSyncTime('last_sync_cpanel')` setelah antrean berhasil dibuat.
-    - Akar masalah #2: `DashboardService` tidak mengambil kunci `last_sync_cpanel` dari database (hanya mengambil `last_sync_time` yang sudah usang).
-    - Akar masalah #3: `app/Views/home/index.php` masih menggunakan variabel `$last_sync_time` (usang) untuk menampilkan tanggal cPanel, bukan `$last_sync_cpanel`.
-    - Ketiga akar masalah telah diperbaiki secara bersamaan.
-- **Fix `Duplicate Entry` pada Sinkronisasi cPanel (`sync_cpanel`)**:
-    - Akun email yang sudah di-*soft-delete* tidak terdeteksi saat proses pengecekan `upsertBatch`, sehingga sistem mencoba memasukkan data baru dan terkena error duplikasi.
-    - Diperbaiki dengan menambahkan `->withDeleted()` pada query pengecekan eksistensi, sehingga sistem akan melakukan *update* (bukan *insert*) meskipun akunnya berada di tong sampah.
-- **Fix `null` Error pada Notifikasi Kuota (`sync_quota_report`)**:
-    - `TelegramMessageBuilder::addUserProfile()` menerima `null` pada argumen `$name` untuk akun yang belum diisi namanya, menyebabkan *fatal error*.
-    - Diperbaiki dengan sanitasi nilai `null` sebelum dikirim ke *builder*.
+    - `SyncAllCommand::syncCpanel()` lupa memanggil `saveLastSyncTime('last_sync_cpanel')`.
+    - `DashboardService` tidak mengambil kunci `last_sync_cpanel` dari database.
+    - View `index.php` masih menggunakan variabel `$last_sync_time` yang sudah usang.
+- **Fix `Duplicate Entry` pada Sinkronisasi cPanel**: Menambahkan `->withDeleted()` pada pengecekan eksistensi agar akun yang di-*soft-delete* tidak di-*insert* ulang.
+- **Fix `null` Error pada Notifikasi Kuota**: Sanitasi nilai `null` pada argumen `$name` di `TelegramMessageBuilder::addUserProfile()`.
 
-## Optimasi Database (Performance)
-- **Migrasi Indeks Baru (`2026-06-22-140700_AddMissingIndexes`)**:
-    - Menambahkan `INDEX deleted_at_idx` pada tabel `emails` untuk mempercepat semua *query* yang menggunakan fitur *soft delete* (digunakan hampir di seluruh sistem).
-    - Menambahkan *composite index* `bsre_status_deleted_at_idx` pada tabel `emails` untuk mempercepat *query* dashboard TTE.
-    - Menambahkan `INDEX status_idx` pada tabel `web_opd` dan `web_desa_kelurahan`.
-    - Menambahkan `INDEX kecamatan_idx` pada tabel `web_desa_kelurahan` untuk mempercepat fitur filter.
+## Optimasi Database
+- **Migrasi Indeks Baru** (`2026-06-22-140700_AddMissingIndexes`):
+    - `INDEX deleted_at_idx` pada tabel `emails` untuk mempercepat query *soft delete*.
+    - *Composite index* `bsre_status_deleted_at_idx` pada tabel `emails` untuk dashboard TTE.
+    - `INDEX status_idx` pada tabel `web_opd` dan `web_desa_kelurahan`.
+    - `INDEX kecamatan_idx` pada tabel `web_desa_kelurahan` untuk filter.
 
-## Refaktor Lanjutan (Babak 2)
-- **Standarisasi Semua Notifikasi Telegram ke `TelegramMessageBuilder`**:
-    - Notifikasi *Pensiun* (`mark_pensiun`): Diubah dari *raw string* ke `TelegramMessageBuilder`. NIP/NIK kembali ditampilkan (jika ada).
-    - Notifikasi *Hapus Permanen dari Trash* (`forceDelete`): Diubah dari *raw string* ke `TelegramMessageBuilder`. NIP/NIK kembali ditampilkan.
-    - Notifikasi *Hapus Permanen Direct* (`delete`): Diubah dari *raw string* ke `TelegramMessageBuilder`. NIP/NIK kembali ditampilkan.
-    - Notifikasi *Batch Create & Update* (`sendBatchNotification`): Diubah dari *raw string* ke `TelegramMessageBuilder`. Kini menampilkan nama admin yang mengeksekusi dan *timestamp*.
-    - **Aturan NIP/NIK berlaku seragam** di semua notifikasi: ditampilkan jika ada (NIP prioritas, NIK cadangan, jika kosong baris otomatis hilang).
-- **Audit Log Konsisten di Semua Titik Aksi Kritis**:
-    - Tambah `log_audit('CREATE')` saat buat 1 akun (`EmailApi::create_single_email`).
-    - Tambah `log_audit('UPDATE')` saat edit profil (`Email::update_details`).
-    - Tambah `log_audit('PENSIUN')` saat akun ditandai pensiun (`Email::mark_pensiun`).
-    - Tambah `log_audit('BATCH_CREATE')` saat pembuatan akun massal (`BatchController::save_batch_create`).
-    - Tambah `log_audit('BATCH_UPDATE')` saat pembaruan akun massal (`BatchController::save_batch_update`).
-    - *Restore* dan *Force Delete* dari Trash sudah tercatat sejak sebelumnya.
-- **Implementasi Keamanan (Rate Limiting)**:
-    - Membuat filter `Throttle.php` untuk membatasi *request* berlebih (*rate limit*).
-    - Dikonfigurasi dengan batas **120 *request* per menit** per alamat IP.
-    - Diterapkan pada *endpoint* pencarian `email/search` dan seluruh layanan API di bawah *group* `api/v1/*` untuk mencegah eksploitasi dan *scraping* data menggunakan *bot/script*.
-- **Diet Controller `Email.php` & `EmailList.php`**:
-    - Memindahkan seluruh logika bisnis `update_details()` (rename cPanel, transaksi DB, sinkronisasi NIP ke akun lain) ke `EmailService::updateProfileDetails()`.
-    - *Controller* `update_details()` dipangkas dari ~90 baris menjadi ~45 baris.
-    - Menghapus pemanggilan `AppSettingModel` yang tidak terpakai dari `index()`.
-    - Membersihkan `EmailList.php` dari *dependency injection* model yang tidak terpakai (EselonModel, StatusAsnModel).
-- **Diet Controller `EmailApi.php`**:
-    - Memindahkan logika pencarian email (`search`) ke `EmailService::searchEmails()`.
-    - Memindahkan logika query email per unit kerja (`api_unit_emails`) ke `EmailService::getUnitEmails()`.
-    - Memindahkan logika sinkronisasi data pegawai dari API eksternal (`sync_pegawai`) ke `EmailService::syncPegawaiFromApi()`.
-    - `EmailApi.php` berkurang dari **437 baris** menjadi **~260 baris** — murni hanya sebagai *dispatcher* tipis.
+## Standarisasi Lanjutan
+- **Semua Notifikasi Telegram ke `TelegramMessageBuilder`**: Notifikasi Pensiun, Hapus Permanen, Batch Create/Update kini menggunakan builder terstandarisasi.
+- **Audit Log Konsisten**: `log_audit()` ditambahkan di semua titik aksi kritis (CREATE, UPDATE, PENSIUN, BATCH_CREATE, BATCH_UPDATE).
+- **Rate Limiting**: Filter `Throttle.php` dengan batas 120 request/menit per IP diterapkan pada endpoint pencarian dan seluruh `api/v1/*`.
+- **Diet Controller `Email.php` & `EmailList.php`**: Logika bisnis `update_details()` dipindahkan ke `EmailService::updateProfileDetails()`.
+- **Diet Controller `EmailApi.php`**: Berkurang dari 437 baris menjadi ~260 baris — murni sebagai *dispatcher* tipis.
 
-# Session History - 16 Juni 2026
+---
+
+# [16 Juni 2026]
 
 ## Fitur & Refaktor
-- **Integrasi Backup Database Otomatis**:
-    - Menambahkan `BackupCommand.php` untuk mencadangkan database otomatis (termasuk kompresi GZIP).
-    - Menambahkan fitur auto-cleanup untuk menghapus file backup yang berumur lebih dari 7 hari.
-    - Menambahkan notifikasi Telegram apabila eksekusi *mysqldump* gagal atau *error*.
-    - Menambahkan parameter `--no-tablespaces` pada *mysqldump* untuk mencegah error hak akses PROCESS di environment cPanel / Shared Hosting.
-- **Pembaruan Alur Eksekusi Antrean (*Queue Worker*)**:
-    - Memindahkan pemanggilan eksekusi `queue:work --stop-when-empty` langsung ke dalam skrip `sync.sh`. Hal ini mengefisiensikan tugas *cronjob* di sisi server agar tidak perlu dipanggil setiap menit, dan menjamin laporan hanya diproses tepat setelah *job* utama selesai.
+- **Backup Database Otomatis** (`BackupCommand.php`):
+    - Pencadangan database dengan kompresi GZIP.
+    - Auto-cleanup file backup yang berumur lebih dari 7 hari.
+    - Notifikasi Telegram jika eksekusi *mysqldump* gagal.
+    - Parameter `--no-tablespaces` untuk mencegah error hak akses di cPanel.
+- **Pembaruan Alur Eksekusi Antrean**: Pemanggilan `queue:work --stop-when-empty` dipindahkan ke dalam `sync.sh` untuk efisiensi.
 
-## Debug & Fixes
-- **Fix Pengiriman Laporan TTE & Kuota**:
-    - Memisahkan pembuatan laporan `checkQuotaAlerts` dan `checkTteExpiredAlerts` menjadi dua pekerjaan (Job) independen (`sync_quota_report` & `sync_tte_report`) yang dijadwalkan secara pasti dalam `SyncAllCommand`.
-    - Sebelumnya, laporan ini bergantung pada logika `stopWhenEmpty` yang tidak pernah terpicu jika *worker* dijalankan sebagai daemon.
-    - Memperbaiki salah ketik (*typo*) variabel `$e['nama']` menjadi `$e['name']` pada *builder* pesan laporan TTE, yang sebelumnya dapat menyebabkan *worker* *crash* karena *Undefined array key*.
-- **Fix Internal Server Error (HTTP 500) & Parse Error**:
-    - Memperbaiki *Parse Error* pada PHP 8.1+ akibat dari sintaks *Closure* atau ekspresi *Regex* variabel `$1` yang disalahgunakan sebagai variabel di dalam namespace (*use*) berbagai *Controller*.
+## Perbaikan Bug
+- **Fix Pengiriman Laporan TTE & Kuota**: Memisahkan `checkQuotaAlerts` dan `checkTteExpiredAlerts` menjadi dua Job independen yang dijadwalkan secara pasti.
+- **Fix Typo Variabel**: `$e['nama']` diubah menjadi `$e['name']` pada builder pesan TTE untuk mencegah *crash* worker.
+- **Fix HTTP 500 & Parse Error**: Memperbaiki sintaks *Closure* yang tidak kompatibel dengan PHP 8.1+.
 
-# Session History - 11 Juni 2026
+---
+
+# [11 Juni 2026]
+
+## Perubahan Besar
 - **Pemusnahan Enkripsi Hash (NIP/NIK)**:
-    - Membatalkan dan menghapus sepenuhnya penggunaan algoritma enkripsi (AES-256) dan indeks rahasia (*blind index*) `nip_hash` & `nik_hash` dari seluruh tabel, model, layanan, dan API.
-    - Semua data NIP dan NIK kini kembali menggunakan *plain text* asli sesuai permintaan, dan sistem pencarian global langsung disesuaikan menggunakan metode klausa `LIKE` biasa.
-    - Mengeksekusi *Migration* untuk mendrop kolom `nip_hash` dan `nik_hash` secara permanen.
-- **Refaktor Logika Pemicu Notifikasi Telegram di QueueWorker**:
-    - Mengubah logika pengecekan tugas (*job*) terakhir di `QueueWorker`. Sebelumnya, pekerja menghitung sisa baris di tabel `jobs`, yang menyebabkan bug gagal lapor jika ada *phantom job* (tugas yang gagal dan ditunda ke masa depan). 
-    - Logika baru merekam jenis tugas yang diproses di dalam memori PHP (Sesi Pekerja) dan memicu peringatan Telegram tepat saat pekerja akan mati (*queue is empty*), memastikan akurasi notifikasi 100%.
+    - Menghapus sepenuhnya enkripsi AES-256 dan *blind index* (`nip_hash`, `nik_hash`) dari seluruh tabel, model, layanan, dan API.
+    - NIP dan NIK kini kembali menggunakan *plain text* dan pencarian menggunakan klausa `LIKE` biasa.
+    - Migrasi untuk menghapus kolom `nip_hash` dan `nik_hash` secara permanen.
 
-## Pembersihan & UI
-- **Penyelarasan Judul Helpdesk**: Menyesuaikan judul halaman `HelpdeskAdminController` dari "Manajemen Tiket Helpdesk TTE" menjadi "Helpdesk Layanan" agar identik (sinkron) dengan judul menu di *sidebar*.
-- **Pembersihan File Temp/Debug**: Melenyapkan 22 file *script* PHP usang yang sebelumnya digunakan untuk *debugging* pemulihan data (misal: `CheckNik.php`, `RecoverNips.php`) untuk merampingkan folder `app/Commands`.
-- **Pembersihan Environment Production**: Menghapus folder `tests/`, file pengaturan `phpunit`, dan `.DS_Store` yang berserakan, untuk meringankan server *production*.
+## Refaktor
+- **Logika Notifikasi QueueWorker**: Merekam jenis tugas yang diproses di memori PHP dan memicu notifikasi Telegram tepat saat pekerja akan berhenti (*queue is empty*).
 
-## Debug & Fixes
-- **Fix Dashboard TTE Count Bug**:
-    - Memperbaiki *bug* tersembunyi pada `Home.php` di mana kolom `unit_kerja_id` tidak terpanggil dalam query `SELECT`, yang menyebabkan ribuan pegawai tanpa NIP disalahartikan sebagai "NON_TTE" (Bukan Sasaran TTE), sehingga menyembunyikan status TTE Aktif mereka dari dasbor.
-- **Cleanup Temporary Routes**:
-    - Menghapus rute, *controller*, dan *view* sementara (`duplicate_nips` dan `ambiguous`) yang sebelumnya digunakan untuk *debugging* pemulihan data NIP.
+## Antarmuka & Pembersihan
+- **Penyelarasan Judul Helpdesk**: Mengubah judul `HelpdeskAdminController` menjadi "Helpdesk Layanan".
+- **Pembersihan File Debug**: Menghapus 22 skrip PHP sisa pengembangan dari `app/Commands`.
+- **Pembersihan Environment Production**: Menghapus folder `tests/`, file `phpunit`, dan `.DS_Store`.
 
-# Session History - 10 Juni 2026
+## Perbaikan Bug
+- **Fix Dashboard TTE Count**: Kolom `unit_kerja_id` tidak terpanggil dalam query SELECT sehingga ribuan pegawai tanpa NIP disalahartikan sebagai "NON_TTE".
+- **Cleanup Rute Sementara**: Menghapus rute, controller, dan view sementara `duplicate_nips` dan `ambiguous`.
 
-## Debug & Fixes
-- **Fix 403 Forbidden pada Batch Update**:
-    - Mengganti payload dari `application/json` ke `multipart/form-data` (menggunakan `FormData`) pada fungsi `create_single_email`, `batch_check_availability`, dan `batch-update-data`. Hal ini mencegah ModSecurity (WAF) dari memblokir payload JSON yang dikira berisi injeksi berbahaya saat menyimpan banyak data array.
-- **Fix Queue Worker Crash (Laporan Telegram TTE)**:
-    - Mengoreksi klausul pencarian dengan query builder `$jobModel->like('payload', $type)` dari sebelumnya yang menggunakan tanda kutip ganda ganda `'"type":"' . $type . '"'`. Tanda kutip ganda menyebabkan error `Unknown column 'type'` di database yang menggunakan konfigurasi `ANSI_QUOTES`.
-    - Perbaikan ini memastikan bahwa fungsi `checkTteExpiredAlerts` (pengiriman notifikasi TTE pimpinan yang expired ke Telegram) dapat dieksekusi dengan lancar setelah tugas batch sinkronisasi selesai tanpa terhenti karena _crash_ SQL.
-    - **Perbaikan Sinkronisasi `status_asn_id`**: Menutup celah bug pada `processBatchUpdate` di mana tabel `pk` (Perjanjian Kerja) gagal mendapatkan nilai `status_asn_id` yang baru jika pembaruan dari UI/Excel hanya mengubah status ASN tanpa mengubah data PK lainnya.
-    - **Transaksi pada Batch Create**: Memperbaiki `processBatchCreate` yang sebelumnya tidak memiliki pelindung transaksi (*Database Transaction*). Sekarang, sistem akan memasukkan data ke database lokal terlebih dahulu; jika berhasil, barulah membuat akun di cPanel. Jika pembuatan cPanel gagal, maka rekaman di database lokal otomatis dibatalkan (*Rollback*) sehingga tidak ada *orphan account*.
-- **Refaktor Queue Worker & Sinkronisasi Notifikasi Asinkron**:
-    - Memindahkan fungsi notifikasi Telegram (`checkTteExpiredAlerts` dan `checkQuotaAlerts`) ke sebuah *service* terpusat (`AlertService`).
-    - Menghapus pemanggilan laporan dari *Cron Job* (`SyncAllCommand`) yang prematur, dan memindahkannya ke dalam `QueueWorker` agar laporan dikirimkan **hanya setelah** tugas latar belakang (API calls) tersebut benar-benar tuntas.
-    - Menambahkan notifikasi darurat (CRITICAL ERROR) otomatis ke grup Telegram apabila terdapat antrean tugas sinkronisasi yang gagal permanen setelah 3 kali percobaan.
-    - Menambahkan logika pembaruan nama `jabatan` pada proses sinkronisasi massal data pegawai di `QueueWorker`.
-- **Fix Laporan Notifikasi Telegram**: Memperbaiki fungsi *Cron Job* `SyncAllCommand` di mana fungsi pengecekan `checkTteExpiredAlerts()` (untuk mendeteksi TTE pimpinan yang *expired*) dan `checkQuotaAlerts()` (untuk peringatan limit *cPanel*) sebelumnya terdefinisi namun terlewat untuk dieksekusi. Sekarang kedua fungsi tersebut akan dipanggil secara otomatis pada sinkronisasi harian dan mingguan.
-- **Refaktor Batch Update (EmailBatchService)**:
-    - **Performa (*Pre-fetching*)**: Menghilangkan masalah *N+1 Query* dengan mengambil seluruh data `email` dan `pk` secara *bulk* di awal proses (memecah ke dalam *chunk* 500 baris) sebelum perbandingan data.
-    - **Konsistensi Data**: Menerapkan *Database Transaction* (`transBegin`, `transCommit`, `transRollback`) sehingga jika salah satu pembaruan gagal, data tidak akan bentrok (setengah jalan).
-    - **Sinkronisasi cPanel**: Mengaktifkan sinkronisasi pembaruan *password* massal langsung ke server cPanel secara *real-time*.
-    - **Fix Logika Unit Kerja & Gaji**: Memperbaiki prioritas *override* unit kerja (data Excel kini tidak tertimpa pilihan dropdown antarmuka) dan memperbaiki logika filter pemisah ribuan pada nominal gaji yang memiliki akhiran desimal `.00` atau `,00`.
-- **Halaman Debug NIP Ganda**: 
-    - Menambahkan rute `/email/duplicate_nips` dan method `duplicate_nips` pada `EmailController` untuk melacak dan menampilkan secara khusus akun-akun pegawai yang memiliki NIP yang sama di dalam database.
-    - Menambahkan antarmuka (view) bergaya "Slate Clean Government" khusus untuk menampilkan tabel akun-akun dengan NIP ganda tersebut beserta tautan cepat untuk mengeditnya.
-- **Fix Local Environment Cookie**:
-    - Mengubah pengaturan cookie `public bool $secure = true;` menjadi `false` pada `app/Config/Cookie.php` untuk mengatasi `SecurityException` saat login di *local environment* (pengujian HTTP biasa tanpa HTTPS).
+---
 
-# Session History - 9 Juni 2026
+# [10 Juni 2026]
 
-- **Fix Batch Route 404 & GET Redirect**:
-    - Mengganti nama rute (`execute-update` -> `process-update`) untuk menghindari blokir WAF.
-    - Menambahkan header CSRF (`X-CSRF-TOKEN`) pada pemanggilan `fetch` di sisi klien.
-    - Memperbarui `baseURL` di `App.php` ke HTTPS untuk mencegah pengalihan (redirect) dari POST ke GET akibat ketidakcocokan protokol.
+## Perbaikan Bug
+- **Fix 403 Forbidden pada Batch Update**: Mengganti payload dari `application/json` ke `multipart/form-data` (`FormData`) untuk mencegah pemblokiran ModSecurity (WAF).
+- **Fix Queue Worker Crash (Laporan Telegram TTE)**: Mengoreksi klausul `LIKE` yang menggunakan tanda kutip ganda pada nama kolom sehingga menyebabkan error SQL `ANSI_QUOTES`.
+- **Fix Sinkronisasi `status_asn_id`**: Menutup celah bug pada `processBatchUpdate` di mana tabel `pk` gagal mendapatkan `status_asn_id` baru.
+- **Transaksi pada Batch Create**: Menambahkan proteksi *Database Transaction* — jika pembuatan akun di cPanel gagal, data di database lokal otomatis dibatalkan (*Rollback*).
 
-## Reviu Proses Batch & Unit Testing
-- **Refaktor EmailBatchService**:
-    - Mengimplementasikan **Dependency Injection** pada constructor `EmailBatchService` untuk mempermudah unit testing dengan memungkinkan penggunaan *mock objects* untuk `CpanelApi`, `EmailModel`, `UnitKerjaModel`, dan `PkModel`.
-- **Implementasi Unit Test**:
-    - Membuat suite pengujian komprehensif di `tests/app/Domains/Batch/EmailBatchServiceTest.php`.
-    - Mencakup pengujian logika `processBatchUpdate` (mode Email & NIK, deteksi *no-change*) dan `processBatchCreate` (keberhasilan pembuatan & validasi duplikasi).
-    - Memastikan integritas logika bisnis dengan 6 *test cases* dan 24 *assertions* yang lulus uji.
-- **Optimasi & Perbaikan Logika**:
-    - **Peningkatan Performa**: Memindahkan pencarian Unit Kerja ke luar *looping* pada proses batch update untuk mengurangi beban database.
-    - **Robust Error Reporting**: Memperbarui penanganan error agar memberikan pesan yang lebih spesifik (seperti detail kegagalan database atau enkripsi) per baris data, menggantikan pesan umum "Gagal memproses data".
-    - **Logging Detail**: Menambahkan pencatatan *stack trace* lengkap pada `BatchController` untuk memudahkan diagnosa kegagalan sistemik di lingkungan server.
-    - **Normalisasi Data**: Memperbaiki perbandingan data agar lebih toleran terhadap perbedaan tipe data antara database (`null`) dan input spreadsheet (string kosong).
+## Refaktor
+- **AlertService Terpusat**: Memindahkan fungsi notifikasi Telegram ke `AlertService`. Laporan dikirimkan hanya setelah tugas latar belakang benar-benar tuntas.
+- **Notifikasi Darurat (CRITICAL ERROR)**: Notifikasi otomatis ke Telegram jika antrean tugas gagal permanen setelah 3 kali percobaan.
+- **Refaktor Batch Update (`EmailBatchService`)**: Menghilangkan masalah *N+1 Query*, menerapkan *Database Transaction*, mengaktifkan sinkronisasi password ke cPanel secara *real-time*.
+
+---
+
+# [9 Juni 2026]
+
+## Perbaikan Bug
+- **Fix Batch Route 404 & GET Redirect**: Mengganti nama rute dan memperbarui `baseURL` ke HTTPS untuk mencegah pengalihan POST ke GET.
 
 ## Perluasan Layanan Helpdesk
-- **Transformasi Portal Helpdesk**:
-    - Mengalihkan fokus Helpdesk yang sebelumnya hanya untuk TTE menjadi portal bantuan terpadu untuk seluruh layanan (Website OPD, Email Resmi, TTE, Aplikasi Srikandi, dan Website Desa).
-    - Memperbarui `HelpdeskPublicController` untuk mendukung pemetaan kategori dan layanan secara dinamis dari domain `Assistance`.
-- **Formulir Publik Dinamis**:
-    - Implementasi **Cascading Dropdowns**: Pengguna kini memilih Kategori terlebih dahulu, diikuti Layanan Spesifik, dan terakhir Jenis Kendala yang relevan (menggunakan logic yang sama dengan Log Pendampingan).
-    - Perbaikan UI/UX pada `public_form.php` dengan penambahan kolom deskripsi detail kendala dan penyesuaian teks agar lebih inklusif untuk seluruh layanan TIK.
-- **Otomasi Integrasi Admin**:
-    - Memperbarui `HelpdeskAdminController` agar tiket yang diselesaikan secara otomatis dicatat ke Log Pendampingan (`Assistance`) dengan kategori dan layanan yang sesuai dengan pilihan pengguna, bukan lagi hardcoded sebagai TTE.
-- **Peningkatan Aksesibilitas**:
-    - Memperbarui tautan bantuan di halaman Login dari "Butuh Bantuan TTE?" menjadi "Butuh Bantuan Layanan?" untuk mencerminkan perluasan cakupan layanan.
-- **Penyederhanaan Formulir**:
-    - Menghapus field `deskripsi_kendala` dari database dan formulir helpdesk untuk mempercepat proses pelaporan bagi pengguna.
-- **Fitur Manajemen Admin Helpdesk**:
-    - Menambahkan fitur hapus permohonan pada panel admin helpdesk (tersedia di halaman index dan detail).
-    - Implementasi proteksi konfirmasi sebelum penghapusan dan pencatatan aksi hapus ke dalam Audit Trail.
+- **Portal Bantuan Terpadu**: Mengalihkan fokus Helpdesk dari TTE saja menjadi portal bantuan untuk seluruh layanan (Website OPD, Email Resmi, TTE, Srikandi, Website Desa).
+- **Formulir Publik Dinamis**: Implementasi *Cascading Dropdowns* — pengguna memilih Kategori → Layanan Spesifik → Jenis Kendala secara berurutan.
+- **Otomasi Integrasi Admin**: Tiket yang diselesaikan otomatis dicatat ke Log Pendampingan dengan kategori dan layanan yang sesuai.
+- **Fitur Manajemen Admin Helpdesk**: Menambahkan fitur hapus permohonan dengan konfirmasi dan audit trail.
 
-## Perbaikan Bug & Optimasi
-- **Fix Password Edit**: Memperbaiki error `Undefined array key "success"` saat mengubah password dengan menyesuaikan pengecekan status respon dari cPanel API.
-- **Fix Batch Operations JS**: Memperbaiki error `Cannot read properties of undefined (reading 'length')` pada proses Batch Update dan Batch PK dengan menambahkan validasi respon server dan penanganan error yang lebih kokoh pada sisi klien.
-- **Fix Batch Route 404**: Memperbaiki kesalahan `404 Not Found` pada rute batch dengan mengubah pemanggilan URL menjadi relatif dan mengganti nama rute (`execute-update`) guna menghindari konflik penamaan atau blokir WAF pada server.
-- **Fix Batch Payload Sync**: Memperbaiki sinkronisasi data pada proses Batch Update di mana data bergeser (index mismatch) akibat penghapusan baris kosong pada identifier. Sistem kini mewajibkan identifier di setiap baris dan memastikan pemetaan kolom tetap konsisten.
+## Reviu & Pengujian Batch
+- **Dependency Injection `EmailBatchService`**: Memudahkan unit testing dengan *mock objects*.
+- **Unit Test**: 6 *test cases* dan 24 *assertions* untuk logika `processBatchUpdate` dan `processBatchCreate`.
 
-# Session History - 8 Juni 2026
+## Optimasi
+- **Peningkatan Performa**: Pencarian Unit Kerja dipindahkan ke luar *looping* pada proses batch update.
+- **Robust Error Reporting**: Pesan error lebih spesifik per baris data.
+- **Normalisasi Data**: Perbandingan data lebih toleran terhadap perbedaan `null` vs string kosong.
 
-## Perbaikan Fitur Pencarian & Keamanan Data
-- **Optimasi Pencarian NIK/NIP pada Data Terenkripsi**:
-    - Memperbaiki kegagalan pencarian NIK dan NIP di seluruh sistem (Pencarian Global, Dashboard, Unit Kerja, dan Export).
-    - Implementasi **Normalisasi Query**: Sistem kini secara otomatis membersihkan karakter non-numerik (spasi, titik, tanda hubung) dari input pencarian sebelum diproses.
-    - Implementasi **Blind Index Search**: Mengalihkan pencarian NIK/NIP dari `LIKE` query (yang tidak kompatibel dengan enkripsi) ke pencocokan tepat menggunakan `nik_hash` dan `nip_hash`.
-    - **Pencarian Multi-Kriteria**: Memastikan pencarian berdasarkan Nama dan Email tetap berjalan secara paralel meskipun input berupa angka NIK/NIP.
-- **Konsistensi Layanan**:
-    - Pembaruan logika pencarian pada `EmailApi`, `EmailService`, `EmailList`, `PimpinanController`, dan `EmailExportService`.
-- **Perbaikan Dekripsi Tampilan Data**:
-    - Memperbaiki bug di mana NIK dan NIP ditampilkan dalam bentuk *hash* pada halaman Detail Akun dan file Ekspor (PDF/Excel).
-    - Mengoreksi fungsi *callback* `decryptData` di `EmailModel` agar dapat mendeteksi dan mendekripsi data *single result* maupun *multiple results* secara akurat (menggunakan identifikasi `singleton`).
-    - Menghapus penggunaan `allowCallbacks(false)` yang tidak semestinya pada `EmailExportService` agar proses dekripsi data tetap berjalan saat mengunduh dokumen.
+---
 
-# Session History - 5 Juni 2026
+# [8 Juni 2026]
 
-## Otomatisasi & Perintah CLI Baru
-- **Perintah Sinkronisasi TTE Per Unit**:
-    - Penambahan custom command `php spark sync:tte-unit {unit_id}` untuk sinkronisasi status TTE secara manual dan spesifik per unit kerja.
-    - **Eksekusi Langsung**: Berbeda dengan `sync:all`, perintah ini memproses data secara sekuensial dan sinkron (tanpa antrean) untuk memberikan umpan balik *real-time* di terminal.
-    - **Fitur Validasi**: Menyediakan pengecekan keberadaan ID Unit Kerja dan pelaporan statistik (Berhasil/Gagal) setelah proses selesai.
+## Perbaikan Pencarian & Keamanan Data
+- **Normalisasi Query Pencarian**: Sistem secara otomatis membersihkan karakter non-numerik dari input NIK/NIP sebelum diproses.
+- **Blind Index Search**: Pencarian NIK/NIP dialihkan ke pencocokan `nik_hash` dan `nip_hash`.
+- **Pencarian Multi-Kriteria**: Pencarian Nama dan Email tetap berjalan paralel meskipun input berupa angka.
+- **Perbaikan Dekripsi Tampilan**: NIK dan NIP tidak lagi tampil sebagai *hash* di halaman Detail Akun dan file Ekspor.
 
-# Session History - 4 Juni 2026
+---
 
-## Keamanan Data, Antrean Tugas, & Pemantauan Sistem
+# [5 Juni 2026]
+
+## Fitur Baru
+- **Perintah CLI Sinkronisasi TTE Per Unit** (`php spark sync:tte-unit {unit_id}`):
+    - Memproses data secara sekuensial dan sinkron tanpa antrean untuk umpan balik *real-time* di terminal.
+    - Menyediakan validasi keberadaan ID Unit Kerja dan statistik (Berhasil/Gagal) setelah selesai.
+
+---
+
+# [4 Juni 2026]
+
+## Keamanan & Infrastruktur
 - **Enkripsi Data Sensitif & Blind Index**:
-    - Implementasi enkripsi dua arah (AES-256) untuk kolom `nik`, `nip`, dan `password` di `EmailModel.php`.
-    - Menambahkan fitur *Blind Index* (Hashing SHA-256) pada kolom `nik_hash` dan `nip_hash` untuk memungkinkan pencarian data sensitif secara cepat tanpa perlu mendekripsi seluruh database.
-    - Migrasi kueri pencarian pada `EmailService` dan `EmailApi` untuk menggunakan hash guna meningkatkan performa dan keamanan.
+    - Enkripsi dua arah AES-256 untuk kolom `nik`, `nip`, dan `password` di `EmailModel.php`.
+    - *Blind Index* SHA-256 pada `nik_hash` dan `nip_hash` untuk pencarian data terenkripsi tanpa dekripsi massal.
 - **Sistem Antrean (Job Queue)**:
-    - Migrasi sinkronisasi berat (cPanel, TTE Status, dan Data Pegawai) dari proses sinkron menjadi berbasis antrean (*Queued Jobs*).
-    - Penambahan `JobModel` dan tabel `jobs` untuk manajemen antrean tugas latar belakang.
-    - Pembaruan `SyncAllCommand.php` untuk mendispatch tugas ke antrean dalam bentuk *chunk* kecil guna mencegah beban server berlebih.
-- **Pemantauan Kesehatan Sistem (Health Check)**:
-    - Penambahan `SystemHealthService` untuk memantau status konektivitas layanan eksternal (cPanel UAPI, BSrE API, dan Pegawai API).
-    - Integrasi widget *real-time health check* pada Dashboard utama.
-- **Peningkatan Audit Trail**:
-    - Penambahan ringkasan statistik aksi dan entitas pada halaman Audit Log untuk memudahkan pengawasan aktivitas sistem.
-- **Standarisasi UI, SEO & Perbaikan Metadata**:
-    - Implementasi SEO Best Practices: Penambahan meta tag dinamis (title, description, robots, canonical URL) dan dukungan Open Graph/Twitter Card di seluruh halaman utama.
-    - Penyesuaian meta title pada halaman Detail Unit Kerja agar konsisten dengan struktur navigasi global.
-    - Fix Meta Title Conflict: Menonaktifkan `saveData` pada komponen modal untuk mencegah judul modal menimpa judul halaman utama.
-    - Redesain Dashboard: Merapikan section "Terakhir Sinkronisasi" dan "Layanan Eksternal" dengan tata letak grid, ikon kategori, dan status badge (pill) yang lebih modern.
-    - Pembersihan kode korup dan perbaikan logika penghapusan otomatis data pensiun yang telah melewati batas 30 hari.
-- **Perbaikan Bug Kritis & Refactoring**:
-    - **Optimasi Verifikasi Publik**: Migrasi kueri verifikasi identitas ke *Blind Index* (`nik_hash`) untuk performa maksimal (O(1)) dan memperbaiki rute `/verifikasi` yang sebelumnya tidak berfungsi.
-    - **Fix Encrypted Queries**: Memperbaiki semua kueri pencarian identitas di `EmailApi`, `User`, dan `QueueWorker` agar menggunakan hash untuk mendukung data yang terenkripsi.
-    - **Integrasi Transaksi Database**: Implementasi `transStart()` pada pembaruan profil untuk menjamin integritas data antara cPanel dan database lokal.
-    - **Keamanan AJAX**: Penambahan proteksi CSRF pada semua operasi sinkronisasi massal berbasis AJAX.
-    - **Soft Delete Fix**: Memperbaiki kegagalan pemulihan (*restore*) akun dari sampah dengan akses langsung ke query builder.
+    - Migrasi sinkronisasi berat (cPanel, TTE, Data Pegawai) ke antrean latar belakang.
+    - Penambahan `JobModel` dan tabel `jobs`.
+    - `SyncAllCommand.php` mendispatch tugas dalam *chunk* kecil.
+- **Pemantauan Kesehatan Sistem**:
+    - `SystemHealthService` memantau konektivitas cPanel UAPI, BSrE API, dan Pegawai API.
+    - Widget *real-time health check* di Dashboard utama.
+- **Audit Trail**: Penambahan ringkasan statistik aksi dan entitas pada halaman Audit Log.
+- **SEO & Metadata**: Implementasi meta tag dinamis (title, description, robots, canonical, Open Graph, Twitter Card) di seluruh halaman.
 
-# Session History - 3 Juni 2026
+## Perbaikan Bug
+- **Optimasi Verifikasi Publik**: Migrasi query ke *Blind Index* (`nik_hash`) dan perbaikan rute `/verifikasi`.
+- **Integrasi Transaksi Database**: `transStart()` pada pembaruan profil untuk menjamin integritas data.
+- **Keamanan AJAX**: Proteksi CSRF pada semua sinkronisasi massal berbasis AJAX.
+- **Soft Delete Fix**: Memperbaiki kegagalan *restore* akun dari sampah.
 
-## Perbaikan Bug & Optimasi Otomatisasi
-- **Optimasi Sinkronisasi cPanel (Mingguan)**:
-    - Memperbaiki kegagalan *timeout* pada sinkronisasi mingguan dengan menaikkan batas waktu HTTP request di `CpanelApi.php` dari 300 detik menjadi 1800 detik, mengantisipasi besarnya waktu kalkulasi disk untuk 7.500+ akun email di server cPanel.
-    - Mengimplementasikan proses *Chunking* pada metode `upsertBatch` di `EmailModel.php`. Data ribuan email kini dipecah menjadi kelompok (chunk) berisi maksimal 500 baris sebelum diproses ke database untuk mencegah error `Query too large` atau terputusnya koneksi MySQL karena beban kueri `WHERE IN` yang masif.
+---
 
-# Session History - 26 Mei 2026
+# [26 Mei 2026]
 
 ## Integrasi & Optimasi Unit Kerja
-- **Sinkronisasi ID Unit Eksternal**:
-    - Menambahkan kolom `api_unit_id` pada tabel `unit_kerja` untuk menyimpan referensi ID dari API `apps.sinjaikab.go.id`.
-    - Implementasi perintah Spark `sync:unit-api` untuk pemetaan otomatis dengan tingkat akurasi 100% (43 unit utama).
-- **Dukungan Hierarki API**:
-    - Endpoint `/api/v1/unit/{id}` kini mendukung pengambilan data secara rekursif (termasuk sub-unit seperti sekolah dan puskesmas).
-    - Pegawai di sub-unit secara otomatis mewarisi `api_unit_id` dari unit induk dalam respon JSON.
-- **Filter Query Dinamis**:
-    - Menambahkan dukungan parameter filter via URL pada API Gateway (`name`, `email`, `nip`, `nik`, `jabatan`, `bsre_status`, dan `api_unit_id`).
-- **Standarisasi UI & Modal**:
-    - Implementasi komponen reusable `modal.php` dengan standarisasi layering Z-Index.
-    - Pembaruan dokumentasi interaktif di `/api-docs` yang mencakup daftar ID Unit Kerja dan panduan parameter filter.
-- **Pemeliharaan Data**:
-    - Implementasi perintah `maintenance:unit-duplicates` untuk penggabungan data unit ganda dengan tetap mempertahankan integritas nama lokal.
-    - Implementasi perintah `maintenance:unit-uppercase` untuk standarisasi format penulisan.
+- **Sinkronisasi ID Unit Eksternal**: Menambahkan kolom `api_unit_id` dan perintah Spark `sync:unit-api` untuk pemetaan otomatis.
+- **Dukungan Hierarki API**: Endpoint `/api/v1/unit/{id}` mendukung pengambilan data rekursif termasuk sub-unit.
+- **Filter Query Dinamis**: Dukungan parameter filter via URL pada API Gateway (`name`, `email`, `nip`, `nik`, `jabatan`, `bsre_status`, `api_unit_id`).
+- **Pemeliharaan Data**: Perintah `maintenance:unit-duplicates` dan `maintenance:unit-uppercase` untuk standarisasi data unit kerja.
 
-# Session History - 24 Mei 2026
+---
 
-## Perbaikan Bug & Refaktor
-- **Sinkronisasi API cPanel**:
-    - Memperbaiki kesalahan "3 : Bad URL" dengan refaktor konstruksi URL yang lebih robust (pembersihan protokol/port otomatis).
-    - Menjamin isolasi request menggunakan instansi `CURLRequest` baru untuk setiap panggilan API.
-- **Koreksi Filter TTE (Mutually Exclusive)**:
-    - Melakukan refaktor mendalam pada logika filter status TTE di `EmailService`.
-    - Memastikan status `ISSUE`, `EXPIRED`, `NOT_SYNCED`, dll. hanya menampilkan akun wajib TTE.
-    - Menghilangkan masalah "kebocoran data" dimana akun NON_TTE muncul di kategori filter lain.
+# [24 Mei 2026]
 
-## Fitur Baru & Optimasi
-- **API Gateway Login**:
-    - Implementasi gateway otentikasi eksternal terintegrasi dengan `apps.sinjaikab.go.id`.
-    - **Otentikasi Ganda**: Sistem memprioritaskan validasi kredensial (NIP & Password) ke API eksternal, dengan mekanisme *fallback* ke password lokal untuk menjamin reliabilitas akses.
-    - **Pendaftaran User Cerdas**: Admin kini cukup memasukkan NIP saat mendaftarkan administrator baru; sistem secara otomatis memvalidasi data dan menarik nama lengkap pegawai via API.
-    - **Login Tanpa Password Lokal**: Kolom password pada tabel user kini bersifat opsional (nullable). Untuk pendaftaran user berbasis NIP, sistem tidak lagi men-generate password acak, melainkan membiarkannya kosong karena otentikasi sepenuhnya dialihkan ke API Gateway eksternal.
-- **Otomatisasi Akun Pensiun**:
-    - Fitur **"Tandai Pensiun"** manual: Penangguhan akses login cPanel instan + Pembersihan data identitas/kedinasan otomatis dari database.
-    - **Pembersihan Permanen**: Fase 5 otomatis yang menghapus akun setelah masa tunggu aman 30 hari.
-- **Standarisasi Notifikasi Telegram**:
-    - **Laporan Batch**: Notifikasi audit trail instan setelah operasi Batch Create/Update selesai.
-    - **Detail Komprehensif**: Semua alert (Kuota, TTE, Pensiun) kini menyertakan Nama, NIP, Jabatan, dan Unit Kerja yang sinkron.
-    - **Pemisahan Statistik**: Laporan TTE kini membedakan angka statistik global dengan detail prioritas pimpinan.
-- **Transparansi Dashboard**:
-    - Menambahkan panel status sinkronisasi multi-modul di Dashboard utama (cPanel, TTE, Pegawai, Website).
-    - Mempermudah Admin memantau "kesegaran" data di seluruh sistem secara terpusat.
-- **Optimasi TTE Pimpinan**:
-    - Membatasi sinkronisasi harian hanya untuk akun **Pimpinan** dan **Pimpinan Desa** guna efisiensi maksimal kuota API BSrE.
+## Perbaikan Bug
+- **Sinkronisasi API cPanel**: Memperbaiki error "Bad URL" dengan refaktor konstruksi URL yang lebih *robust*.
+- **Koreksi Filter TTE**: Memastikan status `ISSUE`, `EXPIRED`, dll. hanya menampilkan akun wajib TTE. Menghilangkan "kebocoran data" akun NON_TTE ke kategori filter lain.
 
-## Pembersihan Sistem
-- **Standardisasi NON_TTE**: Mengubah seluruh label dan kunci "NON-TTE" menjadi **"NON_TTE"** untuk konsistensi penamaan sistem.
-- **Penghapusan Fitur Tren**: Menghapus grafik tren pertumbuhan dan tabel `email_stats_history` untuk fokus pada penyajian data real-time yang akurat.
+## Fitur Baru
+- **API Gateway Login**: Otentikasi ganda — validasi ke API eksternal `apps.sinjaikab.go.id` dengan *fallback* ke password lokal.
+- **Otomatisasi Akun Pensiun**: Penangguhan akses login cPanel instan + pembersihan data otomatis + penghapusan permanen setelah 30 hari.
+- **Standarisasi Notifikasi Telegram**: Semua alert (Kuota, TTE, Pensiun) menyertakan Nama, NIP, Jabatan, dan Unit Kerja.
 
-# Changelog
+---
 
-Semua perubahan penting pada proyek ini akan dicatat dalam berkas ini.
+# [31 Maret 2026]
 
-Format didasarkan pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), dan proyek ini mengikuti pola versi rilis internal.
+## Fitur Baru
+- **Sinkronisasi Data Pegawai**: Sinkronisasi Jabatan, Pangkat, dan Golongan Ruang dari API Pegawai eksternal dalam satu operasi menggunakan NIP.
+- **Perluasan Database**: Penambahan kolom `pangkat_nama` dan `pangkat_golruang` via migrasi baru.
+- **Standarisasi Jabatan Pimpinan**: Migrasi data untuk menyesuaikan jabatan pimpinan secara otomatis. Sinkronisasi diatur untuk melewati update `jabatan` bagi akun `pimpinan`.
 
-## [Unreleased] - (Status Saat Ini berdasarkan README.md)
+## Antarmuka
+- **Halaman Detail Akun**: Menampilkan Pangkat dan Golongan secara terstruktur dengan visibilitas kondisional berdasarkan Status ASN.
+- **Form Edit Profil**: Toggle visibilitas field secara *real-time* berdasarkan pilihan Status ASN.
 
-### Added
-- **Optimasi Batch Create**: 
-  - Implementasi endpoint batch check (`/user/batch_check_availability`) untuk verifikasi NIK, NIP, dan ketersediaan email dalam satu operasi database.
-  - Refaktor logika preview 'Batch Create' untuk menggunakan batch check, mengurangi request jaringan dari ratusan panggilan sekuensial menjadi satu request yang dioptimalkan.
-  - **Multi-Candidate Batch Check**: Menyiapkan 3 kandidat email sekaligus per user dan memvalidasi semuanya dalam satu request batch, menghilangkan request sekuensial saat terjadi konflik email.
-  - Penambahan blok `try...catch...finally` pada JavaScript untuk mencegah antarmuka hang dan memastikan tombol selalu aktif kembali.
-- **Peningkatan UI/UX Preview**:
-  - **Hapus Baris**: Penambahan tombol hapus pada setiap baris tabel preview untuk kontrol data yang lebih fleksibel sebelum eksekusi.
-  - **Pembersihan Nama Otomatis**: Fitur pembersihan nama dari tanda baca dan perbaikan format nama yang terpisah spasi (contoh: "A H M A D" -> "AHMAD").
-  - **Sinkronisasi Live**: Perubahan nama pada tabel preview otomatis memicu pembuatan ulang email dan validasi ulang (termasuk kandidat alternatif).
-  - **Password Nama Pendek**: Perbaikan logika password untuk nama di bawah 5 huruf dengan sistem pengulangan karakter (contoh: "ALI" -> "Alial") untuk memenuhi syarat keamanan.
-- **Standar Alur Kerja Git**: Pembaruan `GEMINI.md` dengan urutan 4 langkah wajib: Build CSS -> Update Changelog -> Update README -> Push.
-- **Otomatisasi Sinkronisasi (CLI)**: 
-  - Penambahan custom command `php spark sync:all` untuk otomatisasi sinkronisasi massal.
-  - Skrip mencakup sinkronisasi Akun cPanel, Status TTE BSrE, dan Data Pegawai dalam satu alur kerja.
-  - Dirancang untuk dijalankan melalui Cron Job guna pembaruan data berkala tanpa intervensi manual.
-- **Notifikasi Telegram**: 
-  - Implementasi `TelegramLibrary` untuk pengiriman laporan otomatis ke Channel atau Grup Telegram.
-  - Integrasi notifikasi pada skrip sinkronisasi: mengirim pesan saat proses dimulai dan ringkasan statistik detail (jumlah berhasil/gagal/tetap) saat proses selesai.
-  - Mendukung konfigurasi bot token dan chat ID secara aman melalui file `.env`.
-- **Indikator Waktu Sinkronisasi Spesifik**:
-  - `SyncAllCommand` kini mencatat waktu penyelesaian secara individual untuk setiap fase (`last_sync_tte`, `last_sync_pegawai`, `last_sync_website`).
-  - Penambahan tampilan "Terakhir Sync" di Dashboard utama.
-  - Penambahan informasi waktu sinkronisasi khusus (TTE & Pegawai) pada halaman Detail Akun Email.
-  - Penambahan informasi waktu sinkronisasi masa aktif domain pada halaman Website Desa & Kelurahan.
-- **Peningkatan Analitik & Monitoring**:
-  - **Grafik Tren Pertumbuhan**: Fitur ini telah dihapus karena keterbatasan API eksternal dalam menyediakan data historis yang akurat (tanggal pembuatan akun).
-  - **Alert Otomatis Telegram**: 
-      - Integrasi pengecekan kuota pada sinkronisasi cPanel; mengirimkan peringatan instan ke Telegram jika penggunaan disk akun mencapai >= 90%. Laporan kini menyertakan data lengkap (Nama, NIP, dan Unit Kerja) untuk mempermudah identifikasi pengguna.
-      - Penambahan notifikasi otomatis untuk akun dengan status TTE 'EXPIRED' setelah proses sinkronisasi TTE selesai. Notifikasi kini membedakan antara **statistik total seluruh akun** yang expired dengan **detail identitas lengkap khusus Pimpinan**, guna memberikan gambaran beban kerja sekaligus menjaga fokus pada posisi strategis.
-      - Implementasi peringatan otomatis untuk domain website Desa/Kelurahan yang akan kadaluwarsa (sisa aktif <= 30 hari) guna memastikan kontinuitas layanan publik di tingkat desa.
-- **Standardisasi Konfigurasi (.env)**:
-    - Melakukan audit dan penyelarasan seluruh variabel lingkungan menggunakan format `UPPER_SNAKE_CASE` yang konsisten.
-    - Memindahkan endpoint Pegawai API dari kode program (*hardcoded*) ke file `.env` untuk kemudahan pemeliharaan dan keamanan.
-- **Pembersihan Sistem (Cleanup)**:
-    - Menghapus fitur Gemini AI secara menyeluruh karena ketergantungan pada API Key pihak ketiga yang bersifat opsional.
-    - Menghapus kolom `se_status` dari tabel `users` karena sudah tidak relevan dengan alur otentikasi baru.
-    - Menghapus tabel database `email_stats_history` dan model terkait.
-    - Menghapus seluruh logika pencatatan data statistik harian dan visualisasi grafik tren di Dashboard.
-- **API Gateway (v1)**:
-  - Implementasi *API Gateway* terpusat dengan dukungan otentikasi ganda: *Bearer Token* (untuk integrasi sistem) dan *Session-based* (untuk akses browser pengguna terdaftar).
-  - **Daftar Endpoint Terstandarisasi**:
-    - `GET /api/v1/emails`: Daftar seluruh email aktif.
-    - `GET /api/v1/pns`: Daftar akun pegawai PNS.
-    - `GET /api/v1/pppk`: Daftar akun pegawai PPPK Penuh Waktu.
-    - `GET /api/v1/pppk-pw`: Daftar akun pegawai PPPK Paruh Waktu.
-    - `GET /api/v1/unit/{id}`: Daftar akun berdasarkan ID Unit Kerja.
-  - **Optimasi Payload API**: Menambahkan field `nik` dan menghapus field `humandiskquota` serta `humandiskused` untuk efisiensi data.
-  - **Halaman Dokumentasi Interaktif**: Penambahan halaman `/api-docs` yang dapat diakses oleh seluruh pengguna untuk melihat panduan integrasi dan contoh respons JSON.
-  - **Unit Kerja ID Modal**: Penambahan modal interaktif dengan fitur pencarian cepat untuk mempermudah pencarian ID Unit Kerja pada halaman dokumentasi API.
-- **Manajemen Email & Akun**: 
-  - Integrasi UAPI cPanel untuk sinkronisasi, pembuatan akun, dan reset kata sandi secara real-time.
-  - Kategorisasi spesifik untuk entitas PNS, PPPK (Penuh Waktu), dan PPPK (Paruh Waktu).
-  - Sinkronisasi otomatis data Jabatan, Pangkat, dan Golongan Ruang dengan API Pegawai eksternal.
-  - Verifikasi Identitas Publik menggunakan teknologi QR Code terenkripsi (Hash).
-- **Integrasi TTE BSrE**: 
-  - Monitoring status Sertifikat Elektronik secara real-time.
-  - Sinkronisasi batch/massal untuk status TTE dengan indikator progres visual.
-- **Pemantauan & Analitik**: 
-  - Dashboard dinamis dengan metrik persentase dan visualisasi grafik donut.
-  - Modul Pemantauan Website khusus untuk domain OPD dan Desa/Kelurahan (termasuk masa aktif SSL dan Domain).
-  - Modul pencatatan Log Bantuan/Pendampingan untuk bantuan teknis.
-- **Operasi Batch (XLSX)**: 
-  - Pemrosesan file Excel terintegrasi menggunakan `PhpSpreadsheet`.
-  - Dukungan alur kerja untuk *Batch Create*, *Batch Update*, dan *Batch PK* (Perjanjian Kerja).
-  - Mekanisme deteksi cerdas untuk melompati pembaruan database jika tidak ada perubahan data ("No-Change").
-- **Sistem Ekspor PDF & Data**: 
-  - Tata letak PDF yang menggunakan estetika "Slate Clean Government" dan berbasis `Dompdf`.
-  - Ekspor komprehensif mendukung format PDF, CSV, dan kompilasi ZIP.
-- **Arsitektur & Keamanan**: 
-  - Mengimplementasikan pola arsitektur **Domain-Driven Design (DDD)** (Assistance, Auth, Batch, Dashboard, Email, UnitKerja, Website).
-  - Sistem *Role-Based Access Control (RBAC)* yang solid memisahkan hak istimewa Super Admin (Data Induk, Log Layanan, Hapus Data) dan Admin.
-  - Privasi data ditegakkan melalui meta tag global `noindex, nofollow`.
-  - Penanganan Error Global menggunakan `\Throwable` untuk menghasilkan halaman error yang profesional.
-- **Antarmuka Pengguna (UI/UX)**: 
-  - Standar estetika *Slate Clean Government* menggunakan Tailwind CSS.
-  - Performa navigasi dan sidebar dioptimalkan dengan memigrasikan logika dari Alpine.js ke Vanilla JavaScript untuk performa kilat.
+---
 
-  # Session History - May 21, 2026
+# [26 Maret 2026]
 
-  ## Features Added
-  - **PPPK API Endpoints**: Created `api_pppk_list` and `api_pppk_pw_list` endpoints in `EmailApi.php` to serve structured JSON data for PPPK and PPPK Paruh Waktu employees.
-  - **API Payload Optimization**: Added `nik` to the API response and removed `user`, `bsre_status`, and the `pk` table join (`nomor_pk`) to optimize the database query.
+## Arsitektur
+- **Sistem Paginasi Terpusat**: Komponen reusable `app/Views/components/pagination.php` diterapkan di semua halaman daftar (Email, PNS, PPPK, Unit Kerja, Web Monitoring, Assistance). Menghapus lebih dari 300 baris HTML redundan.
 
-  ## UI/UX Improvements
-  - **Capitalize Button Refinement**: Relocated the "Huruf Kapital" utility button to sit directly next to the "Nama Lengkap" input labels across all form views (`email/create.php`, `batch/create.php`, `batch/update.php`) for better context and accessibility.
-  - **Website Monitoring Auto-Scroll**: Removed the static, large progress bar from the Website Desa/Kelurahan sync interface (`web_desa_kelurahan/index.php`). Replaced it with a smooth auto-scroll mechanism (`scrollIntoView`) that dynamically highlights and tracks the specific row currently being synchronized.
+---
 
-  ## Documentation Improvements
-  - **Three Pillars Standard**: Extracted technical session histories from `GEMINI.md` into `CHANGELOG.md` to comply with the project's new "Tiga Pilar Dokumentasi" architecture.
+# [5 Maret 2026]
 
-  # Session History - March 2, 2026
+## Dashboard & Analitik
+- **Peningkatan Metrik**: Persentase pada kartu metrik Website. Semua kartu metrik dapat diklik langsung ke tampilan terfilter.
+- **Peningkatan Legenda Grafik**: Persentase pada semua legenda grafik donut (TTE Status, ASN Status, Website Status).
+- **Identitas Digital & QR Code**: QR Code di halaman Detail Akun muncul saat status TTE "ISSUE". Halaman verifikasi publik (`/verifikasi/{hash}`) menggunakan hash MD5 untuk obfuskasi URL.
 
-## Features Added
-- **Pegawai Management**: Added a new "Pegawai" menu in the sidebar with submenus for PNS, PPPK (Penuh Waktu), and PPPK PW (Paruh Waktu).
-- **Pagination**: Implemented pagination (100 records per page) for PNS and PPPK lists.
-- **Excel Import (Batch)**:
-    - Replaced CSV import with XLSX support using `PhpSpreadsheet`.
-    - Added XLSX template downloads for Batch Create, Batch Update, and Batch PK.
-    - Unified spreadsheet parsing through a generic backend handler.
-    - Added support for individual `unit_kerja_id` updates in Batch Update.
-- **Unit Kerja Batch**: Added Excel import functionality for creating multiple Unit Kerja records at once.
-- **Unit Kerja Detail Refinements**:
-    - Added a "TOTAL DATA" badge showing the total number of filtered records.
-    - Improved conditional display of the "Unit Kerja" column when viewing sub-units.
-    - Switched Unit Kerja display to show Child unit on top and Parent unit below.
-    - Refined sorting logic: Eselon > Status ASN > (Unit Kerja if multi-unit) > Name.
+## Antarmuka & Navigasi
+- **Migrasi Vanilla JS**: Seluruh sistem navigasi sidebar dan submenu berhasil dimigrasikan dari Alpine.js ke Vanilla JavaScript murni. Menghilangkan *layout flickering* saat pemuatan halaman.
+- **Pencarian Global**: Pencarian *real-time* di header untuk Email, Nama, NIP, dan NIK. Responsif di mobile.
+- **Menu User di Topbar**: Memindahkan menu "Ganti Password" dan "Logout" dari sidebar ke dropdown di topbar.
 
-## UI/UX Improvements
-- **PDF Export Enhancements**:
-    - Switched paper orientation to Portrait for all monitoring exports.
-    - Adjusted column widths and improved layout for Desa/Kelurahan and OPD exports.
-    - Added status count summaries (Total, Aktif, Nonaktif) above the tables.
-    - Made domain names clickable links in the PDFs.
-    - Standardized table header background colors.
-    - Optimized "Pimpinan", "Akun", and "Status" PDF layouts (switching child/parent unit kerja display, adding NIP to Akun PDF).
-- **Batch Forms**: Restructured textareas in Batch Update into logical pairings for better usability and increased the width of dropdown selections.
+## SEO & Privasi
+- **Meta Robots**: Menambahkan `noindex, nofollow` ke layout utama, halaman login, semua halaman error, dan template ekspor PDF.
+- **`robots.txt`**: Menonaktifkan pengindeksan semua bagian aplikasi.
 
-## Database & Data Integrity
-- **PK Table Schema**: Added `status_asn_id` to the `pk` (Perjanjian Kerja) table.
-- **Data Sync**: Synchronized `status_asn_id` from existing email records into the PK table.
-- **Cleanup**: Uppercased all school names under "Dinas Pendidikan" for data consistency.
-- **Duplicates Check**: Verified duplicate PK numbers in the database and provided a list of affected accounts.
+## RBAC
+- **Perluasan Hak Admin**: Admin kini dapat memicu sinkronisasi cPanel & TTE, mengakses Batch Operations, membuat/mengedit akun, dan memodifikasi informasi website.
+- **Pembatasan Super Admin**: Operasi hapus, Master Data Unit Kerja, dan Log Layanan dibatasi hanya untuk Super Admin.
 
-## Technical Details
-- Refactored `Email` controller into four specialized controllers:
-    - `Email.php`: Dashboard, Index, Detail, and core mutation actions (Create, Sync, Edit Profile, Delete).
-    - `EmailList.php`: Categorized lists (Unit Kerja, Eselon, PNS, PPPK).
-    - `EmailExport.php`: PDF, CSV, and ZIP export actions.
-    - `EmailApi.php`: API endpoints and AJAX helpers.
-- Added `import_generic_spreadsheet` method to `BatchController` for flexible XLSX parsing.
-- Added `status_asn_id` to `PkModel` allowed fields.
-- Created `batch-update.js`, `batch-pk.js`, and `unit-kerja-batch.js` to handle specialized import logic.
-- Defined a `precise_find` utility to map school names to database IDs.
+---
 
-# Session History - March 3, 2026
+# [3 Maret 2026]
 
-## UI/UX Improvements
-- **Sync TTE**:
-    - Replaced `fa-sync-alt` with `fa-fingerprint` icon for all "Sync TTE" buttons.
-    - Added `scrollIntoView` behavior to all batch sync operations for better user feedback.
-    - Removed individual per-row sync buttons from `pppk_list.php` and `pppk_pw_list.php` to streamline the interface.
-- **Error Pages**:
-    - Re-styled all standard error pages (`400`, `404`, `exception`, and a custom `error.php`) to match the global application's "slate clean government" aesthetic, ensuring a consistent user experience even on error states.
-- **PPPK Summary**:
-    - Implemented a summary section on the `pppk_list.php` page, showing TTE status counts grouped by parent `unit_kerja`.
-    - Iteratively refined the summary's styling, content, and grouping logic based on feedback.
-- **Sidebar & Layout**:
-    - Enabled the sidebar toggle button for desktop screens with a full-hide behavior.
-    - Implemented state persistence using `localStorage`, ensuring the sidebar remains in the user's preferred state across page reloads.
-    - Optimized layout rendering by applying the sidebar state before the body renders to prevent flicker during navigation.
-- **Individual TTE Sync Removal**: Removed per-row "Sync TTE" buttons from `pns_list.php` for consistency with other employee lists.
+## Antarmuka
+- **Halaman Error**: Mendesain ulang semua halaman error (`400`, `404`, `exception`, `error.php`) agar sesuai dengan estetika "Slate Clean Government".
+- **PPPK Summary**: Menambahkan ringkasan status TTE yang dikelompokkan per unit kerja induk di halaman `pppk_list.php`.
+- **Sidebar**: Menambahkan tombol toggle sidebar untuk desktop dengan penyimpanan status di `localStorage`.
 
-## Feature Refinements
-- **Assistance Logs**: Updated the creation form to set "Online" as the default assistance method.
+## Perbaikan Bug
+- **SQL Errors di `pppk_list.php`**: Memperbaiki error `Not unique table/alias`, `only_full_group_by`, dan `Duplicate column name 'id'`.
+- **Query Builder State**: Mengisolasi query ringkasan ke instansi model terpisah agar tidak mereset state query utama.
 
-## Bug Fixes
-- **SQL Errors**:
-    - Resolved a cascade of complex SQL errors on the `pppk_list.php` page related to database queries with multiple joins and `GROUP BY` clauses.
-    - Fixed "Not unique table/alias" error by refactoring summary query.
-    - Fixed "only_full_group_by" incompatibility by adding `groupBy()` and using aggregate functions (`MIN`) in the `orderBy()` clause.
-    - Fixed "Duplicate column name 'id'" error by refactoring the main query to be explicit and not use `select(*)`.
-- **Query Builder State**: Fixed a bug where a shared query builder instance was being reset, causing the main page query to fail after the summary query was executed. Isolated the summary query to its own model instance.
+---
 
-## Global Design Standards
-The project adheres to a **"Slate Clean Government"** aesthetic:
-- **Primary Palette**: Tailwind **Slate** (bg-slate-50 for body, bg-slate-800 for sidebar, border-slate-200).
-- **Typography**: Uses **Inter** font with high-contrast weights and uppercase tracking for UI labels.
-- **Semantic Feedback**: Uses Emerald (Success), Red (Danger), Amber (Warning), and Blue (Info).
-- **Standardized Components**: Centralized buttons in `input.css`, unified badges in `badge.php`, and standardized status color mapping in `main.php`.
-- **Interactions**: Uses Alpine.js for lightweight UI logic and smooth transitions.
+# [2 Maret 2026]
 
-## Architectural Improvements
-- **Controller Refactoring**: Decomposed the "fat" `Email` controller into four specialized, maintainable units: `Email.php`, `EmailList.php`, `EmailExport.php`, and `EmailApi.php`, strictly adhering to the Single Responsibility Principle.
-- **Service Optimization**: Refined `AssistanceExportService` to utilize fresh query builders for each request, preventing filter bleeding and ensuring data integrity in reports.
+## Fitur Baru
+- **Menu Pegawai di Sidebar**: Submenu PNS, PPPK Penuh Waktu, dan PPPK Paruh Waktu.
+- **Paginasi**: 100 record per halaman untuk daftar PNS dan PPPK.
+- **Impor Excel (Batch)**: Dukungan XLSX via `PhpSpreadsheet` untuk Batch Create, Batch Update, dan Batch PK.
+- **Batch Unit Kerja**: Impor Excel untuk membuat banyak Unit Kerja sekaligus.
+- **Refaktor Controller Email**: Dipecah menjadi 4 controller spesifik — `Email.php`, `EmailList.php`, `EmailExport.php`, dan `EmailApi.php`.
 
-## PDF Export System Refinement
-- **Standardized Styling**: Unified all export templates (`Email`, `Pimpinan`, `Website`, `Assistance`) under the "Clean Slate Government" visual standard.
-- **Layout Stability**: Migrated from float-based positioning to robust, table-based layouts, resolving blank page and alignment issues in `Dompdf`.
-- **Data Richness**:
-    - Added NIP and NIK columns to account and unit kerja exports.
-    - Implemented a dynamic "Ringkasan Data" (Summary) section in Website and Unit Kerja exports.
-    - Switched `Account Detail` export to Landscape orientation for better data density.
-- **UX Improvements**:
-    - Repositioned activation instructions and TTE legends for better prominence above tables.
-    - Enforced fixed widths for "No." and "Status TTE" columns while allowing other data to flow flexibly.
-    - Ensured footers appear consistently on every page of the generated reports.
-    - Optimized data cleanliness by replacing "N/A" or "-" placeholders with empty strings for a more professional look.
+## Ekspor PDF
+- **Standarisasi Visual**: Semua template ekspor menggunakan estetika "Slate Clean Government" berbasis `Dompdf`.
+- **Format Beragam**: Mendukung ekspor PDF, CSV, dan ZIP.
 
-## Housekeeping
-- **CSS Build**: Compiled production Tailwind CSS assets.
-- **Filter Fixes**: Corrected the assistance export link to properly propagate active filters (Category, Month, Year) via query strings.
-- **Parse Errors**: Resolved a syntax error in `WebMonitoringExportService`.
+---
 
-# Session History - March 5, 2026
+# [21 Mei 2026]
 
-## Dashboard & Analytics
-- **Metric Enhancements**:
-    - Refactored dashboard metrics to focus on "Aktif" counts for Emails, TTE, and Websites.
-    - Added percentage indicators to Website metrics (OPD and Desa/Kelurahan) for better performance tracking.
-    - Improved metric card typography and layout (font sizes, rounded values, semantic colors).
-    - Implemented "Click-to-Page" functionality for all dashboard metric cards, linking directly to filtered views.
-- **Chart Legend Improvements**:
-    - Added percentage breakdowns to all donut chart legends (TTE Status, ASN Status, Website Status, and Platform Distribution).
-    - Standardized legend layouts to prevent text overflow and improve readability on all monitoring pages.
-
-## Unit Kerja Monitoring
-- **Data Richness**:
-    - Added a dedicated "TTE Expired" metric card to the Unit Kerja detail page.
-    - Integrated percentage displays for both "Aktif" and "Expired" TTE statuses relative to the unit's total email count.
-    - Refined the visual hierarchy by using emerald/red border accents for status-critical metric cards.
-- **Visual Consistency**:
-    - Adjusted metric container widths for a more balanced layout.
-    - Synchronized chart legend styling with the main dashboard.
-
-## PDF Export System
-- **Metric Percentages**: Integrated "Aktif" and "Nonaktif" percentages into Website Monitoring PDF exports (OPD and Desa/Kelurahan).
-- **Inline Layouts**: Switched to an inline display for percentages in Unit Kerja PDF reports to match the website monitoring style and improve space efficiency.
-
-## SEO & Privacy
-- **Search Engine Indexing**:
-    - Added `<meta name="robots" content="noindex, nofollow">` to the main layout (`main.php`), login page (`login.php`), and all error pages (`400`, `404`, `exception`, `production`).
-    - Applied the same meta tag to all PDF export HTML templates to prevent indexing of generated reports.
-    - Updated `public/robots.txt` to explicitly disallow all user agents from indexing any part of the application.
-
-## Role-Based Access Control (RBAC) Refinements
-- **Admin Role Expansion**:
-    - Expanded permissions for the "Admin" role to bridge the gap between simple viewing and full management.
-    - **cPanel Sync**: Admins can now trigger cPanel email synchronization.
-    - **TTE Sync**: Admins can now trigger TTE status synchronization (individual and batch).
-    - **Batch Operations**: Admins now have full access to Batch Create, Batch Update, and Batch PK operations.
-    - **Account Mutations**: Admins can now create new accounts and edit existing profiles, passwords, and PK data.
-    - **Website Monitoring**: Admins can now modify website information (Edit/Update) and sync domain expirations.
-- **Super Admin Restrictions**:
-    - Reserved "Delete" operations for Super Admins only to prevent accidental data loss.
-    - Restricted "Master Data" (Unit Kerja management) to Super Admins.
-    - Restricted "Log Layanan" (Assistance/Pendampingan) to Super Admins only, removing visibility and access for the Admin role.
-- **UI/UX Consistency**:
-    - Updated sidebar visibility to show/hide "Batch", "Master Data", and "Log Layanan" based on roles.
-    - Adjusted buttons and action links across `index`, `detail`, `unit_kerja_detail`, and `web_monitoring` views to reflect updated permissions.
-
-## Navigation & UX Logic Migration
-- **Vanilla JS Transition**:
-    - Successfully migrated the entire sidebar navigation and submenu interaction system from Alpine.js to highly-optimized **Vanilla JavaScript**.
-    - Eliminated layout flickering during page loads by implementing early state detection in the `<head>` using CSS data-attribute mapping.
-- **Global Omni-Search**:
-    - Implemented a high-performance global search bar in the top header.
-    - Real-time results: providing instant access to account details across the entire system.
-    - Context-aware matching: supports searching by Email, Name, NIP, or NIK with strict URL matching for active states.
-    - Mobile-responsive: adapts to screen size with specialized mobile layouts.
-- **Advanced Interaction Behavior**:
-    - Implemented a hybrid accordion behavior: menu headers toggle independently, but clicking any child link automatically collapses unrelated menus to maintain a clean interface.
-    - Added strict URL path matching (including full support for query parameters) to ensure active states are accurately identified and reflected in the UI.
-    - Implemented a robust mobile offcanvas system with a dynamic overlay and automatic body-scroll locking.
-- **Accessibility & Performance**:
-    - Added `aria-current="page"` and `aria-expanded` attributes for better screen reader compatibility.
-    - Guaranteed zero external library dependencies for core navigation, resulting in near-instant interaction response.
-
-## Digital Identity & Verification
-- **Dynamic Identity QR Code**:
-    - Added a QR code identity card to the Account Detail page that appears when TTE status is "ISSUE".
-    - Enhanced the QR code with a centered logo overlay for a professional, integrated look.
-    - Made the QR code clickable, linking to a new public verification route (`/verifikasi/{hash}`).
-- **Secure Public Verification**:
-    - Implemented a dedicated, mobile-optimized public verification view (`verifikasi.php`).
-    - Obfuscated public verification URLs using secure MD5 hashes to prevent account enumeration.
-    - Displays formal confirmation of digital signature ownership without exposing sensitive data (NIP/NIK).
-    - Features a full-height, large card layout designed specifically for smartphone scans.
-
-## Technical Refinements & Housekeeping
-- **Batch Processing Optimizations**:
-    - Optimized Batch Update and Batch PK processes to skip database writes if the incoming data is identical to the existing record.
-    - Implemented robust numeric comparison for financial data (`gaji_nominal`) to handle formatting and decimal differences.
-    - Improved feedback for skipped records, clearly marking them as "no changes detected" in the results log.
-- **Global Error Handling**:
-    - Implemented a unified error modal system in `main.php`.
-    - Updated TTE synchronization logic to display detailed API failure reasons in a modal instead of basic tooltips.
-    - Improved sequential processing feedback with live status counters.
-- **Visual Branding**:
-    - Standardized application favicon across all layouts and error pages using `logo.png`.
-    - Generated a professional sidebar-themed Open Graph image for high-quality social media previews.
-- **UI Cleanup**:
-    - Refined `unit_kerja_detail.php`: removed redundant table headers and moved filtered data summaries to the footer for better data density.
-- **Route Optimization**:
-    - Refactored `Routes.php` to use cleaner group-based filters for role restrictions and added support for the new `/verifikasi` public route.
-- **Code Optimization**:
-    - Migrated legacy spreadsheet logic to unified XLSX handler.
-    - Cleaned up redundant Alpine.js state management in favor of native ES6 logic.
-
-# Session History - March 6, 2026
-
-## UI/UX Improvements
-- **Topbar User Menu**: Migrated the "User Management" section (Change Password, Logout) from the sidebar to a new dropdown menu in the topbar, improving accessibility and aligning with modern UI patterns.
-- **Alpine.js Removal**: Replaced all Alpine.js functionality with lightweight, high-performance Vanilla JavaScript, including the new topbar dropdown and the manual input toggle on the `unit_kerja/batch_create` page.
-- **Expanded Mobile Search**: Removed the mobile app logo and search toggle, integrating the global search bar directly into the main header for a more streamlined experience on smaller devices.
-- **Responsive Refinements**: Adjusted the responsive layout of the Account Detail page (`email/detail.php`) to ensure proper alignment, spacing, and readability on tablet and mobile devices without altering the core design or text content.
-- **Icon/Photo Cleanup**: Removed user icon placeholders ("photos") from both the global search dropdown and the Account Detail page for a cleaner, more data-focused presentation.
-
-## Housekeeping
-- **CSS Build**: Compiled production Tailwind CSS assets.
-
-# Session History - March 26, 2026
-
-## Architectural Improvements
-- **Unified Pagination System**:
-    - Created a new, reusable pagination component at `app/Views/components/pagination.php`.
-    - Refactored all major listing pages (`Email`, `PNS`, `PPPK`, `Unit Kerja`, `Web Monitoring`, and `Assistance`) to utilize the centralized component.
-    - Eliminated over 300 lines of redundant HTML and inline CSS from view files, ensuring a single source of truth for pagination UI/UX.
-- **Standardized Data Flow**:
-    - Unified the variable naming convention across Controllers and Services, strictly using `$pager` to represent the pagination state.
-    - Updated `Email.php`, `EmailList.php`, `EmailService.php`, and `PimpinanController.php` to ensure consistent data delivery to the new component.
-
-## UI/UX Refinements
-- **Centralized Styling**: Moved all pagination-related CSS into the component or global build, resulting in a cleaner and more maintainable frontend codebase.
-- **Responsive Pagination**: Ensured the new component maintains the high-contrast, "Slate Clean Government" aesthetic while being fully responsive across all device types.
-
-## Housekeeping
-- **Untracked Files**: Added `app/Views/components/pagination.php` to the repository.
-- **CSS Cleanup**: Re-compiled `output.css` after removing redundant inline styles from multiple view files.
-
-# Session History - March 31, 2026
-
-## Features Added
-- **Sync Data Pegawai**:
-    - Implemented a comprehensive synchronization feature using the external Pegawai API (`http://apps.sinjaikab.go.id/api/pegawai/data_pegawai/`).
-    - Synchronizes **Jabatan**, **Pangkat**, and **Golongan Ruang** in a single operation using the employee's NIP.
-    - Added support for both individual and batch synchronization.
-- **Database Expansion**:
-    - Added `pangkat_nama` and `pangkat_golruang` columns to the `emails` table via a new migration.
-    - Integrated these fields into the `EmailModel` and the profile update logic.
-- **Pimpinan Title Standardization**:
-    - Created a data migration to automatically adjust the `jabatan` field for all organizational leaders based on their unit name (e.g., KEPALA DINAS, CAMAT, LURAH).
-    - Specifically updated the Sekretaris Daerah title.
-    - Updated the synchronization logic to **skip** updating the `jabatan` field for accounts marked as `pimpinan`, ensuring these official titles are not overwritten by generic API data.
-
-## UI/UX Improvements
-- **Refined Detail View**:
-    - Redesigned the "Kepegawaian" section on the Account Detail page to explicitly show Rank (Pangkat) and Grade (Golongan Ruang) in a structured grid.
-    - Restored missing badges for **Eselon** and **Golongan (PPPK)** for a more complete profile.
-    - Implemented **Conditional Visibility**: Rank and grade fields are now dynamically shown or hidden based on the Status ASN (PNS, PPPK, or Paruh Waktu) to ensure data relevance.
-    - Repositioned the "Sync Pegawai" action to the main Profil card header for better accessibility and grouping with the "Edit Profil" action.
-- **Dynamic Edit Form**:
-    - Updated the "Edit Profil" form with real-time JavaScript to toggle field visibility based on Status ASN selection, improving data entry accuracy.
-- **Simplified Unit Kerja Actions**:
-    - Consolidated multiple export and sync buttons on the Unit Kerja detail page into logical dropdown menus (Export, Batch PK, and Sync).
-    - This declutters the header and prevents layout wrapping on smaller screens.
-- **Standardized Loading Feedback**:
-    - Unified row-level loading indicators with animated "SYNCING" badges during batch operations.
-    - Implemented live progress counters (e.g., `PEG: 5/20`) on the main dropdown buttons during active synchronization.
-
-## Robust Error Handling
-- **Global Throwable Refactor**:
-    - Refactored over 30 `catch` blocks across Controllers, Services, and Libraries to use `\Throwable` instead of `\Exception`.
-    - This ensures that all types of PHP errors (including missing database columns, TypeErrors, and logic errors) are correctly caught and rendered within the application's themed error page instead of falling back to default server error screens.
-- **Defensive Rendering**:
-    - Added null coalescing (`??`) to all displays of the newly added rank fields to prevent application crashes during the migration transition period.
-
-## Refactoring & Naming
-- **Standardization**: Renamed all instances of "Sync Jabatan" to "Sync Data Pegawai" across the entire codebase (routes, methods, and JS functions) to accurately reflect the expanded scope of the feature.
-- **Casing Policy**: Standardized the `jabatan` (position) field to use **Uppercase** formatting across all views, PDFs, and database storage for institutional consistency.
-
-# Session History - April 3, 2026
-
-## Features Added
-- **Batch Sync Data Pegawai**:
-    - Implemented batch synchronization functionality for "Data Pegawai" across all employee lists (PNS, PPPK, PPPK PW).
-    - Added a "Sync Pegawai" button to list headers that iterates through all records with a NIP on the current page.
-- **Advanced Filtering**:
-    - Introduced a "Filter NIP" dropdown on employee listing pages, allowing administrators to filter records by "With NIP", "Without NIP", or "All".
-- **API Logic Refinement**:
-    - Optimized the `sync_pegawai` API handler to skip updating the `jabatan` field if the API response contains "PLT" (Acting) to prevent overwriting primary roles.
-    - Added an explicit check to return a failure status (`success: false`) if the Pegawai API returns an empty data set, ensuring these cases are correctly logged as "FAILED" or "NO DATA" in batch operations instead of silently succeeding.
-    - Standardized "Sekretaris" position titles: any position containing "SEKRETARIS" is now automatically simplified to "SEKRETARIS DINAS", "SEKRETARIS BADAN", "SEKRETARIS KECAMATAN", or "SEKRETARIS KELURAHAN" based dynamically on the employee's assigned `unit_kerja` rather than guessing from the API string.
-    - **Automated Eselon Assignment**: Replaced the hardcoded Eselon mapping logic with dynamic assignment. The system now extracts the `jabatan_jenis_eselon` field directly from the Pegawai API response, formats it, and automatically matches it with the internal `eselon` database table (e.g., syncing "III.a" as `IIIa`).
-    - **Paruh Waktu Optimization**: The system now completely skips the external Pegawai API call for employees with the status "PPPK PARUH WAKTU", returning early with a graceful success state to conserve API resources and protect data integrity. Additionally, the "Sync Pegawai" button has been removed from the Paruh Waktu list page and the individual account detail page for these users.
-- **Database Standardization**:
-    - Created a migration to update `nama_eselon` in the `eselon` table from numeric-alpha format (e.g., "3a", "4b") to standard Roman numerals ("IIIa", "IVb") for professional consistency and better alignment with API response formatting.
-
-## UI/UX Improvements
-- **Standardized Sync Interface**: Simplified the "Sync" interface on the Pimpinan Desa page to match the Pimpinan page, replacing the dropdown with a single "Sync TTE" button for better consistency.
-- **Improved Batch Feedback**: Updated the batch sync UI across list pages to display a specific amber "NO DATA" badge when the API returns no profile data, providing clearer distinction from system failures.
-
-## Documentation Improvements
-- **README Overhaul**: Rewrote and simplified the project's `README.md` title to **"Sistem Identitas Digital"**, providing content in both English and Bahasa Indonesia that accurately reflects the current domain-driven architecture, tech stack, and comprehensive feature set.
-- **Session History Persistence**: Updated `GEMINI.md` with the latest session history to maintain a clear audit trail of project evolution.
-
-## Technical Auditing
-- **Architecture Review**: Conducted a comprehensive review of the project's domain-driven structure, service layer patterns, and frontend optimizations (Vanilla JS transition, CSS data-attribute mapping).
-- **Security & Integrity Validation**: Verified RBAC enforcement, secure public verification routes, and defensive data synchronization logic.
+## Fitur Baru
+- **Endpoint API PPPK**: Menambahkan `api_pppk_list` dan `api_pppk_pw_list` di `EmailApi.php`.
+- **Optimasi Payload API**: Menambahkan `nik` ke respons API, menghapus `user`, `bsre_status`, dan join tabel `pk`.
+- **Pemindahan Riwayat Sesi**: Riwayat sesi teknis dipindahkan dari `GEMINI.md` ke `CHANGELOG.md`.

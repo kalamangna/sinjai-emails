@@ -46,7 +46,7 @@
     <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
         <div class="p-6 border-b border-slate-100 bg-slate-50">
             <form method="GET" action="<?= site_url('email') ?>" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
-                <div class="md:col-span-6 lg:col-span-8">
+                <div class="md:col-span-4 lg:col-span-6">
                     <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Pencarian</label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-700">
@@ -56,13 +56,22 @@
                     </div>
                 </div>
 
-                <div class="md:col-span-4 lg:col-span-2">
+                <div class="md:col-span-3 lg:col-span-2">
                     <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Status TTE</label>
                     <select name="bsre_status" class="block w-full px-3 py-2 bg-white border <?= !empty($bsre_status) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm appearance-none cursor-pointer transition-all">
                         <option value="">Semua Status</option>
                         <?php foreach ($bsre_status_options ?? [] as $key => $label): ?>
                             <option value="<?= esc($key) ?>" <?= (($bsre_status ?? '') === $key) ? 'selected' : '' ?>><?= esc($label) ?></option>
                         <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div class="md:col-span-3 lg:col-span-2">
+                    <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Penggunaan Disk</label>
+                    <select name="disk_usage" class="block w-full px-3 py-2 bg-white border <?= !empty($disk_usage) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm appearance-none cursor-pointer transition-all">
+                        <option value="">Semua Penggunaan</option>
+                        <option value="critical" <?= (($disk_usage ?? '') === 'critical') ? 'selected' : '' ?>>Kritis (≥ 85%)</option>
+                        <option value="full" <?= (($disk_usage ?? '') === 'full') ? 'selected' : '' ?>>Penuh (≥ 95%)</option>
                     </select>
                 </div>
 
@@ -84,6 +93,7 @@
                         <th class="px-6 py-3 border-b border-slate-200">Email</th>
                         <th class="px-6 py-3 border-b border-slate-200">Unit Kerja</th>
                         <th class="px-6 py-3 border-b border-slate-200">Status TTE</th>
+                        <th class="px-6 py-3 border-b border-slate-200">Penggunaan Disk</th>
                         <th class="px-6 py-3 border-b border-slate-200 text-center">Aksi</th>
                     </tr>
                 </thead>
@@ -120,7 +130,7 @@
                                         $status = $email['bsre_status'] ?? '';
                                         $colorClass = 'bg-slate-100 text-slate-700 border-transparent';
                                         $statusLabel = $status ?: 'NOT_SYNCED';
-
+ 
                                         if ($status === 'ISSUE') {
                                             $colorClass = 'bg-emerald-100 text-emerald-800 border-transparent';
                                         } elseif (in_array($status, ['EXPIRED', 'REVOKE', 'SUSPEND'])) {
@@ -138,6 +148,21 @@
                                     <span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase border <?= $colorClass ?>">
                                         <?= $statusLabel ?>
                                     </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <?php
+                                    $is_unlimited = ($email['diskquota'] ?? '') == 'unlimited' || empty($email['_diskquota']);
+                                    $usage_percent = round($email['diskusedpercent_float'] ?? 0, 1);
+                                    $progress_color = ($usage_percent >= 85) ? 'bg-red-600' : (($usage_percent >= 70) ? 'bg-amber-500' : 'bg-slate-800');
+                                    ?>
+                                    <div class="flex items-center gap-3 min-w-[120px]">
+                                        <div class="flex-grow bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                                            <div class="<?= $progress_color ?> h-full rounded-full transition-all duration-500" style="width: <?= $is_unlimited ? 100 : min($usage_percent, 100) ?>%"></div>
+                                        </div>
+                                        <span class="text-[10px] font-bold text-slate-700 w-8 text-right shrink-0">
+                                            <?= $is_unlimited ? '∞' : $usage_percent . '%' ?>
+                                        </span>
+                                    </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center">
                                     <div class="flex justify-center gap-2">
@@ -158,7 +183,7 @@
                         <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="4" class="px-6 py-20 text-center">
+                            <td colspan="5" class="px-6 py-20 text-center">
                                 <div class="flex flex-col items-center justify-center">
                                     <div class="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center mb-3">
                                         <i class="fas fa-search text-slate-300 text-lg"></i>
