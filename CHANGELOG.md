@@ -10,14 +10,14 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## Perbaikan & Peningkatan
 - **Responsive Layout Navbar (Topbar)**:
     - Merestruktur layout `header` di `app/Views/layouts/main.php` agar tidak meluap di layar mobile.
-    - Pada layar mobile (`< 640px`), search bar global disembunyikan dari header dan digantikan tombol ikon **🔍**. Klik tombol memunculkan search bar slide-down di bawah header dengan overlay gelap (klik overlay atau tekan `Esc` untuk menutup).
-    - Pada layar desktop (`≥ 640px`), search bar tetap tampil inline di header seperti semula.
-    - Padding header disesuaikan (`px-3 sm:px-6`) dan gap antar tombol diperkecil (`gap-1 sm:gap-2`) agar semua elemen kanan (Verifikasi PDF, Riwayat Laporan, User dropdown) selalu terlihat di semua ukuran layar.
+    - Search bar global **selalu tampil** di header pada semua ukuran layar (mobile & desktop).
+    - Tombol **Verifikasi PDF** dan **Riwayat Laporan** disembunyikan di layar mobile (`hidden sm:flex`) dan dipindahkan ke dalam menu **User Dropdown** agar tetap dapat diakses. Di dropdown, keduanya hanya tampil pada layar mobile (`sm:hidden`) menggunakan divider tersendiri.
     - Info nama/role user di header disesuaikan ke `hidden md:flex` (tampil mulai tablet) dengan batas lebar `max-w-[120px] truncate` agar tidak meluap.
-    - Info user di dalam dropdown menu kini **selalu tampil** (sebelumnya hanya `lg:hidden`), memastikan konsistensi di semua ukuran layar.
+    - Info user di dalam dropdown menu kini **selalu tampil**, memastikan konsistensi di semua ukuran layar.
     - Menambahkan atribut `aria-label`, `aria-haspopup`, dan `aria-expanded` pada tombol-tombol header untuk aksesibilitas.
 - **Perbaikan Bug JS Sidebar**:
     - Memperbaiki typo variabel `activeMenuValueValue` (tidak terdefinisi) menjadi `activeMenuValue` yang benar di dalam fungsi `toggleSubmenu()` pada `app/Views/layouts/main.php`. Bug ini menyebabkan error diam (*silent error*) saat state sidebar dicoba disimpan ke `localStorage`.
+
 
 ---
 

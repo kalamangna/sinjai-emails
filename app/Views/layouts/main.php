@@ -198,17 +198,16 @@
         <?php if (!$isPublic): ?>
 
         <header class="h-16 bg-white border-b border-slate-200 sticky top-0 z-40 relative">
-            <!-- Normal header row -->
             <div class="h-16 flex items-center justify-between px-3 sm:px-6 gap-2">
 
-                <!-- Left: Sidebar toggle + Desktop Search -->
+                <!-- Left: Sidebar toggle + Search -->
                 <div class="flex items-center gap-2 flex-1 min-w-0">
                     <!-- Sidebar Toggle -->
                     <button id="sidebar-toggle" class="w-10 h-10 flex items-center justify-center text-slate-700 hover:bg-slate-50 rounded-lg transition-colors shrink-0" aria-label="Toggle Sidebar">
                         <i class="fas fa-bars"></i>
                     </button>
 
-                    <!-- Global Search -->
+                    <!-- Global Search (selalu tampil) -->
                     <div class="flex-1 max-w-xl w-full px-2">
                         <?= $this->include('components/global_search') ?>
                     </div>
@@ -216,13 +215,13 @@
 
                 <!-- Right: Actions -->
                 <div class="flex items-center gap-2 shrink-0">
-                    <!-- Verifikasi PDF -->
-                    <a href="<?= site_url('verifikasi-pdf') ?>" target="_blank" rel="noopener noreferrer" title="Verifikasi PDF" class="w-10 h-10 flex items-center justify-center text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors">
+                    <!-- Verifikasi PDF (desktop only) -->
+                    <a href="<?= site_url('verifikasi-pdf') ?>" target="_blank" rel="noopener noreferrer" title="Verifikasi PDF" class="hidden sm:flex w-10 h-10 items-center justify-center text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors">
                         <i class="fas fa-file-signature text-base"></i>
                     </a>
 
-                    <!-- Riwayat Laporan -->
-                    <a href="<?= site_url('reports/history') ?>" title="Riwayat Laporan" class="w-10 h-10 flex items-center justify-center text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors">
+                    <!-- Riwayat Laporan (desktop only) -->
+                    <a href="<?= site_url('reports/history') ?>" title="Riwayat Laporan" class="hidden sm:flex w-10 h-10 items-center justify-center text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors">
                         <i class="fas fa-history text-base"></i>
                     </a>
 
@@ -245,10 +244,27 @@
                         <div id="user-dropdown-menu"
                              class="absolute right-0 mt-2 w-56 bg-white border border-slate-200 rounded-xl shadow-2xl py-2 z-50 origin-top-right overflow-hidden hidden opacity-0 scale-95 translate-y-1 transition-all duration-200">
 
-                            <!-- User info (always visible in dropdown) -->
+                            <!-- User info -->
                             <div class="px-4 py-2 mb-1 border-b border-slate-100">
                                 <p class="text-xs font-bold text-slate-800 uppercase truncate"><?= session()->get('name') ?: session()->get('username') ?></p>
                                 <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-0.5"><?= session()->get('role') == 'super_admin' ? 'Super Admin' : 'Admin' ?></p>
+                            </div>
+
+                            <!-- Mobile-only: Verifikasi PDF & Riwayat Laporan -->
+                            <div class="sm:hidden">
+                                <a href="<?= site_url('verifikasi-pdf') ?>" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-all uppercase tracking-tight">
+                                    <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-100/50">
+                                        <i class="fas fa-file-signature text-[10px]"></i>
+                                    </div>
+                                    Verifikasi PDF
+                                </a>
+                                <a href="<?= site_url('reports/history') ?>" class="flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-all uppercase tracking-tight">
+                                    <div class="w-8 h-8 rounded-lg bg-slate-50 text-slate-600 flex items-center justify-center border border-slate-100/50">
+                                        <i class="fas fa-history text-[10px]"></i>
+                                    </div>
+                                    Riwayat Laporan
+                                </a>
+                                <div class="h-px bg-slate-100 my-1 mx-2"></div>
                             </div>
 
                             <a href="<?= site_url('user/change_password') ?>" class="flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-all uppercase tracking-tight">
@@ -271,6 +287,7 @@
                 </div>
             </div>
         </header>
+
 
         <?php endif; ?>
 
