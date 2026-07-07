@@ -196,8 +196,8 @@
     <div id="main-content" class="<?= !$isPublic ? 'lg:ml-64' : '' ?> min-h-screen flex flex-col">
         <!-- Header / Topbar -->
         <?php if (!$isPublic): ?>
-        <!-- Mobile Search Overlay -->
-        <div id="mobile-search-overlay" class="fixed inset-0 z-[60] bg-slate-900/40 backdrop-blur-sm hidden lg:hidden" aria-hidden="true"></div>
+        <!-- Mobile Search Overlay (z-index di bawah search bar) -->
+        <div id="mobile-search-overlay" class="fixed inset-0 z-[55] bg-slate-900/40 backdrop-blur-sm hidden lg:hidden" aria-hidden="true"></div>
 
         <header class="h-16 bg-white border-b border-slate-200 sticky top-0 z-40 relative">
             <!-- Normal header row -->
@@ -279,7 +279,7 @@
             </div>
 
             <!-- Mobile Search Bar (slide-down, hanya muncul di mobile via JS toggle) -->
-            <div id="mobile-search-bar" class="hidden absolute left-0 right-0 top-16 bg-white border-b border-slate-200 px-4 py-3 shadow-lg z-50">
+            <div id="mobile-search-bar" class="hidden absolute left-0 right-0 top-16 bg-white border-b border-slate-200 px-4 py-3 shadow-lg z-[65]">
                 <div class="relative">
                     <?= $this->include('components/global_search', ['id_suffix' => '-mobile']) ?>
                 </div>
