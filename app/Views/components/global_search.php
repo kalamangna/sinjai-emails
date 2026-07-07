@@ -17,48 +17,32 @@ $id_suffix = $id_suffix ?? ''; // Default to empty string if not provided
             <i class="fas fa-circle-notch fa-spin text-slate-400 text-[10px]"></i>
         </div>
     </div>
-</div>
 
-<!-- Search Results: dirender ke portal di luar header via JS -->
-<div 
-    id="global-search-results<?= $id_suffix ?>" 
-    class="fixed bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden hidden z-[9990] transform transition-all duration-200 origin-top scale-95 opacity-0"
-    style="min-width:320px;"
->
-    <div id="results-list<?= $id_suffix ?>" class="max-h-[450px] overflow-y-auto custom-scrollbar divide-y divide-slate-100">
-        <!-- Results will be injected here -->
-    </div>
-    <div id="no-results<?= $id_suffix ?>" class="p-10 text-center hidden">
-        <div class="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-2 text-slate-300">
-            <i class="fas fa-search text-sm"></i>
+    <!-- Search Results Dropdown -->
+    <div 
+        id="global-search-results<?= $id_suffix ?>" 
+        class="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden hidden z-[100] transform transition-all duration-200 origin-top scale-95 opacity-0"
+    >
+        <div id="results-list<?= $id_suffix ?>" class="max-h-[450px] overflow-y-auto custom-scrollbar divide-y divide-slate-100">
+            <!-- Results will be injected here -->
         </div>
-        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest italic">Data tidak ditemukan</p>
+        <div id="no-results<?= $id_suffix ?>" class="p-10 text-center hidden">
+            <div class="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-2 text-slate-300">
+                <i class="fas fa-search text-sm"></i>
+            </div>
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest italic">Data tidak ditemukan</p>
+        </div>
     </div>
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const suffix = '<?= $id_suffix ?>';
-    const container = document.getElementById('global-search-container' + suffix);
     const input = document.getElementById('global-search-input' + suffix);
     const results = document.getElementById('global-search-results' + suffix);
     const list = document.getElementById('results-list' + suffix);
     const noResults = document.getElementById('no-results' + suffix);
     const spinner = document.getElementById('global-search-spinner' + suffix);
-
-    if (!input || !results) return;
-
-    // --- Portal: pindahkan dropdown ke body agar bebas dari stacking context header ---
-    document.body.appendChild(results);
-
-    // Posisikan dropdown mengikuti input
-    const positionResults = () => {
-        const rect = input.getBoundingClientRect();
-        results.style.top = (rect.bottom + window.scrollY + 8) + 'px';
-        results.style.left = rect.left + 'px';
-        results.style.width = rect.width + 'px';
-    };
-
     let debounceTimer;
 
     const hideResults = () => {
@@ -70,7 +54,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const showResults = () => {
-        positionResults();
         results.classList.remove('hidden');
         setTimeout(() => {
             results.classList.add('scale-100', 'opacity-100');
@@ -147,13 +130,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 300);
     });
 
-    // Reposisi saat window di-resize atau scroll
-    window.addEventListener('resize', () => { if (!results.classList.contains('hidden')) positionResults(); });
-    window.addEventListener('scroll', () => { if (!results.classList.contains('hidden')) positionResults(); }, true);
-
     // Close on click outside
     document.addEventListener('click', (e) => {
-        if (!container?.contains(e.target) && !results.contains(e.target)) {
+        if (!document.getElementById('global-search-container' + suffix).contains(e.target)) {
             hideResults();
         }
     });

@@ -196,8 +196,6 @@
     <div id="main-content" class="<?= !$isPublic ? 'lg:ml-64' : '' ?> min-h-screen flex flex-col">
         <!-- Header / Topbar -->
         <?php if (!$isPublic): ?>
-        <!-- Mobile Search Overlay (z-index di bawah search bar) -->
-        <div id="mobile-search-overlay" class="fixed inset-0 z-[55] bg-slate-900/40 backdrop-blur-sm hidden lg:hidden" aria-hidden="true"></div>
 
         <header class="h-16 bg-white border-b border-slate-200 sticky top-0 z-40 relative">
             <!-- Normal header row -->
@@ -210,19 +208,14 @@
                         <i class="fas fa-bars"></i>
                     </button>
 
-                    <!-- Desktop Search (hidden on mobile) -->
-                    <div class="hidden sm:flex flex-1 max-w-xl px-1">
+                    <!-- Global Search -->
+                    <div class="flex-1 max-w-xl w-full px-2">
                         <?= $this->include('components/global_search') ?>
                     </div>
                 </div>
 
                 <!-- Right: Actions -->
-                <div class="flex items-center gap-1 sm:gap-2 shrink-0">
-                    <!-- Mobile Search Toggle -->
-                    <button id="mobile-search-toggle" class="w-10 h-10 flex items-center justify-center text-slate-500 hover:text-slate-800 hover:bg-slate-50 rounded-lg transition-colors sm:hidden" aria-label="Cari" title="Cari">
-                        <i class="fas fa-search text-base"></i>
-                    </button>
-
+                <div class="flex items-center gap-2 shrink-0">
                     <!-- Verifikasi PDF -->
                     <a href="<?= site_url('verifikasi-pdf') ?>" target="_blank" rel="noopener noreferrer" title="Verifikasi PDF" class="w-10 h-10 flex items-center justify-center text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors">
                         <i class="fas fa-file-signature text-base"></i>
@@ -275,13 +268,6 @@
                             </a>
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <!-- Mobile Search Bar (slide-down, hanya muncul di mobile via JS toggle) -->
-            <div id="mobile-search-bar" class="hidden absolute left-0 right-0 top-16 bg-white border-b border-slate-200 px-4 py-3 shadow-lg z-[65]">
-                <div class="relative">
-                    <?= $this->include('components/global_search', ['id_suffix' => '-mobile']) ?>
                 </div>
             </div>
         </header>
@@ -559,38 +545,6 @@
                     if (e.key === 'Escape') {
                         closeUserDropdown();
                     }
-                });
-            }
-
-            // --- 6. MOBILE SEARCH TOGGLE ---
-            const mobileSearchToggle = document.getElementById('mobile-search-toggle');
-            const mobileSearchBar = document.getElementById('mobile-search-bar');
-            const mobileSearchOverlay = document.getElementById('mobile-search-overlay');
-
-            if (mobileSearchToggle && mobileSearchBar) {
-                const openMobileSearch = () => {
-                    mobileSearchBar.classList.remove('hidden');
-                    mobileSearchOverlay?.classList.remove('hidden');
-                    // Focus the input inside
-                    const inp = mobileSearchBar.querySelector('input');
-                    if (inp) setTimeout(() => inp.focus(), 50);
-                    mobileSearchToggle.innerHTML = '<i class="fas fa-times text-base"></i>';
-                };
-
-                const closeMobileSearch = () => {
-                    mobileSearchBar.classList.add('hidden');
-                    mobileSearchOverlay?.classList.add('hidden');
-                    mobileSearchToggle.innerHTML = '<i class="fas fa-search text-base"></i>';
-                };
-
-                mobileSearchToggle.addEventListener('click', () => {
-                    mobileSearchBar.classList.contains('hidden') ? openMobileSearch() : closeMobileSearch();
-                });
-
-                mobileSearchOverlay?.addEventListener('click', closeMobileSearch);
-
-                document.addEventListener('keydown', (e) => {
-                    if (e.key === 'Escape') closeMobileSearch();
                 });
             }
         });
