@@ -20,6 +20,7 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **Halaman Beranda / Landing Page Publik Baru**:
     - Memindahkan rute utama `/` keluar dari filter `auth` agar dapat diakses oleh publik sebagai landing page resmi yang modern dan responsif.
     - Membuat view `home/landing.php` dengan Hero section yang elegan, 3 card aksi cepat (Verifikasi PDF, Helpdesk Layanan, dan Portal Login Admin), serta melengkapinya dengan **OpenGraph & Twitter Card meta tags** untuk memuat berkas **`meta.png`** saat tautan dibagikan.
+    - Menyelaraskan teks judul utama dan judul halaman pada landing page menjadi **"Pemerintah Kabupaten Sinjai"** (sebelumnya hanya "Kabupaten Sinjai") agar konsisten dengan halaman publik lainnya.
 
     - Menambahkan rute `/dashboard` terproteksi sebagai portal utama bagi administrator yang telah login, lengkap dengan auto-redirection dari halaman landing page jika sesi login aktif.
     - Menyederhanakan halaman login (`auth/login.php`) dengan menghapus tautan eksternal "Verifikasi PDF" dan "Helpdesk" (karena sudah diakomodasi di landing page), lalu menambahkan tautan navigasi balik **"Kembali ke Beranda"** serta memberikan atribut **`autofocus`** pada input username untuk kemudahan pengisian form.
