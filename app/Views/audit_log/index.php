@@ -60,7 +60,7 @@
 
         <!-- Filter Bar -->
         <div class="p-6 border-b border-slate-100 bg-slate-50">
-            <form method="GET" action="<?= site_url('audit_log') ?>" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+            <form method="GET" action="<?= site_url('audit_log') ?>" class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
 
                 <!-- Search -->
                 <div class="md:col-span-2">
@@ -103,13 +103,13 @@
                 </div>
 
                 <!-- Tombol -->
-                <div class="md:col-span-4 flex gap-3">
-                    <button type="submit" id="filterBtn" class="btn btn-solid">
+                <div class="flex gap-2">
+                    <button type="submit" id="filterBtn" class="btn btn-solid w-full">
                         <i class="fas fa-filter mr-2"></i> Filter
                     </button>
                     <?php if (!empty($filterAction) || !empty($filterEntity) || !empty($search)): ?>
-                        <a href="<?= site_url('audit_log') ?>" class="btn btn-outline no-underline">
-                            <i class="fas fa-times mr-2"></i> Reset
+                        <a href="<?= site_url('audit_log') ?>" class="btn btn-outline no-underline" title="Reset">
+                            <i class="fas fa-times"></i>
                         </a>
                     <?php endif; ?>
                 </div>
