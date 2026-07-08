@@ -33,8 +33,10 @@
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col justify-between selection:bg-slate-700 selection:text-white relative overflow-x-hidden">
 
     <!-- Decorative Soft Glows (Light Mode aligned with slate dashboard theme) -->
-    <div class="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-slate-200/50 blur-[120px] pointer-events-none z-0"></div>
-    <div class="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-indigo-50/50 blur-[120px] pointer-events-none z-0"></div>
+    <div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        <div class="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-slate-200/50 blur-[120px]"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-indigo-50/50 blur-[120px]"></div>
+    </div>
 
     <!-- Header / Navbar -->
     <div class="w-full sticky top-0 z-50 px-4 pt-4 shrink-0">
@@ -136,13 +138,8 @@
 
     <!-- Footer -->
     <footer class="w-full border-t border-slate-200 bg-white py-6 z-10 shrink-0">
-        <div class="max-w-5xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-            <div>
-                © <?= date('Y') ?> Pemerintah Kabupaten Sinjai. All rights reserved.
-            </div>
-            <div class="text-slate-400">
-                Aptika diskominfo-sp sinjai
-            </div>
+        <div class="max-w-5xl mx-auto px-6 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-left">
+            diskominfo-sp sinjai
         </div>
     </footer>
 
