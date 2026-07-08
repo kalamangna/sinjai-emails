@@ -37,23 +37,25 @@
     <div class="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-indigo-50/50 blur-[120px] pointer-events-none z-0"></div>
 
     <!-- Header / Navbar -->
-    <header class="w-full max-w-7xl mx-auto px-6 py-6 flex items-center justify-between z-10 shrink-0 border-b border-slate-200/55 bg-white/40 backdrop-blur-md sticky top-0">
-        <div class="flex items-center gap-3">
-            <img src="<?= base_url('logo.png') ?>" alt="Logo Kabupaten Sinjai" class="w-10 h-10 object-contain drop-shadow-sm">
-            <div>
-                <span class="block text-sm font-extrabold tracking-tight text-slate-800 uppercase">sinjai<span class="text-slate-500">emails</span></span>
-                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mt-0.5">identitas digital</span>
+    <div class="w-full sticky top-0 z-50 px-4 pt-4 shrink-0">
+        <header class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between bg-white/80 backdrop-blur-md border border-slate-200/80 rounded-2xl shadow-sm">
+            <div class="flex items-center gap-3">
+                <img src="<?= base_url('logo.png') ?>" alt="Logo Kabupaten Sinjai" class="w-10 h-10 object-contain drop-shadow-sm">
+                <div>
+                    <span class="block text-sm font-extrabold tracking-tight text-slate-800 uppercase">sinjai<span class="text-slate-500">emails</span></span>
+                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mt-0.5">identitas digital</span>
+                </div>
             </div>
-        </div>
-        <div>
-            <a href="<?= site_url('login') ?>" id="nav-login-btn" class="btn btn-solid flex items-center gap-2 hover:scale-[1.02]">
-                <i class="fas fa-sign-in-alt text-[10px]"></i> Masuk
-            </a>
-        </div>
-    </header>
+            <div>
+                <a href="<?= site_url('login') ?>" id="nav-login-btn" class="btn btn-solid flex items-center gap-2 hover:scale-[1.02]">
+                    <i class="fas fa-sign-in-alt text-[10px]"></i> Masuk
+                </a>
+            </div>
+        </header>
+    </div>
 
     <!-- Main Content -->
-    <main class="w-full max-w-7xl mx-auto px-6 py-16 flex-grow flex flex-col items-center justify-center z-10 relative">
+    <main class="w-full max-w-5xl mx-auto px-6 py-16 flex-grow flex flex-col items-center justify-center z-10 relative">
         
         <!-- Hero Section -->
         <div class="text-center max-w-3xl space-y-6 mb-16">
@@ -134,13 +136,12 @@
 
     <!-- Footer -->
     <footer class="w-full border-t border-slate-200 bg-white py-6 z-10 shrink-0">
-        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+        <div class="max-w-5xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
             <div>
                 © <?= date('Y') ?> Pemerintah Kabupaten Sinjai. All rights reserved.
             </div>
-            <div class="flex items-center gap-6">
-                <span class="flex items-center gap-1.5"><i class="fas fa-shield-alt text-slate-300"></i> Secure Connection</span>
-                <span class="flex items-center gap-1.5"><i class="fas fa-server text-slate-300"></i> v2.0.0-Stable</span>
+            <div class="text-slate-400">
+                Aptika diskominfo-sp sinjai
             </div>
         </div>
     </footer>

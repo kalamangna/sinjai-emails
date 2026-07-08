@@ -1938,8 +1938,8 @@ video {
   border-color: rgb(226 232 240 / var(--tw-border-opacity, 1));
 }
 
-.border-slate-200\/55 {
-  border-color: rgb(226 232 240 / 0.55);
+.border-slate-200\/80 {
+  border-color: rgb(226 232 240 / 0.8);
 }
 
 .border-slate-400 {
@@ -2213,8 +2213,8 @@ video {
   background-color: rgb(255 255 255 / 0.1);
 }
 
-.bg-white\/40 {
-  background-color: rgb(255 255 255 / 0.4);
+.bg-white\/80 {
+  background-color: rgb(255 255 255 / 0.8);
 }
 
 .bg-yellow-100 {
