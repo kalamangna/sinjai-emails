@@ -12,6 +12,11 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
     - Menambahkan platform `KOMINFO` ke tabel `platforms` melalui migration `2026-07-08-153748_AddKominfoPlatform.php`.
     - Platform ini kini tersedia sebagai pilihan di dropdown form edit Website Desa & Kelurahan serta filter halaman monitoring.
 
+## Perbaikan Bug
+- **KOMINFO tidak muncul di chart distribusi platform**:
+    - Menambahkan `KOMINFO` ke array sort order di `WebsiteService::getDesaKelurahanPlatformStats()` (posisi 4, sebelum `TIDAK TERDAFTAR`).
+    - Tanpa entri ini, platform dengan urutan tak terdefinisi berpotensi tidak dirender dengan benar di chart ApexCharts.
+
 ---
 
 # [7 Juli 2026]
