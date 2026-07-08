@@ -110,13 +110,14 @@ class WebsiteService
             ];
         }
 
-        // Custom sort order: Sideka, OpenSID, Pihak Ketiga, Tidak Terdaftar
+        // Custom sort order: Sideka, OpenSID, Pihak Ketiga, Kominfo, Tidak Terdaftar
         usort($platform_stats, function ($a, $b) {
             $order = [
-                'SIDEKA-NG' => 1,
-                'OPENSID' => 2,
-                'PIHAK KETIGA' => 3,
-                'TIDAK TERDAFTAR' => 4
+                'SIDEKA-NG'      => 1,
+                'OPENSID'        => 2,
+                'PIHAK KETIGA'   => 3,
+                'KOMINFO'        => 4,
+                'TIDAK TERDAFTAR' => 5,
             ];
             
             $nameA = strtoupper($a['nama_platform']);
