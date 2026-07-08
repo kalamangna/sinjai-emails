@@ -40,7 +40,8 @@ class AuditLogModel extends Model
     public function getDistinctActions(): array
     {
         return $this->db->table('audit_logs')
-                        ->select('DISTINCT action')
+                        ->distinct()
+                        ->select('action')
                         ->orderBy('action', 'ASC')
                         ->get()->getResultArray();
     }
@@ -48,7 +49,8 @@ class AuditLogModel extends Model
     public function getDistinctEntities(): array
     {
         return $this->db->table('audit_logs')
-                        ->select('DISTINCT entity')
+                        ->distinct()
+                        ->select('entity')
                         ->orderBy('entity', 'ASC')
                         ->get()->getResultArray();
     }
