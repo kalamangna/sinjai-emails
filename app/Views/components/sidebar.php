@@ -24,19 +24,19 @@
 
     // Determine default active group based on child matches
     $default_active = '';
-    if ($isActive('email/pns_list') || $isActive('email/pppk_list') || $isActive('email/pppk_pw_list')) {
+    if ($isActive('email/pns') || $isActive('email/pppk') || $isActive('email/pppk-pw')) {
         $default_active = 'pegawai';
     } elseif ($isActive('email/pimpinan') || $isActive('email/pimpinan_desa')) {
         $default_active = 'pejabat';
     } elseif (strpos($full_url, site_url('email/unit_kerja')) !== false && strpos($full_url, 'manage') === false) {
         $default_active = 'organisasi';
-    } elseif ($isActive('email/eselon_list') || strpos($full_url, site_url('email/eselon_detail')) !== false) {
+    } elseif ($isActive('email/eselon') || strpos($full_url, site_url('email/eselon_detail')) !== false) {
         $default_active = 'organisasi';
     } elseif ($isActive('web_opd') || $isActive('web_desa_kelurahan')) {
         $default_active = 'website';
     } elseif ($isActive('batch') || $isActive('batch/update') || $isActive('batch/pk')) {
         $default_active = 'batch';
-    } elseif ($isActive('unit_kerja/manage') || strpos($full_url, site_url('auth/users')) !== false || $isActive('audit_logs')) {
+    } elseif ($isActive('unit_kerja/manage') || strpos($full_url, site_url('auth/users')) !== false || $isActive('audit-trail')) {
         $default_active = 'master';
     }
     ?>
@@ -72,13 +72,13 @@
                 <i class="fas fa-chevron-down text-[10px] transition-transform duration-200"></i>
             </button>
             <div id="submenu-pegawai" class="sidebar-submenu mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
-                <a href="<?= site_url('email/pns_list') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('email/pns_list') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
+                <a href="<?= site_url('email/pns') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('email/pns') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
                     PNS
                 </a>
-                <a href="<?= site_url('email/pppk_list') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('email/pppk_list') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
+                <a href="<?= site_url('email/pppk') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('email/pppk') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
                     PPPK
                 </a>
-                <a href="<?= site_url('email/pppk_pw_list') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('email/pppk_pw_list') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
+                <a href="<?= site_url('email/pppk-pw') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('email/pppk-pw') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
                     PPPK PW
                 </a>
             </div>
@@ -120,7 +120,7 @@
                 <a href="<?= site_url('email/unit_kerja') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('email/unit_kerja') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
                     Unit Kerja
                 </a>
-                <a href="<?= site_url('email/eselon_list') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('email/eselon_list') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
+                <a href="<?= site_url('email/eselon') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('email/eselon') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
                     Eselon
                 </a>
             </div>
@@ -212,7 +212,7 @@
                     <a href="<?= site_url('auth/users') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('auth/users') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
                         User Login
                     </a>
-                    <a href="<?= site_url('audit_logs') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('audit_logs') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
+                    <a href="<?= site_url('audit-trail') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('audit-trail') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
                         Audit Trail
                     </a>
                 </div>

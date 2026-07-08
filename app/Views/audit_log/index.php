@@ -59,7 +59,7 @@
 
         <!-- Filter Bar -->
         <div class="p-6 border-b border-slate-100 bg-slate-50">
-            <form method="GET" action="<?= site_url('audit_log') ?>" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+            <form method="GET" action="<?= site_url('audit-trail') ?>" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
 
                 <!-- Search -->
                 <div class="md:col-span-4">
@@ -99,7 +99,7 @@
                     <button type="submit" id="filterBtn" class="flex-1 btn btn-solid">
                         <i class="fas fa-filter mr-2 text-white/80"></i> Filter
                     </button>
-                    <a href="<?= site_url('audit_log') ?>" class="btn btn-outline" title="Reset">
+                    <a href="<?= site_url('audit-trail') ?>" class="btn btn-outline" title="Reset">
                         <i class="fas fa-undo"></i>
                     </a>
                 </div>
