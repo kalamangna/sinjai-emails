@@ -4,21 +4,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title><?= $title ?? 'Sistem Identitas Digital' ?> | Kabupaten Sinjai</title>
+    <title><?= $title ?? 'Sistem Identitas Digital' ?> | Pemerintah Kabupaten Sinjai</title>
 
     <meta name="description" content="Portal Sistem Identitas Digital & Sertifikat Elektronik Pemerintah Kabupaten Sinjai. Akses layanan integrasi data email, verifikasi dokumen TTE, dan helpdesk.">
     <link rel="canonical" href="<?= current_url() ?>">
 
     <!-- Meta Tags -->
     <meta property="og:site_name" content="Sistem Identitas Digital Sinjai">
-    <meta property="og:title" content="<?= $title ?? 'Sistem Identitas Digital' ?> | Kabupaten Sinjai">
+    <meta property="og:title" content="<?= $title ?? 'Sistem Identitas Digital' ?> | Pemerintah Kabupaten Sinjai">
     <meta property="og:description" content="Portal Sistem Identitas Digital & Sertifikat Elektronik Pemerintah Kabupaten Sinjai. Akses layanan integrasi data email, verifikasi dokumen TTE, dan helpdesk.">
     <meta property="og:url" content="<?= current_url() ?>">
     <meta property="og:image" content="<?= base_url('meta.png') ?>">
     <meta property="og:type" content="website">
     
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="<?= $title ?? 'Sistem Identitas Digital' ?> | Kabupaten Sinjai">
+    <meta name="twitter:title" content="<?= $title ?? 'Sistem Identitas Digital' ?> | Pemerintah Kabupaten Sinjai">
     <meta name="twitter:description" content="Portal Sistem Identitas Digital & Sertifikat Elektronik Pemerintah Kabupaten Sinjai. Akses layanan integrasi data email, verifikasi dokumen TTE, dan helpdesk.">
     <meta name="twitter:image" content="<?= base_url('meta.png') ?>">
 
@@ -82,7 +82,7 @@
             
             <h1 class="text-3xl md:text-5xl font-black tracking-tight text-slate-800 leading-tight uppercase">
                 Sistem Identitas Digital <br>
-                <span class="text-slate-500 font-extrabold">Kabupaten Sinjai</span>
+                <span class="text-slate-500 font-extrabold">Pemerintah Kabupaten Sinjai</span>
             </h1>
             
             <p class="text-slate-500 text-xs md:text-sm max-w-2xl mx-auto leading-relaxed font-medium">
