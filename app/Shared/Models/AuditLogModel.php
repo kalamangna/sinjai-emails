@@ -12,17 +12,48 @@ class AuditLogModel extends Model
     protected $useTimestamps = true;
     protected $createdField  = 'created_at';
     protected $updatedField  = '';
-    
-    public function getLogsWithUser($limit = 100)
+
+    public function applyFilters(string $action = '', string $entity = '', string $search = ''): static
     {
-        return $this->select('audit_logs.*, users.name as user_name, users.username')
-                    ->join('users', 'users.id = audit_logs.user_id', 'left')
-                    ->orderBy('audit_logs.created_at', 'DESC')
-                    ->limit($limit)
-                    ->findAll();
+        $this->select('audit_logs.*, users.name as user_name, users.username')
+             ->join('users', 'users.id = audit_logs.user_id', 'left')
+             ->orderBy('audit_logs.created_at', 'DESC');
+
+        if ($action !== '') {
+            $this->where('audit_logs.action', $action);
+        }
+
+        if ($entity !== '') {
+            $this->where('audit_logs.entity', $entity);
+        }
+
+        if ($search !== '') {
+            $this->groupStart()
+                 ->like('users.name', $search)
+                 ->orLike('users.username', $search)
+                 ->groupEnd();
+        }
+
+        return $this;
     }
 
-    public function getActionSummary()
+    public function getDistinctActions(): array
+    {
+        return $this->db->table('audit_logs')
+                        ->select('DISTINCT action')
+                        ->orderBy('action', 'ASC')
+                        ->get()->getResultArray();
+    }
+
+    public function getDistinctEntities(): array
+    {
+        return $this->db->table('audit_logs')
+                        ->select('DISTINCT entity')
+                        ->orderBy('entity', 'ASC')
+                        ->get()->getResultArray();
+    }
+
+    public function getActionSummary(): array
     {
         return $this->select('action, COUNT(id) as count')
                     ->groupBy('action')
@@ -30,7 +61,7 @@ class AuditLogModel extends Model
                     ->findAll();
     }
 
-    public function getEntitySummary()
+    public function getEntitySummary(): array
     {
         return $this->select('entity, COUNT(id) as count')
                     ->groupBy('entity')
@@ -38,3 +69,4 @@ class AuditLogModel extends Model
                     ->findAll();
     }
 }
+

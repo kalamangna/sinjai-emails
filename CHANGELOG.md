@@ -7,6 +7,13 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 # [8 Juli 2026]
 
+## Fitur Baru
+- **Filter & Pagination Halaman Audit Trail**:
+    - Menambahkan form filter pada halaman audit trail dengan tiga parameter: aksi (`action`), entitas (`entity`), dan pencarian nama/username pengguna.
+    - Data kini dipaginasi 50 baris per halaman menggunakan komponen pagination standar, menggantikan hard limit 200 data sebelumnya.
+    - Badge kolom "Aksi" kini berwarna berbeda per jenis: DELETE=merah, UPDATE=biru, CREATE=hijau, LOGIN=ungu, LOGOUT=abu-abu.
+    - `AuditLogModel` diperbarui dengan method `applyFilters()`, `getDistinctActions()`, dan `getDistinctEntities()`.
+
 ## Penambahan Data
 - **Tambah Platform Baru — KOMINFO**:
     - Menambahkan platform `KOMINFO` ke tabel `platforms` melalui migration `2026-07-08-153748_AddKominfoPlatform.php`.
