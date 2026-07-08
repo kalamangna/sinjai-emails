@@ -42,7 +42,7 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
     $routes->get('/', '\App\Domains\Dashboard\Controllers\Home::index');
 
         // API Documentation (Admin & Super Admin)
-        $routes->group('api-docs', ['filter' => 'role:admin,super_admin'], function ($routes) {
+        $routes->group('api-gateway', ['filter' => 'role:admin,super_admin'], function ($routes) {
             $routes->get('/', '\App\Domains\Api\Controllers\GatewayController::index');
         });
 
