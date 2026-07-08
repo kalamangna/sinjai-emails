@@ -7,6 +7,21 @@
     <title><?= $title ?? 'Sistem Identitas Digital' ?> | Kabupaten Sinjai</title>
 
     <meta name="description" content="Portal Sistem Identitas Digital & Sertifikat Elektronik Pemerintah Kabupaten Sinjai. Akses layanan integrasi data email, verifikasi dokumen TTE, dan helpdesk.">
+    <link rel="canonical" href="<?= current_url() ?>">
+
+    <!-- Meta Tags -->
+    <meta property="og:site_name" content="Sistem Identitas Digital Sinjai">
+    <meta property="og:title" content="<?= $title ?? 'Sistem Identitas Digital' ?> | Kabupaten Sinjai">
+    <meta property="og:description" content="Portal Sistem Identitas Digital & Sertifikat Elektronik Pemerintah Kabupaten Sinjai. Akses layanan integrasi data email, verifikasi dokumen TTE, dan helpdesk.">
+    <meta property="og:url" content="<?= current_url() ?>">
+    <meta property="og:image" content="<?= base_url('meta.png') ?>">
+    <meta property="og:type" content="website">
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<?= $title ?? 'Sistem Identitas Digital' ?> | Kabupaten Sinjai">
+    <meta name="twitter:description" content="Portal Sistem Identitas Digital & Sertifikat Elektronik Pemerintah Kabupaten Sinjai. Akses layanan integrasi data email, verifikasi dokumen TTE, dan helpdesk.">
+    <meta name="twitter:image" content="<?= base_url('meta.png') ?>">
+
     <link rel="icon" type="image/png" href="<?= base_url('logo.png') ?>">
     <link href="<?= base_url('css/output.css') ?>" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
