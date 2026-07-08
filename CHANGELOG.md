@@ -5,6 +5,15 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [8 Juli 2026]
+
+## Penambahan Data
+- **Tambah Platform Baru — KOMINFO**:
+    - Menambahkan platform `KOMINFO` ke tabel `platforms` melalui migration `2026-07-08-153748_AddKominfoPlatform.php`.
+    - Platform ini kini tersedia sebagai pilihan di dropdown form edit Website Desa & Kelurahan serta filter halaman monitoring.
+
+---
+
 # [7 Juli 2026]
 
 ## Perbaikan & Peningkatan
