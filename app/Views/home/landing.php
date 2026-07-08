@@ -39,8 +39,8 @@
     </div>
 
     <!-- Header / Navbar -->
-    <div class="w-full sticky top-0 z-50 px-4 pt-4 shrink-0">
-        <header class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between bg-white/80 backdrop-blur-md border border-slate-200/80 rounded-2xl shadow-sm">
+    <header class="w-full bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50 shrink-0">
+        <div class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <img src="<?= base_url('logo.png') ?>" alt="Logo Kabupaten Sinjai" class="w-10 h-10 object-contain drop-shadow-sm">
                 <div>
@@ -53,8 +53,8 @@
                     <i class="fas fa-sign-in-alt text-[10px]"></i> Masuk
                 </a>
             </div>
-        </header>
-    </div>
+        </div>
+    </header>
 
     <!-- Main Content -->
     <main class="w-full max-w-5xl mx-auto px-6 py-16 flex-grow flex flex-col items-center justify-center z-10 relative">
@@ -138,8 +138,10 @@
 
     <!-- Footer -->
     <footer class="w-full border-t border-slate-200 bg-white py-6 z-10 shrink-0">
-        <div class="max-w-5xl mx-auto px-6 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-left">
-            diskominfo-sp sinjai
+        <div class="max-w-5xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
+            <p class="text-[10px] font-bold text-slate-700 uppercase tracking-widest">
+                &copy; <?= tahunSekarang() ?> Diskominfo-SP Sinjai
+            </p>
         </div>
     </footer>
 
