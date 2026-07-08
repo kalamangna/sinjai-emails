@@ -60,30 +60,23 @@
 
         <!-- Filter Bar -->
         <div class="p-6 border-b border-slate-100 bg-slate-50">
-            <form method="GET" action="<?= site_url('audit_log') ?>" class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+            <form method="GET" action="<?= site_url('audit_log') ?>" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
 
                 <!-- Search -->
-                <div class="md:col-span-2">
+                <div class="md:col-span-4">
                     <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Cari Pengguna</label>
                     <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 pointer-events-none">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-700">
                             <i class="fas fa-search text-xs"></i>
                         </span>
-                        <input
-                            type="text"
-                            name="search"
-                            id="search"
-                            value="<?= esc($search) ?>"
-                            placeholder="Nama atau username..."
-                            class="block w-full pl-9 pr-3 py-2 bg-white border <?= !empty($search) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 text-sm transition-all"
-                        >
+                        <input type="text" name="search" value="<?= esc($search) ?>" class="block w-full pl-9 pr-3 py-2 bg-white border <?= !empty($search) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm transition-all" placeholder="Nama atau username...">
                     </div>
                 </div>
 
                 <!-- Filter Aksi -->
-                <div>
+                <div class="md:col-span-3">
                     <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Aksi</label>
-                    <select name="action" id="filter_action" class="block w-full px-3 py-2 bg-white border <?= !empty($filterAction) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 text-sm appearance-none cursor-pointer transition-all">
+                    <select name="action" id="filter_action" class="block w-full px-3 py-2 bg-white border <?= !empty($filterAction) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm appearance-none cursor-pointer transition-all">
                         <option value="">Semua Aksi</option>
                         <?php foreach ($actions as $a): ?>
                             <option value="<?= esc($a['action']) ?>" <?= ($filterAction === $a['action']) ? 'selected' : '' ?>><?= esc($a['action']) ?></option>
@@ -92,9 +85,9 @@
                 </div>
 
                 <!-- Filter Entitas -->
-                <div>
+                <div class="md:col-span-3">
                     <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Entitas</label>
-                    <select name="entity" id="filter_entity" class="block w-full px-3 py-2 bg-white border <?= !empty($filterEntity) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 text-sm appearance-none cursor-pointer transition-all">
+                    <select name="entity" id="filter_entity" class="block w-full px-3 py-2 bg-white border <?= !empty($filterEntity) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm appearance-none cursor-pointer transition-all">
                         <option value="">Semua Entitas</option>
                         <?php foreach ($entities as $e): ?>
                             <option value="<?= esc($e['entity']) ?>" <?= ($filterEntity === $e['entity']) ? 'selected' : '' ?>><?= esc($e['entity']) ?></option>
@@ -103,15 +96,13 @@
                 </div>
 
                 <!-- Tombol -->
-                <div class="flex gap-2">
-                    <button type="submit" id="filterBtn" class="btn btn-solid w-full">
-                        <i class="fas fa-filter mr-2"></i> Filter
+                <div class="md:col-span-2 flex gap-2">
+                    <button type="submit" id="filterBtn" class="flex-1 btn btn-solid">
+                        <i class="fas fa-filter mr-2 text-white/80"></i> Filter
                     </button>
-                    <?php if (!empty($filterAction) || !empty($filterEntity) || !empty($search)): ?>
-                        <a href="<?= site_url('audit_log') ?>" class="btn btn-outline no-underline" title="Reset">
-                            <i class="fas fa-times"></i>
-                        </a>
-                    <?php endif; ?>
+                    <a href="<?= site_url('audit_log') ?>" class="btn btn-outline" title="Reset">
+                        <i class="fas fa-undo"></i>
+                    </a>
                 </div>
             </form>
         </div>
