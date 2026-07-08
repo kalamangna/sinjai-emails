@@ -77,7 +77,7 @@
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-700">
                             <i class="fas fa-user text-xs"></i>
                         </span>
-                        <input type="text" name="username" id="username" value="<?= old('username') ?>" required
+                        <input type="text" name="username" id="username" value="<?= old('username') ?>" required autofocus
                             class="block w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all"
                             placeholder="Username">
                     </div>
@@ -102,6 +102,11 @@
                 </div>
             </form>
 
+            <div class="mt-6 pt-4 border-t border-slate-100 text-center">
+                <a href="<?= site_url('/') ?>" class="inline-flex items-center gap-1.5 text-[10px] font-bold text-slate-500 hover:text-slate-800 transition-colors uppercase tracking-widest">
+                    <i class="fas fa-arrow-left"></i> Kembali ke Beranda
+                </a>
+            </div>
         </div>
 
         <p class="text-center text-[10px] font-bold text-slate-700 uppercase tracking-widest mt-8">
