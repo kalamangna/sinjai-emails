@@ -14,8 +14,11 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## Perbaikan Bug
 - **KOMINFO tidak muncul di chart distribusi platform**:
-    - Menambahkan `KOMINFO` ke array sort order di `WebsiteService::getDesaKelurahanPlatformStats()` (posisi 4, sebelum `TIDAK TERDAFTAR`).
+    - Menambahkan `KOMINFO` ke array sort order di `WebsiteService::getDesaKelurahanPlatformStats()` (posisi 1/pertama).
     - Tanpa entri ini, platform dengan urutan tak terdefinisi berpotensi tidak dirender dengan benar di chart ApexCharts.
+- **Urutan dropdown platform** — KOMINFO ditampilkan sebagai pilihan pertama di:
+    - Filter halaman index Website Desa & Kelurahan
+    - Form edit Website Desa & Kelurahan
 
 ---
 

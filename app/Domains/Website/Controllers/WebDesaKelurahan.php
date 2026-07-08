@@ -90,7 +90,7 @@ class WebDesaKelurahan extends BaseController
             'stats' => $stats,
             'platform_stats' => $platform_stats,
             'kecamatan_list' => $kecamatan_list,
-            'platforms' => $platformModel->asArray()->findAll(),
+            'platforms' => $platformModel->orderBy("FIELD(nama_platform, 'KOMINFO', 'SIDEKA-NG', 'OPENSID', 'PIHAK KETIGA')")->asArray()->findAll(),
             'title' => 'Website Desa & Kelurahan',
             'search' => $search,
             'filterKecamatan' => $filterKecamatan,
@@ -129,7 +129,7 @@ class WebDesaKelurahan extends BaseController
             return redirect()->to('web_desa_kelurahan')->with('error', 'Data not found.');
         }
 
-        $data['platforms'] = $platformModel->findAll();
+        $data['platforms'] = $platformModel->orderBy("FIELD(nama_platform, 'KOMINFO', 'SIDEKA-NG', 'OPENSID', 'PIHAK KETIGA')")->findAll();
         $data['title'] = 'Edit Website Desa & Kelurahan';
         return view('web_desa_kelurahan/form', $data);
     }
