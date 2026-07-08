@@ -72,6 +72,8 @@ class Auth extends BaseController
 
             session()->set($sessionData);
 
+            log_audit('LOGIN', 'User', $user['id'], 'User login berhasil: ' . $user['username']);
+
             return redirect()->to('/')->with('success', 'Selamat datang kembali, ' . ($user['name'] ?? $user['username']));
         }
 
@@ -80,6 +82,7 @@ class Auth extends BaseController
 
     public function logout()
     {
+        log_audit('LOGOUT', 'User', session()->get('id'), 'User melakukan logout: ' . session()->get('username'));
         session()->destroy();
         return redirect()->to('/login');
     }

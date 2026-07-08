@@ -25,6 +25,8 @@ class EmailExport extends BaseController
             ];
 
             $result = $this->emailExportService->generateUnitKerjaCsv($unitKerjaId, $params);
+            
+            log_audit('EXPORT', 'Email', $unitKerjaId, 'Ekspor CSV Email Unit Kerja');
 
             if ($result['type'] === 'csv') {
                 return $this->response->download($result['path'], null)->setFileName($result['filename']);
@@ -47,6 +49,8 @@ class EmailExport extends BaseController
 
             $result = $this->emailExportService->generatePnsExcel($params);
 
+            log_audit('EXPORT', 'Email', null, 'Ekspor Excel PNS');
+
             return $this->response->download($result['path'], null)->setFileName($result['filename']);
         } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
@@ -65,6 +69,8 @@ class EmailExport extends BaseController
 
             $result = $this->emailExportService->generateUnitKerjaExcel($unitKerjaId, $params);
 
+            log_audit('EXPORT', 'Email', $unitKerjaId, 'Ekspor Excel Email Unit Kerja');
+
             return $this->response->download($result['path'], null)->setFileName($result['filename']);
         } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
@@ -76,6 +82,7 @@ class EmailExport extends BaseController
     {
         try {
             $result = $this->emailExportService->generatePerjanjianKerjaPdf($username);
+            log_audit('EXPORT', 'Email', null, 'Ekspor PDF Perjanjian Kerja user: ' . $username);
             $result['dompdf']->stream($result['filename'], ["Attachment" => true]);
             exit();
         } catch (\Throwable $e) {
@@ -89,6 +96,8 @@ class EmailExport extends BaseController
         try {
             $pkType = $this->request->getGet('pk_type');
             $result = $this->emailExportService->generatePerjanjianKerjaZip($unitKerjaId, $pkType);
+
+            log_audit('EXPORT', 'Email', $unitKerjaId, 'Ekspor ZIP Perjanjian Kerja Unit Kerja');
 
             header('Content-Type: application/zip');
             header('Content-Disposition: attachment; filename="' . $result['filename'] . '"');
@@ -135,6 +144,8 @@ class EmailExport extends BaseController
                 'filters' => $filters
             ]);
 
+            log_audit('EXPORT', 'Email', $unitKerjaId, 'Antrean Ekspor PDF Unit Kerja');
+
             // Instead of cURL, tell the history page to trigger the worker via AJAX
             session()->setFlashdata('trigger_worker', true);
             session()->setFlashdata('success', 'Permintaan Export PDF berhasil ditambahkan ke antrean. File akan segera tersedia di Riwayat Laporan.');
@@ -177,6 +188,8 @@ class EmailExport extends BaseController
                 'history_id' => $historyId,
                 'filters' => $filters
             ]);
+
+            log_audit('EXPORT', 'Email', $unitKerjaId, 'Antrean Ekspor PDF Detail Akun Unit Kerja');
 
             session()->setFlashdata('trigger_worker', true);
             session()->setFlashdata('success', 'Permintaan Export Detail Akun PDF berhasil ditambahkan ke antrean. File akan segera tersedia di Riwayat Laporan.');

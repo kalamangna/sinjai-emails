@@ -267,6 +267,7 @@ class Assistance extends BaseController
         }
 
         $result = $this->exportService->generateReportPdf($filterCategory, $filterMonth, $filterYear);
+        log_audit('EXPORT', 'Assistance', null, 'Ekspor PDF Log Layanan');
         $result['dompdf']->stream($result['filename'], ['Attachment' => true]);
     }
 }

@@ -13,6 +13,12 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
     - Data kini dipaginasi 50 baris per halaman menggunakan komponen pagination standar, menggantikan hard limit 200 data sebelumnya.
     - Badge kolom "Aksi" kini berwarna berbeda per jenis: DELETE=merah, UPDATE=biru, CREATE=hijau, LOGIN=ungu, LOGOUT=abu-abu.
     - `AuditLogModel` diperbarui dengan method `applyFilters()`, `getDistinctActions()`, dan `getDistinctEntities()`.
+- **Pencatatan Audit Trail untuk Ekspor Laporan**:
+    - Menambahkan pemanggilan `log_audit()` otomatis untuk mencatat aksi `EXPORT` setiap kali pengguna mengunduh atau mengantrekan laporan (PDF, Excel, CSV, ZIP) dari berbagai modul (Email, Website Desa, Website OPD, Log Layanan).
+- **Pencatatan Audit Trail untuk Login & Logout**:
+    - Menambahkan pencatatan audit otomatis dengan aksi `LOGIN` dan `LOGOUT` pada saat pengguna masuk dan keluar dari sistem untuk meningkatkan visibilitas keamanan sistem.
+
+
 
 ## Penambahan Data
 - **Tambah Platform Baru — KOMINFO**:

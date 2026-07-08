@@ -116,6 +116,9 @@ class WebDesaKelurahan extends BaseController
             $filterStatus,
             $filterType
         );
+
+        log_audit('EXPORT', 'WebDesaKelurahan', null, 'Ekspor PDF Website Desa dan Kelurahan');
+
         $result['dompdf']->stream($result['filename'], ['Attachment' => true]);
     }
 

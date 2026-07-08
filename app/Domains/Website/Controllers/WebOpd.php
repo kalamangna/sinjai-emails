@@ -66,6 +66,7 @@ class WebOpd extends BaseController
         $filterStatus = trim($this->request->getGet('status') ?? '');
 
         $result = $this->exportService->generateWebOpdPdf($search, $filterStatus);
+        log_audit('EXPORT', 'WebOpd', null, 'Ekspor PDF Website OPD');
         $result['dompdf']->stream($result['filename'], ['Attachment' => true]);
     }
 
