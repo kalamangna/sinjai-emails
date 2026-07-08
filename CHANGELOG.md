@@ -21,6 +21,8 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
     - Memindahkan rute utama `/` keluar dari filter `auth` agar dapat diakses oleh publik sebagai landing page resmi yang modern dan responsif.
     - Membuat view `home/landing.php` dengan Hero section yang elegan dan 3 card aksi cepat (Verifikasi PDF, Helpdesk Layanan, dan Portal Login Admin).
     - Menambahkan rute `/dashboard` terproteksi sebagai portal utama bagi administrator yang telah login, lengkap dengan auto-redirection dari halaman landing page jika sesi login aktif.
+    - Menyederhanakan halaman login (`auth/login.php`) dengan menghapus tautan eksternal "Verifikasi PDF" dan "Helpdesk" karena fungsinya sudah sepenuhnya diakomodasi di landing page utama.
+
 
 
 
