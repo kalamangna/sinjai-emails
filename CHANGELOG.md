@@ -45,6 +45,10 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
     - Menghapus subjudul statis (keterangan/deskripsi di bawah `<h1>`) di halaman **API Gateway**, **Audit Trail**, **Kotak Sampah**, **Tukar Data Akun**, dan **Riwayat Laporan** agar tampilan lebih bersih dan konsisten.
 - **Penyelarasan Rute API Gateway**:
     - Mengubah rute halaman dokumentasi API Gateway dari `/api-docs` menjadi `/api-gateway` agar selaras dan konsisten dengan teks menu sidebar "API Gateway".
+- **Restrukturisasi & Pengamanan Rute Eksekusi Batch**:
+    - Memindahkan rute `batch_execute_update` dan `batch_execute_create` ke dalam grup `/batch` menjadi `/batch/execute_update` dan `/batch/execute_create`.
+    - Perubahan ini membuat rute eksekusi batch otomatis dilindungi oleh filter `role:admin,super_admin` untuk keamanan yang lebih baik.
+
 
 
 

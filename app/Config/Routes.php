@@ -124,10 +124,6 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
     $routes->get('reports/download/(:num)', '\App\Domains\Email\Controllers\EmailExport::download_history/$1');
     $routes->post('reports/delete/(:num)', '\App\Domains\Email\Controllers\EmailExport::delete_history/$1');
 
-    // Batch Create & Update API
-    $routes->match(['GET', 'POST'], 'batch_execute_update', '\App\Domains\Batch\Controllers\BatchController::save_batch_update');
-    $routes->match(['GET', 'POST'], 'batch_execute_create', '\App\Domains\Batch\Controllers\BatchController::save_batch_create');
-
     // Batch Operations (Admin & Super Admin)
     $routes->group('batch', ['filter' => 'role:admin,super_admin'], function ($routes) {
         $routes->get('/', '\App\Domains\Batch\Controllers\BatchController::index');
@@ -138,6 +134,8 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         $routes->get('download_unit_kerja_template', '\App\Domains\Batch\Controllers\BatchController::download_unit_kerja_template');
         $routes->get('update', '\App\Domains\Batch\Controllers\BatchController::update');
         $routes->get('pk', '\App\Domains\Batch\Controllers\BatchController::pk');
+        $routes->match(['GET', 'POST'], 'execute_update', '\App\Domains\Batch\Controllers\BatchController::save_batch_update');
+        $routes->match(['GET', 'POST'], 'execute_create', '\App\Domains\Batch\Controllers\BatchController::save_batch_create');
     });
 
     // Manajemen Data Induk (Unit Kerja - Super Admin Only)
