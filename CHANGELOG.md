@@ -36,6 +36,8 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
         - **Unit Kerja**: `'Master Data Unit Kerja'` -> `'Unit Kerja'`
         - **Kotak Sampah**: `'Manajemen Sampah (Soft Deleted)' / 'Manajemen Sampah'` -> `'Kotak Sampah'`
         - **API Gateway**: `'API Gateway Documentation'` -> `'API Gateway'`
+    - Menghapus subjudul statis (keterangan/deskripsi di bawah `<h1>`) di halaman **API Gateway**, **Audit Trail**, **Kotak Sampah**, **Tukar Data Akun**, dan **Riwayat Laporan** agar tampilan lebih bersih dan konsisten.
+
 
 
 ---

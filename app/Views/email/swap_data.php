@@ -9,7 +9,6 @@
             </a>
             <div>
                 <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight">Tukar Data Akun</h1>
-                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">Menukar profil NIK, NIP, Nama, dll antar dua email</p>
             </div>
         </div>
     </div>

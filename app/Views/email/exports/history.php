@@ -6,9 +6,6 @@
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
             <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight">Riwayat Laporan</h1>
-            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">
-                Daftar antrean laporan PDF latar belakang
-            </p>
         </div>
         <div class="flex items-center gap-2 w-full sm:w-auto">
             <button onclick="window.location.reload()" class="flex-1 sm:flex-none btn btn-outline no-underline">
