@@ -47,7 +47,7 @@ class GatewayController extends BaseController
         $units = $unitModel->orderBy('nama_unit_kerja', 'ASC')->findAll();
 
         $data = [
-            'title' => 'API Gateway Documentation',
+            'title' => 'API Gateway',
             'token' => $displayToken,
             'base_url' => base_url('api/v1'),
             'units' => $units

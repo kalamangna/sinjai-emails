@@ -4,7 +4,7 @@
 <div class="space-y-6">
     <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
         <div>
-            <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight">Manajemen Sampah</h1>
+            <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight">Kotak Sampah</h1>
             <p class="text-[10px] font-bold text-slate-700 uppercase tracking-widest mt-1">Daftar Akun yang Dihapus (Soft Deleted)</p>
         </div>
     </div>

@@ -50,7 +50,7 @@ class UnitKerja extends BaseController
         $data['parents_with_children'] = $parentsWithChildren;
         $data['search'] = $search;
         $data['parent_id_filter'] = $parentIdFilter;
-        $data['title'] = 'Master Data Unit Kerja';
+        $data['title'] = 'Unit Kerja';
 
         return view('unit_kerja/manage', $data);
     }

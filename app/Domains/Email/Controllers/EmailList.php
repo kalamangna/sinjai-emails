@@ -121,7 +121,7 @@ class EmailList extends BaseController
 
             $data['parent_unit_kerjas'] = $this->unitKerjaModel->where('parent_id', null)->orderBy('nama_unit_kerja', 'ASC')->findAll();
 
-            $data['title'] = 'Daftar PNS';
+            $data['title'] = 'PNS';
             $data['has_nip'] = $params['has_nip'];
             $data['parent_unit_kerja_id'] = $params['parent_unit_kerja_id'];
             $data['back_url'] = site_url('email');
@@ -145,7 +145,7 @@ class EmailList extends BaseController
 
             $data = $this->emailService->getAsnList('PPPK', $params);
 
-            $data['title'] = 'PPPK Penuh Waktu';
+            $data['title'] = 'PPPK';
             $data['has_nip'] = $params['has_nip'];
             $data['back_url'] = site_url('email');
 
@@ -168,7 +168,7 @@ class EmailList extends BaseController
 
             $data = $this->emailService->getAsnList('PPPK PARUH WAKTU', $params);
 
-            $data['title'] = 'PPPK Paruh Waktu';
+            $data['title'] = 'PPPK PW';
             $data['has_nip'] = $params['has_nip'];
             $data['back_url'] = site_url('email');
 

@@ -25,7 +25,7 @@ class AuditLogController extends BaseController
         $summaryModel = new AuditLogModel();
 
         $data = [
-            'title'          => 'Audit Trail (Log Aktivitas)',
+            'title'          => 'Audit Trail',
             'logs'           => $logs,
             'pager'          => $pager,
             'action_summary' => $summaryModel->getActionSummary(),

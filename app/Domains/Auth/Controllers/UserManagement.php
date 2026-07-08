@@ -19,7 +19,7 @@ class UserManagement extends BaseController
     public function index()
     {
         $data = [
-            'title' => 'Manajemen User',
+            'title' => 'User Login',
             'users' => $this->userModel->findAll()
         ];
         return view('auth/user_index', $data);

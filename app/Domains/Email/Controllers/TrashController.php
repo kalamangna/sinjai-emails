@@ -16,7 +16,7 @@ class TrashController extends BaseController
         $emails = $emailModel->withDetails()->onlyDeleted()->findAll();
 
         $data = [
-            'title' => 'Manajemen Sampah (Soft Deleted)',
+            'title' => 'Kotak Sampah',
             'emails' => $emails,
         ];
 

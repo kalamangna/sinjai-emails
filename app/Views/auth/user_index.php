@@ -3,7 +3,7 @@
 <?= $this->section('content') ?>
 <div class="space-y-6">
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight">Manajemen User Login</h1>
+        <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight">User Login</h1>
         <a href="<?= site_url('auth/users/add') ?>" class="btn btn-solid">
             <i class="fas fa-plus mr-2 text-white/80"></i> Tambah User
         </a>

@@ -5,7 +5,7 @@
     <!-- Header Halaman -->
     <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
         <div>
-            <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight">API Gateway Documentation</h1>
+            <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight">API Gateway</h1>
             <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">
                 Panduan integrasi data internal Pemerintah Kabupaten Sinjai
             </p>

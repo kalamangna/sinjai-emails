@@ -26,6 +26,17 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **Urutan dropdown platform** — KOMINFO ditampilkan sebagai pilihan pertama di:
     - Filter halaman index Website Desa & Kelurahan
     - Form edit Website Desa & Kelurahan
+- **Konsistensi Judul Halaman & Judul Besar (H1)**:
+    - Menyelaraskan `<title>` dan judul besar `<h1>` pada beberapa halaman agar sesuai dengan nama menu di sidebar:
+        - **PNS**: `'Daftar PNS'` -> `'PNS'`
+        - **PPPK**: `'PPPK Penuh Waktu'` -> `'PPPK'`
+        - **PPPK PW**: `'PPPK Paruh Waktu'` -> `'PPPK PW'`
+        - **Website Desa dan Kelurahan**: `'Website Desa & Kelurahan'` -> `'Website Desa dan Kelurahan'`
+        - **User Login**: `'Manajemen User' / 'Manajemen User Login'` -> `'User Login'`
+        - **Unit Kerja**: `'Master Data Unit Kerja'` -> `'Unit Kerja'`
+        - **Kotak Sampah**: `'Manajemen Sampah (Soft Deleted)' / 'Manajemen Sampah'` -> `'Kotak Sampah'`
+        - **API Gateway**: `'API Gateway Documentation'` -> `'API Gateway'`
+
 
 ---
 
