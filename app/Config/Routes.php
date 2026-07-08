@@ -35,11 +35,14 @@ $routes->group('api/v1', ['filter' => 'api_gateway'], function ($routes) {
 // Internal Async Queue Trigger (Publicly accessible but safe)
 $routes->get('api_trigger_queue', '\App\Domains\Email\Controllers\EmailApi::api_trigger_queue');
 
+// Public Route - Landing Page
+$routes->get('/', '\App\Domains\Dashboard\Controllers\Home::index');
+
 // Protected Routes
 $routes->group('', ['filter' => 'auth'], function ($routes) {
     
     // Portal Utama
-    $routes->get('/', '\App\Domains\Dashboard\Controllers\Home::index');
+    $routes->get('dashboard', '\App\Domains\Dashboard\Controllers\Home::dashboard');
 
         // API Documentation (Admin & Super Admin)
         $routes->group('api-gateway', ['filter' => 'role:admin,super_admin'], function ($routes) {

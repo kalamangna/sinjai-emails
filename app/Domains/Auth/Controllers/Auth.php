@@ -12,7 +12,7 @@ class Auth extends BaseController
     public function login()
     {
         if (session()->get('isLoggedIn')) {
-            return redirect()->to('/');
+            return redirect()->to('dashboard');
         }
 
         $data = [
@@ -74,7 +74,7 @@ class Auth extends BaseController
 
             log_audit('LOGIN', 'User', $user['id'], 'User login berhasil: ' . $user['username']);
 
-            return redirect()->to('/')->with('success', 'Selamat datang kembali, ' . ($user['name'] ?? $user['username']));
+            return redirect()->to('dashboard')->with('success', 'Selamat datang kembali, ' . ($user['name'] ?? $user['username']));
         }
 
         return redirect()->back()->withInput()->with('error', 'Username atau password salah.');

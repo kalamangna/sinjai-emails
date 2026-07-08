@@ -17,6 +17,11 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
     - Menambahkan pemanggilan `log_audit()` otomatis untuk mencatat aksi `EXPORT` setiap kali pengguna mengunduh atau mengantrekan laporan (PDF, Excel, CSV, ZIP) dari berbagai modul (Email, Website Desa, Website OPD, Log Layanan).
 - **Pencatatan Audit Trail untuk Login & Logout**:
     - Menambahkan pencatatan audit otomatis dengan aksi `LOGIN` dan `LOGOUT` pada saat pengguna masuk dan keluar dari sistem untuk meningkatkan visibilitas keamanan sistem.
+- **Halaman Beranda / Landing Page Publik Baru**:
+    - Memindahkan rute utama `/` keluar dari filter `auth` agar dapat diakses oleh publik sebagai landing page resmi yang modern dan responsif.
+    - Membuat view `home/landing.php` dengan Hero section yang elegan dan 3 card aksi cepat (Verifikasi PDF, Helpdesk Layanan, dan Portal Login Admin).
+    - Menambahkan rute `/dashboard` terproteksi sebagai portal utama bagi administrator yang telah login, lengkap dengan auto-redirection dari halaman landing page jika sesi login aktif.
+
 
 
 

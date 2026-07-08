@@ -44,9 +44,9 @@
     <!-- Navigation Menu -->
     <nav class="flex-grow py-6 px-4 space-y-1 overflow-y-auto custom-scrollbar">
         <!-- Dashboard -->
-        <a href="<?= site_url('/') ?>" data-sidebar-clear class="flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('/') ? 'bg-slate-700 text-white shadow-lg shadow-slate-900/20' : 'text-slate-100 hover:bg-slate-700/80 hover:text-white' ?>">
+        <a href="<?= site_url('dashboard') ?>" data-sidebar-clear class="flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('dashboard') ? 'bg-slate-700 text-white shadow-lg shadow-slate-900/20' : 'text-slate-100 hover:bg-slate-700/80 hover:text-white' ?>">
             <div class="w-5 h-5 flex items-center justify-center mr-3 shrink-0">
-                <i class="fas fa-th-large <?= $isActive('/') ? 'text-white' : 'text-slate-300' ?>"></i>
+                <i class="fas fa-th-large <?= $isActive('dashboard') ? 'text-white' : 'text-slate-300' ?>"></i>
             </div>
             Dashboard
         </a>
