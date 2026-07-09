@@ -5,6 +5,18 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [9 Juli 2026]
+
+## Pembaruan Visual & UI
+- **Penyelarasan Desain Halaman Publik**:
+    - Mengubah intensitas bayangan kartu (*card shadow*) dari `shadow-2xl` menjadi `shadow-xl shadow-slate-200/50` di seluruh halaman publik (Verifikasi Akun, Verifikasi PDF, Helpdesk Form, Helpdesk Success, dan Halaman Error) agar senada dengan estetika landing page.
+    - Menyelaraskan teks hak cipta pada footer kartu agar menggunakan warna abu-abu yang lebih halus (`text-slate-400` menggantikan `text-slate-700` yang sebelumnya terlalu kontras).
+    - Menambahkan komponen footer kartu secara konsisten pada halaman *Helpdesk Form* dan *Helpdesk Success*.
+- **Perbaikan HTML Bug**:
+    - Menghapus tag penutup `</div>` ganda yang redundan di bagian akhir file `public_success.php` untuk memastikan struktur HTML tervalidasi bersih.
+
+---
+
 # [8 Juli 2026]
 
 ## Fitur Baru
