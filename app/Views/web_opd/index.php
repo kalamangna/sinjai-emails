@@ -73,7 +73,7 @@
         </div>
     </div>
 
-    <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
+    <div class="bg-white border border-slate-200 rounded-lg shadow-sm">
         <div class="p-6 border-b border-slate-100 bg-slate-50">
             <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
                 <div class="md:col-span-8">
