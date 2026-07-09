@@ -112,62 +112,52 @@
 
     <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
         <div class="p-6 border-b border-slate-100 bg-slate-50">
-            <form method="GET" action="<?= site_url('web_desa_kelurahan') ?>" id="filter-form" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
-                <div class="md:col-span-3">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+                <div class="md:col-span-4">
                     <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Pencarian</label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-700">
                             <i class="fas fa-search text-xs"></i>
                         </span>
-                        <input type="text" name="search" value="<?= esc($search) ?>" class="block w-full pl-9 pr-3 py-2 bg-white border <?= !empty($search) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm transition-all" placeholder="Cari desa atau kelurahan...">
+                        <input type="text" id="search-input" class="block w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm transition-all" placeholder="Cari desa, kelurahan, kecamatan, atau domain...">
                     </div>
                 </div>
 
                 <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Kecamatan</label>
-                    <select name="kecamatan" id="filter-kecamatan" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm cursor-pointer transition-all">
-                        <option value="">Semua Kecamatan</option>
-                        <?php foreach ($kecamatan_list as $k): ?>
-                            <option value="<?= esc($k['kecamatan']) ?>" <?= ($filterKecamatan === $k['kecamatan']) ? 'selected' : '' ?>><?= esc($k['kecamatan']) ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-
-                <div class="md:col-span-2">
                     <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Tipe</label>
-                    <select name="type" id="filter-type" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm cursor-pointer transition-all">
+                    <select id="filter-type" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm cursor-pointer transition-all">
                         <option value="">Semua Tipe</option>
-                        <option value="DESA" <?= ($filterType === 'DESA') ? 'selected' : '' ?>>DESA</option>
-                        <option value="KELURAHAN" <?= ($filterType === 'KELURAHAN') ? 'selected' : '' ?>>KELURAHAN</option>
+                        <option value="DESA">DESA</option>
+                        <option value="KELURAHAN">KELURAHAN</option>
                     </select>
                 </div>
 
-                <div class="md:col-span-2">
+                <div class="md:col-span-3">
                     <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Platform</label>
-                    <select name="filter_platform" id="filter-platform" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm cursor-pointer transition-all">
+                    <select id="filter-platform" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm cursor-pointer transition-all">
                         <option value="">Semua Platform</option>
-                        <option value="NULL" <?= ($filterPlatform === 'NULL') ? 'selected' : '' ?>>TIDAK TERDAFTAR</option>
+                        <option value="NULL">TIDAK TERDAFTAR</option>
                         <?php foreach ($platforms as $p): ?>
-                            <option value="<?= esc($p['nama_platform']) ?>" <?= ($filterPlatform === $p['nama_platform']) ? 'selected' : '' ?>><?= esc($p['nama_platform']) ?></option>
+                            <option value="<?= esc(strtoupper($p['nama_platform'])) ?>"><?= esc($p['nama_platform']) ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
 
                 <div class="md:col-span-2">
                     <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Status</label>
-                    <select name="status" id="filter-status" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm cursor-pointer transition-all">
+                    <select id="filter-status" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm cursor-pointer transition-all">
                         <option value="">Semua Status</option>
-                        <option value="AKTIF" <?= ($filterStatus === 'AKTIF') ? 'selected' : '' ?>>AKTIF</option>
-                        <option value="NONAKTIF" <?= ($filterStatus === 'NONAKTIF') ? 'selected' : '' ?>>NONAKTIF</option>
+                        <option value="AKTIF">AKTIF</option>
+                        <option value="NONAKTIF">NONAKTIF</option>
                     </select>
                 </div>
 
                 <div class="md:col-span-1 flex gap-2">
-                    <a href="<?= site_url('web_desa_kelurahan') ?>" class="w-full btn btn-outline justify-center" title="Reset">
+                    <button type="button" id="reset-filters" class="w-full btn btn-outline justify-center" title="Reset">
                         <i class="fas fa-undo"></i>
-                    </a>
+                    </button>
                 </div>
-            </form>
+            </div>
         </div>
 
         <div class="overflow-x-auto">
@@ -186,7 +176,19 @@
                 <tbody class="divide-y divide-slate-100">
                     <?php if (!empty($websites)): ?>
                         <?php foreach ($websites as $web): ?>
-                            <tr class="hover:bg-slate-50 transition-colors website-row" data-id="<?= $web['id'] ?>">
+                            <?php
+                            $type = (stripos($web['desa_kelurahan'], 'KELURAHAN') !== false) ? 'KELURAHAN' : 'DESA';
+                            $platform = strtoupper($web['platform_name'] ?: 'TIDAK TERDAFTAR');
+                            $status = strtoupper($web['status'] ?? 'NONAKTIF');
+                            ?>
+                            <tr class="hover:bg-slate-50 transition-colors website-row" 
+                                data-id="<?= $web['id'] ?>"
+                                data-name="<?= esc(strtoupper($web['desa_kelurahan'])) ?>"
+                                data-kecamatan="<?= esc(strtoupper($web['kecamatan'])) ?>"
+                                data-domain="<?= esc(strtoupper($web['domain'] ?? '')) ?>"
+                                data-type="<?= $type ?>"
+                                data-platform="<?= $platform ?>"
+                                data-status="<?= $status ?>">
                             <td class="px-6 py-4">
                                 <div class="flex flex-col">
                                     <span class="font-medium text-slate-800 uppercase tracking-tight text-xs"><?= esc($web['desa_kelurahan']) ?></span>
@@ -261,6 +263,16 @@
                             </td>
                         </tr>
                                             <?php endforeach; ?>
+                                            <tr id="no-results-row" class="hidden">
+                                                <td colspan="7" class="px-6 py-20 text-center">
+                                                    <div class="flex flex-col items-center justify-center">
+                                                        <div class="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center mb-3">
+                                                            <i class="fas fa-search text-slate-300 text-lg"></i>
+                                                        </div>
+                                                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest italic">Data tidak ditemukan</span>
+                                                    </div>
+                                                </td>
+                                            </tr>
                                         <?php else: ?>
                                             <tr>
                                                 <td colspan="7" class="px-6 py-20 text-center">
@@ -276,7 +288,7 @@
                                     </tbody>            </table>
         </div>
 
-        <?= view('components/pagination', ['items' => $websites, 'pager' => $pager, 'label' => 'website']) ?>
+        <!-- Pagination disembunyikan karena seluruh data dimuat langsung dalam 1 halaman -->
     </div>
 </div>
 
@@ -286,49 +298,108 @@
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        // Initialize Choices.js for Filter Form Dropdowns and set Auto-submit on change
+        // Initialize Choices.js for Filter Form Dropdowns
         const typeSelect = document.getElementById('filter-type');
         const platformSelect = document.getElementById('filter-platform');
         const statusSelect = document.getElementById('filter-status');
-        const kecamatanSelect = document.getElementById('filter-kecamatan');
-        const filterForm = document.getElementById('filter-form');
+        const searchInput = document.getElementById('search-input');
+        const resetBtn = document.getElementById('reset-filters');
 
-        const autoSubmit = () => {
-            if (filterForm) filterForm.submit();
-        };
-        
+        let typeChoices, platformChoices, statusChoices;
+
         if (typeSelect) {
-            new Choices(typeSelect, {
+            typeChoices = new Choices(typeSelect, {
                 searchEnabled: false,
                 itemSelectText: '',
                 shouldSort: false
             });
-            typeSelect.addEventListener('change', autoSubmit);
+            typeSelect.addEventListener('change', filterWebsites);
         }
         if (platformSelect) {
-            new Choices(platformSelect, {
+            platformChoices = new Choices(platformSelect, {
                 searchEnabled: false,
                 itemSelectText: '',
                 shouldSort: false
             });
-            platformSelect.addEventListener('change', autoSubmit);
+            platformSelect.addEventListener('change', filterWebsites);
         }
         if (statusSelect) {
-            new Choices(statusSelect, {
+            statusChoices = new Choices(statusSelect, {
                 searchEnabled: false,
                 itemSelectText: '',
                 shouldSort: false
             });
-            statusSelect.addEventListener('change', autoSubmit);
+            statusSelect.addEventListener('change', filterWebsites);
         }
-        if (kecamatanSelect) {
-            new Choices(kecamatanSelect, {
-                searchEnabled: true,
-                itemSelectText: '',
-                shouldSort: false,
-                searchPlaceholderValue: 'Cari kecamatan...'
+
+        if (searchInput) {
+            searchInput.addEventListener('input', filterWebsites);
+        }
+
+        if (resetBtn) {
+            resetBtn.addEventListener('click', function() {
+                if (searchInput) searchInput.value = '';
+                if (typeChoices) typeChoices.setChoiceByValue('');
+                if (platformChoices) platformChoices.setChoiceByValue('');
+                if (statusChoices) statusChoices.setChoiceByValue('');
+                filterWebsites();
             });
-            kecamatanSelect.addEventListener('change', autoSubmit);
+        }
+
+        function filterWebsites() {
+            const searchVal = searchInput ? searchInput.value.toLowerCase().trim() : '';
+            const typeVal = typeSelect ? typeSelect.value : '';
+            const platformVal = platformSelect ? platformSelect.value : '';
+            const statusVal = statusSelect ? statusSelect.value : '';
+
+            let visibleCount = 0;
+            const rows = document.querySelectorAll('.website-row');
+            
+            rows.forEach(row => {
+                const name = row.getAttribute('data-name').toLowerCase();
+                const kecamatan = row.getAttribute('data-kecamatan').toLowerCase();
+                const domain = row.getAttribute('data-domain').toLowerCase();
+                const type = row.getAttribute('data-type');
+                const platform = row.getAttribute('data-platform');
+                const status = row.getAttribute('data-status');
+
+                const matchSearch = !searchVal || 
+                                    name.includes(searchVal) || 
+                                    kecamatan.includes(searchVal) || 
+                                    domain.includes(searchVal);
+                const matchType = !typeVal || type === typeVal;
+                const matchPlatform = !platformVal || 
+                                       (platformVal === 'NULL' && (!platform || platform === 'TIDAK TERDAFTAR')) || 
+                                       platform === platformVal;
+                const matchStatus = !statusVal || status === statusVal;
+
+                if (matchSearch && matchType && matchPlatform && matchStatus) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            // Update Export PDF href dynamically
+            const exportPdfBtn = document.querySelector('a[href*="export_pdf"]');
+            if (exportPdfBtn) {
+                const params = new URLSearchParams();
+                if (searchVal) params.set('search', searchVal);
+                if (typeVal) params.set('type', typeVal);
+                if (platformVal) params.set('filter_platform', platformVal);
+                if (statusVal) params.set('status', statusVal);
+                
+                const queryString = params.toString();
+                exportPdfBtn.href = '<?= site_url("web_desa_kelurahan/export_pdf") ?>' + (queryString ? '?' + queryString : '');
+            }
+
+            const noResultsRow = document.getElementById('no-results-row');
+            if (visibleCount === 0) {
+                if (noResultsRow) noResultsRow.classList.remove('hidden');
+            } else {
+                if (noResultsRow) noResultsRow.classList.add('hidden');
+            }
         }
 
         const stats = <?= json_encode($stats) ?>;
