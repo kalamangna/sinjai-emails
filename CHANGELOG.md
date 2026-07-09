@@ -18,6 +18,13 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
     - Mengintegrasikan Choices.js pada ketiga dropdown filter form (Tipe, Platform, dan Status) untuk memberikan indikator dropdown yang jelas dan visual yang seragam.
     - Mengimplementasikan visualisasi status domain 4 warna/badge berdasarkan sisa masa aktif (`sisa_hari`): `AKTIF` (Hijau jika sisa hari > 90 hari), `PERINGATAN` (Kuning jika sisa hari 31 - 90 hari), `KRITIS` (Oranye jika sisa hari <= 30 hari), `EXPIRED` (Merah jika status aktif tetapi sisa hari sudah minus), dan `NONAKTIF` (Merah jika status nonaktif).
 
+## Optimasi Performa & API
+- **Resolusi Pemblokiran Halaman (Session / Connection Lock)**:
+    - Merombak total `SystemHealthService` untuk mem-bypass panggilan API eksternal saat berjalan di mode lokal/development (`env('CI_ENVIRONMENT') === 'development'`). Hal ini menyelesaikan masalah "sangat lama berpindah halaman" di localhost akibat server built-in PHP yang single-threaded tertahan oleh request health check.
+    - Mengganti panggilan fungsi API penuh yang berat di `SystemHealthService` (seperti mengambil ratusan akun email cPanel atau mengambil detail pegawai) menjadi uji konektivitas port jaringan soket cepat (**`fsockopen`**) dengan batas waktu (*timeout*) 1.5 detik. Hal ini membuat status layanan di dashboard termuat instan baik di local maupun production.
+- **Toleransi SSL di Localhost**:
+    - Mengonfigurasi `PegawaiApi.php` agar secara dinamis menonaktifkan verifikasi SSL (`'verify' => false`) saat berjalan di lingkungan localhost/development untuk menghindari kegagalan cURL SSL saat otentikasi lokal.
+
 ---
 
 # [8 Juli 2026]
