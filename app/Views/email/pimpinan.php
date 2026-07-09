@@ -114,6 +114,8 @@
                                 data-email="<?= esc(strtoupper($email['email'])) ?>"
                                 data-nip="<?= esc($email['nip']) ?>"
                                 data-nik="<?= esc($email['nik']) ?>"
+                                data-unit-kerja="<?= esc(strtoupper($email['unit_kerja_name'] ?? '')) ?>"
+                                data-parent-unit-kerja="<?= esc(strtoupper($email['parent_unit_kerja_name'] ?? '')) ?>"
                                 data-status="<?= $statusAttr ?>">
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex flex-col">
@@ -316,13 +318,17 @@
                 const email = row.getAttribute('data-email').toLowerCase();
                 const nip = row.getAttribute('data-nip').toLowerCase();
                 const nik = row.getAttribute('data-nik').toLowerCase();
+                const unitKerja = row.getAttribute('data-unit-kerja').toLowerCase();
+                const parentUnitKerja = row.getAttribute('data-parent-unit-kerja').toLowerCase();
                 const status = row.getAttribute('data-status');
                 
                 const matchSearch = !searchVal || 
                                     name.includes(searchVal) || 
                                     email.includes(searchVal) || 
                                     nip.includes(searchVal) || 
-                                    nik.includes(searchVal);
+                                    nik.includes(searchVal) ||
+                                    unitKerja.includes(searchVal) ||
+                                    parentUnitKerja.includes(searchVal);
                 const matchStatus = !statusVal || status === statusVal;
                 
                 if (matchSearch && matchStatus) {
