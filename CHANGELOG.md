@@ -16,7 +16,7 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
     - Menghapus tag penutup `</div>` ganda yang redundan di bagian akhir file `public_success.php` untuk memastikan struktur HTML tervalidasi bersih.
 - **Penyempurnaan Halaman Website Desa dan Kelurahan**:
     - Mengintegrasikan Choices.js pada ketiga dropdown filter form (Tipe, Platform, dan Status) untuk memberikan indikator dropdown yang jelas dan visual yang seragam.
-    - Mengimplementasikan visualisasi status domain 4 warna/badge berdasarkan sisa masa aktif (`sisa_hari`): `AKTIF` (Hijau jika sisa hari > 90 hari), `PERINGATAN` (Kuning jika sisa hari 31 - 90 hari), `KRITIS` (Oranye jika sisa hari <= 30 hari), `EXPIRED` (Merah jika status aktif tetapi sisa hari sudah minus), dan `NONAKTIF` (Merah jika status nonaktif).
+    - Menyederhanakan badge status domain pada tabel agar hanya memiliki 2 status utama (AKTIF - hijau dan NONAKTIF - merah) demi kesederhanaan visual.
     - Mengimplementasikan **Pencarian & Filter Instan Client-Side (JavaScript)**: Seluruh pencarian teks dan filter dropdown (Tipe, Platform, Status) dilakukan secara langsung di browser tanpa memicu muat ulang halaman (*zero page reload*), memberikan performa pemfilteran instan.
     - Menghubungkan URL ekspor PDF secara dinamis di mana tautan unduhan PDF akan otomatis menyesuaikan dengan parameter kueri filter aktif saat ini di layar.
     - Meningkatkan batas baris data per halaman (*per page*) dari 100 menjadi **200** baris data, memastikan seluruh data website (yang berjumlah ~80 data) langsung tampil dalam satu halaman utuh tanpa membutuhkan navigasi halaman (pagination). Hapus filter Kecamatan untuk menyederhanakan antarmuka pencarian.
