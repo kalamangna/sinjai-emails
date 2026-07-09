@@ -66,7 +66,7 @@ class WebDesaKelurahan extends BaseController
             $model->like('web_desa_kelurahan.desa_kelurahan', $filterType, 'after');
         }
 
-        $perPage = 100;
+        $perPage = 200;
         $websites = $model->orderBy('web_desa_kelurahan.kecamatan', 'ASC')
             ->orderBy('web_desa_kelurahan.desa_kelurahan', 'ASC')
             ->asArray()

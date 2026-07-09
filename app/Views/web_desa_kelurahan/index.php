@@ -112,7 +112,7 @@
 
     <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
         <div class="p-6 border-b border-slate-100 bg-slate-50">
-            <form method="GET" action="<?= site_url('web_desa_kelurahan') ?>" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+            <form method="GET" action="<?= site_url('web_desa_kelurahan') ?>" id="filter-form" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
                 <div class="md:col-span-3">
                     <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Pencarian</label>
                     <div class="relative">
@@ -124,6 +124,16 @@
                 </div>
 
                 <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Kecamatan</label>
+                    <select name="kecamatan" id="filter-kecamatan" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm cursor-pointer transition-all">
+                        <option value="">Semua Kecamatan</option>
+                        <?php foreach ($kecamatan_list as $k): ?>
+                            <option value="<?= esc($k['kecamatan']) ?>" <?= ($filterKecamatan === $k['kecamatan']) ? 'selected' : '' ?>><?= esc($k['kecamatan']) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div class="md:col-span-2">
                     <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Tipe</label>
                     <select name="type" id="filter-type" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm cursor-pointer transition-all">
                         <option value="">Semua Tipe</option>
@@ -132,7 +142,7 @@
                     </select>
                 </div>
 
-                <div class="md:col-span-3">
+                <div class="md:col-span-2">
                     <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Platform</label>
                     <select name="filter_platform" id="filter-platform" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm cursor-pointer transition-all">
                         <option value="">Semua Platform</option>
@@ -152,11 +162,8 @@
                     </select>
                 </div>
 
-                <div class="md:col-span-2 flex gap-2">
-                    <button type="submit" class="flex-1 btn btn-solid">
-                        <i class="fas fa-filter mr-2 text-white/80"></i> Filter
-                    </button>
-                    <a href="<?= site_url('web_desa_kelurahan') ?>" class="btn btn-outline" title="Reset">
+                <div class="md:col-span-1 flex gap-2">
+                    <a href="<?= site_url('web_desa_kelurahan') ?>" class="w-full btn btn-outline justify-center" title="Reset">
                         <i class="fas fa-undo"></i>
                     </a>
                 </div>
@@ -279,10 +286,16 @@
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        // Initialize Choices.js for Filter Form Dropdowns
+        // Initialize Choices.js for Filter Form Dropdowns and set Auto-submit on change
         const typeSelect = document.getElementById('filter-type');
         const platformSelect = document.getElementById('filter-platform');
         const statusSelect = document.getElementById('filter-status');
+        const kecamatanSelect = document.getElementById('filter-kecamatan');
+        const filterForm = document.getElementById('filter-form');
+
+        const autoSubmit = () => {
+            if (filterForm) filterForm.submit();
+        };
         
         if (typeSelect) {
             new Choices(typeSelect, {
@@ -290,6 +303,7 @@
                 itemSelectText: '',
                 shouldSort: false
             });
+            typeSelect.addEventListener('change', autoSubmit);
         }
         if (platformSelect) {
             new Choices(platformSelect, {
@@ -297,6 +311,7 @@
                 itemSelectText: '',
                 shouldSort: false
             });
+            platformSelect.addEventListener('change', autoSubmit);
         }
         if (statusSelect) {
             new Choices(statusSelect, {
@@ -304,6 +319,16 @@
                 itemSelectText: '',
                 shouldSort: false
             });
+            statusSelect.addEventListener('change', autoSubmit);
+        }
+        if (kecamatanSelect) {
+            new Choices(kecamatanSelect, {
+                searchEnabled: true,
+                itemSelectText: '',
+                shouldSort: false,
+                searchPlaceholderValue: 'Cari kecamatan...'
+            });
+            kecamatanSelect.addEventListener('change', autoSubmit);
         }
 
         const stats = <?= json_encode($stats) ?>;
