@@ -51,6 +51,18 @@
                     </select>
                 </div>
 
+                <!-- Informasi Server & Hosting (Read-Only) -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50 p-4 rounded-lg border border-slate-100">
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-700 uppercase tracking-widest mb-1">IP Address Server</label>
+                        <span class="text-xs font-semibold text-slate-700"><?= esc($website['ip_address'] ?: '-') ?></span>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-700 uppercase tracking-widest mb-1">Hosting Provider (ISP)</label>
+                        <span class="text-xs font-semibold text-slate-700"><?= esc($website['hosting_provider'] ?: '-') ?></span>
+                    </div>
+                </div>
+
                 <!-- Keterangan -->
                 <div>
                     <label for="keterangan" class="block text-sm font-medium text-slate-700 mb-1">Keterangan</label>

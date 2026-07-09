@@ -265,7 +265,7 @@ class SyncAllCommand extends BaseCommand
 
     private function syncWebExpirations()
     {
-        CLI::write('--- Phase 4: Website Expiration Synchronization ---', 'yellow');
+        CLI::write('--- Phase 4: Website Expiration & Hosting Synchronization ---', 'yellow');
         $this->syncStats['website']['executed'] = true;
         try {
             $webDesaModel = new WebDesaKelurahanModel();
@@ -280,21 +280,29 @@ class SyncAllCommand extends BaseCommand
                 CLI::print("[$count/$total] Syncing {$website['domain']}... ");
                 
                 $newDate = $websiteService->determineExpirationDate($website['desa_kelurahan'], $website['domain'], null);
-                
+                $hostingInfo = $websiteService->getHostingInfo($website['domain'], $website['ip_address'] ?? null, $website['hosting_provider'] ?? null);
+
+                $updateData = [];
                 if ($newDate) {
-                    $updateData = [
-                        'tanggal_berakhir' => $newDate,
-                        'sisa_hari' => $websiteService->calculateDaysRemaining($newDate)
-                    ];
+                    $updateData['tanggal_berakhir'] = $newDate;
+                    $updateData['sisa_hari'] = $websiteService->calculateDaysRemaining($newDate);
+                }
+                if ($hostingInfo) {
+                    $updateData['ip_address'] = $hostingInfo['ip'];
+                    $updateData['hosting_provider'] = $hostingInfo['provider'];
+                    $updateData['hosting_status'] = $hostingInfo['status'];
+                }
+
+                if (!empty($updateData)) {
                     $webDesaModel->update($website['id'], $updateData);
-                    CLI::write($newDate, 'green');
+                    CLI::write(($newDate ?: 'No Expir') . " | IP: " . ($hostingInfo['ip'] ?: 'None') . " | ISP: " . ($hostingInfo['provider'] ?: 'None') . " | Port: " . $hostingInfo['status'], 'green');
                     $this->syncStats['website']['success']++;
                 } else {
                     CLI::write('FAILED', 'red');
                     $this->syncStats['website']['fail']++;
                 }
             }
-            CLI::write("Website Expiration Sync Finished. Success: " . $this->syncStats['website']['success'] . ", Failed: " . $this->syncStats['website']['fail'], 'cyan');
+            CLI::write("Website & Hosting Sync Finished. Success: " . $this->syncStats['website']['success'] . ", Failed: " . $this->syncStats['website']['fail'], 'cyan');
             $this->saveLastSyncTime('last_sync_website');
 
             // Check for expiring website domains alerts

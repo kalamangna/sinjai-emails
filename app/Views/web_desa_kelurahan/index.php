@@ -192,6 +192,7 @@
                     <tr>
                         <th class="px-6 py-3 border-b border-slate-200">Desa / Kelurahan</th>
                         <th class="px-6 py-3 border-b border-slate-200">Domain / Platform</th>
+                        <th class="px-6 py-3 border-b border-slate-200">Hosting & Server</th>
                         <th class="px-6 py-3 border-b border-slate-200">Tanggal Berakhir</th>
                         <th class="px-6 py-3 border-b border-slate-200">Status</th>
                         <th class="px-6 py-3 border-b border-slate-200">Dikelola Kominfo</th>
@@ -228,6 +229,20 @@
                                     </a>
                                 <?php endif; ?>
                                 <span class="text-[9px] font-bold text-slate-700 uppercase tracking-tight"><?= esc($web['platform_name'] ?: 'TIDAK TERDAFTAR') ?></span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex flex-col">
+                                    <div class="flex items-center gap-1.5">
+                                        <?php
+                                        $hostStatus = strtoupper($web['hosting_status'] ?? 'UNKNOWN');
+                                        $dotColor = ($hostStatus === 'AKTIF') ? 'bg-emerald-500' : (($hostStatus === 'NONAKTIF') ? 'bg-rose-500' : 'bg-slate-300');
+                                        $dotTitle = 'Port check: ' . ($hostStatus === 'AKTIF' ? 'Terhubung (Online)' : ($hostStatus === 'NONAKTIF' ? 'Putus (Offline)' : 'Belum dicek'));
+                                        ?>
+                                        <span class="w-2.5 h-2.5 rounded-full <?= $dotColor ?> inline-block" id="host-status-dot-<?= $web['id'] ?>" title="<?= $dotTitle ?>"></span>
+                                        <span class="text-xs font-semibold text-slate-700" id="ip-cell-<?= $web['id'] ?>"><?= esc($web['ip_address'] ?: '-') ?></span>
+                                    </div>
+                                    <span class="text-[9px] font-bold text-slate-500 uppercase tracking-tight mt-0.5" id="provider-cell-<?= $web['id'] ?>"><?= esc($web['hosting_provider'] ?: 'BELUM DI-SYNC') ?></span>
+                                </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap" id="date-cell-<?= $web['id'] ?>">
                                 <span class="text-xs font-medium text-slate-700">
@@ -269,30 +284,31 @@
                                 <?php endif; ?>
                             </td>
                         </tr>
-                                            <?php endforeach; ?>
-                                            <tr id="no-results-row" class="hidden">
-                                                <td colspan="7" class="px-6 py-20 text-center">
-                                                    <div class="flex flex-col items-center justify-center">
-                                                        <div class="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center mb-3">
-                                                            <i class="fas fa-search text-slate-300 text-lg"></i>
-                                                        </div>
-                                                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest italic">Data tidak ditemukan</span>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        <?php else: ?>
-                                            <tr>
-                                                <td colspan="7" class="px-6 py-20 text-center">
-                                                    <div class="flex flex-col items-center justify-center">
-                                                        <div class="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center mb-3">
-                                                            <i class="fas fa-search text-slate-300 text-lg"></i>
-                                                        </div>
-                                                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest italic">Data tidak ditemukan</span>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        <?php endif; ?>
-                                    </tbody>            </table>
+                    <?php endforeach; ?>
+                    <tr id="no-results-row" class="hidden">
+                        <td colspan="8" class="px-6 py-20 text-center">
+                            <div class="flex flex-col items-center justify-center">
+                                <div class="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center mb-3">
+                                    <i class="fas fa-search text-slate-300 text-lg"></i>
+                                </div>
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest italic">Data tidak ditemukan</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <?php else: ?>
+                    <tr>
+                        <td colspan="8" class="px-6 py-20 text-center">
+                            <div class="flex flex-col items-center justify-center">
+                                <div class="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center mb-3">
+                                    <i class="fas fa-search text-slate-300 text-lg"></i>
+                                </div>
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest italic">Data tidak ditemukan</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
         </div>
 
         <!-- Pagination disembunyikan karena seluruh data dimuat langsung dalam 1 halaman -->
@@ -490,12 +506,26 @@
     async function syncExpiration(id) {
         const dateCell = document.getElementById('date-cell-' + id);
         const statusCell = document.getElementById('status-cell-' + id);
+        const ipCell = document.getElementById('ip-cell-' + id);
+        const providerCell = document.getElementById('provider-cell-' + id);
+        const hostDot = document.getElementById('host-status-dot-' + id);
+        
         if (dateCell) dateCell.innerHTML = '<i class="fas fa-spinner fa-spin text-slate-700 text-[10px]"></i>';
+        if (ipCell) ipCell.innerHTML = '<i class="fas fa-spinner fa-spin text-slate-700 text-[10px]"></i>';
+        
         try {
             const r = await fetch('<?= site_url('web_desa_kelurahan/sync_expiration/') ?>' + id);
             const d = await r.json();
             if (d.status === 'success') {
-                dateCell.innerHTML = `<span class="text-xs font-medium text-slate-700">${d.date}</span>`;
+                if (dateCell) dateCell.innerHTML = `<span class="text-xs font-medium text-slate-700">${d.date}</span>`;
+                if (ipCell) ipCell.innerHTML = d.ip_address;
+                if (providerCell) providerCell.innerHTML = d.hosting_provider;
+                
+                if (hostDot) {
+                    hostDot.className = 'w-2.5 h-2.5 rounded-full inline-block ' + (d.hosting_status === 'AKTIF' ? 'bg-emerald-500' : (d.hosting_status === 'NONAKTIF' ? 'bg-rose-500' : 'bg-slate-300'));
+                    hostDot.title = 'Port check: ' + (d.hosting_status === 'AKTIF' ? 'Terhubung (Online)' : (d.hosting_status === 'NONAKTIF' ? 'Putus (Offline)' : 'Belum dicek'));
+                }
+                
                 if (statusCell && d.web_status) {
                     const status = d.web_status.toUpperCase();
                     const colorClass = (status === 'AKTIF') ? 'bg-emerald-100 text-emerald-800 border-transparent' : 'bg-red-100 text-red-700 border-transparent';
@@ -507,6 +537,7 @@
             console.error(e);
         }
         if (dateCell) dateCell.innerHTML = '<span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Gagal</span>';
+        if (ipCell) ipCell.innerHTML = '-';
         return false;
     }
 

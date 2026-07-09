@@ -35,7 +35,7 @@ class WebDesaKelurahan extends BaseController
         $platform_stats = $this->websiteService->getDesaKelurahanPlatformStats();
 
         // Build Query with Join for the table
-        $model->select('web_desa_kelurahan.id, web_desa_kelurahan.desa_kelurahan, web_desa_kelurahan.kecamatan, web_desa_kelurahan.domain, web_desa_kelurahan.status, web_desa_kelurahan.tanggal_berakhir, web_desa_kelurahan.sisa_hari, web_desa_kelurahan.dikelola_kominfo, web_desa_kelurahan.keterangan, platforms.nama_platform as platform_name')
+        $model->select('web_desa_kelurahan.id, web_desa_kelurahan.desa_kelurahan, web_desa_kelurahan.kecamatan, web_desa_kelurahan.domain, web_desa_kelurahan.ip_address, web_desa_kelurahan.hosting_provider, web_desa_kelurahan.hosting_status, web_desa_kelurahan.status, web_desa_kelurahan.tanggal_berakhir, web_desa_kelurahan.sisa_hari, web_desa_kelurahan.dikelola_kominfo, web_desa_kelurahan.keterangan, platforms.nama_platform as platform_name')
             ->join('platforms', 'platforms.id = web_desa_kelurahan.platform_id', 'left');
 
         if ($search !== '') {
@@ -149,6 +149,7 @@ class WebDesaKelurahan extends BaseController
         $domain = $this->request->getPost('domain');
 
         $expirationDate = $this->websiteService->determineExpirationDate($website['desa_kelurahan'], $domain, null);
+        $hostingInfo = $this->websiteService->getHostingInfo($domain, $website['ip_address'] ?? null, $website['hosting_provider'] ?? null);
 
         $data = [
             'domain'           => $domain,
@@ -158,6 +159,12 @@ class WebDesaKelurahan extends BaseController
             'dikelola_kominfo' => $this->request->getPost('dikelola_kominfo'),
             'keterangan'       => $this->request->getPost('keterangan'),
         ];
+
+        if ($hostingInfo) {
+            $data['ip_address'] = $hostingInfo['ip'];
+            $data['hosting_provider'] = $hostingInfo['provider'];
+            $data['hosting_status'] = $hostingInfo['status'];
+        }
 
         if ($data['tanggal_berakhir']) {
             $data['sisa_hari'] = $this->websiteService->calculateDaysRemaining($data['tanggal_berakhir']);
@@ -176,25 +183,39 @@ class WebDesaKelurahan extends BaseController
             return $this->response->setJSON(['status' => 'error', 'message' => 'Data not found']);
         }
 
-        // Attempt to fetch date
+        // 1. Sync Domain Expiration
         $newDate = $this->websiteService->determineExpirationDate($website['desa_kelurahan'], $website['domain'], null);
+        
+        // 2. Sync Hosting Info
+        $hostingInfo = $this->websiteService->getHostingInfo($website['domain'], $website['ip_address'] ?? null, $website['hosting_provider'] ?? null);
 
+        $updateData = [];
         if ($newDate) {
-            $updateData = [
-                'tanggal_berakhir' => $newDate,
-                'sisa_hari' => $this->websiteService->calculateDaysRemaining($newDate)
-            ];
+            $updateData['tanggal_berakhir'] = $newDate;
+            $updateData['sisa_hari'] = $this->websiteService->calculateDaysRemaining($newDate);
+        }
+        
+        if ($hostingInfo) {
+            $updateData['ip_address'] = $hostingInfo['ip'];
+            $updateData['hosting_provider'] = $hostingInfo['provider'];
+            $updateData['hosting_status'] = $hostingInfo['status'];
+        }
 
+        if (!empty($updateData)) {
             $model->update($id, $updateData);
+            $updatedWebsite = $model->find($id);
 
             return $this->response->setJSON([
                 'status' => 'success',
-                'date' => formatSingkat($newDate),
-                'message' => 'Date synced successfully'
+                'date' => $newDate ? formatSingkat($newDate) : ($website['tanggal_berakhir'] ? formatSingkat($website['tanggal_berakhir']) : '-'),
+                'ip_address' => $updatedWebsite['ip_address'] ?: '-',
+                'hosting_provider' => $updatedWebsite['hosting_provider'] ?: '-',
+                'hosting_status' => $updatedWebsite['hosting_status'] ?: 'UNKNOWN',
+                'message' => 'Data website dan hosting berhasil disinkronkan'
             ]);
         }
 
-        return $this->response->setJSON(['status' => 'error', 'message' => 'Could not fetch expiration date']);
+        return $this->response->setJSON(['status' => 'error', 'message' => 'Gagal menyinkronkan data website']);
     }
 
     private function fetchPandiExpiration($domain)

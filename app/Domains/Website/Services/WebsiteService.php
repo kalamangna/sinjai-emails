@@ -152,4 +152,66 @@ class WebsiteService
             'nonaktif_percentage' => $total > 0 ? (int)(($nonaktif / $total) * 100) : 0,
         ];
     }
+
+    public function getHostingInfo($domain, $existingIp = null, $existingProvider = null)
+    {
+        if (empty($domain)) {
+            return null;
+        }
+
+        $cleanDomain = preg_replace('#^https?://#', '', $domain);
+        $cleanDomain = rtrim($cleanDomain, '/');
+        
+        // 1. Resolve IP
+        $ip = @gethostbyname($cleanDomain);
+        if ($ip === $cleanDomain || filter_var($ip, FILTER_VALIDATE_IP) === false) {
+            return [
+                'ip' => null,
+                'provider' => 'TIDAK TERRESOLUSI',
+                'status' => 'NONAKTIF'
+            ];
+        }
+
+        // 2. Determine Provider
+        $provider = $existingProvider ?: 'UNKNOWN';
+        if (empty($existingIp) || $ip !== $existingIp || empty($existingProvider) || $existingProvider === 'UNKNOWN') {
+            try {
+                $client = Services::curlrequest();
+                $url = 'http://ip-api.com/json/' . $ip;
+                $response = $client->request('GET', $url, [
+                    'timeout' => 2,
+                    'http_errors' => false
+                ]);
+
+                if ($response->getStatusCode() === 200) {
+                    $body = json_decode($response->getBody(), true);
+                    if (isset($body['status']) && $body['status'] === 'success') {
+                        $provider = $body['org'] ?? ($body['isp'] ?? $body['as'] ?? 'UNKNOWN');
+                    }
+                }
+            } catch (\Throwable $e) {
+                log_message('error', 'IP-API Error for ' . $domain . ': ' . $e->getMessage());
+            }
+        }
+
+        // 3. Check connectivity
+        $status = 'NONAKTIF';
+        $connection = @fsockopen($cleanDomain, 443, $errno, $errstr, 1.0);
+        if (is_resource($connection)) {
+            fclose($connection);
+            $status = 'AKTIF';
+        } else {
+            $connection = @fsockopen($cleanDomain, 80, $errno, $errstr, 1.0);
+            if (is_resource($connection)) {
+                fclose($connection);
+                $status = 'AKTIF';
+            }
+        }
+
+        return [
+            'ip' => $ip,
+            'provider' => $provider,
+            'status' => $status
+        ];
+    }
 }
