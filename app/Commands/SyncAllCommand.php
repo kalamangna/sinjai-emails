@@ -278,9 +278,12 @@ class SyncAllCommand extends BaseCommand
             foreach ($websites as $index => $website) {
                 $count = $index + 1;
                 CLI::print("[$count/$total] Syncing {$website['domain']}... ");
-                
-                $newDate = $websiteService->determineExpirationDate($website['desa_kelurahan'], $website['domain'], null);
-                $hostingInfo = $websiteService->getHostingInfo($website['domain'], $website['ip_address'] ?? null, $website['hosting_provider'] ?? null);
+
+                $existingIp       = $website['ip_address'] ?? null;
+                $existingProvider = $website['hosting_provider'] ?? null;
+
+                $newDate     = $websiteService->determineExpirationDate($website['desa_kelurahan'], $website['domain'], null);
+                $hostingInfo = $websiteService->getHostingInfo($website['domain'], $existingIp, $existingProvider);
 
                 $updateData = [];
                 if ($newDate) {

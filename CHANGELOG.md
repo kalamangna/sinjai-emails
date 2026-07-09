@@ -5,7 +5,26 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [10 Juli 2026]
+
+## Perbaikan & Ketahanan Sistem
+
+- **Refactor Lookup Hosting Provider (`WebsiteService.php`) — Berbasis Hasil Diagnostik Production**:
+    - Melakukan uji diagnostik langsung di server production via `public/iptest.php` dan menemukan bahwa:
+        - `ipwhois.app` (HTTPS/port 443) ✅ **bekerja normal** — HTTP 200 dalam ~0.5 detik.
+        - `ip-api.com` (HTTP/port 80) ❌ **port 80 diblokir** oleh firewall server production — errno 110 (Connection timed out).
+        - `ipinfo.io` (HTTPS/port 443) ❌ **timeout** di server production.
+    - Berdasarkan temuan di atas, seluruh logika fallback multi-endpoint (`ip-api.com` dan `ipinfo.io`) **dihapus** dan kode disederhanakan menjadi satu endpoint tunggal: `ipwhois.app`.
+    - Menambahkan mekanisme **retry 3x dengan exponential backoff** (2s → 4s) khusus untuk `ipwhois.app` agar tahan terhadap kegagalan sementara.
+    - Timeout per percobaan ditetapkan **5 detik** (naik dari 3 detik sebelumnya) agar memberi ruang yang cukup mengingat respons server bisa mencapai ~0.5 detik.
+    - Memindahkan logika lookup ke method terpisah `resolveIspProvider()` agar `getHostingInfo()` lebih bersih dan mudah diuji.
+    - Menghapus blok `sleep(2)` manual di `SyncAllCommand.php` yang tidak lagi diperlukan karena throttling sudah ditangani di dalam `resolveIspProvider()`.
+    - Menambahkan format log yang konsisten: `IP-API Error for [domain] [endpoint]: [pesan] (percobaan X/Y)`.
+
+---
+
 # [9 Juli 2026]
+
 
 ## Pembaruan Visual & UI
 - **Penyelarasan Desain Halaman Publik**:

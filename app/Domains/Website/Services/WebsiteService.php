@@ -161,37 +161,27 @@ class WebsiteService
 
         $cleanDomain = preg_replace('#^https?://#', '', $domain);
         $cleanDomain = rtrim($cleanDomain, '/');
-        
+
         // 1. Resolve IP
         $ip = @gethostbyname($cleanDomain);
         if ($ip === $cleanDomain || filter_var($ip, FILTER_VALIDATE_IP) === false) {
             return [
-                'ip' => null,
+                'ip'       => null,
                 'provider' => 'TIDAK TERRESOLUSI',
-                'status' => 'NONAKTIF'
+                'status'   => 'NONAKTIF'
             ];
         }
 
         // 2. Determine Provider
+        // Skip IP lookup jika IP tidak berubah dan provider sudah terisi & valid
         $provider = $existingProvider ?: 'UNKNOWN';
-        if (empty($existingIp) || $ip !== $existingIp || empty($existingProvider) || $existingProvider === 'UNKNOWN') {
-            try {
-                $client = Services::curlrequest();
-                $url = 'http://ip-api.com/json/' . $ip;
-                $response = $client->request('GET', $url, [
-                    'timeout' => 2,
-                    'http_errors' => false
-                ]);
+        $needsLookup = empty($existingIp)
+            || $ip !== $existingIp
+            || empty($existingProvider)
+            || $existingProvider === 'UNKNOWN';
 
-                if ($response->getStatusCode() === 200) {
-                    $body = json_decode($response->getBody(), true);
-                    if (isset($body['status']) && $body['status'] === 'success') {
-                        $provider = $body['org'] ?? ($body['isp'] ?? $body['as'] ?? 'UNKNOWN');
-                    }
-                }
-            } catch (\Throwable $e) {
-                log_message('error', 'IP-API Error for ' . $domain . ': ' . $e->getMessage());
-            }
+        if ($needsLookup) {
+            $provider = $this->resolveIspProvider($ip, $domain) ?? 'UNKNOWN';
         }
 
         // 3. Check connectivity
@@ -209,9 +199,73 @@ class WebsiteService
         }
 
         return [
-            'ip' => $ip,
+            'ip'       => $ip,
             'provider' => $provider,
-            'status' => $status
+            'status'   => $status
         ];
+    }
+
+    /**
+     * Coba resolve ISP/provider dari IP menggunakan beberapa endpoint secara berurutan.
+     * Setiap endpoint dicoba dengan mekanisme retry (exponential backoff) sebelum pindah ke fallback.
+     *
+     * @param  string $ip     Alamat IP yang ingin di-lookup.
+     * @param  string $domain Domain asal (untuk keperluan logging).
+     * @return string|null    Nama ISP/provider, atau null jika semua endpoint gagal.
+     */
+    protected function resolveIspProvider(string $ip, string $domain): ?string
+    {
+        // Berdasarkan uji diagnostik production:
+        // - ipwhois.app (HTTPS/443) : ✅ BEKERJA
+        // - ip-api.com  (HTTP/80)   : ❌ Port 80 diblokir di server production
+        // - ipinfo.io   (HTTPS/443) : ❌ Timeout di server production
+        // Hanya menggunakan ipwhois.app dengan 3x retry + exponential backoff.
+
+        $url     = 'https://ipwhois.app/json/' . $ip;
+        $client  = Services::curlrequest();
+        $timeout = 5;    // timeout per percobaan (detik)
+        $maxRetry = 3;   // jumlah maksimal percobaan
+
+        for ($attempt = 1; $attempt <= $maxRetry; $attempt++) {
+            try {
+                $response = $client->request('GET', $url, [
+                    'timeout'     => $timeout,
+                    'http_errors' => false,
+                ]);
+
+                if ($response->getStatusCode() === 200) {
+                    $body   = json_decode($response->getBody(), true);
+                    $result = $body['isp'] ?? $body['org'] ?? null;
+                    if (!empty($result)) {
+                        return $result;
+                    }
+                    // Respons 200 tapi ISP kosong — tidak perlu retry
+                    log_message('warning', sprintf(
+                        'IP-API Error for %s [ipwhois.app]: ISP kosong di respons (percobaan %d/%d)',
+                        $domain, $attempt, $maxRetry
+                    ));
+                    break;
+                }
+
+                log_message('warning', sprintf(
+                    'IP-API Error for %s [ipwhois.app]: HTTP %d (percobaan %d/%d)',
+                    $domain, $response->getStatusCode(), $attempt, $maxRetry
+                ));
+
+            } catch (\Throwable $e) {
+                log_message('warning', sprintf(
+                    'IP-API Error for %s [ipwhois.app]: %s (percobaan %d/%d)',
+                    $domain, $e->getMessage(), $attempt, $maxRetry
+                ));
+            }
+
+            // Exponential backoff sebelum retry berikutnya
+            if ($attempt < $maxRetry) {
+                sleep((int) pow(2, $attempt)); // 2s → 4s
+            }
+        }
+
+        log_message('warning', 'IP lookup gagal untuk ' . $domain . ' (IP: ' . $ip . ') setelah ' . $maxRetry . ' percobaan');
+        return null;
     }
 }
