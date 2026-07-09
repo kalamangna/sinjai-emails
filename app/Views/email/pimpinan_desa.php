@@ -98,7 +98,7 @@
                         <th class="px-6 py-4 border-b border-slate-200">Email</th>
                         <th class="px-6 py-4 border-b border-slate-200">Jabatan</th>
                         <th class="px-6 py-4 border-b border-slate-200">Unit Kerja</th>
-                        <th class="px-6 py-4 border-b border-slate-200">Status TTE</th>
+                        <th class="px-6 py-4 border-b border-slate-200 w-48">Status TTE</th>
                         <th class="px-6 py-4 border-b border-slate-200 text-center">Aksi</th>
                     </tr>
                 </thead>
@@ -134,7 +134,7 @@
                                         <span class="text-[10px] font-bold text-slate-700 uppercase tracking-widest mt-0.5"><?= esc(trim(str_ireplace('KANTOR', '', $email['parent_unit_kerja_name'] ?? '-'))) ?></span>
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
+                                <td class="px-6 py-4 whitespace-nowrap w-48">
                                     <div id="bsre-status-<?= esc($email['user']) ?>" data-email="<?= esc($email['email']) ?>">
                                         <?php
                                         $st = $email['bsre_status'] ?? '';
