@@ -16,6 +16,8 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
     - Menghapus tag penutup `</div>` ganda yang redundan di bagian akhir file `public_success.php` untuk memastikan struktur HTML tervalidasi bersih.
 - **Penyempurnaan Halaman Website Monitoring (Desa, Kelurahan & OPD)**:
     - Mengintegrasikan Choices.js pada dropdown filter form (Tipe, Platform, dan Status) untuk memberikan indikator dropdown yang jelas dan visual yang seragam.
+    - Menambahkan blok gaya CSS kustom untuk merapikan Choices.js: menyelaraskan tinggi dropdown (38px), warna border (`#e2e8f0`), ukuran teks (`text-sm`), dan padding agar persis sama dengan input pencarian teks serta tombol reset sehingga berada di satu baris horizontal yang rapi.
+    - Mengembalikan pembungkus padding kontainer `p-6` yang sebelumnya tidak sengaja terhapus di halaman Website OPD.
     - Menyederhanakan badge status domain pada tabel agar hanya memiliki 2 status utama (AKTIF - hijau dan NONAKTIF - merah) demi kesederhanaan visual.
     - Mengimplementasikan **Pencarian & Filter Instan Client-Side (JavaScript)** pada halaman Website Desa dan Website OPD: Seluruh pencarian teks dan filter dropdown dilakukan secara langsung di browser secara instan tanpa memicu muat ulang halaman (*zero page reload*).
     - Menghubungkan URL ekspor PDF secara dinamis pada kedua halaman tersebut di mana tautan unduhan PDF otomatis menyesuaikan dengan parameter kueri filter aktif saat ini di layar.
