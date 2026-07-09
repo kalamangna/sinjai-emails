@@ -33,7 +33,7 @@
 </head>
 
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex items-center justify-center p-4">
-    <div class="w-full max-w-xl bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden flex flex-col my-auto">
+    <div class="w-full max-w-xl bg-white border border-slate-200 rounded-2xl shadow-xl shadow-slate-200/50 overflow-hidden flex flex-col my-auto">
         <!-- Header Card -->
         <div class="bg-slate-800 p-8 text-center relative overflow-hidden shrink-0">
             <div class="absolute inset-0 opacity-10 pointer-events-none">
@@ -71,7 +71,7 @@
         
         <!-- Footer inside card -->
         <div class="bg-slate-50 p-4 border-t border-slate-100 text-center shrink-0">
-            <p class="text-[10px] font-bold text-slate-700 uppercase tracking-widest">
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                 &copy; <?= tahunSekarang() ?> Diskominfo-SP Sinjai
             </p>
         </div>

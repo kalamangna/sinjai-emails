@@ -2969,6 +2969,11 @@ video {
   --tw-shadow: var(--tw-shadow-colored);
 }
 
+.shadow-slate-200\/50 {
+  --tw-shadow-color: rgb(226 232 240 / 0.5);
+  --tw-shadow: var(--tw-shadow-colored);
+}
+
 .shadow-slate-900\/20 {
   --tw-shadow-color: rgb(15 23 42 / 0.2);
   --tw-shadow: var(--tw-shadow-colored);
