@@ -44,7 +44,7 @@ class WebOpd extends BaseController
             $model->where('web_opd.status', $filterStatus);
         }
 
-        $perPage = 100;
+        $perPage = 200;
         $websites = $model->orderBy('unit_kerja.nama_unit_kerja', 'ASC')->asArray()->paginate($perPage);
         $pager = $model->pager;
 
