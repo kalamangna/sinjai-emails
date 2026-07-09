@@ -13,7 +13,9 @@ class PegawaiApi
     public function __construct()
     {
         $this->baseUrl = rtrim(env('PEGAWAI_BASE_URL') ?: 'https://apps.sinjaikab.go.id/api/pegawai', '/') . '/';
-        $this->client = Services::curlrequest();
+        $this->client = Services::curlrequest([
+            'verify' => (env('CI_ENVIRONMENT') === 'production')
+        ]);
     }
 
     public function authenticate($nip, $password)
