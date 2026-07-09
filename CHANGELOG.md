@@ -26,6 +26,13 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
     - Meningkatkan batas baris data per halaman (*per page*) dari 100 menjadi **200** baris data untuk memastikan seluruh data langsung tampil dalam satu halaman utuh tanpa membutuhkan navigasi halaman (pagination). Hapus filter Kecamatan untuk menyederhanakan antarmuka pencarian.
 
 ## Optimasi Performa & API
+- **Pelacakan & Pemantauan Hosting Website Desa**:
+    - Menambahkan migrasi database baru (`2026-07-09-233000_AddHostingFieldsToWebDesaKelurahan`) untuk menyediakan kolom `ip_address`, `hosting_provider`, dan `hosting_status` pada tabel `web_desa_kelurahan`.
+    - Mengintegrasikan API Pelacak **IP-API** (`http://ip-api.com`) secara otomatis untuk melacak penyedia server/ISP hosting (contoh: Kominfo, Hostinger, Niagahoster) berdasarkan IP address domain website desa.
+    - Mengimplementasikan sistem optimasi cashing/rate-limit API: server tidak akan memanggil API IP-API jika IP domain yang ter-resolve tidak berubah dari IP yang saat ini disimpan di database.
+    - Membuat sistem **Uji Port Server (HTTP/HTTPS)** otomatis via `fsockopen` untuk mendeteksi apakah server hosting aktif/online secara real-time (diwakili oleh indikator dot hijau/merah di sebelah IP).
+    - Memperbarui halaman utama monitoring desa dan halaman form edit desa untuk menampilkan informasi IP Address, nama ISP/Provider, serta status port aktif.
+    - Memperbarui perintah sinkronisasi otomatis CLI `php spark sync:all` agar menyinkronkan data domain dan data hosting (IP, ISP, Port) sekaligus.
 - **Resolusi Pemblokiran Halaman (Session / Connection Lock)**:
     - Merombak total `SystemHealthService` untuk mem-bypass panggilan API eksternal saat berjalan di mode lokal/development (`env('CI_ENVIRONMENT') === 'development'`). Hal ini menyelesaikan masalah "sangat lama berpindah halaman" di localhost akibat server built-in PHP yang single-threaded tertahan oleh request health check.
     - Mengganti panggilan fungsi API penuh yang berat di `SystemHealthService` (seperti mengambil ratusan akun email cPanel atau mengambil detail pegawai) menjadi uji konektivitas port jaringan soket cepat (**`fsockopen`**) dengan batas waktu (*timeout*) 1.5 detik. Hal ini membuat status layanan di dashboard termuat instan baik di local maupun production.
