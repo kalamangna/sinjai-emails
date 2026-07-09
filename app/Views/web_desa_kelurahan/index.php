@@ -215,29 +215,10 @@
                             <td class="px-6 py-4 whitespace-nowrap" id="status-cell-<?= $web['id'] ?>">
                                 <?php
                                 $status = strtoupper($web['status'] ?? 'NONAKTIF');
-                                $days = isset($web['sisa_hari']) ? (int)$web['sisa_hari'] : null;
-                                
-                                if ($status === 'AKTIF') {
-                                    if ($days !== null && $days < 0) {
-                                        $colorClass = 'bg-red-100 text-red-700 border-transparent';
-                                        $statusText = 'EXPIRED';
-                                    } elseif ($days !== null && $days <= 30) {
-                                        $colorClass = 'bg-amber-100 text-amber-800 border-transparent';
-                                        $statusText = 'KRITIS';
-                                    } elseif ($days !== null && $days <= 90) {
-                                        $colorClass = 'bg-yellow-50 text-yellow-700 border-yellow-200';
-                                        $statusText = 'PERINGATAN';
-                                    } else {
-                                        $colorClass = 'bg-emerald-100 text-emerald-800 border-transparent';
-                                        $statusText = 'AKTIF';
-                                    }
-                                } else {
-                                    $colorClass = 'bg-red-100 text-red-700 border-transparent';
-                                    $statusText = 'NONAKTIF';
-                                }
+                                $colorClass = ($status === 'AKTIF') ? 'bg-emerald-100 text-emerald-800 border-transparent' : 'bg-red-100 text-red-700 border-transparent';
                                 ?>
                                 <span class="px-2 py-0.5 rounded-full text-[10px] font-bold border <?= $colorClass ?>">
-                                    <?= $statusText ?>
+                                    <?= $status ?>
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
