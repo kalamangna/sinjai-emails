@@ -1,5 +1,31 @@
 <?= $this->extend('layouts/main') ?>
 
+<?= $this->section('styles') ?>
+<style>
+    .choices {
+        margin-bottom: 0 !important;
+    }
+    .choices__inner {
+        min-height: 38px !important;
+        border-color: #e2e8f0 !important;
+        border-radius: 0.5rem !important;
+        background-color: #ffffff !important;
+        padding: 4px 8px !important;
+        display: flex;
+        align-items: center;
+    }
+    .choices__list--single {
+        padding: 0 !important;
+        font-size: 0.875rem !important;
+        font-weight: 500 !important;
+        color: #334155 !important;
+    }
+    #reset-filters {
+        height: 38px !important;
+    }
+</style>
+<?= $this->endSection() ?>
+
 <?= $this->section('content') ?>
 <div class="space-y-6">
     <!-- Header Halaman -->
@@ -48,6 +74,7 @@
     </div>
 
     <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
+        <div class="p-6 border-b border-slate-100 bg-slate-50">
             <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
                 <div class="md:col-span-8">
                     <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Pencarian</label>
@@ -74,6 +101,7 @@
                     </button>
                 </div>
             </div>
+        </div>
 
         <div class="overflow-x-auto">
             <table class="w-full text-left text-sm">
