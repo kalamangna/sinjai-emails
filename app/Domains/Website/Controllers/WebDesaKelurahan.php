@@ -203,19 +203,18 @@ class WebDesaKelurahan extends BaseController
 
         if (!empty($updateData)) {
             $model->update($id, $updateData);
-            $updatedWebsite = $model->find($id);
-
-            return $this->response->setJSON([
-                'status' => 'success',
-                'date' => $newDate ? formatSingkat($newDate) : ($website['tanggal_berakhir'] ? formatSingkat($website['tanggal_berakhir']) : '-'),
-                'ip_address' => $updatedWebsite['ip_address'] ?: '-',
-                'hosting_provider' => $updatedWebsite['hosting_provider'] ?: '-',
-                'hosting_status' => $updatedWebsite['hosting_status'] ?: 'UNKNOWN',
-                'message' => 'Data website dan hosting berhasil disinkronkan'
-            ]);
         }
 
-        return $this->response->setJSON(['status' => 'error', 'message' => 'Gagal menyinkronkan data website']);
+        $updatedWebsite = $model->find($id);
+
+        return $this->response->setJSON([
+            'status' => 'success',
+            'date' => $newDate ? formatSingkat($newDate) : ($updatedWebsite['tanggal_berakhir'] ? formatSingkat($updatedWebsite['tanggal_berakhir']) : '-'),
+            'ip_address' => $updatedWebsite['ip_address'] ?: '-',
+            'hosting_provider' => $updatedWebsite['hosting_provider'] ?: '-',
+            'hosting_status' => $updatedWebsite['hosting_status'] ?: 'UNKNOWN',
+            'message' => 'Data website dan hosting berhasil disinkronkan'
+        ]);
     }
 
     private function fetchPandiExpiration($domain)

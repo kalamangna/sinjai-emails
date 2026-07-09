@@ -276,9 +276,14 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-center">
                                 <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
-                                    <a href="<?= site_url('web_desa_kelurahan/edit/' . $web['id']) ?>" class="btn btn-table" title="Edit">
-                                        <i class="fas fa-edit text-xs"></i>
-                                    </a>
+                                    <div class="flex items-center justify-center gap-1">
+                                        <a href="<?= site_url('web_desa_kelurahan/edit/' . $web['id']) ?>" class="btn btn-table" title="Edit">
+                                            <i class="fas fa-edit text-xs"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-table" title="Sync Data" onclick="syncExpiration(<?= $web['id'] ?>)" id="sync-btn-<?= $web['id'] ?>">
+                                            <i class="fas fa-sync text-xs"></i>
+                                        </button>
+                                    </div>
                                 <?php else: ?>
                                     <span class="text-[10px] font-bold text-slate-700 uppercase italic">Hanya Lihat</span>
                                 <?php endif; ?>
@@ -542,31 +547,39 @@
     }
 
     async function startBatchSync() {
-        if (!confirm('Sinkronkan data sekarang?')) return;
+        if (!confirm('Sinkronkan semua data website sekarang? Proses ini membutuhkan beberapa menit.')) return;
         const btn = document.getElementById('batchSyncBtn');
+        const progressContainer = document.getElementById('syncProgressContainer');
+        const progressBar = document.getElementById('syncProgressBar');
+        const statusCount = document.getElementById('syncStatusCount');
 
         btn.disabled = true;
         btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Sinkronisasi...';
+        if (progressContainer) progressContainer.classList.remove('hidden');
 
-        const rows = document.querySelectorAll('.website-row');
+        const rows = [...document.querySelectorAll('.website-row')];
         const total = rows.length;
-        
+
         for (let i = 0; i < total; i++) {
             const row = rows[i];
-            
-            // Scroll to the current row so the user can see the progress
+
             row.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            
-            // Add a visual cue to the active row
             row.classList.add('bg-slate-100');
-            
+
+            // Update progress UI
+            if (statusCount) statusCount.textContent = (i + 1) + '/' + total;
+            if (progressBar) progressBar.style.width = (((i + 1) / total) * 100) + '%';
+
             await syncExpiration(row.getAttribute('data-id'));
-            
-            // Remove the visual cue
+
             row.classList.remove('bg-slate-100');
         }
-        
-        setTimeout(() => location.reload(), 1000);
+
+        if (statusCount) statusCount.textContent = total + '/' + total;
+        if (progressBar) progressBar.style.width = '100%';
+
+        btn.innerHTML = '<i class="fas fa-check mr-2"></i> Selesai!';
+        setTimeout(() => location.reload(), 1500);
     }
 </script>
 <?= $this->endSection() ?>

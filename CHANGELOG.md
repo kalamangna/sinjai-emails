@@ -33,6 +33,13 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
     - Membuat sistem **Uji Port Server (HTTP/HTTPS)** otomatis via `fsockopen` untuk mendeteksi apakah server hosting aktif/online secara real-time (diwakili oleh indikator dot hijau/merah di sebelah IP).
     - Memperbarui halaman utama monitoring desa dan halaman form edit desa untuk menampilkan informasi IP Address, nama ISP/Provider, serta status port aktif.
     - Memperbarui perintah sinkronisasi otomatis CLI `php spark sync:all` agar menyinkronkan data domain dan data hosting (IP, ISP, Port) sekaligus.
+    - Menambahkan tombol sync per-baris (ikon `fa-sync`) di kolom Aksi pada tabel website desa, sehingga pengguna dapat menyinkronkan data per website secara individual tanpa perlu menjalankan batch sync keseluruhan.
+
+## Perbaikan Bug
+- **Tombol Sync Expiration Website Desa tidak berfungsi**:
+    - Memperbaiki logic controller `sync_expiration`: sebelumnya mengembalikan `status: error` ketika tidak ada data baru yang perlu diperbarui (misalnya domain tidak dapat di-resolve dan IP tidak berubah), padahal seharusnya tetap mengembalikan `status: success` dengan data terbaru dari database. Kini controller selalu merespons sukses selama record website ditemukan.
+    - Memperbaiki `startBatchSync()` di JavaScript: progress container (`#syncProgressContainer`) sebelumnya tidak pernah ditampilkan karena class `hidden` tidak dihapus, dan counter (`X/80`) tidak diperbarui. Kini progress bar dan counter diperbarui secara real-time saat proses batch sync berjalan.
+    - Menambahkan tombol sync per-baris yang sebelumnya tidak ada di kolom Aksi, menjadi penyebab utama tombol sync tidak bisa diklik dari tabel.
 - **Resolusi Pemblokiran Halaman (Session / Connection Lock)**:
     - Merombak total `SystemHealthService` untuk mem-bypass panggilan API eksternal saat berjalan di mode lokal/development (`env('CI_ENVIRONMENT') === 'development'`). Hal ini menyelesaikan masalah "sangat lama berpindah halaman" di localhost akibat server built-in PHP yang single-threaded tertahan oleh request health check.
     - Mengganti panggilan fungsi API penuh yang berat di `SystemHealthService` (seperti mengambil ratusan akun email cPanel atau mengambil detail pegawai) menjadi uji konektivitas port jaringan soket cepat (**`fsockopen`**) dengan batas waktu (*timeout*) 1.5 detik. Hal ini membuat status layanan di dashboard termuat instan baik di local maupun production.
