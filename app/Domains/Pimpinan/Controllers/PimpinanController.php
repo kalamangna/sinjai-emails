@@ -20,7 +20,7 @@ class PimpinanController extends BaseController
     public function pimpinan()
     {
         try {
-            $perPage = $this->request->getGet('per_page') ?? 100;
+            $perPage = $this->request->getGet('per_page') ?? 200;
             $search = $this->request->getGet('search');
             $bsre_status = $this->request->getGet('bsre_status');
 
@@ -90,7 +90,7 @@ class PimpinanController extends BaseController
     public function pimpinan_desa()
     {
         try {
-            $perPage = $this->request->getGet('per_page') ?? 100;
+            $perPage = $this->request->getGet('per_page') ?? 200;
             $search = $this->request->getGet('search');
             $bsre_status = $this->request->getGet('bsre_status');
 

@@ -1,5 +1,31 @@
 <?= $this->extend('layouts/main') ?>
 
+<?= $this->section('styles') ?>
+<style>
+    .choices {
+        margin-bottom: 0 !important;
+    }
+    .choices__inner {
+        min-height: 38px !important;
+        border-color: #e2e8f0 !important;
+        border-radius: 0.5rem !important;
+        background-color: #ffffff !important;
+        padding: 4px 8px !important;
+        display: flex;
+        align-items: center;
+    }
+    .choices__list--single {
+        padding: 0 !important;
+        font-size: 0.875rem !important;
+        font-weight: 500 !important;
+        color: #334155 !important;
+    }
+    #reset-filters {
+        height: 38px !important;
+    }
+</style>
+<?= $this->endSection() ?>
+
 <?= $this->section('content') ?>
 <div class="space-y-6">
     <!-- Navigasi dan Aksi -->
@@ -36,34 +62,31 @@
     </div>
 
     <div class="bg-white border border-slate-200 rounded-lg shadow-sm p-6">
-        <form action="<?= current_url() ?>" method="get" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
-            <div class="md:col-span-7">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+            <div class="md:col-span-8">
                 <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Pencarian</label>
                 <div class="relative">
                     <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-700">
                         <i class="fas fa-search text-xs"></i>
                     </span>
-                    <input type="text" name="search" value="<?= esc($search ?? '') ?>" class="block w-full pl-9 pr-4 py-2 bg-white border <?= !empty($search) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm transition-all" placeholder="Cari nama, NIP, atau NIK...">
+                    <input type="text" id="search-input" class="block w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm transition-all" placeholder="Cari nama, email, NIP, atau NIK...">
                 </div>
             </div>
             <div class="md:col-span-3">
                 <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Status TTE</label>
-                <select name="bsre_status" class="block w-full px-3 py-2 bg-white border <?= !empty($bsre_status) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm appearance-none cursor-pointer transition-all">
+                <select id="filter-status" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm cursor-pointer transition-all">
                     <option value="">Semua Status</option>
                     <?php foreach ($bsre_status_options as $key => $label): ?>
-                        <option value="<?= esc($key) ?>" <?= ($bsre_status === $key) ? 'selected' : '' ?>><?= esc($label) ?></option>
+                        <option value="<?= esc(strtoupper($key)) ?>"><?= esc($label) ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
-            <div class="md:col-span-2 flex gap-2">
-                <button type="submit" class="flex-1 btn btn-solid">
-                    <i class="fas fa-filter mr-2 text-white/80"></i> Filter
-                </button>
-                <a href="<?= site_url('email/pimpinan_desa') ?>" class="btn btn-outline" title="Reset">
+            <div class="md:col-span-1 flex gap-2">
+                <button type="button" id="reset-filters" class="w-full btn btn-outline justify-center" title="Reset">
                     <i class="fas fa-undo"></i>
-                </a>
+                </button>
             </div>
-        </form>
+        </div>
     </div>
 
     <!-- Tabel -->
@@ -82,7 +105,16 @@
                 <tbody class="divide-y divide-slate-100 bg-white">
                     <?php if (!empty($emails)): ?>
                         <?php foreach ($emails as $email): ?>
-                            <tr class="hover:bg-slate-50 transition-colors group">
+                            <?php
+                            $st = $email['bsre_status'] ?? '';
+                            $statusAttr = strtoupper($st ?: 'NOT_SYNCED');
+                            ?>
+                            <tr class="hover:bg-slate-50 transition-colors group email-row"
+                                data-name="<?= esc(strtoupper($email['name'])) ?>"
+                                data-email="<?= esc(strtoupper($email['email'])) ?>"
+                                data-nip="<?= esc($email['nip']) ?>"
+                                data-nik="<?= esc($email['nik']) ?>"
+                                data-status="<?= $statusAttr ?>">
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex flex-col">
                                         <span class="font-medium text-slate-800 lowercase leading-tight"><?= esc($email['email']) ?></span>
@@ -133,8 +165,18 @@
                                     </div>
                                 </td>
                             </tr>
-                        <?php endforeach; ?>
-                    <?php else: ?>
+                                            <?php endforeach; ?>
+                                            <tr id="no-results-row" class="hidden">
+                                                <td colspan="5" class="px-6 py-20 text-center">
+                                                    <div class="flex flex-col items-center justify-center">
+                                                        <div class="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center mb-3">
+                                                            <i class="fas fa-search text-slate-300 text-lg"></i>
+                                                        </div>
+                                                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest italic">Data tidak ditemukan</span>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        <?php else: ?>
                         <tr>
                             <td colspan="5" class="px-6 py-20 text-center">
                                 <div class="flex flex-col items-center justify-center">
@@ -236,5 +278,83 @@
 
         alert(`Sinkronisasi Selesai!\nTotal: ${processed}\nBerhasil: ${success}\nGagal: ${failed}`);
     }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const statusSelect = document.getElementById('filter-status');
+        const searchInput = document.getElementById('search-input');
+        const resetBtn = document.getElementById('reset-filters');
+        
+        let statusChoices;
+        
+        if (statusSelect) {
+            statusChoices = new Choices(statusSelect, {
+                searchEnabled: false,
+                itemSelectText: '',
+                shouldSort: false
+            });
+            statusSelect.addEventListener('change', filterEmails);
+        }
+        
+        if (searchInput) {
+            searchInput.addEventListener('input', filterEmails);
+        }
+        
+        if (resetBtn) {
+            resetBtn.addEventListener('click', function() {
+                if (searchInput) searchInput.value = '';
+                if (statusChoices) statusChoices.setChoiceByValue('');
+                filterEmails();
+            });
+        }
+        
+        function filterEmails() {
+            const searchVal = searchInput ? searchInput.value.toLowerCase().trim() : '';
+            const statusVal = statusSelect ? statusSelect.value : '';
+            
+            let visibleCount = 0;
+            const rows = document.querySelectorAll('.email-row');
+            
+            rows.forEach(row => {
+                const name = row.getAttribute('data-name').toLowerCase();
+                const email = row.getAttribute('data-email').toLowerCase();
+                const nip = row.getAttribute('data-nip').toLowerCase();
+                const nik = row.getAttribute('data-nik').toLowerCase();
+                const status = row.getAttribute('data-status');
+                
+                const matchSearch = !searchVal || 
+                                    name.includes(searchVal) || 
+                                    email.includes(searchVal) || 
+                                    nip.includes(searchVal) || 
+                                    nik.includes(searchVal);
+                const matchStatus = !statusVal || status === statusVal;
+                
+                if (matchSearch && matchStatus) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            // Update Export PDF href dynamically
+            const exportPdfBtn = document.querySelector('a[href*="export_pimpinan_pdf"], a[href*="export_pimpinan_desa_pdf"]');
+            if (exportPdfBtn) {
+                const params = new URLSearchParams();
+                if (searchVal) params.set('search', searchVal);
+                if (statusVal) params.set('bsre_status', statusVal.toLowerCase());
+                
+                const queryString = params.toString();
+                const baseExportUrl = exportPdfBtn.getAttribute('href').split('?')[0];
+                exportPdfBtn.href = baseExportUrl + (queryString ? '?' + queryString : '');
+            }
+            
+            const noResultsRow = document.getElementById('no-results-row');
+            if (visibleCount === 0) {
+                if (noResultsRow) noResultsRow.classList.remove('hidden');
+            } else {
+                if (noResultsRow) noResultsRow.classList.add('hidden');
+            }
+        }
+    });
 </script>
 <?= $this->endSection() ?>
