@@ -125,7 +125,7 @@
 
                 <div class="md:col-span-2">
                     <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Tipe</label>
-                    <select name="type" class="block w-full px-3 py-2 bg-white border <?= !empty($filterType) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm appearance-none cursor-pointer transition-all">
+                    <select name="type" id="filter-type" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm cursor-pointer transition-all">
                         <option value="">Semua Tipe</option>
                         <option value="DESA" <?= ($filterType === 'DESA') ? 'selected' : '' ?>>DESA</option>
                         <option value="KELURAHAN" <?= ($filterType === 'KELURAHAN') ? 'selected' : '' ?>>KELURAHAN</option>
@@ -134,7 +134,7 @@
 
                 <div class="md:col-span-3">
                     <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Platform</label>
-                    <select name="filter_platform" class="block w-full px-3 py-2 bg-white border <?= !empty($filterPlatform) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm appearance-none cursor-pointer transition-all">
+                    <select name="filter_platform" id="filter-platform" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm cursor-pointer transition-all">
                         <option value="">Semua Platform</option>
                         <option value="NULL" <?= ($filterPlatform === 'NULL') ? 'selected' : '' ?>>TIDAK TERDAFTAR</option>
                         <?php foreach ($platforms as $p): ?>
@@ -145,7 +145,7 @@
 
                 <div class="md:col-span-2">
                     <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Status</label>
-                    <select name="status" class="block w-full px-3 py-2 bg-white border <?= !empty($filterStatus) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm appearance-none cursor-pointer transition-all">
+                    <select name="status" id="filter-status" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm cursor-pointer transition-all">
                         <option value="">Semua Status</option>
                         <option value="AKTIF" <?= ($filterStatus === 'AKTIF') ? 'selected' : '' ?>>AKTIF</option>
                         <option value="NONAKTIF" <?= ($filterStatus === 'NONAKTIF') ? 'selected' : '' ?>>NONAKTIF</option>
@@ -206,10 +206,29 @@
                             <td class="px-6 py-4 whitespace-nowrap" id="status-cell-<?= $web['id'] ?>">
                                 <?php
                                 $status = strtoupper($web['status'] ?? 'NONAKTIF');
-                                $colorClass = ($status === 'AKTIF') ? 'bg-emerald-100 text-emerald-800 border-transparent' : 'bg-red-100 text-red-700 border-transparent';
+                                $days = isset($web['sisa_hari']) ? (int)$web['sisa_hari'] : null;
+                                
+                                if ($status === 'AKTIF') {
+                                    if ($days !== null && $days < 0) {
+                                        $colorClass = 'bg-red-100 text-red-700 border-transparent';
+                                        $statusText = 'EXPIRED';
+                                    } elseif ($days !== null && $days <= 30) {
+                                        $colorClass = 'bg-amber-100 text-amber-800 border-transparent';
+                                        $statusText = 'KRITIS';
+                                    } elseif ($days !== null && $days <= 90) {
+                                        $colorClass = 'bg-yellow-50 text-yellow-700 border-yellow-200';
+                                        $statusText = 'PERINGATAN';
+                                    } else {
+                                        $colorClass = 'bg-emerald-100 text-emerald-800 border-transparent';
+                                        $statusText = 'AKTIF';
+                                    }
+                                } else {
+                                    $colorClass = 'bg-red-100 text-red-700 border-transparent';
+                                    $statusText = 'NONAKTIF';
+                                }
                                 ?>
                                 <span class="px-2 py-0.5 rounded-full text-[10px] font-bold border <?= $colorClass ?>">
-                                    <?= $status ?>
+                                    <?= $statusText ?>
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
@@ -260,6 +279,33 @@
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
+        // Initialize Choices.js for Filter Form Dropdowns
+        const typeSelect = document.getElementById('filter-type');
+        const platformSelect = document.getElementById('filter-platform');
+        const statusSelect = document.getElementById('filter-status');
+        
+        if (typeSelect) {
+            new Choices(typeSelect, {
+                searchEnabled: false,
+                itemSelectText: '',
+                shouldSort: false
+            });
+        }
+        if (platformSelect) {
+            new Choices(platformSelect, {
+                searchEnabled: false,
+                itemSelectText: '',
+                shouldSort: false
+            });
+        }
+        if (statusSelect) {
+            new Choices(statusSelect, {
+                searchEnabled: false,
+                itemSelectText: '',
+                shouldSort: false
+            });
+        }
+
         const stats = <?= json_encode($stats) ?>;
         const platformStats = <?= json_encode($platform_stats) ?>;
 
