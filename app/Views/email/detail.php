@@ -465,82 +465,42 @@
     }
 
     function syncBsreStatus(email) {
-        const container = document.getElementById('bsre-status-container');
-        container.innerHTML = '<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase border bg-slate-50 text-slate-400 border-slate-200 animate-pulse"><i class="fas fa-spinner fa-spin mr-1"></i> SYNCING</span>';
-
-        fetch('<?= site_url('bsre/sync-status') ?>', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                body: 'email=' + encodeURIComponent(email)
-            })
-            .then(r => r.json()).then(data => {
-                if (data.status === 'success') {
-                    renderBsreStatus(data.bsre_status);
-                } else {
-                    const errorMsg = data.message || 'Gagal';
-                    container.innerHTML = `<button onclick="showGlobalError('Gagal Sinkronisasi', '${errorMsg.replace(/'/g, "\\'")}')" class="px-2 py-0.5 rounded text-[9px] font-bold uppercase border bg-red-50 text-red-600 border-red-200 hover:bg-red-100 transition-colors">ERROR</button>`;
+        syncSingleBsreStatus(email, 'bsre-status-container').then(result => {
+            if (result && result.success) {
+                const status = result.status;
+                const registerBtn = document.getElementById('register-bsre-btn');
+                if (registerBtn) {
+                    if (status === 'NOT_REGISTERED') {
+                        registerBtn.classList.remove('hidden');
+                    } else {
+                        registerBtn.classList.add('hidden');
+                    }
                 }
-            })
-            .catch((err) => {
-                const errorMsg = 'Masalah Koneksi Jaringan';
-                container.innerHTML = `<button onclick="showGlobalError('Kesalahan Jaringan', '${errorMsg}')" class="px-2 py-0.5 rounded text-[9px] font-bold uppercase border bg-red-50 text-red-600 border-red-200 hover:bg-red-100 transition-colors">ERROR</button>`;
-            });
+
+                const qrcodeCard = document.getElementById('qrcode-card');
+                const qrcodeImage = document.getElementById('qrcode-image');
+                const qrcodeLink = document.getElementById('qrcode-link');
+                const hash = '<?= $verification_hash ?>';
+
+                if (status === 'ISSUE' && hash) {
+                    const profileUrl = '<?= site_url('verify/') ?>' + hash;
+                    if (qrcodeImage) qrcodeImage.src = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' + encodeURIComponent(profileUrl);
+                    if (qrcodeLink) qrcodeLink.href = profileUrl;
+                    if (qrcodeCard) qrcodeCard.classList.remove('hidden');
+                } else if (qrcodeCard) {
+                    qrcodeCard.classList.add('hidden');
+                }
+            }
+        });
     }
 
     function syncPegawai(nip, btn) {
-        const originalContent = btn.innerHTML;
-        const jabatanElement = document.getElementById('jabatan-text');
-        const pangkatElement = document.getElementById('pangkat-text');
-        const golruElement = document.getElementById('golru-text');
-
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> SYNCING';
-        if (jabatanElement) jabatanElement.classList.add('animate-pulse', 'text-slate-400');
-        if (pangkatElement) pangkatElement.classList.add('animate-pulse', 'text-slate-400');
-        if (golruElement) golruElement.classList.add('animate-pulse', 'text-slate-400');
-
-        fetch('<?= site_url('email/sync_pegawai') ?>', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                body: 'nip=' + encodeURIComponent(nip)
-            })
-            .then(r => r.json()).then(data => {
-                btn.disabled = false;
-                btn.innerHTML = originalContent;
-                if (jabatanElement) jabatanElement.classList.remove('animate-pulse', 'text-slate-400');
-                if (pangkatElement) pangkatElement.classList.remove('animate-pulse', 'text-slate-400');
-                if (golruElement) golruElement.classList.remove('animate-pulse', 'text-slate-400');
-
-                if (data.success) {
-                    if (data.data.jabatan && jabatanElement) {
-                        jabatanElement.textContent = data.data.jabatan;
-                    }
-
-                    if (data.data.pangkat_nama && pangkatElement) {
-                        pangkatElement.textContent = data.data.pangkat_nama;
-                    }
-
-                    if (data.data.pangkat_golruang && golruElement) {
-                        golruElement.textContent = data.data.pangkat_golruang;
-                    }
-                } else {
-                    showGlobalError('Gagal Sinkronisasi Pegawai', data.message || 'Gagal mengambil data dari API');
-                }
-            })
-            .catch((err) => {
-                btn.disabled = false;
-                btn.innerHTML = originalContent;
-                if (jabatanElement) jabatanElement.classList.remove('animate-pulse', 'text-slate-400');
-                if (pangkatElement) pangkatElement.classList.remove('animate-pulse', 'text-slate-400');
-                if (golruElement) golruElement.classList.remove('animate-pulse', 'text-slate-400');
-                showGlobalError('Kesalahan Jaringan', 'Gagal menghubungi server API.');
-            });
+        const elements = {
+            jabatan: document.getElementById('jabatan-text'),
+            pangkat: document.getElementById('pangkat-text'),
+            golru: document.getElementById('golru-text')
+        };
+        syncSinglePegawai(nip, btn, elements);
     }
 
     document.addEventListener('DOMContentLoaded', () => {

@@ -650,6 +650,8 @@
 
     </script>
 
+    <script src="<?= base_url('js/sync-helper.js') ?>"></script>
+
     <?= $this->renderSection('scripts') ?>
 </body>
 

@@ -32,6 +32,12 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
     - Merefaktor **User Dropdown** agar menggunakan reaktivitas Alpine.js (`x-data`, `x-show`, `@click.outside`, transition effects) untuk menggantikan logika manipulasi DOM manual via Vanilla JS yang panjang dan rawan error.
     - Merefaktor **Global Flash Messages** agar menutup otomatis setelah 5 detik menggunakan directive `x-init`, `x-show`, dan transisi bawaan Alpine.js, serta menghapus event handler Vanilla JS yang tidak diperlukan lagi.
 
+- **Ekstraksi & Refactor JavaScript Helper Global (`sync-helper.js`)**:
+    - Membuat berkas javascript pembantu global baru `public/js/sync-helper.js` untuk memusatkan logika AJAX request, visual spinner/loading status, pewarnaan badge hasil, dan visualisasi error modal.
+    - Mengekstraksi fungsi penanganan sinkronisasi status TTE (`syncSingleBsreStatus`, `syncAllBsreStatus`) dan sinkronisasi data pegawai (`syncSinglePegawai`) dari file PHP agar tidak terduplikasi.
+    - Memotong ratusan baris kode JavaScript duplikat yang sebelumnya disematkan secara inline di dalam berkas views: `detail.php`, `eselon_detail.php`, `pimpinan.php`, `pimpinan_desa.php`, `pns_list.php`, `pppk_list.php`, dan `pppk_pw_list.php`.
+
+
 ## Pembaruan Visual & UI
 - **Penyelarasan Kolom Website Desa**:
     - Mengubah nama kolom table header dari `Hosting & Server` menjadi `hosting / server` (huruf kecil) agar lebih konsisten dengan penulisan tag visual lainnya.

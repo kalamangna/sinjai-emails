@@ -153,40 +153,7 @@
 
     async function syncBsreStatus(email, id) {
         const containerId = `bsre-status-${id}`;
-        const container = document.getElementById(containerId);
-        container.innerHTML = '<span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase border bg-slate-50 text-slate-400 border-slate-200 animate-pulse"><i class="fas fa-spinner fa-spin mr-1"></i> SYNCING</span>';
-
-        try {
-            const response = await fetch('<?= site_url('bsre/sync-status') ?>', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                body: 'email=' + encodeURIComponent(email)
-            });
-
-            const data = await response.json();
-            if (data.status === 'success') {
-                renderBsreStatus(data.bsre_status, containerId);
-                return {
-                    success: true,
-                    status: data.bsre_status
-                };
-            } else {
-                const errorMsg = data.message || 'Gagal';
-                container.innerHTML = `<button onclick="showGlobalError('Gagal Sinkronisasi', '${errorMsg.replace(/'/g, "\\'")}')" class="px-2 py-0.5 rounded text-[9px] font-bold uppercase border bg-red-50 text-red-600 border-red-200 hover:bg-red-100 transition-colors">ERROR</button>`;
-                return {
-                    success: false
-                };
-            }
-        } catch (error) {
-            const errorMsg = 'Masalah Koneksi Jaringan';
-            container.innerHTML = `<button onclick="showGlobalError('Kesalahan Jaringan', '${errorMsg}')" class="px-2 py-0.5 rounded text-[9px] font-bold uppercase border bg-red-50 text-red-600 border-red-200 hover:bg-red-100 transition-colors">ERROR</button>`;
-            return {
-                success: false
-            };
-        }
+        return window.syncSingleBsreStatus(email, containerId);
     }
 
     async function syncAllOnPage() {

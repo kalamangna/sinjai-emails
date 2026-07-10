@@ -158,81 +158,8 @@
 </div>
 
 <script>
-    async function syncAllBsreStatus() {
-        const containers = document.querySelectorAll('[id^="bsre-status-"]');
-        if (!containers.length) return;
-        
-        if (!confirm(`Sinkronkan status sertifikat untuk ${containers.length} akun dalam eselon ini?`)) {
-            return;
-        }
-
-        const syncBtn = document.getElementById('syncAllTteBtn');
-        const originalBtnContent = syncBtn.innerHTML;
-
-        // 1. Scroll ke tabel secara smooth
-        const tableContainer = document.getElementById('email-table-container');
-        if (tableContainer) {
-            tableContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-
-        // 2. Disable tombol dan beri feedback visual
-        syncBtn.disabled = true;
-        syncBtn.classList.add('opacity-75', 'cursor-not-allowed');
-        syncBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Syncing...';
-
-        // 3. Proses secara sekuensial
-        let processed = 0;
-        let success = 0;
-        let failed = 0;
-
-        for (const container of containers) {
-            const email = container.getAttribute('data-email');
-            const originalContent = container.innerHTML;
-            
-            // Scroll ke container yang sedang diproses
-            container.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            
-            // Set loading state untuk baris ini
-            container.innerHTML = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-bold uppercase border bg-slate-50 text-slate-400 border-slate-200 animate-pulse"><i class="fas fa-spinner fa-spin mr-1"></i> SYNCING</span>';
-            
-            try {
-                const response = await fetch('<?= site_url('bsre/sync-status') ?>', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    },
-                    body: 'email=' + encodeURIComponent(email)
-                });
-                
-                const data = await response.json();
-                
-                if (data.status === 'success') {
-                    const colorClass = getJsStatusColor(data.bsre_status);
-                    container.innerHTML = `<span class="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-bold uppercase border ${colorClass}">${data.bsre_status}</span>`;
-                    success++;
-                } else {
-                    const errorMsg = data.message || 'Gagal';
-                    container.innerHTML = `<button onclick="showGlobalError('Gagal Sinkronisasi', '${errorMsg.replace(/'/g, "\\'")}')" class="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-bold uppercase border bg-red-50 text-red-600 border-red-200 hover:bg-red-100 transition-colors">ERROR</button>`;
-                    failed++;
-                }
-            } catch (error) {
-                console.error('Sync failed for ' + email, error);
-                const errorMsg = 'Masalah Koneksi Jaringan';
-                container.innerHTML = `<button onclick="showGlobalError('Kesalahan Jaringan', '${errorMsg}')" class="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-bold uppercase border bg-red-50 text-red-600 border-red-200 hover:bg-red-100 transition-colors">ERROR</button>`;
-                failed++;
-            }
-
-            processed++;
-            syncBtn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Syncing ${processed}/${containers.length}...`;
-        }
-
-        // 4. Restore tombol
-        syncBtn.disabled = false;
-        syncBtn.classList.remove('opacity-75', 'cursor-not-allowed');
-        syncBtn.innerHTML = originalBtnContent;
-        
-        showSyncResult(processed, success, failed);
+    function syncAllBsreStatus() {
+        window.syncAllBsreStatus('syncAllTteBtn', 'Sinkronkan status sertifikat untuk semua akun dalam eselon ini?');
     }
 </script>
 <?= $this->endSection() ?>
