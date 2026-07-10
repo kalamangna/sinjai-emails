@@ -5286,6 +5286,16 @@ input:checked + .toggle-bg {
   forced-color-adjust: none;
 }
 
+/* ApexCharts Donut Chart Font Size Reset (Overrides Flowbite's !important values) */
+
+.apexcharts-canvas .apexcharts-datalabels-group .apexcharts-text.apexcharts-datalabel-value {
+  font-size: 16px !important;
+}
+
+.apexcharts-canvas .apexcharts-datalabels-group .apexcharts-text.apexcharts-datalabel-label {
+  font-size: 10px !important;
+}
+
 .selection\:bg-slate-700 *::-moz-selection {
   --tw-bg-opacity: 1;
   background-color: rgb(51 65 85 / var(--tw-bg-opacity, 1));
