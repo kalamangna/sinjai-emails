@@ -1,8 +1,7 @@
 <?= $this->extend('layouts/main') ?>
 
 <?= $this->section('styles') ?>
-<!-- Choices.js CSS -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+
 <style>
     .choices__inner {
         @apply bg-white border-slate-200 rounded-lg text-sm font-medium text-slate-800 !important;
@@ -132,7 +131,7 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
-<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+
 <script>
     const servicesMap = <?= json_encode($servicesMap) ?>;
     const keteranganByServiceMap = <?= json_encode($keteranganByServiceMap) ?>;
