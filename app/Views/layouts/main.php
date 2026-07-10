@@ -39,9 +39,6 @@
     <!-- Choices.js CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
 
-    <!-- Alpine.js -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-
     <?= $this->renderSection('styles') ?>
 
     <script>
@@ -251,32 +248,24 @@
                         <i class="fas fa-history text-base"></i>
                     </a>
 
-                    <!-- User Dropdown -->
-                    <div class="relative" id="user-dropdown-container" x-data="{ open: false }" @click.outside="open = false" @keydown.escape.window="open = false">
-                        <button id="user-dropdown-button" @click="open = !open" class="flex items-center gap-2 p-1.5 rounded-xl hover:bg-slate-50 transition-all focus:outline-none" aria-haspopup="true" :aria-expanded="open.toString()">
+                    <!-- User Dropdown (Flowbite) -->
+                    <div class="relative" id="user-dropdown-container">
+                        <button id="user-dropdown-button" data-dropdown-toggle="user-dropdown-menu" data-dropdown-placement="bottom-end" class="flex items-center gap-2 p-1.5 rounded-xl hover:bg-slate-50 transition-all focus:outline-none" aria-haspopup="true">
                             <div class="hidden md:flex flex-col items-end">
                                 <p class="text-xs font-bold text-slate-800 leading-none uppercase truncate max-w-[120px]"><?= session()->get('name') ?: session()->get('username') ?></p>
                                 <p class="text-[9px] font-bold text-slate-500 uppercase mt-1 tracking-widest">
                                     <?= session()->get('role') == 'super_admin' ? 'Super Admin' : 'Admin' ?>
                                 </p>
                             </div>
-                            <div id="user-icon-wrapper" :class="open ? 'scale-90' : ''" class="w-9 h-9 bg-slate-100 rounded-lg flex items-center justify-center text-slate-700 border border-slate-200 shadow-sm transition-transform duration-200">
+                            <div id="user-icon-wrapper" class="w-9 h-9 bg-slate-100 rounded-lg flex items-center justify-center text-slate-700 border border-slate-200 shadow-sm transition-transform duration-200">
                                 <i class="fas fa-user-shield text-sm"></i>
                             </div>
-                            <i id="user-dropdown-chevron" :class="open ? 'rotate-180' : ''" class="fas fa-chevron-down text-[8px] text-slate-400 transition-transform duration-200 hidden sm:inline"></i>
+                            <i id="user-dropdown-chevron" class="fas fa-chevron-down text-[8px] text-slate-400 transition-transform duration-200 hidden sm:inline"></i>
                         </button>
 
                         <!-- Dropdown Menu -->
                         <div id="user-dropdown-menu"
-                             x-show="open"
-                             x-transition:enter="transition ease-out duration-200"
-                             x-transition:enter-start="opacity-0 scale-95 translate-y-1"
-                             x-transition:enter-end="opacity-100 scale-100 translate-y-0"
-                             x-transition:leave="transition ease-in duration-150"
-                             x-transition:leave-start="opacity-100 scale-100 translate-y-0"
-                             x-transition:leave-end="opacity-0 scale-95 translate-y-1"
-                             class="absolute right-0 mt-2 w-56 bg-white border border-slate-200 rounded-xl shadow-2xl py-2 z-50 origin-top-right overflow-hidden"
-                             x-cloak>
+                             class="hidden w-56 bg-white border border-slate-200 rounded-xl shadow-2xl py-2 z-50 overflow-hidden">
 
                             <!-- User info -->
                             <div class="px-4 py-2 mb-1 border-b border-slate-100">
@@ -327,43 +316,70 @@
 
         <!-- Content Area -->
         <main class="flex-grow p-6">
-            <!-- Global Flash Messages -->
+            <!-- Global Flash Messages (Flowbite Dismiss) -->
             <?php if (session()->getFlashdata('success') || session()->getFlashdata('message') || session()->getFlashdata('error') || session()->getFlashdata('info')): ?>
                 <div class="mb-6 space-y-2">
                     <?php if ($msg = session()->getFlashdata('success') ?: session()->getFlashdata('message')): ?>
-                        <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)" x-transition class="bg-slate-700 text-white px-5 py-3 rounded-lg flex items-center justify-between shadow-sm" role="alert">
+                        <div id="toast-success" class="transition-opacity duration-300 bg-slate-700 text-white px-5 py-3 rounded-lg flex items-center justify-between shadow-sm" role="alert">
                             <div class="flex items-center">
                                 <i class="fas fa-check-circle mr-3 text-white"></i>
                                 <span class="font-bold text-xs uppercase tracking-wider"><?= $msg === true ? 'Berhasil' : $msg ?></span>
                             </div>
-                            <button @click="show = false" class="text-white/50 hover:text-white transition-colors focus:outline-none">
+                            <button type="button" data-dismiss-target="#toast-success" class="text-white/50 hover:text-white transition-colors focus:outline-none" aria-label="Close">
                                 <i class="fas fa-times text-xs"></i>
                             </button>
                         </div>
+                        <script>
+                            setTimeout(() => {
+                                const toast = document.getElementById('toast-success');
+                                if (toast) {
+                                    toast.classList.add('opacity-0');
+                                    setTimeout(() => toast.remove(), 300);
+                                }
+                            }, 5000);
+                        </script>
                     <?php endif; ?>
 
                     <?php if ($err = session()->getFlashdata('error')): ?>
-                        <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)" x-transition class="bg-red-600 text-white px-5 py-3 rounded-lg flex items-center justify-between shadow-sm" role="alert">
+                        <div id="toast-error" class="transition-opacity duration-300 bg-red-600 text-white px-5 py-3 rounded-lg flex items-center justify-between shadow-sm" role="alert">
                             <div class="flex items-center">
                                 <i class="fas fa-exclamation-circle mr-3 text-white"></i>
                                 <span class="font-bold text-xs uppercase tracking-wider"><?= $err ?></span>
                             </div>
-                            <button @click="show = false" class="text-white/50 hover:text-white transition-colors focus:outline-none">
+                            <button type="button" data-dismiss-target="#toast-error" class="text-white/50 hover:text-white transition-colors focus:outline-none" aria-label="Close">
                                 <i class="fas fa-times text-xs"></i>
                             </button>
                         </div>
+                        <script>
+                            setTimeout(() => {
+                                const toast = document.getElementById('toast-error');
+                                if (toast) {
+                                    toast.classList.add('opacity-0');
+                                    setTimeout(() => toast.remove(), 300);
+                                }
+                            }, 5000);
+                        </script>
                     <?php endif; ?>
 
                     <?php if ($info = session()->getFlashdata('info')): ?>
-                        <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)" x-transition class="bg-slate-800 text-white px-5 py-3 rounded-lg flex items-center justify-between shadow-sm" role="alert">
+                        <div id="toast-info" class="transition-opacity duration-300 bg-slate-800 text-white px-5 py-3 rounded-lg flex items-center justify-between shadow-sm" role="alert">
                             <div class="flex items-center">
                                 <i class="fas fa-info-circle mr-3 text-white"></i>
                                 <span class="font-bold text-xs uppercase tracking-wider"><?= $info ?></span>
                             </div>
-                            <button @click="show = false" class="text-white/50 hover:text-white transition-colors focus:outline-none">
+                            <button type="button" data-dismiss-target="#toast-info" class="text-white/50 hover:text-white transition-colors focus:outline-none" aria-label="Close">
                                 <i class="fas fa-times text-xs"></i>
                             </button>
                         </div>
+                        <script>
+                            setTimeout(() => {
+                                const toast = document.getElementById('toast-info');
+                                if (toast) {
+                                    toast.classList.add('opacity-0');
+                                    setTimeout(() => toast.remove(), 300);
+                                }
+                            }, 5000);
+                        </script>
                     <?php endif; ?>
                 </div>
             <?php endif; ?>
