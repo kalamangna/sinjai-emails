@@ -13,7 +13,9 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
         if (!container) return;
 
         const label = (status && status.toLowerCase() !== 'not_synced') ? status : 'NOT_SYNCED';
-        const colorClass = getJsStatusColor(label);
+        const colorClass = (typeof window.getJsStatusColor === 'function') 
+            ? window.getJsStatusColor(label) 
+            : 'bg-slate-100 text-slate-700 border-slate-200';
 
         container.innerHTML = `<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${colorClass}">${label}</span>`;
     };
@@ -54,7 +56,7 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
                 return { success: true, status: data.bsre_status };
             } else {
                 const errorMsg = data.message || 'Gagal';
-                container.innerHTML = `<button onclick="showGlobalError('Gagal Sinkronisasi', '${errorMsg.replace(/'/g, "\\'")}')" class="px-2 py-0.5 rounded text-[9px] font-bold uppercase border bg-red-50 text-red-600 border-red-200 hover:bg-red-100 transition-colors">ERROR</button>`;
+                container.innerHTML = `<button onclick="if(typeof window.showGlobalError==='function') { window.showGlobalError('Gagal Sinkronisasi', '${errorMsg.replace(/'/g, "\\'")}'); } else { alert('${errorMsg.replace(/'/g, "\\'")}'); }" class="px-2 py-0.5 rounded text-[9px] font-bold uppercase border bg-red-50 text-red-600 border-red-200 hover:bg-red-100 transition-colors">ERROR</button>`;
                 return { success: false };
             }
         } catch (error) {
@@ -63,7 +65,7 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
                 btn.innerHTML = originalBtnContent;
             }
             const errorMsg = 'Masalah Koneksi Jaringan';
-            container.innerHTML = `<button onclick="showGlobalError('Kesalahan Jaringan', '${errorMsg}')" class="px-2 py-0.5 rounded text-[9px] font-bold uppercase border bg-red-50 text-red-600 border-red-200 hover:bg-red-100 transition-colors">ERROR</button>`;
+            container.innerHTML = `<button onclick="if(typeof window.showGlobalError==='function') { window.showGlobalError('Kesalahan Jaringan', '${errorMsg}'); } else { alert('${errorMsg}'); }" class="px-2 py-0.5 rounded text-[9px] font-bold uppercase border bg-red-50 text-red-600 border-red-200 hover:bg-red-100 transition-colors">ERROR</button>`;
             return { success: false };
         }
     };
@@ -170,7 +172,11 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
                 }
                 return true;
             } else {
-                showGlobalError('Gagal Sinkronisasi Pegawai', data.message || 'Gagal mengambil data dari API');
+                if (typeof window.showGlobalError === 'function') {
+                    window.showGlobalError('Gagal Sinkronisasi Pegawai', data.message || 'Gagal mengambil data dari API');
+                } else {
+                    alert(data.message || 'Gagal mengambil data dari API');
+                }
                 return false;
             }
         } catch (error) {
@@ -179,7 +185,11 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
             Object.values(elements).forEach(el => {
                 if (el) el.classList.remove('animate-pulse', 'text-slate-400');
             });
-            showGlobalError('Kesalahan Jaringan', 'Gagal menghubungi server API.');
+            if (typeof window.showGlobalError === 'function') {
+                window.showGlobalError('Kesalahan Jaringan', 'Gagal menghubungi server API.');
+            } else {
+                alert('Gagal menghubungi server API.');
+            }
             return false;
         }
     };
