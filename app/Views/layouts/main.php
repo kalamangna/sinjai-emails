@@ -569,21 +569,7 @@
                 toggleSubmenu(initialGroup, true);
             }
 
-            // Native Select Placeholder color helper
-            const selectPlaceholderToggles = document.querySelectorAll('select');
-            selectPlaceholderToggles.forEach(select => {
-                const updateColor = () => {
-                    if (select.value === '') {
-                        select.classList.add('text-slate-400');
-                        select.classList.remove('text-slate-800');
-                    } else {
-                        select.classList.remove('text-slate-400');
-                        select.classList.add('text-slate-800');
-                    }
-                };
-                select.addEventListener('change', updateColor);
-                updateColor();
-            });
+
 
             // Remove no-transition after first paint
             setTimeout(() => { document.body.classList.remove('no-transition'); }, 100);

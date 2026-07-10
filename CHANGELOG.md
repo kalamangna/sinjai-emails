@@ -54,7 +54,6 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - **Penyelarasan Tampilan & Warna Placeholder**:
     - Menerapkan pewarnaan placeholder abu-abu konsisten (`placeholder-slate-400 font-medium text-slate-800`) pada input kolom pencarian monitoring Website OPD (`web_opd/index.php`) dan Website Desa Kelurahan (`web_desa_kelurahan/index.php`).
-    - Membuat *global script helper* di `main.php` untuk mendeteksi pilihan dropdown native select yang kosong (`value = ''`), otomatis mengubah warna teksnya menjadi abu-abu pudar (`text-slate-400`) layaknya placeholder, dan mengembalikannya ke hitam tajam (`text-slate-800`) ketika opsi bernilai dipilih.
 
 
 - **Kustomisasi Tema Warna Flowbite (Slate/Gray)**:
