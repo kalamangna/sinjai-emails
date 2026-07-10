@@ -9,6 +9,12 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## Perbaikan & Ketahanan Sistem
 
+- **Bugfix: BSrE Status API Selalu Offline di Production (`SystemHealthService.php`)**:
+    - Ditemukan bahwa health check BSrE selalu mengembalikan status **DOWN** di lingkungan production meskipun server sebenarnya dapat dijangkau.
+    - Penyebab: kode lama selalu melakukan TCP ping ke **port 443 (HTTPS)** secara hardcode, padahal `BSRE_BASE_URL` menggunakan skema `http://` yang seharusnya diuji di **port 80**.
+    - Perbaikan: mengganti logika parsing host dengan `parse_url()` yang lebih andal, lalu menentukan port secara otomatis — menggunakan port eksplisit dari URL jika ada, atau fallback berdasarkan skema (`https` → 443, `http` → 80).
+    - Sekarang mendukung semua format URL: `http://host`, `https://host`, maupun `http://host:PORT`.
+
 - **Refactor Lookup Hosting Provider (`WebsiteService.php`) — Berbasis Hasil Diagnostik Production**:
     - Melakukan uji diagnostik langsung di server production via `public/iptest.php` dan menemukan bahwa:
         - `ipwhois.app` (HTTPS/port 443) ✅ **bekerja normal** — HTTP 200 dalam ~0.5 detik.

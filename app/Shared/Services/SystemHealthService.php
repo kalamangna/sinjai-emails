@@ -123,18 +123,17 @@ class SystemHealthService
                 return $this->buildResponse($key, $label, 'DOWN', 'Offline', 'BSRE_BASE_URL belum diatur.');
             }
 
-            $host = $baseUrl;
-            if (preg_match('/^https?:\/\//', $host)) {
-                $parsedUrl = parse_url($host);
-                $host = $parsedUrl['host'] ?? $host;
-            }
-            $host = explode('/', $host)[0];
-            if (strpos($host, ':') !== false) {
-                list($host, ) = explode(':', $host, 2);
+            $parsedUrl = parse_url($baseUrl);
+            $host = $parsedUrl['host'] ?? '';
+            // Deteksi port: gunakan port eksplisit dari URL, fallback ke skema (https=443, http=80)
+            $port = $parsedUrl['port'] ?? (($parsedUrl['scheme'] ?? 'https') === 'https' ? 443 : 80);
+
+            if (empty($host)) {
+                return $this->buildResponse($key, $label, 'DOWN', 'Offline', 'BSRE_BASE_URL tidak valid.');
             }
 
-            // Test port 443 (HTTPS) with 1.5s timeout
-            $connection = @fsockopen($host, 443, $errno, $errstr, 1.5);
+            // Test port dengan timeout 1.5s
+            $connection = @fsockopen($host, $port, $errno, $errstr, 1.5);
             if (is_resource($connection)) {
                 fclose($connection);
                 return $this->buildResponse($key, $label, 'UP', 'Online', 'Koneksi ke API server BSrE berhasil terhubung.');
