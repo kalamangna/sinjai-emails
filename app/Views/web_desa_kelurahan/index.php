@@ -326,27 +326,33 @@
         let typeChoices, platformChoices, statusChoices;
 
         if (typeSelect) {
-            typeChoices = new Choices(typeSelect, {
-                searchEnabled: false,
-                itemSelectText: '',
-                shouldSort: false
-            });
+            if (typeSelect.options.length >= 10) {
+                typeChoices = new Choices(typeSelect, {
+                    searchEnabled: false,
+                    itemSelectText: '',
+                    shouldSort: false
+                });
+            }
             typeSelect.addEventListener('change', filterWebsites);
         }
         if (platformSelect) {
-            platformChoices = new Choices(platformSelect, {
-                searchEnabled: false,
-                itemSelectText: '',
-                shouldSort: false
-            });
+            if (platformSelect.options.length >= 10) {
+                platformChoices = new Choices(platformSelect, {
+                    searchEnabled: false,
+                    itemSelectText: '',
+                    shouldSort: false
+                });
+            }
             platformSelect.addEventListener('change', filterWebsites);
         }
         if (statusSelect) {
-            statusChoices = new Choices(statusSelect, {
-                searchEnabled: false,
-                itemSelectText: '',
-                shouldSort: false
-            });
+            if (statusSelect.options.length >= 10) {
+                statusChoices = new Choices(statusSelect, {
+                    searchEnabled: false,
+                    itemSelectText: '',
+                    shouldSort: false
+                });
+            }
             statusSelect.addEventListener('change', filterWebsites);
         }
 
