@@ -181,7 +181,7 @@
 
     document.addEventListener('DOMContentLoaded', function() {
         const agencySelect = document.getElementById('agency_info');
-        if (agencySelect) {
+        if (agencySelect && agencySelect.options.length >= 10) {
             new Choices(agencySelect, {
                 searchEnabled: true,
                 itemSelectText: '',

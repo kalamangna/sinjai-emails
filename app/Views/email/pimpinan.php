@@ -213,11 +213,13 @@
         let statusChoices;
         
         if (statusSelect) {
-            statusChoices = new Choices(statusSelect, {
-                searchEnabled: false,
-                itemSelectText: '',
-                shouldSort: false
-            });
+            if (statusSelect.options.length >= 10) {
+                statusChoices = new Choices(statusSelect, {
+                    searchEnabled: false,
+                    itemSelectText: '',
+                    shouldSort: false
+                });
+            }
             statusSelect.addEventListener('change', filterEmails);
         }
         
