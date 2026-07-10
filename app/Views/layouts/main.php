@@ -492,34 +492,47 @@
                 });
             });
 
-            // --- 3. MOBILE OFF-CANVAS & OVERLAY ---
-            let overlay = document.getElementById('sidebar-overlay');
-            if (!overlay) {
-                overlay = document.createElement('div');
-                overlay.id = 'sidebar-overlay';
-                overlay.className = 'fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 lg:hidden transition-opacity duration-300 opacity-0 pointer-events-none';
-                document.body.appendChild(overlay);
-            }
-
-            const closeSidebar = () => {
-                sidebar.classList.add('-translate-x-full');
-                overlay.classList.add('opacity-0', 'pointer-events-none');
-                overlay.classList.remove('opacity-100', 'pointer-events-auto');
-                document.body.style.overflow = '';
+            // --- 3. MOBILE OFF-CANVAS & OVERLAY (Flowbite Drawer JS API) ---
+            let sidebarDrawer = null;
+            
+            const initDrawer = () => {
+                if (window.innerWidth < 1024) {
+                    if (!sidebarDrawer) {
+                        const options = {
+                            placement: 'left',
+                            backdrop: true,
+                            bodyScrolling: false,
+                            edge: false,
+                            backdropClasses: 'bg-slate-900/50 backdrop-blur-sm fixed inset-0 z-40 lg:hidden',
+                            onHide: () => {
+                                sidebar.classList.add('-translate-x-full');
+                            },
+                            onShow: () => {
+                                sidebar.classList.remove('-translate-x-full');
+                            }
+                        };
+                        sidebarDrawer = new Drawer(sidebar, options);
+                    }
+                } else {
+                    if (sidebarDrawer) {
+                        sidebarDrawer.destroy();
+                        sidebarDrawer = null;
+                        sidebar.classList.remove('-translate-x-full');
+                    }
+                }
             };
 
-            const openSidebar = () => {
-                sidebar.classList.remove('-translate-x-full');
-                overlay.classList.add('opacity-100', 'pointer-events-auto');
-                overlay.classList.remove('opacity-0', 'pointer-events-none');
-                document.body.style.overflow = 'hidden';
-            };
+            // Init on load
+            initDrawer();
+            
+            // Re-init on resize
+            window.addEventListener('resize', initDrawer);
 
             if (sidebarToggle) {
                 sidebarToggle.addEventListener('click', () => {
                     if (window.innerWidth < 1024) {
-                        const isHidden = sidebar.classList.contains('-translate-x-full');
-                        isHidden ? openSidebar() : closeSidebar();
+                        initDrawer();
+                        sidebarDrawer.toggle();
                     } else {
                         html.classList.toggle('sidebar-collapsed');
                         localStorage.setItem('sidebar-collapsed', html.classList.contains('sidebar-collapsed'));
@@ -527,9 +540,12 @@
                 });
             }
 
-            overlay.addEventListener('click', closeSidebar);
-            document.addEventListener('keydown', (e) => { e.key === 'Escape' && closeSidebar(); });
-            allLinks.forEach(l => l.addEventListener('click', () => { window.innerWidth < 1024 && closeSidebar(); }));
+            // Close drawer when sidebar links are clicked (on mobile)
+            allLinks.forEach(l => l.addEventListener('click', () => {
+                if (window.innerWidth < 1024 && sidebarDrawer) {
+                    sidebarDrawer.hide();
+                }
+            }));
 
             // --- 4. INITIALIZE STATE ---
             const initialGroup = localStorage.getItem('sidebar-active-menu') || activeGroupId;

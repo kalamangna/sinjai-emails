@@ -1836,6 +1836,10 @@ input:checked + .toggle-bg {
   z-index: 100;
 }
 
+.z-\[990\] {
+  z-index: 990;
+}
+
 .z-\[9999\] {
   z-index: 9999;
 }
@@ -2247,6 +2251,10 @@ input:checked + .toggle-bg {
   height: 50vw;
 }
 
+.h-\[calc\(100\%-1rem\)\] {
+  height: calc(100% - 1rem);
+}
+
 .h-auto {
   height: auto;
 }
@@ -2285,6 +2293,10 @@ input:checked + .toggle-bg {
 
 .max-h-\[90vh\] {
   max-height: 90vh;
+}
+
+.max-h-full {
+  max-height: 100%;
 }
 
 .max-h-none {
@@ -5951,6 +5963,10 @@ input:checked + .toggle-bg {
 }
 
 @media (min-width: 768px) {
+  .md\:inset-0 {
+    inset: 0px;
+  }
+
   .md\:col-span-1 {
     grid-column: span 1 / span 1;
   }

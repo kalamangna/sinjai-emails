@@ -43,6 +43,16 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
     - Mengubah nama kolom table header dari `Hosting & Server` menjadi `hosting / server` (huruf kecil) agar lebih konsisten dengan penulisan tag visual lainnya.
     - Menghapus tombol **Sync Data** per baris (individual sync) dari kolom Aksi pada tabel Website Desa, menyisakan hanya tombol Edit. Alur sinkronisasi kini dipusatkan sepenuhnya menggunakan tombol batch sync di header.
 
+- **Kustomisasi Tema Warna Flowbite (Slate/Gray)**:
+    - Mendefinisikan ulang warna `primary` di `tailwind.config.js` dengan shade warna Slate agar seluruh komponen bawaan Flowbite (yang menggunakan warna primer biru) secara otomatis mengikuti bahasa desain dashboard yang berwarna abu-abu gelap/slate.
+
+- **Refaktor Komponen Modal Berbasis Flowbite Modal API**:
+    - Memigrasikan seluruh logika reaktivitas open/close modal pada berkas `components/modal.php` ke pustaka **Flowbite Modal JS API** resmi, menggantikan transisi manual kelas CSS. Backdrops modal kini didorong secara dinamis menggunakan parameter Flowbite terpadu.
+
+- **Refaktor Mobile Sidebar menggunakan Flowbite Drawer JS API**:
+    - Mengganti overlay custom dan event listener manual untuk sidebar mobile dengan **Flowbite Drawer JS API**, menyederhanakan kode transisi off-canvas, penanganan scroll body, serta penutupan otomatis panel drawer saat navigasi di klik pada layar sentuh.
+
+
 - **Implementasi Komponen Flowbite (Tooltip & Toggle Switch)**:
     - Menggantikan tooltip native browser (`title="..."`) yang kaku pada seluruh tombol aksi tabel utama (Edit, Detail, Edit PK, Dikelola Kominfo) di halaman Website Desa, Website OPD, PNS List, PPPK List, PPPK PW List, dan Detail Email menggunakan **Flowbite Tooltip** yang interaktif dan beranimasi halus.
     - Mengubah elemen dropdown pilihan `dikelola_kominfo` (YA/TIDAK) di formulir Website Desa menjadi komponen **Flowbite Toggle Switch** (saklar geser) yang lebih intuitif, dilengkapi dengan input tersembunyi agar integrasi post request tetap kompatibel.

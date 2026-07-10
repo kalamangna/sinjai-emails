@@ -22,18 +22,15 @@ $isFullscreen = ($size ?? '') === 'full';
 ?>
 
 <div id="<?= $id ?>" 
-     class="fixed inset-0 z-[1000] hidden transition-all duration-300 <?= $isFullscreen ? 'm-0' : 'flex items-center justify-center px-4' ?>"
-     role="dialog" 
-     aria-modal="true" 
-     aria-labelledby="<?= $id ?>-title">
+     tabindex="-1"
+     aria-hidden="true"
+     class="fixed top-0 left-0 right-0 z-[1000] hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full flex items-center justify-center"
+     role="dialog">
     
-    <!-- Backdrop -->
-    <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeModal('<?= $id ?>')"></div>
-
     <!-- Modal Content -->
-    <div class="relative bg-white shadow-2xl overflow-hidden flex flex-col transition-all duration-300 w-full
+    <div class="relative bg-white shadow-2xl overflow-hidden flex flex-col transition-all duration-300 w-full z-50
                 <?= $modalSize ?> 
-                <?= $isFullscreen ? 'h-full' : 'rounded-2xl border border-slate-200 my-8 max-h-[90vh]' ?>">
+                <?= $isFullscreen ? 'h-full border-0' : 'rounded-2xl border border-slate-200 my-8 max-h-[90vh]' ?>">
         
         <!-- Header -->
         <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center shrink-0">
@@ -66,48 +63,43 @@ $isFullscreen = ($size ?? '') === 'full';
 
 <script>
     /**
-     * Modal Helper Functions
-     * Will only be defined once if multiple modals use this component.
+     * Modal Helper Functions (Flowbite Native Modal API Wrapper)
      */
     if (typeof openModal === 'undefined') {
+        window.flowbiteModals = window.flowbiteModals || {};
+
         window.openModal = function(id) {
-            const modal = document.getElementById(id);
-            if (!modal) return;
+            const modalElement = document.getElementById(id);
+            if (!modalElement) return;
             
-            modal.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-            
-            // Focus first input if exists
-            const firstInput = modal.querySelector('input, select, textarea, button:not([aria-label="Tutup"])');
-            if (firstInput) setTimeout(() => firstInput.focus(), 100);
+            if (!window.flowbiteModals[id]) {
+                const options = {
+                    placement: 'center',
+                    backdrop: 'dynamic',
+                    backdropClasses: 'bg-slate-900/60 backdrop-blur-sm fixed inset-0 z-[990]',
+                    closable: true,
+                    onHide: () => {
+                        modalElement.classList.add('hidden');
+                        modalElement.classList.remove('flex');
+                    },
+                    onShow: () => {
+                        modalElement.classList.remove('hidden');
+                        modalElement.classList.add('flex');
+                        
+                        // Focus first input if exists
+                        const firstInput = modalElement.querySelector('input, select, textarea, button:not([aria-label="Tutup"])');
+                        if (firstInput) setTimeout(() => firstInput.focus(), 100);
+                    }
+                };
+                window.flowbiteModals[id] = new Modal(modalElement, options);
+            }
+            window.flowbiteModals[id].show();
         };
 
         window.closeModal = function(id) {
-            const modal = document.getElementById(id);
-            if (!modal) return;
-            
-            modal.classList.add('hidden');
-            
-            // Check if any other modal is still open
-            const openModals = document.querySelectorAll('[role="dialog"]:not(.hidden)');
-            if (openModals.length === 0) {
-                document.body.style.overflow = '';
+            if (window.flowbiteModals[id]) {
+                window.flowbiteModals[id].hide();
             }
         };
-
-        // Close on click outside (backdrop)
-        document.addEventListener('click', (e) => {
-            if (e.target.hasAttribute('role') && e.target.getAttribute('role') === 'dialog') {
-                closeModal(e.target.id);
-            }
-        });
-
-        // Close on Escape
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                const openModal = document.querySelector('[role="dialog"]:not(.hidden)');
-                if (openModal) closeModal(openModal.id);
-            }
-        });
     }
 </script>
