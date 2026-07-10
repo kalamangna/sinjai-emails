@@ -123,7 +123,11 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
         syncBtn.classList.remove('opacity-75', 'cursor-not-allowed');
         syncBtn.innerHTML = originalBtnContent;
 
-        showSyncResult(processed, success, failed);
+        if (typeof window.showSyncResult === 'function') {
+            window.showSyncResult(processed, success, failed);
+        } else {
+            alert(`Sinkronisasi Selesai!\nTotal: ${processed}\nBerhasil: ${success}\nGagal: ${failed}`);
+        }
     };
 
     /**
