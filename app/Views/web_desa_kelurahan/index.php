@@ -363,9 +363,21 @@
         if (resetBtn) {
             resetBtn.addEventListener('click', function() {
                 if (searchInput) searchInput.value = '';
-                if (typeChoices) typeChoices.setChoiceByValue('');
-                if (platformChoices) platformChoices.setChoiceByValue('');
-                if (statusChoices) statusChoices.setChoiceByValue('');
+                if (typeChoices) {
+                    typeChoices.setChoiceByValue('');
+                } else if (typeSelect) {
+                    typeSelect.value = '';
+                }
+                if (platformChoices) {
+                    platformChoices.setChoiceByValue('');
+                } else if (platformSelect) {
+                    platformSelect.value = '';
+                }
+                if (statusChoices) {
+                    statusChoices.setChoiceByValue('');
+                } else if (statusSelect) {
+                    statusSelect.value = '';
+                }
                 filterWebsites();
             });
         }

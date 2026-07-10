@@ -226,7 +226,11 @@
         if (resetBtn) {
             resetBtn.addEventListener('click', function() {
                 if (searchInput) searchInput.value = '';
-                if (statusChoices) statusChoices.setChoiceByValue('');
+                if (statusChoices) {
+                    statusChoices.setChoiceByValue('');
+                } else if (statusSelect) {
+                    statusSelect.value = '';
+                }
                 filterWebsites();
             });
         }
