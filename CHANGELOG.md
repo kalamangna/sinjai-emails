@@ -52,6 +52,11 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
     - Mengubah nama kolom table header dari `Hosting & Server` menjadi `hosting / server` (huruf kecil) agar lebih konsisten dengan penulisan tag visual lainnya.
     - Menghapus tombol **Sync Data** per baris (individual sync) dari kolom Aksi pada tabel Website Desa, menyisakan hanya tombol Edit. Alur sinkronisasi kini dipusatkan sepenuhnya menggunakan tombol batch sync di header.
 
+- **Penyelarasan Tampilan & Warna Placeholder**:
+    - Menerapkan pewarnaan placeholder abu-abu konsisten (`placeholder-slate-400 font-medium text-slate-800`) pada input kolom pencarian monitoring Website OPD (`web_opd/index.php`) dan Website Desa Kelurahan (`web_desa_kelurahan/index.php`).
+    - Membuat *global script helper* di `main.php` untuk mendeteksi pilihan dropdown native select yang kosong (`value = ''`), otomatis mengubah warna teksnya menjadi abu-abu pudar (`text-slate-400`) layaknya placeholder, dan mengembalikannya ke hitam tajam (`text-slate-800`) ketika opsi bernilai dipilih.
+
+
 - **Kustomisasi Tema Warna Flowbite (Slate/Gray)**:
     - Mendefinisikan ulang warna `primary` di `tailwind.config.js` dengan shade warna Slate agar seluruh komponen bawaan Flowbite (yang menggunakan warna primer biru) secara otomatis mengikuti bahasa desain dashboard yang berwarna abu-abu gelap/slate.
 
