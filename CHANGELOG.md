@@ -43,6 +43,12 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
     - Mengubah nama kolom table header dari `Hosting & Server` menjadi `hosting / server` (huruf kecil) agar lebih konsisten dengan penulisan tag visual lainnya.
     - Menghapus tombol **Sync Data** per baris (individual sync) dari kolom Aksi pada tabel Website Desa, menyisakan hanya tombol Edit. Alur sinkronisasi kini dipusatkan sepenuhnya menggunakan tombol batch sync di header.
 
+- **Integrasi Penuh Flowbite CSS & JS**:
+    - Menginstal paket npm `flowbite` dan mengonfigurasikannya ke dalam berkas `tailwind.config.js` sebagai plugin.
+    - Menambahkan path `node_modules/flowbite/**/*.js` ke opsi `content` Tailwind config agar compiler dapat mengenali dan menghasilkan class component Flowbite.
+    - Memuat Flowbite JS bundle dari CDN secara global di layout utama `main.php` untuk mendukung keaktifan komponen interaktif.
+
+
 ---
 
 # [9 Juli 2026]
