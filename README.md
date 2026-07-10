@@ -144,6 +144,9 @@ chmod +x sync.sh
 
 # 5. Pembersihan File & Riwayat Laporan PDF Harian (Jam 01:00)
 0 1 * * * /opt/cpanel/ea-php83/root/usr/bin/php /home/tte/sinjai-emails/spark queue:clean-exports >> /dev/null 2>&1
+
+# 6. Pembaruan Cache Status Kesehatan Layanan Eksternal (Setiap 5 Menit)
+*/5 * * * * /opt/cpanel/ea-php83/root/usr/bin/php /home/tte/sinjai-emails/spark health:check-cache >> /dev/null 2>&1
 ```
 
 Skrip ini secara cerdas membagi tugas:
