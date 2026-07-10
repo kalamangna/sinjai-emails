@@ -573,20 +573,22 @@
             setTimeout(() => { document.body.classList.remove('no-transition'); }, 100);
         });
 
-        // Global Choices.js initialization
+        // Global Choices.js initialization (only for select elements with 10 or more options)
         document.addEventListener('DOMContentLoaded', () => {
             const searchSelects = document.querySelectorAll('.choices-search');
             searchSelects.forEach(select => {
-                new Choices(select, {
-                    searchEnabled: true,
-                    itemSelectText: '',
-                    placeholder: true,
-                    searchPlaceholderValue: 'Cari...',
-                    shouldSort: false,
-                    loadingText: 'Memuat...',
-                    noResultsText: 'Tidak ditemukan',
-                    noChoicesText: 'Tidak ada pilihan',
-                });
+                if (select.options.length >= 10) {
+                    new Choices(select, {
+                        searchEnabled: true,
+                        itemSelectText: '',
+                        placeholder: true,
+                        searchPlaceholderValue: 'Cari...',
+                        shouldSort: false,
+                        loadingText: 'Memuat...',
+                        noResultsText: 'Tidak ditemukan',
+                        noChoicesText: 'Tidak ada pilihan',
+                    });
+                }
             });
         });
 
