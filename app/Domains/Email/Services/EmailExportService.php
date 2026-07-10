@@ -173,7 +173,7 @@ class EmailExportService
         return $dompdf;
     }
 
-    public function generateUnitKerjaPdf($unitKerjaId, $search = null, $status_asn = null, $bsre_status = null, $pimpinanDesa = 1)
+    public function generateUnitKerjaPdf($unitKerjaId, $search = null, $status_asn = null, $bsre_status = null, $pimpinan_desa = 1)
     {
         set_time_limit(0);
         ini_set('memory_limit', '-1');
@@ -196,7 +196,7 @@ class EmailExportService
             ->orderBy('emails.jabatan', 'ASC')
             ->orderBy('emails.name', 'ASC');
 
-        if ($isKecamatan && $pimpinanDesa == 0) $builder->where('pimpinanDesa', 0);
+        if ($isKecamatan && $pimpinan_desa == 0) $builder->where('pimpinan_desa', 0);
         if ($search) {
             $builder->groupStart();
             $cleanSearch = str_replace([' ', '.', '-', '\''], '', $search);
@@ -227,7 +227,7 @@ class EmailExportService
         $builder = $this->emailModel->withDetails()
             ->whereIn('unit_kerja_id', $allUnitIds);
 
-        if ($isKecamatan && $pimpinanDesa == 0) $builder->where('pimpinanDesa', 0);
+        if ($isKecamatan && $pimpinan_desa == 0) $builder->where('pimpinan_desa', 0);
         if ($search) {
             $builder->groupStart();
             $cleanSearch = str_replace([' ', '.', '-', '\''], '', $search);
@@ -287,7 +287,7 @@ class EmailExportService
         ];
     }
 
-    public function generateAccountDetailPdf($unitKerjaId, $search = null, $status_asn = null, $bsre_status = null, $pimpinanDesa = 1)
+    public function generateAccountDetailPdf($unitKerjaId, $search = null, $status_asn = null, $bsre_status = null, $pimpinan_desa = 1)
     {
         set_time_limit(0);
         ini_set('memory_limit', '-1');
@@ -310,7 +310,7 @@ class EmailExportService
             ->orderBy('emails.jabatan', 'ASC')
             ->orderBy('emails.name', 'ASC');
 
-        if ($isKecamatan && $pimpinanDesa == 0) $builder->where('pimpinanDesa', 0);
+        if ($isKecamatan && $pimpinan_desa == 0) $builder->where('pimpinan_desa', 0);
         if ($search) {
             $builder->groupStart();
             $cleanSearch = str_replace([' ', '.', '-', '\''], '', $search);
@@ -341,7 +341,7 @@ class EmailExportService
         $builder = $this->emailModel->withDetails()
             ->whereIn('unit_kerja_id', $allUnitIds);
 
-        if ($isKecamatan && $pimpinanDesa == 0) $builder->where('pimpinanDesa', 0);
+        if ($isKecamatan && $pimpinan_desa == 0) $builder->where('pimpinan_desa', 0);
         if ($search) {
             $builder->groupStart();
             $cleanSearch = str_replace([' ', '.', '-', '\''], '', $search);

@@ -72,7 +72,7 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
 
         // Pimpinan Routes
         $routes->get('pimpinan', '\App\Domains\Pimpinan\Controllers\PimpinanController::pimpinan');
-        $routes->get('pimpinanDesa', '\App\Domains\Pimpinan\Controllers\PimpinanController::pimpinanDesa');
+        $routes->get('pimpinan_desa', '\App\Domains\Pimpinan\Controllers\PimpinanController::pimpinan_desa');
         $routes->get('exportPimpinanPdf', '\App\Domains\Pimpinan\Controllers\PimpinanController::exportPimpinanPdf');
         $routes->get('exportPimpinanDesaPdf', '\App\Domains\Pimpinan\Controllers\PimpinanController::exportPimpinanDesaPdf');
 

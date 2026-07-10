@@ -149,7 +149,7 @@ class PimpinanController extends BaseController
                 'back_url' => site_url('email'),
             ];
 
-            return view('email/pimpinanDesa', $data);
+            return view('email/pimpinan_desa', $data);
         } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
             $data['back_url'] = site_url('email');

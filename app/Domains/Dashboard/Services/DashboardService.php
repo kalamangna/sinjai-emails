@@ -28,11 +28,11 @@ class DashboardService
         $statusAsnModel = new StatusAsnModel();
 
         // 1. Email Stats (Raw Status from database/API)
-        $raw_stats = $emailModel->select('bsre_status, pimpinan, pimpinanDesa, nip, unit_kerja_id, COUNT(id) as count')
+        $raw_stats = $emailModel->select('bsre_status, pimpinan, pimpinan_desa, nip, unit_kerja_id, COUNT(id) as count')
             ->allowCallbacks(false)
             ->groupBy('bsre_status')
             ->groupBy('pimpinan')
-            ->groupBy('pimpinanDesa')
+            ->groupBy('pimpinan_desa')
             ->groupBy('nip')
             ->groupBy('unit_kerja_id')
             ->findAll();
@@ -47,7 +47,7 @@ class DashboardService
             $count = (int)$row['count'];
             $total_emails += $count;
 
-            $isNeedTte = !empty($row['nip']) || ($row['pimpinan'] == 1) || ($row['pimpinanDesa'] == 1) || !empty($row['unit_kerja_id']);
+            $isNeedTte = !empty($row['nip']) || ($row['pimpinan'] == 1) || ($row['pimpinan_desa'] == 1) || !empty($row['unit_kerja_id']);
 
             if (!$isNeedTte) {
                 $non_tte_count += $count;

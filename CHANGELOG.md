@@ -8,6 +8,11 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 # [10 Juli 2026]
 ## Refactor & Konsistensi Kode
 
+- **Fix: Pemulihan Kolom Database `pimpinan_desa` dari `pimpinanDesa`**:
+    - Memperbaiki kesalahan penggantian nama kolom database `pimpinan_desa` (snake_case) menjadi `pimpinanDesa` (camelCase) yang tidak sengaja dilakukan oleh skrip penggantian method.
+    - Mengembalikan ke format `pimpinan_desa` di seluruh berkas model, query SQL/ActiveRecord, array key, dan param view.
+    - Mencegah error database: `Unknown column 'pimpinanDesa' in 'field list'` (DatabaseException #1054).
+
 - **Fix: Pemulihan URI Route ke `snake_case` (`Routes.php`)**:
     - Mengembalikan seluruh URI path route (parameter pertama fungsi `$routes->get()`, `$routes->post()`, dsb.) ke format original `snake_case` (e.g. `sync_pegawai`, `process_batch_create`, `check_niknip`).
     - Hal ini menjamin kompabilitas penuh dengan seluruh pemanggilan AJAX fetch / XMLHttpRequest dari file frontend Javascript (`batch.js`, `sync-helper.js`, `unit-kerja-batch.js`) serta tag `<form>` pada Views.

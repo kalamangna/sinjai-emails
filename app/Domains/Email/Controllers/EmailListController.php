@@ -52,7 +52,7 @@ class EmailListController extends BaseController
                 'search' => $this->request->getGet('search'),
                 'status_asn' => $this->request->getGet('status_asn'),
                 'bsre_status' => $this->request->getGet('bsre_status'),
-                'pimpinanDesa' => $this->request->getGet('pimpinanDesa'),
+                'pimpinan_desa' => $this->request->getGet('pimpinan_desa'),
             ];
 
             $data = $this->emailService->getUnitKerjaDetail($unitKerjaId, $params);
@@ -62,7 +62,7 @@ class EmailListController extends BaseController
             $data['search'] = $params['search'];
             $data['status_asn'] = $params['status_asn'];
             $data['bsre_status'] = $params['bsre_status'];
-            $data['pimpinanDesa'] = $params['pimpinanDesa'] ?? 1;
+            $data['pimpinan_desa'] = $params['pimpinan_desa'] ?? 1;
             $data['back_url'] = site_url('email');
 
             return view('email/unitKerjaDetail', $data);

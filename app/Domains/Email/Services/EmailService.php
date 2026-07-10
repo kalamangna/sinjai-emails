@@ -119,7 +119,7 @@ class EmailService
                             ->orWhere('nip', '')
                         ->groupEnd()
                         ->where('pimpinan', 0)
-                        ->where('pimpinanDesa', 0)
+                        ->where('pimpinan_desa', 0)
                         ->groupStart()
                             ->where('unit_kerja_id IS NULL')
                             ->orWhere('unit_kerja_id', 0)
@@ -132,7 +132,7 @@ class EmailService
                                 ->where('nip !=', '')
                             ->groupEnd()
                             ->orWhere('pimpinan', 1)
-                            ->orWhere('pimpinanDesa', 1)
+                            ->orWhere('pimpinan_desa', 1)
                             ->orGroupStart()
                                 ->where('unit_kerja_id IS NOT NULL')
                                 ->where('unit_kerja_id !=', 0)
@@ -253,10 +253,10 @@ class EmailService
             }
 
             $rawBsreCounts = $this->emailModel->allowCallbacks(false)
-                ->select('bsre_status, pimpinan, pimpinanDesa, nip, COUNT(id) as count')
+                ->select('bsre_status, pimpinan, pimpinan_desa, nip, COUNT(id) as count')
                 ->groupBy('bsre_status')
                 ->groupBy('pimpinan')
-                ->groupBy('pimpinanDesa')
+                ->groupBy('pimpinan_desa')
                 ->groupBy('nip')
                 ->asArray()
                 ->findAll();
@@ -275,7 +275,7 @@ class EmailService
             $nonTteCount = 0;
             
             foreach ($rawBsreCounts as $row) {
-                $isNeedTte = !empty($row['nip']) || ($row['pimpinan'] == 1) || ($row['pimpinanDesa'] == 1) || !empty($row['unit_kerja_id']);
+                $isNeedTte = !empty($row['nip']) || ($row['pimpinan'] == 1) || ($row['pimpinan_desa'] == 1) || !empty($row['unit_kerja_id']);
                 
                 if (!$isNeedTte) {
                     $nonTteCount += $row['count'];
@@ -401,14 +401,14 @@ class EmailService
         $search = $params['search'] ?? null;
         $status_asn = $params['status_asn'] ?? null;
         $bsre_status = $params['bsre_status'] ?? null;
-        $pimpinanDesa = $params['pimpinanDesa'] ?? 1;
+        $pimpinan_desa = $params['pimpinan_desa'] ?? 1;
 
         $isKecamatan = stripos($unitKerja['nama_unit_kerja'], 'Kecamatan') !== false;
 
         // Start building the query for the emails list
         $emailBuilder = $this->emailModel->withDetails()->whereIn('emails.unit_kerja_id', $allUnitIds);
-        if ($isKecamatan && $pimpinanDesa == 0) {
-            $emailBuilder->where('emails.pimpinanDesa', 0);
+        if ($isKecamatan && $pimpinan_desa == 0) {
+            $emailBuilder->where('emails.pimpinan_desa', 0);
         }
 
         $applyFilters = function($builder) use ($search, $status_asn, $bsre_status) {
@@ -437,7 +437,7 @@ class EmailService
                                     ->orWhere('emails.nip', '')
                                 ->groupEnd()
                                 ->where('emails.pimpinan', 0)
-                                ->where('emails.pimpinanDesa', 0)
+                                ->where('emails.pimpinan_desa', 0)
                                 ->groupStart()
                                     ->where('emails.unit_kerja_id IS NULL')
                                     ->orWhere('emails.unit_kerja_id', 0)
@@ -449,7 +449,7 @@ class EmailService
                                         ->where('emails.nip !=', '')
                                     ->groupEnd()
                                     ->orWhere('emails.pimpinan', 1)
-                                    ->orWhere('emails.pimpinanDesa', 1)
+                                    ->orWhere('emails.pimpinan_desa', 1)
                                     ->orGroupStart()
                                         ->where('emails.unit_kerja_id IS NOT NULL')
                                         ->where('emails.unit_kerja_id !=', 0)
@@ -511,15 +511,15 @@ class EmailService
 
         // Calculate stats for the unit (affected by filters)
         $statsBuilder = $this->emailModel->whereIn('emails.unit_kerja_id', $allUnitIds);
-        if ($isKecamatan && $pimpinanDesa == 0) {
-            $statsBuilder->where('emails.pimpinanDesa', 0);
+        if ($isKecamatan && $pimpinan_desa == 0) {
+            $statsBuilder->where('emails.pimpinan_desa', 0);
         }
         $applyFilters($statsBuilder);
 
         $rawCounts = $statsBuilder->allowCallbacks(false)
             ->select('
                 CASE 
-                    WHEN (nip IS NULL OR nip = "") AND pimpinan = 0 AND pimpinanDesa = 0 AND (unit_kerja_id IS NULL OR unit_kerja_id = 0) THEN "non_tte"
+                    WHEN (nip IS NULL OR nip = "") AND pimpinan = 0 AND pimpinan_desa = 0 AND (unit_kerja_id IS NULL OR unit_kerja_id = 0) THEN "non_tte"
                     WHEN (bsre_status IS NULL OR bsre_status = "") THEN "not_synced"
                     ELSE bsre_status 
                 END as derived_status,
@@ -557,8 +557,8 @@ class EmailService
 
         // Calculate ASN Status stats for the unit
         $asnStatsBuilder = $this->emailModel->whereIn('emails.unit_kerja_id', $allUnitIds);
-        if ($isKecamatan && $pimpinanDesa == 0) {
-            $asnStatsBuilder->where('emails.pimpinanDesa', 0);
+        if ($isKecamatan && $pimpinan_desa == 0) {
+            $asnStatsBuilder->where('emails.pimpinan_desa', 0);
         }
         $applyFilters($asnStatsBuilder);
         $rawAsnStats = $asnStatsBuilder->allowCallbacks(false)
@@ -590,8 +590,8 @@ class EmailService
 
         // Calculate actual active count (suspended_login = 0)
         $activeStatsBuilder = $this->emailModel->whereIn('emails.unit_kerja_id', $allUnitIds);
-        if ($isKecamatan && $pimpinanDesa == 0) {
-            $activeStatsBuilder->where('emails.pimpinanDesa', 0);
+        if ($isKecamatan && $pimpinan_desa == 0) {
+            $activeStatsBuilder->where('emails.pimpinan_desa', 0);
         }
         $applyFilters($activeStatsBuilder);
         $active_count = $activeStatsBuilder->where('emails.suspended_login', 0)->countAllResults();
@@ -745,7 +745,7 @@ class EmailService
             $syncData = $profileData;
             unset($syncData['email'], $syncData['user'], $syncData['jabatan']);
             unset($syncData['unit_kerja_id'], $syncData['eselon_id']);
-            unset($syncData['pimpinan'], $syncData['pimpinanDesa']);
+            unset($syncData['pimpinan'], $syncData['pimpinan_desa']);
 
             $cleanNip = str_replace([' ', '.', '-', "'"], '', $profileData['nip']);
             $this->emailModel->where('nip', $cleanNip)
@@ -1086,7 +1086,7 @@ class EmailService
         $fields = [
             'nik', 'nip', 'name', 'gelar_depan', 'gelar_belakang', 'tempat_lahir', 'tanggal_lahir', 'pendidikan',
             'jabatan', 'golongan', 'pangkat_nama', 'pangkat_golruang',
-            'unit_kerja_id', 'eselon_id', 'status_asn_id', 'pimpinan', 'pimpinanDesa', 'pensiun_at'
+            'unit_kerja_id', 'eselon_id', 'status_asn_id', 'pimpinan', 'pimpinan_desa', 'pensiun_at'
         ];
 
         $data1 = [];

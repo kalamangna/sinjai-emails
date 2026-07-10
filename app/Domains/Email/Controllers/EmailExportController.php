@@ -117,14 +117,14 @@ class EmailExportController extends BaseController
             $search = $this->request->getGet('search');
             $status_asn = $this->request->getGet('status_asn');
             $bsre_status = $this->request->getGet('bsre_status');
-            $pimpinanDesa = $this->request->getGet('pimpinanDesa') ?? 1;
+            $pimpinan_desa = $this->request->getGet('pimpinan_desa') ?? 1;
 
             $filters = [
                 'unitKerjaId'   => $unitKerjaId,
                 'search'        => $search,
                 'status_asn'    => $status_asn,
                 'bsre_status'   => $bsre_status,
-                'pimpinanDesa' => $pimpinanDesa
+                'pimpinan_desa' => $pimpinan_desa
             ];
 
             $historyModel = new \App\Shared\Models\ExportHistoryModel();
@@ -162,14 +162,14 @@ class EmailExportController extends BaseController
             $search = $this->request->getGet('search');
             $status_asn = $this->request->getGet('status_asn');
             $bsre_status = $this->request->getGet('bsre_status');
-            $pimpinanDesa = $this->request->getGet('pimpinanDesa') ?? 1;
+            $pimpinan_desa = $this->request->getGet('pimpinan_desa') ?? 1;
 
             $filters = [
                 'unitKerjaId'   => $unitKerjaId,
                 'search'        => $search,
                 'status_asn'    => $status_asn,
                 'bsre_status'   => $bsre_status,
-                'pimpinanDesa' => $pimpinanDesa
+                'pimpinan_desa' => $pimpinan_desa
             ];
 
             $historyModel = new \App\Shared\Models\ExportHistoryModel();
@@ -239,7 +239,7 @@ class EmailExportController extends BaseController
                 if (!empty($filters['search'])) $readable[] = "Cari: " . $filters['search'];
                 if (!empty($filters['status_asn'])) $readable[] = "ASN: " . $filters['status_asn'];
                 if (!empty($filters['bsre_status'])) $readable[] = "BSrE: " . $filters['bsre_status'];
-                if (isset($filters['pimpinanDesa']) && $filters['pimpinanDesa'] == 0) $readable[] = "Inc. Desa: Tidak";
+                if (isset($filters['pimpinan_desa']) && $filters['pimpinan_desa'] == 0) $readable[] = "Inc. Desa: Tidak";
             }
             $h['readable_filters'] = !empty($readable) ? implode(' | ', $readable) : 'Semua Data';
         }

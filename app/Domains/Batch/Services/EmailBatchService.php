@@ -52,7 +52,7 @@ class EmailBatchService
         $newEselonId = $data['eselon_id'] ?? null;
         $newBsreStatus = $data['bsre_status'] ?? null;
         $newPimpinan = $data['pimpinan'] ?? null;
-        $newPimpinanDesa = $data['pimpinanDesa'] ?? null;
+        $newPimpinanDesa = $data['pimpinan_desa'] ?? null;
         $newUnitKerja = $data['unit_kerja'] ?? null;
         
         $newUnitKerjaIdFromNama = null;
@@ -167,8 +167,8 @@ class EmailBatchService
             if (isset($newPimpinan) && $newPimpinan !== '' && (int)$emailRecord['pimpinan'] !== (int)$newPimpinan) {
                 $emailUpdateData['pimpinan'] = $newPimpinan;
             }
-            if (isset($newPimpinanDesa) && $newPimpinanDesa !== '' && (int)$emailRecord['pimpinanDesa'] !== (int)$newPimpinanDesa) {
-                $emailUpdateData['pimpinanDesa'] = $newPimpinanDesa;
+            if (isset($newPimpinanDesa) && $newPimpinanDesa !== '' && (int)$emailRecord['pimpinan_desa'] !== (int)$newPimpinanDesa) {
+                $emailUpdateData['pimpinan_desa'] = $newPimpinanDesa;
             }
 
             $pkUpdateData = [];
