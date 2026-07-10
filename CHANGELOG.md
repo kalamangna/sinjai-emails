@@ -8,6 +8,10 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 # [10 Juli 2026]
 ## Refactor & Konsistensi Kode
 
+- **Refactor: Pembuatan `UnitKerjaService` dan Pemisahan Logika Bisnis (`UnitKerjaService.php` baru & `UnitKerjaController.php`)**:
+    - Membuat `App\Domains\UnitKerja\Services\UnitKerjaService` untuk merangkum seluruh logika bisnis CRUD Unit Kerja, termasuk penanganan batch creation baik dari format textarea (newline-separated) maupun dari array JSON.
+    - Merampingkan `UnitKerjaController` sehingga semua data-write dan data-mutation dialihkan sepenuhnya ke service.
+
 - **Refactor: Pemindahan Manajemen Cache Dashboard ke Service (`DashboardService.php` & `HomeController.php`)**:
     - Memindahkan logika pengecekan dan penyimpanan cache dari `HomeController::dashboard()` ke `DashboardService::getSummaryData()`.
     - `HomeController` kini lebih ramping dan hanya mendelegasikan pengambilan data ke service.

@@ -4,41 +4,49 @@ namespace App\Domains\UnitKerja\Controllers;
 
 use App\Shared\BaseController;
 use App\Domains\UnitKerja\Models\UnitKerjaModel;
+use App\Domains\UnitKerja\Services\UnitKerjaService;
 
 class UnitKerjaController extends BaseController
 {
+    protected $unitKerjaModel;
+    protected $unitKerjaService;
+
+    public function __construct()
+    {
+        $this->unitKerjaModel = new UnitKerjaModel();
+        $this->unitKerjaService = new UnitKerjaService();
+    }
+
     public function manage()
     {
-        $unitKerjaModel = new UnitKerjaModel();
-        
         // Calculate Statistics
-        $data['total_units'] = $unitKerjaModel->countAllResults(false);
-        $data['total_parents'] = (new UnitKerjaModel())->where('parent_id', null)->countAllResults();
-        $data['total_children'] = (new UnitKerjaModel())->where('parent_id !=', null)->countAllResults();
+        $data['total_units'] = $this->unitKerjaModel->countAllResults(false);
+        $data['total_parents'] = $this->unitKerjaModel->where('parent_id', null)->countAllResults();
+        $data['total_children'] = $this->unitKerjaModel->where('parent_id !=', null)->countAllResults();
 
         $search = $this->request->getGet('search');
         $parentIdFilter = $this->request->getGet('parent_id');
 
-        $unitKerjaModel->select('unit_kerja.*, parent.nama_unit_kerja as parent_name')
+        $this->unitKerjaModel->select('unit_kerja.*, parent.nama_unit_kerja as parent_name')
             ->join('unit_kerja as parent', 'parent.id = unit_kerja.parent_id', 'left');
 
         if ($search) {
-            $unitKerjaModel->groupStart()
+            $this->unitKerjaModel->groupStart()
                 ->like('unit_kerja.nama_unit_kerja', $search)
                 ->orLike('parent.nama_unit_kerja', $search)
                 ->groupEnd();
         }
 
         if ($parentIdFilter) {
-            $unitKerjaModel->where('unit_kerja.parent_id', $parentIdFilter);
+            $this->unitKerjaModel->where('unit_kerja.parent_id', $parentIdFilter);
         }
 
         // Apply Pagination
-        $unitKerjaList = $unitKerjaModel->paginate(100);
-        $data['pager'] = $unitKerjaModel->pager;
+        $unitKerjaList = $this->unitKerjaModel->paginate(100);
+        $data['pager'] = $this->unitKerjaModel->pager;
 
         // Fetch parents that actually have children for the filter
-        $parentsWithChildren = (new UnitKerjaModel())
+        $parentsWithChildren = $this->unitKerjaModel
             ->select('unit_kerja.id, unit_kerja.nama_unit_kerja')
             ->join('unit_kerja as child', 'child.parent_id = unit_kerja.id')
             ->groupBy('unit_kerja.id')
@@ -57,8 +65,7 @@ class UnitKerjaController extends BaseController
 
     public function add()
     {
-        $unitKerjaModel = new UnitKerjaModel();
-        $data['parent_options'] = $unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->findAll();
+        $data['parent_options'] = $this->unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->findAll();
         $data['title'] = 'Tambah Unit Kerja';
 
         return view('unit_kerja/add', $data);
@@ -66,20 +73,21 @@ class UnitKerjaController extends BaseController
 
     public function store()
     {
-        $unitKerjaModel = new UnitKerjaModel();
         $parentId = $this->request->getPost('parent_id');
-        $data = [
-            'nama_unit_kerja' => $this->request->getPost('nama_unit_kerja'),
-            'parent_id' => !empty($parentId) ? $parentId : null,
-        ];
-        $unitKerjaModel->insert($data);
-        return redirect()->to('unit_kerja/manage');
+        $parentId = !empty($parentId) ? (int)$parentId : null;
+        $name = $this->request->getPost('nama_unit_kerja');
+
+        try {
+            $this->unitKerjaService->createUnitKerja($name, $parentId);
+            return redirect()->to('unit_kerja/manage')->with('success', 'Unit Kerja berhasil ditambahkan.');
+        } catch (\Throwable $e) {
+            return redirect()->back()->withInput()->with('error', $e->getMessage());
+        }
     }
 
     public function batchCreate()
     {
-        $unitKerjaModel = new UnitKerjaModel();
-        $data['parent_options'] = $unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->findAll();
+        $data['parent_options'] = $this->unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->findAll();
         $data['title'] = 'Buat Unit Kerja Massal';
 
         return view('unit_kerja/batchCreate', $data);
@@ -87,29 +95,15 @@ class UnitKerjaController extends BaseController
 
     public function batchStore()
     {
-        $unitKerjaModel = new UnitKerjaModel();
         $parentId = $this->request->getPost('parent_id');
+        $parentId = !empty($parentId) ? (int)$parentId : null;
         $names = $this->request->getPost('unit_kerja_names');
 
         if (!empty($names)) {
-            $namesArray = explode("\n", $names);
-            $data = [];
-            foreach ($namesArray as $name) {
-                $trimmedName = trim($name);
-                if (!empty($trimmedName)) {
-                    $data[] = [
-                        'nama_unit_kerja' => $trimmedName,
-                        'parent_id' => !empty($parentId) ? $parentId : null,
-                    ];
-                }
-            }
-
-            if (!empty($data)) {
-                $unitKerjaModel->insertBatch($data);
-            }
+            $this->unitKerjaService->createUnitKerjaBatchFromText($names, $parentId);
         }
 
-        return redirect()->to('unit_kerja/manage');
+        return redirect()->to('unit_kerja/manage')->with('success', 'Batch pembuatan Unit Kerja selesai.');
     }
 
     public function processBatchCreate()
@@ -123,50 +117,19 @@ class UnitKerjaController extends BaseController
             return $this->response->setStatusCode(400)->setJSON(['success' => false, 'message' => 'No data provided.']);
         }
 
-        $unitKerjaModel = new UnitKerjaModel();
-        $results = [];
-        $successCount = 0;
-        $failCount = 0;
-
-        foreach ($data as $item) {
-            $name = trim($item['nama_unit_kerja'] ?? '');
-            if (empty($name)) {
-                $results[] = ['name' => 'N/A', 'success' => false, 'message' => 'Nama Unit Kerja kosong.'];
-                $failCount++;
-                continue;
-            }
-
-            $parentId = !empty($item['parent_id']) ? $item['parent_id'] : null;
-
-            try {
-                $unitKerjaModel->insert([
-                    'nama_unit_kerja' => $name,
-                    'parent_id' => $parentId
-                ]);
-                $results[] = ['name' => $name, 'success' => true, 'message' => 'Berhasil disimpan.'];
-                $successCount++;
-            } catch (\Throwable $e) {
-                $results[] = ['name' => $name, 'success' => false, 'message' => $e->getMessage()];
-                $failCount++;
-            }
-        }
+        $result = $this->unitKerjaService->createUnitKerjaBatchFromJson($data);
 
         return $this->response->setJSON([
             'success' => true,
-            'results' => $results,
-            'summary' => [
-                'success' => $successCount,
-                'fail' => $failCount,
-                'total' => count($data)
-            ]
+            'results' => $result['results'],
+            'summary' => $result['summary']
         ]);
     }
 
     public function edit($id)
     {
-        $unitKerjaModel = new UnitKerjaModel();
-        $data['unit_kerja'] = $unitKerjaModel->find($id);
-        $data['parent_options'] = $unitKerjaModel->where('id !=', $id)->orderBy('nama_unit_kerja', 'ASC')->findAll();
+        $data['unit_kerja'] = $this->unitKerjaModel->find($id);
+        $data['parent_options'] = $this->unitKerjaModel->where('id !=', $id)->orderBy('nama_unit_kerja', 'ASC')->findAll();
         $data['title'] = 'Edit Unit Kerja';
 
         return view('unit_kerja/edit', $data);
@@ -174,20 +137,25 @@ class UnitKerjaController extends BaseController
 
     public function update($id)
     {
-        $unitKerjaModel = new UnitKerjaModel();
         $parentId = $this->request->getPost('parent_id');
-        $data = [
-            'nama_unit_kerja' => $this->request->getPost('nama_unit_kerja'),
-            'parent_id' => !empty($parentId) ? $parentId : null,
-        ];
-        $unitKerjaModel->update($id, $data);
-        return redirect()->to('unit_kerja/manage');
+        $parentId = !empty($parentId) ? (int)$parentId : null;
+        $name = $this->request->getPost('nama_unit_kerja');
+
+        try {
+            $this->unitKerjaService->updateUnitKerja((int)$id, $name, $parentId);
+            return redirect()->to('unit_kerja/manage')->with('success', 'Unit Kerja berhasil diperbarui.');
+        } catch (\Throwable $e) {
+            return redirect()->back()->withInput()->with('error', $e->getMessage());
+        }
     }
 
     public function delete($id)
     {
-        $unitKerjaModel = new UnitKerjaModel();
-        $unitKerjaModel->delete($id);
-        return redirect()->to('unit_kerja/manage');
+        try {
+            $this->unitKerjaService->deleteUnitKerja((int)$id);
+            return redirect()->to('unit_kerja/manage')->with('success', 'Unit Kerja berhasil dihapus.');
+        } catch (\Throwable $e) {
+            return redirect()->to('unit_kerja/manage')->with('error', $e->getMessage());
+        }
     }
 }
