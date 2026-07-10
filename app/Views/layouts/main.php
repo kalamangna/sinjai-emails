@@ -578,11 +578,28 @@
             const searchSelects = document.querySelectorAll('.choices-search');
             searchSelects.forEach(select => {
                 if (select && select.tagName === 'SELECT' && select.options && select.options.length >= 10) {
+                    // Deduce search placeholder text based on label or first option text
+                    let searchPlaceholder = 'Cari...';
+                    if (select.getAttribute('data-search-placeholder')) {
+                        searchPlaceholder = select.getAttribute('data-search-placeholder');
+                    } else {
+                        const firstOptionText = select.options[0] ? select.options[0].text.trim() : '';
+                        if (firstOptionText) {
+                            let cleanText = firstOptionText.replace(/^(SEMUA|PILIH|Semua|Pilih)\s+/i, '');
+                            // Clean any trailing dots
+                            cleanText = cleanText.replace(/\.+$/, '');
+                            if (cleanText && cleanText !== firstOptionText) {
+                                cleanText = cleanText.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+                                searchPlaceholder = 'Cari ' + cleanText + '...';
+                            }
+                        }
+                    }
+
                     new Choices(select, {
                         searchEnabled: true,
                         itemSelectText: '',
                         placeholder: true,
-                        searchPlaceholderValue: 'Cari...',
+                        searchPlaceholderValue: searchPlaceholder,
                         shouldSort: false,
                         loadingText: 'Memuat...',
                         noResultsText: 'Tidak ditemukan',
