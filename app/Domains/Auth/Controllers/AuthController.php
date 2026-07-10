@@ -7,7 +7,7 @@ use App\Domains\Auth\Models\UserModel;
 use App\Shared\Libraries\PegawaiApi;
 use CodeIgniter\Controller;
 
-class Auth extends BaseController
+class AuthController extends BaseController
 {
     public function login()
     {

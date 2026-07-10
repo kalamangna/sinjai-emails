@@ -40,7 +40,7 @@ class EmailModel extends Model
         'eselon_id',
         'bsre_status',
         'pimpinan',
-        'pimpinan_desa',
+        'pimpinanDesa',
         'pensiun_at',
         'nik',
         'nip',
@@ -93,7 +93,7 @@ class EmailModel extends Model
     public function getPimpinanDesaBuilder()
     {
         return $this->withDetails()
-            ->where('pimpinan_desa', 1)
+            ->where('pimpinanDesa', 1)
             ->where('unit_kerja.nama_unit_kerja NOT LIKE', '%Kelurahan%');
     }
 

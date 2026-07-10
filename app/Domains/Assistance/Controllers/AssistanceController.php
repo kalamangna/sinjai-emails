@@ -8,7 +8,7 @@ use App\Domains\UnitKerja\Models\UnitKerjaModel;
 use App\Domains\Website\Models\WebDesaKelurahanModel;
 use Dompdf\Dompdf;
 
-class Assistance extends BaseController
+class AssistanceController extends BaseController
 {
     protected $desaModel;
     protected $exportService;
@@ -252,7 +252,7 @@ class Assistance extends BaseController
         return redirect()->to('/assistance')->with('message', 'Activity deleted successfully.');
     }
 
-    public function export_pdf()
+    public function exportPdf()
     {
         $filterCategory = $this->request->getGet('category');
 
@@ -268,6 +268,10 @@ class Assistance extends BaseController
 
         $result = $this->exportService->generateReportPdf($filterCategory, $filterMonth, $filterYear);
         log_audit('EXPORT', 'Assistance', null, 'Ekspor PDF Log Layanan');
-        $result['dompdf']->stream($result['filename'], ['Attachment' => true]);
+        $pdfContent = $result['dompdf']->output();
+        return $this->response
+            ->setContentType('application/pdf')
+            ->setHeader('Content-Disposition', 'attachment; filename="' . $result['filename'] . '"')
+            ->setBody($pdfContent);
     }
 }

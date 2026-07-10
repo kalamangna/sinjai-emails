@@ -23,31 +23,31 @@ class BatchController extends BaseController
         $this->emailBatchService = new EmailBatchService();
     }
 
-    public function download_template()
+    public function downloadTemplate()
     {
         $header = ['nama', 'nip', 'nik'];
-        $this->generate_template($header, 'batch-create.xlsx');
+        $this->generateTemplate($header, 'batch-create.xlsx');
     }
 
-    public function download_update_template()
+    public function downloadUpdateTemplate()
     {
         $header = ['identifier', 'name', 'nik', 'nip', 'jabatan', 'golongan', 'pendidikan', 'gelar_depan', 'gelar_belakang', 'tempat_lahir', 'tanggal_lahir', 'unit_kerja_id'];
-        $this->generate_template($header, 'batch-update.xlsx');
+        $this->generateTemplate($header, 'batch-update.xlsx');
     }
 
-    public function download_pk_template()
+    public function downloadPkTemplate()
     {
         $header = ['identifier', 'nomor', 'gaji_nominal', 'gaji_terbilang', 'tanggal_kontrak_awal', 'tanggal_kontrak_akhir'];
-        $this->generate_template($header, 'batch-pk.xlsx');
+        $this->generateTemplate($header, 'batch-pk.xlsx');
     }
 
-    public function download_unit_kerja_template()
+    public function downloadUnitKerjaTemplate()
     {
         $header = ['nama_unit_kerja', 'parent_id'];
-        $this->generate_template($header, 'batch-unit-kerja.xlsx');
+        $this->generateTemplate($header, 'batch-unit-kerja.xlsx');
     }
 
-    private function generate_template(array $header, string $filename)
+    private function generateTemplate(array $header, string $filename)
     {
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
@@ -61,7 +61,7 @@ class BatchController extends BaseController
         exit();
     }
 
-    public function import_generic_spreadsheet()
+    public function importGenericSpreadsheet()
     {
         if (strtolower($this->request->getMethod()) !== 'post') {
             return $this->response->setStatusCode(405)->setJSON(['success' => false, 'message' => 'Invalid request method.']);
@@ -134,7 +134,7 @@ class BatchController extends BaseController
         return view('batch/pk', $data);
     }
 
-    public function save_batch_update()
+    public function saveBatchUpdate()
     {
         $method = $this->request->getMethod();
         $headers = $this->request->getHeaders();
@@ -220,7 +220,7 @@ class BatchController extends BaseController
         }
     }
 
-    public function save_batch_create()
+    public function saveBatchCreate()
     {
         if (strtolower($this->request->getMethod()) !== 'post') {
             return redirect()->to('/email');

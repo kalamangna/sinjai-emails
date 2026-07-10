@@ -10,7 +10,7 @@ use App\Shared\Models\StatusAsnModel;
 use App\Domains\Email\Services\EmailExportService;
 use Exception;
 
-class EmailApi extends BaseController
+class EmailApiController extends BaseController
 {
     private $emailModel;
     private $unitKerjaModel;
@@ -27,7 +27,7 @@ class EmailApi extends BaseController
         $this->emailExportService = new EmailExportService();
     }
 
-    public function api_unit_emails($unitKerjaId)
+    public function apiUnitEmails($unitKerjaId)
     {
         $unitKerja = $this->unitKerjaModel->find($unitKerjaId);
         if (!$unitKerja) {
@@ -46,9 +46,9 @@ class EmailApi extends BaseController
         }
     }
 
-    public function api_trigger_queue()
+    public function apiTriggerQueue()
     {
-        log_message('info', 'api_trigger_queue called via HTTP');
+        log_message('info', 'apiTriggerQueue called via HTTP');
         // Release session lock to prevent blocking other user requests
         if (session_status() === PHP_SESSION_ACTIVE) {
             session_write_close();
@@ -72,7 +72,7 @@ class EmailApi extends BaseController
         }
 
         try {
-            log_message('info', 'Executing QueueWorker directly from api_trigger_queue');
+            log_message('info', 'Executing QueueWorker directly from apiTriggerQueue');
             $worker = new \App\Commands\QueueWorker(service('logger'), service('commands'));
             $worker->run(['stop-when-empty' => true]);
             log_message('info', 'Queue worker finished successfully');
@@ -82,7 +82,7 @@ class EmailApi extends BaseController
         exit();
     }
 
-    public function api_generate_pdf()
+    public function apiGeneratePdf()
     {
         $unitId = $this->request->getPost('unit_id');
         $emailId = $this->request->getPost('email_id');
@@ -99,7 +99,7 @@ class EmailApi extends BaseController
         }
     }
 
-    public function api_download_zip($unitId)
+    public function apiDownloadZip($unitId)
     {
         set_time_limit(0);
         $unitKerja = $this->unitKerjaModel->find($unitId);
@@ -177,7 +177,7 @@ class EmailApi extends BaseController
         return $this->response->setJSON(['success' => true, 'files' => $generatedZips]);
     }
 
-    public function create_single_email()
+    public function createSingleEmail()
     {
         if (strtolower($this->request->getMethod()) !== 'post') {
             return $this->response->setStatusCode(405)->setJSON(['success' => false, 'message' => 'Invalid request method.']);
@@ -245,7 +245,7 @@ class EmailApi extends BaseController
         return $this->response->setJSON($this->emailService->searchEmails($q));
     }
 
-    public function sync_pegawai()
+    public function syncPegawai()
     {
         $nip = $this->request->getVar('nip');
         if (empty($nip)) {

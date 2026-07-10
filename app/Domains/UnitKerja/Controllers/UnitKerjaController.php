@@ -5,7 +5,7 @@ namespace App\Domains\UnitKerja\Controllers;
 use App\Shared\BaseController;
 use App\Domains\UnitKerja\Models\UnitKerjaModel;
 
-class UnitKerja extends BaseController
+class UnitKerjaController extends BaseController
 {
     public function manage()
     {
@@ -34,7 +34,7 @@ class UnitKerja extends BaseController
         }
 
         // Apply Pagination
-        $unit_kerja_list = $unitKerjaModel->paginate(100);
+        $unitKerjaList = $unitKerjaModel->paginate(100);
         $data['pager'] = $unitKerjaModel->pager;
 
         // Fetch parents that actually have children for the filter
@@ -46,7 +46,7 @@ class UnitKerja extends BaseController
             ->asArray()
             ->findAll();
 
-        $data['unit_kerja_list'] = $unit_kerja_list;
+        $data['unitKerjaList'] = $unitKerjaList;
         $data['parents_with_children'] = $parentsWithChildren;
         $data['search'] = $search;
         $data['parent_id_filter'] = $parentIdFilter;
@@ -76,16 +76,16 @@ class UnitKerja extends BaseController
         return redirect()->to('unit_kerja/manage');
     }
 
-    public function batch_create()
+    public function batchCreate()
     {
         $unitKerjaModel = new UnitKerjaModel();
         $data['parent_options'] = $unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->findAll();
         $data['title'] = 'Buat Unit Kerja Massal';
 
-        return view('unit_kerja/batch_create', $data);
+        return view('unit_kerja/batchCreate', $data);
     }
 
-    public function batch_store()
+    public function batchStore()
     {
         $unitKerjaModel = new UnitKerjaModel();
         $parentId = $this->request->getPost('parent_id');
@@ -112,7 +112,7 @@ class UnitKerja extends BaseController
         return redirect()->to('unit_kerja/manage');
     }
 
-    public function process_batch_create()
+    public function processBatchCreate()
     {
         if (strtolower($this->request->getMethod()) !== 'post') {
             return $this->response->setStatusCode(405)->setJSON(['success' => false, 'message' => 'Invalid request method.']);

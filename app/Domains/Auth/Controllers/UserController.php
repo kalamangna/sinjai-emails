@@ -8,7 +8,7 @@ use App\Domains\Auth\Models\UserModel;
 use CodeIgniter\Controller;
 use Exception;
 
-class User extends BaseController
+class UserController extends BaseController
 {
     public function changePassword()
     {
@@ -87,7 +87,7 @@ class User extends BaseController
         }
     }
 
-    public function check_niknip()
+    public function checkNiknip()
     {
         if (strtolower($this->request->getMethod()) !== 'post') {
             return $this->response->setStatusCode(405)->setJSON(['exists' => false, 'message' => 'Method not allowed.']);
@@ -132,7 +132,7 @@ class User extends BaseController
         }
     }
 
-    public function batch_check_availability()
+    public function batchCheckAvailability()
     {
         if (strtolower($this->request->getMethod()) !== 'post') {
             return $this->response->setStatusCode(405)->setJSON(['success' => false, 'message' => 'Method not allowed.']);

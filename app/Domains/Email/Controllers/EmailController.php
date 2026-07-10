@@ -17,7 +17,7 @@ use App\Shared\Libraries\TelegramLibrary;
 use App\Shared\Services\SyncService;
 use Exception;
 
-class Email extends BaseController
+class EmailController extends BaseController
 {
     private $emailModel;
     private $pkModel;
@@ -102,7 +102,7 @@ class Email extends BaseController
         return view('email/create', $data);
     }
 
-    public function edit_profile($username)
+    public function editProfile($username)
     {
         try {
             $data = $this->emailService->getEmailDetail($username);
@@ -110,13 +110,13 @@ class Email extends BaseController
             $data['status_asn_options'] = $this->statusAsnModel->orderBy('nama_status_asn', 'ASC')->findAll();
             $data['eselon_options'] = $this->eselonModel->orderBy('nama_eselon', 'ASC')->findAll();
             $data['title'] = 'Edit Profil';
-            return view('email/edit_profile', $data);
+            return view('email/editProfile', $data);
         } catch (\Throwable $e) {
             return redirect()->to('email')->with('error', $e->getMessage());
         }
     }
 
-    public function mark_pensiun($username)
+    public function markPensiun($username)
     {
         try {
             $email = $this->emailModel->select('emails.*, unit_kerja.nama_unit_kerja as unit_kerja_name')
@@ -147,7 +147,7 @@ class Email extends BaseController
                 'eselon_id' => null,
                 'bsre_status' => null,
                 'pimpinan' => 0,
-                'pimpinan_desa' => 0,
+                'pimpinanDesa' => 0,
                 'gelar_depan' => null,
                 'gelar_belakang' => null,
                 'tempat_lahir' => null,
@@ -191,7 +191,7 @@ class Email extends BaseController
         }
     }
 
-    public function update_details($username)
+    public function updateDetails($username)
     {
         if (strtolower($this->request->getMethod()) !== 'post') {
             return redirect()->to('email/detail/' . $username)->with('error', 'Metode permintaan tidak valid.');
@@ -216,7 +216,7 @@ class Email extends BaseController
             'eselon_id'      => $this->request->getPost('eselon') ?: null,
             'unit_kerja_id'  => $this->request->getPost('unit_kerja_id') ?: null,
             'pimpinan'       => $this->request->getPost('pimpinan') ? 1 : 0,
-            'pimpinan_desa'  => $this->request->getPost('pimpinan_desa') ? 1 : 0,
+            'pimpinanDesa'  => $this->request->getPost('pimpinanDesa') ? 1 : 0,
             'tanggal_lahir'  => $this->request->getPost('tanggal_lahir') ?: null,
             'user'           => $newUser,
             'email'          => $newEmail,
@@ -242,18 +242,18 @@ class Email extends BaseController
         \App\Shared\Services\CacheService::invalidateDashboard();
     }
 
-    public function edit_password($username)
+    public function editPassword($username)
     {
         try {
             $data = $this->emailService->getEmailDetail($username);
             $data['title'] = 'Edit Password';
-            return view('email/edit_password', $data);
+            return view('email/editPassword', $data);
         } catch (\Throwable $e) {
             return redirect()->to('email')->with('error', $e->getMessage());
         }
     }
 
-    public function update_password($username)
+    public function updatePassword($username)
     {
         try {
             $password = $this->request->getPost('password');
@@ -275,12 +275,12 @@ class Email extends BaseController
         }
     }
 
-    public function edit_pk($username)
+    public function editPk($username)
     {
         try {
             $data = $this->emailService->getEmailDetail($username);
             $data['title'] = 'Edit PK';
-            return view('email/edit_pk', $data);
+            return view('email/editPk', $data);
         } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
             $data['title'] = 'Edit PK';
@@ -288,7 +288,7 @@ class Email extends BaseController
         }
     }
 
-    public function update_pk($username)
+    public function updatePk($username)
     {
         try {
             $email = $this->emailModel->where('user', $username)->first();
@@ -371,13 +371,13 @@ class Email extends BaseController
         }
     }
 
-    public function swap_form()
+    public function swapForm()
     {
         $data['title'] = 'Tukar Data Akun (Swap)';
         return view('email/swap_data', $data);
     }
 
-    public function swap_process()
+    public function swapProcess()
     {
         $email1 = $this->request->getPost('email_1');
         $email2 = $this->request->getPost('email_2');

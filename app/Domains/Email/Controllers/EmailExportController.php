@@ -6,7 +6,7 @@ use App\Shared\BaseController;
 use App\Domains\Email\Services\EmailExportService;
 use Exception;
 
-class EmailExport extends BaseController
+class EmailExportController extends BaseController
 {
     private $emailExportService;
 
@@ -15,7 +15,7 @@ class EmailExport extends BaseController
         $this->emailExportService = new EmailExportService();
     }
 
-    public function export_unit_kerja_csv($unitKerjaId)
+    public function exportUnitKerjaCsv($unitKerjaId)
     {
         try {
             $params = [
@@ -39,7 +39,7 @@ class EmailExport extends BaseController
         }
     }
 
-    public function export_pns_excel()
+    public function exportPnsExcel()
     {
         try {
             $params = [
@@ -58,7 +58,7 @@ class EmailExport extends BaseController
         }
     }
 
-    public function export_unit_kerja_excel($unitKerjaId)
+    public function exportUnitKerjaExcel($unitKerjaId)
     {
         try {
             $params = [
@@ -78,20 +78,23 @@ class EmailExport extends BaseController
         }
     }
 
-    public function export_single_perjanjian_kerja_pdf($username)
+    public function exportSinglePerjanjianKerjaPdf($username)
     {
         try {
             $result = $this->emailExportService->generatePerjanjianKerjaPdf($username);
             log_audit('EXPORT', 'Email', null, 'Ekspor PDF Perjanjian Kerja user: ' . $username);
-            $result['dompdf']->stream($result['filename'], ["Attachment" => true]);
-            exit();
+            $pdfContent = $result['dompdf']->output();
+            return $this->response
+                ->setContentType('application/pdf')
+                ->setHeader('Content-Disposition', 'attachment; filename="' . $result['filename'] . '"')
+                ->setBody($pdfContent);
         } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
             return view('email/error', $data);
         }
     }
 
-    public function export_perjanjian_kerja_pdf($unitKerjaId)
+    public function exportPerjanjianKerjaPdf($unitKerjaId)
     {
         try {
             $pkType = $this->request->getGet('pk_type');
@@ -99,32 +102,29 @@ class EmailExport extends BaseController
 
             log_audit('EXPORT', 'Email', $unitKerjaId, 'Ekspor ZIP Perjanjian Kerja Unit Kerja');
 
-            header('Content-Type: application/zip');
-            header('Content-Disposition: attachment; filename="' . $result['filename'] . '"');
-            header('Content-Length: ' . filesize($result['path']));
-            readfile($result['path']);
+            $response = $this->response->download($result['path'], null)->setFileName($result['filename']);
             unlink($result['path']);
-            exit();
+            return $response;
         } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
             return view('email/error', $data);
         }
     }
 
-    public function export_unit_kerja_pdf($unitKerjaId)
+    public function exportUnitKerjaPdf($unitKerjaId)
     {
         try {
             $search = $this->request->getGet('search');
             $status_asn = $this->request->getGet('status_asn');
             $bsre_status = $this->request->getGet('bsre_status');
-            $pimpinan_desa = $this->request->getGet('pimpinan_desa') ?? 1;
+            $pimpinanDesa = $this->request->getGet('pimpinanDesa') ?? 1;
 
             $filters = [
                 'unitKerjaId'   => $unitKerjaId,
                 'search'        => $search,
                 'status_asn'    => $status_asn,
                 'bsre_status'   => $bsre_status,
-                'pimpinan_desa' => $pimpinan_desa
+                'pimpinanDesa' => $pimpinanDesa
             ];
 
             $historyModel = new \App\Shared\Models\ExportHistoryModel();
@@ -138,8 +138,8 @@ class EmailExport extends BaseController
             ]);
 
             $jobModel->push('default', [
-                'type' => 'export_pdf',
-                'task' => 'export_unit_kerja_pdf',
+                'type' => 'exportPdf',
+                'task' => 'exportUnitKerjaPdf',
                 'history_id' => $historyId,
                 'filters' => $filters
             ]);
@@ -156,20 +156,20 @@ class EmailExport extends BaseController
         }
     }
 
-    public function export_account_detail_pdf($unitKerjaId)
+    public function exportAccountDetailPdf($unitKerjaId)
     {
         try {
             $search = $this->request->getGet('search');
             $status_asn = $this->request->getGet('status_asn');
             $bsre_status = $this->request->getGet('bsre_status');
-            $pimpinan_desa = $this->request->getGet('pimpinan_desa') ?? 1;
+            $pimpinanDesa = $this->request->getGet('pimpinanDesa') ?? 1;
 
             $filters = [
                 'unitKerjaId'   => $unitKerjaId,
                 'search'        => $search,
                 'status_asn'    => $status_asn,
                 'bsre_status'   => $bsre_status,
-                'pimpinan_desa' => $pimpinan_desa
+                'pimpinanDesa' => $pimpinanDesa
             ];
 
             $historyModel = new \App\Shared\Models\ExportHistoryModel();
@@ -183,8 +183,8 @@ class EmailExport extends BaseController
             ]);
 
             $jobModel->push('default', [
-                'type' => 'export_pdf',
-                'task' => 'export_account_detail_pdf',
+                'type' => 'exportPdf',
+                'task' => 'exportAccountDetailPdf',
                 'history_id' => $historyId,
                 'filters' => $filters
             ]);
@@ -200,7 +200,7 @@ class EmailExport extends BaseController
         }
     }
 
-    public function download_zip_file($filename)
+    public function downloadZipFile($filename)
     {
         if (empty($filename) || strpos($filename, '..') !== false || strpos($filename, '/') !== false || strpos($filename, '\\') !== false) {
             throw new \Exception('Invalid filename');
@@ -239,7 +239,7 @@ class EmailExport extends BaseController
                 if (!empty($filters['search'])) $readable[] = "Cari: " . $filters['search'];
                 if (!empty($filters['status_asn'])) $readable[] = "ASN: " . $filters['status_asn'];
                 if (!empty($filters['bsre_status'])) $readable[] = "BSrE: " . $filters['bsre_status'];
-                if (isset($filters['pimpinan_desa']) && $filters['pimpinan_desa'] == 0) $readable[] = "Inc. Desa: Tidak";
+                if (isset($filters['pimpinanDesa']) && $filters['pimpinanDesa'] == 0) $readable[] = "Inc. Desa: Tidak";
             }
             $h['readable_filters'] = !empty($readable) ? implode(' | ', $readable) : 'Semua Data';
         }
@@ -248,7 +248,7 @@ class EmailExport extends BaseController
         return view('email/exports/history', $data);
     }
 
-    public function download_history($id)
+    public function downloadHistory($id)
     {
         $historyModel = new \App\Shared\Models\ExportHistoryModel();
         $history = $historyModel->find($id);
@@ -264,7 +264,7 @@ class EmailExport extends BaseController
             throw new \CodeIgniter\Exceptions\PageNotFoundException('File fisik tidak ditemukan, mungkin sudah dihapus otomatis.');
         }
     }
-    public function delete_history($id)
+    public function deleteHistory($id)
     {
         $historyModel = new \App\Shared\Models\ExportHistoryModel();
         $history = $historyModel->find($id);

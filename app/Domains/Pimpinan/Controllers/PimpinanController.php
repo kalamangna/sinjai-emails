@@ -87,7 +87,7 @@ class PimpinanController extends BaseController
         }
     }
 
-    public function pimpinan_desa()
+    public function pimpinanDesa()
     {
         try {
             $perPage = $this->request->getGet('per_page') ?? 200;
@@ -149,7 +149,7 @@ class PimpinanController extends BaseController
                 'back_url' => site_url('email'),
             ];
 
-            return view('email/pimpinan_desa', $data);
+            return view('email/pimpinanDesa', $data);
         } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
             $data['back_url'] = site_url('email');
@@ -157,7 +157,7 @@ class PimpinanController extends BaseController
         }
     }
 
-    public function export_pimpinan_pdf()
+    public function exportPimpinanPdf()
     {
         try {
             $search = $this->request->getGet('search');
@@ -167,15 +167,18 @@ class PimpinanController extends BaseController
 
             require_once APPPATH . 'Shared/Helpers/TanggalHelper.php';
             $filename = 'Email & TTE Pimpinan - ' . formatTanggal('now') . '.pdf';
-            $dompdf->stream($filename, ["Attachment" => true]);
-            exit();
+            $pdfContent = $dompdf->output();
+            return $this->response
+                ->setContentType('application/pdf')
+                ->setHeader('Content-Disposition', 'attachment; filename="' . $filename . '"')
+                ->setBody($pdfContent);
         } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
             return view('email/error', $data);
         }
     }
 
-    public function export_pimpinan_desa_pdf()
+    public function exportPimpinanDesaPdf()
     {
         try {
             $search = $this->request->getGet('search');
@@ -185,8 +188,11 @@ class PimpinanController extends BaseController
 
             require_once APPPATH . 'Shared/Helpers/TanggalHelper.php';
             $filename = 'Email & TTE Kepala Desa - ' . formatTanggal('now') . '.pdf';
-            $dompdf->stream($filename, ["Attachment" => true]);
-            exit();
+            $pdfContent = $dompdf->output();
+            return $this->response
+                ->setContentType('application/pdf')
+                ->setHeader('Content-Disposition', 'attachment; filename="' . $filename . '"')
+                ->setBody($pdfContent);
         } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
             return view('email/error', $data);

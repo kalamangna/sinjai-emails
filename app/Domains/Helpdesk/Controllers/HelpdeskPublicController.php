@@ -6,7 +6,7 @@ use App\Domains\Helpdesk\Models\HelpdeskModel;
 
 use App\Shared\BaseController;
 use App\Domains\Assistance\Services\AssistanceExportService;
-use App\Domains\Assistance\Controllers\Assistance;
+use App\Domains\Assistance\Controllers\AssistanceController;
 
 class HelpdeskPublicController extends BaseController
 {
@@ -24,9 +24,9 @@ class HelpdeskPublicController extends BaseController
         $data = [
             'title' => 'Helpdesk',
             'agencies' => $this->assistanceExportService->getAgencyOptions(),
-            'categoryMap' => Assistance::CATEGORY_MAP,
-            'servicesMap' => Assistance::SERVICES_MAP,
-            'keteranganByServiceMap' => Assistance::KETERANGAN_BY_SERVICE_MAP,
+            'categoryMap' => AssistanceController::CATEGORY_MAP,
+            'servicesMap' => AssistanceController::SERVICES_MAP,
+            'keteranganByServiceMap' => AssistanceController::KETERANGAN_BY_SERVICE_MAP,
             'isPublic' => true
         ];
 

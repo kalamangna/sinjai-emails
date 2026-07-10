@@ -7,7 +7,7 @@ use App\Domains\Auth\Models\UserModel;
 use App\Shared\Libraries\PegawaiApi;
 use Exception;
 
-class UserManagement extends BaseController
+class UserManagementController extends BaseController
 {
     private $userModel;
 
@@ -57,7 +57,7 @@ class UserManagement extends BaseController
         return redirect()->to('/auth/users')->with('success', 'User berhasil ditambahkan. User kini dapat login menggunakan kredensial eksternal.');
     }
 
-    public function check_nip()
+    public function checkNip()
     {
         if (strtolower($this->request->getMethod()) !== 'post') {
             return $this->response->setJSON(['success' => false, 'message' => 'Invalid request method.']);

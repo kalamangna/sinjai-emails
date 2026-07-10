@@ -8,7 +8,7 @@ use App\Shared\Models\PlatformModel;
 use CodeIgniter\Files\File;
 use Config\Services;
 
-class WebDesaKelurahan extends BaseController
+class WebDesaKelurahanController extends BaseController
 {
     protected $exportService;
     protected $websiteService;
@@ -103,7 +103,7 @@ class WebDesaKelurahan extends BaseController
         return view('web_desa_kelurahan/index', $data);
     }
 
-    public function export_pdf()
+    public function exportPdf()
     {
         $search = trim($this->request->getGet('search') ?? '');
         $filterPlatform = trim($this->request->getGet('filter_platform') ?? '');
@@ -118,8 +118,11 @@ class WebDesaKelurahan extends BaseController
         );
 
         log_audit('EXPORT', 'WebDesaKelurahan', null, 'Ekspor PDF Website Desa dan Kelurahan');
-
-        $result['dompdf']->stream($result['filename'], ['Attachment' => true]);
+        $pdfContent = $result['dompdf']->output();
+        return $this->response
+            ->setContentType('application/pdf')
+            ->setHeader('Content-Disposition', 'attachment; filename="' . $result['filename'] . '"')
+            ->setBody($pdfContent);
     }
 
     public function edit($id)
@@ -174,7 +177,7 @@ class WebDesaKelurahan extends BaseController
         return redirect()->to('web_desa_kelurahan')->with('message', 'Data updated successfully.');
     }
 
-    public function sync_expiration($id)
+    public function syncExpiration($id)
     {
         $model = new WebDesaKelurahanModel();
         $website = $model->find($id);

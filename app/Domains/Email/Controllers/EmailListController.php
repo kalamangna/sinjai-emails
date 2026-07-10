@@ -8,7 +8,7 @@ use App\Domains\UnitKerja\Models\UnitKerjaModel;
 use App\Shared\Models\EselonModel;
 use Exception;
 
-class EmailList extends BaseController
+class EmailListController extends BaseController
 {
     private $eselonModel;
     private $unitKerjaModel;
@@ -21,14 +21,14 @@ class EmailList extends BaseController
         $this->emailService = new EmailService();
     }
 
-    public function eselon_list()
+    public function eselonList()
     {
         $data['eselons'] = $this->eselonModel->orderBy('nama_eselon', 'ASC')->findAll();
         $data['title'] = 'Eselon';
-        return view('email/eselon_list', $data);
+        return view('email/eselonList', $data);
     }
 
-    public function unit_kerja_list()
+    public function unitKerjaList()
     {
         try {
             $navData = $this->emailService->getGlobalNavigationData();
@@ -37,14 +37,14 @@ class EmailList extends BaseController
                 'unit_kerja' => $navData['unit_kerja_nav'],
                 'back_url' => site_url('/')
             ];
-            return view('email/unit_kerja_list', $data);
+            return view('email/unitKerjaList', $data);
         } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
             return view('email/error', $data);
         }
     }
 
-    public function unit_kerja_detail($unitKerjaId)
+    public function unitKerjaDetail($unitKerjaId)
     {
         try {
             $params = [
@@ -52,7 +52,7 @@ class EmailList extends BaseController
                 'search' => $this->request->getGet('search'),
                 'status_asn' => $this->request->getGet('status_asn'),
                 'bsre_status' => $this->request->getGet('bsre_status'),
-                'pimpinan_desa' => $this->request->getGet('pimpinan_desa'),
+                'pimpinanDesa' => $this->request->getGet('pimpinanDesa'),
             ];
 
             $data = $this->emailService->getUnitKerjaDetail($unitKerjaId, $params);
@@ -62,10 +62,10 @@ class EmailList extends BaseController
             $data['search'] = $params['search'];
             $data['status_asn'] = $params['status_asn'];
             $data['bsre_status'] = $params['bsre_status'];
-            $data['pimpinan_desa'] = $params['pimpinan_desa'] ?? 1;
+            $data['pimpinanDesa'] = $params['pimpinanDesa'] ?? 1;
             $data['back_url'] = site_url('email');
 
-            return view('email/unit_kerja_detail', $data);
+            return view('email/unitKerjaDetail', $data);
         } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
             $data['back_url'] = site_url('email');
@@ -73,7 +73,7 @@ class EmailList extends BaseController
         }
     }
 
-    public function eselon_detail($eselonId)
+    public function eselonDetail($eselonId)
     {
         try {
             $params = [
@@ -99,7 +99,7 @@ class EmailList extends BaseController
             $data['bsre_status_options'] = $bsre_status_options;
             $data['back_url'] = site_url('email');
 
-            return view('email/eselon_detail', $data);
+            return view('email/eselonDetail', $data);
         } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
             $data['back_url'] = site_url('email');
@@ -107,7 +107,7 @@ class EmailList extends BaseController
         }
     }
 
-    public function pns_list()
+    public function pnsList()
     {
         try {
             $params = [
@@ -126,7 +126,7 @@ class EmailList extends BaseController
             $data['parent_unit_kerja_id'] = $params['parent_unit_kerja_id'];
             $data['back_url'] = site_url('email');
 
-            return view('email/pns_list', $data);
+            return view('email/pnsList', $data);
         } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
             $data['back_url'] = site_url('email');
@@ -134,7 +134,7 @@ class EmailList extends BaseController
         }
     }
 
-    public function pppk_list()
+    public function pppkList()
     {
         try {
             $params = [
@@ -149,7 +149,7 @@ class EmailList extends BaseController
             $data['has_nip'] = $params['has_nip'];
             $data['back_url'] = site_url('email');
 
-            return view('email/pppk_list', $data);
+            return view('email/pppkList', $data);
         } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
             $data['back_url'] = site_url('email');
@@ -157,7 +157,7 @@ class EmailList extends BaseController
         }
     }
 
-    public function pppk_pw_list()
+    public function pppkPwList()
     {
         try {
             $params = [
@@ -172,7 +172,7 @@ class EmailList extends BaseController
             $data['has_nip'] = $params['has_nip'];
             $data['back_url'] = site_url('email');
 
-            return view('email/pppk_pw_list', $data);
+            return view('email/pppkPwList', $data);
         } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
             $data['back_url'] = site_url('email');

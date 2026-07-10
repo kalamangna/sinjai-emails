@@ -8,7 +8,7 @@ use App\Domains\UnitKerja\Models\UnitKerjaModel;
 use CodeIgniter\Files\File;
 use Config\Services;
 
-class WebOpd extends BaseController
+class WebOpdController extends BaseController
 {
     protected $exportService;
     protected $websiteService;
@@ -60,14 +60,18 @@ class WebOpd extends BaseController
         return view('web_opd/index', $data);
     }
 
-    public function export_pdf()
+    public function exportPdf()
     {
         $search = trim($this->request->getGet('search') ?? '');
         $filterStatus = trim($this->request->getGet('status') ?? '');
 
         $result = $this->exportService->generateWebOpdPdf($search, $filterStatus);
         log_audit('EXPORT', 'WebOpd', null, 'Ekspor PDF Website OPD');
-        $result['dompdf']->stream($result['filename'], ['Attachment' => true]);
+        $pdfContent = $result['dompdf']->output();
+        return $this->response
+            ->setContentType('application/pdf')
+            ->setHeader('Content-Disposition', 'attachment; filename="' . $result['filename'] . '"')
+            ->setBody($pdfContent);
     }
 
     public function edit($id)

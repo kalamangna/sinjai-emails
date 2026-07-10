@@ -7,12 +7,12 @@ use CodeIgniter\Router\RouteCollection;
  */
 
 // Authentication Routes
-$routes->get('login', '\App\Domains\Auth\Controllers\Auth::login');
-$routes->post('auth/attemptLogin', '\App\Domains\Auth\Controllers\Auth::attemptLogin');
-$routes->get('logout', '\App\Domains\Auth\Controllers\Auth::logout');
+$routes->get('login', '\App\Domains\Auth\Controllers\AuthController::login');
+$routes->post('auth/attemptLogin', '\App\Domains\Auth\Controllers\AuthController::attemptLogin');
+$routes->get('logout', '\App\Domains\Auth\Controllers\AuthController::logout');
 
 // Public Identity Verification
-$routes->get('verifikasi/(:any)', '\App\Domains\Email\Controllers\Email::profile/$1');
+$routes->get('verifikasi/(:any)', '\App\Domains\Email\Controllers\EmailController::profile/$1');
 
 // Helpdesk (Public Form)
 $routes->get('helpdesk', '\App\Domains\Helpdesk\Controllers\HelpdeskPublicController::index');
@@ -20,8 +20,8 @@ $routes->post('helpdesk/submit', '\App\Domains\Helpdesk\Controllers\HelpdeskPubl
 $routes->get('helpdesk/success/(:any)', '\App\Domains\Helpdesk\Controllers\HelpdeskPublicController::success/$1');
 
 // Public PDF Verification
-$routes->get('verifikasi-pdf', '\App\Domains\Email\Controllers\Bsre::publicVerify');
-$routes->post('verifikasi-pdf', '\App\Domains\Email\Controllers\Bsre::verifyPdf');
+$routes->get('verifikasi-pdf', '\App\Domains\Email\Controllers\BsreController::publicVerify');
+$routes->post('verifikasi-pdf', '\App\Domains\Email\Controllers\BsreController::verifyPdf');
 
 // API Gateway (v1) - External Integration
 $routes->group('api/v1', ['filter' => 'api_gateway'], function ($routes) {
@@ -33,16 +33,16 @@ $routes->group('api/v1', ['filter' => 'api_gateway'], function ($routes) {
 });
 
 // Internal Async Queue Trigger (Protected: Admin & Super Admin only)
-$routes->get('api_trigger_queue', '\App\Domains\Email\Controllers\EmailApi::api_trigger_queue', ['filter' => 'role:admin,super_admin']);
+$routes->get('apiTriggerQueue', '\App\Domains\Email\Controllers\EmailApiController::apiTriggerQueue', ['filter' => 'role:admin,super_admin']);
 
 // Public Route - Landing Page
-$routes->get('/', '\App\Domains\Dashboard\Controllers\Home::index');
+$routes->get('/', '\App\Domains\Dashboard\Controllers\HomeController::index');
 
 // Protected Routes
 $routes->group('', ['filter' => 'auth'], function ($routes) {
     
     // Portal Utama
-    $routes->get('dashboard', '\App\Domains\Dashboard\Controllers\Home::dashboard');
+    $routes->get('dashboard', '\App\Domains\Dashboard\Controllers\HomeController::dashboard');
 
         // API Documentation (Admin & Super Admin)
         $routes->group('api-gateway', ['filter' => 'role:admin,super_admin'], function ($routes) {
@@ -52,8 +52,8 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         // Manajemen Email
         $routes->group('email', function ($routes) {
         // View Routes (Admin & Super Admin)
-        $routes->get('/', '\App\Domains\Email\Controllers\Email::index');
-        $routes->get('detail/(:any)', '\App\Domains\Email\Controllers\Email::detail/$1');
+        $routes->get('/', '\App\Domains\Email\Controllers\EmailController::index');
+        $routes->get('detail/(:any)', '\App\Domains\Email\Controllers\EmailController::detail/$1');
         
         // Trash Routes (Manajemen Sampah)
         $routes->get('trash', '\App\Domains\Email\Controllers\TrashController::index');
@@ -61,150 +61,152 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         $routes->post('trash/force_delete/(:num)', '\App\Domains\Email\Controllers\TrashController::forceDelete/$1');
         
         // List Routes
-        $routes->get('unit_kerja', '\App\Domains\Email\Controllers\EmailList::unit_kerja_list');
-        $routes->get('unit_kerja/(:num)', '\App\Domains\Email\Controllers\EmailList::unit_kerja_detail/$1');
-        $routes->get('eselon_detail/(:num)', '\App\Domains\Email\Controllers\EmailList::eselon_detail/$1');
-        $routes->get('pns', '\App\Domains\Email\Controllers\EmailList::pns_list');
-        $routes->get('export_pns_excel', '\App\Domains\Email\Controllers\EmailExport::export_pns_excel');
-        $routes->get('pppk', '\App\Domains\Email\Controllers\EmailList::pppk_list');
-        $routes->get('pppk-pw', '\App\Domains\Email\Controllers\EmailList::pppk_pw_list');
-        $routes->get('eselon', '\App\Domains\Email\Controllers\EmailList::eselon_list');
+        $routes->get('unit_kerja', '\App\Domains\Email\Controllers\EmailListController::unitKerjaList');
+        $routes->get('unit_kerja/(:num)', '\App\Domains\Email\Controllers\EmailListController::unitKerjaDetail/$1');
+        $routes->get('eselonDetail/(:num)', '\App\Domains\Email\Controllers\EmailListController::eselonDetail/$1');
+        $routes->get('pns', '\App\Domains\Email\Controllers\EmailListController::pnsList');
+        $routes->get('exportPnsExcel', '\App\Domains\Email\Controllers\EmailExportController::exportPnsExcel');
+        $routes->get('pppk', '\App\Domains\Email\Controllers\EmailListController::pppkList');
+        $routes->get('pppk-pw', '\App\Domains\Email\Controllers\EmailListController::pppkPwList');
+        $routes->get('eselon', '\App\Domains\Email\Controllers\EmailListController::eselonList');
 
         // Pimpinan Routes
         $routes->get('pimpinan', '\App\Domains\Pimpinan\Controllers\PimpinanController::pimpinan');
-        $routes->get('pimpinan_desa', '\App\Domains\Pimpinan\Controllers\PimpinanController::pimpinan_desa');
-        $routes->get('export_pimpinan_pdf', '\App\Domains\Pimpinan\Controllers\PimpinanController::export_pimpinan_pdf');
-        $routes->get('export_pimpinan_desa_pdf', '\App\Domains\Pimpinan\Controllers\PimpinanController::export_pimpinan_desa_pdf');
+        $routes->get('pimpinanDesa', '\App\Domains\Pimpinan\Controllers\PimpinanController::pimpinanDesa');
+        $routes->get('exportPimpinanPdf', '\App\Domains\Pimpinan\Controllers\PimpinanController::exportPimpinanPdf');
+        $routes->get('exportPimpinanDesaPdf', '\App\Domains\Pimpinan\Controllers\PimpinanController::exportPimpinanDesaPdf');
 
         // Export Routes
-        $routes->get('export_unit_kerja_csv/(:num)', '\App\Domains\Email\Controllers\EmailExport::export_unit_kerja_csv/$1');
-        $routes->get('export_unit_kerja_excel/(:num)', '\App\Domains\Email\Controllers\EmailExport::export_unit_kerja_excel/$1');
-        $routes->get('export_unit_kerja_pdf/(:num)', '\App\Domains\Email\Controllers\EmailExport::export_unit_kerja_pdf/$1');
-        $routes->get('export_account_detail_pdf/(:num)', '\App\Domains\Email\Controllers\EmailExport::export_account_detail_pdf/$1');
-        $routes->get('export_perjanjian_kerja_pdf/(:num)', '\App\Domains\Email\Controllers\EmailExport::export_perjanjian_kerja_pdf/$1');
-        $routes->get('export_single_perjanjian_kerja_pdf/(:any)', '\App\Domains\Email\Controllers\EmailExport::export_single_perjanjian_kerja_pdf/$1');
-        $routes->get('download_zip_file/(:any)', '\App\Domains\Email\Controllers\EmailExport::download_zip_file/$1');
+        $routes->get('exportUnitKerjaCsv/(:num)', '\App\Domains\Email\Controllers\EmailExportController::exportUnitKerjaCsv/$1');
+        $routes->get('exportUnitKerjaExcel/(:num)', '\App\Domains\Email\Controllers\EmailExportController::exportUnitKerjaExcel/$1');
+        $routes->get('exportUnitKerjaPdf/(:num)', '\App\Domains\Email\Controllers\EmailExportController::exportUnitKerjaPdf/$1');
+        $routes->get('exportAccountDetailPdf/(:num)', '\App\Domains\Email\Controllers\EmailExportController::exportAccountDetailPdf/$1');
+        $routes->get('exportPerjanjianKerjaPdf/(:num)', '\App\Domains\Email\Controllers\EmailExportController::exportPerjanjianKerjaPdf/$1');
+        $routes->get('exportSinglePerjanjianKerjaPdf/(:any)', '\App\Domains\Email\Controllers\EmailExportController::exportSinglePerjanjianKerjaPdf/$1');
+        $routes->get('downloadZipFile/(:any)', '\App\Domains\Email\Controllers\EmailExportController::downloadZipFile/$1');
 
 
 
         // API Routes
-        $routes->get('search', '\App\Domains\Email\Controllers\EmailApi::search');
+        $routes->get('search', '\App\Domains\Email\Controllers\EmailApiController::search');
 
         // Mutation Routes (Admin & Super Admin)
         $routes->group('', ['filter' => 'role:admin,super_admin'], function ($routes) {
 
-            $routes->get('create', '\App\Domains\Email\Controllers\Email::create');
-            $routes->get('edit_profile/(:any)', '\App\Domains\Email\Controllers\Email::edit_profile/$1');
-            $routes->post('update_details/(:any)', '\App\Domains\Email\Controllers\Email::update_details/$1');
-            $routes->post('mark_pensiun/(:any)', '\App\Domains\Email\Controllers\Email::mark_pensiun/$1');
-            $routes->get('edit_password/(:any)', '\App\Domains\Email\Controllers\Email::edit_password/$1');
-            $routes->post('update_password/(:any)', '\App\Domains\Email\Controllers\Email::update_password/$1');
-            $routes->get('edit_pk/(:any)', '\App\Domains\Email\Controllers\Email::edit_pk/$1');
-            $routes->post('update_pk/(:any)', '\App\Domains\Email\Controllers\Email::update_pk/$1');
-            $routes->post('create_single', '\App\Domains\Email\Controllers\EmailApi::create_single_email');
+            $routes->get('create', '\App\Domains\Email\Controllers\EmailController::create');
+            $routes->get('editProfile/(:any)', '\App\Domains\Email\Controllers\EmailController::editProfile/$1');
+            $routes->post('updateDetails/(:any)', '\App\Domains\Email\Controllers\EmailController::updateDetails/$1');
+            $routes->post('markPensiun/(:any)', '\App\Domains\Email\Controllers\EmailController::markPensiun/$1');
+            $routes->get('editPassword/(:any)', '\App\Domains\Email\Controllers\EmailController::editPassword/$1');
+            $routes->post('updatePassword/(:any)', '\App\Domains\Email\Controllers\EmailController::updatePassword/$1');
+            $routes->get('editPk/(:any)', '\App\Domains\Email\Controllers\EmailController::editPk/$1');
+            $routes->post('updatePk/(:any)', '\App\Domains\Email\Controllers\EmailController::updatePk/$1');
+            $routes->post('create_single', '\App\Domains\Email\Controllers\EmailApiController::createSingleEmail');
             
             // Swap Data
-            $routes->get('swap_data', '\App\Domains\Email\Controllers\Email::swap_form');
-            $routes->post('swap_process', '\App\Domains\Email\Controllers\Email::swap_process');
+            $routes->get('swap_data', '\App\Domains\Email\Controllers\EmailController::swapForm');
+            $routes->post('swapProcess', '\App\Domains\Email\Controllers\EmailController::swapProcess');
         });
 
         // Sync & Utility Routes (Admin & Super Admin)
         $routes->group('', ['filter' => 'role:admin,super_admin'], function ($routes) {
-            $routes->post('sync_pegawai', '\App\Domains\Email\Controllers\EmailApi::sync_pegawai');
-            $routes->post('api_generate_pdf', '\App\Domains\Email\Controllers\EmailApi::api_generate_pdf');
-            $routes->get('api_unit_emails/(:num)', '\App\Domains\Email\Controllers\EmailApi::api_unit_emails/$1');
-            $routes->get('api_download_zip/(:num)', '\App\Domains\Email\Controllers\EmailApi::api_download_zip/$1');
+            $routes->post('syncPegawai', '\App\Domains\Email\Controllers\EmailApiController::syncPegawai');
+            $routes->post('apiGeneratePdf', '\App\Domains\Email\Controllers\EmailApiController::apiGeneratePdf');
+            $routes->get('apiUnitEmails/(:num)', '\App\Domains\Email\Controllers\EmailApiController::apiUnitEmails/$1');
+            $routes->get('apiDownloadZip/(:num)', '\App\Domains\Email\Controllers\EmailApiController::apiDownloadZip/$1');
         });
 
         // Destructive Routes (Super Admin Only)
         $routes->group('', ['filter' => 'role:super_admin'], function ($routes) {
-            $routes->post('delete/(:num)', '\App\Domains\Email\Controllers\Email::delete/$1');
+            $routes->post('delete/(:num)', '\App\Domains\Email\Controllers\EmailController::delete/$1');
         });
     });
 
-    // Reports History
-    $routes->get('reports/history', '\App\Domains\Email\Controllers\EmailExport::history');
-    $routes->get('reports/download/(:num)', '\App\Domains\Email\Controllers\EmailExport::download_history/$1');
-    $routes->post('reports/delete/(:num)', '\App\Domains\Email\Controllers\EmailExport::delete_history/$1');
+    // Reports History (Admin & Super Admin)
+    $routes->group('reports', ['filter' => 'role:admin,super_admin'], function ($routes) {
+        $routes->get('history', '\App\Domains\Email\Controllers\EmailExportController::history');
+        $routes->get('download/(:num)', '\App\Domains\Email\Controllers\EmailExportController::downloadHistory/$1');
+        $routes->post('delete/(:num)', '\App\Domains\Email\Controllers\EmailExportController::deleteHistory/$1');
+    });
 
     // Batch Operations (Admin & Super Admin)
     $routes->group('batch', ['filter' => 'role:admin,super_admin'], function ($routes) {
         $routes->get('/', '\App\Domains\Batch\Controllers\BatchController::index');
-        $routes->post('import_generic_spreadsheet', '\App\Domains\Batch\Controllers\BatchController::import_generic_spreadsheet');
-        $routes->get('download_template', '\App\Domains\Batch\Controllers\BatchController::download_template');
-        $routes->get('download_update_template', '\App\Domains\Batch\Controllers\BatchController::download_update_template');
-        $routes->get('download_pk_template', '\App\Domains\Batch\Controllers\BatchController::download_pk_template');
-        $routes->get('download_unit_kerja_template', '\App\Domains\Batch\Controllers\BatchController::download_unit_kerja_template');
+        $routes->post('importGenericSpreadsheet', '\App\Domains\Batch\Controllers\BatchController::importGenericSpreadsheet');
+        $routes->get('downloadTemplate', '\App\Domains\Batch\Controllers\BatchController::downloadTemplate');
+        $routes->get('downloadUpdateTemplate', '\App\Domains\Batch\Controllers\BatchController::downloadUpdateTemplate');
+        $routes->get('downloadPkTemplate', '\App\Domains\Batch\Controllers\BatchController::downloadPkTemplate');
+        $routes->get('downloadUnitKerjaTemplate', '\App\Domains\Batch\Controllers\BatchController::downloadUnitKerjaTemplate');
         $routes->get('update', '\App\Domains\Batch\Controllers\BatchController::update');
         $routes->get('pk', '\App\Domains\Batch\Controllers\BatchController::pk');
-        $routes->match(['GET', 'POST'], 'execute_update', '\App\Domains\Batch\Controllers\BatchController::save_batch_update');
-        $routes->match(['GET', 'POST'], 'execute_create', '\App\Domains\Batch\Controllers\BatchController::save_batch_create');
+        $routes->match(['GET', 'POST'], 'execute_update', '\App\Domains\Batch\Controllers\BatchController::saveBatchUpdate');
+        $routes->match(['GET', 'POST'], 'execute_create', '\App\Domains\Batch\Controllers\BatchController::saveBatchCreate');
     });
 
     // Manajemen Data Induk (Unit Kerja - Super Admin Only)
     $routes->group('unit_kerja', ['filter' => 'role:super_admin'], function ($routes) {
-        $routes->get('manage', '\App\Domains\UnitKerja\Controllers\UnitKerja::manage');
-        $routes->get('add', '\App\Domains\UnitKerja\Controllers\UnitKerja::add');
-        $routes->post('store', '\App\Domains\UnitKerja\Controllers\UnitKerja::store');
-        $routes->get('batch_create', '\App\Domains\UnitKerja\Controllers\UnitKerja::batch_create');
-        $routes->post('batch_store', '\App\Domains\UnitKerja\Controllers\UnitKerja::batch_store');
-        $routes->post('process_batch_create', '\App\Domains\UnitKerja\Controllers\UnitKerja::process_batch_create');
-        $routes->get('edit/(:num)', '\App\Domains\UnitKerja\Controllers\UnitKerja::edit/$1');
-        $routes->post('update/(:num)', '\App\Domains\UnitKerja\Controllers\UnitKerja::update/$1');
-        $routes->get('delete/(:num)', '\App\Domains\UnitKerja\Controllers\UnitKerja::delete/$1');
+        $routes->get('manage', '\App\Domains\UnitKerja\Controllers\UnitKerjaController::manage');
+        $routes->get('add', '\App\Domains\UnitKerja\Controllers\UnitKerjaController::add');
+        $routes->post('store', '\App\Domains\UnitKerja\Controllers\UnitKerjaController::store');
+        $routes->get('batchCreate', '\App\Domains\UnitKerja\Controllers\UnitKerjaController::batchCreate');
+        $routes->post('batchStore', '\App\Domains\UnitKerja\Controllers\UnitKerjaController::batchStore');
+        $routes->post('processBatchCreate', '\App\Domains\UnitKerja\Controllers\UnitKerjaController::processBatchCreate');
+        $routes->get('edit/(:num)', '\App\Domains\UnitKerja\Controllers\UnitKerjaController::edit/$1');
+        $routes->post('update/(:num)', '\App\Domains\UnitKerja\Controllers\UnitKerjaController::update/$1');
+        $routes->get('delete/(:num)', '\App\Domains\UnitKerja\Controllers\UnitKerjaController::delete/$1');
     });
 
     // Pemantauan Website
     $routes->group('web_desa_kelurahan', function ($routes) {
-        $routes->get('/', '\App\Domains\Website\Controllers\WebDesaKelurahan::index');
-        $routes->get('export_pdf', '\App\Domains\Website\Controllers\WebDesaKelurahan::export_pdf');
+        $routes->get('/', '\App\Domains\Website\Controllers\WebDesaKelurahanController::index');
+        $routes->get('exportPdf', '\App\Domains\Website\Controllers\WebDesaKelurahanController::exportPdf');
         
         // Mutation Routes (Admin & Super Admin)
         $routes->group('', ['filter' => 'role:admin,super_admin'], function ($routes) {
-            $routes->get('edit/(:num)', '\App\Domains\Website\Controllers\WebDesaKelurahan::edit/$1');
-            $routes->post('update/(:num)', '\App\Domains\Website\Controllers\WebDesaKelurahan::update/$1');
-            $routes->get('sync_expiration/(:num)', '\App\Domains\Website\Controllers\WebDesaKelurahan::sync_expiration/$1');
+            $routes->get('edit/(:num)', '\App\Domains\Website\Controllers\WebDesaKelurahanController::edit/$1');
+            $routes->post('update/(:num)', '\App\Domains\Website\Controllers\WebDesaKelurahanController::update/$1');
+            $routes->get('syncExpiration/(:num)', '\App\Domains\Website\Controllers\WebDesaKelurahanController::syncExpiration/$1');
         });
     });
 
     $routes->group('web_opd', function ($routes) {
-        $routes->get('/', '\App\Domains\Website\Controllers\WebOpd::index');
-        $routes->get('export_pdf', '\App\Domains\Website\Controllers\WebOpd::export_pdf');
+        $routes->get('/', '\App\Domains\Website\Controllers\WebOpdController::index');
+        $routes->get('exportPdf', '\App\Domains\Website\Controllers\WebOpdController::exportPdf');
         
         // Mutation Routes (Admin & Super Admin)
         $routes->group('', ['filter' => 'role:admin,super_admin'], function ($routes) {
-            $routes->get('edit/(:num)', '\App\Domains\Website\Controllers\WebOpd::edit/$1');
-            $routes->post('update/(:num)', '\App\Domains\Website\Controllers\WebOpd::update/$1');
+            $routes->get('edit/(:num)', '\App\Domains\Website\Controllers\WebOpdController::edit/$1');
+            $routes->post('update/(:num)', '\App\Domains\Website\Controllers\WebOpdController::update/$1');
         });
     });
 
     // Log Pendampingan (Super Admin Only)
     $routes->group('assistance', ['filter' => 'role:super_admin'], function ($routes) {
-        $routes->get('/', '\App\Domains\Assistance\Controllers\Assistance::index');
-        $routes->get('export_pdf', '\App\Domains\Assistance\Controllers\Assistance::export_pdf');
-        $routes->get('create', '\App\Domains\Assistance\Controllers\Assistance::create');
-        $routes->post('store', '\App\Domains\Assistance\Controllers\Assistance::store');
-        $routes->get('edit/(:num)', '\App\Domains\Assistance\Controllers\Assistance::edit/$1');
-        $routes->post('update/(:num)', '\App\Domains\Assistance\Controllers\Assistance::update/$1');
-        $routes->get('delete/(:num)', '\App\Domains\Assistance\Controllers\Assistance::delete/$1');
+        $routes->get('/', '\App\Domains\Assistance\Controllers\AssistanceController::index');
+        $routes->get('exportPdf', '\App\Domains\Assistance\Controllers\AssistanceController::exportPdf');
+        $routes->get('create', '\App\Domains\Assistance\Controllers\AssistanceController::create');
+        $routes->post('store', '\App\Domains\Assistance\Controllers\AssistanceController::store');
+        $routes->get('edit/(:num)', '\App\Domains\Assistance\Controllers\AssistanceController::edit/$1');
+        $routes->post('update/(:num)', '\App\Domains\Assistance\Controllers\AssistanceController::update/$1');
+        $routes->get('delete/(:num)', '\App\Domains\Assistance\Controllers\AssistanceController::delete/$1');
     });
 
     // Utilitas User & BSrE
-    $routes->get('user/change_password', '\App\Domains\Auth\Controllers\User::changePassword');
-    $routes->post('user/update_password', '\App\Domains\Auth\Controllers\User::updatePassword');
-    $routes->post('user/check_email', '\App\Domains\Auth\Controllers\User::checkEmailAvailability');
-    $routes->post('user/check_niknip', '\App\Domains\Auth\Controllers\User::check_niknip');
-    $routes->post('user/batch_check_availability', '\App\Domains\Auth\Controllers\User::batch_check_availability');
+    $routes->get('user/change_password', '\App\Domains\Auth\Controllers\UserController::changePassword');
+    $routes->post('user/updatePassword', '\App\Domains\Auth\Controllers\UserController::updatePassword');
+    $routes->post('user/check_email', '\App\Domains\Auth\Controllers\UserController::checkEmailAvailability');
+    $routes->post('user/checkNiknip', '\App\Domains\Auth\Controllers\UserController::checkNiknip');
+    $routes->post('user/batchCheckAvailability', '\App\Domains\Auth\Controllers\UserController::batchCheckAvailability');
     
     // User Management (Super Admin Only)
     $routes->group('auth/users', ['filter' => 'role:super_admin'], function ($routes) {
-        $routes->get('/', '\App\Domains\Auth\Controllers\UserManagement::index');
-        $routes->get('add', '\App\Domains\Auth\Controllers\UserManagement::add');
-        $routes->post('store', '\App\Domains\Auth\Controllers\UserManagement::store');
-        $routes->post('check_nip', '\App\Domains\Auth\Controllers\UserManagement::check_nip');
-        $routes->get('edit/(:num)', '\App\Domains\Auth\Controllers\UserManagement::edit/$1');
-        $routes->post('update/(:num)', '\App\Domains\Auth\Controllers\UserManagement::update/$1');
-        $routes->post('delete/(:num)', '\App\Domains\Auth\Controllers\UserManagement::delete/$1');
+        $routes->get('/', '\App\Domains\Auth\Controllers\UserManagementController::index');
+        $routes->get('add', '\App\Domains\Auth\Controllers\UserManagementController::add');
+        $routes->post('store', '\App\Domains\Auth\Controllers\UserManagementController::store');
+        $routes->post('checkNip', '\App\Domains\Auth\Controllers\UserManagementController::checkNip');
+        $routes->get('edit/(:num)', '\App\Domains\Auth\Controllers\UserManagementController::edit/$1');
+        $routes->post('update/(:num)', '\App\Domains\Auth\Controllers\UserManagementController::update/$1');
+        $routes->post('delete/(:num)', '\App\Domains\Auth\Controllers\UserManagementController::delete/$1');
     });
 
     // Audit Logs (Super Admin Only)
@@ -221,11 +223,11 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         $routes->post('delete/(:num)', '\App\Domains\Helpdesk\Controllers\HelpdeskAdminController::delete/$1');
     });    
     $routes->group('bsre', ['filter' => 'role:admin,super_admin'], function ($routes) {
-        $routes->get('check-status', '\App\Domains\Email\Controllers\Bsre::checkStatus');
-        $routes->get('sync-all', '\App\Domains\Email\Controllers\Bsre::syncAllStatus');
-        $routes->get('sync-status', '\App\Domains\Email\Controllers\Bsre::syncStatus');
-        $routes->post('sync-status', '\App\Domains\Email\Controllers\Bsre::syncStatus');
-        $routes->post('register', '\App\Domains\Email\Controllers\Bsre::registerUser');
-        $routes->post('verify', '\App\Domains\Email\Controllers\Bsre::verifyPdf');
+        $routes->get('check-status', '\App\Domains\Email\Controllers\BsreController::checkStatus');
+        $routes->get('sync-all', '\App\Domains\Email\Controllers\BsreController::syncAllStatus');
+        $routes->get('sync-status', '\App\Domains\Email\Controllers\BsreController::syncStatus');
+        $routes->post('sync-status', '\App\Domains\Email\Controllers\BsreController::syncStatus');
+        $routes->post('register', '\App\Domains\Email\Controllers\BsreController::registerUser');
+        $routes->post('verify', '\App\Domains\Email\Controllers\BsreController::verifyPdf');
     });
 });

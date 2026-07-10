@@ -6,7 +6,7 @@ use App\Shared\BaseController;
 use App\Shared\Libraries\BsreApi;
 use App\Domains\Auth\Models\UserModel;
 
-class Bsre extends BaseController
+class BsreController extends BaseController
 {
     /**
      * Halaman Publik Verifikasi PDF

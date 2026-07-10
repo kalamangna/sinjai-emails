@@ -4,7 +4,7 @@ namespace App\Domains\Dashboard\Controllers;
 
 use App\Shared\BaseController;
 
-class Home extends BaseController
+class HomeController extends BaseController
 {
     /**
      * Halaman Utama (Public Landing Page)

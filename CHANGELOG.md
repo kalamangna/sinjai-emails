@@ -8,6 +8,14 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 # [10 Juli 2026]
 ## Refactor & Konsistensi Kode
 
+- **Standarisasi Penamaan Kelas Controller (Suffix `Controller`)**:
+    - Melakukan rename/move pada 13 file controller yang sebelumnya tidak memiliki suffix `Controller` menjadi berakhiran `Controller` secara konsisten (e.g. `Home` -> `HomeController`, `Email` -> `EmailController`, `Bsre` -> `BsreController`, dsb.).
+    - Memperbarui deklarasi nama kelas di dalam seluruh file tersebut dan memperbarui pemanggilannya di `app/Config/Routes.php`.
+
+- **Standarisasi Penamaan Method (Refactor ke `camelCase`)**:
+    - Mengubah 40+ method di controller yang sebelumnya menggunakan format `snake_case` menjadi `camelCase` (e.g. `edit_profile` -> `editProfile`, `eselon_list` -> `eselonList`, `export_unit_kerja_csv` -> `exportUnitKerjaCsv`, dsb.) untuk mengikuti standar PSR-12 dan konvensi CodeIgniter 4.
+    - Menyelaraskan seluruh pemanggilan method di file route (`Routes.php`), internal service, dan model terkait.
+
 - **Keamanan Route: Proteksi `api_trigger_queue` (`Routes.php`)**:
     - Route `GET /api_trigger_queue` sebelumnya tidak memiliki filter apapun dan bisa diakses oleh siapa saja tanpa autentikasi.
     - Ditambahkan filter `role:admin,super_admin` untuk membatasi akses hanya kepada administrator.
