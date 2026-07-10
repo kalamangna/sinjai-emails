@@ -44,7 +44,7 @@
 
                 <div class="md:col-span-7">
                     <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Filter Unit Kerja</label>
-                    <select name="parent_unit_kerja_id" class="block w-full px-3 py-2 bg-white border <?= !empty($parent_unit_kerja_id) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm appearance-none cursor-pointer transition-all">
+                    <select name="parent_unit_kerja_id" class="choices-search block w-full px-3 py-2 bg-white border <?= !empty($parent_unit_kerja_id) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm appearance-none cursor-pointer transition-all">
                         <option value="">SEMUA UNIT KERJA</option>
                         <?php foreach ($parent_unit_kerjas as $puk): ?>
                             <option value="<?= esc($puk['id']) ?>" <?= ($parent_unit_kerja_id ?? '') == $puk['id'] ? 'selected' : '' ?>>
