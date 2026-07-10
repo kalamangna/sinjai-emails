@@ -483,32 +483,30 @@
                 const container = document.getElementById('healthCheckContent');
                 container.innerHTML = '';
 
-                const services = [{
-                        key: 'cpanel',
-                        label: 'cPanel UAPI'
-                    },
-                    {
-                        key: 'bsre',
-                        label: 'BSrE Status API'
-                    },
-                    {
-                        key: 'pegawai',
-                        label: 'Pegawai API'
-                    }
-                ];
+                // Loop secara dinamis dari data API
+                Object.values(data).forEach(service => {
+                    const isUp = service.status === 'UP';
+                    const isMocked = service.is_mocked;
 
-                services.forEach(service => {
-                    const isUp = data[service.key].status === 'UP';
-                    const bgStatus = isUp ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-red-50 text-red-600 border-red-100';
-                    const dotStatus = isUp ? 'bg-emerald-500' : 'bg-red-500';
-                    const text = isUp ? 'Online' : 'Offline';
+                    let bgStatus = 'bg-red-50 text-red-600 border-red-100';
+                    let dotStatus = 'bg-red-500';
+
+                    if (isUp) {
+                        if (isMocked) {
+                            bgStatus = 'bg-indigo-50 text-indigo-600 border-indigo-100';
+                            dotStatus = 'bg-indigo-500';
+                        } else {
+                            bgStatus = 'bg-emerald-50 text-emerald-600 border-emerald-100';
+                            dotStatus = 'bg-emerald-500';
+                        }
+                    }
 
                     const html = `
-                        <div class="flex items-center justify-between p-2 rounded-lg border border-transparent hover:border-slate-50 transition-colors">
+                        <div class="flex items-center justify-between p-2 rounded-lg border border-transparent hover:border-slate-50 transition-colors" title="${service.message || ''}">
                             <span class="text-[10px] font-bold text-slate-600 uppercase tracking-tight">${service.label}</span>
                             <div class="flex items-center px-2 py-0.5 rounded-full border ${bgStatus}">
                                 <div class="w-1 h-1 rounded-full ${dotStatus} mr-1.5 animate-pulse"></div>
-                                <span class="text-[8px] font-bold uppercase tracking-widest">${text}</span>
+                                <span class="text-[8px] font-bold uppercase tracking-widest">${service.text}</span>
                             </div>
                         </div>
                     `;

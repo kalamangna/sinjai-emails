@@ -28,7 +28,7 @@ class GatewayController extends BaseController
         session_write_close();
         
         $healthService = new SystemHealthService();
-        $results = $healthService->checkAll();
+        $results = $healthService->getHealthStatus();
         return $this->respond($results);
     }
 
