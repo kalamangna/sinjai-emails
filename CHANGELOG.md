@@ -27,6 +27,11 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
     - Diterapkan secara seragam di halaman: Website Desa, Pimpinan, Eselon, PNS List, PPPK List, PPPK Paruh Waktu, dan Detail Unit Kerja.
     - Menghapus komponen `syncProgressContainer` (progress bar) pada halaman Website Desa agar antarmuka lebih ringkas dan langsung memunculkan modal di akhir.
 
+- **Refactor Komponen UI dengan Alpine.js (`main.php`)**:
+    - Mengintegrasikan Alpine.js CDN secara global pada tata letak utama (`main.php`).
+    - Merefaktor **User Dropdown** agar menggunakan reaktivitas Alpine.js (`x-data`, `x-show`, `@click.outside`, transition effects) untuk menggantikan logika manipulasi DOM manual via Vanilla JS yang panjang dan rawan error.
+    - Merefaktor **Global Flash Messages** agar menutup otomatis setelah 5 detik menggunakan directive `x-init`, `x-show`, dan transisi bawaan Alpine.js, serta menghapus event handler Vanilla JS yang tidak diperlukan lagi.
+
 ## Pembaruan Visual & UI
 - **Penyelarasan Kolom Website Desa**:
     - Mengubah nama kolom table header dari `Hosting & Server` menjadi `hosting / server` (huruf kecil) agar lebih konsisten dengan penulisan tag visual lainnya.

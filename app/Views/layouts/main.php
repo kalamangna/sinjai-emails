@@ -39,6 +39,8 @@
     <!-- Choices.js CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
 
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <?= $this->renderSection('styles') ?>
 
@@ -63,6 +65,7 @@
     </script>
 
     <style>
+        [x-cloak] { display: none !important; }
         /* Essential behavior classes only (no design changes) */
         .sidebar-submenu {
             display: none;
@@ -249,23 +252,31 @@
                     </a>
 
                     <!-- User Dropdown -->
-                    <div class="relative" id="user-dropdown-container">
-                        <button id="user-dropdown-button" class="flex items-center gap-2 p-1.5 rounded-xl hover:bg-slate-50 transition-all focus:outline-none" aria-haspopup="true" aria-expanded="false">
+                    <div class="relative" id="user-dropdown-container" x-data="{ open: false }" @click.outside="open = false" @keydown.escape.window="open = false">
+                        <button id="user-dropdown-button" @click="open = !open" class="flex items-center gap-2 p-1.5 rounded-xl hover:bg-slate-50 transition-all focus:outline-none" aria-haspopup="true" :aria-expanded="open.toString()">
                             <div class="hidden md:flex flex-col items-end">
                                 <p class="text-xs font-bold text-slate-800 leading-none uppercase truncate max-w-[120px]"><?= session()->get('name') ?: session()->get('username') ?></p>
                                 <p class="text-[9px] font-bold text-slate-500 uppercase mt-1 tracking-widest">
                                     <?= session()->get('role') == 'super_admin' ? 'Super Admin' : 'Admin' ?>
                                 </p>
                             </div>
-                            <div id="user-icon-wrapper" class="w-9 h-9 bg-slate-100 rounded-lg flex items-center justify-center text-slate-700 border border-slate-200 shadow-sm transition-transform duration-200">
+                            <div id="user-icon-wrapper" :class="open ? 'scale-90' : ''" class="w-9 h-9 bg-slate-100 rounded-lg flex items-center justify-center text-slate-700 border border-slate-200 shadow-sm transition-transform duration-200">
                                 <i class="fas fa-user-shield text-sm"></i>
                             </div>
-                            <i id="user-dropdown-chevron" class="fas fa-chevron-down text-[8px] text-slate-400 transition-transform duration-200 hidden sm:inline"></i>
+                            <i id="user-dropdown-chevron" :class="open ? 'rotate-180' : ''" class="fas fa-chevron-down text-[8px] text-slate-400 transition-transform duration-200 hidden sm:inline"></i>
                         </button>
 
                         <!-- Dropdown Menu -->
                         <div id="user-dropdown-menu"
-                             class="absolute right-0 mt-2 w-56 bg-white border border-slate-200 rounded-xl shadow-2xl py-2 z-50 origin-top-right overflow-hidden hidden opacity-0 scale-95 translate-y-1 transition-all duration-200">
+                             x-show="open"
+                             x-transition:enter="transition ease-out duration-200"
+                             x-transition:enter-start="opacity-0 scale-95 translate-y-1"
+                             x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                             x-transition:leave="transition ease-in duration-150"
+                             x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+                             x-transition:leave-end="opacity-0 scale-95 translate-y-1"
+                             class="absolute right-0 mt-2 w-56 bg-white border border-slate-200 rounded-xl shadow-2xl py-2 z-50 origin-top-right overflow-hidden"
+                             x-cloak>
 
                             <!-- User info -->
                             <div class="px-4 py-2 mb-1 border-b border-slate-100">
@@ -320,36 +331,36 @@
             <?php if (session()->getFlashdata('success') || session()->getFlashdata('message') || session()->getFlashdata('error') || session()->getFlashdata('info')): ?>
                 <div class="mb-6 space-y-2">
                     <?php if ($msg = session()->getFlashdata('success') ?: session()->getFlashdata('message')): ?>
-                        <div class="flash-message bg-slate-700 text-white px-5 py-3 rounded-lg flex items-center justify-between shadow-sm transform transition-all duration-500 ease-in-out" role="alert">
+                        <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)" x-transition class="bg-slate-700 text-white px-5 py-3 rounded-lg flex items-center justify-between shadow-sm" role="alert">
                             <div class="flex items-center">
                                 <i class="fas fa-check-circle mr-3 text-white"></i>
                                 <span class="font-bold text-xs uppercase tracking-wider"><?= $msg === true ? 'Berhasil' : $msg ?></span>
                             </div>
-                            <button onclick="const p = this.parentElement; const container = p.parentElement; p.remove(); if(container && container.children.length === 0) container.remove();" class="text-white/50 hover:text-white transition-colors focus:outline-none">
+                            <button @click="show = false" class="text-white/50 hover:text-white transition-colors focus:outline-none">
                                 <i class="fas fa-times text-xs"></i>
                             </button>
                         </div>
                     <?php endif; ?>
 
                     <?php if ($err = session()->getFlashdata('error')): ?>
-                        <div class="flash-message bg-red-600 text-white px-5 py-3 rounded-lg flex items-center justify-between shadow-sm transform transition-all duration-500 ease-in-out" role="alert">
+                        <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)" x-transition class="bg-red-600 text-white px-5 py-3 rounded-lg flex items-center justify-between shadow-sm" role="alert">
                             <div class="flex items-center">
                                 <i class="fas fa-exclamation-circle mr-3 text-white"></i>
                                 <span class="font-bold text-xs uppercase tracking-wider"><?= $err ?></span>
                             </div>
-                            <button onclick="const p = this.parentElement; const container = p.parentElement; p.remove(); if(container && container.children.length === 0) container.remove();" class="text-white/50 hover:text-white transition-colors focus:outline-none">
+                            <button @click="show = false" class="text-white/50 hover:text-white transition-colors focus:outline-none">
                                 <i class="fas fa-times text-xs"></i>
                             </button>
                         </div>
                     <?php endif; ?>
 
                     <?php if ($info = session()->getFlashdata('info')): ?>
-                        <div class="flash-message bg-slate-800 text-white px-5 py-3 rounded-lg flex items-center justify-between shadow-sm transform transition-all duration-500 ease-in-out" role="alert">
+                        <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)" x-transition class="bg-slate-800 text-white px-5 py-3 rounded-lg flex items-center justify-between shadow-sm" role="alert">
                             <div class="flex items-center">
                                 <i class="fas fa-info-circle mr-3 text-white"></i>
                                 <span class="font-bold text-xs uppercase tracking-wider"><?= $info ?></span>
                             </div>
-                            <button onclick="const p = this.parentElement; const container = p.parentElement; p.remove(); if(container && container.children.length === 0) container.remove();" class="text-white/50 hover:text-white transition-colors focus:outline-none">
+                            <button @click="show = false" class="text-white/50 hover:text-white transition-colors focus:outline-none">
                                 <i class="fas fa-times text-xs"></i>
                             </button>
                         </div>
@@ -528,65 +539,6 @@
 
             // Remove no-transition after first paint
             setTimeout(() => { document.body.classList.remove('no-transition'); }, 100);
-
-            // --- 5. USER DROPDOWN LOGIC (VANILLA JS) ---
-            const userDropdownButton = document.getElementById('user-dropdown-button');
-            const userDropdownMenu = document.getElementById('user-dropdown-menu');
-            const userDropdownChevron = document.getElementById('user-dropdown-chevron');
-            const userIconWrapper = document.getElementById('user-icon-wrapper');
-
-            if (userDropdownButton && userDropdownMenu) {
-                const toggleDropdown = (e) => {
-                    e.stopPropagation();
-                    const isOpen = !userDropdownMenu.classList.contains('hidden');
-                    
-                    if (isOpen) {
-                        closeUserDropdown();
-                    } else {
-                        openUserDropdown();
-                    }
-                };
-
-                const openUserDropdown = () => {
-                    userDropdownMenu.classList.remove('hidden');
-                    // Force reflow for transition
-                    userDropdownMenu.offsetHeight;
-                    userDropdownMenu.classList.remove('opacity-0', 'scale-95', 'translate-y-1');
-                    userDropdownMenu.classList.add('opacity-100', 'scale-100', 'translate-y-0');
-                    userDropdownChevron?.classList.add('rotate-180');
-                    userIconWrapper?.classList.add('scale-90');
-                };
-
-                const closeUserDropdown = () => {
-                    userDropdownMenu.classList.add('opacity-0', 'scale-95', 'translate-y-1');
-                    userDropdownMenu.classList.remove('opacity-100', 'scale-100', 'translate-y-0');
-                    userDropdownChevron?.classList.remove('rotate-180');
-                    userIconWrapper?.classList.remove('scale-90');
-                    
-                    // Wait for transition to finish before hiding
-                    setTimeout(() => {
-                        if (userDropdownMenu.classList.contains('opacity-0')) {
-                            userDropdownMenu.classList.add('hidden');
-                        }
-                    }, 200);
-                };
-
-                userDropdownButton.addEventListener('click', toggleDropdown);
-
-                // Close on click outside
-                document.addEventListener('click', (e) => {
-                    if (!userDropdownMenu.contains(e.target) && !userDropdownButton.contains(e.target)) {
-                        closeUserDropdown();
-                    }
-                });
-
-                // Close on Escape
-                document.addEventListener('keydown', (e) => {
-                    if (e.key === 'Escape') {
-                        closeUserDropdown();
-                    }
-                });
-            }
         });
 
         // Global Choices.js initialization
@@ -606,23 +558,7 @@
             });
         });
 
-        // Flash Message Auto Close
-        document.addEventListener('DOMContentLoaded', () => {
-            const flashMessages = document.querySelectorAll('.flash-message');
-            flashMessages.forEach(msg => {
-                setTimeout(() => {
-                    msg.style.opacity = '0';
-                    msg.style.transform = 'translateY(-10px)';
-                    setTimeout(() => {
-                        const parent = msg.parentElement;
-                        msg.remove();
-                        if (parent && parent.children.length === 0) {
-                            parent.remove();
-                        }
-                    }, 500);
-                }, 5000);
-            });
-        });
+
 
         // Global status color mapper
         function getJsStatusColor(status) {
