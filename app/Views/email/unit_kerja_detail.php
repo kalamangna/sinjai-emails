@@ -666,7 +666,7 @@ echo view('components/modal', [
         syncBtn.disabled = false;
         syncBtn.innerHTML = originalBtnContent;
 
-        alert(`Sinkronisasi Selesai!\nTotal: ${processed}\nBerhasil: ${success}\nGagal: ${failed}`);
+        showSyncResult(processed, success, failed);
     }
 
     async function syncAllPegawai() {

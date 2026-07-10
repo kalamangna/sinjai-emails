@@ -278,7 +278,7 @@
         syncBtn.classList.remove('opacity-75', 'cursor-not-allowed');
         syncBtn.innerHTML = originalBtnContent;
 
-        alert(`Sinkronisasi Selesai!\nTotal: ${processed}\nBerhasil: ${success}\nGagal: ${failed}`);
+        showSyncResult(processed, success, failed);
     }
 
     document.addEventListener("DOMContentLoaded", function() {

@@ -21,6 +21,16 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
     - Menghapus blok `sleep(2)` manual di `SyncAllCommand.php` yang tidak lagi diperlukan karena throttling sudah ditangani di dalam `resolveIspProvider()`.
     - Menambahkan format log yang konsisten: `IP-API Error for [domain] [endpoint]: [pesan] (percobaan X/Y)`.
 
+- **Pembaruan Notifikasi Hasil Sinkronisasi Batch**:
+    - Mengganti notifikasi `alert()` native browser (yang sering diblokir browser modern) dengan modal dialog kustom `showSyncResult(total, success, failed)` yang global didefinisikan di `main.php`.
+    - Desain modal baru menggunakan warna hijau/merah/amber yang representatif lengkap dengan statistik Total, Berhasil, dan Gagal.
+    - Diterapkan secara seragam di halaman: Website Desa, Pimpinan, Eselon, PNS List, PPPK List, PPPK Paruh Waktu, dan Detail Unit Kerja.
+    - Menghapus komponen `syncProgressContainer` (progress bar) pada halaman Website Desa agar antarmuka lebih ringkas dan langsung memunculkan modal di akhir.
+
+## Pembaruan Visual & UI
+- **Penyelarasan Kolom Website Desa**:
+    - Mengubah nama kolom table header dari `Hosting & Server` menjadi `hosting / server` (huruf kecil) agar lebih konsisten dengan penulisan tag visual lainnya.
+
 ---
 
 # [9 Juli 2026]

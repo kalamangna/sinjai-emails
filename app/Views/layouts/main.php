@@ -169,7 +169,6 @@
         </div>
     </div>
 
-    <!-- Global Error Modal -->
     <?php
     $errorContent = '<div id="error-modal-message" class="text-xs font-medium text-slate-600 leading-relaxed max-h-48 overflow-y-auto custom-scrollbar p-2 bg-slate-50 rounded-lg text-center"></div>';
     $errorFooter = '
@@ -185,6 +184,30 @@
         'footer' => $errorFooter
     ], ['saveData' => false]);
     ?>
+
+    <!-- Global Sync Result Modal -->
+    <?php
+    $syncResultContent = '
+        <div class="flex flex-col items-center gap-4 py-2">
+            <div id="sync-result-icon" class="w-14 h-14 rounded-full flex items-center justify-center text-2xl"></div>
+            <p id="sync-result-message" class="text-sm font-semibold text-slate-700 text-center leading-relaxed"></p>
+            <div id="sync-result-stats" class="flex gap-3 w-full"></div>
+        </div>
+    ';
+    $syncResultFooter = '
+        <button onclick="closeModal(\'global-sync-result-modal\')" class="px-6 py-2 bg-slate-800 text-white text-[10px] font-bold uppercase tracking-widest rounded-lg hover:bg-slate-700 transition-colors focus:outline-none">
+            OK
+        </button>
+    ';
+    echo view('components/modal', [
+        'id'      => 'global-sync-result-modal',
+        'title'   => 'Hasil Sinkronisasi',
+        'size'    => 'sm',
+        'content' => $syncResultContent,
+        'footer'  => $syncResultFooter,
+    ], ['saveData' => false]);
+    ?>
+
 
     <?php $isPublic = $isPublic ?? false; ?>
     <!-- Sidebar -->
@@ -636,6 +659,59 @@
         function hideGlobalError() {
             closeModal('global-error-modal');
         }
+
+        /**
+         * Tampilkan modal hasil batch sync.
+         * @param {number} total   - Total item yang diproses
+         * @param {number} success - Jumlah yang berhasil
+         * @param {number} failed  - Jumlah yang gagal
+         */
+        function showSyncResult(total, success, failed) {
+            const allOk  = failed === 0;
+            const allFail = success === 0;
+
+            const iconEl   = document.getElementById('sync-result-icon');
+            const msgEl    = document.getElementById('sync-result-message');
+            const statsEl  = document.getElementById('sync-result-stats');
+
+            if (iconEl) {
+                if (allOk) {
+                    iconEl.className = 'w-14 h-14 rounded-full flex items-center justify-center text-2xl bg-emerald-100';
+                    iconEl.innerHTML = '<i class="fas fa-check text-emerald-600"></i>';
+                } else if (allFail) {
+                    iconEl.className = 'w-14 h-14 rounded-full flex items-center justify-center text-2xl bg-red-100';
+                    iconEl.innerHTML = '<i class="fas fa-times text-red-500"></i>';
+                } else {
+                    iconEl.className = 'w-14 h-14 rounded-full flex items-center justify-center text-2xl bg-amber-100';
+                    iconEl.innerHTML = '<i class="fas fa-exclamation text-amber-500"></i>';
+                }
+            }
+
+            if (msgEl) {
+                if (allOk) {
+                    msgEl.textContent = 'Sinkronisasi selesai. Semua data berhasil diperbarui.';
+                } else if (allFail) {
+                    msgEl.textContent = 'Sinkronisasi selesai, namun semua item gagal diproses.';
+                } else {
+                    msgEl.textContent = `Sinkronisasi selesai dengan ${failed} item gagal.`;
+                }
+            }
+
+            if (statsEl) {
+                const statCard = (label, value, color) =>
+                    `<div class="flex-1 rounded-lg p-3 text-center ${color}">
+                        <div class="text-xl font-bold">${value}</div>
+                        <div class="text-[10px] font-bold uppercase tracking-widest mt-0.5">${label}</div>
+                    </div>`;
+                statsEl.innerHTML =
+                    statCard('Total',    total,   'bg-slate-100 text-slate-700') +
+                    statCard('Berhasil', success, 'bg-emerald-50 text-emerald-700') +
+                    statCard('Gagal',    failed,  'bg-red-50 text-red-600');
+            }
+
+            openModal('global-sync-result-modal');
+        }
+
     </script>
 
     <?= $this->renderSection('scripts') ?>

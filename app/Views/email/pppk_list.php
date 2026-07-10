@@ -207,7 +207,7 @@
         btn.innerHTML = originalContent;
         btn.disabled = false;
         btn.classList.remove('opacity-75', 'cursor-not-allowed');
-        alert(`Sinkronisasi Selesai!\nTotal: ${processed}\nBerhasil: ${success}\nGagal: ${failed}`);
+        showSyncResult(processed, success, failed);
     }
 
     async function syncAllPegawai() {

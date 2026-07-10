@@ -52,23 +52,8 @@
         </div>
     </div>
 
-    <!-- Progress Sinkronisasi -->
-    <div id="syncProgressContainer" class="hidden bg-slate-800 rounded-lg p-6 shadow-sm overflow-hidden relative">
-        <div class="relative z-10 space-y-4">
-            <div class="flex justify-between items-end">
-                <div>
-                    <p class="text-[10px] font-bold text-slate-700 uppercase tracking-widest mb-1">Sinkronisasi RDAP</p>
-                    <h4 class="text-sm font-bold text-white uppercase tracking-tight">Memproses Data...</h4>
-                </div>
-                <div class="text-right">
-                    <span id="syncStatusCount" class="text-2xl font-bold text-white leading-none">0/0</span>
-                </div>
-            </div>
-            <div class="w-full bg-slate-700 rounded-full h-2">
-                <div id="syncProgressBar" class="bg-white h-full rounded-full transition-all duration-300" style="width: 0%"></div>
-            </div>
-        </div>
-    </div>
+
+
 
     <!-- Statistik -->
     <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
@@ -192,7 +177,7 @@
                     <tr>
                         <th class="px-6 py-3 border-b border-slate-200">Desa / Kelurahan</th>
                         <th class="px-6 py-3 border-b border-slate-200">Domain / Platform</th>
-                        <th class="px-6 py-3 border-b border-slate-200">Hosting & Server</th>
+                        <th class="px-6 py-3 border-b border-slate-200">hosting / server</th>
                         <th class="px-6 py-3 border-b border-slate-200">Tanggal Berakhir</th>
                         <th class="px-6 py-3 border-b border-slate-200">Status</th>
                         <th class="px-6 py-3 border-b border-slate-200">Dikelola Kominfo</th>
@@ -549,37 +534,35 @@
     async function startBatchSync() {
         if (!confirm('Sinkronkan semua data website sekarang? Proses ini membutuhkan beberapa menit.')) return;
         const btn = document.getElementById('batchSyncBtn');
-        const progressContainer = document.getElementById('syncProgressContainer');
-        const progressBar = document.getElementById('syncProgressBar');
-        const statusCount = document.getElementById('syncStatusCount');
+        const originalBtnContent = btn.innerHTML;
 
         btn.disabled = true;
         btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Sinkronisasi...';
-        if (progressContainer) progressContainer.classList.remove('hidden');
 
         const rows = [...document.querySelectorAll('.website-row')];
         const total = rows.length;
+        let success = 0;
+        let failed  = 0;
 
         for (let i = 0; i < total; i++) {
             const row = rows[i];
-
             row.scrollIntoView({ behavior: 'smooth', block: 'center' });
             row.classList.add('bg-slate-100');
 
-            // Update progress UI
-            if (statusCount) statusCount.textContent = (i + 1) + '/' + total;
-            if (progressBar) progressBar.style.width = (((i + 1) / total) * 100) + '%';
-
-            await syncExpiration(row.getAttribute('data-id'));
+            try {
+                const result = await syncExpiration(row.getAttribute('data-id'));
+                if (result) success++; else failed++;
+            } catch (e) {
+                failed++;
+            }
 
             row.classList.remove('bg-slate-100');
         }
 
-        if (statusCount) statusCount.textContent = total + '/' + total;
-        if (progressBar) progressBar.style.width = '100%';
+        btn.disabled = false;
+        btn.innerHTML = originalBtnContent;
 
-        btn.innerHTML = '<i class="fas fa-check mr-2"></i> Selesai!';
-        setTimeout(() => location.reload(), 1500);
+        showSyncResult(total, success, failed);
     }
 </script>
 <?= $this->endSection() ?>
