@@ -37,7 +37,8 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
     - Mengekstraksi fungsi penanganan sinkronisasi status TTE (`syncSingleBsreStatus`, `syncAllBsreStatus`) dan sinkronisasi data pegawai (`syncSinglePegawai`) dari file PHP agar tidak terduplikasi.
     - Memotong ratusan baris kode JavaScript duplikat yang sebelumnya disematkan secara inline di dalam berkas views: `detail.php`, `eselon_detail.php`, `pimpinan.php`, `pimpinan_desa.php`, `pns_list.php`, `pppk_list.php`, dan `pppk_pw_list.php`.
     - **Penyempurnaan Keandalan JS**: Menambahkan *conditional safety wrapper* pada pemanggilan fungsi-fungsi eksternal seperti `getJsStatusColor` dan `showGlobalError`. Jika terjadi kegagalan muat script penunjang di luar layout utama, helper akan otomatis menggunakan *fallback* aman (default colors / alert bawaan) tanpa memicu error Javascript di konsol browser.
-    - **Filter Inisialisasi Choices.js**: Membatasi inisialisasi Choices.js global di `main.php` hanya pada elemen select `.choices-search` yang memiliki **10 atau lebih pilihan**. Dropdown dengan sedikit opsi akan tetap menggunakan gaya dropdown native browser yang lebih hemat sumber daya dan ramah pengguna di perangkat mobile.
+    - **Filter Inisialisasi Choices.js**: Membatasi inisialisasi Choices.js global di `main.php` hanya pada elemen select `.choices-search` yang memiliki **10 atau lebih pilihan**. Dropdown dengan sedikit opsi akan tetap menggunakan gaya dropdown native browser yang lebih hemat sumber daya dan ramah pengguna di perangkat mobile. Serta menambahkan pengaman *null-check* dan verifikasi *tagName* (`tagName === 'SELECT'`) agar tidak memicu error JS jika class tersebut disematkan pada elemen non-select.
+
 
 
 

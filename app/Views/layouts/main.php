@@ -577,7 +577,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             const searchSelects = document.querySelectorAll('.choices-search');
             searchSelects.forEach(select => {
-                if (select.options.length >= 10) {
+                if (select && select.tagName === 'SELECT' && select.options && select.options.length >= 10) {
                     new Choices(select, {
                         searchEnabled: true,
                         itemSelectText: '',
