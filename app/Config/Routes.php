@@ -94,26 +94,26 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         $routes->group('', ['filter' => 'role:admin,super_admin'], function ($routes) {
 
             $routes->get('create', '\App\Domains\Email\Controllers\EmailController::create');
-            $routes->get('editProfile/(:any)', '\App\Domains\Email\Controllers\EmailController::editProfile/$1');
-            $routes->post('updateDetails/(:any)', '\App\Domains\Email\Controllers\EmailController::updateDetails/$1');
-            $routes->post('markPensiun/(:any)', '\App\Domains\Email\Controllers\EmailController::markPensiun/$1');
-            $routes->get('editPassword/(:any)', '\App\Domains\Email\Controllers\EmailController::editPassword/$1');
-            $routes->post('updatePassword/(:any)', '\App\Domains\Email\Controllers\EmailController::updatePassword/$1');
-            $routes->get('editPk/(:any)', '\App\Domains\Email\Controllers\EmailController::editPk/$1');
-            $routes->post('updatePk/(:any)', '\App\Domains\Email\Controllers\EmailController::updatePk/$1');
+            $routes->get('edit_profile/(:any)', '\App\Domains\Email\Controllers\EmailController::editProfile/$1');
+            $routes->post('update_details/(:any)', '\App\Domains\Email\Controllers\EmailController::updateDetails/$1');
+            $routes->post('mark_pensiun/(:any)', '\App\Domains\Email\Controllers\EmailController::markPensiun/$1');
+            $routes->get('edit_password/(:any)', '\App\Domains\Email\Controllers\EmailController::editPassword/$1');
+            $routes->post('update_password/(:any)', '\App\Domains\Email\Controllers\EmailController::updatePassword/$1');
+            $routes->get('edit_pk/(:any)', '\App\Domains\Email\Controllers\EmailController::editPk/$1');
+            $routes->post('update_pk/(:any)', '\App\Domains\Email\Controllers\EmailController::updatePk/$1');
             $routes->post('create_single', '\App\Domains\Email\Controllers\EmailApiController::createSingleEmail');
             
             // Swap Data
             $routes->get('swap_data', '\App\Domains\Email\Controllers\EmailController::swapForm');
-            $routes->post('swapProcess', '\App\Domains\Email\Controllers\EmailController::swapProcess');
+            $routes->post('swap_process', '\App\Domains\Email\Controllers\EmailController::swapProcess');
         });
 
         // Sync & Utility Routes (Admin & Super Admin)
         $routes->group('', ['filter' => 'role:admin,super_admin'], function ($routes) {
-            $routes->post('syncPegawai', '\App\Domains\Email\Controllers\EmailApiController::syncPegawai');
-            $routes->post('apiGeneratePdf', '\App\Domains\Email\Controllers\EmailApiController::apiGeneratePdf');
-            $routes->get('apiUnitEmails/(:num)', '\App\Domains\Email\Controllers\EmailApiController::apiUnitEmails/$1');
-            $routes->get('apiDownloadZip/(:num)', '\App\Domains\Email\Controllers\EmailApiController::apiDownloadZip/$1');
+            $routes->post('sync_pegawai', '\App\Domains\Email\Controllers\EmailApiController::syncPegawai');
+            $routes->post('api_generate_pdf', '\App\Domains\Email\Controllers\EmailApiController::apiGeneratePdf');
+            $routes->get('api_unit_emails/(:num)', '\App\Domains\Email\Controllers\EmailApiController::apiUnitEmails/$1');
+            $routes->get('api_download_zip/(:num)', '\App\Domains\Email\Controllers\EmailApiController::apiDownloadZip/$1');
         });
 
         // Destructive Routes (Super Admin Only)
@@ -132,11 +132,11 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
     // Batch Operations (Admin & Super Admin)
     $routes->group('batch', ['filter' => 'role:admin,super_admin'], function ($routes) {
         $routes->get('/', '\App\Domains\Batch\Controllers\BatchController::index');
-        $routes->post('importGenericSpreadsheet', '\App\Domains\Batch\Controllers\BatchController::importGenericSpreadsheet');
-        $routes->get('downloadTemplate', '\App\Domains\Batch\Controllers\BatchController::downloadTemplate');
-        $routes->get('downloadUpdateTemplate', '\App\Domains\Batch\Controllers\BatchController::downloadUpdateTemplate');
-        $routes->get('downloadPkTemplate', '\App\Domains\Batch\Controllers\BatchController::downloadPkTemplate');
-        $routes->get('downloadUnitKerjaTemplate', '\App\Domains\Batch\Controllers\BatchController::downloadUnitKerjaTemplate');
+        $routes->post('import_generic_spreadsheet', '\App\Domains\Batch\Controllers\BatchController::importGenericSpreadsheet');
+        $routes->get('download_template', '\App\Domains\Batch\Controllers\BatchController::downloadTemplate');
+        $routes->get('download_update_template', '\App\Domains\Batch\Controllers\BatchController::downloadUpdateTemplate');
+        $routes->get('download_pk_template', '\App\Domains\Batch\Controllers\BatchController::downloadPkTemplate');
+        $routes->get('download_unit_kerja_template', '\App\Domains\Batch\Controllers\BatchController::downloadUnitKerjaTemplate');
         $routes->get('update', '\App\Domains\Batch\Controllers\BatchController::update');
         $routes->get('pk', '\App\Domains\Batch\Controllers\BatchController::pk');
         $routes->match(['GET', 'POST'], 'execute_update', '\App\Domains\Batch\Controllers\BatchController::saveBatchUpdate');
@@ -148,9 +148,9 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         $routes->get('manage', '\App\Domains\UnitKerja\Controllers\UnitKerjaController::manage');
         $routes->get('add', '\App\Domains\UnitKerja\Controllers\UnitKerjaController::add');
         $routes->post('store', '\App\Domains\UnitKerja\Controllers\UnitKerjaController::store');
-        $routes->get('batchCreate', '\App\Domains\UnitKerja\Controllers\UnitKerjaController::batchCreate');
-        $routes->post('batchStore', '\App\Domains\UnitKerja\Controllers\UnitKerjaController::batchStore');
-        $routes->post('processBatchCreate', '\App\Domains\UnitKerja\Controllers\UnitKerjaController::processBatchCreate');
+        $routes->get('batch_create', '\App\Domains\UnitKerja\Controllers\UnitKerjaController::batchCreate');
+        $routes->post('batch_store', '\App\Domains\UnitKerja\Controllers\UnitKerjaController::batchStore');
+        $routes->post('process_batch_create', '\App\Domains\UnitKerja\Controllers\UnitKerjaController::processBatchCreate');
         $routes->get('edit/(:num)', '\App\Domains\UnitKerja\Controllers\UnitKerjaController::edit/$1');
         $routes->post('update/(:num)', '\App\Domains\UnitKerja\Controllers\UnitKerjaController::update/$1');
         $routes->get('delete/(:num)', '\App\Domains\UnitKerja\Controllers\UnitKerjaController::delete/$1');
@@ -159,19 +159,19 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
     // Pemantauan Website
     $routes->group('web_desa_kelurahan', function ($routes) {
         $routes->get('/', '\App\Domains\Website\Controllers\WebDesaKelurahanController::index');
-        $routes->get('exportPdf', '\App\Domains\Website\Controllers\WebDesaKelurahanController::exportPdf');
+        $routes->get('export_pdf', '\App\Domains\Website\Controllers\WebDesaKelurahanController::exportPdf');
         
         // Mutation Routes (Admin & Super Admin)
         $routes->group('', ['filter' => 'role:admin,super_admin'], function ($routes) {
             $routes->get('edit/(:num)', '\App\Domains\Website\Controllers\WebDesaKelurahanController::edit/$1');
             $routes->post('update/(:num)', '\App\Domains\Website\Controllers\WebDesaKelurahanController::update/$1');
-            $routes->get('syncExpiration/(:num)', '\App\Domains\Website\Controllers\WebDesaKelurahanController::syncExpiration/$1');
+            $routes->get('sync_expiration/(:num)', '\App\Domains\Website\Controllers\WebDesaKelurahanController::syncExpiration/$1');
         });
     });
 
     $routes->group('web_opd', function ($routes) {
         $routes->get('/', '\App\Domains\Website\Controllers\WebOpdController::index');
-        $routes->get('exportPdf', '\App\Domains\Website\Controllers\WebOpdController::exportPdf');
+        $routes->get('export_pdf', '\App\Domains\Website\Controllers\WebOpdController::exportPdf');
         
         // Mutation Routes (Admin & Super Admin)
         $routes->group('', ['filter' => 'role:admin,super_admin'], function ($routes) {
@@ -183,7 +183,7 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
     // Log Pendampingan (Super Admin Only)
     $routes->group('assistance', ['filter' => 'role:super_admin'], function ($routes) {
         $routes->get('/', '\App\Domains\Assistance\Controllers\AssistanceController::index');
-        $routes->get('exportPdf', '\App\Domains\Assistance\Controllers\AssistanceController::exportPdf');
+        $routes->get('export_pdf', '\App\Domains\Assistance\Controllers\AssistanceController::exportPdf');
         $routes->get('create', '\App\Domains\Assistance\Controllers\AssistanceController::create');
         $routes->post('store', '\App\Domains\Assistance\Controllers\AssistanceController::store');
         $routes->get('edit/(:num)', '\App\Domains\Assistance\Controllers\AssistanceController::edit/$1');
@@ -193,17 +193,17 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
 
     // Utilitas User & BSrE
     $routes->get('user/change_password', '\App\Domains\Auth\Controllers\UserController::changePassword');
-    $routes->post('user/updatePassword', '\App\Domains\Auth\Controllers\UserController::updatePassword');
+    $routes->post('user/update_password', '\App\Domains\Auth\Controllers\UserController::updatePassword');
     $routes->post('user/check_email', '\App\Domains\Auth\Controllers\UserController::checkEmailAvailability');
-    $routes->post('user/checkNiknip', '\App\Domains\Auth\Controllers\UserController::checkNiknip');
-    $routes->post('user/batchCheckAvailability', '\App\Domains\Auth\Controllers\UserController::batchCheckAvailability');
+    $routes->post('user/check_niknip', '\App\Domains\Auth\Controllers\UserController::checkNiknip');
+    $routes->post('user/batch_check_availability', '\App\Domains\Auth\Controllers\UserController::batchCheckAvailability');
     
     // User Management (Super Admin Only)
     $routes->group('auth/users', ['filter' => 'role:super_admin'], function ($routes) {
         $routes->get('/', '\App\Domains\Auth\Controllers\UserManagementController::index');
         $routes->get('add', '\App\Domains\Auth\Controllers\UserManagementController::add');
         $routes->post('store', '\App\Domains\Auth\Controllers\UserManagementController::store');
-        $routes->post('checkNip', '\App\Domains\Auth\Controllers\UserManagementController::checkNip');
+        $routes->post('check_nip', '\App\Domains\Auth\Controllers\UserManagementController::checkNip');
         $routes->get('edit/(:num)', '\App\Domains\Auth\Controllers\UserManagementController::edit/$1');
         $routes->post('update/(:num)', '\App\Domains\Auth\Controllers\UserManagementController::update/$1');
         $routes->post('delete/(:num)', '\App\Domains\Auth\Controllers\UserManagementController::delete/$1');

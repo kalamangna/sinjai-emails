@@ -8,6 +8,11 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 # [10 Juli 2026]
 ## Refactor & Konsistensi Kode
 
+- **Fix: Pemulihan URI Route ke `snake_case` (`Routes.php`)**:
+    - Mengembalikan seluruh URI path route (parameter pertama fungsi `$routes->get()`, `$routes->post()`, dsb.) ke format original `snake_case` (e.g. `sync_pegawai`, `process_batch_create`, `check_niknip`).
+    - Hal ini menjamin kompabilitas penuh dengan seluruh pemanggilan AJAX fetch / XMLHttpRequest dari file frontend Javascript (`batch.js`, `sync-helper.js`, `unit-kerja-batch.js`) serta tag `<form>` pada Views.
+    - Pemanggilan action method pada controller tetap dipertahankan menggunakan nama camelCase baru.
+
 - **Refactor: Pembuatan `UnitKerjaService` dan Pemisahan Logika Bisnis (`UnitKerjaService.php` baru & `UnitKerjaController.php`)**:
     - Membuat `App\Domains\UnitKerja\Services\UnitKerjaService` untuk merangkum seluruh logika bisnis CRUD Unit Kerja, termasuk penanganan batch creation baik dari format textarea (newline-separated) maupun dari array JSON.
     - Merampingkan `UnitKerjaController` sehingga semua data-write dan data-mutation dialihkan sepenuhnya ke service.
