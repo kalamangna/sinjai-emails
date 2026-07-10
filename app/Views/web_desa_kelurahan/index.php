@@ -265,9 +265,6 @@
                                         <a href="<?= site_url('web_desa_kelurahan/edit/' . $web['id']) ?>" class="btn btn-table" title="Edit">
                                             <i class="fas fa-edit text-xs"></i>
                                         </a>
-                                        <button type="button" class="btn btn-table" title="Sync Data" onclick="syncExpiration(<?= $web['id'] ?>)" id="sync-btn-<?= $web['id'] ?>">
-                                            <i class="fas fa-sync text-xs"></i>
-                                        </button>
                                     </div>
                                 <?php else: ?>
                                     <span class="text-[10px] font-bold text-slate-700 uppercase italic">Hanya Lihat</span>
