@@ -53,7 +53,7 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
     - Menghapus tombol **Sync Data** per baris (individual sync) dari kolom Aksi pada tabel Website Desa, menyisakan hanya tombol Edit. Alur sinkronisasi kini dipusatkan sepenuhnya menggunakan tombol batch sync di header.
 
 - **Penyelarasan Tampilan & Warna Placeholder**:
-    - Menerapkan pewarnaan placeholder abu-abu konsisten (`placeholder-slate-400 font-medium text-slate-800`) pada input kolom pencarian monitoring Website OPD (`web_opd/index.php`) dan Website Desa Kelurahan (`web_desa_kelurahan/index.php`).
+    - Menerapkan pewarnaan placeholder abu-abu konsisten (`placeholder-slate-400 font-medium text-slate-800`) secara menyeluruh pada kolom masukan teks pencarian filter di halaman monitoring: Email Monitoring (`email/index.php`), Detail Eselon (`email/eselon_detail.php`), Pimpinan (`email/pimpinan.php`), Pimpinan Desa (`email/pimpinan_desa.php`), Log Audit (`audit_log/index.php`), Pengelolaan Unit Kerja (`unit_kerja/manage.php`), Website OPD (`web_opd/index.php`), dan Website Desa Kelurahan (`web_desa_kelurahan/index.php`) agar senada dengan modul global search.
 
 
 - **Kustomisasi Tema Warna Flowbite (Slate/Gray)**:
