@@ -11,8 +11,15 @@ use App\Shared\Models\StatusAsnModel;
 
 class DashboardService
 {
-    public function getSummaryData(): array
+    public function getSummaryData(bool $forceRefresh = false): array
     {
+        $cache = \Config\Services::cache();
+        $cacheKey = \App\Shared\Services\CacheService::KEY_DASHBOARD_SUMMARY;
+
+        if (!$forceRefresh && ($cachedData = $cache->get($cacheKey)) !== null) {
+            return $cachedData;
+        }
+
         $emailModel = new EmailModel();
         $webOpdModel = new WebOpdModel();
         $webDesaModel = new WebDesaKelurahanModel();
@@ -204,7 +211,7 @@ class DashboardService
             ];
         }
 
-        return [
+        $result = [
             'email_stats' => $email_stats,
             'total_emails' => $total_emails,
             'active_bsre' => $active_bsre,
@@ -222,5 +229,9 @@ class DashboardService
             'title' => 'Dashboard',
             'meta_description' => 'Ringkasan Statistik Identitas Digital, Sertifikat Elektronik, dan Pemantauan Website Pemerintah Kabupaten Sinjai.',
         ];
+
+        $cache->save($cacheKey, $result, \App\Shared\Services\CacheService::TTL_DASHBOARD);
+
+        return $result;
     }
 }

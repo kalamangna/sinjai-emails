@@ -8,6 +8,14 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 # [10 Juli 2026]
 ## Refactor & Konsistensi Kode
 
+- **Refactor: Pemindahan Manajemen Cache Dashboard ke Service (`DashboardService.php` & `HomeController.php`)**:
+    - Memindahkan logika pengecekan dan penyimpanan cache dari `HomeController::dashboard()` ke `DashboardService::getSummaryData()`.
+    - `HomeController` kini lebih ramping dan hanya mendelegasikan pengambilan data ke service.
+
+- **Refactor: Pembuatan `AuthService` dan Pemisahan Logika Bisnis (`AuthService.php` baru & `AuthController.php`)**:
+    - Membuat `App\Domains\Auth\Services\AuthService` sebagai tempat penampung seluruh logika bisnis autentikasi (pemeriksaan pendaftaran lokal, verifikasi SSO eksternal ke PegawaiApi, sinkronisasi nama, dan fallback otentikasi password lokal).
+    - Merampingkan `AuthController::attemptLogin()` agar hanya menangani request input, inisialisasi session, pencatatan log audit, dan response redirect.
+
 - **Standarisasi Penamaan Kelas Controller (Suffix `Controller`)**:
     - Melakukan rename/move pada 13 file controller yang sebelumnya tidak memiliki suffix `Controller` menjadi berakhiran `Controller` secara konsisten (e.g. `Home` -> `HomeController`, `Email` -> `EmailController`, `Bsre` -> `BsreController`, dsb.).
     - Memperbarui deklarasi nama kelas di dalam seluruh file tersebut dan memperbarui pemanggilannya di `app/Config/Routes.php`.

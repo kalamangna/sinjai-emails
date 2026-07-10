@@ -28,17 +28,8 @@ class HomeController extends BaseController
      */
     public function dashboard()
     {
-        $cache = \Config\Services::cache();
-        $cacheKey = \App\Shared\Services\CacheService::KEY_DASHBOARD_SUMMARY;
-
-        if (!$data = $cache->get($cacheKey)) {
-            $dashboardService = new \App\Domains\Dashboard\Services\DashboardService();
-            $data = $dashboardService->getSummaryData();
-
-            // Cache for 10 minutes
-            $cache->save($cacheKey, $data, \App\Shared\Services\CacheService::TTL_DASHBOARD);
-        }
-
+        $dashboardService = new \App\Domains\Dashboard\Services\DashboardService();
+        $data = $dashboardService->getSummaryData();
         $data['title'] = 'Dashboard';
 
         return view('home/index', $data);
