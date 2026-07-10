@@ -32,8 +32,8 @@ $routes->group('api/v1', ['filter' => 'api_gateway'], function ($routes) {
     $routes->get('unit/(:num)', '\App\Domains\Api\Controllers\GatewayController::listByUnit/$1');
 });
 
-// Internal Async Queue Trigger (Publicly accessible but safe)
-$routes->get('api_trigger_queue', '\App\Domains\Email\Controllers\EmailApi::api_trigger_queue');
+// Internal Async Queue Trigger (Protected: Admin & Super Admin only)
+$routes->get('api_trigger_queue', '\App\Domains\Email\Controllers\EmailApi::api_trigger_queue', ['filter' => 'role:admin,super_admin']);
 
 // Public Route - Landing Page
 $routes->get('/', '\App\Domains\Dashboard\Controllers\Home::index');
@@ -220,9 +220,8 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         $routes->post('update_status/(:num)', '\App\Domains\Helpdesk\Controllers\HelpdeskAdminController::updateStatus/$1');
         $routes->post('delete/(:num)', '\App\Domains\Helpdesk\Controllers\HelpdeskAdminController::delete/$1');
     });    
-    $routes->get('bsre/check-status', '\App\Domains\Email\Controllers\Bsre::checkStatus');
-    
     $routes->group('bsre', ['filter' => 'role:admin,super_admin'], function ($routes) {
+        $routes->get('check-status', '\App\Domains\Email\Controllers\Bsre::checkStatus');
         $routes->get('sync-all', '\App\Domains\Email\Controllers\Bsre::syncAllStatus');
         $routes->get('sync-status', '\App\Domains\Email\Controllers\Bsre::syncStatus');
         $routes->post('sync-status', '\App\Domains\Email\Controllers\Bsre::syncStatus');

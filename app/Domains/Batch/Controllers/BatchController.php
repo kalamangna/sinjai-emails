@@ -211,9 +211,7 @@ class BatchController extends BaseController
             log_audit('BATCH_UPDATE', 'Email', null, "Batch update: $successCount akun berhasil diperbarui.");
 
             // Clear Dashboard Cache
-            $cache = \Config\Services::cache();
-            $cache->delete('dashboard_summary_data_v3');
-            $cache->delete('email_dashboard_summary');
+            \App\Shared\Services\CacheService::invalidateDashboard();
 
             return $this->response->setJSON(['success' => true, 'results' => $results]);
         } catch (\Throwable $e) {
@@ -251,9 +249,7 @@ class BatchController extends BaseController
             log_audit('BATCH_CREATE', 'Email', null, "Batch create: $successCount akun berhasil dibuat.");
 
             // Clear Dashboard Cache
-            $cache = \Config\Services::cache();
-            $cache->delete('dashboard_summary_data_v3');
-            $cache->delete('email_dashboard_summary');
+            \App\Shared\Services\CacheService::invalidateDashboard();
 
             return $this->response->setJSON(['success' => true, 'results' => $results]);
         } catch (\Throwable $e) {

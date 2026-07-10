@@ -29,14 +29,14 @@ class Home extends BaseController
     public function dashboard()
     {
         $cache = \Config\Services::cache();
-        $cacheKey = 'dashboard_summary_data_v3';
+        $cacheKey = \App\Shared\Services\CacheService::KEY_DASHBOARD_SUMMARY;
 
         if (!$data = $cache->get($cacheKey)) {
             $dashboardService = new \App\Domains\Dashboard\Services\DashboardService();
             $data = $dashboardService->getSummaryData();
 
-            // Cache for 10 minutes (600 seconds)
-            $cache->save($cacheKey, $data, 600);
+            // Cache for 10 minutes
+            $cache->save($cacheKey, $data, \App\Shared\Services\CacheService::TTL_DASHBOARD);
         }
 
         $data['title'] = 'Dashboard';

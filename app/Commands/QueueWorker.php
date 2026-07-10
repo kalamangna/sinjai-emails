@@ -38,9 +38,7 @@ class QueueWorker extends BaseCommand
                     CLI::write("Queue is empty. Stopping worker.", 'yellow');
                     
                     // Clear caches because background sync changed data
-                    $cache = \Config\Services::cache();
-                    $cache->delete('dashboard_summary_data_v3');
-                    $cache->delete('email_dashboard_summary');
+                    \App\Shared\Services\CacheService::invalidateDashboard();
                     CLI::write("Dashboard caches cleared.", 'green');
                     
                     break;

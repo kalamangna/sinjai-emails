@@ -239,9 +239,7 @@ class Email extends BaseController
 
     private function clearEmailCaches()
     {
-        $cache = \Config\Services::cache();
-        $cache->delete('dashboard_summary_data_v3');
-        $cache->delete('email_dashboard_summary');
+        \App\Shared\Services\CacheService::invalidateDashboard();
     }
 
     public function edit_password($username)

@@ -1045,9 +1045,7 @@ class EmailService
         if (!empty($updateData)) {
             $this->emailModel->where('nip', $nip)->set($updateData)->update();
 
-            $cache = \Config\Services::cache();
-            $cache->delete('dashboard_summary_data_v3');
-            $cache->delete('email_dashboard_summary');
+            \App\Shared\Services\CacheService::invalidateDashboard();
 
             $responseData = $updateData;
             if ($isPimpinan) $responseData['jabatan'] = $currentEmail['jabatan'] ?? '-';
@@ -1121,8 +1119,6 @@ class EmailService
         }
 
         // Clear dashboard caches
-        $cache = \Config\Services::cache();
-        $cache->delete('dashboard_summary_data_v3');
-        $cache->delete('email_dashboard_summary');
+        \App\Shared\Services\CacheService::invalidateDashboard();
     }
 }

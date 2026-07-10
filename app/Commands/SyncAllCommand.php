@@ -115,9 +115,7 @@ class SyncAllCommand extends BaseCommand
         $this->cleanupRetiredAccounts();
 
         // Clear Dashboard Cache so timestamps update immediately
-        $cache = \Config\Services::cache();
-        $cache->delete('dashboard_summary_data_v3');
-        $cache->delete('email_dashboard_summary');
+        \App\Shared\Services\CacheService::invalidateDashboard();
 
         CLI::write('Synchronization process completed and cache cleared!', 'green');
         $this->sendTelegramSummary($modeName);

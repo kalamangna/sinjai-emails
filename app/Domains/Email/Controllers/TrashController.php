@@ -66,9 +66,7 @@ class TrashController extends BaseController
             }
             $emailModel->delete($id, true); // true for force delete
             
-            $cache = \Config\Services::cache();
-            $cache->delete('dashboard_summary_data_v3');
-            $cache->delete('email_dashboard_summary');
+            \App\Shared\Services\CacheService::invalidateDashboard();
 
             helper('audit');
             log_audit('FORCE_DELETE', 'Email', $id, 'Permanently deleted email: ' . $email['email']);

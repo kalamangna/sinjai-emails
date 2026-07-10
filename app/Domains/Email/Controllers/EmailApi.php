@@ -227,9 +227,7 @@ class EmailApi extends BaseController
             log_audit('CREATE', 'Email', $email, 'Akun baru dibuat: ' . $data['email']);
 
             // Clear Dashboard Cache
-            $cache = \Config\Services::cache();
-            $cache->delete('dashboard_summary_data_v3');
-            $cache->delete('email_dashboard_summary');
+            \App\Shared\Services\CacheService::invalidateDashboard();
 
             return $this->response->setJSON(['success' => true, 'email' => $data['email']]);
         } catch (\Throwable $e) {

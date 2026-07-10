@@ -6,6 +6,26 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ---
 
 # [10 Juli 2026]
+## Refactor & Konsistensi Kode
+
+- **Keamanan Route: Proteksi `api_trigger_queue` (`Routes.php`)**:
+    - Route `GET /api_trigger_queue` sebelumnya tidak memiliki filter apapun dan bisa diakses oleh siapa saja tanpa autentikasi.
+    - Ditambahkan filter `role:admin,super_admin` untuk membatasi akses hanya kepada administrator.
+
+- **Keamanan Route: Konsolidasi Route BSrE (`Routes.php`)**:
+    - Route `GET /bsre/check-status` sebelumnya berada di luar grup `bsre` sehingga bisa diakses oleh semua user yang login tanpa pembatasan role.
+    - Dipindahkan ke dalam grup `bsre` yang sudah dilindungi filter `role:admin,super_admin`.
+
+- **Refactor: Terpusatkan Manajemen Cache (`CacheService.php` baru)**:
+    - Dibuat `App\Shared\Services\CacheService` sebagai titik terpusat untuk semua cache key dan TTL.
+    - Mendefinisikan konstanta: `KEY_DASHBOARD_SUMMARY`, `KEY_EMAIL_SUMMARY`, `KEY_SYSTEM_HEALTH`, `TTL_DASHBOARD`, `TTL_EMAIL`, `TTL_HEALTH`.
+    - Menyediakan method static: `invalidateDashboard()` dan `invalidateHealth()`.
+    - Mengganti semua string literal cache key yang sebelumnya tersebar di **7 file berbeda** (`Email.php`, `EmailApi.php`, `TrashController.php`, `BatchController.php`, `EmailService.php`, `QueueWorker.php`, `SyncAllCommand.php`) dengan pemanggilan ke `CacheService`.
+
+- **Refactor: Pisahkan Business Logic Helpdesk ke `HelpdeskService` (`HelpdeskService.php` baru)**:
+    - Dibuat `App\Domains\Helpdesk\Services\HelpdeskService` dengan method `updateTicketStatus()`.
+    - Logika cross-domain (insert ke `AssistanceModel` saat tiket selesai) dipindahkan dari `HelpdeskAdminController::updateStatus()` ke `HelpdeskService`.
+    - `HelpdeskAdminController::updateStatus()` kini hanya bertugas menangani HTTP request dan response, delegasi ke service.
 
 ## Perbaikan & Ketahanan Sistem
 
