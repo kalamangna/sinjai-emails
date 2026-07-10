@@ -32,11 +32,13 @@
                         </select>
                     </div>
                     <div>
-                        <label for="dikelola_kominfo" class="block text-sm font-medium text-slate-700 mb-1">Dikelola Kominfo</label>
-                        <select class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm appearance-none cursor-pointer" id="dikelola_kominfo" name="dikelola_kominfo">
-                            <option value="YA" <?= strtoupper($website['dikelola_kominfo']) === 'YA' ? 'selected' : '' ?>>YA</option>
-                            <option value="TIDAK" <?= strtoupper($website['dikelola_kominfo']) === 'TIDAK' ? 'selected' : '' ?>>TIDAK</option>
-                        </select>
+                        <label class="block text-sm font-medium text-slate-700 mb-3">Dikelola Kominfo</label>
+                        <input type="hidden" name="dikelola_kominfo" value="TIDAK">
+                        <label class="inline-flex items-center cursor-pointer mt-1">
+                            <input type="checkbox" name="dikelola_kominfo" value="YA" class="sr-only peer" <?= strtoupper($website['dikelola_kominfo']) === 'YA' ? 'checked' : '' ?>>
+                            <div class="relative w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-slate-400 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-slate-700"></div>
+                            <span class="ms-3 text-xs font-bold text-slate-700 uppercase tracking-wider">Ya, dikelola Kominfo</span>
+                        </label>
                     </div>
                 </div>
 

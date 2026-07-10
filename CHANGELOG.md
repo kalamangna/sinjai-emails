@@ -43,6 +43,11 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
     - Mengubah nama kolom table header dari `Hosting & Server` menjadi `hosting / server` (huruf kecil) agar lebih konsisten dengan penulisan tag visual lainnya.
     - Menghapus tombol **Sync Data** per baris (individual sync) dari kolom Aksi pada tabel Website Desa, menyisakan hanya tombol Edit. Alur sinkronisasi kini dipusatkan sepenuhnya menggunakan tombol batch sync di header.
 
+- **Implementasi Komponen Flowbite (Tooltip & Toggle Switch)**:
+    - Menggantikan tooltip native browser (`title="..."`) yang kaku pada seluruh tombol aksi tabel utama (Edit, Detail, Edit PK, Dikelola Kominfo) di halaman Website Desa, Website OPD, PNS List, PPPK List, PPPK PW List, dan Detail Email menggunakan **Flowbite Tooltip** yang interaktif dan beranimasi halus.
+    - Mengubah elemen dropdown pilihan `dikelola_kominfo` (YA/TIDAK) di formulir Website Desa menjadi komponen **Flowbite Toggle Switch** (saklar geser) yang lebih intuitif, dilengkapi dengan input tersembunyi agar integrasi post request tetap kompatibel.
+
+
 - **Penyelarasan Teks Donut Chart (ApexCharts)**:
     - Menambahkan reset ukuran font untuk `.apexcharts-datalabel-value` dan `.apexcharts-datalabel-label` di `input.css` untuk membatalkan paksaan ukuran besar (`!important`) yang didorong oleh plugin Flowbite, mengembalikan ukuran teks total di tengah donut chart ke ukuran ideal bawaan (16px untuk nilai dan 10px untuk label).
 

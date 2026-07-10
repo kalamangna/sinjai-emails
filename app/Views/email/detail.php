@@ -61,9 +61,13 @@
                                     <span class="text-[10px] font-bold text-slate-700 animate-pulse uppercase">Memeriksa...</span>
                                 </div>
                                 <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
-                                    <button onclick="syncBsreStatus('<?= esc($email['email'], 'js') ?>')" class="btn btn-solid btn-xs ml-2" title="Sinkronisasi">
+                                    <button id="sync-bsre-btn" onclick="syncBsreStatus('<?= esc($email['email'], 'js') ?>')" class="btn btn-solid btn-xs ml-2" data-tooltip-target="tooltip-sync-bsre">
                                         <i class="fas fa-sync-alt"></i>
                                     </button>
+                                    <div id="tooltip-sync-bsre" role="tooltip" class="absolute z-10 invisible inline-block px-2.5 py-1 text-[10px] font-bold text-white bg-slate-900 rounded-lg shadow-sm opacity-0 tooltip" x-cloak>
+                                        Sinkronkan Status
+                                        <div class="tooltip-arrow" data-popper-arrow></div>
+                                    </div>
                                     <button id="register-bsre-btn" onclick="registerBsreUser('<?= esc($email['name'], 'js') ?>', '<?= esc($email['email'], 'js') ?>')" class="hidden btn btn-outline btn-xs ml-2" title="Daftarkan ke BSrE">
                                         <i class="fas fa-user-plus mr-1"></i> Daftarkan BSrE
                                     </button>

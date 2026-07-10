@@ -94,12 +94,20 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center">
                                     <div class="flex justify-center gap-2">
-                                        <a href="<?php echo site_url('email/detail/' . $email['user']); ?>" class="btn btn-table" title="Detail">
+                                        <a href="<?php echo site_url('email/detail/' . $email['user']); ?>" class="btn btn-table" data-tooltip-target="tooltip-detail-<?= $email['id'] ?>">
                                             <i class="fas fa-eye text-xs text-slate-700"></i>
                                         </a>
-                                        <a href="<?php echo site_url('email/edit_pk/' . $email['user']); ?>" class="btn btn-table" title="Edit PK">
+                                        <div id="tooltip-detail-<?= $email['id'] ?>" role="tooltip" class="absolute z-10 invisible inline-block px-2.5 py-1 text-[10px] font-bold text-white bg-slate-900 rounded-lg shadow-sm opacity-0 tooltip" x-cloak>
+                                            Detail Akun
+                                            <div class="tooltip-arrow" data-popper-arrow></div>
+                                        </div>
+                                        <a href="<?php echo site_url('email/edit_pk/' . $email['user']); ?>" class="btn btn-table" data-tooltip-target="tooltip-editpk-<?= $email['id'] ?>">
                                             <i class="fas fa-file-contract text-xs text-slate-700"></i>
                                         </a>
+                                        <div id="tooltip-editpk-<?= $email['id'] ?>" role="tooltip" class="absolute z-10 invisible inline-block px-2.5 py-1 text-[10px] font-bold text-white bg-slate-900 rounded-lg shadow-sm opacity-0 tooltip" x-cloak>
+                                            Edit Perjanjian Kerja
+                                            <div class="tooltip-arrow" data-popper-arrow></div>
+                                        </div>
                                     </div>
                                 </td>
                             </tr>

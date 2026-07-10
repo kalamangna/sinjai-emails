@@ -249,9 +249,13 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <?php if ($web['dikelola_kominfo'] === 'YA'): ?>
-                                    <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-100 text-slate-700 border-transparent" title="Dikelola Kominfo">
+                                    <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-100 text-slate-700 border-transparent cursor-help" data-tooltip-target="tooltip-kominfo-<?= $web['id'] ?>">
                                         <i class="fas fa-check text-[10px]"></i>
                                     </span>
+                                    <div id="tooltip-kominfo-<?= $web['id'] ?>" role="tooltip" class="absolute z-10 invisible inline-block px-2.5 py-1 text-[10px] font-bold text-white bg-slate-900 rounded-lg shadow-sm opacity-0 tooltip" x-cloak>
+                                        Dikelola Kominfo
+                                        <div class="tooltip-arrow" data-popper-arrow></div>
+                                    </div>
                                 <?php else: ?>
                                     <span class="text-[10px] text-slate-700 font-bold tracking-widest">—</span>
                                 <?php endif; ?>
@@ -262,9 +266,13 @@
                             <td class="px-6 py-4 whitespace-nowrap text-center">
                                 <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
                                     <div class="flex items-center justify-center gap-1">
-                                        <a href="<?= site_url('web_desa_kelurahan/edit/' . $web['id']) ?>" class="btn btn-table" title="Edit">
+                                        <a href="<?= site_url('web_desa_kelurahan/edit/' . $web['id']) ?>" class="btn btn-table animate-none" data-tooltip-target="tooltip-edit-<?= $web['id'] ?>">
                                             <i class="fas fa-edit text-xs"></i>
                                         </a>
+                                        <div id="tooltip-edit-<?= $web['id'] ?>" role="tooltip" class="absolute z-10 invisible inline-block px-2.5 py-1 text-[10px] font-bold text-white bg-slate-900 rounded-lg shadow-sm opacity-0 tooltip" x-cloak>
+                                            Edit Data
+                                            <div class="tooltip-arrow" data-popper-arrow></div>
+                                        </div>
                                     </div>
                                 <?php else: ?>
                                     <span class="text-[10px] font-bold text-slate-700 uppercase italic">Hanya Lihat</span>

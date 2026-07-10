@@ -152,9 +152,13 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center">
                                     <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
-                                        <a href="<?= site_url('web_opd/edit/' . $web['id']) ?>" class="btn btn-table" title="Edit">
+                                        <a href="<?= site_url('web_opd/edit/' . $web['id']) ?>" class="btn btn-table" data-tooltip-target="tooltip-edit-<?= $web['id'] ?>">
                                             <i class="fas fa-edit text-xs"></i>
                                         </a>
+                                        <div id="tooltip-edit-<?= $web['id'] ?>" role="tooltip" class="absolute z-10 invisible inline-block px-2.5 py-1 text-[10px] font-bold text-white bg-slate-900 rounded-lg shadow-sm opacity-0 tooltip" x-cloak>
+                                            Edit Data
+                                            <div class="tooltip-arrow" data-popper-arrow></div>
+                                        </div>
                                     <?php else: ?>
                                         <span class="text-[10px] font-bold text-slate-700 uppercase italic">Hanya Lihat</span>
                                     <?php endif; ?>
