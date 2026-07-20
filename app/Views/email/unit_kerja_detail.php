@@ -29,10 +29,10 @@
                     </a>
                 </div>
             </div>
-        <div class="flex items-center gap-2 overflow-x-auto pb-1 max-w-full custom-scrollbar shrink-0">
+        <div class="flex flex-wrap items-center gap-2">
             <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
                 <!-- Dropdown Batch PK -->
-                <div class="relative group shrink-0">
+                <div class="relative group">
                     <button class="btn btn-outline text-xs px-3 py-2">
                         <i class="fas fa-file-contract mr-1.5 text-slate-600"></i> Batch PK <i class="fas fa-chevron-down ml-1 text-[8px] opacity-50 transition-transform duration-300 group-hover:rotate-180"></i>
                     </button>
@@ -48,7 +48,7 @@
 
 
                 <!-- Dropdown Sinkronisasi -->
-                <div class="relative group shrink-0">
+                <div class="relative group">
                     <button id="mainSyncBtn" class="btn btn-solid text-xs px-3 py-2">
                         <i class="fas fa-sync-alt mr-1.5 text-white/80"></i> Sync <i class="fas fa-chevron-down ml-1 text-[8px] opacity-50 transition-transform duration-300 group-hover:rotate-180"></i>
                     </button>
@@ -203,7 +203,7 @@
                 <i class="fas fa-chevron-down text-[10px]"></i>
             </button>
 
-            <form id="unitDetailFilterForm" method="GET" action="" class="hidden md:grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+            <form id="unitDetailFilterForm" method="GET" action="" class="hidden md:grid grid-cols-1 md:grid-cols-12 gap-y-4 gap-x-4 items-end">
                 <div class="md:col-span-5">
                     <label class="block text-xs font-bold text-slate-700 mb-1 uppercase tracking-tight">Pencarian</label>
                     <div class="relative">

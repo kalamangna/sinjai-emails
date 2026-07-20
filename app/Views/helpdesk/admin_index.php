@@ -4,15 +4,15 @@
 <div class="space-y-6">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight"><?= esc($title) ?></h1>
-        <div class="flex items-center gap-2 overflow-x-auto pb-1 max-w-full custom-scrollbar shrink-0">
-            <a href="<?= site_url('admin/helpdesk') ?>" class="btn <?= empty($statusFilter) ? 'btn-solid' : 'btn-outline' ?> btn-sm text-[10px] whitespace-nowrap">Semua</a>
-            <a href="<?= site_url('admin/helpdesk?status=Menunggu') ?>" class="btn <?= $statusFilter == 'Menunggu' ? 'btn-solid !bg-amber-500 !border-amber-600' : 'btn-outline text-amber-600 border-amber-200' ?> btn-sm text-[10px] whitespace-nowrap">
+        <div class="flex flex-wrap items-center gap-2">
+            <a href="<?= site_url('admin/helpdesk') ?>" class="btn <?= empty($statusFilter) ? 'btn-solid' : 'btn-outline' ?> btn-sm text-[10px]">Semua</a>
+            <a href="<?= site_url('admin/helpdesk?status=Menunggu') ?>" class="btn <?= $statusFilter == 'Menunggu' ? 'btn-solid !bg-amber-500 !border-amber-600' : 'btn-outline text-amber-600 border-amber-200' ?> btn-sm text-[10px]">
                 Menunggu (<?= $statusCounts['Menunggu'] ?>)
             </a>
-            <a href="<?= site_url('admin/helpdesk?status=Diproses') ?>" class="btn <?= $statusFilter == 'Diproses' ? 'btn-solid !bg-blue-500 !border-blue-600' : 'btn-outline text-blue-600 border-blue-200' ?> btn-sm text-[10px] whitespace-nowrap">
+            <a href="<?= site_url('admin/helpdesk?status=Diproses') ?>" class="btn <?= $statusFilter == 'Diproses' ? 'btn-solid !bg-blue-500 !border-blue-600' : 'btn-outline text-blue-600 border-blue-200' ?> btn-sm text-[10px]">
                 Diproses (<?= $statusCounts['Diproses'] ?>)
             </a>
-            <a href="<?= site_url('admin/helpdesk?status=Selesai') ?>" class="btn <?= $statusFilter == 'Selesai' ? 'btn-solid !bg-emerald-600 !border-emerald-700' : 'btn-outline text-emerald-600 border-emerald-200' ?> btn-sm text-[10px] whitespace-nowrap">
+            <a href="<?= site_url('admin/helpdesk?status=Selesai') ?>" class="btn <?= $statusFilter == 'Selesai' ? 'btn-solid !bg-emerald-600 !border-emerald-700' : 'btn-outline text-emerald-600 border-emerald-200' ?> btn-sm text-[10px]">
                 Selesai (<?= $statusCounts['Selesai'] ?>)
             </a>
         </div>

@@ -14,12 +14,12 @@
             <?php endif; ?>
         </div>
 
-        <div class="flex items-center gap-2 overflow-x-auto pb-1 max-w-full custom-scrollbar shrink-0">
+        <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto">
             <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
-                <a href="<?= site_url('email/swap_data') ?>" class="whitespace-nowrap btn btn-outline no-underline text-xs px-3 py-2" title="Tukar Data Profil Antar Dua Akun">
+                <a href="<?= site_url('email/swap_data') ?>" class="btn btn-outline no-underline text-xs px-3 py-2 flex-1 sm:flex-none justify-center" title="Tukar Data Profil Antar Dua Akun">
                     <i class="fas fa-exchange-alt mr-1.5 text-slate-700"></i> Tukar Data
                 </a>
-                <a href="<?= site_url('email/create') ?>" class="whitespace-nowrap btn btn-outline no-underline text-xs px-3 py-2">
+                <a href="<?= site_url('email/create') ?>" class="btn btn-outline no-underline text-xs px-3 py-2 flex-1 sm:flex-none justify-center">
                     <i class="fas fa-plus mr-1.5 text-slate-700"></i> Tambah
                 </a>
             <?php endif; ?>
@@ -51,7 +51,7 @@
                 <i class="fas fa-chevron-down text-[10px]"></i>
             </button>
 
-            <form id="emailFilterForm" method="GET" action="<?= site_url('email') ?>" class="hidden md:grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+            <form id="emailFilterForm" method="GET" action="<?= site_url('email') ?>" class="hidden md:grid grid-cols-1 md:grid-cols-12 gap-y-4 gap-x-4 items-end">
                 <div class="md:col-span-3 lg:col-span-5">
                     <label class="block text-xs font-bold text-slate-700 mb-1 uppercase tracking-tight">Pencarian</label>
                     <div class="relative">

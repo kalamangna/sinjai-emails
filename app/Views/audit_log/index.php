@@ -65,7 +65,7 @@
                 <i class="fas fa-chevron-down text-[10px]"></i>
             </button>
 
-            <form id="auditFilterForm" method="GET" action="<?= site_url('audit-trail') ?>" class="hidden md:grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+            <form id="auditFilterForm" method="GET" action="<?= site_url('audit-trail') ?>" class="hidden md:grid grid-cols-1 md:grid-cols-12 gap-y-4 gap-x-4 items-end">
 
                 <!-- Search -->
                 <div class="md:col-span-4">

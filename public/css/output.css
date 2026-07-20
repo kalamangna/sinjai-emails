@@ -2547,10 +2547,6 @@ input:checked + .toggle-bg {
   max-width: 95vw;
 }
 
-.max-w-full {
-  max-width: 100%;
-}
-
 .max-w-md {
   max-width: 28rem;
 }
@@ -3139,6 +3135,10 @@ input:checked + .toggle-bg {
 
 .gap-y-3 {
   row-gap: 0.75rem;
+}
+
+.gap-y-4 {
+  row-gap: 1rem;
 }
 
 .space-x-2 > :not([hidden]) ~ :not([hidden]) {
