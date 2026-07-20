@@ -21,7 +21,7 @@
                             <i class="fas fa-lock text-xs"></i>
                         </span>
                         <input type="password" name="old_password" id="old_password" required
-                            class="block w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all"
+                            class="block w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all placeholder-slate-400"
                             placeholder="••••••••">
                     </div>
                 </div>
@@ -33,7 +33,7 @@
                             <i class="fas fa-key text-xs"></i>
                         </span>
                         <input type="password" name="new_password" id="new_password" required minlength="8"
-                            class="block w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all"
+                            class="block w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all placeholder-slate-400"
                             placeholder="Min. 8 karakter">
                     </div>
                 </div>
@@ -45,7 +45,7 @@
                             <i class="fas fa-check-double text-xs"></i>
                         </span>
                         <input type="password" name="confirm_password" id="confirm_password" required minlength="8"
-                            class="block w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all"
+                            class="block w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all placeholder-slate-400"
                             placeholder="••••••••">
                     </div>
                 </div>

@@ -79,7 +79,7 @@
                 <div class="flex flex-col sm:flex-row gap-4 items-end">
                     <div class="flex-grow w-full">
                         <label for="password" class="block text-xs font-bold text-slate-700 uppercase tracking-widest mb-2">Sandi Dokumen (Opsional)</label>
-                        <input type="password" id="password" name="password" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm transition-all" placeholder="Masukkan sandi jika PDF terenkripsi...">
+                        <input type="password" id="password" name="password" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm transition-all placeholder-slate-400" placeholder="Masukkan sandi jika PDF terenkripsi...">
                     </div>
                     <button type="submit" class="w-full sm:w-auto btn btn-solid flex items-center justify-center gap-2 h-[38px] shrink-0">
                         <i class="fas fa-shield-alt text-xs"></i> Uji Keaslian Dokumen

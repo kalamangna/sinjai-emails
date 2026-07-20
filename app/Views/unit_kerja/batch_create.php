@@ -96,7 +96,7 @@
 
                         <div>
                             <label for="unit_kerja_names" class="block text-sm font-medium text-slate-700 mb-1">Daftar Nama Unit Kerja</label>
-                            <textarea class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 min-h-[300px] font-mono uppercase placeholder-slate-200 custom-scrollbar" id="unit_kerja_names" name="unit_kerja_names" placeholder="CONTOH:&#10;DINAS KESEHATAN&#10;DINAS PENDIDIKAN" required></textarea>
+                            <textarea class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 min-h-[300px] font-mono uppercase placeholder-slate-200 custom-scrollbar placeholder-slate-400" id="unit_kerja_names" name="unit_kerja_names" placeholder="Dinas Kesehatan&#10;Dinas Pendidikan" required></textarea>
                         </div>
 
                         <div class="flex justify-end pt-6 border-t border-slate-100">

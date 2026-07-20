@@ -630,6 +630,15 @@ class EmailService
             $data['nik'] = $cleanNik;
         }
 
+        if (!empty($data['nip'])) {
+            $cleanNip = str_replace([' ', '.', '-', '\''], '', $data['nip']);
+            $existing_nip = $this->emailModel->where('nip', $cleanNip)->first();
+            if ($existing_nip) {
+                throw new Exception('NIP sudah digunakan oleh akun lain (' . $existing_nip['email'] . ').');
+            }
+            $data['nip'] = $cleanNip;
+        }
+
         try {
             $cpanelApi->create_email_account($data['email'], $data['password'], $data['quota'] ?? 1024);
         } catch (\Throwable $e) {
@@ -724,6 +733,28 @@ class EmailService
 
         $sourceRecord = $this->emailModel->where('user', $username)->first();
         if (!$sourceRecord) throw new Exception('Akun asal tidak ditemukan.');
+
+        if (!empty($profileData['nik'])) {
+            $cleanNik = str_replace([' ', '.', '-', '\''], '', $profileData['nik']);
+            $profileData['nik'] = $cleanNik;
+            if ($cleanNik !== $sourceRecord['nik']) {
+                $existingNik = $this->emailModel->where('nik', $cleanNik)->where('id !=', $sourceRecord['id'])->first();
+                if ($existingNik) {
+                    throw new Exception('NIK sudah digunakan oleh akun lain (' . $existingNik['email'] . ').');
+                }
+            }
+        }
+
+        if (!empty($profileData['nip'])) {
+            $cleanNip = str_replace([' ', '.', '-', '\''], '', $profileData['nip']);
+            $profileData['nip'] = $cleanNip;
+            if ($cleanNip !== $sourceRecord['nip']) {
+                $existingNip = $this->emailModel->where('nip', $cleanNip)->where('id !=', $sourceRecord['id'])->first();
+                if ($existingNip) {
+                    throw new Exception('NIP sudah digunakan oleh akun lain (' . $existingNip['email'] . ').');
+                }
+            }
+        }
 
         // 1. Handle username change in cPanel if needed
         if ($newUser !== $username) {

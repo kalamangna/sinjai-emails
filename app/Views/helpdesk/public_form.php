@@ -127,7 +127,7 @@
                                     <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-700">
                                         <i class="fas fa-user text-xs"></i>
                                     </span>
-                                    <input type="text" class="block w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all uppercase placeholder:text-slate-400 placeholder:font-normal" id="nama_pemohon" name="nama_pemohon" value="<?= old('nama_pemohon') ?>" required placeholder="Contoh: BUDI SANTOSO, S.Kom">
+                                    <input type="text" class="block w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all uppercase placeholder:text-slate-400 placeholder:font-normal placeholder-slate-400" id="nama_pemohon" name="nama_pemohon" value="<?= old('nama_pemohon') ?>" required placeholder="Budi Santoso, S.Kom">
                                 </div>
                             </div>
                             <div>
@@ -136,7 +136,7 @@
                                     <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-700">
                                         <i class="fas fa-id-card text-xs"></i>
                                     </span>
-                                    <input type="text" class="block w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all font-mono placeholder:text-slate-400 placeholder:font-normal" id="nip_pemohon" name="nip_pemohon" value="<?= old('nip_pemohon') ?>" required placeholder="Contoh: 19800101...">
+                                    <input type="text" class="block w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all font-mono placeholder:text-slate-400 placeholder:font-normal placeholder-slate-400" id="nip_pemohon" name="nip_pemohon" value="<?= old('nip_pemohon') ?>" required placeholder="19800101...">
                                 </div>
                             </div>
                         </div>
@@ -148,7 +148,7 @@
                                     <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-700">
                                         <i class="fab fa-whatsapp text-xs"></i>
                                     </span>
-                                    <input type="text" class="block w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all font-mono placeholder:text-slate-400 placeholder:font-normal" id="kontak_whatsapp" name="kontak_whatsapp" value="<?= old('kontak_whatsapp') ?>" required placeholder="Contoh: 08123456789">
+                                    <input type="text" class="block w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all font-mono placeholder:text-slate-400 placeholder:font-normal placeholder-slate-400" id="kontak_whatsapp" name="kontak_whatsapp" value="<?= old('kontak_whatsapp') ?>" required placeholder="08123456789">
                                 </div>
                             </div>
                             <div>

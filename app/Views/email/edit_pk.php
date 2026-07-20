@@ -31,7 +31,7 @@
                         </div>
                         <div>
                             <label for="nomor" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Nomor PK</label>
-                            <input type="text" name="nomor" id="nomor" value="<?= esc($pk_data['nomor'] ?? '') ?>" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all font-mono" placeholder="Contoh: 001/PK/2026" required>
+                            <input type="text" name="nomor" id="nomor" value="<?= esc($pk_data['nomor'] ?? '') ?>" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all font-mono placeholder-slate-400" placeholder="001/PK/2026" required>
                         </div>
                         <div></div>
                         <div>
@@ -59,7 +59,7 @@
                         </div>
                         <div class="md:col-span-2">
                             <label for="gaji_terbilang" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Gaji Terbilang (Rupiah)</label>
-                            <textarea name="gaji_terbilang" id="gaji_terbilang" rows="2" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all" placeholder="CONTOH: TIGA JUTA DUA RATUS TIGA RIBU ENAM RATUS" required><?= esc($pk_data['gaji_terbilang'] ?? '') ?></textarea>
+                            <textarea name="gaji_terbilang" id="gaji_terbilang" rows="2" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all placeholder-slate-400" placeholder="Tiga Juta Dua Ratus Tiga Ribu Enam Ratus" required><?= esc($pk_data['gaji_terbilang'] ?? '') ?></textarea>
                         </div>
                     </div>
                 </div>

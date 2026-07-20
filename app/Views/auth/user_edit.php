@@ -18,12 +18,12 @@
             
             <div>
                 <label for="username" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Username</label>
-                <input type="text" id="username" name="username" value="<?= old('username', $user['username']) ?>" required class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 uppercase transition-all" placeholder="Masukkan username...">
+                <input type="text" id="username" name="username" value="<?= old('username', $user['username']) ?>" required class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 uppercase transition-all placeholder-slate-400" placeholder="Masukkan username...">
             </div>
 
             <div>
                 <label for="password" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Password <span class="text-slate-500 font-normal italic">(Biarkan kosong jika tidak diubah)</span></label>
-                <input type="password" id="password" name="password" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all" placeholder="Masukkan password baru (opsional)...">
+                <input type="password" id="password" name="password" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all placeholder-slate-400" placeholder="Masukkan password baru (opsional)...">
                 <p class="mt-1 text-[10px] text-slate-500 uppercase font-bold tracking-tight">Minimal 6 karakter jika diisi.</p>
             </div>
 

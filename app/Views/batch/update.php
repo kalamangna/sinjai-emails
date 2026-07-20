@@ -55,7 +55,7 @@
 
                     <div>
                         <label for="identifier_input" id="identifier_label" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Daftar NIK</label>
-                        <textarea id="identifier_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px]" placeholder="Satu pengenal per baris..."></textarea>
+                        <textarea id="identifier_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px] placeholder-slate-400" placeholder="Satu pengenal per baris..."></textarea>
                     </div>
                 </div>
 
@@ -70,51 +70,51 @@
                             <div class="mb-1">
                                 <label for="name_input" class="block text-sm font-medium text-slate-700 uppercase tracking-tight">Nama Baru</label>
                             </div>
-                            <textarea id="name_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px]" placeholder="Nama Lengkap..."></textarea>
+                            <textarea id="name_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px] placeholder-slate-400" placeholder="Nama lengkap..."></textarea>
                         </div>
                         <div>
                             <label for="nik_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">NIK Baru</label>
-                            <textarea id="nik_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px]" placeholder="16 digit NIK..."></textarea>
+                            <textarea id="nik_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px] placeholder-slate-400" placeholder="16 digit NIK..."></textarea>
                         </div>
                         
                         <div>
                             <label for="nip_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">NIP Baru</label>
-                            <textarea id="nip_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px]" placeholder="18 digit NIP..."></textarea>
+                            <textarea id="nip_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px] placeholder-slate-400" placeholder="18 digit NIP..."></textarea>
                         </div>
                         <div>
                             <label for="golongan_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Golongan Baru</label>
-                            <textarea id="golongan_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px]" placeholder="IX, VII, etc..."></textarea>
+                            <textarea id="golongan_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px] placeholder-slate-400" placeholder="IX, VII, etc..."></textarea>
                         </div>
 
                         <div>
                             <label for="jabatan_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Jabatan Baru</label>
-                            <textarea id="jabatan_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 uppercase transition-all custom-scrollbar min-h-[300px]" placeholder="Nama Jabatan..."></textarea>
+                            <textarea id="jabatan_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 uppercase transition-all custom-scrollbar min-h-[300px] placeholder-slate-400" placeholder="Nama jabatan..."></textarea>
                         </div>
                         <div>
                             <label for="pendidikan_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Pendidikan</label>
-                            <textarea id="pendidikan_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px]" placeholder="S1 - Teknik Informatika..."></textarea>
+                            <textarea id="pendidikan_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px] placeholder-slate-400" placeholder="S1 - Teknik Informatika..."></textarea>
                         </div>
 
                         <div>
                             <label for="gelar_depan_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Gelar Depan</label>
-                            <textarea id="gelar_depan_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px]" placeholder="H., Dra., etc..."></textarea>
+                            <textarea id="gelar_depan_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px] placeholder-slate-400" placeholder="H., Dra., etc..."></textarea>
                         </div>
                         <div>
                             <label for="gelar_belakang_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Gelar Belakang</label>
-                            <textarea id="gelar_belakang_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px]" placeholder="S.Kom, M.Si, etc..."></textarea>
+                            <textarea id="gelar_belakang_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px] placeholder-slate-400" placeholder="S.Kom, M.Si, etc..."></textarea>
                         </div>
 
                         <div>
                             <label for="tempat_lahir_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Tempat Lahir</label>
-                            <textarea id="tempat_lahir_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px]" placeholder="Sinjai, Makassar, etc..."></textarea>
+                            <textarea id="tempat_lahir_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px] placeholder-slate-400" placeholder="Sinjai, Makassar, etc..."></textarea>
                         </div>
                         <div>
                             <label for="tanggal_lahir_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Tgl Lahir</label>
-                            <textarea id="tanggal_lahir_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px]" placeholder="YYYY-MM-DD"></textarea>
+                            <textarea id="tanggal_lahir_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px] placeholder-slate-400" placeholder="YYYY-MM-DD"></textarea>
                         </div>
                         <div>
                             <label for="unit_kerja_id_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Unit Kerja ID Baru</label>
-                            <textarea id="unit_kerja_id_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px]" placeholder="ID Angka..."></textarea>
+                            <textarea id="unit_kerja_id_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px] placeholder-slate-400" placeholder="ID angka..."></textarea>
                         </div>
                     </div>
 

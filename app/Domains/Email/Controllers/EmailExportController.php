@@ -218,7 +218,7 @@ class EmailExportController extends BaseController
     {
         $historyModel = new \App\Shared\Models\ExportHistoryModel();
         
-        $data['title'] = 'Riwayat Export Laporan';
+        $data['title'] = 'Riwayat Laporan';
         
         $role = session()->get('role');
         if ($role !== 'super_admin') {
@@ -228,6 +228,14 @@ class EmailExportController extends BaseController
         $histories = $historyModel->orderBy('created_at', 'DESC')->limit(100)->find();
         
         $unitKerjaModel = new \App\Domains\UnitKerja\Models\UnitKerjaModel();
+        $statusAsnModel = new \App\Shared\Models\StatusAsnModel();
+        
+        $asnList = $statusAsnModel->findAll();
+        $asnMap = [];
+        foreach ($asnList as $asn) {
+            $asnMap[$asn['id']] = $asn['nama_status_asn'];
+        }
+
         foreach ($histories as &$h) {
             $filters = json_decode($h['filters'], true);
             $readable = [];
@@ -237,7 +245,10 @@ class EmailExportController extends BaseController
                     if ($unit) $readable[] = "Unit: " . $unit['nama_unit_kerja'];
                 }
                 if (!empty($filters['search'])) $readable[] = "Cari: " . $filters['search'];
-                if (!empty($filters['status_asn'])) $readable[] = "ASN: " . $filters['status_asn'];
+                if (!empty($filters['status_asn'])) {
+                    $asnName = $asnMap[$filters['status_asn']] ?? $filters['status_asn'];
+                    $readable[] = "ASN: " . $asnName;
+                }
                 if (!empty($filters['bsre_status'])) $readable[] = "BSrE: " . $filters['bsre_status'];
                 if (isset($filters['pimpinan_desa']) && $filters['pimpinan_desa'] == 0) $readable[] = "Inc. Desa: Tidak";
             }

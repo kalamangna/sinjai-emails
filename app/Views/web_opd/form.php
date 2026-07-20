@@ -27,7 +27,7 @@
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-700">
                             <i class="fas fa-link text-xs"></i>
                         </span>
-                        <input type="text" class="block w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 lowercase placeholder-slate-200" id="domain" name="domain" value="<?= esc($website['domain'] ?? '') ?>" placeholder="contoh: dinas.sinjaikab.go.id">
+                        <input type="text" class="block w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 lowercase placeholder-slate-200 placeholder-slate-400" id="domain" name="domain" value="<?= esc($website['domain'] ?? '') ?>" placeholder="dinas.sinjaikab.go.id">
                     </div>
                 </div>
 
@@ -43,7 +43,7 @@
                 <!-- Keterangan -->
                 <div>
                     <label for="keterangan" class="block text-sm font-medium text-slate-700 mb-1">Keterangan</label>
-                    <textarea class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm min-h-[100px] placeholder-slate-200 custom-scrollbar" id="keterangan" name="keterangan" rows="3" placeholder="Tambahkan catatan teknis jika diperlukan..."><?= esc($website['keterangan'] ?? '') ?></textarea>
+                    <textarea class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm min-h-[100px] placeholder-slate-200 custom-scrollbar placeholder-slate-400" id="keterangan" name="keterangan" rows="3" placeholder="Tambahkan catatan teknis jika diperlukan..."><?= esc($website['keterangan'] ?? '') ?></textarea>
                 </div>
 
                 <!-- Tombol Aksi -->

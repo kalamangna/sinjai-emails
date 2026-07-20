@@ -95,7 +95,7 @@
 
                         <div>
                             <label class="block text-[10px] font-bold text-slate-700 mb-1.5 uppercase tracking-widest">Catatan Admin (Internal)</label>
-                            <textarea name="admin_notes" rows="4" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 text-sm font-medium text-slate-800 transition-all" placeholder="Catatan internal untuk tim..."><?= esc($ticket['admin_notes']) ?></textarea>
+                            <textarea name="admin_notes" rows="4" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 text-sm font-medium text-slate-800 transition-all placeholder-slate-400" placeholder="Catatan internal untuk tim..."><?= esc($ticket['admin_notes']) ?></textarea>
                         </div>
 
                         <?php if ($ticket['status'] !== 'Selesai'): ?>

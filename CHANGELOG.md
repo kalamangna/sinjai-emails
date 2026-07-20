@@ -5,6 +5,26 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [21 Juli 2026]
+
+## Refactor & Konsistensi Tampilan
+
+- **Penyelarasan Teks Placeholder**:
+    - Memangkas kata 'contoh' dan melakukan standarisasi *Sentence case* pada atribut `placeholder` di seluruh form sistem.
+    - Menyederhanakan seluruh placeholder pada form filter pencarian (yang sebelumnya panjang) menjadi cukup `"Cari..."` agar antarmuka lebih bersih dan to-the-point.
+    - Menerapkan *class* Tailwind `placeholder-slate-400` pada seluruh field `<input>` dan `<textarea>` secara global untuk menjaga konsistensi warna yang elegan.
+
+## Perbaikan Bug & Ketahanan Data
+
+- **Validasi Ketat Duplikat NIK & NIP (`EmailService.php`)**:
+    - Menambahkan validasi keamanan tambahan di form *Edit Profil* dan *Tambah Akun Baru*. Sistem kini otomatis memeriksa apakah NIP/NIK baru yang diinputkan telah terdaftar pada entitas akun/email pengguna lain.
+    - Menampilkan *flash error message* yang jelas (contoh: *"NIP sudah digunakan oleh akun lain (budi@sinjaikab.go.id)"*).
+- **Keterbacaan Filter Laporan (`EmailExportController.php`)**:
+    - Memperbaiki tampilan paramter pencarian di halaman *Riwayat Laporan* yang sebelumnya hanya menampilkan angka ID database dari *Status ASN* (contoh: `ASN: 1`). Sistem kini membaca referensi master dan menampilkannya sebagai nama status yang jelas (contoh: `ASN: PNS`).
+    - Menyederhanakan judul halaman dari "Riwayat Export Laporan" menjadi "Riwayat Laporan".
+
+---
+
 # [20 Juli 2026]
 
 ## Refactor & Penghapusan Fitur

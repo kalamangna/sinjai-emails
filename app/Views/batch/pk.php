@@ -55,7 +55,7 @@
 
                     <div>
                         <label for="identifier_input" id="identifier_label" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Daftar NIK (Satu per baris)</label>
-                        <textarea id="identifier_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px]" placeholder="Satu pengenal per baris..."></textarea>
+                        <textarea id="identifier_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px] placeholder-slate-400" placeholder="Satu pengenal per baris..."></textarea>
                     </div>
                 </div>
 
@@ -68,27 +68,27 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label for="nomor_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Nomor PK</label>
-                            <textarea id="nomor_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px]" placeholder="Satu nomor per baris..."></textarea>
+                            <textarea id="nomor_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px] placeholder-slate-400" placeholder="Satu nomor per baris..."></textarea>
                         </div>
                         <div>
                             <label for="gaji_nominal_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Gaji (Nominal)</label>
-                            <textarea id="gaji_nominal_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px]" placeholder="Satu nominal per baris..."></textarea>
+                            <textarea id="gaji_nominal_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px] placeholder-slate-400" placeholder="Satu nominal per baris..."></textarea>
                         </div>
                     </div>
 
                     <div>
                         <label for="gaji_terbilang_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Gaji (Terbilang)</label>
-                        <textarea id="gaji_terbilang_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px]" placeholder="Satu terbilang per baris..."></textarea>
+                        <textarea id="gaji_terbilang_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px] placeholder-slate-400" placeholder="Satu terbilang per baris..."></textarea>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label for="tanggal_kontrak_awal_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Tanggal Awal</label>
-                            <textarea id="tanggal_kontrak_awal_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px]" placeholder="YYYY-MM-DD"></textarea>
+                            <textarea id="tanggal_kontrak_awal_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px] placeholder-slate-400" placeholder="YYYY-MM-DD"></textarea>
                         </div>
                         <div>
                             <label for="tanggal_kontrak_akhir_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Tanggal Akhir</label>
-                            <textarea id="tanggal_kontrak_akhir_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px]" placeholder="YYYY-MM-DD"></textarea>
+                            <textarea id="tanggal_kontrak_akhir_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px] placeholder-slate-400" placeholder="YYYY-MM-DD"></textarea>
                         </div>
                     </div>
                 </div>

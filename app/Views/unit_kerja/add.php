@@ -12,7 +12,7 @@
                 <?= csrf_field() ?>
                 <div>
                     <label for="nama_unit_kerja" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Nama Unit Kerja</label>
-                    <input type="text" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 uppercase placeholder-slate-200 transition-all" id="nama_unit_kerja" name="nama_unit_kerja" value="<?= old('nama_unit_kerja') ?>" required placeholder="CONTOH: DINAS KOMUNIKASI DAN INFORMATIKA">
+                    <input type="text" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 uppercase placeholder-slate-200 transition-all placeholder-slate-400" id="nama_unit_kerja" name="nama_unit_kerja" value="<?= old('nama_unit_kerja') ?>" required placeholder="Dinas Komunikasi dan Informatika">
                 </div>
                 <div>
                     <label for="parent_id" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Unit Induk <span class="text-slate-700 font-normal">(Opsional)</span></label>
