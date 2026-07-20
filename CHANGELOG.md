@@ -20,7 +20,7 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **Peningkatan Responsivitas Layout (Mobile-First & Touch Optimization)**:
     - **Layout Utama (`main.php`)**: Menyesuaikan padding konten utama pada smartphone (`p-4 sm:p-6`) agar lebih lega di layar kecil.
     - **Form Filter Collapsible**: Menambahkan tombol expand/collapse filter pencarian pada halaman Email (`email/index.php`), Detail Unit Kerja (`unit_kerja_detail.php`), dan Audit Trail (`audit_log/index.php`) khusus tampilan mobile (`md:hidden`).
-    - **Action Bar Scrollable**: Menyesuaikan tombol aksi (Sync, Export, Batch PK, Tambah) agar tersusun berbaris horizontal dengan touch scroll halus (`custom-scrollbar`) pada layar smartphone.
+    - **Action Bar Scrollable**: Menyesuaikan tombol aksi (Sync, Export, Batch PK, Tambah, Edit Profil, Pensiun, Hapus) pada halaman Detail Akun (`detail.php`), Email, Unit Kerja, dan Helpdesk agar tersusun berbaris horizontal dengan touch scroll halus (`custom-scrollbar`) pada layar smartphone.
     - **Tabel Touch-pan**: Menambahkan `custom-scrollbar touch-pan-x` dan batas lebar minimum (`min-w-[650px]` / `min-w-[700px]`) pada tabel data di modul Email, Unit Kerja, Audit Trail, dan Helpdesk.
 
 ## Perbaikan Bug

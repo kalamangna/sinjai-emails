@@ -33,7 +33,7 @@
     </div>
 
     <!-- Informasi Utama -->
-    <div class="bg-white border border-slate-200 rounded-lg p-6 lg:p-8 shadow-sm">
+    <div class="bg-white border border-slate-200 rounded-lg p-4 sm:p-6 lg:p-8 shadow-sm">
         <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
             <div class="flex flex-col md:flex-row items-center gap-6">
                 <div class="w-24 h-24 bg-slate-100 rounded-2xl flex items-center justify-center text-slate-700 border border-slate-200 shadow-sm shrink-0">
@@ -42,7 +42,7 @@
 
                 <div class="text-center md:text-left space-y-2">
                     <div class="flex flex-col md:flex-row md:items-center gap-2">
-                        <p class="text-2xl font-bold text-slate-800 break-all"><?= esc($email['email']) ?></p>
+                        <p class="text-xl sm:text-2xl font-bold text-slate-800 break-all"><?= esc($email['email']) ?></p>
                         <button class="text-slate-700 hover:text-slate-800 transition-colors p-1" onclick="copyToClipboard('<?= esc($email['email'], 'js') ?>', this)" title="Salin Email">
                             <i class="fas fa-copy"></i>
                         </button>
@@ -115,22 +115,22 @@
         <div class="lg:col-span-2 space-y-6">
             <!-- Data Personal & Kepegawaian -->
             <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
-                <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+                <div class="px-4 sm:px-6 py-4 border-b border-slate-100 bg-slate-50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Profil</h3>
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-2 overflow-x-auto max-w-full custom-scrollbar pb-1 shrink-0">
                         <?php if (in_array(session()->get('role'), ['super_admin', 'admin']) && !empty($email['nip']) && ($email['status_asn_id'] ?? 0) != 3): ?>
-                            <button onclick="syncPegawai('<?= esc($email['nip'], 'js') ?>', this)" class="btn btn-outline btn-xs uppercase tracking-widest transition-colors flex items-center" title="Sinkronkan Data Pegawai dari API">
+                            <button onclick="syncPegawai('<?= esc($email['nip'], 'js') ?>', this)" class="btn btn-outline btn-xs uppercase tracking-widest transition-colors flex items-center whitespace-nowrap" title="Sinkronkan Data Pegawai dari API">
                                 <i class="fas fa-sync-alt mr-1.5 text-slate-500"></i> Sync Pegawai
                             </button>
                         <?php endif; ?>
                         <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
-                            <a href="<?= site_url('email/edit_profile/' . $email['user']) ?>" class="btn btn-outline btn-xs no-underline">
+                            <a href="<?= site_url('email/edit_profile/' . $email['user']) ?>" class="btn btn-outline btn-xs no-underline whitespace-nowrap">
                                 <i class="fas fa-edit mr-1.5"></i> Edit Profil
                             </a>
                             <?php if (empty($email['pensiun_at'])): ?>
                                 <form action="<?= site_url('email/mark_pensiun/' . $email['user']) ?>" method="POST" class="inline" onsubmit="return confirm('Tandai akun ini sebagai Pensiun? Akun akan langsung ditangguhkan dan dihapus permanen 30 hari dari sekarang.');">
                                     <?= csrf_field() ?>
-                                    <button type="submit" class="btn btn-outline btn-xs text-amber-600 border-amber-200 hover:bg-amber-50" title="Tandai Pensiun">
+                                    <button type="submit" class="btn btn-outline btn-xs text-amber-600 border-amber-200 hover:bg-amber-50 whitespace-nowrap" title="Tandai Pensiun">
                                         <i class="fas fa-user-slash mr-1.5"></i> Pensiun
                                     </button>
                                 </form>
@@ -138,7 +138,7 @@
                             <?php if (session()->get('role') === 'super_admin'): ?>
                                 <form action="<?= site_url('email/delete/' . $email['id']) ?>" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus akun ini?');">
                                     <?= csrf_field() ?>
-                                    <button type="submit" class="btn btn-outline btn-xs text-red-600 border-red-200 hover:bg-red-50" title="Hapus Akun">
+                                    <button type="submit" class="btn btn-outline btn-xs text-red-600 border-red-200 hover:bg-red-50 whitespace-nowrap" title="Hapus Akun">
                                         <i class="fas fa-trash-alt mr-1.5"></i> Hapus
                                     </button>
                                 </form>
