@@ -199,18 +199,19 @@ class BsreController extends BaseController
      */
     public function registerUser()
     {
+        $nik = $this->request->getVar('nik');
         $nama = $this->request->getVar('nama');
         $email = $this->request->getVar('email');
 
-        if (empty($nama) || empty($email)) {
+        if (empty($nik) || empty($nama) || empty($email)) {
             return $this->response->setJSON([
                 'status' => 'error',
-                'message' => 'Nama dan Email wajib diisi'
+                'message' => 'NIK, Nama, dan Email wajib diisi'
             ])->setStatusCode(400);
         }
 
         $bsreApi = new BsreApi();
-        $result = $bsreApi->registerUser($nama, $email);
+        $result = $bsreApi->registerUser($nama, $email, $nik);
 
         if ($result['success']) {
             return $this->response->setJSON([

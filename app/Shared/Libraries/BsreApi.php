@@ -97,9 +97,10 @@ class BsreApi
      * @param string $email Email Dinas/Resmi
      * @return array
      */
-    public function registerUser(string $nama, string $email): array
+    public function registerUser(string $nama, string $email, string $nik): array
     {
         $payload = [
+            'nik'   => $nik,
             'nama'  => $nama,
             'email' => $email
         ];
