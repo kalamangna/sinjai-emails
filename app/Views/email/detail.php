@@ -68,7 +68,7 @@
                                         Sinkronkan Status
                                         <div class="tooltip-arrow" data-popper-arrow></div>
                                     </div>
-                                    <button id="register-bsre-btn" onclick="registerBsreUser('<?= esc($email['name'], 'js') ?>', '<?= esc($email['email'], 'js') ?>', '<?= esc($email['nik'] ?? '', 'js') ?>')" class="hidden btn btn-outline btn-xs ml-2" title="Daftarkan ke BSrE">
+                                    <button id="register-bsre-btn" onclick="registerBsreUser('<?= esc($email['name'], 'js') ?>', '<?= esc($email['email'], 'js') ?>')" class="hidden btn btn-outline btn-xs ml-2" title="Daftarkan ke BSrE">
                                         <i class="fas fa-user-plus mr-1"></i> Daftarkan BSrE
                                     </button>
                                 <?php endif; ?>
@@ -512,7 +512,7 @@
         renderBsreStatus(initialStatus);
     });
 
-    function registerBsreUser(nama, email, nik) {
+    function registerBsreUser(nama, email) {
         if (!confirm(`Apakah Anda yakin ingin mendaftarkan ${nama} (${email}) ke BSrE?`)) {
             return;
         }
@@ -522,7 +522,6 @@
         const formData = new FormData();
         formData.append('nama', nama);
         formData.append('email', email);
-        formData.append('nik', nik);
         formData.append('<?= csrf_token() ?>', '<?= csrf_hash() ?>');
 
         fetch('<?= site_url('bsre/register') ?>', {

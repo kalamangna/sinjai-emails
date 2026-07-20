@@ -280,7 +280,7 @@
                                     </td>
                                 <?php endif; ?>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div id="bsre-status-<?= esc($email['user']) ?>" data-email="<?= esc($email['email']) ?>" data-name="<?= esc($email['name']) ?>" data-nik="<?= esc($email['nik'] ?? '') ?>" data-status="<?= esc($email['bsre_status'] ?? '') ?>">
+                                    <div id="bsre-status-<?= esc($email['user']) ?>" data-email="<?= esc($email['email']) ?>" data-name="<?= esc($email['name']) ?>" data-status="<?= esc($email['bsre_status'] ?? '') ?>">
                                         <?php
                                         $isNeedTte = !empty($email['nip']) || ($email['pimpinan'] ?? 0) == 1 || ($email['pimpinan_desa'] ?? 0) == 1 || !empty($email['unit_kerja_id']);
 
@@ -782,7 +782,6 @@ echo view('components/modal', [
         for (const container of validContainers) {
             const email = container.getAttribute('data-email');
             const name = container.getAttribute('data-name');
-            const nik = container.getAttribute('data-nik');
             
             // Scroll ke container yang sedang diproses
             container.scrollIntoView({
@@ -796,7 +795,6 @@ echo view('components/modal', [
             const formData = new FormData();
             formData.append('nama', name);
             formData.append('email', email);
-            formData.append('nik', nik);
             formData.append('<?= csrf_token() ?>', '<?= csrf_hash() ?>');
 
             try {
