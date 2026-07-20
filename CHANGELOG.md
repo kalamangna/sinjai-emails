@@ -7,6 +7,14 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 # [20 Juli 2026]
 
+## Refactor & Penghapusan Fitur
+
+- **Penghapusan Fitur Registrasi BSrE**:
+    - Menghapus endpoint `POST /bsre/register` dari `Routes.php`.
+    - Menghapus method `registerUser()` dari `BsreController.php` dan pustaka `BsreApi.php`.
+    - Menghapus tombol pendaftaran BSrE ("Daftarkan BSrE" & "Register BSrE" batch) beserta fungsi JavaScript `registerBsreUser()` & `batchRegisterBsre()` pada tampilan detail akun (`detail.php`) dan detail unit kerja (`unit_kerja_detail.php`).
+    - Menghapus berkas skrip uji coba redundan `public/test_bsre_reg.php`.
+
 ## Perbaikan Bug
 
 - **Fix: Error "Invalid file" pada Halaman Email (Unit Kerja, Eselon, PNS, PPPK)**:

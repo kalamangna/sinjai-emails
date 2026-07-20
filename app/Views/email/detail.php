@@ -68,9 +68,6 @@
                                         Sinkronkan Status
                                         <div class="tooltip-arrow" data-popper-arrow></div>
                                     </div>
-                                    <button id="register-bsre-btn" onclick="registerBsreUser('<?= esc($email['name'], 'js') ?>', '<?= esc($email['email'], 'js') ?>', '<?= esc($email['nik'] ?? '', 'js') ?>')" class="hidden btn btn-outline btn-xs ml-2" title="Daftarkan ke BSrE">
-                                        <i class="fas fa-user-plus mr-1"></i> Daftarkan BSrE
-                                    </button>
                                 <?php endif; ?>
                             </div>
                         <?php else: ?>
@@ -441,15 +438,6 @@
 
         container.innerHTML = `<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${colorClass}">${label}</span>`;
 
-        // Handle Register Button Visibility
-        const registerBtn = document.getElementById('register-bsre-btn');
-        if (registerBtn) {
-            if (status === 'NOT_REGISTERED') {
-                registerBtn.classList.remove('hidden');
-            } else {
-                registerBtn.classList.add('hidden');
-            }
-        }
 
         // Handle QR Code Visibility
         const qrcodeCard = document.getElementById('qrcode-card');
@@ -472,14 +460,6 @@
         syncSingleBsreStatus(email, 'bsre-status-container').then(result => {
             if (result && result.success) {
                 const status = result.status;
-                const registerBtn = document.getElementById('register-bsre-btn');
-                if (registerBtn) {
-                    if (status === 'NOT_REGISTERED') {
-                        registerBtn.classList.remove('hidden');
-                    } else {
-                        registerBtn.classList.add('hidden');
-                    }
-                }
 
                 const qrcodeCard = document.getElementById('qrcode-card');
                 const qrcodeImage = document.getElementById('qrcode-image');
@@ -512,43 +492,6 @@
         renderBsreStatus(initialStatus);
     });
 
-    function registerBsreUser(nama, email, nik) {
-        if (!confirm(`Apakah Anda yakin ingin mendaftarkan ${nama} (${email}) ke BSrE?`)) {
-            return;
-        }
 
-        showGlobalLoading(true);
-
-        const formData = new FormData();
-        formData.append('nama', nama);
-        formData.append('email', email);
-        formData.append('nik', nik);
-        formData.append('<?= csrf_token() ?>', '<?= csrf_hash() ?>');
-
-        fetch('<?= site_url('bsre/register') ?>', {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(r => r.json()).then(result => {
-                showGlobalLoading(false);
-                if (result.status === 'success') {
-                    alert('Pendaftaran berhasil diajukan ke BSrE!');
-                    syncBsreStatus(email);
-                } else {
-                    let errorMsg = result.message || 'Terjadi kesalahan sistem saat memproses registrasi.';
-                    if (errorMsg.toLowerCase().includes('already') || errorMsg.toLowerCase().includes('terdaftar') || errorMsg.toLowerCase().includes('exist')) {
-                        errorMsg = 'Akun ini tidak dapat diregistrasikan karena email atau NIK pegawai sudah terdaftar di sistem BSrE.';
-                    }
-                    showGlobalError('Gagal Mendaftarkan', errorMsg);
-                }
-            })
-            .catch((err) => {
-                showGlobalLoading(false);
-                showGlobalError('Error Jaringan', 'Gagal menghubungi server aplikasi.');
-            });
-    }
 </script>
 <?= $this->endSection() ?>

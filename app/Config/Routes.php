@@ -227,7 +227,6 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         $routes->get('sync-all', '\App\Domains\Email\Controllers\BsreController::syncAllStatus');
         $routes->get('sync-status', '\App\Domains\Email\Controllers\BsreController::syncStatus');
         $routes->post('sync-status', '\App\Domains\Email\Controllers\BsreController::syncStatus');
-        $routes->post('register', '\App\Domains\Email\Controllers\BsreController::registerUser');
         $routes->post('verify', '\App\Domains\Email\Controllers\BsreController::verifyPdf');
     });
 });

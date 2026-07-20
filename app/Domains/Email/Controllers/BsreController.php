@@ -194,39 +194,6 @@ class BsreController extends BaseController
     }
 
     /**
-     * Mendaftarkan User Baru di BSrE (API v2)
-     * POST /bsre/register
-     */
-    public function registerUser()
-    {
-        $nik = $this->request->getVar('nik');
-        $nama = $this->request->getVar('nama');
-        $email = $this->request->getVar('email');
-
-        if (empty($nama) || empty($email)) {
-            return $this->response->setJSON([
-                'status' => 'error',
-                'message' => 'Nama dan Email wajib diisi'
-            ])->setStatusCode(400);
-        }
-
-        $bsreApi = new BsreApi();
-        $result = $bsreApi->registerUser($nama, $email, $nik ?? '');
-
-        if ($result['success']) {
-            return $this->response->setJSON([
-                'status' => 'success',
-                'data' => $result['data']
-            ]);
-        } else {
-            return $this->response->setJSON([
-                'status' => 'error',
-                'message' => $result['message']
-            ])->setStatusCode($result['code'] ?: 500);
-        }
-    }
-
-    /**
      * Verifikasi TTE File PDF (API v2)
      * POST /bsre/verify
      */

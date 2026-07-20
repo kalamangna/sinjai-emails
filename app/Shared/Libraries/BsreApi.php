@@ -90,68 +90,6 @@ class BsreApi
     }
 
     /**
-     * Register User Baru (API V2)
-     * Endpoint: /api/v2/user/registration
-     * 
-     * @param string $nama Nama Lengkap
-     * @param string $email Email Dinas/Resmi
-     * @return array
-     */
-    public function registerUser(string $nama, string $email, string $nik): array
-    {
-        $payload = [
-            'nik'   => $nik,
-            'nama'  => $nama,
-            'email' => $email
-        ];
-
-        try {
-            $fullUrl = rtrim($this->baseUrl, '/') . '/api/v2/user/registration';
-
-            $response = $this->client->request('POST', $fullUrl, [
-                'auth' => [$this->username, $this->password],
-                'json' => $payload,
-                'http_errors' => false,
-                'headers' => [
-                    'Content-Type' => 'application/json'
-                ]
-            ]);
-
-            $body = json_decode($response->getBody(), true);
-            $statusCode = $response->getStatusCode();
-
-            log_message('info', 'BSrE API Response (Register User): ' . print_r($body, true));
-
-            if ($statusCode >= 200 && $statusCode < 300) {
-                return [
-                    'success' => true,
-                    'data'    => $body,
-                    'code'    => $statusCode
-                ];
-            } else {
-                $msg = $body['message'] ?? $body['error'] ?? $body['error_description'] ?? 'Gagal mendaftarkan user ke BSrE';
-                if ($msg === 'Gagal mendaftarkan user ke BSrE') {
-                    $msg .= '. Raw Response: ' . $response->getBody() . '. Payload sent: ' . json_encode($payload);
-                }
-                return [
-                    'success' => false,
-                    'message' => $msg,
-                    'code'    => $statusCode
-                ];
-            }
-        } catch (\Throwable $e) {
-            $errorMsg = "BSrE API Error (Register User). URL: [{$fullUrl}]. Message: " . $e->getMessage();
-            log_message('error', $errorMsg);
-
-            return [
-                'success' => false,
-                'message' => $errorMsg,
-                'code'    => 500
-            ];
-        }
-    }
-
-    /**
      * Verify PDF (API V2)
      * Endpoint: /api/v2/verify/pdf
      * 
