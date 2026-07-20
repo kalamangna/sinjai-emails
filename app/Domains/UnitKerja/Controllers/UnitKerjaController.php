@@ -90,7 +90,7 @@ class UnitKerjaController extends BaseController
         $data['parent_options'] = $this->unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->findAll();
         $data['title'] = 'Buat Unit Kerja Massal';
 
-        return view('unit_kerja/batchCreate', $data);
+        return view('unit_kerja/batch_create', $data);
     }
 
     public function batchStore()

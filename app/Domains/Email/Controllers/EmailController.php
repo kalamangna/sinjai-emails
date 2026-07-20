@@ -110,7 +110,7 @@ class EmailController extends BaseController
             $data['status_asn_options'] = $this->statusAsnModel->orderBy('nama_status_asn', 'ASC')->findAll();
             $data['eselon_options'] = $this->eselonModel->orderBy('nama_eselon', 'ASC')->findAll();
             $data['title'] = 'Edit Profil';
-            return view('email/editProfile', $data);
+            return view('email/edit_profile', $data);
         } catch (\Throwable $e) {
             return redirect()->to('email')->with('error', $e->getMessage());
         }
@@ -247,7 +247,7 @@ class EmailController extends BaseController
         try {
             $data = $this->emailService->getEmailDetail($username);
             $data['title'] = 'Edit Password';
-            return view('email/editPassword', $data);
+            return view('email/edit_password', $data);
         } catch (\Throwable $e) {
             return redirect()->to('email')->with('error', $e->getMessage());
         }
@@ -280,7 +280,7 @@ class EmailController extends BaseController
         try {
             $data = $this->emailService->getEmailDetail($username);
             $data['title'] = 'Edit PK';
-            return view('email/editPk', $data);
+            return view('email/edit_pk', $data);
         } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
             $data['title'] = 'Edit PK';
