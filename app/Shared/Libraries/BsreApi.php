@@ -128,7 +128,10 @@ class BsreApi
                     'code'    => $statusCode
                 ];
             } else {
-                $msg = $body['message'] ?? $body['error'] ?? 'Gagal mendaftarkan user ke BSrE';
+                $msg = $body['message'] ?? $body['error'] ?? $body['error_description'] ?? 'Gagal mendaftarkan user ke BSrE';
+                if ($msg === 'Gagal mendaftarkan user ke BSrE') {
+                    $msg .= '. Raw Response: ' . $response->getBody();
+                }
                 return [
                     'success' => false,
                     'message' => $msg,
