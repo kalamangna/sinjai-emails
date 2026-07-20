@@ -26,6 +26,9 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## Perbaikan Bug
 
+- **Fix: Error 404 Halaman Hilang pada Ekspor CSV & File Ekspor Unit Kerja (`Routes.php`)**:
+    - Memperbaiki ketidaksesuaian penamaan rute URL ekspor di `Routes.php` yang sebelumnya hanya mendaftarkan format `camelCase` (`exportUnitKerjaCsv`, `exportPnsExcel`, dsb.) sementara tampilan *view* dan skrip JS memanggil rute format `snake_case` (`export_unit_kerja_csv`, `export_single_perjanjian_kerja_pdf`, `eselon_detail`, dsb.).
+    - Menambahkan rute alias *snake_case* pada `Routes.php` sehingga seluruh tautan ekspor (CSV, Excel, PDF, ZIP) dan detail eselon dapat diakses dengan normal tanpa error 404.
 - **Fix: Layout Berantakan pada Halaman Detail Unit Kerja (`unit_kerja_detail.php`)**:
     - Memperbaiki tag HTML berlisensial/terbuka ganda pada bagian grup tombol header dan merapikan grid metrik unit kerja (`grid-cols-3 w-full lg:w-auto`) agar tampilan desktop dan tablet menjadi presisi dan simetris kembali.
 - **Fix: Error "Invalid file" pada Halaman Email (Unit Kerja, Eselon, PNS, PPPK)**:

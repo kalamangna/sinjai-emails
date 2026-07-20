@@ -64,8 +64,10 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         $routes->get('unit_kerja', '\App\Domains\Email\Controllers\EmailListController::unitKerjaList');
         $routes->get('unit_kerja/(:num)', '\App\Domains\Email\Controllers\EmailListController::unitKerjaDetail/$1');
         $routes->get('eselonDetail/(:num)', '\App\Domains\Email\Controllers\EmailListController::eselonDetail/$1');
+        $routes->get('eselon_detail/(:num)', '\App\Domains\Email\Controllers\EmailListController::eselonDetail/$1');
         $routes->get('pns', '\App\Domains\Email\Controllers\EmailListController::pnsList');
         $routes->get('exportPnsExcel', '\App\Domains\Email\Controllers\EmailExportController::exportPnsExcel');
+        $routes->get('export_pns_excel', '\App\Domains\Email\Controllers\EmailExportController::exportPnsExcel');
         $routes->get('pppk', '\App\Domains\Email\Controllers\EmailListController::pppkList');
         $routes->get('pppk-pw', '\App\Domains\Email\Controllers\EmailListController::pppkPwList');
         $routes->get('eselon', '\App\Domains\Email\Controllers\EmailListController::eselonList');
@@ -74,16 +76,31 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         $routes->get('pimpinan', '\App\Domains\Pimpinan\Controllers\PimpinanController::pimpinan');
         $routes->get('pimpinan_desa', '\App\Domains\Pimpinan\Controllers\PimpinanController::pimpinanDesa');
         $routes->get('exportPimpinanPdf', '\App\Domains\Pimpinan\Controllers\PimpinanController::exportPimpinanPdf');
+        $routes->get('export_pimpinan_pdf', '\App\Domains\Pimpinan\Controllers\PimpinanController::exportPimpinanPdf');
         $routes->get('exportPimpinanDesaPdf', '\App\Domains\Pimpinan\Controllers\PimpinanController::exportPimpinanDesaPdf');
+        $routes->get('export_pimpinan_desa_pdf', '\App\Domains\Pimpinan\Controllers\PimpinanController::exportPimpinanDesaPdf');
 
         // Export Routes
         $routes->get('exportUnitKerjaCsv/(:num)', '\App\Domains\Email\Controllers\EmailExportController::exportUnitKerjaCsv/$1');
+        $routes->get('export_unit_kerja_csv/(:num)', '\App\Domains\Email\Controllers\EmailExportController::exportUnitKerjaCsv/$1');
+
         $routes->get('exportUnitKerjaExcel/(:num)', '\App\Domains\Email\Controllers\EmailExportController::exportUnitKerjaExcel/$1');
+        $routes->get('export_unit_kerja_excel/(:num)', '\App\Domains\Email\Controllers\EmailExportController::exportUnitKerjaExcel/$1');
+
         $routes->get('exportUnitKerjaPdf/(:num)', '\App\Domains\Email\Controllers\EmailExportController::exportUnitKerjaPdf/$1');
+        $routes->get('export_unit_kerja_pdf/(:num)', '\App\Domains\Email\Controllers\EmailExportController::exportUnitKerjaPdf/$1');
+
         $routes->get('exportAccountDetailPdf/(:num)', '\App\Domains\Email\Controllers\EmailExportController::exportAccountDetailPdf/$1');
+        $routes->get('export_account_detail_pdf/(:num)', '\App\Domains\Email\Controllers\EmailExportController::exportAccountDetailPdf/$1');
+
         $routes->get('exportPerjanjianKerjaPdf/(:num)', '\App\Domains\Email\Controllers\EmailExportController::exportPerjanjianKerjaPdf/$1');
+        $routes->get('export_perjanjian_kerja_pdf/(:num)', '\App\Domains\Email\Controllers\EmailExportController::exportPerjanjianKerjaPdf/$1');
+
         $routes->get('exportSinglePerjanjianKerjaPdf/(:any)', '\App\Domains\Email\Controllers\EmailExportController::exportSinglePerjanjianKerjaPdf/$1');
+        $routes->get('export_single_perjanjian_kerja_pdf/(:any)', '\App\Domains\Email\Controllers\EmailExportController::exportSinglePerjanjianKerjaPdf/$1');
+
         $routes->get('downloadZipFile/(:any)', '\App\Domains\Email\Controllers\EmailExportController::downloadZipFile/$1');
+        $routes->get('download_zip_file/(:any)', '\App\Domains\Email\Controllers\EmailExportController::downloadZipFile/$1');
 
 
 
