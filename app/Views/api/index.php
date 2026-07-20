@@ -47,7 +47,7 @@
         </div>
         <div class="p-6">
             <p class="text-xs text-slate-600 mb-4">Anda dapat menambahkan parameter berikut pada URL untuk menyaring hasil pencarian:</p>
-            <div class="overflow-x-auto custom-scrollbar">
+            <div class="overflow-x-auto">
                 <table class="w-full text-[11px] text-left border-collapse">
                     <thead>
                         <tr class="bg-slate-50 border-b border-slate-200">

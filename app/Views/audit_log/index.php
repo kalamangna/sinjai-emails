@@ -59,13 +59,7 @@
 
         <!-- Filter Bar -->
         <div class="p-4 sm:p-6 border-b border-slate-100 bg-slate-50">
-            <!-- Mobile Filter Toggle Button -->
-            <button type="button" onclick="document.getElementById('auditFilterForm').classList.toggle('hidden')" class="md:hidden w-full flex items-center justify-between px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                <span><i class="fas fa-filter mr-2 text-slate-500"></i> Filter & Pencarian</span>
-                <i class="fas fa-chevron-down text-[10px]"></i>
-            </button>
-
-            <form id="auditFilterForm" method="GET" action="<?= site_url('audit-trail') ?>" class="hidden md:grid grid-cols-1 md:grid-cols-12 gap-y-4 gap-x-4 items-end">
+            <form id="auditFilterForm" method="GET" action="<?= site_url('audit-trail') ?>" class="grid grid-cols-1 md:grid-cols-12 gap-y-4 gap-x-4 items-end">
 
                 <!-- Search -->
                 <div class="md:col-span-4">
@@ -113,7 +107,7 @@
         </div>
 
         <!-- Table -->
-        <div class="overflow-x-auto custom-scrollbar touch-pan-x">
+        <div class="overflow-x-auto touch-pan-x">
             <table class="w-full text-left text-sm min-w-[650px]">
                 <thead class="bg-slate-100 text-slate-700 uppercase text-[10px] font-bold">
                     <tr>

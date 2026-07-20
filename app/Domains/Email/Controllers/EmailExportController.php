@@ -138,8 +138,8 @@ class EmailExportController extends BaseController
             ]);
 
             $jobModel->push('default', [
-                'type' => 'exportPdf',
-                'task' => 'exportUnitKerjaPdf',
+                'type' => 'export_pdf',
+                'task' => 'export_unit_kerja_pdf',
                 'history_id' => $historyId,
                 'filters' => $filters
             ]);
@@ -183,8 +183,8 @@ class EmailExportController extends BaseController
             ]);
 
             $jobModel->push('default', [
-                'type' => 'exportPdf',
-                'task' => 'exportAccountDetailPdf',
+                'type' => 'export_pdf',
+                'task' => 'export_account_detail_pdf',
                 'history_id' => $historyId,
                 'filters' => $filters
             ]);

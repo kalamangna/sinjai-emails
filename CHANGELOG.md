@@ -19,13 +19,16 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - **Peningkatan Responsivitas Layout (Mobile-First & Touch Optimization)**:
     - **Layout Utama (`main.php`)**: Menyesuaikan padding konten utama pada smartphone (`p-4 sm:p-6`) agar lebih lega di layar kecil.
-    - **Form Filter Collapsible & Row Gap**: Menambahkan tombol expand/collapse filter pencarian serta memastikan jarak vertikal antar-field filter (`gap-y-4 gap-x-4`) rapi pada halaman Email (`email/index.php`), Detail Unit Kerja (`unit_kerja_detail.php`), dan Audit Trail (`audit_log/index.php`).
+    - **Form Filter Row-by-Row**: Menghapus tombol toggle collapsible pada tampilan mobile sehingga seluruh field filter dan pencarian tampil terbuka secara urut baris per baris (*row-by-row*) dengan `gap-y-4 gap-x-4` yang konsisten pada halaman Email (`email/index.php`), Detail Unit Kerja (`unit_kerja_detail.php`), dan Audit Trail (`audit_log/index.php`).
     - **Grup Tombol Non-Scroll (`flex-wrap`)**: Menghilangkan scroll horizontal pada seluruh grup tombol aksi di modul Email, Detail Akun, Unit Kerja, dan Helpdesk. Tombol aksi kini menyesuaikan lebar layar secara alami (*flex-wrap*) tanpa bantuan scrollbar.
-    - **Tabel Touch-pan**: Menambahkan `custom-scrollbar touch-pan-x` dan batas lebar minimum (`min-w-[650px]` / `min-w-[700px]`) pada tabel data di modul Email, Unit Kerja, Audit Trail, dan Helpdesk.
+    - **Tabel Responsif Standar Tailwind**: Menggunakan utility class bawaan Tailwind CSS (`overflow-x-auto touch-pan-x`) serta batas lebar minimum (`min-w-[650px]` / `min-w-[700px]`) pada tabel data di modul Email, Unit Kerja, Audit Trail, dan Helpdesk untuk menjamin keterbacaan data di smartphone.
     - **Grafik Donut & Bar Responsif**: Menyesuaikan skala kontainer, padding (`p-4 sm:p-6`), dan scrollbar legenda grafik ApexCharts pada Dashboard (`home/index.php`), Detail Unit Kerja (`unit_kerja_detail.php`), Monitoring Web OPD (`web_opd/index.php`), dan Web Desa/Kelurahan (`web_desa_kelurahan/index.php`) untuk kenyamanan tampilan smartphone.
 
 ## Perbaikan Bug
 
+- **Fix: Status Ekspor PDF Menunggu Terus (`Routes.php`, `QueueWorker.php`, `EmailExportController.php`)**:
+    - Memperbaiki panggilan AJAX trigger worker di `history.php` yang memanggil `/api_trigger_queue` tetapi rute terdaftar menggunakan format `camelCase` (`apiTriggerQueue`), yang menyebabkan respons 404 dan antrean worker tidak pernah berjalan otomatis dari browser.
+    - Memperbaiki ketidaksesuaian tipe payload job (`exportPdf` vs `export_pdf` & `exportAccountDetailPdf` vs `export_account_detail_pdf`) pada `EmailExportController.php` dan `QueueWorker.php` agar job ekspor PDF dapat diproses secara sempurna hingga selesai (*COMPLETED*).
 - **Fix: Error 404 Halaman Hilang pada Ekspor CSV & File Ekspor Unit Kerja (`Routes.php`)**:
     - Memperbaiki ketidaksesuaian penamaan rute URL ekspor di `Routes.php` yang sebelumnya hanya mendaftarkan format `camelCase` (`exportUnitKerjaCsv`, `exportPnsExcel`, dsb.) sementara tampilan *view* dan skrip JS memanggil rute format `snake_case` (`export_unit_kerja_csv`, `export_single_perjanjian_kerja_pdf`, `eselon_detail`, dsb.).
     - Menambahkan rute alias *snake_case* pada `Routes.php` sehingga seluruh tautan ekspor (CSV, Excel, PDF, ZIP) dan detail eselon dapat diakses dengan normal tanpa error 404.

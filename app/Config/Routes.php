@@ -34,6 +34,7 @@ $routes->group('api/v1', ['filter' => 'api_gateway'], function ($routes) {
 
 // Internal Async Queue Trigger (Protected: Admin & Super Admin only)
 $routes->get('apiTriggerQueue', '\App\Domains\Email\Controllers\EmailApiController::apiTriggerQueue', ['filter' => 'role:admin,super_admin']);
+$routes->get('api_trigger_queue', '\App\Domains\Email\Controllers\EmailApiController::apiTriggerQueue', ['filter' => 'role:admin,super_admin']);
 
 // Public Route - Landing Page
 $routes->get('/', '\App\Domains\Dashboard\Controllers\HomeController::index');

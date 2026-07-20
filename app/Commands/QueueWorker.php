@@ -81,6 +81,7 @@ class QueueWorker extends BaseCommand
                     $alertService->checkTteExpiredAlerts(false);
                     break;
                 case 'export_pdf':
+                case 'exportPdf':
                     $historyModel = new \App\Shared\Models\ExportHistoryModel();
                     $historyId = $payload['history_id'];
                     $task = $payload['task'];
@@ -92,7 +93,7 @@ class QueueWorker extends BaseCommand
                         $exportService = new \App\Domains\Email\Services\EmailExportService();
                         $result = null;
 
-                        if ($task === 'export_unit_kerja_pdf') {
+                        if ($task === 'export_unit_kerja_pdf' || $task === 'exportUnitKerjaPdf') {
                             $result = $exportService->generateUnitKerjaPdf(
                                 $filters['unitKerjaId'],
                                 $filters['search'] ?? null,
@@ -100,7 +101,7 @@ class QueueWorker extends BaseCommand
                                 $filters['bsre_status'] ?? null,
                                 $filters['pimpinan_desa'] ?? 1
                             );
-                        } elseif ($task === 'export_account_detail_pdf') {
+                        } elseif ($task === 'export_account_detail_pdf' || $task === 'exportAccountDetailPdf') {
                             $result = $exportService->generateAccountDetailPdf(
                                 $filters['unitKerjaId'],
                                 $filters['search'] ?? null,
