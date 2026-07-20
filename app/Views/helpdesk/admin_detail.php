@@ -23,7 +23,7 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div class="lg:col-span-2 space-y-6">
-            <div class="bg-white border border-slate-200 rounded-lg shadow-sm">
+            <div class="bg-white border border-slate-200 rounded-2xl shadow-sm">
                 <div class="px-6 py-4 border-b border-slate-100 bg-slate-50">
                     <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Informasi Pemohon</h3>
                 </div>
@@ -53,7 +53,7 @@
             </div>
 
             <!-- Card Detail Kendala & Layanan -->
-            <div class="bg-white border border-slate-200 rounded-lg shadow-sm">
+            <div class="bg-white border border-slate-200 rounded-2xl shadow-sm">
                 <div class="px-6 py-4 border-b border-slate-100 bg-slate-50">
                     <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Detail Kendala & Layanan</h3>
                 </div>
@@ -75,7 +75,7 @@
         </div>
 
         <div>
-            <div class="bg-white border border-slate-200 rounded-lg shadow-sm sticky top-6">
+            <div class="bg-white border border-slate-200 rounded-2xl shadow-sm sticky top-6">
                 <div class="px-6 py-4 border-b border-slate-100 bg-slate-50">
                     <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Tindak Lanjut</h3>
                 </div>

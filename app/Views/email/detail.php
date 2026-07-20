@@ -114,7 +114,7 @@
         <!-- Profil -->
         <div class="lg:col-span-2 space-y-6">
             <!-- Data Personal & Kepegawaian -->
-            <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
+            <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
                 <div class="px-4 sm:px-6 py-4 border-b border-slate-100 bg-slate-50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Profil</h3>
                     <div class="flex flex-wrap items-center gap-2">
@@ -260,7 +260,7 @@
 
             <!-- Bagian: Kontrak Kerja (Hanya jika ada data PK atau status PPPK) -->
             <?php if (!empty($pk_data) || in_array($email['status_asn_id'] ?? 0, [2, 3])): ?>
-                <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
+                <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
                     <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
                         <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Perjanjian Kerja (PK)</h3>
                         <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
@@ -311,7 +311,7 @@
         <!-- Infrastruktur & Kredensial -->
         <div class="flex flex-col gap-6">
             <!-- QR Code (Visible only if TTE status is ISSUE) -->
-            <div id="qrcode-card" class="hidden bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
+            <div id="qrcode-card" class="hidden bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
                 <div class="px-6 py-4 border-b border-slate-100 bg-slate-50">
                     <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">QR Code</h3>
                 </div>
@@ -329,7 +329,7 @@
             </div>
 
             <!-- Kata Sandi -->
-            <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
+            <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
                 <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
                     <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Kredensial</h3>
                     <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
@@ -359,7 +359,7 @@
             </div>
 
             <!-- Penyimpanan -->
-            <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
+            <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
                 <div class="px-6 py-4 border-b border-slate-100 bg-slate-50">
                     <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Penyimpanan</h3>
                 </div>

@@ -23,7 +23,7 @@
         </div>
     <?php endif; ?>
 
-    <div class="bg-white border border-slate-200 rounded-lg shadow-sm">
+    <div class="bg-white border border-slate-200 rounded-2xl shadow-sm">
         <div class="bg-slate-50 px-6 py-4 border-b border-slate-200">
             <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Konfigurasi Swap</h3>
         </div>

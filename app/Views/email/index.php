@@ -28,26 +28,26 @@
 
     <!-- Metrik -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6">
-        <div class="bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-lg shadow-sm p-4 sm:p-6">
+        <div class="bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-2xl shadow-sm p-4 sm:p-6">
             <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Total Email</p>
             <h3 class="text-xl sm:text-2xl font-bold text-slate-800 mt-1"><?= number_format($total_emails ?? 0, 0, ',', '.') ?></h3>
         </div>
-        <div class="bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-lg shadow-sm p-4 sm:p-6">
+        <div class="bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-2xl shadow-sm p-4 sm:p-6">
             <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Email Aktif</p>
             <h3 class="text-xl sm:text-2xl font-bold text-slate-800 mt-1"><?= number_format($active_count ?? 0, 0, ',', '.') ?></h3>
         </div>
-        <div class="bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-lg shadow-sm p-4 sm:p-6">
+        <div class="bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-2xl shadow-sm p-4 sm:p-6">
             <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">TTE Aktif</p>
             <h3 class="text-xl sm:text-2xl font-bold text-slate-800 mt-1"><?= number_format($active_bsre_count ?? 0, 0, ',', '.') ?></h3>
         </div>
     </div>
 
     <!-- Tabel dan Pencarian -->
-    <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
+    <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
         <div class="p-4 sm:p-6 border-b border-slate-100 bg-slate-50">
             <form id="emailFilterForm" method="GET" action="<?= site_url('email') ?>" class="grid grid-cols-1 md:grid-cols-12 gap-y-4 gap-x-4 items-end">
                 <div class="md:col-span-3 lg:col-span-5">
-                    <label class="block text-xs font-bold text-slate-700 mb-1 uppercase tracking-tight">Pencarian</label>
+                    <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-widest">Pencarian</label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-700">
                             <i class="fas fa-search text-xs"></i>
@@ -57,7 +57,7 @@
                 </div>
 
                 <div class="md:col-span-3 lg:col-span-2">
-                    <label class="block text-xs font-bold text-slate-700 mb-1 uppercase tracking-tight">Status TTE</label>
+                    <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-widest">Status TTE</label>
                     <select name="bsre_status" class="block w-full px-3 py-2 bg-white border <?= !empty($bsre_status) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm appearance-none cursor-pointer transition-all">
                         <option value="">Semua Status</option>
                         <?php foreach ($bsre_status_options ?? [] as $key => $label): ?>
@@ -67,7 +67,7 @@
                 </div>
 
                 <div class="md:col-span-4 lg:col-span-3">
-                    <label class="block text-xs font-bold text-slate-700 mb-1 uppercase tracking-tight">Penggunaan Disk</label>
+                    <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-widest">Penggunaan Disk</label>
                     <select name="disk_usage" class="block w-full px-3 py-2 bg-white border <?= !empty($disk_usage) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm appearance-none cursor-pointer transition-all">
                         <option value="">Semua Penggunaan</option>
                         <option value="critical" <?= (($disk_usage ?? '') === 'critical') ? 'selected' : '' ?>>Kritis (≥ 85%)</option>
@@ -86,9 +86,9 @@
             </form>
         </div>
 
-        <div class="overflow-x-auto touch-pan-x">
+        <div class="overflow-x-auto">
             <table class="w-full text-left text-sm min-w-[700px]">
-                <thead class="bg-slate-100 text-slate-700 uppercase text-[10px] font-bold">
+                <thead class="bg-slate-50 text-slate-400 uppercase text-[10px] font-bold tracking-widest">
                     <tr>
                         <th class="px-6 py-3 border-b border-slate-200">Email</th>
                         <th class="px-6 py-3 border-b border-slate-200">Unit Kerja</th>
@@ -172,7 +172,7 @@
                                         <?php if (session()->get('role') === 'super_admin'): ?>
                                             <form action="<?= site_url('email/delete/' . $email['id']) ?>" method="post" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus akun ini?');">
                                                 <?= csrf_field() ?>
-                                                <button type="submit" class="btn btn-table" title="Hapus">
+                                                <button type="submit" class="btn btn-table-danger" title="Hapus">
                                                     <i class="fas fa-trash-alt text-xs"></i>
                                                 </button>
                                             </form>

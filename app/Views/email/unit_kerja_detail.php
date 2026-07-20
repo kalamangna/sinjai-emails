@@ -78,7 +78,7 @@
             </div>
 
             <div class="grid grid-cols-3 gap-3 w-full lg:w-auto shrink-0">
-                <div class="bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-lg p-3 text-center">
+                <div class="bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-2xl p-3 text-center">
                     <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Total Email</p>
                     <p class="text-xl sm:text-2xl font-bold text-slate-800 mt-0.5"><?= number_format($total_emails ?? 0, 0, ',', '.') ?></p>
                 </div>
@@ -97,7 +97,7 @@
 
     <!-- Sub-Unit -->
     <?php if (!empty($child_units)): ?>
-        <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
+        <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
             <button onclick="toggleChildUnits()" class="w-full px-6 py-4 flex justify-between items-center hover:bg-slate-50 transition-all focus:outline-none">
                 <div class="flex items-center gap-3">
                     <h6 class="text-[11px] font-bold text-slate-800 uppercase tracking-widest">Daftar Sub-Unit</h6>
@@ -122,7 +122,7 @@
     <!-- Statistik Sertifikat -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <?php if (!empty($bsre_status_counts)): ?>
-            <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
+            <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
                 <div class="px-4 sm:px-6 py-4 border-b border-slate-100 bg-slate-50">
                     <h5 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Status TTE</h5>
                 </div>
@@ -155,7 +155,7 @@
         <?php endif; ?>
 
         <?php if (!empty($status_asn_stats)): ?>
-            <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
+            <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
                 <div class="px-4 sm:px-6 py-4 border-b border-slate-100 bg-slate-50">
                     <h5 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Status ASN</h5>
                 </div>
@@ -190,11 +190,11 @@
     </div>
 
     <!-- Tabel Akun Email -->
-    <div id="email-table-container" class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
+    <div id="email-table-container" class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
         <div class="p-4 sm:p-6 border-b border-slate-100 bg-slate-50">
             <form id="unitDetailFilterForm" method="GET" action="" class="grid grid-cols-1 md:grid-cols-12 gap-y-4 gap-x-4 items-end">
                 <div class="md:col-span-5">
-                    <label class="block text-xs font-bold text-slate-700 mb-1 uppercase tracking-tight">Pencarian</label>
+                    <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-widest">Pencarian</label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-700">
                             <i class="fas fa-search text-xs"></i>
@@ -203,7 +203,7 @@
                     </div>
                 </div>
                 <div class="md:col-span-3">
-                    <label class="block text-xs font-bold text-slate-700 mb-1 uppercase tracking-tight">Status ASN</label>
+                    <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-widest">Status ASN</label>
                     <select name="status_asn" class="block w-full px-3 py-2 bg-white border <?= !empty($status_asn) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm appearance-none cursor-pointer transition-all">
                         <option value="">Semua Status</option>
                         <?php foreach ($status_asn_options as $option): ?>
@@ -212,7 +212,7 @@
                     </select>
                 </div>
                 <div class="md:col-span-2">
-                    <label class="block text-xs font-bold text-slate-700 mb-1 uppercase tracking-tight">Status TTE</label>
+                    <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-widest">Status TTE</label>
                     <select name="bsre_status" class="block w-full px-3 py-2 bg-white border <?= !empty($bsre_status) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm appearance-none cursor-pointer transition-all">
                         <option value="">Semua Status</option>
                         <?php foreach ($bsre_status_options as $key => $label): ?>
@@ -231,9 +231,9 @@
             </form>
         </div>
 
-        <div class="overflow-x-auto touch-pan-x">
+        <div class="overflow-x-auto">
             <table class="w-full text-left text-sm min-w-[700px]">
-                <thead class="bg-slate-100 text-slate-700 uppercase text-[10px] font-bold">
+                <thead class="bg-slate-50 text-slate-400 uppercase text-[10px] font-bold tracking-widest">
                     <tr>
                         <th class="px-6 py-3 border-b border-slate-200">Email</th>
                         <th class="px-6 py-3 border-b border-slate-200">Jabatan / Status</th>
@@ -305,7 +305,7 @@
                                         <?php if (session()->get('role') === 'super_admin'): ?>
                                             <form action="<?= site_url('email/delete/' . $email['id']) ?>" method="post" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus akun ini?');">
                                                 <?= csrf_field() ?>
-                                                <button type="submit" class="btn btn-table" title="Hapus">
+                                                <button type="submit" class="btn btn-table-danger" title="Hapus">
                                                     <i class="fas fa-trash-alt text-xs"></i>
                                                 </button>
                                             </form>

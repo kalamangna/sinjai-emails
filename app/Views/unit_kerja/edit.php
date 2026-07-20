@@ -6,7 +6,7 @@
         <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight">Edit Unit Kerja</h1>
     </div>
 
-    <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
+    <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
         <div class="p-8">
             <form action="<?= site_url('unit_kerja/update/' . $unit_kerja['id']) ?>" method="post" class="space-y-6">
                 <?= csrf_field() ?>

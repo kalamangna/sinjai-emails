@@ -17,21 +17,21 @@
 
     <!-- Statistik -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-lg p-6 shadow-sm">
+        <div class="bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-2xl p-6 shadow-sm">
             <p class="text-[10px] font-bold text-slate-700 uppercase tracking-widest">Total Unit Kerja</p>
             <h3 class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($total_units, 0, ',', '.') ?></h3>
         </div>
-        <div class="bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-lg p-6 shadow-sm">
+        <div class="bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-2xl p-6 shadow-sm">
             <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Unit Induk</p>
             <h3 class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($total_parents, 0, ',', '.') ?></h3>
         </div>
-        <div class="bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-lg p-6 shadow-sm">
+        <div class="bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-2xl p-6 shadow-sm">
             <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Sub Unit</p>
             <h3 class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($total_children, 0, ',', '.') ?></h3>
         </div>
     </div>
 
-    <div class="bg-white border border-slate-200 rounded-lg shadow-sm">
+    <div class="bg-white border border-slate-200 rounded-2xl shadow-sm">
         <div class="bg-slate-50 px-6 py-4 border-b border-slate-200 flex justify-between items-center">
             <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Daftar Unit Kerja</h3>
             <span class="text-[10px] font-bold text-slate-700 bg-white border border-slate-200 px-2 py-0.5 rounded-full shadow-sm">
@@ -74,7 +74,7 @@
 
         <div class="overflow-x-auto">
             <table class="w-full text-left text-sm">
-                <thead class="bg-slate-100 text-slate-700 uppercase text-[10px] font-bold">
+                <thead class="bg-slate-50 text-slate-400 uppercase text-[10px] font-bold tracking-widest">
                     <tr>
                         <th class="px-6 py-3 border-b border-slate-200 w-20">ID</th>
                         <th class="px-6 py-3 border-b border-slate-200">Nama Unit Kerja</th>

@@ -6,7 +6,7 @@
         <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight">Tambah Unit Kerja</h1>
     </div>
 
-    <div class="bg-white border border-slate-200 rounded-lg shadow-sm">
+    <div class="bg-white border border-slate-200 rounded-2xl shadow-sm">
         <div class="p-8">
             <form action="<?= site_url('unit_kerja/store') ?>" method="post" class="space-y-6">
                 <?= csrf_field() ?>

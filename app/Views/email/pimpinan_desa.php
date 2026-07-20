@@ -61,7 +61,7 @@
         </div>
     </div>
 
-    <div class="bg-white border border-slate-200 rounded-lg shadow-sm p-6">
+    <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
         <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
             <div class="md:col-span-8">
                 <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Pencarian</label>
@@ -90,10 +90,10 @@
     </div>
 
     <!-- Tabel -->
-    <div id="email-table-container" class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
+    <div id="email-table-container" class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-left text-sm">
-                <thead class="bg-slate-100 text-slate-700 uppercase text-[10px] font-bold">
+                <thead class="bg-slate-50 text-slate-400 uppercase text-[10px] font-bold tracking-widest">
                     <tr>
                         <th class="px-6 py-4 border-b border-slate-200">Email</th>
                         <th class="px-6 py-4 border-b border-slate-200">Jabatan</th>
@@ -159,7 +159,7 @@
                                         <?php if (session()->get('role') === 'super_admin'): ?>
                                             <form action="<?= site_url('email/delete/' . $email['id']) ?>" method="post" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus akun ini?');">
                                                 <?= csrf_field() ?>
-                                                <button type="submit" class="btn btn-table" title="Hapus">
+                                                <button type="submit" class="btn btn-table-danger" title="Hapus">
                                                     <i class="fas fa-trash-alt text-xs"></i>
                                                 </button>
                                             </form>

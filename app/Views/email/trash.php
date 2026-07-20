@@ -8,10 +8,10 @@
         </div>
     </div>
 
-    <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
+    <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-left text-sm">
-                <thead class="bg-slate-100 text-slate-700 uppercase text-[10px] font-bold">
+                <thead class="bg-slate-50 text-slate-400 uppercase text-[10px] font-bold tracking-widest">
                     <tr>
                         <th class="px-6 py-3 border-b border-slate-200">Email</th>
                         <th class="px-6 py-3 border-b border-slate-200">Nama</th>
@@ -50,7 +50,7 @@
                                         </a>
                                         <form action="<?= site_url('email/trash/force_delete/' . $email['id']) ?>" method="post" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus permanen akun ini? Tidak dapat dibatalkan.');">
                                             <?= csrf_field() ?>
-                                            <button type="submit" class="btn btn-table text-red-600 hover:bg-red-50 hover:text-red-700" title="Hapus Permanen">
+                                            <button type="submit" class="btn btn-table-danger text-red-600 hover:bg-red-50 hover:text-red-700" title="Hapus Permanen">
                                                 <i class="fas fa-trash-alt text-xs"></i>
                                             </button>
                                         </form>

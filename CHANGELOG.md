@@ -9,12 +9,20 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## Refactor & Konsistensi Tampilan
 
+- **Refactor Global Konsistensi Desain UI**:
+    - **Card Border Radius**: Memperbarui kelengkungan seluruh kontainer kartu utama dan pembungkus form dari `rounded-lg` menjadi `rounded-2xl` agar lebih premium dan modern.
+    - **Tipografi Kontras Tinggi**: Menyeragamkan elemen label input dan header tabel menggunakan gaya modern: `text-[10px] font-bold text-slate-400 uppercase tracking-widest`.
+    - **Aksi Tabel Minimalis**: Mengganti pewarnaan tombol 'Hapus' di dalam seluruh tabel menjadi abu-abu netral secara default, dengan implementasi efek hover `.btn-table-danger` (merah) kustom pada `input.css` agar tabel tidak mencolok dan mata fokus pada data.
 - **Penyelarasan Teks Placeholder**:
     - Memangkas kata 'contoh' dan melakukan standarisasi *Sentence case* pada atribut `placeholder` di seluruh form sistem.
     - Menyederhanakan seluruh placeholder pada form filter pencarian (yang sebelumnya panjang) menjadi cukup `"Cari..."` agar antarmuka lebih bersih dan to-the-point.
     - Menerapkan *class* Tailwind `placeholder-slate-400` pada seluruh field `<input>` dan `<textarea>` secara global untuk menjaga konsistensi warna yang elegan.
 
 ## Perbaikan Bug & Ketahanan Data
+
+- **Fix Scroll Terkunci di Mobile (Tabel)**:
+    - Menghapus kelas bawaan Tailwind `touch-pan-x` dari seluruh elemen kontainer tabel (seperti di modul *Email*, *Helpdesk*, dan *Audit Trail*).
+    - Sebelumnya kelas ini memblokir perilaku sentuhan layar secara vertikal sehingga pengguna ponsel pintar tidak bisa menggulir layar web (scroll) ke bawah jika jari mereka berada di atas area tabel.
 
 - **Validasi Ketat Duplikat NIK & NIP (`EmailService.php`)**:
     - Menambahkan validasi keamanan tambahan di form *Edit Profil* dan *Tambah Akun Baru*. Sistem kini otomatis memeriksa apakah NIP/NIK baru yang diinputkan telah terdaftar pada entitas akun/email pengguna lain.

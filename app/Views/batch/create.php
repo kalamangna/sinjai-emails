@@ -12,7 +12,7 @@
     </div>
 
     <!-- Input Section -->
-    <div class="bg-white border border-slate-200 rounded-lg shadow-sm">
+    <div class="bg-white border border-slate-200 rounded-2xl shadow-sm">
         <div class="bg-slate-50 px-6 py-4 border-b border-slate-200">
             <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Impor dari Excel (XLSX)</h3>
         </div>
@@ -31,7 +31,7 @@
         </div>
     </div>
 
-    <div class="bg-white border border-slate-200 rounded-lg shadow-sm">
+    <div class="bg-white border border-slate-200 rounded-2xl shadow-sm">
         <div class="bg-slate-50 px-6 py-4 border-b border-slate-200">
             <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Input Data</h3>
         </div>
@@ -84,13 +84,13 @@
     </div>
 
     <!-- Preview Section -->
-    <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
+    <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
         <div class="bg-slate-50 px-6 py-4 border-b border-slate-200">
             <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Hasil Preview</h3>
         </div>
         <div class="overflow-x-auto">
             <table id="results_table" class="w-full text-left text-sm">
-                <thead class="bg-slate-100 text-slate-700 uppercase text-[10px] font-bold">
+                <thead class="bg-slate-50 text-slate-400 uppercase text-[10px] font-bold tracking-widest">
                     <tr>
                         <th class="px-6 py-3 border-b border-slate-200 w-12">#</th>
                         <th class="px-6 py-3 border-b border-slate-200">NIP</th>
@@ -110,7 +110,7 @@
     </div>
 
     <!-- Execution Section -->
-    <div id="progress_section" class="hidden bg-white border border-slate-200 rounded-lg shadow-sm p-6 space-y-4">
+    <div id="progress_section" class="hidden bg-white border border-slate-200 rounded-2xl shadow-sm p-6 space-y-4">
         <div class="flex justify-between items-center">
             <h3 class="text-[10px] font-bold text-slate-700 uppercase tracking-widest">Progres Eksekusi</h3>
             <span id="progress_text" class="text-[10px] font-bold text-slate-800 uppercase">0 / 0</span>

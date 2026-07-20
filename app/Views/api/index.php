@@ -10,7 +10,7 @@
     </div>
 
     <!-- Informasi Otentikasi -->
-    <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
+    <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
         <div class="px-6 py-4 border-b border-slate-100 bg-slate-50">
             <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Otentikasi & Akses</h3>
         </div>
@@ -40,7 +40,7 @@
     </div>
 
     <!-- Parameter Query -->
-    <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
+    <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
         <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
             <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Parameter Query (Filter)</h3>
             <span class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Opsional</span>
@@ -131,7 +131,7 @@
         ];
 
         foreach ($endpoints as $api): ?>
-            <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
+            <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
                 <div class="px-6 py-4 border-b border-slate-100 bg-white flex justify-between items-center">
                     <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight"><?= $api['name'] ?></h3>
                     <span class="px-2 py-1 bg-emerald-100 text-emerald-700 rounded text-[9px] font-black uppercase leading-none">V1</span>

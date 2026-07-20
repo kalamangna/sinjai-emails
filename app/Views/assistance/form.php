@@ -33,7 +33,7 @@
         <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight"><?= esc($title) ?></h1>
     </div>
 
-    <div class="bg-white border border-slate-200 rounded-lg shadow-sm">
+    <div class="bg-white border border-slate-200 rounded-2xl shadow-sm">
         <div class="p-8">
             <form action="<?= isset($activity) ? site_url('assistance/update/' . $activity['id']) : site_url('assistance/store') ?>" method="post" class="space-y-6">
                 <?= csrf_field() ?>

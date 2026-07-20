@@ -9,10 +9,10 @@
         </a>
     </div>
 
-    <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
+    <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-left text-sm">
-                <thead class="bg-slate-100 text-slate-700 uppercase text-[10px] font-bold">
+                <thead class="bg-slate-50 text-slate-400 uppercase text-[10px] font-bold tracking-widest">
                     <tr>
                         <th class="px-6 py-3 border-b border-slate-200">Username</th>
                         <th class="px-6 py-3 border-b border-slate-200">Nama</th>
@@ -47,7 +47,7 @@
                                         <?php if (session()->get('id') != $user['id']): ?>
                                             <form action="<?= site_url('auth/users/delete/' . $user['id']) ?>" method="post" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus user ini?');">
                                                 <?= csrf_field() ?>
-                                                <button type="submit" class="btn btn-table" title="Hapus">
+                                                <button type="submit" class="btn btn-table-danger" title="Hapus">
                                                     <i class="fas fa-trash-alt text-xs"></i>
                                                 </button>
                                             </form>

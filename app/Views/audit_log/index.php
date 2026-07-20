@@ -55,7 +55,7 @@
     </div>
 
     <!-- Filter & Table -->
-    <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
+    <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
 
         <!-- Filter Bar -->
         <div class="p-4 sm:p-6 border-b border-slate-100 bg-slate-50">
@@ -63,7 +63,7 @@
 
                 <!-- Search -->
                 <div class="md:col-span-4">
-                    <label class="block text-xs font-bold text-slate-700 mb-1 uppercase tracking-tight">Cari Pengguna</label>
+                    <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-widest">Cari Pengguna</label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-700">
                             <i class="fas fa-search text-xs"></i>
@@ -74,7 +74,7 @@
 
                 <!-- Filter Aksi -->
                 <div class="md:col-span-3">
-                    <label class="block text-xs font-bold text-slate-700 mb-1 uppercase tracking-tight">Aksi</label>
+                    <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-widest">Aksi</label>
                     <select name="action" id="filter_action" class="block w-full px-3 py-2 bg-white border <?= !empty($filterAction) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm appearance-none cursor-pointer transition-all">
                         <option value="">Semua Aksi</option>
                         <?php foreach ($actions as $a): ?>
@@ -85,7 +85,7 @@
 
                 <!-- Filter Entitas -->
                 <div class="md:col-span-3">
-                    <label class="block text-xs font-bold text-slate-700 mb-1 uppercase tracking-tight">Entitas</label>
+                    <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-widest">Entitas</label>
                     <select name="entity" id="filter_entity" class="block w-full px-3 py-2 bg-white border <?= !empty($filterEntity) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm appearance-none cursor-pointer transition-all">
                         <option value="">Semua Entitas</option>
                         <?php foreach ($entities as $e): ?>
@@ -107,9 +107,9 @@
         </div>
 
         <!-- Table -->
-        <div class="overflow-x-auto touch-pan-x">
+        <div class="overflow-x-auto">
             <table class="w-full text-left text-sm min-w-[650px]">
-                <thead class="bg-slate-100 text-slate-700 uppercase text-[10px] font-bold">
+                <thead class="bg-slate-50 text-slate-400 uppercase text-[10px] font-bold tracking-widest">
                     <tr>
                         <th class="px-6 py-3 border-b border-slate-200">Waktu</th>
                         <th class="px-6 py-3 border-b border-slate-200">Pengguna</th>

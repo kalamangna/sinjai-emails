@@ -9,7 +9,7 @@
         <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight">Ganti Password</h1>
     </div>
 
-    <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
+    <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
         <div class="p-8">
             <form action="<?= site_url('user/update_password') ?>" method="POST" class="space-y-4">
                 <?= csrf_field() ?>

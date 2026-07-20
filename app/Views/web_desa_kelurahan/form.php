@@ -6,7 +6,7 @@
         <h1 class="text-2xl font-semibold text-slate-800">Perbarui Website Desa & Kelurahan</h1>
     </div>
 
-    <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
+    <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
         <div class="p-8">
             <form action="<?= site_url('web_desa_kelurahan/update/' . $website['id']) ?>" method="POST" id="websiteForm" class="space-y-6">
                 <?= csrf_field() ?>

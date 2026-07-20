@@ -33,7 +33,7 @@
     <!-- Status Sinkronisasi & Health Check -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <!-- Card Terakhir Sinkronisasi -->
-        <div class="lg:col-span-8 bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
+        <div class="lg:col-span-8 bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
             <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
                 <h3 class="text-[10px] font-bold text-slate-800 uppercase tracking-[0.2em]">Terakhir Sinkronisasi</h3>
                 <i class="fas fa-history text-slate-400 text-xs"></i>
@@ -82,7 +82,7 @@
         </div>
 
         <!-- Card Layanan Eksternal -->
-        <div class="lg:col-span-4 bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
+        <div class="lg:col-span-4 bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
             <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
                 <h3 class="text-[10px] font-bold text-slate-800 uppercase tracking-[0.2em]">Layanan Eksternal</h3>
                 <i class="fas fa-plug text-slate-400 text-xs"></i>
@@ -102,21 +102,21 @@
 
     <!-- Metrik Ringkasan -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <a href="<?= site_url('email') ?>" class="bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-lg p-6 shadow-sm hover:border-slate-800 transition-all no-underline group">
+        <a href="<?= site_url('email') ?>" class="bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-2xl p-6 shadow-sm hover:border-slate-800 transition-all no-underline group">
             <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest group-hover:text-slate-700">Total Email</p>
             <div class="flex items-baseline gap-2 mt-1">
                 <h3 class="text-2xl font-bold text-slate-800"><?= number_format($total_emails, 0, ',', '.') ?></h3>
                 <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Aktif</span>
             </div>
         </a>
-        <a href="<?= site_url('email?bsre_status=ISSUE') ?>" class="bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-lg p-6 shadow-sm hover:border-slate-800 transition-all no-underline group">
+        <a href="<?= site_url('email?bsre_status=ISSUE') ?>" class="bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-2xl p-6 shadow-sm hover:border-slate-800 transition-all no-underline group">
             <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest group-hover:text-slate-700">Status TTE</p>
             <div class="flex items-baseline gap-2 mt-1">
                 <h3 class="text-2xl font-bold text-slate-800"><?= number_format($active_bsre, 0, ',', '.') ?></h3>
                 <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Aktif</span>
             </div>
         </a>
-        <a href="<?= site_url('web_opd') ?>" class="bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-lg p-6 shadow-sm hover:border-slate-800 transition-all no-underline group">
+        <a href="<?= site_url('web_opd') ?>" class="bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-2xl p-6 shadow-sm hover:border-slate-800 transition-all no-underline group">
             <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest group-hover:text-slate-700">Website OPD</p>
             <div class="flex items-baseline gap-2 mt-1">
                 <h3 class="text-2xl font-bold text-slate-800"><?= number_format($web_stats['opd_aktif'], 0, ',', '.') ?></h3>
@@ -125,7 +125,7 @@
                 </span>
             </div>
         </a>
-        <a href="<?= site_url('web_desa_kelurahan') ?>" class="bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-lg p-6 shadow-sm hover:border-slate-800 transition-all no-underline group">
+        <a href="<?= site_url('web_desa_kelurahan') ?>" class="bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-2xl p-6 shadow-sm hover:border-slate-800 transition-all no-underline group">
             <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest group-hover:text-slate-700">Website Desa & Kelurahan</p>
             <div class="flex items-baseline gap-2 mt-1">
                 <h3 class="text-2xl font-bold text-slate-800"><?= number_format($web_stats['desa_aktif'] + $web_stats['kelurahan_aktif'], 0, ',', '.') ?></h3>
@@ -143,7 +143,7 @@
     <!-- Statistik dan Grafik -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Grafik Status Email -->
-        <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
+        <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
             <div class="px-4 sm:px-6 py-4 border-b border-slate-100 bg-slate-50">
                 <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Status TTE</h3>
             </div>
@@ -175,7 +175,7 @@
         </div>
 
         <!-- Grafik Status ASN -->
-        <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
+        <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
             <div class="px-4 sm:px-6 py-4 border-b border-slate-100 bg-slate-50">
                 <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Status ASN</h3>
             </div>
@@ -206,13 +206,13 @@
     </div>
 
     <!-- Top 10 OPD Teraktif TTE -->
-    <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
+    <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
         <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
             <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">TTE Teraktif</h3>
         </div>
         <div class="overflow-x-auto">
             <table class="w-full text-left text-sm whitespace-nowrap">
-                <thead class="bg-slate-100 text-slate-700 uppercase text-[10px] font-bold">
+                <thead class="bg-slate-50 text-slate-400 uppercase text-[10px] font-bold tracking-widest">
                     <tr>
                         <th class="px-6 py-3 border-b border-slate-200 w-12 text-center">No</th>
                         <th class="px-6 py-3 border-b border-slate-200">Nama OPD</th>
@@ -267,7 +267,7 @@
     </div>
 
     <!-- Top 10 Persentase Penggunaan Disk -->
-    <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
+    <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
         <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
             <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Penggunaan Disk Terbesar</h3>
         </div>

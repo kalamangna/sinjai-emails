@@ -235,7 +235,7 @@ $errorId = uniqid('error', true);
 
                 <!-- Server -->
                 <div class="content" id="server">
-                    <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
+                    <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
                     <?php foreach (['_SERVER', '_SESSION'] as $var) : ?>
                         <?php if (empty($GLOBALS[$var]) || ! is_array($GLOBALS[$var])) continue; ?>
                         <div class="p-4 border-b border-slate-200">
@@ -268,7 +268,7 @@ $errorId = uniqid('error', true);
                 </div>
                 <!-- Files -->
                 <div class="content" id="files">
-                    <div class="bg-white border border-slate-200 rounded-lg shadow-sm p-4">
+                    <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-4">
                         <ol class="list-decimal list-inside text-sm font-mono">
                         <?php foreach (get_included_files() as $file) :?>
                             <li><?= esc(clean_path($file)) ?></li>
