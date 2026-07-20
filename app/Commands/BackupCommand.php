@@ -64,26 +64,26 @@ class BackupCommand extends BaseCommand
             // Hapus backup yang lebih tua dari 7 hari
             $this->cleanOldBackups($backupDir, 7);
 
-            $msg = "✅ <b>BACKUP DATABASE BERHASIL</b>\n";
-            $msg .= "----------------------------------------\n";
-            $msg .= "<b>Waktu:</b> " . date('d/m/Y H:i:s') . "\n";
-            $msg .= "<b>File:</b> {$filename}\n";
-            $msg .= "<b>Ukuran:</b> {$sizeFormatted}\n";
-            $msg .= "<b>Status:</b> Auto Backup (cPanel Compatible)\n";
-            $msg .= "----------------------------------------";
+            $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
+            $builder->setTitle('BACKUP DATABASE BERHASIL', '✅')
+                    ->addDivider()
+                    ->addKeyValue('Waktu', date('d/m/Y H:i:s'), '🕒')
+                    ->addKeyValue('File', "<code>{$filename}</code>", '📁')
+                    ->addKeyValue('Ukuran', $sizeFormatted, '📊')
+                    ->addKeyValue('Status', 'Auto Backup (cPanel Compatible)', '⚡');
             
-            $telegram->sendMessage($msg);
+            $telegram->sendMessage($builder->build());
 
         } catch (\Exception $e) {
             CLI::error("Backup gagal! Error: " . $e->getMessage());
             
-            $msg = "🚨 <b>GAGAL BACKUP DATABASE</b>\n";
-            $msg .= "----------------------------------------\n";
-            $msg .= "<b>Waktu:</b> " . date('d/m/Y H:i:s') . "\n";
-            $msg .= "<b>Error:</b> " . htmlspecialchars($e->getMessage()) . "\n";
-            $msg .= "----------------------------------------";
+            $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
+            $builder->setTitle('GAGAL BACKUP DATABASE', '🚨')
+                    ->addDivider()
+                    ->addKeyValue('Waktu', date('d/m/Y H:i:s'), '🕒')
+                    ->addKeyValue('Error', htmlspecialchars($e->getMessage()), '❌');
             
-            $telegram->sendMessage($msg);
+            $telegram->sendMessage($builder->build());
         }
     }
 

@@ -281,8 +281,7 @@ class BatchController extends BaseController
                         ->addDivider()
                         ->addKeyValue('Dieksekusi oleh', "<b>$adminName</b>", '👤')
                         ->addKeyValue('Berhasil', "<b>$successCount</b> Akun", '✅')
-                        ->addKeyValue('Gagal', "<b>$failCount</b> Akun", '❌')
-                        ->addText("\n🕒 " . date('d M Y, H:i:s'));
+                        ->addKeyValue('Gagal', "<b>$failCount</b> Akun", '❌');
 
                 $telegram = new \App\Shared\Libraries\TelegramLibrary();
                 $telegram->sendMessage($builder->build());

@@ -702,7 +702,7 @@ class EmailService
                             $unitKerjaName,
                             $data['email']
                         )
-                        ->addText("\n🕒 " . date('d M Y, H:i:s'));
+                        ->addText("🕒 " . date('d M Y, H:i:s'));
 
                 $telegram = new \App\Shared\Libraries\TelegramLibrary();
                 $telegram->sendMessage($builder->build());

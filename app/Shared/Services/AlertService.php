@@ -33,8 +33,8 @@ class AlertService
                 
                 $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
                 $builder->setTitle('PERINGATAN KUOTA EMAIL PENUH', '⚠️')
-                        ->addText("<b>$count Akun Kuota Hampir Penuh (>90%):</b>")
-                        ->addDivider();
+                        ->addDivider()
+                        ->addText("<b>$count Akun Kuota Hampir Penuh (>90%):</b>");
                 
                 foreach (array_slice($highUsageAccounts, 0, 10) as $acc) {
                     $identitas = !empty($acc['nip']) ? "NIP: {$acc['nip']}" : (!empty($acc['nik']) ? "NIK: {$acc['nik']}" : "");
@@ -99,8 +99,8 @@ class AlertService
             
             $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
             $builder->setTitle('LAPORAN TTE PIMPINAN EXPIRED', '🔔')
-                    ->addText("<b>$pimpinanCount Pimpinan TTE Expired:</b>")
-                    ->addDivider();
+                    ->addDivider()
+                    ->addText("<b>$pimpinanCount Pimpinan TTE Expired:</b>");
 
             foreach (array_slice($expiredPimpinan, 0, 10) as $acc) {
                 $identitas = !empty($acc['nip']) ? "NIP: {$acc['nip']}" : (!empty($acc['nik']) ? "NIK: {$acc['nik']}" : "");
@@ -137,8 +137,8 @@ class AlertService
                 
                 $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
                 $builder->setTitle('PERINGATAN MASA AKTIF WEBSITE', '🌐')
-                        ->addText("<b>$count Domain Akan Kedaluwarsa (<30 Hari):</b>")
-                        ->addDivider();
+                        ->addDivider()
+                        ->addText("<b>$count Domain Akan Kedaluwarsa (<30 Hari):</b>");
                 
                 foreach (array_slice($expiringWebs, 0, 10) as $web) {
                     $item = "💻 <b>" . $web['domain'] . "</b>\n";

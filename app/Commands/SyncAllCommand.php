@@ -90,8 +90,8 @@ class SyncAllCommand extends BaseCommand
         CLI::write("Starting Synchronization Process ($modeName)...", 'blue');
         $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
         $builder->setTitle('SINKRONISASI SISTEM BERJALAN', '🔄')
-                ->addText("Sistem mengeksekusi sinkronisasi $modeName...")
-                ->addDivider();
+                ->addDivider()
+                ->addText("Sistem mengeksekusi sinkronisasi $modeName...");
                 
         $this->telegram->sendMessage($builder->build());
 
@@ -144,7 +144,6 @@ class SyncAllCommand extends BaseCommand
             $builder->addKeyValue('Website Sync', $this->syncStats['website']['success'] . " Berhasil, " . $this->syncStats['website']['fail'] . " Gagal", '🌐');
         }
 
-        $builder->addText("\n🕒 " . date('d M Y, H:i:s'));
         $this->telegram->sendMessage($builder->build());
     }
 
@@ -362,8 +361,8 @@ class SyncAllCommand extends BaseCommand
             if (!empty($deletedList)) {
                 $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
                 $builder->setTitle('LAPORAN PEMBERSIHAN OTOMATIS', '🧹')
-                        ->addText("Akun berikut telah dihapus permanen (melewati masa tunggu pensiun 30 hari):")
-                        ->addDivider();
+                        ->addDivider()
+                        ->addText("Akun berikut telah dihapus permanen (melewati masa tunggu pensiun 30 hari):");
                 
                 foreach ($deletedList as $item) {
                     $builder->addText($item);

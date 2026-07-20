@@ -176,7 +176,7 @@ class EmailController extends BaseController
                             $email['unit_kerja_name'] ?? '',
                             $email['email']
                         )
-                        ->addText("\n🔒 <i>Akses login cPanel ditangguhkan (Suspend). Data dipindahkan ke Tempat Sampah.</i>");
+                        ->addText("🔒 <i>Akses login cPanel ditangguhkan (Suspend). Data dipindahkan ke Tempat Sampah.</i>");
 
                 $telegram = new TelegramLibrary();
                 $telegram->sendMessage($builder->build());
@@ -355,7 +355,7 @@ class EmailController extends BaseController
                             '',
                             $email['email']
                         )
-                        ->addText("\n⚠️ <i>Dihapus permanen dari Database dan cPanel. (Bypass Trash)</i>");
+                        ->addText("⚠️ <i>Dihapus permanen dari Database dan cPanel. (Bypass Trash)</i>");
 
                 $telegram = new \App\Shared\Libraries\TelegramLibrary();
                 $telegram->sendMessage($builder->build());

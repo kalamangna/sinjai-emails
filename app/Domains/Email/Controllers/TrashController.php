@@ -62,7 +62,7 @@ class TrashController extends BaseController
                             '',
                             $email['email']
                         )
-                        ->addText("\n✅ <i>Akses login cPanel di-unsuspend dan akun telah dikembalikan dari Tempat Sampah.</i>");
+                        ->addText("✅ <i>Akses login cPanel di-unsuspend dan akun telah dikembalikan dari Tempat Sampah.</i>");
 
                 $telegram = new \App\Shared\Libraries\TelegramLibrary();
                 $telegram->sendMessage($builder->build());
@@ -108,7 +108,7 @@ class TrashController extends BaseController
                             '',
                             $email['email']
                         )
-                        ->addText("\n⚠️ <i>Data telah dibumihanguskan dari Database dan cPanel.</i>");
+                        ->addText("⚠️ <i>Data telah dihapus secara permanen dari Database dan cPanel.</i>");
 
                 $telegram = new \App\Shared\Libraries\TelegramLibrary();
                 $telegram->sendMessage($builder->build());

@@ -15,6 +15,12 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
     - Mengintegrasikan pemanggilan API cPanel (`suspend_email_login` & `unsuspend_email_login`) secara wajib (*mandatory*), di mana proses akan dibatalkan dengan notifikasi error jika API cPanel gagal.
     - Menyesuaikan format notifikasi Telegram untuk pemberitahuan penangguhan akun (Pensiun/Pindah/Keluar) serta pemulihan akun (*restore*).
 
+- **Standardisasi Notifikasi Telegram (3-Tier)**:
+    - Melakukan *refactoring* ekstensif pada `TelegramMessageBuilder` untuk menghapus anomali *double/triple spacing* dan spasi ganda.
+    - Menetapkan struktur 3-Tier konsisten di seluruh notifikasi sistem: Header, Divider, Body (dengan Label tebal otomatis), dan Footer/Timestamp.
+    - Menerapkan format pesan yang terstandar pada controller: `EmailController`, `TrashController`, `BatchController`, `SyncAllCommand`, `QueueWorker`, `BackupCommand`, `AlertService`, dan `EmailService`.
+    - Menggubah *wording* pesan peringatan menjadi lebih formal (contoh: "dibumihanguskan" menjadi "dihapus secara permanen").
+
 ## Refactor & Konsistensi Tampilan
 
 - **Refactor Global Konsistensi Desain UI**:
