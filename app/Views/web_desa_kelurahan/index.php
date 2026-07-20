@@ -59,12 +59,12 @@
     <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
         <!-- Status -->
         <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
-            <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/50">
+            <div class="px-4 sm:px-6 py-4 border-b border-slate-100 bg-slate-50/50">
                 <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Status Website</h3>
             </div>
-            <div class="p-6 flex flex-col md:flex-row items-center gap-8">
-                <div class="w-full md:w-1/2 flex justify-center">
-                    <div id="statusChart" class="w-full max-w-[180px]"></div>
+            <div class="p-4 sm:p-6 flex flex-col md:flex-row items-center gap-4 sm:gap-8">
+                <div class="w-full md:w-1/2 flex justify-center py-2 sm:py-0">
+                    <div id="statusChart" class="w-full max-w-[160px] sm:max-w-[180px]"></div>
                 </div>
                 <div class="w-full md:w-1/2 space-y-2">
                     <div class="flex justify-between items-center p-2 rounded-lg border border-slate-200 bg-slate-50">
@@ -93,14 +93,14 @@
 
         <!-- Statistik Teknologi -->
         <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
-            <div class="px-6 py-4 border-b border-slate-100 bg-slate-50">
+            <div class="px-4 sm:px-6 py-4 border-b border-slate-100 bg-slate-50">
                 <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Distribusi Platform</h3>
             </div>
-            <div class="p-6 flex flex-col md:flex-row items-center gap-8">
-                <div class="w-full md:w-1/2 flex justify-center">
-                    <div id="platformChart" class="w-full max-w-[180px]"></div>
+            <div class="p-4 sm:p-6 flex flex-col md:flex-row items-center gap-4 sm:gap-8">
+                <div class="w-full md:w-1/2 flex justify-center py-2 sm:py-0">
+                    <div id="platformChart" class="w-full max-w-[160px] sm:max-w-[180px]"></div>
                 </div>
-                <div class="w-full md:w-1/2 space-y-2 max-h-[160px] overflow-y-auto custom-scrollbar pr-2">
+                <div class="w-full md:w-1/2 space-y-2 max-h-[160px] overflow-y-auto custom-scrollbar pr-1 sm:pr-2">
                     <?php 
                     $platform_total = array_sum(array_column($platform_stats, 'count'));
                     foreach ($platform_stats as $index => $ps): 

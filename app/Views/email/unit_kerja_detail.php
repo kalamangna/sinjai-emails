@@ -128,14 +128,14 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <?php if (!empty($bsre_status_counts)): ?>
             <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
-                <div class="px-6 py-4 border-b border-slate-100 bg-slate-50">
+                <div class="px-4 sm:px-6 py-4 border-b border-slate-100 bg-slate-50">
                     <h5 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Status TTE</h5>
                 </div>
-                <div class="p-6 flex flex-col sm:flex-row items-center gap-8 flex-grow">
-                    <div class="w-full sm:w-1/2 flex justify-center">
-                        <div id="bsreStatusChart" class="w-full max-w-[200px]"></div>
+                <div class="p-4 sm:p-6 flex flex-col sm:flex-row items-center gap-4 sm:gap-8 flex-grow">
+                    <div class="w-full sm:w-1/2 flex justify-center py-2 sm:py-0">
+                        <div id="bsreStatusChart" class="w-full max-w-[180px] sm:max-w-[200px]"></div>
                     </div>
-                    <div class="w-full sm:w-1/2 space-y-2 max-h-[200px] overflow-y-auto custom-scrollbar pr-2">
+                    <div class="w-full sm:w-1/2 space-y-2 max-h-[180px] sm:max-h-[200px] overflow-y-auto custom-scrollbar pr-1 sm:pr-2">
                         <?php foreach ($bsre_status_counts as $key => $data):
                             $bgClass = 'bg-slate-400';
                             if ($key === 'ISSUE') $bgClass = 'bg-emerald-600';
@@ -161,14 +161,14 @@
 
         <?php if (!empty($status_asn_stats)): ?>
             <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
-                <div class="px-6 py-4 border-b border-slate-100 bg-slate-50">
+                <div class="px-4 sm:px-6 py-4 border-b border-slate-100 bg-slate-50">
                     <h5 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Status ASN</h5>
                 </div>
-                <div class="p-6 flex flex-col sm:flex-row items-center gap-8 flex-grow">
-                    <div class="w-full sm:w-1/2 flex justify-center">
-                        <div id="asnStatusChart" class="w-full max-w-[200px]"></div>
+                <div class="p-4 sm:p-6 flex flex-col sm:flex-row items-center gap-4 sm:gap-8 flex-grow">
+                    <div class="w-full sm:w-1/2 flex justify-center py-2 sm:py-0">
+                        <div id="asnStatusChart" class="w-full max-w-[180px] sm:max-w-[200px]"></div>
                     </div>
-                    <div class="w-full sm:w-1/2 space-y-2 max-h-[200px] overflow-y-auto custom-scrollbar pr-2">
+                    <div class="w-full sm:w-1/2 space-y-2 max-h-[180px] sm:max-h-[200px] overflow-y-auto custom-scrollbar pr-1 sm:pr-2">
                         <?php
                         foreach ($status_asn_stats as $index => $stat):
                             $label = strtoupper($stat['label']);
