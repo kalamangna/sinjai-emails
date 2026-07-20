@@ -3,16 +3,16 @@
 <?= $this->section('content') ?>
 <div class="space-y-6">
     <!-- Navigasi dan Aksi -->
-    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-        <button onclick="history.back()" class="btn btn-outline">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <button onclick="history.back()" class="btn btn-outline text-xs">
             <i class="fas fa-arrow-left mr-2"></i> Kembali
         </button>
 
         <div class="flex flex-wrap items-center gap-2">
             <!-- Dropdown Export -->
             <div class="relative group">
-                <button class="btn btn-outline">
-                    <i class="fas fa-download mr-2 text-slate-600"></i> Export <i class="fas fa-chevron-down ml-2 text-[8px] opacity-50 transition-transform duration-300 group-hover:rotate-180"></i>
+                <button class="btn btn-outline text-xs px-3 py-2">
+                    <i class="fas fa-download mr-1.5 text-slate-600"></i> Export <i class="fas fa-chevron-down ml-1 text-[8px] opacity-50 transition-transform duration-300 group-hover:rotate-180"></i>
                 </button>
                 <div class="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 overflow-hidden">
                     <a href="<?= site_url('email/export_unit_kerja_csv/' . $unit_kerja['id']) . ($_SERVER['QUERY_STRING'] ? '?' . $_SERVER['QUERY_STRING'] : '') ?>" class="block px-4 py-3 text-left text-[10px] font-bold text-slate-700 uppercase tracking-widest hover:bg-slate-50 border-b border-slate-100 transition-colors no-underline">
@@ -29,7 +29,7 @@
                     </a>
                 </div>
             </div>
-        <div class="flex flex-wrap items-center gap-2">
+
             <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
                 <!-- Dropdown Batch PK -->
                 <div class="relative group">
@@ -45,7 +45,6 @@
                         </button>
                     </div>
                 </div>
-
 
                 <!-- Dropdown Sinkronisasi -->
                 <div class="relative group">
@@ -66,35 +65,31 @@
     </div>
 
     <!-- Informasi Unit Kerja -->
-    <div class="bg-white border border-slate-200 rounded-lg p-6 lg:p-8 shadow-sm">
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
-            <div class="flex items-center gap-6">
-                <div class="w-16 h-16 bg-slate-100 border border-slate-200 rounded-lg flex items-center justify-center text-slate-700">
-                    <i class="fas fa-building text-2xl"></i>
+    <div class="bg-white border border-slate-200 rounded-lg p-4 sm:p-6 lg:p-8 shadow-sm">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 lg:gap-8">
+            <div class="flex items-center gap-4 sm:gap-6">
+                <div class="w-12 h-12 sm:w-16 sm:h-16 bg-slate-100 border border-slate-200 rounded-lg flex items-center justify-center text-slate-700 shrink-0">
+                    <i class="fas fa-building text-xl sm:text-2xl"></i>
                 </div>
                 <div class="flex flex-col">
-                    <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight"><?= esc($unit_kerja['nama_unit_kerja']) ?></h1>
+                    <h1 class="text-xl sm:text-2xl font-bold text-slate-800 uppercase tracking-tight"><?= esc($unit_kerja['nama_unit_kerja']) ?></h1>
                     <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">ID Unit: <?= $unit_kerja['id'] ?></p>
                 </div>
             </div>
 
-            <div class="flex flex-wrap lg:flex-nowrap gap-4 min-w-full lg:min-w-[400px]">
-                <div class="flex-1 bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-lg p-4 text-center">
+            <div class="grid grid-cols-3 gap-3 w-full lg:w-auto shrink-0">
+                <div class="bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-lg p-3 text-center">
                     <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Total Email</p>
-                    <p class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($total_emails ?? 0, 0, ',', '.') ?></p>
+                    <p class="text-xl sm:text-2xl font-bold text-slate-800 mt-0.5"><?= number_format($total_emails ?? 0, 0, ',', '.') ?></p>
                 </div>
-                <div class="flex-1 bg-white border border-slate-200 border-l-4 border-l-emerald-600 rounded-lg p-4 text-center">
+                <div class="bg-white border border-slate-200 border-l-4 border-l-emerald-600 rounded-lg p-3 text-center">
                     <p class="text-[9px] font-bold text-emerald-600 uppercase tracking-widest">TTE Aktif</p>
-                    <div class="flex items-baseline justify-center gap-1 mt-1">
-                        <p class="text-2xl font-bold text-slate-800"><?= number_format($active_bsre_count ?? 0, 0, ',', '.') ?></p>
-                    </div>
+                    <p class="text-xl sm:text-2xl font-bold text-slate-800 mt-0.5"><?= number_format($active_bsre_count ?? 0, 0, ',', '.') ?></p>
                 </div>
                 <?php $expired_count = $bsre_status_counts['EXPIRED']['count'] ?? 0; ?>
-                <div class="flex-1 bg-white border border-slate-200 border-l-4 border-l-red-600 rounded-lg p-4 text-center">
+                <div class="bg-white border border-slate-200 border-l-4 border-l-red-600 rounded-lg p-3 text-center">
                     <p class="text-[9px] font-bold text-red-600 uppercase tracking-widest">TTE Expired</p>
-                    <div class="flex items-baseline justify-center gap-1 mt-1">
-                        <p class="text-2xl font-bold text-slate-800"><?= number_format($expired_count, 0, ',', '.') ?></p>
-                    </div>
+                    <p class="text-xl sm:text-2xl font-bold text-slate-800 mt-0.5"><?= number_format($expired_count, 0, ',', '.') ?></p>
                 </div>
             </div>
         </div>

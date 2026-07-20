@@ -26,6 +26,8 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## Perbaikan Bug
 
+- **Fix: Layout Berantakan pada Halaman Detail Unit Kerja (`unit_kerja_detail.php`)**:
+    - Memperbaiki tag HTML berlisensial/terbuka ganda pada bagian grup tombol header dan merapikan grid metrik unit kerja (`grid-cols-3 w-full lg:w-auto`) agar tampilan desktop dan tablet menjadi presisi dan simetris kembali.
 - **Fix: Error "Invalid file" pada Halaman Email (Unit Kerja, Eselon, PNS, PPPK)**:
     - Memperbaiki ketidaksesuaian penamaan file *view* pada `EmailListController.php` yang sebelumnya menggunakan format *camelCase* (`email/unitKerjaList`) padahal file fisiknya menggunakan *snake_case* (`unit_kerja_list.php`).
     - Hal ini menyelesaikan masalah halaman error saat membuka navigasi pada modul Email.
