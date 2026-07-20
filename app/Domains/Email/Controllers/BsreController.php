@@ -199,6 +199,7 @@ class BsreController extends BaseController
      */
     public function registerUser()
     {
+        $nik = $this->request->getVar('nik');
         $nama = $this->request->getVar('nama');
         $email = $this->request->getVar('email');
 
@@ -210,7 +211,7 @@ class BsreController extends BaseController
         }
 
         $bsreApi = new BsreApi();
-        $result = $bsreApi->registerUser($nama, $email);
+        $result = $bsreApi->registerUser($nama, $email, $nik ?? '');
 
         if ($result['success']) {
             return $this->response->setJSON([
