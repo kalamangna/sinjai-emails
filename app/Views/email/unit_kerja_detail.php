@@ -748,7 +748,7 @@ echo view('components/modal', [
         syncBtn.disabled = false;
         syncBtn.innerHTML = originalBtnContent;
 
-        alert(`Sinkronisasi Data Pegawai Selesai!\nTotal: ${processed}\nBerhasil: ${success}\nGagal: ${failed}`);
+        showSyncResult(processed, success, failed);
     }
 
     async function batchRegisterBsre() {
@@ -854,8 +854,7 @@ echo view('components/modal', [
         syncBtn.disabled = false;
         syncBtn.innerHTML = originalBtnContent;
 
-        alert(`Registrasi Massal Selesai!\nTotal: ${processed}\nBerhasil: ${success}\nGagal: ${failed}\n\nHalaman akan disegarkan.`);
-        window.location.reload();
+        showSyncResult(processed, success, failed);
     }
 </script>
 <?= $this->endSection() ?>
