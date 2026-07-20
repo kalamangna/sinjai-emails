@@ -131,7 +131,7 @@ class BsreApi
             } else {
                 $msg = $body['message'] ?? $body['error'] ?? $body['error_description'] ?? 'Gagal mendaftarkan user ke BSrE';
                 if ($msg === 'Gagal mendaftarkan user ke BSrE') {
-                    $msg .= '. Raw Response: ' . $response->getBody();
+                    $msg .= '. Raw Response: ' . $response->getBody() . '. Payload sent: ' . json_encode($payload);
                 }
                 return [
                     'success' => false,
