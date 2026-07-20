@@ -127,13 +127,13 @@ class EmailController extends BaseController
                 throw new \Exception("Akun email tidak ditemukan.");
             }
 
+            // 1. Mandatory cPanel API Suspend (Will throw Exception if fails)
             $cpanelApi = new \App\Shared\Libraries\CpanelApi();
-            
-            // 1. Suspend in cPanel
             $cpanelApi->suspend_email_login($email['email']);
 
-            // 2. Update DB: Set suspended and clear employee data
-            $this->emailModel->update($email['id'], [
+            // 2. Update DB & Trigger Soft Delete (Move to Trash)
+            $model = new EmailModel();
+            $model->update($email['id'], [
                 'suspended_login' => 1,
                 'pensiun_at' => date('Y-m-d H:i:s'),
                 'unit_kerja_id' => null,
@@ -155,19 +155,19 @@ class EmailController extends BaseController
                 'pendidikan' => null
             ]);
 
-            // Trigger soft delete so it moves to Trash
-            $this->emailModel->delete($email['id']);
+            // Move to Kotak Sampah (Soft Delete)
+            $model->delete($email['id']);
 
             $this->clearEmailCaches();
 
             // 3. Audit Log
             helper('audit');
-            log_audit('PENSIUN', 'Email', $email['id'], 'Akun ditandai pensiun: ' . $email['email']);
+            log_audit('PENSIUN', 'Email', $email['id'], 'Akun ditandai pensiun / ditangguhkan: ' . $email['email']);
 
             // 4. Send Telegram Notification
             try {
                 $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
-                $builder->setTitle('AKUN PEGAWAI PENSIUN / KELUAR', '♻️')
+                $builder->setTitle('AKUN PEGAWAI PENSIUN / PINDAH / KELUAR', '🚫')
                         ->addDivider()
                         ->addUserProfile(
                             $email['name'] ?? '',
@@ -176,7 +176,7 @@ class EmailController extends BaseController
                             $email['unit_kerja_name'] ?? '',
                             $email['email']
                         )
-                        ->addText("\n⚠️ <i>Akses ditangguhkan. Akan dihapus permanen dalam 30 hari.</i>");
+                        ->addText("\n🔒 <i>Akses login cPanel ditangguhkan (Suspend). Data dipindahkan ke Tempat Sampah.</i>");
 
                 $telegram = new TelegramLibrary();
                 $telegram->sendMessage($builder->build());
@@ -184,7 +184,7 @@ class EmailController extends BaseController
                 log_message('error', 'Failed to send Telegram notification for retirement: ' . $te->getMessage());
             }
 
-            return redirect()->to('email')->with('success', 'Akun telah ditandai sebagai Pensiun. Data dipindahkan ke Tempat Sampah dan akan dihapus permanen dalam 30 hari.');
+            return redirect()->to('email')->with('success', 'Akun telah berhasil ditangguhkan di cPanel dan dipindahkan ke Tempat Sampah.');
             
         } catch (\Throwable $e) {
             return redirect()->to('email/detail/' . $username)->with('error', 'Gagal memproses pensiun: ' . $e->getMessage());

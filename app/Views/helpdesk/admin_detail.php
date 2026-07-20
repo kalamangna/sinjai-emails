@@ -12,13 +12,6 @@
                 <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">ID: <?= esc($ticket['tiket_id']) ?> • <?= formatTanggalWaktu($ticket['created_at']) ?></p>
             </div>
         </div>
-
-        <form action="<?= site_url('admin/helpdesk/delete/' . $ticket['id']) ?>" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus tiket ini secara permanen?');">
-            <?= csrf_field() ?>
-            <button type="submit" class="btn btn-outline text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300 btn-sm uppercase tracking-widest text-[10px] font-bold">
-                <i class="fas fa-trash-alt mr-2"></i> Hapus Permohonan
-            </button>
-        </form>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -112,6 +105,15 @@
                 </div>
             </div>
         </div>
+    </div>
+    <!-- Zona Berbahaya (Danger Zone) -->
+    <div class="mt-6 flex justify-end gap-3">
+        <form action="<?= site_url('admin/helpdesk/delete/' . $ticket['id']) ?>" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus tiket ini secara permanen?');">
+            <?= csrf_field() ?>
+            <button type="submit" class="btn btn-solid-danger" title="Hapus Permohonan">
+                <i class="fas fa-trash-alt mr-1.5"></i> Hapus Permanen
+            </button>
+        </form>
     </div>
 </div>
 <?= $this->endSection() ?>

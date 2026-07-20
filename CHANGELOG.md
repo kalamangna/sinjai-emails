@@ -7,6 +7,14 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 # [21 Juli 2026]
 
+## Penyesuaian Aksi & Penangguhan Akun
+
+- **Pemberhentian & Pemindahan Akun (`Pensiun / Pindah / Keluar`)**:
+    - Memperbarui penamaan label dan notifikasi konfirmasi dari "Pensiun" menjadi **"Pensiun / Pindah / Keluar"** pada seluruh tampilan detail dan tabel utama.
+    - Menggeser posisi tombol-tombol aksi di halaman detail (`detail.php` dan `admin_detail.php`) ke sudut kanan paling bawah secara rapi.
+    - Mengintegrasikan pemanggilan API cPanel (`suspend_email_login` & `unsuspend_email_login`) secara wajib (*mandatory*), di mana proses akan dibatalkan dengan notifikasi error jika API cPanel gagal.
+    - Menyesuaikan format notifikasi Telegram untuk pemberitahuan penangguhan akun (Pensiun/Pindah/Keluar) serta pemulihan akun (*restore*).
+
 ## Refactor & Konsistensi Tampilan
 
 - **Refactor Global Konsistensi Desain UI**:
