@@ -197,4 +197,93 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
             return false;
         }
     };
+
+    /**
+     * Sync all Pegawai data on page sequentially
+     */
+    window.syncAllPegawai = async function(btnId = 'batchSyncPegawaiBtn', confirmText = 'Sinkronkan data pegawai dari API?') {
+        const containers = document.querySelectorAll('[id^="pegawai-container-"]');
+        const validContainers = Array.from(containers).filter(c => c.getAttribute('data-nip') && c.getAttribute('data-nip').trim() !== '');
+
+        if (!validContainers.length) {
+            alert('Tidak ada data NIP yang dapat disinkronkan.');
+            return;
+        }
+
+        if (!confirm(confirmText)) {
+            return;
+        }
+
+        const btn = document.getElementById(btnId);
+        if (!btn) return;
+        const originalBtnContent = btn.innerHTML;
+
+        btn.disabled = true;
+        btn.classList.add('opacity-75', 'cursor-not-allowed');
+
+        let processed = 0;
+        let success = 0;
+        let failed = 0;
+
+        for (const container of validContainers) {
+            const nip = container.getAttribute('data-nip');
+            const row = container.closest('tr');
+            const jabatanTarget = row.querySelector('.jabatan-sync-target');
+            let originalJabatan = '';
+
+            container.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+            
+            if (jabatanTarget) {
+                originalJabatan = jabatanTarget.getAttribute('data-original') || jabatanTarget.innerText.trim();
+                jabatanTarget.setAttribute('data-original', originalJabatan);
+                jabatanTarget.innerHTML = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[8px] font-bold uppercase border bg-slate-50 text-slate-400 border-slate-200 animate-pulse"><i class="fas fa-spinner fa-spin mr-1"></i> SYNCING</span>';
+            }
+
+            try {
+                const response = await fetch(window.BASE_URL + '/email/sync_pegawai', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: 'nip=' + encodeURIComponent(nip)
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    if (jabatanTarget) {
+                        const newJabatan = data.data?.jabatan || originalJabatan;
+                        jabatanTarget.innerHTML = `<span class="text-emerald-600 font-bold">${newJabatan}</span>`;
+                        jabatanTarget.setAttribute('data-original', newJabatan);
+                    }
+                    success++;
+                } else {
+                    if (jabatanTarget) {
+                        if (data.message && data.message.includes('tidak ditemukan')) {
+                            jabatanTarget.innerHTML = `<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase border bg-amber-50 text-amber-600 border-amber-200" title="Data tidak ditemukan di API">NO DATA API</span>`;
+                        } else {
+                            jabatanTarget.innerHTML = `${originalJabatan} <span class="ml-1 px-1.5 py-0.5 rounded text-[8px] font-bold uppercase border bg-red-50 text-red-600 border-red-200" title="${data.message || 'Sinkronisasi Gagal'}">FAILED</span>`;
+                        }
+                    }
+                    failed++;
+                }
+            } catch (error) {
+                if (jabatanTarget) {
+                    jabatanTarget.innerHTML = `${originalJabatan} <span class="ml-1 px-1.5 py-0.5 rounded text-[8px] font-bold uppercase border bg-red-50 text-red-600 border-red-200">ERROR</span>`;
+                }
+                failed++;
+            }
+
+            processed++;
+            btn.innerHTML = `<i class="fas fa-sync-alt animate-spin mr-2"></i> Sinkronisasi ${processed}/${validContainers.length}...`;
+        }
+
+        btn.innerHTML = originalBtnContent;
+        btn.disabled = false;
+        btn.classList.remove('opacity-75', 'cursor-not-allowed');
+        alert(`Sinkronisasi Data Pegawai Selesai!\nTotal: ${processed}\nBerhasil: ${success}\nGagal: ${failed}`);
+    };
 }

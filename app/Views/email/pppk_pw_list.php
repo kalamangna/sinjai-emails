@@ -84,7 +84,7 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center gap-2">
-                                        <div id="bsre-status-<?= $email['id'] ?>" class="bsre-status-container">
+                                        <div id="bsre-status-<?= $email['id'] ?>" class="bsre-status-container" data-email="<?= esc($email['email']) ?>">
                                             <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest animate-pulse">Checking...</span>
                                         </div>
                                     </div>
@@ -127,65 +127,16 @@
 
 <?= $this->section('scripts') ?>
 <script>
-    function renderBsreStatus(status, containerId) {
-        const container = document.getElementById(containerId);
-        if (!container) return;
-
-        const colorClass = getJsStatusColor(status);
-        const label = (status && status.toLowerCase() !== 'not_synced') ? status : 'NOT_SYNCED';
-
-        container.innerHTML = `<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${colorClass}">${label}</span>`;
-    }
-
-    async function syncBsreStatus(email, id) {
-        const containerId = `bsre-status-${id}`;
-        return window.syncSingleBsreStatus(email, containerId);
-    }
-
-    async function syncAllOnPage() {
-        const btn = document.getElementById('batchSyncBtn');
-        const originalContent = btn.innerHTML;
-
-        if (!confirm('Sinkronisasi akan mengecek status TTE untuk semua akun di halaman ini satu per satu. Lanjutkan?')) return;
-
-        const emails = <?= json_encode($emails) ?>;
-        if (emails.length === 0) return;
-
-        btn.disabled = true;
-        btn.classList.add('opacity-75', 'cursor-not-allowed');
-
-        let processed = 0;
-        let success = 0;
-        let failed = 0;
-
-        for (const email of emails) {
-            processed++;
-
-            const containerId = `bsre-status-${email.id}`;
-            const element = document.getElementById(containerId);
-            if (element) {
-                element.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'center'
-                });
-            }
-
-            btn.innerHTML = `<i class="fas fa-fingerprint animate-pulse mr-2"></i> Sinkronisasi ${processed}/${emails.length}...`;
-            const result = await syncBsreStatus(email.email, email.id);
-            if (result.success) success++;
-            else failed++;
-        }
-
-        btn.innerHTML = originalContent;
-        btn.disabled = false;
-        btn.classList.remove('opacity-75', 'cursor-not-allowed');
-        showSyncResult(processed, success, failed);
+    function syncAllOnPage() {
+        window.syncAllBsreStatus('batchSyncBtn', 'Sinkronisasi akan mengecek status TTE untuk semua akun di halaman ini satu per satu. Lanjutkan?');
     }
 
     document.addEventListener('DOMContentLoaded', () => {
         const emails = <?= json_encode($emails) ?>;
         emails.forEach(email => {
-            renderBsreStatus(email.bsre_status, `bsre-status-${email.id}`);
+            if (typeof window.renderBsreStatus === 'function') {
+                window.renderBsreStatus(email.bsre_status, `bsre-status-${email.id}`);
+            }
         });
     });
 </script>

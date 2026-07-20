@@ -25,7 +25,7 @@ class EmailListController extends BaseController
     {
         $data['eselons'] = $this->eselonModel->orderBy('nama_eselon', 'ASC')->findAll();
         $data['title'] = 'Eselon';
-        return view('email/eselonList', $data);
+        return view('email/eselon_list', $data);
     }
 
     public function unitKerjaList()
@@ -37,7 +37,7 @@ class EmailListController extends BaseController
                 'unit_kerja' => $navData['unit_kerja_nav'],
                 'back_url' => site_url('/')
             ];
-            return view('email/unitKerjaList', $data);
+            return view('email/unit_kerja_list', $data);
         } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
             return view('email/error', $data);
@@ -65,7 +65,7 @@ class EmailListController extends BaseController
             $data['pimpinan_desa'] = $params['pimpinan_desa'] ?? 1;
             $data['back_url'] = site_url('email');
 
-            return view('email/unitKerjaDetail', $data);
+            return view('email/unit_kerja_detail', $data);
         } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
             $data['back_url'] = site_url('email');
@@ -99,7 +99,7 @@ class EmailListController extends BaseController
             $data['bsre_status_options'] = $bsre_status_options;
             $data['back_url'] = site_url('email');
 
-            return view('email/eselonDetail', $data);
+            return view('email/eselon_detail', $data);
         } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
             $data['back_url'] = site_url('email');
@@ -126,7 +126,7 @@ class EmailListController extends BaseController
             $data['parent_unit_kerja_id'] = $params['parent_unit_kerja_id'];
             $data['back_url'] = site_url('email');
 
-            return view('email/pnsList', $data);
+            return view('email/pns_list', $data);
         } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
             $data['back_url'] = site_url('email');
@@ -149,7 +149,7 @@ class EmailListController extends BaseController
             $data['has_nip'] = $params['has_nip'];
             $data['back_url'] = site_url('email');
 
-            return view('email/pppkList', $data);
+            return view('email/pppk_list', $data);
         } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
             $data['back_url'] = site_url('email');
@@ -172,7 +172,7 @@ class EmailListController extends BaseController
             $data['has_nip'] = $params['has_nip'];
             $data['back_url'] = site_url('email');
 
-            return view('email/pppkPwList', $data);
+            return view('email/pppk_pw_list', $data);
         } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
             $data['back_url'] = site_url('email');

@@ -5,6 +5,16 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [20 Juli 2026]
+
+## Perbaikan Bug
+
+- **Fix: Error "Invalid file" pada Halaman Email (Unit Kerja, Eselon, PNS, PPPK)**:
+    - Memperbaiki ketidaksesuaian penamaan file *view* pada `EmailListController.php` yang sebelumnya menggunakan format *camelCase* (`email/unitKerjaList`) padahal file fisiknya menggunakan *snake_case* (`unit_kerja_list.php`).
+    - Hal ini menyelesaikan masalah halaman error saat membuka navigasi pada modul Email.
+
+---
+
 # [10 Juli 2026]
 ## Refactor & Konsistensi Kode
 
