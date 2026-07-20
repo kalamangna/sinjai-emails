@@ -14,40 +14,46 @@
             <?php endif; ?>
         </div>
 
-        <div class="flex items-center gap-2 w-full lg:w-auto">
+        <div class="flex items-center gap-2 overflow-x-auto pb-1 max-w-full custom-scrollbar shrink-0">
             <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
-                <a href="<?= site_url('email/swap_data') ?>" class="flex-1 lg:flex-none btn btn-outline no-underline" title="Tukar Data Profil Antar Dua Akun">
-                    <i class="fas fa-exchange-alt mr-2 text-slate-700"></i> Tukar Data
+                <a href="<?= site_url('email/swap_data') ?>" class="whitespace-nowrap btn btn-outline no-underline text-xs px-3 py-2" title="Tukar Data Profil Antar Dua Akun">
+                    <i class="fas fa-exchange-alt mr-1.5 text-slate-700"></i> Tukar Data
                 </a>
-                <a href="<?= site_url('email/create') ?>" class="flex-1 lg:flex-none btn btn-outline no-underline">
-                    <i class="fas fa-plus mr-2 text-slate-700"></i> Tambah
+                <a href="<?= site_url('email/create') ?>" class="whitespace-nowrap btn btn-outline no-underline text-xs px-3 py-2">
+                    <i class="fas fa-plus mr-1.5 text-slate-700"></i> Tambah
                 </a>
             <?php endif; ?>
         </div>
     </div>
 
     <!-- Metrik -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-lg shadow-sm p-6">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6">
+        <div class="bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-lg shadow-sm p-4 sm:p-6">
             <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Total Email</p>
-            <h3 class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($total_emails ?? 0, 0, ',', '.') ?></h3>
+            <h3 class="text-xl sm:text-2xl font-bold text-slate-800 mt-1"><?= number_format($total_emails ?? 0, 0, ',', '.') ?></h3>
         </div>
-        <div class="bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-lg shadow-sm p-6">
+        <div class="bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-lg shadow-sm p-4 sm:p-6">
             <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Email Aktif</p>
-            <h3 class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($active_count ?? 0, 0, ',', '.') ?></h3>
+            <h3 class="text-xl sm:text-2xl font-bold text-slate-800 mt-1"><?= number_format($active_count ?? 0, 0, ',', '.') ?></h3>
         </div>
-        <div class="bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-lg shadow-sm p-6">
+        <div class="bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-lg shadow-sm p-4 sm:p-6">
             <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">TTE Aktif</p>
-            <h3 class="text-2xl font-bold text-slate-800 mt-1"><?= number_format($active_bsre_count ?? 0, 0, ',', '.') ?></h3>
+            <h3 class="text-xl sm:text-2xl font-bold text-slate-800 mt-1"><?= number_format($active_bsre_count ?? 0, 0, ',', '.') ?></h3>
         </div>
     </div>
 
     <!-- Tabel dan Pencarian -->
     <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
-        <div class="p-6 border-b border-slate-100 bg-slate-50">
-            <form method="GET" action="<?= site_url('email') ?>" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+        <div class="p-4 sm:p-6 border-b border-slate-100 bg-slate-50">
+            <!-- Mobile Filter Toggle Button -->
+            <button type="button" onclick="document.getElementById('emailFilterForm').classList.toggle('hidden')" class="md:hidden w-full flex items-center justify-between px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                <span><i class="fas fa-filter mr-2 text-slate-500"></i> Filter & Pencarian</span>
+                <i class="fas fa-chevron-down text-[10px]"></i>
+            </button>
+
+            <form id="emailFilterForm" method="GET" action="<?= site_url('email') ?>" class="hidden md:grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
                 <div class="md:col-span-3 lg:col-span-5">
-                    <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Pencarian</label>
+                    <label class="block text-xs font-bold text-slate-700 mb-1 uppercase tracking-tight">Pencarian</label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-700">
                             <i class="fas fa-search text-xs"></i>
@@ -57,7 +63,7 @@
                 </div>
 
                 <div class="md:col-span-3 lg:col-span-2">
-                    <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Status TTE</label>
+                    <label class="block text-xs font-bold text-slate-700 mb-1 uppercase tracking-tight">Status TTE</label>
                     <select name="bsre_status" class="block w-full px-3 py-2 bg-white border <?= !empty($bsre_status) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm appearance-none cursor-pointer transition-all">
                         <option value="">Semua Status</option>
                         <?php foreach ($bsre_status_options ?? [] as $key => $label): ?>
@@ -67,7 +73,7 @@
                 </div>
 
                 <div class="md:col-span-4 lg:col-span-3">
-                    <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Penggunaan Disk</label>
+                    <label class="block text-xs font-bold text-slate-700 mb-1 uppercase tracking-tight">Penggunaan Disk</label>
                     <select name="disk_usage" class="block w-full px-3 py-2 bg-white border <?= !empty($disk_usage) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm appearance-none cursor-pointer transition-all">
                         <option value="">Semua Penggunaan</option>
                         <option value="critical" <?= (($disk_usage ?? '') === 'critical') ? 'selected' : '' ?>>Kritis (≥ 85%)</option>
@@ -76,18 +82,18 @@
                 </div>
 
                 <div class="md:col-span-2 lg:col-span-2 flex gap-2">
-                    <button type="submit" class="flex-1 btn btn-solid">
-                        <i class="fas fa-filter mr-2 text-white/80"></i> Filter
+                    <button type="submit" class="flex-1 btn btn-solid text-xs">
+                        <i class="fas fa-filter mr-1.5 text-white/80"></i> Filter
                     </button>
-                    <a href="<?= site_url('email') ?>" class="btn btn-outline" title="Reset">
+                    <a href="<?= site_url('email') ?>" class="btn btn-outline text-xs px-3" title="Reset">
                         <i class="fas fa-undo"></i>
                     </a>
                 </div>
             </form>
         </div>
 
-        <div class="overflow-x-auto">
-            <table class="w-full text-left text-sm">
+        <div class="overflow-x-auto custom-scrollbar touch-pan-x">
+            <table class="w-full text-left text-sm min-w-[700px]">
                 <thead class="bg-slate-100 text-slate-700 uppercase text-[10px] font-bold">
                     <tr>
                         <th class="px-6 py-3 border-b border-slate-200">Email</th>

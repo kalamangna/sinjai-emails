@@ -315,7 +315,7 @@
         <?php endif; ?>
 
         <!-- Content Area -->
-        <main class="flex-grow p-6">
+        <main class="flex-grow p-4 sm:p-6">
             <!-- Global Flash Messages (Flowbite Dismiss) -->
             <?php if (session()->getFlashdata('success') || session()->getFlashdata('message') || session()->getFlashdata('error') || session()->getFlashdata('info')): ?>
                 <div class="mb-6 space-y-2">

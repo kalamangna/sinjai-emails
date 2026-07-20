@@ -58,12 +58,18 @@
     <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
 
         <!-- Filter Bar -->
-        <div class="p-6 border-b border-slate-100 bg-slate-50">
-            <form method="GET" action="<?= site_url('audit-trail') ?>" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+        <div class="p-4 sm:p-6 border-b border-slate-100 bg-slate-50">
+            <!-- Mobile Filter Toggle Button -->
+            <button type="button" onclick="document.getElementById('auditFilterForm').classList.toggle('hidden')" class="md:hidden w-full flex items-center justify-between px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                <span><i class="fas fa-filter mr-2 text-slate-500"></i> Filter & Pencarian</span>
+                <i class="fas fa-chevron-down text-[10px]"></i>
+            </button>
+
+            <form id="auditFilterForm" method="GET" action="<?= site_url('audit-trail') ?>" class="hidden md:grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
 
                 <!-- Search -->
                 <div class="md:col-span-4">
-                    <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Cari Pengguna</label>
+                    <label class="block text-xs font-bold text-slate-700 mb-1 uppercase tracking-tight">Cari Pengguna</label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-700">
                             <i class="fas fa-search text-xs"></i>
@@ -74,7 +80,7 @@
 
                 <!-- Filter Aksi -->
                 <div class="md:col-span-3">
-                    <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Aksi</label>
+                    <label class="block text-xs font-bold text-slate-700 mb-1 uppercase tracking-tight">Aksi</label>
                     <select name="action" id="filter_action" class="block w-full px-3 py-2 bg-white border <?= !empty($filterAction) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm appearance-none cursor-pointer transition-all">
                         <option value="">Semua Aksi</option>
                         <?php foreach ($actions as $a): ?>
@@ -85,7 +91,7 @@
 
                 <!-- Filter Entitas -->
                 <div class="md:col-span-3">
-                    <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Entitas</label>
+                    <label class="block text-xs font-bold text-slate-700 mb-1 uppercase tracking-tight">Entitas</label>
                     <select name="entity" id="filter_entity" class="block w-full px-3 py-2 bg-white border <?= !empty($filterEntity) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm appearance-none cursor-pointer transition-all">
                         <option value="">Semua Entitas</option>
                         <?php foreach ($entities as $e): ?>
@@ -96,10 +102,10 @@
 
                 <!-- Tombol -->
                 <div class="md:col-span-2 flex gap-2">
-                    <button type="submit" id="filterBtn" class="flex-1 btn btn-solid">
-                        <i class="fas fa-filter mr-2 text-white/80"></i> Filter
+                    <button type="submit" id="filterBtn" class="flex-1 btn btn-solid text-xs">
+                        <i class="fas fa-filter mr-1.5 text-white/80"></i> Filter
                     </button>
-                    <a href="<?= site_url('audit-trail') ?>" class="btn btn-outline" title="Reset">
+                    <a href="<?= site_url('audit-trail') ?>" class="btn btn-outline text-xs px-3" title="Reset">
                         <i class="fas fa-undo"></i>
                     </a>
                 </div>
@@ -107,8 +113,8 @@
         </div>
 
         <!-- Table -->
-        <div class="overflow-x-auto">
-            <table class="w-full text-left text-sm">
+        <div class="overflow-x-auto custom-scrollbar touch-pan-x">
+            <table class="w-full text-left text-sm min-w-[650px]">
                 <thead class="bg-slate-100 text-slate-700 uppercase text-[10px] font-bold">
                     <tr>
                         <th class="px-6 py-3 border-b border-slate-200">Waktu</th>
