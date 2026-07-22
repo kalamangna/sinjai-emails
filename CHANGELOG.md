@@ -20,6 +20,7 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
     - **Pemicu Refresh Modal**: Memperbarui `global-sync-result-modal` di `layouts/main.php` sehingga peremajaan halaman (`location.reload()`) dipicu persis saat pengguna mengklik tombol **OK** pada modal hasil sinkronisasi.
     - **Penghapusan Kontainer Toast Kosong**: Menambahkan `MutationObserver` pada `toast-container` di `layouts/main.php` (dengan pemantauan perubahan class & style) agar kontainer pembungkus ikut dihapus secara instan dari DOM ketika semua banner toast telah ditutup atau disembunyikan (termasuk kelas `hidden` yang ditambahkan oleh utilitas Flowbite).
     - **Alert NO DATA Detail Akun**: Menambahkan penanganan modal alert "Data Tidak Ditemukan" pada `syncSinglePegawai` di `public/js/sync-helper.js` saat koneksi API berhasil namun NIP tidak ditemukan di database SIMPEG, dengan menampilkan pesan kesalahan yang ramah pengguna dan memuat nomor NIP pegawai yang bersangkutan.
+    - **Tabel Riwayat Laporan**: Menambahkan kelas `whitespace-nowrap` pada header dan sel kolom **Waktu Mulai** di [history.php](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/exports/history.php) agar teks waktu/tanggal tidak dibungkus (wrap) ke baris baru.
 
 - **Peningkatan Visual Form Impor Excel (Batch)**:
     - Menambahkan ikon FontAwesome `<i class="fas fa-file-excel"></i>` pada header card "Impor dari Excel (XLSX)".

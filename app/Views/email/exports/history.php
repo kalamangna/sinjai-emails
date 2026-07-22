@@ -33,7 +33,7 @@
                         <th class="px-6 py-3 border-b border-slate-200">Tipe Laporan</th>
                         <th class="px-6 py-3 border-b border-slate-200">Status</th>
                         <th class="px-6 py-3 border-b border-slate-200">Nama File</th>
-                        <th class="px-6 py-3 border-b border-slate-200">Waktu Mulai</th>
+                        <th class="px-6 py-3 border-b border-slate-200 whitespace-nowrap">Waktu Mulai</th>
                         <th class="px-6 py-3 border-b border-slate-200 text-right">Aksi</th>
                     </tr>
                 </thead>
@@ -87,7 +87,7 @@
                                         <span class="text-slate-400 italic">-</span>
                                     <?php endif; ?>
                                 </td>
-                                <td class="px-6 py-4">
+                                <td class="px-6 py-4 whitespace-nowrap">
                                     <p class="font-medium text-slate-800 leading-tight"><?= date('d M Y', strtotime($h['created_at'])) ?></p>
                                     <p class="text-[10px] text-slate-500 font-medium mt-1 uppercase tracking-widest"><?= date('H:i', strtotime($h['created_at'])) ?> WIB</p>
                                 </td>
