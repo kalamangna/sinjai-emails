@@ -163,10 +163,11 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
 
             if (data.success) {
                 if (data.no_data) {
+                    const errorMsg = `Pegawai dengan NIP ${nip} tidak terdaftar di SIMPEG.`;
                     if (typeof window.showGlobalError === 'function') {
-                        window.showGlobalError('Data Tidak Ditemukan', data.message || 'NIP tidak ditemukan di API SIMPEG.');
+                        window.showGlobalError('Data Tidak Ditemukan', errorMsg);
                     } else {
-                        alert(data.message || 'NIP tidak ditemukan di API SIMPEG.');
+                        alert(errorMsg);
                     }
                     return true;
                 }
