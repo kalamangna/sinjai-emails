@@ -1038,11 +1038,15 @@ class EmailService
                       || isset($source['pangkat_nama']) || isset($source['pangkat_golruang']);
 
         if (empty($data) || !$hasActualData) {
+            $apiMessage = 'Data tidak ditemukan di API';
+            if (is_array($data)) {
+                $apiMessage = $data['message'] ?? $data['error'] ?? $data['msg'] ?? $apiMessage;
+            }
             return [
                 'success' => true,
                 'no_data' => true,
                 'updated' => false,
-                'message' => 'Data tidak ditemukan di API',
+                'message' => $apiMessage,
                 'data'    => [
                     'jabatan'          => $currentEmail['jabatan'] ?? '-',
                     'pangkat_nama'     => $currentEmail['pangkat_nama'] ?? '-',

@@ -19,7 +19,7 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
     - **Stabilitas cURL SIMPEG**: Menambahkan `timeout => 15` dan `verify => false` pada `PegawaiApi.php` untuk mencegah kesalahan jabat tangan SSL di lingkungan produksi.
     - **Pemicu Refresh Modal**: Memperbarui `global-sync-result-modal` di `layouts/main.php` sehingga peremajaan halaman (`location.reload()`) dipicu persis saat pengguna mengklik tombol **OK** pada modal hasil sinkronisasi.
     - **Penghapusan Kontainer Toast Kosong**: Menambahkan `MutationObserver` pada `toast-container` di `layouts/main.php` (dengan pemantauan perubahan class & style) agar kontainer pembungkus ikut dihapus secara instan dari DOM ketika semua banner toast telah ditutup atau disembunyikan (termasuk kelas `hidden` yang ditambahkan oleh utilitas Flowbite).
-    - **Alert NO DATA Detail Akun**: Menambahkan penanganan modal alert "Data Tidak Ditemukan" pada `syncSinglePegawai` di `public/js/sync-helper.js` saat koneksi API berhasil namun NIP tidak ditemukan di database SIMPEG.
+    - **Alert NO DATA Detail Akun**: Menambahkan penanganan modal alert "Data Tidak Ditemukan" pada `syncSinglePegawai` di `public/js/sync-helper.js` saat koneksi API berhasil namun NIP tidak ditemukan di database SIMPEG, serta melacak pesan kesalahan asli secara dinamis langsung dari respon API SIMPEG.
 
 - **Peningkatan Visual Form Impor Excel (Batch)**:
     - Menambahkan ikon FontAwesome `<i class="fas fa-file-excel"></i>` pada header card "Impor dari Excel (XLSX)".
