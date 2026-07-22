@@ -383,19 +383,29 @@
                     <?php endif; ?>
                 </div>
                 <script>
-                    document.addEventListener('DOMContentLoaded', () => {
+                    (function() {
                         const container = document.getElementById('toast-container');
                         if (container) {
-                            const observer = new MutationObserver(() => {
-                                const toasts = container.querySelectorAll('[role="alert"]');
-                                if (toasts.length === 0) {
+                            const checkToasts = () => {
+                                const activeToasts = Array.from(container.querySelectorAll('[role="alert"]')).filter(el => {
+                                    return !el.classList.contains('hidden') && el.style.display !== 'none';
+                                });
+                                if (activeToasts.length === 0) {
                                     container.remove();
                                     observer.disconnect();
                                 }
+                            };
+                            const observer = new MutationObserver(checkToasts);
+                            observer.observe(container, { 
+                                childList: true, 
+                                subtree: true, 
+                                attributes: true, 
+                                attributeFilter: ['class', 'style'] 
                             });
-                            observer.observe(container, { childList: true });
+                            // Jalankan pengecekan awal
+                            checkToasts();
                         }
-                    });
+                    })();
                 </script>
             <?php endif; ?>
 
