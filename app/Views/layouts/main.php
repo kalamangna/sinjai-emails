@@ -195,7 +195,7 @@
         </div>
     ';
     $syncResultFooter = '
-        <button onclick="closeModal(\'global-sync-result-modal\')" class="px-6 py-2 bg-slate-800 text-white text-[10px] font-bold uppercase tracking-widest rounded-lg hover:bg-slate-700 transition-colors focus:outline-none">
+        <button onclick="handleSyncResultOk()" class="px-6 py-2 bg-slate-800 text-white text-[10px] font-bold uppercase tracking-widest rounded-lg hover:bg-slate-700 transition-colors focus:outline-none">
             OK
         </button>
     ';
@@ -655,7 +655,25 @@
          * @param {number} success - Jumlah yang berhasil
          * @param {number} failed  - Jumlah yang gagal
          */
-        function showSyncResult(total, success, failed) {
+        let syncResultShouldReload = false;
+
+        function handleSyncResultOk() {
+            closeModal('global-sync-result-modal');
+            if (syncResultShouldReload) {
+                location.reload();
+            }
+        }
+
+        /**
+         * Tampilkan modal hasil batch sync.
+         * @param {number} total   - Total item yang diproses
+         * @param {number} success - Jumlah yang berhasil
+         * @param {number} failed  - Jumlah yang gagal
+         * @param {boolean} [reloadOnSuccess=true] - Reload halaman setelah klik OK jika ada yang berhasil
+         */
+        function showSyncResult(total, success, failed, reloadOnSuccess = true) {
+            syncResultShouldReload = (reloadOnSuccess && success > 0);
+
             const allOk  = failed === 0;
             const allFail = success === 0;
 

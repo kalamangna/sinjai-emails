@@ -16,7 +16,7 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **Perbaikan Sinkronisasi Pegawai & TTE (Unit Kerja Detail)**:
     - **Perbaikan Respons Data Identik**: Memperbarui `EmailService->syncPegawaiFromApi()` agar mengembalikan `success: true` (`message: 'Data sudah terbaru'`) ketika data di SIMPEG API identik dengan DB lokal, mencegah frontend menandai status sebagai `FAILED`.
     - **Stabilitas cURL SIMPEG**: Menambahkan `timeout => 15` dan `verify => false` pada `PegawaiApi.php` untuk mencegah kesalahan jabat tangan SSL di lingkungan produksi.
-    - **Umpan Balik Visual & Refresh Otomatis**: Menambahkan `location.reload()` otomatis setelah pemrosesan `syncAllPegawai` & `syncAllBsreStatus` di `unit_kerja_detail.php` selesai agar statistik dan tabel ter-update secara visual.
+    - **Pemicu Refresh Modal**: Memperbarui `global-sync-result-modal` di `layouts/main.php` sehingga peremajaan halaman (`location.reload()`) dipicu persis saat pengguna mengklik tombol **OK** pada modal hasil sinkronisasi.
 
 - **Peningkatan Visual Form Impor Excel (Batch)**:
     - Menambahkan ikon FontAwesome `<i class="fas fa-file-excel"></i>` pada header card "Impor dari Excel (XLSX)".

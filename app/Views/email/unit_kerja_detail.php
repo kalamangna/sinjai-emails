@@ -658,9 +658,6 @@ echo view('components/modal', [
         syncBtn.innerHTML = originalBtnContent;
 
         showSyncResult(processed, success, failed);
-        if (success > 0) {
-            setTimeout(() => location.reload(), 1500);
-        }
     }
 
     async function syncAllPegawai() {
@@ -743,9 +740,6 @@ echo view('components/modal', [
         syncBtn.innerHTML = originalBtnContent;
 
         showSyncResult(processed, success, failed);
-        if (success > 0) {
-            setTimeout(() => location.reload(), 1500);
-        }
     }
 
 
