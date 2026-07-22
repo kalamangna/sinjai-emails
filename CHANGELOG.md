@@ -7,7 +7,11 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 # [22 Juli 2026]
 
-## Penyesuaian Ikon Upload Batch
+## Penyesuaian Ikon Upload & Identifier NIP Batch
+
+- **Dukungan Identifier NIP pada Operasi Edit Massal**:
+    - Menambahkan opsi pengenal **NIP** pada modul **Edit Akun Massal** (`batch/update.php`) dan **Edit PK Massal** (`batch/pk.php`).
+    - Memperbarui pencarian massal di `EmailBatchService->processBatchUpdate()` untuk memproses pencarian berdasarkan NIP secara presisi (`whereIn('nip', $chunk)`) dengan penanganan pembersihan karakter pemisah (spasi, titik, garis hubung).
 
 - **Peningkatan Visual Form Impor Excel (Batch)**:
     - Menambahkan ikon FontAwesome `<i class="fas fa-file-excel"></i>` pada header card "Impor dari Excel (XLSX)".

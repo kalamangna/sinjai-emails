@@ -51,6 +51,10 @@
                                 <span class="ml-2 text-sm text-slate-700 group-hover:text-slate-800 transition-colors">NIK</span>
                             </label>
                             <label class="flex items-center cursor-pointer group">
+                                <input type="radio" name="update_mode" id="mode_nip" value="nip" class="w-4 h-4 text-slate-700 border-slate-200 focus:ring-slate-700">
+                                <span class="ml-2 text-sm text-slate-700 group-hover:text-slate-800 transition-colors">NIP</span>
+                            </label>
+                            <label class="flex items-center cursor-pointer group">
                                 <input type="radio" name="update_mode" id="mode_email" value="email" class="w-4 h-4 text-slate-700 border-slate-200 focus:ring-slate-700">
                                 <span class="ml-2 text-sm text-slate-700 group-hover:text-slate-800 transition-colors">Email</span>
                             </label>
@@ -150,7 +154,13 @@
 
         document.querySelectorAll('input[name="update_mode"]').forEach(radio => {
             radio.addEventListener('change', function() {
-                identifierLabel.textContent = (this.value === 'email') ? 'Daftar Alamat Email (Satu per baris)' : 'Daftar NIK (Satu per baris)';
+                if (this.value === 'email') {
+                    identifierLabel.textContent = 'Daftar Alamat Email (Satu per baris)';
+                } else if (this.value === 'nip') {
+                    identifierLabel.textContent = 'Daftar NIP (Satu per baris)';
+                } else {
+                    identifierLabel.textContent = 'Daftar NIK (Satu per baris)';
+                }
             });
         });
 

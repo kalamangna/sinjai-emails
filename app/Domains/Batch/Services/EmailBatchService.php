@@ -68,9 +68,9 @@ class EmailBatchService
         foreach ($identifiers as $identifier) {
             if (empty($identifier)) continue;
             if ($mode === 'email') {
-                $cleanIdentifiers[] = $identifier;
+                $cleanIdentifiers[] = trim($identifier);
             } else {
-                $cleanIdentifiers[] = hash('sha256', str_replace([' ', '.', '-', '\''], '', $identifier));
+                $cleanIdentifiers[] = str_replace([' ', '.', '-', '\''], '', trim($identifier));
             }
         }
 
@@ -82,12 +82,17 @@ class EmailBatchService
             foreach ($chunks as $chunk) {
                 if ($mode === 'email') {
                     $records = $this->emailModel->whereIn('email', $chunk)->findAll();
+                } else if ($mode === 'nip') {
+                    $records = $this->emailModel->whereIn('nip', $chunk)->findAll();
                 } else {
                     $records = $this->emailModel->whereIn('nik', $chunk)->findAll();
                 }
                 foreach ($records as $r) {
-                    $key = ($mode === 'email') ? $r['email'] : $r['nik'];
-                    $existingEmails[$key] = $r;
+                    $rawKey = ($mode === 'email') ? ($r['email'] ?? '') : (($mode === 'nip') ? ($r['nip'] ?? '') : ($r['nik'] ?? ''));
+                    $key = ($mode === 'email') ? trim($rawKey) : str_replace([' ', '.', '-', '\''], '', trim($rawKey));
+                    if ($key !== '') {
+                        $existingEmails[$key] = $r;
+                    }
                 }
             }
             
@@ -112,7 +117,7 @@ class EmailBatchService
                 continue;
             }
 
-            $searchKey = ($mode === 'email') ? $identifier : hash('sha256', str_replace([' ', '.', '-', '\''], '', $identifier));
+            $searchKey = ($mode === 'email') ? trim($identifier) : str_replace([' ', '.', '-', '\''], '', trim($identifier));
             
             if (!isset($existingEmails[$searchKey])) {
                 $results[] = ['identifier' => $identifier, 'success' => false, 'message' => 'Record not found in local database.'];
