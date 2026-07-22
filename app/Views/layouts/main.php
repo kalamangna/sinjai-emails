@@ -318,7 +318,7 @@
         <main class="flex-grow p-4 sm:p-6">
             <!-- Global Flash Messages (Flowbite Dismiss) -->
             <?php if (session()->getFlashdata('success') || session()->getFlashdata('message') || session()->getFlashdata('error') || session()->getFlashdata('info')): ?>
-                <div class="mb-6 space-y-2">
+                <div id="toast-container" class="mb-6 space-y-2">
                     <?php if ($msg = session()->getFlashdata('success') ?: session()->getFlashdata('message')): ?>
                         <div id="toast-success" class="transition-opacity duration-300 bg-slate-700 text-white px-5 py-3 rounded-lg flex items-center justify-between shadow-sm" role="alert">
                             <div class="flex items-center">
@@ -382,6 +382,21 @@
                         </script>
                     <?php endif; ?>
                 </div>
+                <script>
+                    document.addEventListener('DOMContentLoaded', () => {
+                        const container = document.getElementById('toast-container');
+                        if (container) {
+                            const observer = new MutationObserver(() => {
+                                const toasts = container.querySelectorAll('[role="alert"]');
+                                if (toasts.length === 0) {
+                                    container.remove();
+                                    observer.disconnect();
+                                }
+                            });
+                            observer.observe(container, { childList: true });
+                        }
+                    });
+                </script>
             <?php endif; ?>
 
             <?= $this->renderSection('content') ?>
