@@ -5,6 +5,15 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [22 Juli 2026]
+
+## Penyesuaian Ikon Upload Batch
+
+- **Peningkatan Visual Form Impor Excel (Batch)**:
+    - Menambahkan ikon FontAwesome `<i class="fas fa-file-excel"></i>` pada header card "Impor dari Excel (XLSX)".
+    - Menambahkan ikon FontAwesome `<i class="fas fa-upload"></i>` pada label field input "File Excel".
+    - Perubahan diterapkan pada seluruh halaman berorientasi batch: **Buat Akun Massal** (`batch/create.php`), **Edit Akun Massal** (`batch/update.php`), **Edit PK Massal** (`batch/pk.php`), dan **Buat Unit Kerja Massal** (`unit_kerja/batch_create.php`).
+
 # [21 Juli 2026]
 
 ## Penyesuaian Aksi & Penangguhan Akun
