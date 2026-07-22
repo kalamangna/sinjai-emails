@@ -1078,21 +1078,22 @@ class EmailService
 
             \App\Shared\Services\CacheService::invalidateDashboard();
 
-            $responseData = $updateData;
-            if ($isPimpinan) $responseData['jabatan'] = $currentEmail['jabatan'] ?? '-';
+            $responseData = array_merge($currentEmail ?: [], $updateData);
 
             return [
                 'success' => true,
+                'updated' => true,
                 'message' => $isPimpinan
                     ? 'Data pangkat disinkronkan, jabatan pimpinan dipertahankan'
                     : 'Data pegawai berhasil disinkronkan',
-                'data' => $responseData,
+                'data'    => $responseData,
             ];
         }
 
         return [
             'success' => true,
-            'message' => $isPimpinan ? 'Akun Pimpinan - Data jabatan tetap dipertahankan' : 'Tidak ada data baru yang ditemukan di API',
+            'updated' => false,
+            'message' => $isPimpinan ? 'Akun Pimpinan - Data jabatan tetap dipertahankan' : 'Data sudah terbaru',
             'data'    => [
                 'jabatan'          => $currentEmail['jabatan'] ?? '-',
                 'pangkat_nama'     => $currentEmail['pangkat_nama'] ?? '-',
