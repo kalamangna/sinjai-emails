@@ -162,6 +162,14 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
             });
 
             if (data.success) {
+                if (data.no_data) {
+                    if (typeof window.showGlobalError === 'function') {
+                        window.showGlobalError('Data Tidak Ditemukan', data.message || 'NIP tidak ditemukan di API SIMPEG.');
+                    } else {
+                        alert(data.message || 'NIP tidak ditemukan di API SIMPEG.');
+                    }
+                    return true;
+                }
                 if (data.data.jabatan && elements.jabatan) {
                     elements.jabatan.textContent = data.data.jabatan;
                     if (elements.jabatan.classList.contains('text-slate-400')) {
