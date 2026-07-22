@@ -1038,7 +1038,17 @@ class EmailService
                       || isset($source['pangkat_nama']) || isset($source['pangkat_golruang']);
 
         if (empty($data) || !$hasActualData) {
-            return ['success' => false, 'message' => 'Data tidak ditemukan di API'];
+            return [
+                'success' => true,
+                'no_data' => true,
+                'updated' => false,
+                'message' => 'Data tidak ditemukan di API',
+                'data'    => [
+                    'jabatan'          => $currentEmail['jabatan'] ?? '-',
+                    'pangkat_nama'     => $currentEmail['pangkat_nama'] ?? '-',
+                    'pangkat_golruang' => $currentEmail['pangkat_golruang'] ?? '-',
+                ]
+            ];
         }
 
         $isPimpinan = ($currentEmail['pimpinan'] ?? 0) == 1;

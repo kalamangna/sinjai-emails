@@ -255,18 +255,18 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
                 const data = await response.json();
                 if (data.success) {
                     if (jabatanTarget) {
-                        const newJabatan = data.data?.jabatan || originalJabatan;
-                        jabatanTarget.innerHTML = `<span class="text-emerald-600 font-bold">${newJabatan}</span>`;
-                        jabatanTarget.setAttribute('data-original', newJabatan);
+                        if (data.no_data) {
+                            jabatanTarget.innerHTML = `<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase border bg-amber-50 text-amber-600 border-amber-200" title="Data tidak ditemukan di API">NO DATA API</span>`;
+                        } else {
+                            const newJabatan = data.data?.jabatan || originalJabatan;
+                            jabatanTarget.innerHTML = `<span class="text-emerald-600 font-bold">${newJabatan}</span>`;
+                            jabatanTarget.setAttribute('data-original', newJabatan);
+                        }
                     }
                     success++;
                 } else {
                     if (jabatanTarget) {
-                        if (data.message && data.message.includes('tidak ditemukan')) {
-                            jabatanTarget.innerHTML = `<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase border bg-amber-50 text-amber-600 border-amber-200" title="Data tidak ditemukan di API">NO DATA API</span>`;
-                        } else {
-                            jabatanTarget.innerHTML = `${originalJabatan} <span class="ml-1 px-1.5 py-0.5 rounded text-[8px] font-bold uppercase border bg-red-50 text-red-600 border-red-200" title="${data.message || 'Sinkronisasi Gagal'}">FAILED</span>`;
-                        }
+                        jabatanTarget.innerHTML = `${originalJabatan} <span class="ml-1 px-1.5 py-0.5 rounded text-[8px] font-bold uppercase border bg-red-50 text-red-600 border-red-200" title="${data.message || 'Sinkronisasi Gagal'}">FAILED</span>`;
                     }
                     failed++;
                 }

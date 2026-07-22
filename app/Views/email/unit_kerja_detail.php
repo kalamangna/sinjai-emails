@@ -709,18 +709,16 @@ echo view('components/modal', [
                 const data = await response.json();
 
                 if (data.success) {
-                    if (data.data && data.data.jabatan) {
+                    if (data.no_data) {
+                        textElement.innerHTML = `<span class="inline-flex items-center px-2 py-0.5 rounded text-[8px] font-bold uppercase border bg-amber-50 text-amber-600 border-amber-200" title="Data tidak ditemukan di API">NO DATA</span>`;
+                    } else if (data.data && data.data.jabatan) {
                         textElement.textContent = data.data.jabatan;
                     } else {
                         textElement.textContent = originalJabatan;
                     }
                     success++;
                 } else {
-                    if (data.message && data.message.includes('tidak ditemukan')) {
-                        textElement.innerHTML = `<span class="inline-flex items-center px-2 py-0.5 rounded text-[8px] font-bold uppercase border bg-amber-50 text-amber-600 border-amber-200" title="Data tidak ditemukan di API">NO DATA</span>`;
-                    } else {
-                        textElement.innerHTML = `<span class="inline-flex items-center px-2 py-0.5 rounded text-[8px] font-bold uppercase border bg-red-50 text-red-600 border-red-200" title="${(data.message || 'Sinkronisasi Gagal').replace(/"/g, '&quot;')}">FAILED</span>`;
-                    }
+                    textElement.innerHTML = `<span class="inline-flex items-center px-2 py-0.5 rounded text-[8px] font-bold uppercase border bg-red-50 text-red-600 border-red-200" title="${(data.message || 'Sinkronisasi Gagal').replace(/"/g, '&quot;')}">FAILED</span>`;
                     failed++;
                 }
             } catch (error) {

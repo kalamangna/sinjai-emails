@@ -14,6 +14,7 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
     - Memperbarui pencarian massal di `EmailBatchService->processBatchUpdate()` untuk memproses pencarian berdasarkan NIP secara presisi (`whereIn('nip', $chunk)`) dengan penanganan pembersihan karakter pemisah (spasi, titik, garis hubung).
 
 - **Perbaikan Sinkronisasi Pegawai & TTE (Unit Kerja Detail)**:
+    - **Penanganan Status NO DATA**: Mengubah respons saat data tidak ditemukan di SIMPEG API agar dikembalikan sebagai `success: true` (`no_data: true`), sehingga dihitung sebagai proses sukses/terproses dan tidak lagi dihitung sebagai item gagal (`FAILED`).
     - **Perbaikan Respons Data Identik**: Memperbarui `EmailService->syncPegawaiFromApi()` agar mengembalikan `success: true` (`message: 'Data sudah terbaru'`) ketika data di SIMPEG API identik dengan DB lokal, mencegah frontend menandai status sebagai `FAILED`.
     - **Stabilitas cURL SIMPEG**: Menambahkan `timeout => 15` dan `verify => false` pada `PegawaiApi.php` untuk mencegah kesalahan jabat tangan SSL di lingkungan produksi.
     - **Pemicu Refresh Modal**: Memperbarui `global-sync-result-modal` di `layouts/main.php` sehingga peremajaan halaman (`location.reload()`) dipicu persis saat pengguna mengklik tombol **OK** pada modal hasil sinkronisasi.
