@@ -7,7 +7,10 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 # [27 Juli 2026]
 
-## Penyempurnaan Format Notifikasi Telegram
+## Penyempurnaan Format Notifikasi Telegram & UI Landing Page
+
+- **Pembaruan Beranda (`landing.php`)**:
+    - Menghapus badge `"Portal Layanan Digital Resmi"` di halaman depan karena sistem ini merupakan sistem internal non-publik.
 
 - **Hapus Duplikat Timestamp**:
     - Menghapus `addKeyValue('Waktu', date(...))` di `BackupCommand.php` yang duplikat dengan timestamp otomatis dari `build()`.

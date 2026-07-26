@@ -76,10 +76,6 @@
         
         <!-- Hero Section -->
         <div class="text-center max-w-3xl space-y-6 mb-16">
-            <div class="inline-flex items-center gap-2 px-3 py-1 bg-slate-100 border border-slate-200 rounded-full text-slate-600 text-[10px] font-bold uppercase tracking-widest">
-                <i class="fas fa-shield-halved text-xs text-slate-500"></i> Portal Layanan Digital Resmi
-            </div>
-            
             <h1 class="text-3xl md:text-5xl font-black tracking-tight text-slate-800 leading-tight uppercase">
                 Sistem Identitas Digital <br>
                 <span class="text-slate-500 font-extrabold">Pemerintah Kabupaten Sinjai</span>
