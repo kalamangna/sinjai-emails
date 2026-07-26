@@ -171,12 +171,11 @@ class EmailController extends BaseController
                         ->addDivider()
                         ->addUserProfile(
                             $email['name'] ?? '',
-                            !empty($email['nip']) ? 'NIP: ' . $email['nip'] : (!empty($email['nik']) ? 'NIK: ' . $email['nik'] : ''),
+                            !empty($email['nip']) ? 'NIP: ' . $email['nip'] : '',
                             $email['jabatan'] ?? '',
                             $email['unit_kerja_name'] ?? '',
                             $email['email']
-                        )
-                        ->addText("🔒 <i>Akses login cPanel ditangguhkan (Suspend). Data dipindahkan ke Tempat Sampah.</i>");
+                        );
 
                 $telegram = new TelegramLibrary();
                 $telegram->sendMessage($builder->build());
@@ -350,12 +349,11 @@ class EmailController extends BaseController
                         ->addDivider()
                         ->addUserProfile(
                             $email['name'] ?? '',
-                            !empty($email['nip']) ? 'NIP: ' . $email['nip'] : (!empty($email['nik']) ? 'NIK: ' . $email['nik'] : ''),
+                            !empty($email['nip']) ? 'NIP: ' . $email['nip'] : '',
                             '',
                             '',
                             $email['email']
-                        )
-                        ->addText("⚠️ <i>Dihapus permanen dari Database dan cPanel. (Bypass Trash)</i>");
+                        );
 
                 $telegram = new \App\Shared\Libraries\TelegramLibrary();
                 $telegram->sendMessage($builder->build());

@@ -701,8 +701,7 @@ class EmailService
                             $data['jabatan'] ?? '',
                             $unitKerjaName,
                             $data['email']
-                        )
-                        ->addText("🕒 " . date('d M Y, H:i:s'));
+                        );
 
                 $telegram = new \App\Shared\Libraries\TelegramLibrary();
                 $telegram->sendMessage($builder->build());

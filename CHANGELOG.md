@@ -5,7 +5,33 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [27 Juli 2026]
+
+## Penyempurnaan Format Notifikasi Telegram
+
+- **Hapus Duplikat Timestamp**:
+    - Menghapus `addKeyValue('Waktu', date(...))` di `BackupCommand.php` yang duplikat dengan timestamp otomatis dari `build()`.
+    - Menghapus `addText("🕒 " . date(...))` di `EmailService.php` yang juga duplikat.
+
+- **Sederhanakan Konten Notifikasi**:
+    - Menghapus `addText` redundant (teks yang sudah terwakili oleh title) di: `QueueWorker`, `SyncAllCommand`, `EmailController` (pensiun & delete), `TrashController` (restore & force delete).
+    - Menghapus `addKeyValue('Status', 'Auto Backup...')` di `BackupCommand` yang tidak informatif.
+    - Menggabungkan dua key-value `ID Job` dan `Tipe` menjadi satu baris `Job: #id — type` di `QueueWorker`.
+    - Memperbarui title `SyncAllCommand` start notification agar menyertakan nama mode langsung (`SINKRONISASI HARIAN BERJALAN`).
+
+- **Perbaikan Format Profil (`addUserProfile`)**:
+    - NIP/NIK dipindah ke baris tersendiri dengan emoji 🪪 (sebelumnya inline dengan nama).
+    - Nama, jabatan, dan unit kerja kini otomatis di-*uppercase* via `mb_strtoupper`.
+    - NIK dihapus dari semua notifikasi Telegram (privasi) — hanya NIP yang ditampilkan.
+
+- **Hapus Garis Divider**:
+    - `addDivider()` dikosongkan di `TelegramMessageBuilder` — garis panjang tidak lagi muncul di bawah header, tanpa perlu mengubah semua caller.
+    - Menyederhanakan logika spasi di `build()` (hapus kondisi khusus `title → divider`).
+
+---
+
 # [22 Juli 2026]
+
 
 ## Penyesuaian Ikon Upload & Identifier NIP Batch
 

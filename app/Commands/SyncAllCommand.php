@@ -89,9 +89,8 @@ class SyncAllCommand extends BaseCommand
         
         CLI::write("Starting Synchronization Process ($modeName)...", 'blue');
         $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
-        $builder->setTitle('SINKRONISASI SISTEM BERJALAN', '🔄')
-                ->addDivider()
-                ->addText("Sistem mengeksekusi sinkronisasi $modeName...");
+        $builder->setTitle("SINKRONISASI $modeName BERJALAN", '🔄')
+                ->addDivider();
                 
         $this->telegram->sendMessage($builder->build());
 

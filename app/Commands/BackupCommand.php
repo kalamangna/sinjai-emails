@@ -67,10 +67,8 @@ class BackupCommand extends BaseCommand
             $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
             $builder->setTitle('BACKUP DATABASE BERHASIL', '✅')
                     ->addDivider()
-                    ->addKeyValue('Waktu', date('d/m/Y H:i:s'), '🕒')
                     ->addKeyValue('File', "<code>{$filename}</code>", '📁')
-                    ->addKeyValue('Ukuran', $sizeFormatted, '📊')
-                    ->addKeyValue('Status', 'Auto Backup (cPanel Compatible)', '⚡');
+                    ->addKeyValue('Ukuran', $sizeFormatted, '📊');
             
             $telegram->sendMessage($builder->build());
 
@@ -80,7 +78,6 @@ class BackupCommand extends BaseCommand
             $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
             $builder->setTitle('GAGAL BACKUP DATABASE', '🚨')
                     ->addDivider()
-                    ->addKeyValue('Waktu', date('d/m/Y H:i:s'), '🕒')
                     ->addKeyValue('Error', htmlspecialchars($e->getMessage()), '❌');
             
             $telegram->sendMessage($builder->build());

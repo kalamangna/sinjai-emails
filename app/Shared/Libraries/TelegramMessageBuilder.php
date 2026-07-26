@@ -32,10 +32,6 @@ class TelegramMessageBuilder
 
     public function addDivider()
     {
-        $this->parts[] = [
-            'type' => 'divider',
-            'content' => "------------------------------------------"
-        ];
         return $this;
     }
 
@@ -44,15 +40,18 @@ class TelegramMessageBuilder
         $lines = [];
         
         if (!empty($name)) {
-            $identitasStr = !empty($identitas) ? " ($identitas)" : "";
-            $lines[] = "👤 <b>" . $name . "</b>" . $identitasStr;
+            $lines[] = "👤 <b>" . mb_strtoupper($name) . "</b>";
+        }
+
+        if (!empty($identitas)) {
+            $lines[] = "🪪 " . $identitas;
         }
         
         if (!empty($jabatan)) {
-            $lines[] = "💼 " . $jabatan;
+            $lines[] = "💼 " . mb_strtoupper($jabatan);
         }
         if (!empty($unitKerja)) {
-            $lines[] = "🏛️ " . $unitKerja;
+            $lines[] = "🏛️ " . mb_strtoupper($unitKerja);
         }
         
         if (!empty($email)) {
@@ -110,12 +109,7 @@ class TelegramMessageBuilder
             $output .= $current['content'];
 
             if ($i < $count - 1) {
-                $next = $this->parts[$i + 1];
-                if ($current['type'] === 'title' && $next['type'] === 'divider') {
-                    $output .= "\n";
-                } else {
-                    $output .= "\n\n";
-                }
+                $output .= "\n\n";
             }
         }
 

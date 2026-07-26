@@ -37,7 +37,7 @@ class AlertService
                         ->addText("<b>$count Akun Kuota Hampir Penuh (>90%):</b>");
                 
                 foreach (array_slice($highUsageAccounts, 0, 10) as $acc) {
-                    $identitas = !empty($acc['nip']) ? "NIP: {$acc['nip']}" : (!empty($acc['nik']) ? "NIK: {$acc['nik']}" : "");
+                    $identitas = !empty($acc['nip']) ? "NIP: {$acc['nip']}" : "";
                     $jabatan = !empty($acc['jabatan']) ? $acc['jabatan'] : "";
                     $unitKerja = !empty($acc['unit_name']) ? $acc['unit_name'] : "";
                     $extraData = "📊 Penggunaan: " . $acc['humandiskused'] . " (" . round($acc['diskusedpercent_float'], 1) . "%)";
@@ -103,7 +103,7 @@ class AlertService
                     ->addText("<b>$pimpinanCount Pimpinan TTE Expired:</b>");
 
             foreach (array_slice($expiredPimpinan, 0, 10) as $acc) {
-                $identitas = !empty($acc['nip']) ? "NIP: {$acc['nip']}" : (!empty($acc['nik']) ? "NIK: {$acc['nik']}" : "");
+                $identitas = !empty($acc['nip']) ? "NIP: {$acc['nip']}" : "";
                 $jabatan = !empty($acc['jabatan']) ? $acc['jabatan'] : "";
                 $unitKerja = !empty($acc['unit_name']) ? $acc['unit_name'] : "";
                 

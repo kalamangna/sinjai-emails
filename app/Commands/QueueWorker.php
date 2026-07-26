@@ -165,9 +165,7 @@ class QueueWorker extends BaseCommand
                 $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
                 $builder->setTitle('CRITICAL ERROR: QUEUE WORKER', '🚨')
                         ->addDivider()
-                        ->addText("Tugas sinkronisasi gagal secara permanen!")
-                        ->addKeyValue('ID Job', "<b>{$job['id']}</b>", '📋')
-                        ->addKeyValue('Tipe', "<b>$type</b>", '🔄')
+                        ->addKeyValue('Job', "#{$job['id']} — $type", '📋')
                         ->addKeyValue('Error', $e->getMessage(), '❌');
                 
                 $telegram->sendMessage($builder->build());

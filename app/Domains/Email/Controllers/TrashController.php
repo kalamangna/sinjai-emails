@@ -57,12 +57,11 @@ class TrashController extends BaseController
                         ->addDivider()
                         ->addUserProfile(
                             $email['name'] ?? '',
-                            !empty($email['nip']) ? 'NIP: ' . $email['nip'] : (!empty($email['nik']) ? 'NIK: ' . $email['nik'] : ''),
+                            !empty($email['nip']) ? 'NIP: ' . $email['nip'] : '',
                             '',
                             '',
                             $email['email']
-                        )
-                        ->addText("✅ <i>Akses login cPanel di-unsuspend dan akun telah dikembalikan dari Tempat Sampah.</i>");
+                        );
 
                 $telegram = new \App\Shared\Libraries\TelegramLibrary();
                 $telegram->sendMessage($builder->build());
@@ -103,12 +102,11 @@ class TrashController extends BaseController
                         ->addDivider()
                         ->addUserProfile(
                             $email['name'] ?? '',
-                            !empty($email['nip']) ? 'NIP: ' . $email['nip'] : (!empty($email['nik']) ? 'NIK: ' . $email['nik'] : ''),
+                            !empty($email['nip']) ? 'NIP: ' . $email['nip'] : '',
                             '',
                             '',
                             $email['email']
-                        )
-                        ->addText("⚠️ <i>Data telah dihapus secara permanen dari Database dan cPanel.</i>");
+                        );
 
                 $telegram = new \App\Shared\Libraries\TelegramLibrary();
                 $telegram->sendMessage($builder->build());
