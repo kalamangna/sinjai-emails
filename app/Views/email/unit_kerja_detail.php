@@ -227,10 +227,11 @@
                 </div>
                 <div class="md:col-span-2">
                     <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-widest">Password</label>
-                    <label class="flex items-center gap-2 px-3 py-2 bg-white border <?= !empty($no_password) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg cursor-pointer transition-all h-[38px]">
-                        <input type="checkbox" name="no_password" value="1" <?= !empty($no_password) ? 'checked' : '' ?> class="w-3.5 h-3.5 accent-slate-800 cursor-pointer" onchange="this.form.submit()">
-                        <span class="text-xs font-medium text-slate-700 whitespace-nowrap">Tanpa Password</span>
-                    </label>
+                    <select name="password_status" class="block w-full px-3 py-2 bg-white border <?= !empty($password_status) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm appearance-none cursor-pointer transition-all">
+                        <option value="">Semua Status</option>
+                        <option value="empty" <?= (($password_status ?? '') === 'empty') ? 'selected' : '' ?>>Tanpa Password</option>
+                        <option value="filled" <?= (($password_status ?? '') === 'filled') ? 'selected' : '' ?>>Ada Password</option>
+                    </select>
                 </div>
                 <div class="md:col-span-12 flex justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
                     <button type="submit" class="btn btn-solid text-xs">

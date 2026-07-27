@@ -56,7 +56,7 @@ class EmailListController extends BaseController
                 'status_asn' => $this->request->getGet('status_asn'),
                 'bsre_status' => $this->request->getGet('bsre_status'),
                 'pimpinan_desa' => $this->request->getGet('pimpinan_desa'),
-                'no_password' => $this->request->getGet('no_password'),
+                'password_status' => $this->request->getGet('password_status'),
             ];
 
             $data = $this->emailService->getUnitKerjaDetail($unitKerjaId, $params);
@@ -67,7 +67,7 @@ class EmailListController extends BaseController
             $data['status_asn'] = $params['status_asn'];
             $data['bsre_status'] = $params['bsre_status'];
             $data['pimpinan_desa'] = $params['pimpinan_desa'] ?? 1;
-            $data['no_password'] = $params['no_password'];
+            $data['password_status'] = $params['password_status'];
             $data['back_url'] = site_url('email');
 
             return view('email/unit_kerja_detail', $data);

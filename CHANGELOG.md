@@ -9,9 +9,10 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## Fitur Filter Tanpa Password & Batch Update Password (Detail Unit Kerja)
 
-- **Filter Tanpa Password**:
-    - Menambahkan opsi filter **"Tanpa Password"** pada halaman Detail Unit Kerja (`unit_kerja_detail.php`).
-    - Memperbarui `EmailService->getUnitKerjaDetail()` untuk mendukung penyaringan akun yang belum memiliki password (`password IS NULL` atau kosong).
+- **Filter Status Password**:
+    - Mengubah filter password menjadi dropdown `<select>` (Semua Status, Tanpa Password, Ada Password) pada halaman Detail Unit Kerja (`unit_kerja_detail.php`).
+    - Filter hanya diterapkan saat tombol **Filter** diklik (tanpa pemicu *auto-submit*).
+    - Memperbarui `EmailService->getUnitKerjaDetail()` untuk mendukung penyaringan status password (`password_status`).
 
 - **Batch Update Password**:
     - Menambahkan tombol dan modal **Batch Update Password** pada halaman Detail Unit Kerja.
