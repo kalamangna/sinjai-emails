@@ -20,7 +20,8 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
       - **Auto per Akun**: Generate password unik secara otomatis untuk tiap akun berdasar NIP & Nama Pemilik (menggunakan logika persis seperti di `edit_password.php`).
       - **Manual Seragam**: Menentukan 1 password tunggal yang diterapkan seragam ke seluruh akun yang tampil.
     - Menambahkan endpoint API `POST email/api_batch_update_password` di `EmailListController` yang memicu pembaruan ke server cPanel dan pembaruan database lokal.
-    - Menampilkan progress bar real-time per akun beserta ringkasan hasil (berhasil/gagal).
+    - Menampilkan progress bar real-time per akun (indikator persentase, status item aktif, animasi spinner) beserta ringkasan hasil (berhasil/gagal).
+    - Memperbarui styling & struktur modal batch password agar konsisten dengan standar UI aplikasi (penggunaan `openModal` / `closeModal` helper dan footer button standar).
 
 ## Penyempurnaan Format Notifikasi Telegram & UI Landing Page
 
