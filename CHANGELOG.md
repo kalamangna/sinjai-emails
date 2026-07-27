@@ -7,6 +7,20 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 # [27 Juli 2026]
 
+## Fitur Filter Tanpa Password & Batch Update Password (Detail Unit Kerja)
+
+- **Filter Tanpa Password**:
+    - Menambahkan opsi filter **"Tanpa Password"** pada halaman Detail Unit Kerja (`unit_kerja_detail.php`).
+    - Memperbarui `EmailService->getUnitKerjaDetail()` untuk mendukung penyaringan akun yang belum memiliki password (`password IS NULL` atau kosong).
+
+- **Batch Update Password**:
+    - Menambahkan tombol dan modal **Batch Update Password** pada halaman Detail Unit Kerja.
+    - Mendukung dua mode pembaruan password massal:
+      - **Auto per Akun**: Generate password unik secara otomatis untuk tiap akun berdasar NIP & Nama Pemilik (menggunakan logika persis seperti di `edit_password.php`).
+      - **Manual Seragam**: Menentukan 1 password tunggal yang diterapkan seragam ke seluruh akun yang tampil.
+    - Menambahkan endpoint API `POST email/api_batch_update_password` di `EmailListController` yang memicu pembaruan ke server cPanel dan pembaruan database lokal.
+    - Menampilkan progress bar real-time per akun beserta ringkasan hasil (berhasil/gagal).
+
 ## Penyempurnaan Format Notifikasi Telegram & UI Landing Page
 
 - **Pembaruan Beranda (`landing.php`)**:

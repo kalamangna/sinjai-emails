@@ -402,6 +402,7 @@ class EmailService
         $status_asn = $params['status_asn'] ?? null;
         $bsre_status = $params['bsre_status'] ?? null;
         $pimpinan_desa = $params['pimpinan_desa'] ?? 1;
+        $no_password = !empty($params['no_password']);
 
         $isKecamatan = stripos($unitKerja['nama_unit_kerja'], 'Kecamatan') !== false;
 
@@ -411,7 +412,7 @@ class EmailService
             $emailBuilder->where('emails.pimpinan_desa', 0);
         }
 
-        $applyFilters = function($builder) use ($search, $status_asn, $bsre_status) {
+        $applyFilters = function($builder) use ($search, $status_asn, $bsre_status, $no_password) {
             if ($search) {
                 $builder->groupStart();
                 $cleanSearch = str_replace([' ', '.', '-', '\''], '', $search);
@@ -466,6 +467,13 @@ class EmailService
                     }
                 }
                 $builder->groupEnd();
+            }
+
+            if ($no_password) {
+                $builder->groupStart()
+                    ->where('emails.password IS NULL')
+                    ->orWhere('emails.password', '')
+                ->groupEnd();
             }
         };
 

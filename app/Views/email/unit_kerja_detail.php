@@ -46,6 +46,11 @@
                     </div>
                 </div>
 
+                <!-- Tombol Batch Password -->
+                <button id="batchPasswordBtn" onclick="openBatchPasswordModal()" class="btn btn-outline text-xs px-3 py-2">
+                    <i class="fas fa-key mr-1.5 text-slate-600"></i> Batch Password
+                </button>
+
                 <!-- Dropdown Sinkronisasi -->
                 <div class="relative group">
                     <button id="mainSyncBtn" class="btn btn-solid text-xs px-3 py-2">
@@ -220,8 +225,15 @@
                         <?php endforeach; ?>
                     </select>
                 </div>
-                <div class="md:col-span-2 flex gap-2">
-                    <button type="submit" class="flex-1 btn btn-solid text-xs">
+                <div class="md:col-span-2">
+                    <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-widest">Password</label>
+                    <label class="flex items-center gap-2 px-3 py-2 bg-white border <?= !empty($no_password) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg cursor-pointer transition-all h-[38px]">
+                        <input type="checkbox" name="no_password" value="1" <?= !empty($no_password) ? 'checked' : '' ?> class="w-3.5 h-3.5 accent-slate-800 cursor-pointer" onchange="this.form.submit()">
+                        <span class="text-xs font-medium text-slate-700 whitespace-nowrap">Tanpa Password</span>
+                    </label>
+                </div>
+                <div class="md:col-span-12 flex justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
+                    <button type="submit" class="btn btn-solid text-xs">
                         <i class="fas fa-filter mr-1.5 text-white/80"></i> Filter
                     </button>
                     <a href="<?= site_url('email/unit_kerja/' . $unit_kerja['id']) ?>" class="btn btn-outline text-xs px-3" title="Reset">
@@ -271,7 +283,7 @@
                                     </td>
                                 <?php endif; ?>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div id="bsre-status-<?= esc($email['user']) ?>" data-email="<?= esc($email['email']) ?>" data-name="<?= esc($email['name']) ?>" data-nik="<?= esc($email['nik'] ?? '') ?>" data-status="<?= esc($email['bsre_status'] ?? '') ?>">
+                                    <div id="bsre-status-<?= esc($email['user']) ?>" data-email="<?= esc($email['email']) ?>" data-name="<?= esc($email['name']) ?>" data-nip="<?= esc($email['nip'] ?? '') ?>" data-nik="<?= esc($email['nik'] ?? '') ?>" data-status="<?= esc($email['bsre_status'] ?? '') ?>">
                                         <?php
                                         $isNeedTte = !empty($email['nip']) || ($email['pimpinan'] ?? 0) == 1 || ($email['pimpinan_desa'] ?? 0) == 1 || !empty($email['unit_kerja_id']);
 
@@ -333,6 +345,86 @@
         <?= view('components/pagination', ['items' => $emails, 'pager' => $pager, 'label' => 'data']) ?>
     </div>
 </div>
+
+<!-- Modal Batch Update Password -->
+<?php
+$batchPasswordContent = '
+    <div class="space-y-4">
+        <!-- Mode Selector -->
+        <div id="batchPwInputSection">
+            <div class="grid grid-cols-2 gap-2 mb-4">
+                <button type="button" id="batchPwModeAuto"
+                    onclick="setBatchPwMode(\'auto\')"
+                    class="flex flex-col items-center gap-1.5 px-3 py-3 rounded-lg border-2 border-slate-800 bg-slate-50 text-slate-800 transition-all">
+                    <i class="fas fa-magic text-sm"></i>
+                    <span class="text-[10px] font-bold uppercase tracking-widest">Auto per Akun</span>
+                    <span class="text-[9px] text-slate-500 text-center leading-tight">Generate dari nama & NIP<br>(sama seperti edit password)</span>
+                </button>
+                <button type="button" id="batchPwModeManual"
+                    onclick="setBatchPwMode(\'manual\')"
+                    class="flex flex-col items-center gap-1.5 px-3 py-3 rounded-lg border-2 border-slate-200 bg-white text-slate-500 hover:border-slate-400 transition-all">
+                    <i class="fas fa-keyboard text-sm"></i>
+                    <span class="text-[10px] font-bold uppercase tracking-widest">Manual Seragam</span>
+                    <span class="text-[9px] text-slate-500 text-center leading-tight">Satu password untuk<br>semua akun</span>
+                </button>
+            </div>
+
+            <!-- Info auto mode -->
+            <div id="batchPwAutoInfo" class="bg-slate-50 border border-slate-200 rounded-lg p-3 mb-3">
+                <p class="text-[10px] font-bold text-slate-700 uppercase tracking-widest mb-1"><i class="fas fa-info-circle mr-1.5 text-slate-500"></i>Format Password Otomatis</p>
+                <p class="text-xs text-slate-600 font-mono tracking-wide"><span class="bg-white border border-slate-200 rounded px-1.5 py-0.5">NamaDepan@XX#</span></p>
+                <p class="text-[9px] text-slate-400 mt-1.5">XX = digit ke-3 & ke-4 dari NIP. Untuk akun tanpa NIP, XX = tanggal hari ini.</p>
+            </div>
+
+            <!-- Input manual password (tersembunyi di mode auto) -->
+            <div id="batchPwManualInput" class="hidden">
+                <label class="block text-[10px] font-bold text-slate-700 uppercase tracking-widest mb-1.5">Password Baru (untuk semua akun)</label>
+                <div class="relative">
+                    <input type="password" id="batchPasswordInput"
+                        class="block w-full px-3 py-2 pr-10 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-mono tracking-wider"
+                        placeholder="Minimal 8 karakter..." autocomplete="new-password">
+                    <button type="button" onclick="toggleBatchPwVisibility()" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-700 transition-colors">
+                        <i class="fas fa-eye text-xs" id="batchPwToggleIcon"></i>
+                    </button>
+                </div>
+            </div>
+
+            <p id="batchPwEmailCount" class="text-[10px] text-slate-400 mt-3"></p>
+        </div>
+
+        <!-- Progress -->
+        <div id="batchPwProgressSection" class="hidden space-y-3">
+            <div class="w-full bg-slate-100 rounded-full h-2">
+                <div id="batchPwProgressBar" class="bg-slate-700 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+            <p id="batchPwStatusText" class="text-center text-[10px] font-bold text-slate-700 uppercase tracking-widest">Memulai...</p>
+        </div>
+
+        <!-- Hasil -->
+        <div id="batchPwResultSection" class="hidden">
+            <div id="batchPwResultContent"></div>
+        </div>
+    </div>
+';
+
+$batchPasswordFooter = '
+    <div id="batchPwActionFooter" class="flex justify-end gap-2">
+        <button type="button" onclick="closeBatchPasswordModal()" class="btn btn-outline text-xs">Batal</button>
+        <button type="button" id="batchPwStartBtn" onclick="startBatchUpdatePassword()" class="btn btn-solid text-xs">
+            <i class="fas fa-key mr-1.5"></i> Mulai Update Password
+        </button>
+    </div>
+';
+
+echo view("components/modal", [
+    "id" => "batchPasswordModal",
+    "title" => "Batch Update Password",
+    "size" => "md",
+    "showClose" => true,
+    "content" => $batchPasswordContent,
+    "footer" => $batchPasswordFooter,
+], ["saveData" => false]);
+?>
 
 <!-- Modal Progress Batch -->
 <?php
@@ -740,6 +832,219 @@ echo view('components/modal', [
         showSyncResult(processed, success, failed);
     }
 
+    // ============================
+    // Batch Update Password
+    // ============================
+
+    let _batchPwMode = 'auto'; // 'auto' | 'manual'
+
+    function setBatchPwMode(mode) {
+        _batchPwMode = mode;
+        const autoBtn    = document.getElementById('batchPwModeAuto');
+        const manualBtn  = document.getElementById('batchPwModeManual');
+        const autoInfo   = document.getElementById('batchPwAutoInfo');
+        const manualInp  = document.getElementById('batchPwManualInput');
+
+        if (mode === 'auto') {
+            autoBtn.classList.replace('border-slate-200', 'border-slate-800');
+            autoBtn.classList.replace('bg-white', 'bg-slate-50');
+            autoBtn.classList.replace('text-slate-500', 'text-slate-800');
+            manualBtn.classList.replace('border-slate-800', 'border-slate-200');
+            manualBtn.classList.replace('bg-slate-50', 'bg-white');
+            manualBtn.classList.replace('text-slate-800', 'text-slate-500');
+            autoInfo.classList.remove('hidden');
+            manualInp.classList.add('hidden');
+        } else {
+            manualBtn.classList.replace('border-slate-200', 'border-slate-800');
+            manualBtn.classList.replace('bg-white', 'bg-slate-50');
+            manualBtn.classList.replace('text-slate-500', 'text-slate-800');
+            autoBtn.classList.replace('border-slate-800', 'border-slate-200');
+            autoBtn.classList.replace('bg-slate-50', 'bg-white');
+            autoBtn.classList.replace('text-slate-800', 'text-slate-500');
+            autoInfo.classList.add('hidden');
+            manualInp.classList.remove('hidden');
+        }
+    }
+
+    /**
+     * Logika identik dengan generatePassword() di edit_password.php
+     */
+    function generatePasswordForAccount(name, nip, useAltNipPart = false) {
+        let suffix = new Date().getDate();
+        if (nip && nip.length >= 8) {
+            suffix = useAltNipPart ? nip.substring(6, 8) : nip.substring(2, 4);
+        } else if (nip && nip.length >= 4) {
+            suffix = nip.substring(2, 4);
+        }
+        const namePart = name.replace(/\s+/g, '').substring(0, 5).toLowerCase();
+        if (!namePart) return `@${suffix}#`;
+        const capitalizedNamePart = namePart.charAt(0).toUpperCase() + namePart.slice(1);
+        return `${capitalizedNamePart}@${suffix}#`;
+    }
+
+    function openBatchPasswordModal() {
+        const emailRows = document.querySelectorAll('[data-email]');
+        const emailCount = emailRows.length;
+        document.getElementById('batchPwEmailCount').textContent =
+            `Akan memperbarui password untuk ${emailCount} akun yang tampil.`;
+
+        // Reset state
+        const pwInput = document.getElementById('batchPasswordInput');
+        if (pwInput) { pwInput.value = ''; pwInput.type = 'password'; }
+        const toggleIcon = document.getElementById('batchPwToggleIcon');
+        if (toggleIcon) toggleIcon.className = 'fas fa-eye text-xs';
+
+        document.getElementById('batchPwInputSection').classList.remove('hidden');
+        document.getElementById('batchPwProgressSection').classList.add('hidden');
+        document.getElementById('batchPwResultSection').classList.add('hidden');
+
+        // Reset ke mode auto
+        _batchPwMode = 'auto';
+        setBatchPwMode('auto');
+
+        document.getElementById('batchPwActionFooter').classList.remove('hidden');
+        document.getElementById('batchPwActionFooter').innerHTML = `
+            <button type="button" onclick="closeBatchPasswordModal()" class="btn btn-outline text-xs">Batal</button>
+            <button type="button" onclick="startBatchUpdatePassword()" class="btn btn-solid text-xs">
+                <i class="fas fa-key mr-1.5"></i> Mulai Update Password
+            </button>`;
+
+        document.getElementById('batchPasswordModal').classList.remove('hidden');
+    }
+
+    function closeBatchPasswordModal() {
+        document.getElementById('batchPasswordModal').classList.add('hidden');
+    }
+
+    function toggleBatchPwVisibility() {
+        const input = document.getElementById('batchPasswordInput');
+        const icon  = document.getElementById('batchPwToggleIcon');
+        if (!input) return;
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.className = 'fas fa-eye-slash text-xs';
+        } else {
+            input.type = 'password';
+            icon.className = 'fas fa-eye text-xs';
+        }
+    }
+
+    async function startBatchUpdatePassword() {
+        // Kumpulkan data akun dari atribut pada elemen bsre-status-*
+        const emailRows = document.querySelectorAll('[id^="bsre-status-"]');
+        const accounts = Array.from(emailRows).map(el => ({
+            email : el.getAttribute('data-email'),
+            name  : el.getAttribute('data-name') || '',
+            nip   : el.getAttribute('data-nip')  || '',
+        })).filter(a => Boolean(a.email));
+
+        if (!accounts.length) {
+            alert('Tidak ada akun yang dapat diperbarui.');
+            return;
+        }
+
+        // Validasi mode manual
+        let manualPassword = '';
+        if (_batchPwMode === 'manual') {
+            manualPassword = (document.getElementById('batchPasswordInput').value || '').trim();
+            if (!manualPassword) {
+                alert('Password tidak boleh kosong.');
+                return;
+            }
+            if (manualPassword.length < 8) {
+                alert('Password minimal 8 karakter.');
+                return;
+            }
+        }
+
+        const modeLabel = _batchPwMode === 'auto' ? 'otomatis per akun' : `seragam "${manualPassword}"`;
+        if (!confirm(`Yakin ingin memperbarui password ${accounts.length} akun dengan mode ${modeLabel}?\n\nTindakan ini tidak dapat dibatalkan!`)) {
+            return;
+        }
+
+        // Tampilkan progress
+        document.getElementById('batchPwInputSection').classList.add('hidden');
+        document.getElementById('batchPwProgressSection').classList.remove('hidden');
+        document.getElementById('batchPwActionFooter').classList.add('hidden');
+
+        const progressBar = document.getElementById('batchPwProgressBar');
+        const statusText  = document.getElementById('batchPwStatusText');
+
+        let processed = 0, success = 0, failed = 0;
+        const failedAccounts = [];
+
+        for (const account of accounts) {
+            const password = _batchPwMode === 'auto'
+                ? generatePasswordForAccount(account.name, account.nip)
+                : manualPassword;
+
+            statusText.textContent = `MEMPROSES: ${processed + 1}/${accounts.length} — ${account.email}`;
+
+            try {
+                const response = await fetch('<?= site_url('email/api_batch_update_password') ?>', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': '<?= csrf_hash() ?>'
+                    },
+                    body: JSON.stringify({ email: account.email, password: password })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    success++;
+                } else {
+                    failed++;
+                    failedAccounts.push({ email: account.email, reason: data.message || 'Gagal' });
+                }
+            } catch (err) {
+                failed++;
+                failedAccounts.push({ email: account.email, reason: 'Kesalahan jaringan' });
+            }
+
+            processed++;
+            progressBar.style.width = Math.round((processed / accounts.length) * 100) + '%';
+        }
+
+        // Tampilkan hasil
+        document.getElementById('batchPwProgressSection').classList.add('hidden');
+        document.getElementById('batchPwResultSection').classList.remove('hidden');
+
+        const failColor = failed > 0 ? 'red' : 'slate';
+        let resultHtml = `
+            <div class="space-y-3">
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-3 text-center">
+                        <p class="text-[9px] font-bold text-emerald-600 uppercase tracking-widest">Berhasil</p>
+                        <p class="text-2xl font-bold text-emerald-700 mt-0.5">${success}</p>
+                    </div>
+                    <div class="bg-${failColor}-50 border border-${failColor}-200 rounded-lg p-3 text-center">
+                        <p class="text-[9px] font-bold text-${failColor}-600 uppercase tracking-widest">Gagal</p>
+                        <p class="text-2xl font-bold text-${failColor}-700 mt-0.5">${failed}</p>
+                    </div>
+                </div>`;
+
+        if (failedAccounts.length > 0) {
+            resultHtml += `<div class="max-h-40 overflow-y-auto space-y-1">`;
+            failedAccounts.forEach(f => {
+                resultHtml += `<div class="flex justify-between items-center px-3 py-1.5 bg-red-50 border border-red-100 rounded text-[10px]">
+                    <span class="text-red-700 font-medium truncate mr-2">${f.email}</span>
+                    <span class="text-red-500 shrink-0">${f.reason}</span>
+                </div>`;
+            });
+            resultHtml += `</div>`;
+        }
+
+        resultHtml += `</div>`;
+        document.getElementById('batchPwResultContent').innerHTML = resultHtml;
+
+        document.getElementById('batchPwActionFooter').innerHTML = `
+            <button type="button" onclick="closeBatchPasswordModal()" class="btn btn-solid text-xs">
+                <i class="fas fa-check mr-1.5"></i> Selesai
+            </button>`;
+        document.getElementById('batchPwActionFooter').classList.remove('hidden');
+    }
 
 </script>
 <?= $this->endSection() ?>

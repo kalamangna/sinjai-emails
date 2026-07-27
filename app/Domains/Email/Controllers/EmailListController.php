@@ -4,6 +4,7 @@ namespace App\Domains\Email\Controllers;
 
 use App\Shared\BaseController;
 use App\Domains\Email\Services\EmailService;
+use App\Domains\Email\Models\EmailModel;
 use App\Domains\UnitKerja\Models\UnitKerjaModel;
 use App\Shared\Models\EselonModel;
 use Exception;
@@ -13,12 +14,14 @@ class EmailListController extends BaseController
     private $eselonModel;
     private $unitKerjaModel;
     private $emailService;
+    private $emailModel;
 
     public function __construct()
     {
         $this->eselonModel = new EselonModel();
         $this->unitKerjaModel = new UnitKerjaModel();
         $this->emailService = new EmailService();
+        $this->emailModel = new EmailModel();
     }
 
     public function eselonList()
@@ -53,6 +56,7 @@ class EmailListController extends BaseController
                 'status_asn' => $this->request->getGet('status_asn'),
                 'bsre_status' => $this->request->getGet('bsre_status'),
                 'pimpinan_desa' => $this->request->getGet('pimpinan_desa'),
+                'no_password' => $this->request->getGet('no_password'),
             ];
 
             $data = $this->emailService->getUnitKerjaDetail($unitKerjaId, $params);
@@ -63,6 +67,7 @@ class EmailListController extends BaseController
             $data['status_asn'] = $params['status_asn'];
             $data['bsre_status'] = $params['bsre_status'];
             $data['pimpinan_desa'] = $params['pimpinan_desa'] ?? 1;
+            $data['no_password'] = $params['no_password'];
             $data['back_url'] = site_url('email');
 
             return view('email/unit_kerja_detail', $data);
@@ -70,6 +75,39 @@ class EmailListController extends BaseController
             $data['error'] = $e->getMessage();
             $data['back_url'] = site_url('email');
             return view('email/error', $data);
+        }
+    }
+
+    public function apiBatchUpdatePassword()
+    {
+        if (strtolower($this->request->getMethod()) !== 'post') {
+            return $this->response->setStatusCode(405)->setJSON(['success' => false, 'message' => 'Invalid request method.']);
+        }
+
+        $payload = $this->request->getJSON(true);
+        $email    = $payload['email'] ?? '';
+        $password = $payload['password'] ?? '';
+
+        if (empty($email) || empty($password)) {
+            return $this->response->setStatusCode(400)->setJSON(['success' => false, 'message' => 'Email dan password harus diisi.']);
+        }
+
+        try {
+            $cpanelApi = new \App\Shared\Libraries\CpanelApi();
+            $result = $cpanelApi->change_password($email, $password);
+
+            if (isset($result['status']) && $result['status'] == 1) {
+                // Extract username from email (before @)
+                $username = strstr($email, '@', true);
+                $this->emailModel->where('user', $username)->set(['password' => $password])->update();
+
+                return $this->response->setJSON(['success' => true, 'message' => 'Password berhasil diperbarui.']);
+            } else {
+                $errorMsg = $result['errors'][0] ?? 'Gagal memperbarui password di cPanel.';
+                return $this->response->setJSON(['success' => false, 'message' => $errorMsg]);
+            }
+        } catch (\Throwable $e) {
+            return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => $e->getMessage()]);
         }
     }
 

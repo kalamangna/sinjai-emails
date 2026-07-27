@@ -132,6 +132,7 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
             $routes->post('api_generate_pdf', '\App\Domains\Email\Controllers\EmailApiController::apiGeneratePdf');
             $routes->get('api_unit_emails/(:num)', '\App\Domains\Email\Controllers\EmailApiController::apiUnitEmails/$1');
             $routes->get('api_download_zip/(:num)', '\App\Domains\Email\Controllers\EmailApiController::apiDownloadZip/$1');
+            $routes->post('api_batch_update_password', '\App\Domains\Email\Controllers\EmailListController::apiBatchUpdatePassword');
         });
 
         // Destructive Routes (Super Admin Only)
