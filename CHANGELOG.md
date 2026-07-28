@@ -9,6 +9,8 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## Penyederhanaan Platform Website Desa / Kelurahan
 
+- **Pembaruan Tampilan Website Desa/Kelurahan**:
+    - Mengubah label tombol **Sync Expiration** menjadi **Sync** pada halaman Website Desa/Kelurahan (`index.php`).
 - **Sederhanakan Kategori Platform**:
     - Mengubah dan menyederhanakan opsi master platform website desa/kelurahan dari 4 opsi (*SIDEKA-NG*, *OPENSID*, *PIHAK KETIGA*, *KOMINFO*) menjadi 2 opsi utama: **`KOMINFO`** dan **`MANDIRI`**.
 - **Migrasi Data Platform**:

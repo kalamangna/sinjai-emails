@@ -37,34 +37,28 @@ class SimplifyPlatformsToKominfoAndMandiri extends Migration
         }
 
         // 3. Map existing web_desa_kelurahan platform_id entries:
-        // SIDEKA-NG becomes KOMINFO
-        $sideka = $db->table('platforms')->where('nama_platform', 'SIDEKA-NG')->get()->getRowArray();
-        if ($sideka) {
-            $db->table('web_desa_kelurahan')
-                ->where('platform_id', $sideka['id'])
-                ->update(['platform_id' => $kominfoId]);
-        }
-
-        // Update all KELURAHAN records to KOMINFO platform
-        $db->table('web_desa_kelurahan')
-            ->like('desa_kelurahan', 'KELURAHAN')
-            ->update(['platform_id' => $kominfoId]);
-
-        // OPENSID, PIHAK KETIGA, and any other non-KOMINFO/MANDIRI become MANDIRI
-        $mandiriPlatforms = $db->table('platforms')
+        // First map all non-KOMINFO/MANDIRI (SIDEKA-NG, OPENSID, PIHAK KETIGA) to MANDIRI
+        $oldPlatforms = $db->table('platforms')
             ->whereNotIn('nama_platform', ['KOMINFO', 'MANDIRI'])
             ->get()
             ->getResultArray();
 
-        $mandiriIds = array_column($mandiriPlatforms, 'id');
-        if (!empty($mandiriIds)) {
+        $oldIds = array_column($oldPlatforms, 'id');
+        if (!empty($oldIds)) {
             $db->table('web_desa_kelurahan')
-                ->whereIn('platform_id', $mandiriIds)
+                ->whereIn('platform_id', $oldIds)
                 ->update(['platform_id' => $mandiriId]);
+        }
 
-            // 4. Delete old platform records
+        // Now map all KELURAHAN records to KOMINFO
+        $db->table('web_desa_kelurahan')
+            ->like('desa_kelurahan', 'KELURAHAN')
+            ->update(['platform_id' => $kominfoId]);
+
+        // Delete old platform records
+        if (!empty($oldIds)) {
             $db->table('platforms')
-                ->whereIn('id', $mandiriIds)
+                ->whereIn('id', $oldIds)
                 ->delete();
         }
     }

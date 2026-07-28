@@ -46,7 +46,7 @@
             </a>
             <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
                 <button type="button" class="flex-1 lg:flex-none btn btn-solid" id="batchSyncBtn" onclick="startBatchSync()">
-                    <i class="fas fa-sync mr-2 text-white/80"></i> Sync Expiration
+                    <i class="fas fa-sync mr-2 text-white/80"></i> Sync
                 </button>
             <?php endif; ?>
         </div>
