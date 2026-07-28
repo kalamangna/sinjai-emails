@@ -9,6 +9,8 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## Penyederhanaan Platform Website Desa / Kelurahan
 
+- **Migrasi Pembaruan Data Kelurahan di Production**:
+    - Menambahkan migrasi khusus `SetKelurahanPlatformToKominfo.php` untuk memastikan seluruh record Kelurahan di database production secara otomatis diperbarui platform-nya ke **`KOMINFO`**.
 - **Pembaruan Tampilan Website Desa/Kelurahan**:
     - Mengubah label tombol **Sync Expiration** menjadi **Sync** pada halaman Website Desa/Kelurahan (`index.php`).
 - **Sederhanakan Kategori Platform**:
