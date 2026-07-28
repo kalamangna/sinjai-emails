@@ -1,23 +1,26 @@
 <?= $this->extend('layouts/main') ?>
 
+<?= $this->section('styles') ?>
+<style>
+    .apexcharts-bar-series rect {
+        cursor: pointer !important;
+    }
+
+    .apexcharts-yaxis-label {
+        cursor: pointer !important;
+        text-decoration: underline !important;
+        text-underline-offset: 2px;
+    }
+
+    .apexcharts-yaxis-label:hover {
+        fill: #1e293b !important;
+        font-weight: 700 !important;
+    }
+</style>
+<?= $this->endSection() ?>
+
 <?= $this->section('content') ?>
 <div class="space-y-6">
-    <style>
-        .apexcharts-bar-series rect {
-            cursor: pointer !important;
-        }
-
-        .apexcharts-yaxis-label {
-            cursor: pointer !important;
-            text-decoration: underline !important;
-            text-underline-offset: 2px;
-        }
-
-        .apexcharts-yaxis-label:hover {
-            fill: #1e293b !important;
-            font-weight: 700 !important;
-        }
-    </style>
     <!-- Header Halaman -->
     <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
         <div>
