@@ -45,6 +45,11 @@ class SimplifyPlatformsToKominfoAndMandiri extends Migration
                 ->update(['platform_id' => $kominfoId]);
         }
 
+        // Update all KELURAHAN records to KOMINFO platform
+        $db->table('web_desa_kelurahan')
+            ->like('desa_kelurahan', 'KELURAHAN')
+            ->update(['platform_id' => $kominfoId]);
+
         // OPENSID, PIHAK KETIGA, and any other non-KOMINFO/MANDIRI become MANDIRI
         $mandiriPlatforms = $db->table('platforms')
             ->whereNotIn('nama_platform', ['KOMINFO', 'MANDIRI'])
