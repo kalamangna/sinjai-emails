@@ -5,6 +5,20 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [28 Juli 2026]
+
+## Penyederhanaan Platform Website Desa / Kelurahan
+
+- **Sederhanakan Kategori Platform**:
+    - Mengubah dan menyederhanakan opsi master platform website desa/kelurahan dari 4 opsi (*SIDEKA-NG*, *OPENSID*, *PIHAK KETIGA*, *KOMINFO*) menjadi 2 opsi utama: **`KOMINFO`** dan **`MANDIRI`**.
+- **Migrasi Data Platform**:
+    - Menambahkan berkas migrasi `SimplifyPlatformsToKominfoAndMandiri.php` untuk memindahkan data website ber-platform *SIDEKA-NG* ke **`KOMINFO`**, serta *OPENSID* & *PIHAK KETIGA* ke **`MANDIRI`**.
+- **Penyesuaian Berkas Terkait**:
+    - Memperbarui `WebDesaKelurahanController` & `WebsiteService` untuk menyesuaikan urutan filter serta statistik pengelompokan platform.
+    - Memperbarui `WebDesaKelurahanSeeder` untuk memetakan data `SIDEKA` ke `KOMINFO` dan platform lainnya ke `MANDIRI`.
+
+---
+
 # [27 Juli 2026]
 
 ## Fitur Filter Tanpa Password & Batch Update Password (Detail Unit Kerja)

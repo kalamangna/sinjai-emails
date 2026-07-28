@@ -90,7 +90,7 @@ class WebDesaKelurahanController extends BaseController
             'stats' => $stats,
             'platform_stats' => $platform_stats,
             'kecamatan_list' => $kecamatan_list,
-            'platforms' => $platformModel->orderBy("FIELD(nama_platform, 'KOMINFO', 'SIDEKA-NG', 'OPENSID', 'PIHAK KETIGA')")->asArray()->findAll(),
+            'platforms' => $platformModel->orderBy("FIELD(nama_platform, 'KOMINFO', 'MANDIRI')")->asArray()->findAll(),
             'title' => 'Website Desa dan Kelurahan',
             'search' => $search,
             'filterKecamatan' => $filterKecamatan,

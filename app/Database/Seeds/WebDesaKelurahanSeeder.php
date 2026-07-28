@@ -125,12 +125,10 @@ class WebDesaKelurahanSeeder extends Seeder
                 // Map Platform to ID
                 $platformRaw = strtoupper(trim($row[8] ?? ''));
                 $normalizedPlatform = null;
-                if (strpos($platformRaw, 'OPEN SID') !== false) {
-                    $normalizedPlatform = 'OPENSID';
-                } elseif (strpos($platformRaw, 'SIDEKA') !== false) {
-                    $normalizedPlatform = 'SIDEKA-NG';
-                } elseif (strpos($platformRaw, 'PIHAK KETIGA') !== false) {
-                    $normalizedPlatform = 'PIHAK KETIGA';
+                if (strpos($platformRaw, 'SIDEKA') !== false || strpos($platformRaw, 'KOMINFO') !== false) {
+                    $normalizedPlatform = 'KOMINFO';
+                } else {
+                    $normalizedPlatform = 'MANDIRI';
                 }
                 
                 $platformId = null;

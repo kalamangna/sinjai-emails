@@ -114,10 +114,8 @@ class WebsiteService
         usort($platform_stats, function ($a, $b) {
             $order = [
                 'KOMINFO'        => 1,
-                'SIDEKA-NG'      => 2,
-                'OPENSID'        => 3,
-                'PIHAK KETIGA'   => 4,
-                'TIDAK TERDAFTAR' => 5,
+                'MANDIRI'        => 2,
+                'TIDAK TERDAFTAR' => 3,
             ];
             
             $nameA = strtoupper($a['nama_platform']);
