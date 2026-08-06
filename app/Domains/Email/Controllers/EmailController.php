@@ -256,19 +256,20 @@ class EmailController extends BaseController
     {
         try {
             $password = $this->request->getPost('password');
-            if (empty($password)) throw new Exception('Password cannot be empty.');
 
-            $cpanelApi = new \App\Shared\Libraries\CpanelApi();
-            $result = $cpanelApi->change_password($username . '@sinjaikab.go.id', $password);
-
-            // CpanelApi returns raw response where status == 1 means success
-            if (isset($result['status']) && $result['status'] == 1) {
-                $this->emailModel->where('user', $username)->set(['password' => $password])->update();
-                return redirect()->to('email/detail/' . $username)->with('success', 'Password berhasil diperbarui.');
-            } else {
-                $errorMsg = $result['errors'][0] ?? 'Gagal memperbarui password di cPanel.';
-                return redirect()->back()->with('error', $errorMsg);
+            if (empty($password)) {
+                throw new Exception('Password tidak boleh kosong.');
             }
+            if (strlen($password) < 8) {
+                throw new Exception('Password minimal 8 karakter.');
+            }
+
+            $this->emailService->updatePassword($username, $password);
+
+            helper('audit');
+            log_audit('CHANGE_PASSWORD', 'Email', null, 'Password diubah untuk akun: ' . $username . '@sinjaikab.go.id');
+
+            return redirect()->to('email/detail/' . $username)->with('success', 'Password berhasil diperbarui.');
         } catch (\Throwable $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }

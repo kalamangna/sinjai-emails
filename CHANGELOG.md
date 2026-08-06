@@ -5,6 +5,22 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [6 Agustus 2026]
+
+## Antarmuka & Standardisasi Data
+- **Standardisasi Badge Status**: Menyeragamkan label, warna, dan ikon badge status (Available, Created, Failed, Existing, Unavailable, Duplicate, Checking...) pada fitur Pembuatan Tunggal dan Massal.
+- **Auto-Uppercase**: Memastikan penamaan (kolom `name`) selalu menggunakan huruf kapital (*uppercase*), baik secara visual di UI (`placeholder` dan form input) maupun logika penyimpanan (`.toUpperCase()`) sebelum dikirim ke server.
+
+## Keamanan & Refactoring
+- **Sentralisasi `generatePassword`**: Memindahkan logika generator password ke berkas *shared* `public/js/utils.js` agar seragam antara pembuatan tunggal dan batch. Memperbaiki bug pembuatan *alt-password* yang tidak berjalan di batch.
+- **Validasi Server-Side & Audit Log**:
+    - Menambahkan validasi ketat (minimal 8 karakter) di sisi server untuk pergantian password (`EmailController` dan `EmailListController`).
+    - Mendelegasikan aksi ke `EmailService::updatePassword` untuk mencegah duplikasi pemanggilan cPanel API.
+    - Mengintegrasikan pencatatan ke Audit Log (`log_audit`) setiap ada pergantian password.
+- **Pembersihan Model**: Menghapus duplikasi properti `nik` dan `nip` pada `allowedFields` di `EmailModel`.
+
+---
+
 # [28 Juli 2026]
 
 ## Penyederhanaan Platform Website Desa / Kelurahan

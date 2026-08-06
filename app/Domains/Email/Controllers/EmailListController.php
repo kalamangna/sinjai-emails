@@ -84,7 +84,7 @@ class EmailListController extends BaseController
             return $this->response->setStatusCode(405)->setJSON(['success' => false, 'message' => 'Invalid request method.']);
         }
 
-        $payload = $this->request->getJSON(true);
+        $payload  = $this->request->getJSON(true);
         $email    = $payload['email'] ?? '';
         $password = $payload['password'] ?? '';
 
@@ -92,20 +92,19 @@ class EmailListController extends BaseController
             return $this->response->setStatusCode(400)->setJSON(['success' => false, 'message' => 'Email dan password harus diisi.']);
         }
 
+        if (strlen($password) < 8) {
+            return $this->response->setStatusCode(400)->setJSON(['success' => false, 'message' => 'Password minimal 8 karakter.']);
+        }
+
         try {
-            $cpanelApi = new \App\Shared\Libraries\CpanelApi();
-            $result = $cpanelApi->change_password($email, $password);
+            $username = strstr($email, '@', true);
+            $emailService = new \App\Domains\Email\Services\EmailService();
+            $emailService->updatePassword($username, $password);
 
-            if (isset($result['status']) && $result['status'] == 1) {
-                // Extract username from email (before @)
-                $username = strstr($email, '@', true);
-                $this->emailModel->where('user', $username)->set(['password' => $password])->update();
+            helper('audit');
+            log_audit('CHANGE_PASSWORD', 'Email', null, 'Password diubah untuk akun: ' . $email);
 
-                return $this->response->setJSON(['success' => true, 'message' => 'Password berhasil diperbarui.']);
-            } else {
-                $errorMsg = $result['errors'][0] ?? 'Gagal memperbarui password di cPanel.';
-                return $this->response->setJSON(['success' => false, 'message' => $errorMsg]);
-            }
+            return $this->response->setJSON(['success' => true, 'message' => 'Password berhasil diperbarui.']);
         } catch (\Throwable $e) {
             return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => $e->getMessage()]);
         }

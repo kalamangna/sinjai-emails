@@ -460,35 +460,7 @@ document.addEventListener("DOMContentLoaded", function () {
     return { username: username, email: `${username}${domain}` };
   }
 
-  function generatePassword(name, nip) {
-    // Urutan kandidat suffix sama dengan email:
-    // 1. Tahun lahir (NIP[3-4])
-    // 2. Tanggal lahir (NIP[7-8])
-    // 3. Random 2 digit
-    let suffix;
-    if (nip && nip.length >= 8) {
-      suffix = nip.substring(2, 4); // tahun lahir (NIP[3-4])
-    } else if (nip && nip.length >= 4) {
-      suffix = nip.substring(2, 4); // tahun lahir jika NIP pendek
-    } else {
-      suffix = String(Math.floor(Math.random() * 90) + 10); // random
-    }
-
-    let baseName = name.replace(/\s+/g, "").toLowerCase();
-    let namePart = baseName;
-
-    // Nama pendek diulang hingga 5 karakter
-    if (namePart.length > 0 && namePart.length < 5) {
-        while (namePart.length < 5) {
-            namePart += baseName;
-        }
-    }
-    namePart = namePart.substring(0, 5);
-
-    if (!namePart) return `@${suffix}#`;
-    const capitalizedNamePart = namePart.charAt(0).toUpperCase() + namePart.slice(1);
-    return `${capitalizedNamePart}@${suffix}#`;
-  }
+  // generatePassword() is provided globally by utils.js
 
   function getSecondNipPart(nip) {
     // NIP karakter ke-7 & 8 (tanggal lahir)
@@ -575,27 +547,27 @@ document.addEventListener("DOMContentLoaded", function () {
     userBatch.forEach((user, index) => {
       let statusBadge;
       const badgeBase =
-        "inline-flex items-center px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border shadow-sm";
+        "inline-flex items-center gap-1 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border-0 shadow-sm";
 
       if (user.status === "created") {
-        statusBadge = `<span class="${badgeBase} bg-emerald-100 text-emerald-800 border-transparent">Created</span>`;
+        statusBadge = `<span class="${badgeBase} bg-emerald-100 text-emerald-800"><i class="fas fa-check-circle"></i>Created</span>`;
       } else if (user.status === "failed") {
-        statusBadge = `<span class="${badgeBase} bg-red-100 text-red-700 border-transparent" title="${user.errorMessage || "Failed"}">Failed</span>`;
+        statusBadge = `<span class="${badgeBase} bg-red-100 text-red-700" title="${user.errorMessage || 'Failed'}"><i class="fas fa-times-circle"></i>Failed</span>`;
       } else if (user.isNikInDb || user.isNipInDb) {
         // NIK atau NIP pegawai sudah terdaftar di database
         let hints = [];
-        if (user.isNikInDb) hints.push('NIK sudah ada di database');
-        if (user.isNipInDb) hints.push('NIP sudah ada di database');
-        statusBadge = `<span class="${badgeBase} bg-orange-100 text-orange-700 border-transparent" title="${hints.join(' | ')}"><i class="fas fa-exclamation-triangle mr-1"></i>Existing</span>`;
+        if (user.isNikInDb) hints.push('NIK already in database');
+        if (user.isNipInDb) hints.push('NIP already in database');
+        statusBadge = `<span class="${badgeBase} bg-orange-100 text-orange-700" title="${hints.join(' | ')}"><i class="fas fa-exclamation-triangle"></i>Existing</span>`;
       } else if (user.isNikDuplicate || user.isNipDuplicate) {
         let hints = [];
-        if (user.isNikDuplicate) hints.push('NIK duplikat dalam batch ini');
-        if (user.isNipDuplicate) hints.push('NIP duplikat dalam batch ini');
-        statusBadge = `<span class="${badgeBase} bg-amber-100 text-amber-700 border-transparent" title="${hints.join(' | ')}"><i class="fas fa-copy mr-1"></i>Duplikat</span>`;
+        if (user.isNikDuplicate) hints.push('Duplicate NIK in this batch');
+        if (user.isNipDuplicate) hints.push('Duplicate NIP in this batch');
+        statusBadge = `<span class="${badgeBase} bg-amber-100 text-amber-700" title="${hints.join(' | ')}"><i class="fas fa-copy"></i>Duplicate</span>`;
       } else if (!user.isAvailable || user.isDuplicate) {
-        statusBadge = `<span class="${badgeBase} bg-red-100 text-red-700 border-transparent"><i class="fas fa-times mr-1"></i>Unavailable</span>`;
+        statusBadge = `<span class="${badgeBase} bg-red-100 text-red-700"><i class="fas fa-times"></i>Unavailable</span>`;
       } else {
-        statusBadge = `<span class="${badgeBase} bg-blue-100 text-blue-700 border-transparent"><i class="fas fa-check mr-1"></i>Available</span>`;
+        statusBadge = `<span class="${badgeBase} bg-sky-100 text-sky-700"><i class="fas fa-check"></i>Available</span>`;
       }
 
       const nameCellContent = `<span contenteditable="true" class="editable-name focus:outline-none focus:text-emerald-700 transition-colors" data-name-index="${index}">${user.name}</span>`;
@@ -766,8 +738,9 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
+    const badgeBase = "inline-flex items-center gap-1 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border-0 shadow-sm";
     const statusCell = editedCell.closest("tr").cells[6];
-    statusCell.innerHTML = '<span class="badge bg-info">Re-checking...</span>';
+    statusCell.innerHTML = `<span class="${badgeBase} bg-slate-100 text-slate-600"><i class="fas fa-spinner fa-spin"></i>Checking...</span>`;
     const result = await checkEmailAvailability(user.email);
     user.isAvailable = result.available;
     user.isDuplicate = userBatch.some(

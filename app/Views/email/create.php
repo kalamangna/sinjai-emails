@@ -22,7 +22,7 @@
                     <div class="mb-1">
                         <label for="name_input" class="block text-sm font-medium text-slate-700 uppercase tracking-tight">Nama Lengkap <span class="text-slate-700 font-normal">(Tanpa Gelar)</span></label>
                     </div>
-                    <input type="text" id="name_input" name="name" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all placeholder-slate-400" required placeholder="Budi Santoso">
+                    <input type="text" id="name_input" name="name" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all placeholder-slate-400 uppercase" required placeholder="BUDI SANTOSO">
                 </div>
 
                 <div>
@@ -110,6 +110,7 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
+<script src="<?= base_url('js/utils.js') ?>"></script>
 <script>
     const nameInput = document.getElementById('name_input');
     const nikInput = document.getElementById('nik_input');
@@ -147,7 +148,7 @@
 
         // Base Draft Config
         const domain = "@sinjaikab.go.id";
-        const cleanedName = name.replace(/[,.']/g, "");
+        const cleanedName = name.replace(/[,.']/g, "").toUpperCase();
         const originalUsername = cleanedName.toLowerCase().replace(/\s+/g, "").substring(0, 30 - domain.length);
         const password = generatePassword(name, nip);
 
@@ -221,16 +222,21 @@
         resultsTableBody.innerHTML = "";
         batch.forEach((user, index) => {
             let statusBadge;
-            const badgeBase = "inline-flex items-center px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border shadow-sm";
+            const badgeBase = "inline-flex items-center gap-1 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border-0 shadow-sm";
 
             if (user.status === "created") {
-                statusBadge = `<span class="${badgeBase} bg-emerald-100 text-emerald-800 border-transparent">Created</span>`;
+                statusBadge = `<span class="${badgeBase} bg-emerald-100 text-emerald-800"><i class="fas fa-check-circle"></i>Created</span>`;
             } else if (user.status === "failed") {
-                statusBadge = `<span class="${badgeBase} bg-red-100 text-red-700 border-transparent" title="${user.errorMessage || "Failed"}">Failed</span>`;
-            } else if (user.isAvailable && !user.isNipInDb) {
-                statusBadge = `<span class="${badgeBase} bg-blue-100 text-slate-700 border-transparent">Ready</span>`;
+                statusBadge = `<span class="${badgeBase} bg-red-100 text-red-700" title="${user.errorMessage || 'Failed'}"><i class="fas fa-times-circle"></i>Failed</span>`;
+            } else if (user.isNikInDb || user.isNipInDb) {
+                const hints = [];
+                if (user.isNikInDb) hints.push('NIK already in database');
+                if (user.isNipInDb) hints.push('NIP already in database');
+                statusBadge = `<span class="${badgeBase} bg-orange-100 text-orange-700" title="${hints.join(' | ')}"><i class="fas fa-exclamation-triangle"></i>Existing</span>`;
+            } else if (!user.isAvailable) {
+                statusBadge = `<span class="${badgeBase} bg-red-100 text-red-700"><i class="fas fa-times"></i>Unavailable</span>`;
             } else {
-                statusBadge = `<span class="${badgeBase} bg-amber-100 text-amber-700 border-transparent">Check Required</span>`;
+                statusBadge = `<span class="${badgeBase} bg-sky-100 text-sky-700"><i class="fas fa-check"></i>Available</span>`;
             }
 
             const nameCellContent = `<span contenteditable="true" class="editable-name focus:outline-none focus:text-slate-700 transition-colors" data-name-index="${index}">${user.name}</span>`;
@@ -434,14 +440,6 @@
 
     function getNikPart(nik) {
         return (typeof nik === "string" && nik.length >= 12) ? nik.substring(10, 12) : "";
-    }
-
-    function generatePassword(name, nip, useAltNipPart = false) {
-        let suffix = new Date().getDate();
-        if (nip && nip.length >= 8) suffix = useAltNipPart ? nip.substring(6, 8) : nip.substring(2, 4);
-        else if (nip && nip.length >= 4) suffix = nip.substring(2, 4);
-        const namePart = name.replace(/\s+/g, "").substring(0, 5).toLowerCase();
-        return (namePart ? namePart.charAt(0).toUpperCase() + namePart.slice(1) : "") + `@${suffix}#`;
     }
 
     function updateDraft() {

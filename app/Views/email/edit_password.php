@@ -63,26 +63,8 @@
     </div>
 </div>
 
+<script src="<?= base_url('js/utils.js') ?>"></script>
 <script>
-function generatePassword(name, nip, useAltNipPart = false) {
-    let suffix = new Date().getDate();
-    if (nip && nip.length >= 8) {
-        if (useAltNipPart) {
-            suffix = nip.substring(6, 8); // 7th & 8th
-        } else {
-            suffix = nip.substring(2, 4); // 3rd & 4th
-        }
-    } else if (nip && nip.length >= 4) {
-        suffix = nip.substring(2, 4);
-    }
-
-    const namePart = name.replace(/\s+/g, "").substring(0, 5).toLowerCase();
-    if (!namePart) return `@${suffix}#`;
-    const capitalizedNamePart =
-        namePart.charAt(0).toUpperCase() + namePart.slice(1);
-    return `${capitalizedNamePart}@${suffix}#`;
-}
-
 function suggestPassword() {
     const name = "<?= esc($email['name'], 'js') ?>";
     const nip = "<?= esc($email['nip'], 'js') ?>";

@@ -44,7 +44,7 @@
                 <div class="mb-1">
                     <label for="name_input" class="block text-sm font-medium text-slate-700 uppercase tracking-tight">Nama Lengkap</label>
                 </div>
-                <textarea id="name_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px] placeholder-slate-400" placeholder="Satu nama per baris..."></textarea>
+                <textarea id="name_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all custom-scrollbar min-h-[300px] placeholder-slate-400 uppercase" placeholder="SATU NAMA PER BARIS..."></textarea>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -142,5 +142,6 @@
     window.EMAIL_CREATE_URL = '<?= site_url('email/create_single') ?>';
     window.EMAIL_REDIRECT_URL = '<?= site_url('email') ?>';
 </script>
+<script src="<?= base_url('js/utils.js?v=' . time()) ?>"></script>
 <script src="<?= base_url('js/batch.js?v=' . time()) ?>"></script>
 <?= $this->endSection() ?>

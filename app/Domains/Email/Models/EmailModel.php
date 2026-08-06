@@ -42,8 +42,6 @@ class EmailModel extends Model
         'pimpinan',
         'pimpinan_desa',
         'pensiun_at',
-        'nik',
-        'nip',
     ];
     protected $useTimestamps = true;
     protected $useSoftDeletes = true;
