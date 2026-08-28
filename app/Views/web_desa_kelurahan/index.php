@@ -122,30 +122,30 @@
     </div>
 
     <div class="bg-white border border-slate-200 rounded-2xl shadow-sm">
-        <div class="p-6 border-b border-slate-100 bg-slate-50">
+        <div class="p-4 sm:p-6 border-b border-slate-100 bg-slate-50">
             <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
-                <div class="md:col-span-4">
-                    <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Pencarian</label>
+                <div class="md:col-span-4 lg:col-span-4">
+                    <label class="block text-[10px] font-bold text-slate-400 mb-1.5 uppercase tracking-widest">Pencarian</label>
                     <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-700">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400 pointer-events-none">
                             <i class="fas fa-search text-xs"></i>
                         </span>
-                        <input type="text" id="search-input" class="block w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm text-slate-800 placeholder-slate-400 font-medium transition-all" placeholder="Cari...">
+                        <input type="text" id="search-input" class="block w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm text-slate-800 placeholder-slate-400 font-medium transition-all h-[40px]" placeholder="Cari...">
                     </div>
                 </div>
 
-                <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Tipe</label>
-                    <select id="filter-type" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm cursor-pointer transition-all">
+                <div class="md:col-span-2 lg:col-span-2">
+                    <label class="block text-[10px] font-bold text-slate-400 mb-1.5 uppercase tracking-widest">Tipe</label>
+                    <select id="filter-type" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm text-slate-800 font-medium cursor-pointer transition-all h-[40px]">
                         <option value="">Semua Tipe</option>
                         <option value="DESA">DESA</option>
                         <option value="KELURAHAN">KELURAHAN</option>
                     </select>
                 </div>
 
-                <div class="md:col-span-3">
-                    <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Platform</label>
-                    <select id="filter-platform" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm cursor-pointer transition-all">
+                <div class="md:col-span-3 lg:col-span-3">
+                    <label class="block text-[10px] font-bold text-slate-400 mb-1.5 uppercase tracking-widest">Platform</label>
+                    <select id="filter-platform" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm text-slate-800 font-medium cursor-pointer transition-all h-[40px]">
                         <option value="">Semua Platform</option>
                         <option value="NULL">TIDAK TERDAFTAR</option>
                         <?php foreach ($platforms as $p): ?>
@@ -154,19 +154,18 @@
                     </select>
                 </div>
 
-                <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Status</label>
-                    <select id="filter-status" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm cursor-pointer transition-all">
-                        <option value="">Semua Status</option>
-                        <option value="AKTIF">AKTIF</option>
-                        <option value="NONAKTIF">NONAKTIF</option>
-                    </select>
-                </div>
-
-                <div class="md:col-span-1 flex gap-2">
-                    <button type="button" id="reset-filters" class="w-full btn btn-outline justify-center" title="Reset">
-                        <i class="fas fa-undo"></i>
-                    </button>
+                <div class="md:col-span-3 lg:col-span-3">
+                    <label class="block text-[10px] font-bold text-slate-400 mb-1.5 uppercase tracking-widest">Status</label>
+                    <div class="flex items-center gap-2">
+                        <select id="filter-status" class="flex-1 block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm text-slate-800 font-medium cursor-pointer transition-all h-[40px]">
+                            <option value="">Semua Status</option>
+                            <option value="AKTIF">AKTIF</option>
+                            <option value="NONAKTIF">NONAKTIF</option>
+                        </select>
+                        <button type="button" id="reset-filters" class="hidden btn btn-outline !w-[40px] !h-[40px] !p-0 shrink-0 flex items-center justify-center rounded-lg transition-all" title="Reset Filter">
+                            <i class="fas fa-undo text-xs"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -325,6 +324,20 @@
 
         let typeChoices, platformChoices, statusChoices;
 
+        function updateResetButton() {
+            const searchVal = searchInput ? searchInput.value.trim() : '';
+            const typeVal = typeSelect ? typeSelect.value : '';
+            const platformVal = platformSelect ? platformSelect.value : '';
+            const statusVal = statusSelect ? statusSelect.value : '';
+            if (resetBtn) {
+                if (searchVal !== '' || typeVal !== '' || platformVal !== '' || statusVal !== '') {
+                    resetBtn.classList.remove('hidden');
+                } else {
+                    resetBtn.classList.add('hidden');
+                }
+            }
+        }
+
         if (typeSelect) {
             if (typeSelect.options.length >= 10) {
                 typeChoices = new Choices(typeSelect, {
@@ -383,6 +396,7 @@
         }
 
         function filterWebsites() {
+            updateResetButton();
             const searchVal = searchInput ? searchInput.value.toLowerCase().trim() : '';
             const typeVal = typeSelect ? typeSelect.value : '';
             const platformVal = platformSelect ? platformSelect.value : '';

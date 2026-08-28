@@ -37,8 +37,8 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **Standardisasi Status ASN**:
   - Menyeragamkan seluruh opsi dropdown Status ASN di seluruh aplikasi (`email/create.php`, `batch/create.php`, `email/edit_profile.php`, `email/unit_kerja_detail.php`) menjadi pilihan baku: `Non-ASN` (default), `PNS`, `PPPK`, dan `PPPK PARUH WAKTU`.
   - Menampilkan badge `NON-ASN` secara konsisten pada halaman Detail Akun dan tabel Unit Kerja ketika data status ASN kosong.
-- **Penyempurnaan Halaman Pimpinan & Pimpinan Desa**:
-  - Menerapkan tombol reset filter yang tampil dinamis (hanya muncul saat kolom pencarian atau filter status TTE terisi) untuk menjaga kebersihan visual antarmuka.
+- **Penyempurnaan Filter Halaman Pimpinan & Monitoring Website**:
+  - Menerapkan tombol reset filter yang tampil dinamis (hanya muncul saat kolom pencarian atau filter status terisi) pada halaman Pimpinan, Pimpinan Desa, Monitoring Website OPD, dan Monitoring Website Desa/Kelurahan.
   - Merapikan tata letak grid filter agar konsisten di seluruh *viewport* (mobile, tablet, desktop) dengan penguncian tinggi elemen 40px (`h-[40px]`).
   - Menstandarkan teks *placeholder* kotak pencarian menjadi `Cari...`.
 - **Pencarian Unit Kerja & Penanganan Desa Kembar**:
