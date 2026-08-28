@@ -324,8 +324,12 @@ class SyncAllCommand extends BaseCommand
             foreach ($toDelete as $acc) {
                 CLI::print("Deleting retired account: {$acc['email']}... ");
                 try {
-                    // 1. Delete from cPanel
-                    $cpanelApi->delete_email_account($acc['email']);
+                    // 1. Delete from cPanel (abaikan error jika akun sudah tidak ada di cPanel)
+                    try {
+                        $cpanelApi->delete_email_account($acc['email']);
+                    } catch (\Throwable $cpanelEx) {
+                        log_message('notice', "cPanel delete skipped for {$acc['email']}: " . $cpanelEx->getMessage());
+                    }
                     
                     // 2. Delete from local DB (Hard Delete)
                     $emailModel->delete($acc['id'], true);
