@@ -111,9 +111,9 @@ Untuk menjaga data tetap mutakhir, Anda dapat menggunakan skrip shell yang telah
 chmod +x sync.sh
 
 # Jalankan sinkronisasi secara manual
-./sync.sh daily    # Hanya Status TTE (Harian)
-./sync.sh weekly   # Hanya cPanel (Mingguan)
-./sync.sh monthly  # Pegawai & Website (Bulanan)
+./sync.sh daily    # Status TTE Pimpinan (Harian)
+./sync.sh weekly   # cPanel & Website (Mingguan)
+./sync.sh monthly  # Data Pegawai & TTE Pegawai ASN (Bulanan)
 ./sync.sh          # Sinkronisasi Penuh
 
 # Contoh penjadwalan Cron Job
@@ -130,13 +130,13 @@ chmod +x sync.sh
 
 # Skrip sync.sh sudah otomatis menjalankan 'queue:work' di akhir prosesnya.
 
-# 1. Setiap Hari jam 02:00 AM (Status TTE)
+# 1. Setiap Hari jam 02:00 AM (Status TTE Pimpinan & Pimpinan Desa)
 0 2 * * * /home/tte/sinjai-emails/sync.sh daily
 
-# 2. Setiap Hari Minggu jam 03:00 AM (cPanel)
+# 2. Setiap Hari Minggu jam 03:00 AM (cPanel & Masa Aktif Website)
 0 3 * * 0 /home/tte/sinjai-emails/sync.sh weekly
 
-# 3. Setiap Tanggal 25 jam 04:00 AM (Pegawai & Website)
+# 3. Setiap Tanggal 25 jam 04:00 AM (Data Pegawai SIMPEG & TTE Pegawai ASN)
 0 4 25 * * /home/tte/sinjai-emails/sync.sh monthly
 
 # 4. Backup Database Harian (Jam 00:00)
@@ -150,9 +150,9 @@ chmod +x sync.sh
 ```
 
 Skrip ini secara cerdas membagi tugas:
-- **Daily**: Memperbarui status **TTE BSrE** (Paling sering).
-- **Weekly**: Sinkronisasi akun **cPanel** (Kuota & Status).
-- **Monthly**: Memperbarui data **API Pegawai** dan masa aktif domain **PANDI**.
+- **Daily**: Memperbarui status **TTE Pimpinan & Pimpinan Desa** (Cepat, < 1 menit).
+- **Weekly**: Sinkronisasi akun **cPanel** (Kuota & Status) serta masa aktif domain **Website Desa/Kelurahan**.
+- **Monthly**: Memperbarui data **API Pegawai (SIMPEG)** dan status **TTE Pegawai ASN Non-Pimpinan**.
 
 Sistem secara transparan mencatat dan menampilkan waktu terakhir masing-masing sinkronisasi tersebut di **Dashboard**, **Detail Akun**, dan **Monitoring Website** untuk memastikan kesegaran data.
 
