@@ -218,7 +218,7 @@ class QueueWorker extends BaseCommand
         if (isset($stats['pegawai']['executed'])) {
             $pegawaiTotal = $stats['pegawai']['success'] ?? 0;
             if ($pegawaiTotal > 0) {
-                $builder->addKeyValue('Data Pegawai', number_format($pegawaiTotal, 0, ',', '.') . ' ASN', '👥');
+                $builder->addKeyValue('Sukses', number_format($pegawaiTotal, 0, ',', '.') . ' Data Pegawai', '👥');
             }
         }
 

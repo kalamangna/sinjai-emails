@@ -96,7 +96,7 @@ class SyncAllCommand extends BaseCommand
         } elseif ($isWeekly) {
             $builder->addKeyValue('Objek', 'cPanel & Domain Web', '🎯');
         } elseif ($isMonthly) {
-            $builder->addKeyValue('Objek', 'TTE Pegawai & Data ASN', '🎯');
+            $builder->addKeyValue('Objek', 'Data dan TTE Pegawai', '🎯');
         } else {
             $builder->addKeyValue('Objek', 'TTE, cPanel, ASN & Web', '🎯');
         }

@@ -19,7 +19,7 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **Penyelarasan Sinkronisasi Bulanan & Pembersihan**:
   - Menambahkan sinkronisasi status sertifikat TTE untuk seluruh pegawai ASN (non-pimpinan) yang terdaftar di unit kerja ke dalam rutinitas sinkronisasi bulanan dengan proteksi jeda mikro (80ms).
   - Mengelompokkan laporan temuan TTE pegawai expired pada sinkronisasi bulanan berbasis per Unit Kerja (OPD).
-  - Menampilkan jumlah ASN yang berhasil diselaraskan datanya pada notifikasi penutup sinkronisasi bulanan (`👥 Data Pegawai: [Jumlah] ASN`).
+  - Menampilkan jumlah data pegawai yang berhasil diselaraskan pada notifikasi penutup sinkronisasi bulanan (`👥 Sukses: [Jumlah] Data Pegawai`).
   - Menjamin ketahanan pembentukan pesan Telegram (*null-safety*) agar notifikasi ringkasan akhir selalu berhasil terkirim.
   - Memperbaiki penanganan error saat pembersihan akun pensiun permanen (>30 hari) agar rekaman database lokal tetap terhapus tuntas meskipun akun sudah tidak ada di cPanel.
   - Menyederhanakan format notifikasi pembersihan akun menjadi daftar ringkas (bullet) agar pesan tidak terlalu panjang.
