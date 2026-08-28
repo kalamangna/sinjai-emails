@@ -5,6 +5,19 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [29 Agustus 2026]
+
+## API Gateway & Integrasi Hierarki Unit Kerja
+- **Penyempurnaan Respon API Gateway**:
+  - Menambahkan field `unit_kerja` (nama unit langsung/sub-unit) dan `parent_unit_kerja` (nama OPD induk) pada seluruh endpoint API Gateway (`/api/v1/emails`, `/api/v1/pns`, `/api/v1/pppk`, `/api/v1/pppk-pw`, dan `/api/v1/unit/{id}`).
+  - Memfasilitasi pemetaan relasi hierarkis *child* (seperti UPTD Sekolah/Puskesmas/Kelurahan/Desa) dan *parent* (Dinas/Kecamatan/Setda), khususnya untuk pegawai kategori PPPK Paruh Waktu dan ASN lainnya.
+  - Menambahkan parameter query filter baru `unit_kerja` dan `parent_unit_kerja` untuk fleksibilitas pencarian data via API.
+- **Pembaruan Halaman Dokumentasi API**:
+  - Menyelaraskan teks judul, deskripsi, dan contoh respon JSON pada halaman dokumentasi API Gateway (`/api-gateway`) agar padat, ringkas, dan *to the point*.
+  - Melengkapi tabel parameter filter dengan parameter pencarian unit kerja dan OPD induk.
+
+---
+
 # [28 Agustus 2026]
 
 ## Notifikasi Telegram & Penyelarasan Background Sync

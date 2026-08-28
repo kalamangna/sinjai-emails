@@ -85,6 +85,14 @@
                             <td class="px-4 py-2.5 text-slate-600">Status TTE (ISSUE, EXPIRED, dll.)</td>
                         </tr>
                         <tr>
+                            <td class="px-4 py-2.5 font-mono text-emerald-600 font-bold">unit_kerja</td>
+                            <td class="px-4 py-2.5 text-slate-600">Nama unit kerja (parsial)</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2.5 font-mono text-emerald-600 font-bold">parent_unit_kerja</td>
+                            <td class="px-4 py-2.5 text-slate-600">Nama induk unit kerja / OPD (parsial)</td>
+                        </tr>
+                        <tr>
                             <td class="px-4 py-2.5 font-mono text-emerald-600 font-bold">api_unit_id</td>
                             <td class="px-4 py-2.5 text-slate-600">ID Unit Kerja API Pusat</td>
                         </tr>
@@ -92,7 +100,7 @@
                 </table>
             </div>
             <div class="p-3 bg-slate-50 border border-slate-100 rounded-lg text-[10px] font-mono text-slate-500 truncate">
-                <span class="font-bold text-slate-700">Contoh:</span> <?= $base_url ?>/emails?name=SUDARMIN&bsre_status=ISSUE
+                <span class="font-bold text-slate-700">Contoh:</span> <?= $base_url ?>/emails?unit_kerja=PUSKESMAS&bsre_status=ISSUE
             </div>
         </div>
     </div>
@@ -102,94 +110,102 @@
         <?php
         $endpoints = [
             [
-                'name' => 'Daftar Seluruh Email',
+                'name' => 'Semua Email',
                 'method' => 'GET',
                 'path' => '/emails',
-                'desc' => 'Seluruh akun email aktif beserta profil dan status TTE.',
+                'desc' => 'Daftar seluruh akun email aktif beserta profil dan unit kerja.',
                 'example' => '{
     "status": "success",
     "count": 8052,
     "data": [
         {
-            "email": "username@sinjaikab.go.id",
-            "name": "NAMA LENGKAP",
+            "email": "nama@sinjaikab.go.id",
+            "name": "NAMA PEGAWAI",
             "nik": "7307...",
             "nip": "1990...",
             "jabatan": "JABATAN PEGAWAI",
             "bsre_status": "ISSUE",
+            "unit_kerja": "UPTD SMPN 1 SINJAI",
+            "parent_unit_kerja": "DINAS PENDIDIKAN",
             "api_unit_id": "730701"
         }
     ]
 }'
             ],
             [
-                'name' => 'Data Pegawai PNS',
+                'name' => 'PNS',
                 'method' => 'GET',
                 'path' => '/pns',
-                'desc' => 'Daftar akun email berstatus Pegawai Negeri Sipil (PNS).',
+                'desc' => 'Daftar akun pegawai berstatus Pegawai Negeri Sipil.',
                 'example' => '{
     "status": "success",
     "count": 1163,
     "data": [
         {
-            "email": "username@sinjaikab.go.id",
-            "name": "NAMA LENGKAP PNS",
+            "email": "nama@sinjaikab.go.id",
+            "name": "NAMA PEGAWAI PNS",
             "nik": "7307...",
             "nip": "1985...",
             "jabatan": "JABATAN PNS",
             "bsre_status": "ISSUE",
+            "unit_kerja": "BAGIAN ORGANISASI",
+            "parent_unit_kerja": "SEKRETARIAT DAERAH",
             "api_unit_id": "730706"
         }
     ]
 }'
             ],
             [
-                'name' => 'Data PPPK',
+                'name' => 'PPPK (Penuh Waktu)',
                 'method' => 'GET',
                 'path' => '/pppk',
-                'desc' => 'Daftar akun email kategori PPPK Penuh Waktu.',
+                'desc' => 'Daftar akun pegawai kategori PPPK Penuh Waktu.',
                 'example' => '{
     "status": "success",
     "count": 467,
     "data": [
         {
-            "email": "username@sinjaikab.go.id",
-            "name": "NAMA LENGKAP PPPK",
+            "email": "nama@sinjaikab.go.id",
+            "name": "NAMA PEGAWAI PPPK",
             "nik": "7307...",
             "nip": "1992...",
             "jabatan": "AHLI PERTAMA - GURU KELAS",
             "bsre_status": "ISSUE",
+            "unit_kerja": "UPTD SD NEGERI 1 SINJAI",
+            "parent_unit_kerja": "DINAS PENDIDIKAN",
             "api_unit_id": "730722"
         }
     ]
 }'
             ],
             [
-                'name' => 'Data PPPK (Paruh Waktu)',
+                'name' => 'PPPK (Paruh Waktu)',
                 'method' => 'GET',
                 'path' => '/pppk-pw',
-                'desc' => 'Daftar akun email kategori PPPK Paruh Waktu.',
+                'desc' => 'Daftar akun pegawai kategori PPPK Paruh Waktu.',
                 'example' => '{
     "status": "success",
     "count": 3948,
     "data": [
         {
-            "email": "username@sinjaikab.go.id",
-            "name": "NAMA LENGKAP PPPK PARUH WAKTU",
+            "email": "nama@sinjaikab.go.id",
+            "name": "NAMA PEGAWAI PPPK PARUH WAKTU",
             "nik": "7307...",
             "nip": "1995...",
             "jabatan": "TENAGA ADMINISTRASI",
             "bsre_status": "ISSUE",
+            "unit_kerja": "UPTD PUSKESMAS MANIMPAHOI",
+            "parent_unit_kerja": "DINAS KESEHATAN",
             "api_unit_id": "730711"
         }
     ]
 }'
             ],
             [
-                'name' => 'Filter Per Unit Kerja',
+                'name' => 'Per Unit Kerja',
                 'method' => 'GET',
                 'path' => '/unit/{id}',
-                'desc' => 'Daftar akun email per unit kerja (termasuk unit turunan).',
+                'desc' => 'Daftar akun dalam unit kerja tertentu (termasuk unit turunan).',
                 'example' => '{
     "status": "success",
     "count": 42,
@@ -198,12 +214,14 @@
     "nama_unit_kerja": "DINAS KESEHATAN",
     "data": [
         {
-            "email": "username@sinjaikab.go.id",
+            "email": "nama@sinjaikab.go.id",
             "name": "NAMA PEGAWAI",
             "nik": "7307...",
             "nip": "1988...",
             "jabatan": "EPIDEMIOLOG KESEHATAN",
             "bsre_status": "ISSUE",
+            "unit_kerja": "DINAS KESEHATAN",
+            "parent_unit_kerja": null,
             "api_unit_id": "730722"
         }
     ]
@@ -368,3 +386,4 @@
     }
 </script>
 <?php $this->endSection() ?>
+

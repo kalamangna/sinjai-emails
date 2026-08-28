@@ -46,9 +46,9 @@ Aplikasi ini menerapkan standar estetika **"Slate Clean Government"**—antarmuk
 Penyediaan data internal yang aman untuk integrasi lintas sektoral di Pemkab Sinjai:
 - **Health Check API:** Titik akhir internal untuk memantau konektivitas layanan eksternal (cPanel, BSrE, Pegawai API) secara real-time.
 - **Endpoints:** `/api/v1/emails`, `/api/v1/pns`, `/api/v1/pppk`, `/api/v1/pppk-pw`, `/api/v1/unit/{id}`.
-- **Data Terintegrasi:** Sertifikasi `api_unit_id` (External ID) pada setiap record untuk sinkronisasi lintas platform yang presisi.
+- **Data Terintegrasi:** Menyertakan informasi hierarki `unit_kerja` (child/sub-unit), `parent_unit_kerja` (OPD induk), dan `api_unit_id` (External ID) untuk integrasi data yang presisi.
 - **Keamanan:** Mendukung *Bearer Token* dan *Session-based Access* (untuk pengguna terdaftar).
-- **Dokumentasi:** Halaman panduan interaktif di `/api-docs` lengkap dengan daftar ID Unit Kerja eksternal.
+- **Dokumentasi:** Halaman panduan interaktif di `/api-gateway` lengkap dengan daftar ID Unit Kerja eksternal.
 
 ### 📄 Sistem Ekspor
 - **Mesin PDF:** Pelaporan profesional menggunakan `Dompdf`, dioptimalkan untuk standar visual "Slate Clean".

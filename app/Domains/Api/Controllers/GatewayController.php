@@ -61,7 +61,7 @@ class GatewayController extends BaseController
      */
     public function listEmails()
     {
-        $builder = $this->emailModel->select('emails.email, emails.name, emails.nik, emails.nip, emails.jabatan, emails.bsre_status, COALESCE(u1.api_unit_id, u2.api_unit_id) as api_unit_id')
+        $builder = $this->emailModel->select('emails.email, emails.name, emails.nik, emails.nip, emails.jabatan, emails.bsre_status, u1.nama_unit_kerja as unit_kerja, u2.nama_unit_kerja as parent_unit_kerja, COALESCE(u1.api_unit_id, u2.api_unit_id) as api_unit_id')
             ->join('unit_kerja u1', 'u1.id = emails.unit_kerja_id', 'left')
             ->join('unit_kerja u2', 'u2.id = u1.parent_id', 'left');
 
@@ -87,7 +87,7 @@ class GatewayController extends BaseController
             return $this->respond(['status' => 'success', 'count' => 0, 'data' => []]);
         }
 
-        $builder = $this->emailModel->select('emails.email, emails.name, emails.nik, emails.nip, emails.jabatan, emails.bsre_status, COALESCE(u1.api_unit_id, u2.api_unit_id) as api_unit_id')
+        $builder = $this->emailModel->select('emails.email, emails.name, emails.nik, emails.nip, emails.jabatan, emails.bsre_status, u1.nama_unit_kerja as unit_kerja, u2.nama_unit_kerja as parent_unit_kerja, COALESCE(u1.api_unit_id, u2.api_unit_id) as api_unit_id')
             ->join('unit_kerja u1', 'u1.id = emails.unit_kerja_id', 'left')
             ->join('unit_kerja u2', 'u2.id = u1.parent_id', 'left')
             ->where('emails.status_asn_id', $status['id']);
@@ -114,7 +114,7 @@ class GatewayController extends BaseController
             return $this->respond(['status' => 'success', 'count' => 0, 'data' => []]);
         }
 
-        $builder = $this->emailModel->select('emails.email, emails.name, emails.nik, emails.nip, emails.jabatan, emails.bsre_status, COALESCE(u1.api_unit_id, u2.api_unit_id) as api_unit_id')
+        $builder = $this->emailModel->select('emails.email, emails.name, emails.nik, emails.nip, emails.jabatan, emails.bsre_status, u1.nama_unit_kerja as unit_kerja, u2.nama_unit_kerja as parent_unit_kerja, COALESCE(u1.api_unit_id, u2.api_unit_id) as api_unit_id')
             ->join('unit_kerja u1', 'u1.id = emails.unit_kerja_id', 'left')
             ->join('unit_kerja u2', 'u2.id = u1.parent_id', 'left')
             ->where('emails.status_asn_id', $status['id']);
@@ -141,7 +141,7 @@ class GatewayController extends BaseController
             return $this->respond(['status' => 'success', 'count' => 0, 'data' => []]);
         }
 
-        $builder = $this->emailModel->select('emails.email, emails.name, emails.nik, emails.nip, emails.jabatan, emails.bsre_status, COALESCE(u1.api_unit_id, u2.api_unit_id) as api_unit_id')
+        $builder = $this->emailModel->select('emails.email, emails.name, emails.nik, emails.nip, emails.jabatan, emails.bsre_status, u1.nama_unit_kerja as unit_kerja, u2.nama_unit_kerja as parent_unit_kerja, COALESCE(u1.api_unit_id, u2.api_unit_id) as api_unit_id')
             ->join('unit_kerja u1', 'u1.id = emails.unit_kerja_id', 'left')
             ->join('unit_kerja u2', 'u2.id = u1.parent_id', 'left')
             ->where('emails.status_asn_id', $pnsStatus['id']);
@@ -180,7 +180,7 @@ class GatewayController extends BaseController
         $targetIds = array_column($childIds, 'id');
         $targetIds[] = $unit['id']; // Include the main unit itself
 
-        $builder = $this->emailModel->select('emails.email, emails.name, emails.nik, emails.nip, emails.jabatan, emails.bsre_status, COALESCE(u1.api_unit_id, u2.api_unit_id) as api_unit_id')
+        $builder = $this->emailModel->select('emails.email, emails.name, emails.nik, emails.nip, emails.jabatan, emails.bsre_status, u1.nama_unit_kerja as unit_kerja, u2.nama_unit_kerja as parent_unit_kerja, COALESCE(u1.api_unit_id, u2.api_unit_id) as api_unit_id')
             ->join('unit_kerja u1', 'u1.id = emails.unit_kerja_id', 'left')
             ->join('unit_kerja u2', 'u2.id = u1.parent_id', 'left')
             ->whereIn('emails.unit_kerja_id', $targetIds);
@@ -228,6 +228,12 @@ class GatewayController extends BaseController
                     ->where('u1.api_unit_id', $apiUnitId)
                     ->orWhere('u2.api_unit_id', $apiUnitId)
                     ->groupEnd();
+        }
+        if ($unitKerja = $request->getGet('unit_kerja')) {
+            $builder->like('u1.nama_unit_kerja', $unitKerja);
+        }
+        if ($parentUnitKerja = $request->getGet('parent_unit_kerja')) {
+            $builder->like('u2.nama_unit_kerja', $parentUnitKerja);
         }
 
         return $builder;
