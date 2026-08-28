@@ -190,7 +190,7 @@ class BsreController extends BaseController
             }
         }
 
-        return redirect()->to('email')->with('success', "Berhasil menyinkronkan status TTE untuk $successCount akun. Gagal: $failCount.");
+        return redirect()->to('email')->with('success', "Sinkronisasi TTE selesai ($successCount berhasil, $failCount gagal).");
     }
 
     /**

@@ -69,7 +69,7 @@ class TrashController extends BaseController
                 log_message('error', 'Failed to send Telegram notification for restore: ' . $te->getMessage());
             }
 
-            return redirect()->to('/email/trash')->with('success', 'Akun berhasil dipulihkan dan login cPanel telah di-unsuspend.');
+            return redirect()->to('/email/trash')->with('success', 'Akun berhasil dipulihkan.');
         } catch (\Throwable $e) {
             return redirect()->to('/email/trash')->with('error', 'Gagal mempulihkan akun: ' . $e->getMessage());
         }

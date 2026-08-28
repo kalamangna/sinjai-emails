@@ -96,7 +96,11 @@ class EmailController extends BaseController
 
     public function create()
     {
-        $data['unit_kerja_options'] = $this->unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->findAll();
+        $data['unit_kerja_options'] = $this->unitKerjaModel
+            ->select('unit_kerja.*, parent.nama_unit_kerja as parent_name')
+            ->join('unit_kerja as parent', 'parent.id = unit_kerja.parent_id', 'left')
+            ->orderBy('unit_kerja.nama_unit_kerja', 'ASC')
+            ->findAll();
         $data['status_asn_options'] = $this->statusAsnModel->orderBy('nama_status_asn', 'ASC')->findAll();
         $data['title'] = 'Buat Akun Tunggal';
         return view('email/create', $data);
@@ -106,7 +110,11 @@ class EmailController extends BaseController
     {
         try {
             $data = $this->emailService->getEmailDetail($username);
-            $data['unit_kerja_options'] = $this->unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->findAll();
+            $data['unit_kerja_options'] = $this->unitKerjaModel
+                ->select('unit_kerja.*, parent.nama_unit_kerja as parent_name')
+                ->join('unit_kerja as parent', 'parent.id = unit_kerja.parent_id', 'left')
+                ->orderBy('unit_kerja.nama_unit_kerja', 'ASC')
+                ->findAll();
             $data['status_asn_options'] = $this->statusAsnModel->orderBy('nama_status_asn', 'ASC')->findAll();
             $data['eselon_options'] = $this->eselonModel->orderBy('nama_eselon', 'ASC')->findAll();
             $data['title'] = 'Edit Profil';
@@ -182,7 +190,7 @@ class EmailController extends BaseController
                 log_message('error', 'Failed to send Telegram notification for retirement: ' . $te->getMessage());
             }
 
-            return redirect()->to('email')->with('success', 'Akun telah berhasil ditangguhkan di cPanel dan dipindahkan ke Tempat Sampah.');
+            return redirect()->to('email')->with('success', 'Akun berhasil ditangguhkan.');
             
         } catch (\Throwable $e) {
             return redirect()->to('email/detail/' . $username)->with('error', 'Gagal memproses pensiun: ' . $e->getMessage());
@@ -361,11 +369,11 @@ class EmailController extends BaseController
                 log_message('error', 'Failed to send Telegram notification for deletion: ' . $te->getMessage());
             }
 
-            return redirect()->to('email')->with('success', 'Email account ' . $email['email'] . ' has been deleted successfully.');
+            return redirect()->to('email')->with('success', 'Akun berhasil dihapus permanen.');
         } catch (\Throwable $e) {
             log_message('error', 'Failed to delete email: ' . $e->getMessage());
             $this->emailModel->delete($id, true); // True to purge from soft deletes
-            return redirect()->to('email')->with('error', 'Failed to delete email account from cPanel, but removed from local list.');
+            return redirect()->to('email')->with('error', 'Gagal menghapus dari cPanel, namun berhasil dihapus dari database.');
         }
     }
 
@@ -383,7 +391,7 @@ class EmailController extends BaseController
         try {
             $this->emailService->swapAccountData($email1, $email2);
             log_audit('SWAP_DATA', 'emails', null, "Tukar data profil antara $email1 dan $email2");
-            return redirect()->to('email')->with('success', "Berhasil menukar data profil antara akun $email1 dan $email2.");
+            return redirect()->to('email')->with('success', 'Data profil akun berhasil ditukar.');
         } catch (\Throwable $e) {
             return redirect()->back()->with('error', $e->getMessage())->withInput();
         }

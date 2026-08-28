@@ -11,29 +11,34 @@
 
     <!-- Informasi Otentikasi -->
     <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
-        <div class="px-6 py-4 border-b border-slate-100 bg-slate-50">
+        <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
             <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Otentikasi & Akses</h3>
+            <span class="text-[10px] font-bold text-slate-500 font-mono">Bearer Token</span>
         </div>
         <div class="p-6">
-            <p class="text-xs text-slate-600 mb-4">Anda dapat mengakses API ini melalui dua cara:</p>
-            
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-2">
-                    <span class="text-slate-800 uppercase tracking-widest text-[9px] font-black block">Metode 1: Akses Langsung (Browser)</span>
-                    <p class="text-[10px] text-slate-600 leading-relaxed">Selama Anda <b>Login sebagai Admin</b> di browser ini, Anda dapat langsung mengklik link endpoint di bawah untuk melihat data JSON.</p>
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-1">
+                    <span class="text-slate-700 text-[10px] font-bold uppercase tracking-wider block">Akses Browser</span>
+                    <p class="text-xs text-slate-600">Sesi login admin aktif dapat langsung membuka endpoint di browser.</p>
                 </div>
 
-                <div class="bg-slate-900 rounded-lg p-4 font-mono text-[11px] text-slate-300 space-y-2 border border-slate-800">
-                    <span class="text-slate-500 uppercase tracking-widest text-[9px] font-bold block border-b border-slate-800 pb-2 mb-2">Metode 2: Integrasi Aplikasi (Header)</span>
-                    <div><span class="text-emerald-400">Authorization:</span> Bearer [LIHAT_DI_ENV]</div>
-                    <div><span class="text-emerald-400">Accept:</span> application/json</div>
-                </div>
-            </div>
-            
-            <div class="mt-4 p-4 bg-amber-50 border border-amber-100 rounded-lg flex gap-3">
-                <i class="fas fa-shield-alt text-amber-500 mt-0.5"></i>
-                <div class="text-[10px] text-amber-800 leading-relaxed uppercase font-bold">
-                    Jaga kerahasiaan token ini. Jangan membagikan token di dalam kode client-side (JavaScript) yang dapat dibaca publik.
+                <div class="bg-slate-900 rounded-xl p-4 font-mono text-xs text-slate-300 space-y-2 border border-slate-800">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                        <span class="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Header Request</span>
+                        <button type="button" onclick="copyToken('<?= esc($token) ?>', this)" class="text-slate-400 hover:text-emerald-400 transition-colors text-[10px] flex items-center gap-1 font-sans font-bold uppercase tracking-wider focus:outline-none" title="Salin Header">
+                            <i class="fas fa-copy"></i> <span>Salin Header</span>
+                        </button>
+                    </div>
+                    <div class="flex items-center justify-between gap-2 pt-0.5">
+                        <div class="truncate text-[11px]">
+                            <span class="text-emerald-400">Authorization:</span> Bearer 
+                            <span id="token-masked" class="text-slate-500 tracking-widest select-none">••••••••••••••••</span>
+                            <span id="token-revealed" class="text-white hidden select-all"><?= esc($token) ?></span>
+                        </div>
+                        <button type="button" onclick="toggleTokenReveal()" class="text-slate-400 hover:text-white transition-colors p-1 focus:outline-none shrink-0" title="Lihat/Sembunyikan">
+                            <i id="token-eye-icon" class="fas fa-eye text-xs"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -42,11 +47,10 @@
     <!-- Parameter Query -->
     <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
         <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
-            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Parameter Query (Filter)</h3>
+            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Parameter Filter</h3>
             <span class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Opsional</span>
         </div>
-        <div class="p-6">
-            <p class="text-xs text-slate-600 mb-4">Anda dapat menambahkan parameter berikut pada URL untuk menyaring hasil pencarian:</p>
+        <div class="p-6 space-y-4">
             <div class="overflow-x-auto">
                 <table class="w-full text-[11px] text-left border-collapse">
                     <thead>
@@ -57,37 +61,37 @@
                     </thead>
                     <tbody class="divide-y divide-slate-100">
                         <tr>
-                            <td class="px-4 py-3 font-mono text-emerald-600 font-bold">name</td>
-                            <td class="px-4 py-3 text-slate-600">Filter berdasarkan nama pegawai (Partial match).</td>
+                            <td class="px-4 py-2.5 font-mono text-emerald-600 font-bold">name</td>
+                            <td class="px-4 py-2.5 text-slate-600">Nama pegawai (parsial)</td>
                         </tr>
                         <tr>
-                            <td class="px-4 py-3 font-mono text-emerald-600 font-bold">email</td>
-                            <td class="px-4 py-3 text-slate-600">Filter berdasarkan alamat email.</td>
+                            <td class="px-4 py-2.5 font-mono text-emerald-600 font-bold">email</td>
+                            <td class="px-4 py-2.5 text-slate-600">Alamat email</td>
                         </tr>
                         <tr>
-                            <td class="px-4 py-3 font-mono text-emerald-600 font-bold">nip</td>
-                            <td class="px-4 py-3 text-slate-600">Filter berdasarkan NIP (Exact match).</td>
+                            <td class="px-4 py-2.5 font-mono text-emerald-600 font-bold">nip</td>
+                            <td class="px-4 py-2.5 text-slate-600">NIP (eksak)</td>
                         </tr>
                         <tr>
-                            <td class="px-4 py-3 font-mono text-emerald-600 font-bold">nik</td>
-                            <td class="px-4 py-3 text-slate-600">Filter berdasarkan NIK (Exact match).</td>
+                            <td class="px-4 py-2.5 font-mono text-emerald-600 font-bold">nik</td>
+                            <td class="px-4 py-2.5 text-slate-600">NIK (eksak)</td>
                         </tr>
                         <tr>
-                            <td class="px-4 py-3 font-mono text-emerald-600 font-bold">jabatan</td>
-                            <td class="px-4 py-3 text-slate-600">Filter berdasarkan nama jabatan.</td>
+                            <td class="px-4 py-2.5 font-mono text-emerald-600 font-bold">jabatan</td>
+                            <td class="px-4 py-2.5 text-slate-600">Nama jabatan</td>
                         </tr>
                         <tr>
-                            <td class="px-4 py-3 font-mono text-emerald-600 font-bold">bsre_status</td>
-                            <td class="px-4 py-3 text-slate-600">Filter status TTE (ISSUE, EXPIRED, dll).</td>
+                            <td class="px-4 py-2.5 font-mono text-emerald-600 font-bold">bsre_status</td>
+                            <td class="px-4 py-2.5 text-slate-600">Status TTE (ISSUE, EXPIRED, dll.)</td>
                         </tr>
                         <tr>
-                            <td class="px-4 py-3 font-mono text-emerald-600 font-bold">api_unit_id</td>
-                            <td class="px-4 py-3 text-slate-600">Filter berdasarkan ID Unit Kerja API Pusat.</td>
+                            <td class="px-4 py-2.5 font-mono text-emerald-600 font-bold">api_unit_id</td>
+                            <td class="px-4 py-2.5 text-slate-600">ID Unit Kerja API Pusat</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-            <div class="mt-4 p-3 bg-slate-50 border border-slate-100 rounded text-[10px] font-mono text-slate-500">
+            <div class="p-3 bg-slate-50 border border-slate-100 rounded-lg text-[10px] font-mono text-slate-500 truncate">
                 <span class="font-bold text-slate-700">Contoh:</span> <?= $base_url ?>/emails?name=SUDARMIN&bsre_status=ISSUE
             </div>
         </div>
@@ -101,33 +105,110 @@
                 'name' => 'Daftar Seluruh Email',
                 'method' => 'GET',
                 'path' => '/emails',
-                'desc' => 'Mengambil daftar seluruh akun email aktif beserta informasi profil dasar dan status TTE.',
+                'desc' => 'Seluruh akun email aktif beserta profil dan status TTE.',
+                'example' => '{
+    "status": "success",
+    "count": 8052,
+    "data": [
+        {
+            "email": "username@sinjaikab.go.id",
+            "name": "NAMA LENGKAP",
+            "nik": "7307...",
+            "nip": "1990...",
+            "jabatan": "JABATAN PEGAWAI",
+            "bsre_status": "ISSUE",
+            "api_unit_id": "730701"
+        }
+    ]
+}'
             ],
             [
                 'name' => 'Data Pegawai PNS',
                 'method' => 'GET',
                 'path' => '/pns',
-                'desc' => 'Mengambil daftar akun email yang berstatus sebagai Pegawai Negeri Sipil (PNS).',
+                'desc' => 'Daftar akun email berstatus Pegawai Negeri Sipil (PNS).',
+                'example' => '{
+    "status": "success",
+    "count": 1163,
+    "data": [
+        {
+            "email": "username@sinjaikab.go.id",
+            "name": "NAMA LENGKAP PNS",
+            "nik": "7307...",
+            "nip": "1985...",
+            "jabatan": "JABATAN PNS",
+            "bsre_status": "ISSUE",
+            "api_unit_id": "730706"
+        }
+    ]
+}'
             ],
             [
                 'name' => 'Data PPPK',
                 'method' => 'GET',
                 'path' => '/pppk',
-                'desc' => 'Mengambil daftar akun email untuk kategori PPPK Penuh Waktu.',
+                'desc' => 'Daftar akun email kategori PPPK Penuh Waktu.',
+                'example' => '{
+    "status": "success",
+    "count": 467,
+    "data": [
+        {
+            "email": "username@sinjaikab.go.id",
+            "name": "NAMA LENGKAP PPPK",
+            "nik": "7307...",
+            "nip": "1992...",
+            "jabatan": "AHLI PERTAMA - GURU KELAS",
+            "bsre_status": "ISSUE",
+            "api_unit_id": "730722"
+        }
+    ]
+}'
             ],
             [
                 'name' => 'Data PPPK (Paruh Waktu)',
                 'method' => 'GET',
                 'path' => '/pppk-pw',
-                'desc' => 'Mengambil daftar akun email untuk kategori PPPK Paruh Waktu.',
+                'desc' => 'Daftar akun email kategori PPPK Paruh Waktu.',
+                'example' => '{
+    "status": "success",
+    "count": 3948,
+    "data": [
+        {
+            "email": "username@sinjaikab.go.id",
+            "name": "NAMA LENGKAP PPPK PARUH WAKTU",
+            "nik": "7307...",
+            "nip": "1995...",
+            "jabatan": "TENAGA ADMINISTRASI",
+            "bsre_status": "ISSUE",
+            "api_unit_id": "730711"
+        }
+    ]
+}'
             ],
             [
                 'name' => 'Filter Per Unit Kerja',
                 'method' => 'GET',
                 'path' => '/unit/{id}',
-                'desc' => 'Mengambil daftar email yang terdaftar pada unit kerja tertentu berdasarkan ID Unit (Lihat daftar ID di bawah).',
+                'desc' => 'Daftar akun email per unit kerja (termasuk unit turunan).',
+                'example' => '{
+    "status": "success",
+    "count": 42,
+    "unit_id": "339",
+    "api_unit_id": "730722",
+    "nama_unit_kerja": "DINAS KESEHATAN",
+    "data": [
+        {
+            "email": "username@sinjaikab.go.id",
+            "name": "NAMA PEGAWAI",
+            "nik": "7307...",
+            "nip": "1988...",
+            "jabatan": "EPIDEMIOLOG KESEHATAN",
+            "bsre_status": "ISSUE",
+            "api_unit_id": "730722"
+        }
+    ]
+}'
             ],
-
         ];
 
         foreach ($endpoints as $api): ?>
@@ -144,27 +225,14 @@
                         <div class="flex-1 bg-slate-50 border border-slate-200 rounded px-3 py-1.5 font-mono text-[11px] text-slate-700 truncate">
                             <?= $base_url . $api['path'] ?>
                         </div>
-                        <button onclick="copyToClipboard('<?= $base_url . $api['path'] ?>')" class="p-1.5 text-slate-400 hover:text-slate-800 transition-colors" title="Salin URL">
+                        <button onclick="copyToClipboard('<?= $base_url . $api['path'] ?>', this)" class="p-1.5 text-slate-400 hover:text-slate-800 transition-colors focus:outline-none" title="Salin URL">
                             <i class="fas fa-copy"></i>
                         </button>
                     </div>
 
                     <div class="border-t border-slate-50 pt-4">
                         <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-2 text-center italic">Example JSON Response</p>
-                        <pre class="bg-slate-50 rounded-lg p-4 font-mono text-[10px] text-slate-600 border border-slate-100 overflow-x-auto custom-scrollbar">{
-    "status": "success",
-    "count": 1,
-    "data": [
-        {
-            "email": "username@sinjaikab.go.id",
-            "name": "NAMA LENGKAP",
-            "nik": "730...",
-            "nip": "199...",
-            "jabatan": "JABATAN PEGAWAI",
-            "bsre_status": "ISSUE"
-        }
-    ]
-}</pre>
+                        <pre class="bg-slate-50 rounded-lg p-4 font-mono text-[10px] text-slate-600 border border-slate-100 overflow-x-auto custom-scrollbar"><?= esc($api['example']) ?></pre>
                     </div>
                 </div>
             </div>
@@ -234,10 +302,47 @@
 
 <?php $this->section('scripts') ?>
 <script>
-    function copyToClipboard(text) {
-        navigator.clipboard.writeText(text).then(() => {
-            alert('URL berhasil disalin ke clipboard!');
+    function copyToClipboard(text, btn) {
+        navigator.clipboard.writeText(text).then(function() {
+            if (btn) {
+                const originalIcon = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-check text-emerald-600"></i>';
+                setTimeout(() => {
+                    btn.innerHTML = originalIcon;
+                }, 2000);
+            }
         });
+    }
+
+    function copyToken(token, btn) {
+        const fullHeader = `Bearer ${token}`;
+        navigator.clipboard.writeText(fullHeader).then(function() {
+            if (btn) {
+                const originalContent = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-check text-emerald-400 text-[10px]"></i> <span class="text-[9px] uppercase font-bold text-emerald-400">Tersalin</span>';
+                setTimeout(() => {
+                    btn.innerHTML = originalContent;
+                }, 2000);
+            }
+        });
+    }
+
+    function toggleTokenReveal() {
+        const masked = document.getElementById('token-masked');
+        const revealed = document.getElementById('token-revealed');
+        const icon = document.getElementById('token-eye-icon');
+        if (masked && revealed && icon) {
+            const isHidden = revealed.classList.contains('hidden');
+            if (isHidden) {
+                masked.classList.add('hidden');
+                revealed.classList.remove('hidden');
+                icon.className = 'fas fa-eye-slash text-xs text-emerald-400';
+            } else {
+                masked.classList.remove('hidden');
+                revealed.classList.add('hidden');
+                icon.className = 'fas fa-eye text-xs';
+            }
+        }
     }
 
     const searchInput = document.getElementById('unitSearch');

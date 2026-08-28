@@ -71,7 +71,7 @@
                         <div>
                             <label for="status_asn" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Status ASN</label>
                             <select name="status_asn" id="status_asn" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 appearance-none cursor-pointer transition-all">
-                                <option value="">Pilih Status...</option>
+                                <option value="" <?= empty($email['status_asn_id']) ? 'selected' : '' ?>>Non-ASN</option>
                                 <?php foreach ($status_asn_options as $option): ?>
                                     <option value="<?= esc($option['id']) ?>" <?= ($email['status_asn_id'] == $option['id']) ? 'selected' : '' ?>><?= esc($option['nama_status_asn']) ?></option>
                                 <?php endforeach; ?>
@@ -107,7 +107,15 @@
                             <select id="unit_kerja_id" name="unit_kerja_id" class="choices-search block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 appearance-none cursor-pointer transition-all">
                                 <option value="">Pilih Unit Kerja...</option>
                                 <?php foreach ($unit_kerja_options as $unit): ?>
-                                    <option value="<?= esc($unit['id']) ?>" <?= ($unit['id'] == $email['unit_kerja_id']) ? 'selected' : '' ?>><?= esc($unit['nama_unit_kerja']) ?></option>
+                                    <?php 
+                                    $unitLabel = esc($unit['nama_unit_kerja']);
+                                    $isDesa = stripos($unit['nama_unit_kerja'], 'DESA ') === 0 || stripos($unit['nama_unit_kerja'], 'KELURAHAN ') === 0;
+                                    if ($isDesa && !empty($unit['parent_name'])) {
+                                        $parentLabel = trim(str_ireplace(['KANTOR KECAMATAN ', 'KANTOR '], '', $unit['parent_name']));
+                                        $unitLabel .= ' (' . esc($parentLabel) . ')';
+                                    }
+                                    ?>
+                                    <option value="<?= esc($unit['id']) ?>" <?= ($unit['id'] == $email['unit_kerja_id']) ? 'selected' : '' ?>><?= $unitLabel ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>

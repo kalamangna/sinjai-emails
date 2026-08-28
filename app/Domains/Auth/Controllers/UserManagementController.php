@@ -54,7 +54,7 @@ class UserManagementController extends BaseController
             'role'       => $this->request->getPost('role')
         ]);
 
-        return redirect()->to('/auth/users')->with('success', 'User berhasil ditambahkan. User kini dapat login menggunakan kredensial eksternal.');
+        return redirect()->to('/auth/users')->with('success', 'Pengguna berhasil ditambahkan.');
     }
 
     public function checkNip()
@@ -136,7 +136,7 @@ class UserManagementController extends BaseController
 
         $this->userModel->update($id, $data);
 
-        return redirect()->to('/auth/users')->with('success', 'User berhasil diperbarui.');
+        return redirect()->to('/auth/users')->with('success', 'Pengguna berhasil diperbarui.');
     }
 
     public function delete($id)
@@ -146,6 +146,6 @@ class UserManagementController extends BaseController
         }
 
         $this->userModel->delete($id);
-        return redirect()->to('/auth/users')->with('success', 'User berhasil dihapus.');
+        return redirect()->to('/auth/users')->with('success', 'Pengguna berhasil dihapus.');
     }
 }

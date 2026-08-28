@@ -29,6 +29,29 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **Penyederhanaan Label Dasbor**:
   - Memperbarui label pada card *Terakhir Sinkronisasi* di dasbor menjadi lebih ringkas dan to the point: **Kuota Email**, **Sertifikat TTE**, **Data Pegawai**, dan **Website Desa**.
 
+## Antarmuka, Pembuatan Akun & Standarisasi Data
+- **Pembuatan Akun Tunggal**:
+  - Mengarahkan (*redirect*) otomatis langsung ke halaman detail akun yang baru dibuat setelah proses pembuatan berhasil.
+  - Menjadikan kolom NIP dan Status ASN sebagai kolom opsional (dengan opsi default `Non-ASN`) untuk mengakomodasi pembuatan akun staf / perangkat desa non-ASN.
+  - Menyesuaikan logika pembuatan sandi awal otomatis agar tetap menghasilkan pola acak yang aman ketika NIP tidak diisi.
+- **Standardisasi Status ASN**:
+  - Menyeragamkan seluruh opsi dropdown Status ASN di seluruh aplikasi (`email/create.php`, `batch/create.php`, `email/edit_profile.php`, `email/unit_kerja_detail.php`) menjadi pilihan baku: `Non-ASN` (default), `PNS`, `PPPK`, dan `PPPK PARUH WAKTU`.
+  - Menampilkan badge `NON-ASN` secara konsisten pada halaman Detail Akun dan tabel Unit Kerja ketika data status ASN kosong.
+- **Penyempurnaan Halaman Pimpinan & Pimpinan Desa**:
+  - Menerapkan tombol reset filter yang tampil dinamis (hanya muncul saat kolom pencarian atau filter status TTE terisi) untuk menjaga kebersihan visual antarmuka.
+  - Merapikan tata letak grid filter agar konsisten di seluruh *viewport* (mobile, tablet, desktop) dengan penguncian tinggi elemen 40px (`h-[40px]`).
+  - Menstandarkan teks *placeholder* kotak pencarian menjadi `Cari...`.
+- **Pencarian Unit Kerja & Penanganan Desa Kembar**:
+  - Mengoptimalkan konfigurasi pencarian Choices.js dengan `ignoreLocation: true` dan limit 100 hasil agar pencarian kata kunci di posisi mana pun (seperti "kehutanan") langsung menampilkan pilihan yang relevan.
+  - Menambahkan data `DESA PATTONGKO` untuk Kecamatan Tellu Limpoe ke tabel `unit_kerja` dan menyertakan nama kecamatan khusus untuk unit kerja Desa/Kelurahan pada dropdown agar pilihan tidak tertukar.
+- **Penyempurnaan Dokumentasi API Gateway**:
+  - Menambahkan fitur intip (*reveal*) dan tombol salin instan untuk Bearer Header Authorization.
+  - Mengganti notifikasi salin URL berbasis browser alert dengan umpan balik indikator centang (*smooth inline feedback*).
+  - Menyederhanakan seluruh teks dan *copywriting* halaman dokumentasi agar padat dan *to the point*.
+  - Melengkapi contoh respon JSON dengan properti `api_unit_id` sesuai output aktual API.
+- **Audit Pesan Sukses Seluruh Sistem**:
+  - Menstandarkan dan menyederhanakan seluruh pesan flash sukses di berbagai Controller agar lebih singkat, profesional, dan kontekstual.
+
 ---
 
 # [6 Agustus 2026]

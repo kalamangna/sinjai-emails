@@ -2380,6 +2380,14 @@ input:checked + .toggle-bg {
   height: 100vh;
 }
 
+.\!h-\[40px\] {
+  height: 40px !important;
+}
+
+.h-\[40px\] {
+  height: 40px;
+}
+
 .max-h-40 {
   max-height: 10rem;
 }
@@ -2546,6 +2554,10 @@ input:checked + .toggle-bg {
 
 .w-screen {
   width: 100vw;
+}
+
+.\!w-\[40px\] {
+  width: 40px !important;
 }
 
 .min-w-0 {
@@ -2848,6 +2860,18 @@ input:checked + .toggle-bg {
 .touch-pinch-zoom {
   --tw-pinch-zoom: pinch-zoom;
   touch-action: var(--tw-pan-x) var(--tw-pan-y) var(--tw-pinch-zoom);
+}
+
+.select-none {
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+}
+
+.select-all {
+  -webkit-user-select: all;
+     -moz-user-select: all;
+          user-select: all;
 }
 
 .resize-none {
@@ -4522,6 +4546,14 @@ input:checked + .toggle-bg {
   padding-top: 1.5rem;
 }
 
+.pl-3\.5 {
+  padding-left: 0.875rem;
+}
+
+.pt-0\.5 {
+  padding-top: 0.125rem;
+}
+
 .text-left {
   text-align: left;
 }
@@ -4580,6 +4612,10 @@ input:checked + .toggle-bg {
 
 .font-mono {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+.font-sans {
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
 .text-2xl {
@@ -5799,6 +5835,11 @@ input:checked + .toggle-bg {
   color: rgb(255 255 255 / var(--tw-text-opacity, 1));
 }
 
+.hover\:text-emerald-400:hover {
+  --tw-text-opacity: 1;
+  color: rgb(52 211 153 / var(--tw-text-opacity, 1));
+}
+
 .hover\:underline:hover {
   text-decoration-line: underline;
 }
@@ -6207,6 +6248,10 @@ input:checked + .toggle-bg {
     width: 50%;
   }
 
+  .md\:w-64 {
+    width: 16rem;
+  }
+
   .md\:rotate-0 {
     --tw-rotate: 0deg;
     transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
@@ -6270,6 +6315,10 @@ input:checked + .toggle-bg {
 
   .lg\:col-span-8 {
     grid-column: span 8 / span 8;
+  }
+
+  .lg\:col-span-9 {
+    grid-column: span 9 / span 9;
   }
 
   .lg\:ml-64 {

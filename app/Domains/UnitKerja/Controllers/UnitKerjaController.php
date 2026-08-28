@@ -103,7 +103,7 @@ class UnitKerjaController extends BaseController
             $this->unitKerjaService->createUnitKerjaBatchFromText($names, $parentId);
         }
 
-        return redirect()->to('unit_kerja/manage')->with('success', 'Batch pembuatan Unit Kerja selesai.');
+        return redirect()->to('unit_kerja/manage')->with('success', 'Unit Kerja massal berhasil dibuat.');
     }
 
     public function processBatchCreate()

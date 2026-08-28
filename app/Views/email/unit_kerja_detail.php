@@ -270,7 +270,7 @@
                                 <td class="px-6 py-4">
                                     <div class="flex flex-col gap-1" id="pegawai-container-<?= esc($email['user']) ?>" data-nip="<?= esc($email['nip']) ?>">
                                         <span class="text-xs font-medium text-slate-700 uppercase tracking-tight jabatan-text"><?= esc($email['jabatan']) ?: '-' ?></span>
-                                        <span class="text-[9px] font-bold text-slate-700 uppercase tracking-widest"><?= esc($email['status_asn']) ?></span>
+                                        <span class="text-[9px] font-bold text-slate-700 uppercase tracking-widest"><?= !empty($email['status_asn']) ? esc($email['status_asn']) : 'NON-ASN' ?></span>
                                     </div>
                                 </td>
                                 <?php if ($showUnitKerjaColumn ?? false): ?>

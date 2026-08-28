@@ -26,19 +26,19 @@
                 </div>
 
                 <div>
-                    <label for="nip_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">NIP</label>
-                    <input type="text" id="nip_input" name="nip" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 font-mono transition-all placeholder-slate-400" placeholder="198801082022031001" required maxlength="18">
+                    <label for="nip_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">NIP <span class="text-slate-500 font-normal">(Opsional)</span></label>
+                    <input type="text" id="nip_input" name="nip" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 font-mono transition-all placeholder-slate-400" placeholder="198801082022031001" maxlength="18">
                 </div>
 
                 <div>
-                    <label for="nik_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">NIK <span class="text-slate-700 font-normal">(Opsional)</span></label>
+                    <label for="nik_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">NIK <span class="text-slate-500 font-normal">(Opsional)</span></label>
                     <input type="text" id="nik_input" name="nik" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 font-mono transition-all placeholder-slate-400" placeholder="730701XXXXXXXXXX" maxlength="16">
                 </div>
 
                 <div>
-                    <label for="status_asn_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Status ASN</label>
-                    <select id="status_asn_input" name="jenisFormasi" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 appearance-none cursor-pointer transition-all" required>
-                        <option value="" disabled selected>Pilih Status...</option>
+                    <label for="status_asn_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Status ASN <span class="text-slate-500 font-normal">(Opsional)</span></label>
+                    <select id="status_asn_input" name="jenisFormasi" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 appearance-none cursor-pointer transition-all">
+                        <option value="" selected>Non-ASN</option>
                         <?php foreach ($status_asn_options as $option): ?>
                             <option value="<?= esc($option['id']) ?>"><?= esc($option['nama_status_asn']) ?></option>
                         <?php endforeach; ?>
@@ -50,7 +50,15 @@
                     <select id="unit_kerja_input" name="unitKerja" class="choices-search block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 appearance-none cursor-pointer transition-all" required>
                         <option value="" disabled selected>Pilih Unit Kerja...</option>
                         <?php foreach ($unit_kerja_options as $unit): ?>
-                            <option value="<?= esc($unit['nama_unit_kerja']) ?>"><?= esc($unit['nama_unit_kerja']) ?></option>
+                            <?php 
+                            $unitLabel = esc($unit['nama_unit_kerja']);
+                            $isDesa = stripos($unit['nama_unit_kerja'], 'DESA ') === 0 || stripos($unit['nama_unit_kerja'], 'KELURAHAN ') === 0;
+                            if ($isDesa && !empty($unit['parent_name'])) {
+                                $parentLabel = trim(str_ireplace(['KANTOR KECAMATAN ', 'KANTOR '], '', $unit['parent_name']));
+                                $unitLabel .= ' (' . esc($parentLabel) . ')';
+                            }
+                            ?>
+                            <option value="<?= esc($unit['nama_unit_kerja']) ?>"><?= $unitLabel ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -137,8 +145,8 @@
         const statusAsn = statusAsnSelect.value;
         const unitKerja = unitKerjaSelect.value;
 
-        if (!name || !nip || !statusAsn || !unitKerja) {
-            alert('Silakan lengkapi data wajib (Nama, NIP, Status ASN, dan Unit Kerja).');
+        if (!name || !unitKerja) {
+            alert('Silakan lengkapi data wajib (Nama Lengkap dan Unit Kerja).');
             return;
         }
 
@@ -156,7 +164,9 @@
         const nikCheckResult = nik ? await checkNikOnServer(nik) : {
             exists: false
         };
-        const nipCheckResult = await checkNipOnServer(nip);
+        const nipCheckResult = nip ? await checkNipOnServer(nip) : {
+            exists: false
+        };
 
         // Email Fallback Loop
         let currentUsername = originalUsername;
@@ -343,12 +353,13 @@
 
             if (response.ok && result.success) {
                 user.status = "created";
-                logResult(user.email, 'SUCCESS', 'Akun berhasil dibuat.');
+                logResult(user.email, 'SUCCESS', 'Akun berhasil dibuat. Mengalihkan ke halaman detail...');
                 renderResults(userBatch);
+                const createdEmail = result.email || user.email;
+                const username = createdEmail.split('@')[0];
                 setTimeout(() => {
-                    alert('Akun berhasil dibuat!');
-                    window.location.href = '<?= site_url('email') ?>';
-                }, 1000);
+                    window.location.href = '<?= site_url('email/detail/') ?>' + encodeURIComponent(username);
+                }, 800);
             } else {
                 const errorMsg = result.message || 'Gagal membuat akun.';
                 user.status = "failed";

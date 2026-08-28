@@ -275,7 +275,17 @@
                 searchEnabled: true,
                 itemSelectText: '',
                 placeholder: true,
-                shouldSort: false
+                placeholderValue: 'Pilih Unit Kerja...',
+                searchPlaceholderValue: 'Cari Unit Kerja...',
+                shouldSort: false,
+                searchFields: ['label', 'value'],
+                searchResultLimit: 100,
+                fuseOptions: {
+                    threshold: 0.2,
+                    distance: 1000,
+                    ignoreLocation: true,
+                    minMatchCharLength: 1
+                }
             });
         }
         if (document.getElementById('category').value) updateServicesDropdown();

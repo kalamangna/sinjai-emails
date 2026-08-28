@@ -628,6 +628,14 @@
                         placeholder: true,
                         searchPlaceholderValue: searchPlaceholder,
                         shouldSort: false,
+                        searchFields: ['label', 'value'],
+                        searchResultLimit: 100,
+                        fuseOptions: {
+                            threshold: 0.2,
+                            distance: 1000,
+                            ignoreLocation: true,
+                            minMatchCharLength: 1
+                        },
                         loadingText: 'Memuat...',
                         noResultsText: 'Tidak ditemukan',
                         noChoicesText: 'Tidak ada pilihan',

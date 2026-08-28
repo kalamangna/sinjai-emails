@@ -62,7 +62,7 @@
                 <div>
                     <label for="status_asn_input" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Status ASN</label>
                     <select id="status_asn_input" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm appearance-none cursor-pointer transition-all">
-                        <option value="">Tidak Ada</option>
+                        <option value="">Non-ASN</option>
                         <?php foreach ($status_asn_options as $option): ?>
                             <option value="<?= esc($option['id']) ?>"><?= esc($option['nama_status_asn']) ?></option>
                         <?php endforeach; ?>
