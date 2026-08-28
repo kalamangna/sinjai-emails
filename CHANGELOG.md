@@ -5,6 +5,22 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [28 Agustus 2026]
+
+## Notifikasi Telegram & Penyelarasan Background Sync
+- **Konsolidasi Notifikasi Selesai & Laporan**:
+  - Mengubah alur pengiriman notifikasi `SINKRONISASI SELESAI` agar dieksekusi oleh queue worker (`sync_summary`) setelah seluruh antrean proses latar belakang (*background queue*) benar-benar tuntas diproses, disertai pencatatan durasi proses nyata.
+  - Menggabungkan laporan temuan/peringatan (TTE expired, kuota >90%, domain website desa <30 hari) ke dalam satu pesan ringkasan penutup komprehensif.
+  - Menerapkan prinsip *alert-only* pada kondisi aman (menghilangkan baris status aman yang redundan agar pesan tetap ringkas).
+- **Standardisasi Format Pesan (Header — Content — Footer)**:
+  - **Header**: Judul ringkas dan huruf kapital tebal dengan emoji semantik status.
+  - **Content**: Struktur informasi profil akun terstandar 4 baris (`👤 Nama`, `📧 Email`, `💼 Jabatan`, `🏛️ Unit Kerja`) dan metrik kunci yang padat tanpa spasi kosong berlebih.
+  - **Footer**: Timestamp otomatis terstandar dengan zona waktu WITA (`🕒 [Tanggal, Jam] WITA`).
+- **Penyelarasan Sinkronisasi Bulanan**:
+  - Menampilkan jumlah ASN yang berhasil diselaraskan datanya pada notifikasi penutup sinkronisasi bulanan (`👥 Data Pegawai: [Jumlah] ASN`).
+
+---
+
 # [6 Agustus 2026]
 
 ## Antarmuka & Standardisasi Data

@@ -5,6 +5,8 @@ namespace App\Commands;
 use CodeIgniter\CLI\BaseCommand;
 use CodeIgniter\CLI\CLI;
 use App\Shared\Models\JobModel;
+use App\Shared\Libraries\TelegramLibrary;
+use App\Shared\Libraries\TelegramMessageBuilder;
 
 class QueueWorker extends BaseCommand
 {
@@ -79,6 +81,9 @@ class QueueWorker extends BaseCommand
                     // Panggil logika terpusat dari AlertService (jangan kirim pesan 'aman' jika kosong agar tidak spam)
                     $alertService = new \App\Shared\Services\AlertService();
                     $alertService->checkTteExpiredAlerts(false);
+                    break;
+                case 'sync_summary':
+                    $this->sendSyncSummaryNotification($payload['data'] ?? []);
                     break;
                 case 'export_pdf':
                 case 'exportPdf':
@@ -172,5 +177,56 @@ class QueueWorker extends BaseCommand
                 $jobModel->delete($job['id']);
             }
         }
+    }
+
+    private function sendSyncSummaryNotification(array $data)
+    {
+        $mode = $data['mode'] ?? 'PENUH';
+        $telegram = new TelegramLibrary();
+        $builder = new TelegramMessageBuilder();
+        $alertService = new \App\Shared\Services\AlertService();
+
+        $builder->setTitle("SINKRONISASI $mode SELESAI", '✅')
+                ->addDivider();
+
+        if (!empty($data['started_at'])) {
+            $startTime = strtotime($data['started_at']);
+            $duration = time() - $startTime;
+            if ($duration < 60) {
+                $durationStr = $duration . " detik";
+            } else {
+                $minutes = floor($duration / 60);
+                $seconds = $duration % 60;
+                $durationStr = "{$minutes} mnt {$seconds} dtk";
+            }
+            $builder->addKeyValue('Durasi', $durationStr, '⏱️');
+        }
+
+        $stats = $data['stats'] ?? [];
+
+        // 1. TTE Section (Harian / Penuh)
+        if (isset($stats['tte']['executed'])) {
+            $alertService->appendTteReport($builder);
+        }
+
+        // 2. cPanel / Quota Section (Mingguan / Penuh)
+        if (isset($stats['cpanel']['executed'])) {
+            $alertService->appendQuotaReport($builder);
+        }
+
+        // 3. Pegawai Section (Bulanan / Penuh)
+        if (isset($stats['pegawai']['executed'])) {
+            $pegawaiTotal = $stats['pegawai']['success'] ?? 0;
+            if ($pegawaiTotal > 0) {
+                $builder->addKeyValue('Data Pegawai', number_format($pegawaiTotal, 0, ',', '.') . ' ASN', '👥');
+            }
+        }
+
+        // 4. Website Section (Bulanan / Penuh)
+        if (isset($stats['website']['executed'])) {
+            $alertService->appendWebExpirationReport($builder);
+        }
+
+        $telegram->sendMessage($builder->build());
     }
 }

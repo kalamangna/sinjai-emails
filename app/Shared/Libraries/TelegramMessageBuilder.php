@@ -7,115 +7,168 @@ namespace App\Shared\Libraries;
  */
 class TelegramMessageBuilder
 {
-    protected $parts = [];
+    protected $header = null;
+    protected $bodyBlocks = [];
+    protected $currentBlock = [];
+    protected $customFooter = null;
 
+    /**
+     * Set Header (Judul & Emoji Konteks)
+     */
     public function setTitle(string $title, string $emoji = '🔔')
     {
-        $this->parts[] = [
-            'type' => 'title',
-            'content' => "$emoji <b>" . mb_strtoupper($title) . "</b>"
-        ];
+        $this->header = "$emoji <b>" . mb_strtoupper(trim($title)) . "</b>";
         return $this;
     }
 
-    public function addText(string $text)
-    {
-        $clean = trim($text);
-        if ($clean !== '') {
-            $this->parts[] = [
-                'type' => 'text',
-                'content' => $clean
-            ];
-        }
-        return $this;
-    }
-
+    /**
+     * Alias untuk addDivider
+     */
     public function addDivider()
     {
         return $this;
     }
 
-    public function addUserProfile(string $name, string $identitas, string $jabatan, string $unitKerja, string $email, string $extraData = null)
+    /**
+     * Tambah Sub-Judul / Bagian
+     */
+    public function addSection(string $title, string $emoji = '📌')
     {
-        $lines = [];
-        
-        if (!empty($name)) {
-            $lines[] = "👤 <b>" . mb_strtoupper($name) . "</b>";
-        }
+        $this->flushCurrentBlock();
+        $this->bodyBlocks[] = "$emoji <b>" . trim($title) . "</b>";
+        return $this;
+    }
 
-        if (!empty($identitas)) {
-            $lines[] = "🪪 " . $identitas;
-        }
-        
-        if (!empty($jabatan)) {
-            $lines[] = "💼 " . mb_strtoupper($jabatan);
-        }
-        if (!empty($unitKerja)) {
-            $lines[] = "🏛️ " . mb_strtoupper($unitKerja);
-        }
-        
-        if (!empty($email)) {
-            $lines[] = "📧 " . $email;
-        }
-        
-        if (!empty($extraData)) {
-            $lines[] = $extraData;
-        }
-
-        if (!empty($lines)) {
-            $this->parts[] = [
-                'type' => 'profile',
-                'content' => implode("\n", $lines)
-            ];
+    /**
+     * Tambah baris teks umum
+     */
+    public function addText(string $text)
+    {
+        $clean = trim($text);
+        if ($clean !== '') {
+            $this->flushCurrentBlock();
+            $this->bodyBlocks[] = $clean;
         }
         return $this;
     }
 
-    public function addKeyValue(string $key, string $value, string $emoji = '🔹')
+    /**
+     * Tambah item daftar berpoin (bullet)
+     */
+    public function addBullet(string $text)
     {
-        // Remove existing <b> tags if they were manually added to prevent double bolding
-        $cleanValue = str_replace(['<b>', '</b>'], '', $value);
-        
-        $this->parts[] = [
-            'type' => 'keyvalue',
-            'content' => "$emoji $key: <b>$cleanValue</b>"
-        ];
+        $clean = trim($text);
+        if ($clean !== '') {
+            $this->currentBlock[] = "• $clean";
+        }
         return $this;
     }
 
+    /**
+     * Tambah format teks miring
+     */
     public function addItalicText(string $text)
     {
         $clean = trim($text);
         if ($clean !== '') {
-            $this->parts[] = [
-                'type' => 'text',
-                'content' => "<i>$clean</i>"
-            ];
+            $this->currentBlock[] = "<i>$clean</i>";
         }
         return $this;
     }
 
+    /**
+     * Tambah pasangan Kunci - Nilai
+     */
+    public function addKeyValue(string $key, string $value, string $emoji = '🔹')
+    {
+        $cleanValue = str_replace(['<b>', '</b>'], '', trim($value));
+        $this->currentBlock[] = "$emoji $key: <b>$cleanValue</b>";
+        return $this;
+    }
+
+    /**
+     * Tambah profil akun/entitas terstruktur 4 baris (nama, email, jabatan, unit kerja)
+     */
+    public function addUserProfile(string $name, string $identitas, string $jabatan, string $unitKerja, string $email, ?string $extraData = null)
+    {
+        $this->flushCurrentBlock();
+
+        $lines = [];
+        if (!empty($name)) {
+            $lines[] = "👤 <b>" . mb_strtoupper(trim($name)) . "</b>";
+        }
+        if (!empty($email)) {
+            $lines[] = "📧 " . trim($email);
+        }
+        if (!empty($jabatan)) {
+            $lines[] = "💼 " . mb_strtoupper(trim($jabatan));
+        }
+        if (!empty($unitKerja)) {
+            $lines[] = "🏛️ " . mb_strtoupper(trim($unitKerja));
+        }
+        if (!empty($extraData)) {
+            $lines[] = trim($extraData);
+        }
+
+        if (!empty($lines)) {
+            $this->bodyBlocks[] = implode("\n", $lines);
+        }
+        return $this;
+    }
+
+    /**
+     * Kustomisasi Footer (opsional)
+     */
+    public function setFooter(string $footerText)
+    {
+        $this->customFooter = trim($footerText);
+        return $this;
+    }
+
+    protected function flushCurrentBlock()
+    {
+        if (!empty($this->currentBlock)) {
+            $this->bodyBlocks[] = implode("\n", $this->currentBlock);
+            $this->currentBlock = [];
+        }
+    }
+
+    /**
+     * Bangun pesan akhir dengan format to the point: Header -> Content -> Footer
+     */
     public function build(): string
     {
-        if (empty($this->parts)) {
-            return "";
+        $this->flushCurrentBlock();
+        $sections = [];
+
+        // 1. HEADER
+        if (!empty($this->header)) {
+            $sections[] = $this->header;
         }
 
-        $output = "";
-        $count = count($this->parts);
+        // 2. CONTENT
+        if (!empty($this->bodyBlocks)) {
+            $sections = array_merge($sections, $this->bodyBlocks);
+        }
 
-        for ($i = 0; $i < $count; $i++) {
-            $current = $this->parts[$i];
-            $output .= $current['content'];
-
-            if ($i < $count - 1) {
-                $output .= "\n\n";
+        // 3. FOOTER
+        if ($this->customFooter !== null) {
+            if ($this->customFooter !== '') {
+                $sections[] = $this->customFooter;
             }
+        } else {
+            $months = [
+                1 => 'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
+                'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'
+            ];
+            $m = (int)date('n');
+            $monthName = $months[$m] ?? date('M');
+            $timestamp = date('d') . ' ' . $monthName . ' ' . date('Y, H:i:s');
+            
+            $sections[] = "🕒 <i>$timestamp WITA</i>";
         }
 
-        // Auto-append timestamp
-        $timestamp = "\n\n🕒 <i>" . date('d M Y, H:i:s') . "</i>";
-        return $output . $timestamp;
+        return implode("\n\n", $sections);
     }
 }
 

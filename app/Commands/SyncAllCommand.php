@@ -89,9 +89,18 @@ class SyncAllCommand extends BaseCommand
         
         CLI::write("Starting Synchronization Process ($modeName)...", 'blue');
         $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
-        $builder->setTitle("SINKRONISASI $modeName BERJALAN", '🔄')
-                ->addDivider();
-                
+        $builder->setTitle("SINKRONISASI $modeName DIMULAI", '🔄');
+
+        if ($isDaily) {
+            $builder->addKeyValue('Objek', 'Status TTE Pimpinan', '🎯');
+        } elseif ($isWeekly) {
+            $builder->addKeyValue('Objek', 'Akun & Kuota Email cPanel', '🎯');
+        } elseif ($isMonthly) {
+            $builder->addKeyValue('Objek', 'Data ASN & Domain Web', '🎯');
+        } else {
+            $builder->addKeyValue('Objek', 'TTE, cPanel, ASN & Web', '🎯');
+        }
+
         $this->telegram->sendMessage($builder->build());
 
         // Phase: TTE (Harian / All)
@@ -116,34 +125,18 @@ class SyncAllCommand extends BaseCommand
         // Clear Dashboard Cache so timestamps update immediately
         \App\Shared\Services\CacheService::invalidateDashboard();
 
-        CLI::write('Synchronization process completed and cache cleared!', 'green');
-        $this->sendTelegramSummary($modeName);
-    }
+        // Push final summary job to queue so it only fires after all batch jobs finish
+        $jobModel = new JobModel();
+        $jobModel->push('default', [
+            'type' => 'sync_summary',
+            'data' => [
+                'mode'       => $modeName,
+                'started_at' => date('Y-m-d H:i:s'),
+                'stats'      => $this->syncStats
+            ]
+        ]);
 
-    private function sendTelegramSummary($mode)
-    {
-        $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
-        $builder->setTitle("SINKRONISASI $mode SELESAI", '✅')
-                ->addDivider();
-
-        if (isset($this->syncStats['cpanel']['executed'])) {
-            $status = $this->syncStats['cpanel']['success'] > 0 ? "Berhasil" : "Gagal";
-            $builder->addKeyValue('cPanel Sync', $status, '📧');
-        }
-
-        if (isset($this->syncStats['tte']['executed'])) {
-            $builder->addKeyValue('TTE Sync', $this->syncStats['tte']['success'] . " Berhasil, " . $this->syncStats['tte']['fail'] . " Gagal", '✍️');
-        }
-
-        if (isset($this->syncStats['pegawai']['executed'])) {
-            $builder->addKeyValue('Pegawai Sync', $this->syncStats['pegawai']['success'] . " Update, " . $this->syncStats['pegawai']['skipped'] . " Tetap, " . $this->syncStats['pegawai']['fail'] . " Gagal", '👥');
-        }
-
-        if (isset($this->syncStats['website']['executed'])) {
-            $builder->addKeyValue('Website Sync', $this->syncStats['website']['success'] . " Berhasil, " . $this->syncStats['website']['fail'] . " Gagal", '🌐');
-        }
-
-        $this->telegram->sendMessage($builder->build());
+        CLI::write('Synchronization jobs dispatched and cache cleared!', 'green');
     }
 
     private function syncCpanel()
@@ -154,10 +147,6 @@ class SyncAllCommand extends BaseCommand
             $jobModel = new JobModel();
             $jobModel->push('default', [
                 'type' => 'sync_cpanel',
-                'data' => []
-            ]);
-            $jobModel->push('default', [
-                'type' => 'sync_quota_report',
                 'data' => []
             ]);
             CLI::write('SUCCESS: Job dispatched to queue.', 'green');
@@ -198,13 +187,7 @@ class SyncAllCommand extends BaseCommand
                 ]);
             }
 
-            // Push a final job to generate and send the Telegram report for EXPIRED TTEs
-            $jobModel->push('default', [
-                'type' => 'sync_tte_report',
-                'data' => []
-            ]);
-
-            CLI::write("SUCCESS: " . count($chunks) . " jobs dispatched to queue, plus 1 report job.", 'green');
+            CLI::write("SUCCESS: " . count($chunks) . " jobs dispatched to queue.", 'green');
             $this->syncStats['tte']['success'] = $total;
             $this->saveLastSyncTime('last_sync_tte');
         } catch (\Throwable $e) {
@@ -303,9 +286,6 @@ class SyncAllCommand extends BaseCommand
             }
             CLI::write("Website & Hosting Sync Finished. Success: " . $this->syncStats['website']['success'] . ", Failed: " . $this->syncStats['website']['fail'], 'cyan');
             $this->saveLastSyncTime('last_sync_website');
-
-            // Check for expiring website domains alerts
-            (new \App\Shared\Services\AlertService())->checkWebExpirationAlerts();
         } catch (\Throwable $e) {
             CLI::error('ERROR in Phase 4: ' . $e->getMessage());
         }
@@ -359,9 +339,9 @@ class SyncAllCommand extends BaseCommand
 
             if (!empty($deletedList)) {
                 $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
-                $builder->setTitle('LAPORAN PEMBERSIHAN OTOMATIS', '🧹')
-                        ->addDivider()
-                        ->addText("Akun berikut telah dihapus permanen (melewati masa tunggu pensiun 30 hari):");
+                $builder->setTitle('PEMBERSIHAN AKUN OTOMATIS', '🧹')
+                        ->addKeyValue('Kriteria', 'Melewati masa tunggu pensiun 30 hari', '📌')
+                        ->addSection('Daftar Akun Dihapus', '🗑️');
                 
                 foreach ($deletedList as $item) {
                     $builder->addText($item);
