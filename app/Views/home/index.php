@@ -44,30 +44,30 @@
             <div class="p-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div class="flex items-center gap-4 p-3 bg-slate-50 border border-slate-100 rounded-xl transition-all hover:bg-slate-100/50">
                     <div class="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-lg flex items-center justify-center shrink-0">
-                        <i class="fas fa-server"></i>
+                        <i class="fas fa-envelope"></i>
                     </div>
                     <div>
-                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">cPanel Storage</p>
+                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Kuota Email</p>
                         <p class="text-xs font-bold text-slate-700"><?= !empty($last_sync_cpanel) ? formatTanggalWaktu($last_sync_cpanel) : '-' ?></p>
                     </div>
                 </div>
 
                 <div class="flex items-center gap-4 p-3 bg-slate-50 border border-slate-100 rounded-xl transition-all hover:bg-slate-100/50">
                     <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center shrink-0">
-                        <i class="fas fa-fingerprint"></i>
+                        <i class="fas fa-signature"></i>
                     </div>
                     <div>
-                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Status Sertifikat (TTE)</p>
+                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Sertifikat TTE</p>
                         <p class="text-xs font-bold text-slate-700"><?= !empty($last_sync_tte) ? formatTanggalWaktu($last_sync_tte) : '-' ?></p>
                     </div>
                 </div>
 
                 <div class="flex items-center gap-4 p-3 bg-slate-50 border border-slate-100 rounded-xl transition-all hover:bg-slate-100/50">
                     <div class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center shrink-0">
-                        <i class="fas fa-user-check"></i>
+                        <i class="fas fa-users"></i>
                     </div>
                     <div>
-                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Data Pegawai API</p>
+                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Data Pegawai</p>
                         <p class="text-xs font-bold text-slate-700"><?= !empty($last_sync_pegawai) ? formatTanggalWaktu($last_sync_pegawai) : '-' ?></p>
                     </div>
                 </div>
@@ -77,7 +77,7 @@
                         <i class="fas fa-globe"></i>
                     </div>
                     <div>
-                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Monitoring Website</p>
+                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Website Desa</p>
                         <p class="text-xs font-bold text-slate-700"><?= !empty($last_sync_website) ? formatTanggalWaktu($last_sync_website) : '-' ?></p>
                     </div>
                 </div>
