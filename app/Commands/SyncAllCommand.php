@@ -92,13 +92,13 @@ class SyncAllCommand extends BaseCommand
         $builder->setTitle("SINKRONISASI $modeName DIMULAI", '🔄');
 
         if ($isDaily) {
-            $builder->addKeyValue('Objek', 'Status TTE Pimpinan', '🎯');
+            $builder->addKeyValue('Objek', 'TTE Pimpinan', '🎯');
         } elseif ($isWeekly) {
-            $builder->addKeyValue('Objek', 'cPanel & Domain Web', '🎯');
+            $builder->addKeyValue('Objek', 'Email & Website', '🎯');
         } elseif ($isMonthly) {
-            $builder->addKeyValue('Objek', 'Data dan TTE Pegawai', '🎯');
+            $builder->addKeyValue('Objek', 'Data & TTE Pegawai', '🎯');
         } else {
-            $builder->addKeyValue('Objek', 'TTE, cPanel, ASN & Web', '🎯');
+            $builder->addKeyValue('Objek', 'Semua Data', '🎯');
         }
 
         $this->telegram->sendMessage($builder->build());
