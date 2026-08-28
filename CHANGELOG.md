@@ -9,7 +9,7 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## Notifikasi Telegram & Penyelarasan Background Sync
 - **Konsolidasi Notifikasi Selesai & Laporan**:
-  - Mengubah alur pengiriman notifikasi `SINKRONISASI SELESAI` agar dieksekusi oleh queue worker (`sync_summary`) setelah seluruh antrean proses latar belakang (*background queue*) benar-benar tuntas diproses, disertai pencatatan durasi proses nyata.
+  - Mengubah alur pengiriman notifikasi `SINKRONISASI SELESAI` agar dieksekusi oleh queue worker (`sync_summary`) setelah seluruh antrean proses latar belakang (*background queue*) benar-benar tuntas diproses.
   - Menggabungkan laporan temuan/peringatan (TTE expired, kuota >90%, domain website desa <30 hari) ke dalam satu pesan ringkasan penutup komprehensif.
   - Menerapkan prinsip *alert-only* pada kondisi aman (menghilangkan baris status aman yang redundan agar pesan tetap ringkas).
 - **Standardisasi Format Pesan (Header — Content — Footer)**:

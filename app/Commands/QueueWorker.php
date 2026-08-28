@@ -189,19 +189,6 @@ class QueueWorker extends BaseCommand
         $builder->setTitle("SINKRONISASI $mode SELESAI", '✅')
                 ->addDivider();
 
-        if (!empty($data['started_at'])) {
-            $startTime = strtotime($data['started_at']);
-            $duration = time() - $startTime;
-            if ($duration < 60) {
-                $durationStr = $duration . " detik";
-            } else {
-                $minutes = floor($duration / 60);
-                $seconds = $duration % 60;
-                $durationStr = "{$minutes} mnt {$seconds} dtk";
-            }
-            $builder->addKeyValue('Durasi', $durationStr, '⏱️');
-        }
-
         $stats = $data['stats'] ?? [];
 
         // 1. TTE Section (Harian / Bulanan / Penuh)
