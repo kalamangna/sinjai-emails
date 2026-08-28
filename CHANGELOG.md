@@ -25,6 +25,7 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Menyederhanakan format notifikasi pembersihan akun menjadi daftar ringkas (bullet) agar pesan tidak terlalu panjang.
 - **Penyelarasan Jadwal Sinkronisasi**:
   - Memindahkan pemantauan masa aktif domain website desa/kelurahan dari bulanan ke rutinitas mingguan bersama sinkronisasi cPanel.
+  - Menyederhanakan baris peringatan masa aktif website desa dengan hanya menampilkan nama domain dan sisa hari agar lebih ringkas.
 - **Penyederhanaan Label Dasbor**:
   - Memperbarui label pada card *Terakhir Sinkronisasi* di dasbor menjadi lebih ringkas dan to the point: **Kuota Email**, **Sertifikat TTE**, **Data Pegawai**, dan **Website Desa**.
 

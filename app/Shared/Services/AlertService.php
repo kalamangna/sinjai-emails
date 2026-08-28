@@ -159,9 +159,8 @@ class AlertService
         $builder->addText("⚠️ <b>$count Domain Kedaluwarsa &lt;30 Hari:</b>");
         foreach (array_slice($expiring, 0, 5) as $web) {
             $domain = htmlspecialchars($web['domain'] ?? '', ENT_NOQUOTES, 'UTF-8');
-            $desa = htmlspecialchars($web['desa_kelurahan'] ?? '', ENT_NOQUOTES, 'UTF-8');
             $sisa = (int)$web['sisa_hari'];
-            $builder->addBullet("<b>{$domain}</b> ({$desa}) — Sisa {$sisa} hari");
+            $builder->addBullet("<b>{$domain}</b> — Sisa {$sisa} hari");
         }
 
         if ($count > 5) {
