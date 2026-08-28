@@ -167,8 +167,7 @@ class EmailController extends BaseController
             // 4. Send Telegram Notification
             try {
                 $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
-                $builder->setTitle('AKUN PEGAWAI PENSIUN / PINDAH / KELUAR', '🚫')
-                        ->addDivider()
+                $builder->setTitle('AKUN EMAIL DITANGGUHKAN', '🚫')
                         ->addUserProfile(
                             $email['name'] ?? '',
                             !empty($email['nip']) ? 'NIP: ' . $email['nip'] : '',
