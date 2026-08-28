@@ -26,6 +26,9 @@ class TteSyncService
                 
                 // Update ke database
                 $emailModel->update($email['id'], ['bsre_status' => $statusFromBsre]);
+            } elseif (isset($result['code']) && ($result['code'] === 429 || $result['code'] === 503)) {
+                // Backoff adaptif jika BSrE mengalami beban tinggi
+                sleep(2);
             }
 
             // Jeda mikro 80ms (~3 request/detik) untuk mencegah rate-limiting & menjaga kestabilan server BSrE

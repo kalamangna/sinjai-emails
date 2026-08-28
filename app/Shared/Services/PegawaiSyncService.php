@@ -44,11 +44,17 @@ class PegawaiSyncService
                     $success = true;
                     $statusMessage = 'Sukses';
                 }
+            } elseif (isset($result['code']) && ($result['code'] === 429 || $result['code'] === 503)) {
+                // Backoff adaptif jika terkena rate limit
+                sleep(2);
             }
 
             if (is_callable($onProgress)) {
                 $onProgress($index + 1, $total, $nip, $success, $statusMessage);
             }
+
+            // Jeda mikro 80ms (~3 request/detik) untuk melindungi server SIMPEG
+            usleep(80000);
         }
     }
 }
