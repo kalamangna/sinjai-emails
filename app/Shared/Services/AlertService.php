@@ -32,10 +32,25 @@ class AlertService
         return $emailModel->select('emails.email, emails.name, emails.nip, emails.nik, emails.jabatan, unit_kerja.nama_unit_kerja as unit_name')
                           ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
                           ->where('emails.bsre_status', 'EXPIRED')
+                          ->where('emails.deleted_at IS NULL')
                           ->groupStart()
                               ->where('emails.pimpinan', 1)
                               ->orWhere('emails.pimpinan_desa', 1)
                           ->groupEnd()
+                          ->findAll();
+    }
+
+    public function getExpiredTtePegawai()
+    {
+        $emailModel = new EmailModel();
+        return $emailModel->select('emails.email, emails.name, emails.nip, emails.nik, emails.jabatan, unit_kerja.nama_unit_kerja as unit_name')
+                          ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
+                          ->where('emails.bsre_status', 'EXPIRED')
+                          ->where('emails.deleted_at IS NULL')
+                          ->where('(emails.pimpinan = 0 OR emails.pimpinan IS NULL)')
+                          ->where('(emails.pimpinan_desa = 0 OR emails.pimpinan_desa IS NULL)')
+                          ->where('emails.nip IS NOT NULL')
+                          ->where('emails.nip !=', '')
                           ->findAll();
     }
 
@@ -47,16 +62,19 @@ class AlertService
                             ->findAll();
     }
 
-    public function appendTteReport(\App\Shared\Libraries\TelegramMessageBuilder $builder)
+    public function appendTteReport(\App\Shared\Libraries\TelegramMessageBuilder $builder, string $mode = 'HARIAN')
     {
-        $expired = $this->getExpiredTtePimpinan();
+        $isHarian = strtoupper($mode) === 'HARIAN';
+        $expired = $isHarian ? $this->getExpiredTtePimpinan() : $this->getExpiredTtePegawai();
         $count = count($expired);
 
         if ($count === 0) {
             return;
         }
 
-        $builder->addText("⚠️ <b>$count TTE Pimpinan Expired:</b>");
+        $label = $isHarian ? "⚠️ <b>$count TTE Pimpinan Expired:</b>" : "⚠️ <b>$count Sertifikat TTE Pegawai Expired:</b>";
+        $builder->addText($label);
+
         foreach (array_slice($expired, 0, 5) as $acc) {
             $builder->addUserProfile(
                 $acc['name'] ?? $acc['email'],

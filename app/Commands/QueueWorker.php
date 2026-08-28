@@ -204,9 +204,9 @@ class QueueWorker extends BaseCommand
 
         $stats = $data['stats'] ?? [];
 
-        // 1. TTE Section (Harian / Penuh)
+        // 1. TTE Section (Harian / Bulanan / Penuh)
         if (isset($stats['tte']['executed'])) {
-            $alertService->appendTteReport($builder);
+            $alertService->appendTteReport($builder, $mode);
         }
 
         // 2. cPanel / Quota Section (Mingguan / Penuh)

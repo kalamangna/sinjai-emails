@@ -105,7 +105,7 @@ class SyncAllCommand extends BaseCommand
 
         // Phase: TTE Harian (Khusus Pimpinan jika --daily)
         if ($isDaily) {
-            $this->syncTteStatus(false);
+            $this->syncTteStatus('pimpinan');
         }
         
         // Phase: cPanel (Mingguan / All)
@@ -113,9 +113,9 @@ class SyncAllCommand extends BaseCommand
             $this->syncCpanel();
         }
 
-        // Phase: Pegawai, TTE Semua Pegawai & Website (Bulanan / All)
+        // Phase: Pegawai, TTE Pegawai Non-Pimpinan & Website (Bulanan / All)
         if ($runAll || $isMonthly) {
-            $this->syncTteStatus(true); // Sinkronisasi TTE Seluruh Pegawai
+            $this->syncTteStatus('pegawai'); // Sinkronisasi TTE Khusus Pegawai Non-Pimpinan
             $this->syncPegawaiData();
             $this->syncWebExpirations();
         }
@@ -161,26 +161,33 @@ class SyncAllCommand extends BaseCommand
 
 
 
-    private function syncTteStatus(bool $allPegawai = false)
+    private function syncTteStatus(string $scope = 'pimpinan')
     {
-        $scopeText = $allPegawai ? 'Semua Pegawai' : 'Pimpinan';
+        $scopeText = $scope === 'pegawai' ? 'Pegawai (Non-Pimpinan)' : 'Pimpinan';
         CLI::write("--- Phase 2: TTE Status Synchronization ($scopeText - Queued) ---", 'yellow');
         $this->syncStats['tte']['executed'] = true;
-        $this->syncStats['tte']['scope'] = $allPegawai ? 'all' : 'pimpinan';
+        $this->syncStats['tte']['scope'] = $scope;
         try {
             $emailModel = new EmailModel();
             $jobModel = new JobModel();
 
-            $builder = $emailModel->select('id, email');
+            $builder = $emailModel->select('id, email')->where('deleted_at IS NULL');
 
-            if (!$allPegawai) {
+            if ($scope === 'pegawai') {
+                // Khusus Pegawai Non-Pimpinan yang memiliki NIP
+                $builder->where('(pimpinan = 0 OR pimpinan IS NULL)')
+                        ->where('(pimpinan_desa = 0 OR pimpinan_desa IS NULL)')
+                        ->where('nip IS NOT NULL')
+                        ->where('nip !=', '');
+            } else {
+                // Khusus Pimpinan & Pimpinan Desa
                 $builder->groupStart()
-                    ->where('pimpinan', 1)
-                    ->orWhere('pimpinan_desa', 1)
-                ->groupEnd();
+                            ->where('pimpinan', 1)
+                            ->orWhere('pimpinan_desa', 1)
+                        ->groupEnd();
             }
 
-            $emails = $builder->where('deleted_at IS NULL')->findAll();
+            $emails = $builder->findAll();
 
             $total = count($emails);
             CLI::write("Total accounts to queue: $total");
