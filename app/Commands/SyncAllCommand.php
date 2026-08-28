@@ -67,9 +67,9 @@ class SyncAllCommand extends BaseCommand
      * @var array
      */
     protected $options = [
-        '--daily'   => 'Menjalankan tugas harian (Status TTE)',
-        '--weekly'  => 'Menjalankan tugas mingguan (cPanel)',
-        '--monthly' => 'Menjalankan tugas bulanan (Pegawai dan Website)',
+        '--daily'   => 'Menjalankan tugas harian (Status TTE Pimpinan)',
+        '--weekly'  => 'Menjalankan tugas mingguan (cPanel dan Website)',
+        '--monthly' => 'Menjalankan tugas bulanan (Data ASN dan TTE Pegawai)',
     ];
 
     /**
@@ -94,9 +94,9 @@ class SyncAllCommand extends BaseCommand
         if ($isDaily) {
             $builder->addKeyValue('Objek', 'Status TTE Pimpinan', '🎯');
         } elseif ($isWeekly) {
-            $builder->addKeyValue('Objek', 'Akun & Kuota Email cPanel', '🎯');
+            $builder->addKeyValue('Objek', 'cPanel & Domain Web', '🎯');
         } elseif ($isMonthly) {
-            $builder->addKeyValue('Objek', 'TTE Pegawai, Data ASN & Web', '🎯');
+            $builder->addKeyValue('Objek', 'TTE Pegawai & Data ASN', '🎯');
         } else {
             $builder->addKeyValue('Objek', 'TTE, cPanel, ASN & Web', '🎯');
         }
@@ -108,16 +108,16 @@ class SyncAllCommand extends BaseCommand
             $this->syncTteStatus('pimpinan');
         }
         
-        // Phase: cPanel (Mingguan / All)
+        // Phase: cPanel & Website (Mingguan / All)
         if ($runAll || $isWeekly) {
             $this->syncCpanel();
+            $this->syncWebExpirations();
         }
 
-        // Phase: Pegawai, TTE Pegawai Non-Pimpinan & Website (Bulanan / All)
+        // Phase: Pegawai & TTE Pegawai Non-Pimpinan (Bulanan / All)
         if ($runAll || $isMonthly) {
             $this->syncTteStatus('pegawai'); // Sinkronisasi TTE Khusus Pegawai Non-Pimpinan
             $this->syncPegawaiData();
-            $this->syncWebExpirations();
         }
 
         // Phase: Cleanup (Setiap kali sinkronisasi)
