@@ -334,7 +334,8 @@ class SyncAllCommand extends BaseCommand
                     // 2. Delete from local DB (Hard Delete)
                     $emailModel->delete($acc['id'], true);
                     
-                    $deletedList[] = "• " . ($acc['name'] ?: $acc['email']);
+                    $name = $acc['name'] ?: $acc['email'];
+                    $deletedList[] = "<b>{$name}</b> (<code>{$acc['email']}</code>)";
                     CLI::write('DONE', 'green');
                 } catch (\Throwable $e) {
                     CLI::write('FAILED: ' . $e->getMessage(), 'red');
@@ -342,15 +343,18 @@ class SyncAllCommand extends BaseCommand
             }
 
             if (!empty($deletedList)) {
+                $totalDeleted = count($deletedList);
                 $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
-                $builder->setTitle('PEMBERSIHAN AKUN OTOMATIS', '🧹')
-                        ->addKeyValue('Kriteria', 'Melewati masa tunggu pensiun 30 hari', '📌')
-                        ->addSection('Daftar Akun Dihapus', '🗑️');
-                
-                foreach ($deletedList as $item) {
-                    $builder->addText($item);
+                $builder->setTitle('PEMBERSIHAN AKUN OTOMATIS', '🧹');
+                $builder->addText("🗑️ <b>$totalDeleted Akun Pensiun Dihapus Permanen:</b>");
+
+                foreach (array_slice($deletedList, 0, 5) as $item) {
+                    $builder->addBullet($item);
                 }
-                
+                if ($totalDeleted > 5) {
+                    $builder->addItalicText("...dan " . ($totalDeleted - 5) . " akun lainnya.");
+                }
+
                 $this->telegram->sendMessage($builder->build());
             }
 
