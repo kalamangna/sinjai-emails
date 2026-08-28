@@ -227,6 +227,14 @@ class QueueWorker extends BaseCommand
             $alertService->appendWebExpirationReport($builder);
         }
 
-        $telegram->sendMessage($builder->build());
+        $msg = $builder->build();
+        CLI::write("Sending summary notification to Telegram...", 'cyan');
+        $sent = $telegram->sendMessage($msg);
+        if (!$sent) {
+            log_message('error', 'Failed to send sync summary Telegram notification');
+            CLI::error('Failed to send sync summary Telegram notification');
+        } else {
+            CLI::write('Sync summary notification sent successfully to Telegram.', 'green');
+        }
     }
 }

@@ -171,16 +171,18 @@ class SyncAllCommand extends BaseCommand
             $emailModel = new EmailModel();
             $jobModel = new JobModel();
 
-            $builder = $emailModel->select('id, email')->where('deleted_at IS NULL');
+            $builder = $emailModel->select('id, email')
+                                  ->where('deleted_at IS NULL')
+                                  ->where('unit_kerja_id IS NOT NULL');
 
             if ($scope === 'pegawai') {
-                // Khusus Pegawai Non-Pimpinan yang memiliki NIP
+                // Khusus Pegawai Non-Pimpinan yang memiliki NIP dan terdaftar di unit kerja
                 $builder->where('(pimpinan = 0 OR pimpinan IS NULL)')
                         ->where('(pimpinan_desa = 0 OR pimpinan_desa IS NULL)')
                         ->where('nip IS NOT NULL')
                         ->where('nip !=', '');
             } else {
-                // Khusus Pimpinan & Pimpinan Desa
+                // Khusus Pimpinan & Pimpinan Desa yang terdaftar di unit kerja
                 $builder->groupStart()
                             ->where('pimpinan', 1)
                             ->orWhere('pimpinan_desa', 1)

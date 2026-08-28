@@ -15,9 +15,11 @@ class TelegramMessageBuilder
     /**
      * Set Header (Judul & Emoji Konteks)
      */
-    public function setTitle(string $title, string $emoji = '🔔')
+    public function setTitle(?string $title = '', string $emoji = '🔔')
     {
-        $this->header = "$emoji <b>" . mb_strtoupper(trim($title)) . "</b>";
+        if ($title !== null && trim($title) !== '') {
+            $this->header = "$emoji <b>" . mb_strtoupper(trim($title)) . "</b>";
+        }
         return $this;
     }
 
@@ -32,19 +34,21 @@ class TelegramMessageBuilder
     /**
      * Tambah Sub-Judul / Bagian
      */
-    public function addSection(string $title, string $emoji = '📌')
+    public function addSection(?string $title = '', string $emoji = '📌')
     {
         $this->flushCurrentBlock();
-        $this->bodyBlocks[] = "$emoji <b>" . trim($title) . "</b>";
+        if ($title !== null && trim($title) !== '') {
+            $this->bodyBlocks[] = "$emoji <b>" . trim($title) . "</b>";
+        }
         return $this;
     }
 
     /**
      * Tambah baris teks umum
      */
-    public function addText(string $text)
+    public function addText(?string $text = '')
     {
-        $clean = trim($text);
+        $clean = trim((string)$text);
         if ($clean !== '') {
             $this->flushCurrentBlock();
             $this->bodyBlocks[] = $clean;
@@ -55,9 +59,9 @@ class TelegramMessageBuilder
     /**
      * Tambah item daftar berpoin (bullet)
      */
-    public function addBullet(string $text)
+    public function addBullet(?string $text = '')
     {
-        $clean = trim($text);
+        $clean = trim((string)$text);
         if ($clean !== '') {
             $this->currentBlock[] = "• $clean";
         }
@@ -67,9 +71,9 @@ class TelegramMessageBuilder
     /**
      * Tambah format teks miring
      */
-    public function addItalicText(string $text)
+    public function addItalicText(?string $text = '')
     {
-        $clean = trim($text);
+        $clean = trim((string)$text);
         if ($clean !== '') {
             $this->currentBlock[] = "<i>$clean</i>";
         }
@@ -79,9 +83,9 @@ class TelegramMessageBuilder
     /**
      * Tambah pasangan Kunci - Nilai
      */
-    public function addKeyValue(string $key, string $value, string $emoji = '🔹')
+    public function addKeyValue(string $key, ?string $value = '', string $emoji = '🔹')
     {
-        $cleanValue = str_replace(['<b>', '</b>'], '', trim($value));
+        $cleanValue = str_replace(['<b>', '</b>'], '', trim((string)$value));
         $this->currentBlock[] = "$emoji $key: <b>$cleanValue</b>";
         return $this;
     }
@@ -89,25 +93,25 @@ class TelegramMessageBuilder
     /**
      * Tambah profil akun/entitas terstruktur 4 baris (nama, email, jabatan, unit kerja)
      */
-    public function addUserProfile(string $name, string $identitas, string $jabatan, string $unitKerja, string $email, ?string $extraData = null)
+    public function addUserProfile(?string $name = '', ?string $identitas = '', ?string $jabatan = '', ?string $unitKerja = '', ?string $email = '', ?string $extraData = null)
     {
         $this->flushCurrentBlock();
 
         $lines = [];
         if (!empty($name)) {
-            $lines[] = "👤 <b>" . mb_strtoupper(trim($name)) . "</b>";
+            $lines[] = "👤 <b>" . mb_strtoupper(trim((string)$name)) . "</b>";
         }
         if (!empty($email)) {
-            $lines[] = "📧 " . trim($email);
+            $lines[] = "📧 " . trim((string)$email);
         }
         if (!empty($jabatan)) {
-            $lines[] = "💼 " . mb_strtoupper(trim($jabatan));
+            $lines[] = "💼 " . mb_strtoupper(trim((string)$jabatan));
         }
         if (!empty($unitKerja)) {
-            $lines[] = "🏛️ " . mb_strtoupper(trim($unitKerja));
+            $lines[] = "🏛️ " . mb_strtoupper(trim((string)$unitKerja));
         }
         if (!empty($extraData)) {
-            $lines[] = trim($extraData);
+            $lines[] = trim((string)$extraData);
         }
 
         if (!empty($lines)) {

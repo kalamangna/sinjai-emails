@@ -27,6 +27,9 @@ class TteSyncService
                 // Update ke database
                 $emailModel->update($email['id'], ['bsre_status' => $statusFromBsre]);
             }
+
+            // Jeda mikro 80ms (~3 request/detik) untuk mencegah rate-limiting & menjaga kestabilan server BSrE
+            usleep(80000);
         }
     }
 }

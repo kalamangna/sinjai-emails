@@ -30,9 +30,10 @@ class AlertService
     {
         $emailModel = new EmailModel();
         return $emailModel->select('emails.email, emails.name, emails.nip, emails.nik, emails.jabatan, unit_kerja.nama_unit_kerja as unit_name')
-                          ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
+                          ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'inner')
                           ->where('emails.bsre_status', 'EXPIRED')
                           ->where('emails.deleted_at IS NULL')
+                          ->where('emails.unit_kerja_id IS NOT NULL')
                           ->groupStart()
                               ->where('emails.pimpinan', 1)
                               ->orWhere('emails.pimpinan_desa', 1)
@@ -40,18 +41,26 @@ class AlertService
                           ->findAll();
     }
 
-    public function getExpiredTtePegawai()
+    public function getExpiredTtePegawaiGroupedByUnitKerja()
     {
-        $emailModel = new EmailModel();
-        return $emailModel->select('emails.email, emails.name, emails.nip, emails.nik, emails.jabatan, unit_kerja.nama_unit_kerja as unit_name')
-                          ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
-                          ->where('emails.bsre_status', 'EXPIRED')
-                          ->where('emails.deleted_at IS NULL')
-                          ->where('(emails.pimpinan = 0 OR emails.pimpinan IS NULL)')
-                          ->where('(emails.pimpinan_desa = 0 OR emails.pimpinan_desa IS NULL)')
-                          ->where('emails.nip IS NOT NULL')
-                          ->where('emails.nip !=', '')
-                          ->findAll();
+        $db = \Config\Database::connect();
+        return $db->query("
+            SELECT 
+                COALESCE(p.nama_unit_kerja, u.nama_unit_kerja) as unit_name,
+                COUNT(e.id) as total
+            FROM emails e
+            INNER JOIN unit_kerja u ON u.id = e.unit_kerja_id
+            LEFT JOIN unit_kerja p ON p.id = COALESCE(u.parent_id, u.id)
+            WHERE e.bsre_status = 'EXPIRED'
+              AND e.deleted_at IS NULL
+              AND e.unit_kerja_id IS NOT NULL
+              AND (e.pimpinan = 0 OR e.pimpinan IS NULL)
+              AND (e.pimpinan_desa = 0 OR e.pimpinan_desa IS NULL)
+              AND e.nip IS NOT NULL
+              AND e.nip != ''
+            GROUP BY unit_name
+            ORDER BY total DESC, unit_name ASC
+        ")->getResultArray();
     }
 
     public function getExpiringWebsites(int $days = 30)
@@ -65,28 +74,49 @@ class AlertService
     public function appendTteReport(\App\Shared\Libraries\TelegramMessageBuilder $builder, string $mode = 'HARIAN')
     {
         $isHarian = strtoupper($mode) === 'HARIAN';
-        $expired = $isHarian ? $this->getExpiredTtePimpinan() : $this->getExpiredTtePegawai();
-        $count = count($expired);
 
-        if ($count === 0) {
-            return;
-        }
+        if ($isHarian) {
+            $expired = $this->getExpiredTtePimpinan();
+            $count = count($expired);
 
-        $label = $isHarian ? "⚠️ <b>$count TTE Pimpinan Expired:</b>" : "⚠️ <b>$count Sertifikat TTE Pegawai Expired:</b>";
-        $builder->addText($label);
+            if ($count === 0) {
+                return;
+            }
 
-        foreach (array_slice($expired, 0, 5) as $acc) {
-            $builder->addUserProfile(
-                $acc['name'] ?? $acc['email'],
-                '',
-                $acc['jabatan'] ?? '',
-                $acc['unit_name'] ?? '',
-                $acc['email'] ?? ''
-            );
-        }
+            $builder->addText("⚠️ <b>$count TTE Pimpinan Expired:</b>");
+            foreach (array_slice($expired, 0, 5) as $acc) {
+                $builder->addUserProfile(
+                    $acc['name'] ?? $acc['email'],
+                    '',
+                    $acc['jabatan'] ?? '',
+                    $acc['unit_name'] ?? '',
+                    $acc['email'] ?? ''
+                );
+            }
 
-        if ($count > 5) {
-            $builder->addItalicText("...dan " . ($count - 5) . " lainnya.");
+            if ($count > 5) {
+                $builder->addItalicText("...dan " . ($count - 5) . " lainnya.");
+            }
+        } else {
+            // Mode Bulanan / Penuh: Tampilkan rekap per unit kerja
+            $grouped = $this->getExpiredTtePegawaiGroupedByUnitKerja();
+            if (empty($grouped)) {
+                return;
+            }
+
+            $totalExpired = array_sum(array_column($grouped, 'total'));
+            $builder->addText("⚠️ <b>$totalExpired TTE Pegawai Expired:</b>");
+
+            foreach (array_slice($grouped, 0, 6) as $row) {
+                $unitName = mb_strtoupper(trim($row['unit_name']));
+                $total = $row['total'];
+                $builder->addBullet("<b>{$unitName}</b> ({$total} Akun)");
+            }
+
+            $totalUnits = count($grouped);
+            if ($totalUnits > 6) {
+                $builder->addItalicText("...dan " . ($totalUnits - 6) . " unit kerja lainnya.");
+            }
         }
     }
 
