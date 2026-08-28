@@ -17,6 +17,7 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - **Content**: Struktur informasi profil akun terstandar 4 baris (`👤 Nama`, `📧 Email`, `💼 Jabatan`, `🏛️ Unit Kerja`) dan metrik kunci yang padat tanpa spasi kosong berlebih.
   - **Footer**: Timestamp otomatis terstandar dengan zona waktu WITA (`🕒 [Tanggal, Jam] WITA`).
 - **Penyelarasan Sinkronisasi Bulanan & Pembersihan**:
+  - Menambahkan sinkronisasi status sertifikat TTE untuk seluruh pegawai ASN ke dalam rutinitas sinkronisasi bulanan (sedangkan sinkronisasi harian tetap berfokus pada pimpinan & pimpinan desa).
   - Menampilkan jumlah ASN yang berhasil diselaraskan datanya pada notifikasi penutup sinkronisasi bulanan (`👥 Data Pegawai: [Jumlah] ASN`).
   - Memperbaiki penanganan error saat pembersihan akun pensiun permanen (>30 hari) agar rekaman database lokal tetap terhapus tuntas meskipun akun sudah tidak ada di cPanel.
   - Menyederhanakan format notifikasi pembersihan akun menjadi daftar ringkas (bullet) agar pesan tidak terlalu panjang.

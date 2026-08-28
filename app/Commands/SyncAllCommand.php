@@ -96,16 +96,16 @@ class SyncAllCommand extends BaseCommand
         } elseif ($isWeekly) {
             $builder->addKeyValue('Objek', 'Akun & Kuota Email cPanel', '🎯');
         } elseif ($isMonthly) {
-            $builder->addKeyValue('Objek', 'Data ASN & Domain Web', '🎯');
+            $builder->addKeyValue('Objek', 'TTE Pegawai, Data ASN & Web', '🎯');
         } else {
             $builder->addKeyValue('Objek', 'TTE, cPanel, ASN & Web', '🎯');
         }
 
         $this->telegram->sendMessage($builder->build());
 
-        // Phase: TTE (Harian / All)
-        if ($runAll || $isDaily) {
-            $this->syncTteStatus();
+        // Phase: TTE Harian (Khusus Pimpinan jika --daily)
+        if ($isDaily) {
+            $this->syncTteStatus(false);
         }
         
         // Phase: cPanel (Mingguan / All)
@@ -113,8 +113,9 @@ class SyncAllCommand extends BaseCommand
             $this->syncCpanel();
         }
 
-        // Phase: Pegawai & Website (Bulanan / All)
+        // Phase: Pegawai, TTE Semua Pegawai & Website (Bulanan / All)
         if ($runAll || $isMonthly) {
+            $this->syncTteStatus(true); // Sinkronisasi TTE Seluruh Pegawai
             $this->syncPegawaiData();
             $this->syncWebExpirations();
         }
@@ -160,20 +161,26 @@ class SyncAllCommand extends BaseCommand
 
 
 
-    private function syncTteStatus()
+    private function syncTteStatus(bool $allPegawai = false)
     {
-        CLI::write('--- Phase 2: TTE Status Synchronization (Queued) ---', 'yellow');
+        $scopeText = $allPegawai ? 'Semua Pegawai' : 'Pimpinan';
+        CLI::write("--- Phase 2: TTE Status Synchronization ($scopeText - Queued) ---", 'yellow');
         $this->syncStats['tte']['executed'] = true;
+        $this->syncStats['tte']['scope'] = $allPegawai ? 'all' : 'pimpinan';
         try {
             $emailModel = new EmailModel();
             $jobModel = new JobModel();
 
-            $emails = $emailModel->select('id, email')
-                ->groupStart()
+            $builder = $emailModel->select('id, email');
+
+            if (!$allPegawai) {
+                $builder->groupStart()
                     ->where('pimpinan', 1)
                     ->orWhere('pimpinan_desa', 1)
-                ->groupEnd()
-                ->findAll();
+                ->groupEnd();
+            }
+
+            $emails = $builder->where('deleted_at IS NULL')->findAll();
 
             $total = count($emails);
             CLI::write("Total accounts to queue: $total");
