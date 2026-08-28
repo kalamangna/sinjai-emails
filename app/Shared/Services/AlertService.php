@@ -108,8 +108,8 @@ class AlertService
             $builder->addText("⚠️ <b>$totalExpired TTE Pegawai Expired:</b>");
 
             foreach (array_slice($grouped, 0, 6) as $row) {
-                $unitName = mb_strtoupper(trim($row['unit_name']));
-                $total = $row['total'];
+                $unitName = htmlspecialchars(mb_strtoupper(trim($row['unit_name'])), ENT_NOQUOTES, 'UTF-8');
+                $total = (int)$row['total'];
                 $builder->addBullet("<b>{$unitName}</b> ({$total} Akun)");
             }
 
@@ -129,9 +129,9 @@ class AlertService
             return;
         }
 
-        $builder->addText("⚠️ <b>$count Akun Kuota Hampir Penuh (>90%):</b>");
+        $builder->addText("⚠️ <b>$count Akun Kuota &gt;90%:</b>");
         foreach (array_slice($highUsage, 0, 5) as $acc) {
-            $extra = "📊 " . round($acc['diskusedpercent_float'], 1) . "% (" . $acc['humandiskused'] . ")";
+            $extra = "📊 " . round($acc['diskusedpercent_float'], 1) . "% (" . htmlspecialchars($acc['humandiskused'] ?? '', ENT_NOQUOTES, 'UTF-8') . ")";
             $builder->addUserProfile(
                 $acc['name'] ?? $acc['email'],
                 '',
@@ -156,9 +156,12 @@ class AlertService
             return;
         }
 
-        $builder->addText("⚠️ <b>$count Domain Akan Kedaluwarsa (<30 Hari):</b>");
+        $builder->addText("⚠️ <b>$count Domain Kedaluwarsa &lt;30 Hari:</b>");
         foreach (array_slice($expiring, 0, 5) as $web) {
-            $builder->addBullet("<b>{$web['domain']}</b> ({$web['desa_kelurahan']}) — Sisa {$web['sisa_hari']} hari");
+            $domain = htmlspecialchars($web['domain'] ?? '', ENT_NOQUOTES, 'UTF-8');
+            $desa = htmlspecialchars($web['desa_kelurahan'] ?? '', ENT_NOQUOTES, 'UTF-8');
+            $sisa = (int)$web['sisa_hari'];
+            $builder->addBullet("<b>{$domain}</b> ({$desa}) — Sisa {$sisa} hari");
         }
 
         if ($count > 5) {

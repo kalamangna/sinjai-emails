@@ -49,13 +49,20 @@ class TelegramLibrary
 
             $statusCode = $response->getStatusCode();
             if ($statusCode !== 200) {
-                log_message('error', 'Telegram API Error Status: ' . $statusCode . ' Body: ' . $response->getBody());
+                $errBody = $response->getBody();
+                log_message('error', 'Telegram API Error Status: ' . $statusCode . ' Body: ' . $errBody);
+                if (is_cli()) {
+                    \CodeIgniter\CLI\CLI::error("Telegram API Error ($statusCode): " . $errBody);
+                }
                 return false;
             }
 
             return true;
         } catch (\Throwable $e) {
             log_message('error', 'Telegram Exception: ' . $e->getMessage());
+            if (is_cli()) {
+                \CodeIgniter\CLI\CLI::error("Telegram Exception: " . $e->getMessage());
+            }
             return false;
         }
     }
