@@ -92,6 +92,61 @@ class PegawaiApi
         }
     }
 
+    /**
+     * Kirim HTTP request dengan penanganan otomatis Rate Limit (429/503/Timeout) & Exponential Backoff
+     */
+    protected function requestWithRetry(string $url, array $options = [], string $method = 'GET', int $maxRetries = 3): array
+    {
+        $attempts = 0;
+        $delayMs = 1500; // 1.5 detik initial delay
+
+        while ($attempts <= $maxRetries) {
+            $attempts++;
+            try {
+                $options['http_errors'] = false;
+                $response = $this->client->request($method, $url, $options);
+                $statusCode = $response->getStatusCode();
+
+                // Jika rate limit (429) atau server overload (503/504), lakukan backoff & retry
+                if (in_array($statusCode, [429, 503, 504]) && $attempts <= $maxRetries) {
+                    $jitter = rand(100, 500);
+                    $waitMs = $delayMs + $jitter;
+                    log_message('warning', "SIMPEG API Rate Limited ({$statusCode}) on {$url}. Retrying in " . round($waitMs / 1000, 2) . "s (Attempt {$attempts}/{$maxRetries})...");
+                    usleep($waitMs * 1000);
+                    $delayMs *= 2; // Exponential backoff (1.5s -> 3s -> 6s)
+                    continue;
+                }
+
+                return [
+                    'success'    => ($statusCode >= 200 && $statusCode < 300),
+                    'statusCode' => $statusCode,
+                    'body'       => $response->getBody(),
+                ];
+            } catch (\Throwable $e) {
+                if ($attempts <= $maxRetries) {
+                    $jitter = rand(100, 500);
+                    $waitMs = $delayMs + $jitter;
+                    log_message('warning', "SIMPEG API Connection Exception on {$url}: " . $e->getMessage() . ". Retrying in " . round($waitMs / 1000, 2) . "s (Attempt {$attempts}/{$maxRetries})...");
+                    usleep($waitMs * 1000);
+                    $delayMs *= 2;
+                    continue;
+                }
+
+                return [
+                    'success'    => false,
+                    'statusCode' => 500,
+                    'error'      => $e->getMessage(),
+                ];
+            }
+        }
+
+        return [
+            'success'    => false,
+            'statusCode' => 429,
+            'error'      => 'Batas percobaan terlampaui karena pembatasan request (Rate Limit).',
+        ];
+    }
+
     public function getPegawaiData($nip)
     {
         if (empty($nip)) {
@@ -101,60 +156,51 @@ class PegawaiApi
             ];
         }
 
-        try {
-            $dataUrl = $this->baseUrl . 'data_pegawai/';
-            $response = $this->client->get($dataUrl, [
-                'query' => [
-                    'nip' => $nip
-                ],
-                'headers' => [
-                    'Accept' => 'application/json',
-                ],
-                'timeout' => 10,
-            ]);
+        $dataUrl = $this->baseUrl . 'data_pegawai/';
+        $res = $this->requestWithRetry($dataUrl, [
+            'query' => [
+                'nip' => $nip
+            ],
+            'headers' => [
+                'Accept' => 'application/json',
+            ],
+            'timeout' => 12,
+        ], 'GET');
 
-            $statusCode = $response->getStatusCode();
-            $body = $response->getBody();
-
-            if ($statusCode === 200) {
-                $data = json_decode($body, true);
-                
-                if (json_last_error() !== JSON_ERROR_NONE) {
-                    return [
-                        'success' => false,
-                        'message' => 'Invalid JSON response from Pegawai API'
-                    ];
-                }
-
-                // Resolusi otomatis: Gunakan Jabatan Definitif saja jika API mengembalikan data Plt/Plh
-                $jNama = $data['jabatan_nama'] ?? $data['jabatan'] ?? '';
-                $statusId = (int)($data['jabatan_status_id'] ?? 1);
-                $isPlt = ($statusId === 2) || (stripos($jNama, 'Plt') === 0) || (stripos($jNama, 'Plh') === 0);
-
-                if ($isPlt) {
-                    $definitifFound = $this->findDefinitifPosition($nip, $data['unit_id'] ?? null);
-                    if ($definitifFound) {
-                        $data = array_merge($data, $definitifFound);
-                    }
-                }
-
-                return [
-                    'success' => true,
-                    'data' => $data
-                ];
-            }
-
+        if (!$res['success']) {
             return [
                 'success' => false,
-                'message' => 'Pegawai API returned status code: ' . $statusCode
-            ];
-
-        } catch (\Throwable $e) {
-            return [
-                'success' => false,
-                'message' => 'Error connecting to Pegawai API: ' . $e->getMessage()
+                'message' => $res['error'] ?? ('Pegawai API returned status code: ' . ($res['statusCode'] ?? 500)),
+                'code'    => $res['statusCode'] ?? 500
             ];
         }
+
+        $body = $res['body'] ?? '';
+        $data = json_decode($body, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return [
+                'success' => false,
+                'message' => 'Invalid JSON response from Pegawai API'
+            ];
+        }
+
+        // Resolusi otomatis: Gunakan Jabatan Definitif saja jika API mengembalikan data Plt/Plh
+        $jNama = $data['jabatan_nama'] ?? $data['jabatan'] ?? '';
+        $statusId = (int)($data['jabatan_status_id'] ?? 1);
+        $isPlt = ($statusId === 2) || (stripos($jNama, 'Plt') === 0) || (stripos($jNama, 'Plh') === 0);
+
+        if ($isPlt) {
+            $definitifFound = $this->findDefinitifPosition($nip, $data['unit_id'] ?? null);
+            if ($definitifFound) {
+                $data = array_merge($data, $definitifFound);
+            }
+        }
+
+        return [
+            'success' => true,
+            'data'    => $data
+        ];
     }
 
     /**
@@ -165,13 +211,14 @@ class PegawaiApi
         try {
             // 1. Coba cari di unit yang sama via get_pegawai
             if (!empty($unitId)) {
-                $response = $this->client->get($this->baseUrl . 'get_pegawai', [
-                    'query' => ['unit_id' => $unitId],
+                $res = $this->requestWithRetry($this->baseUrl . 'get_pegawai', [
+                    'query'   => ['unit_id' => $unitId],
                     'headers' => ['Accept' => 'application/json'],
-                    'timeout' => 10,
-                ]);
-                if ($response->getStatusCode() === 200) {
-                    $list = json_decode($response->getBody(), true);
+                    'timeout' => 12,
+                ], 'GET');
+
+                if ($res['success']) {
+                    $list = json_decode($res['body'] ?? '', true);
                     if (is_array($list)) {
                         foreach ($list as $p) {
                             if (($p['nip'] ?? '') === $nip) {
@@ -187,13 +234,14 @@ class PegawaiApi
             }
 
             // 2. Jika mutasi Plt lintas OPD (contoh: Staf Ahli Setda yang Plt di BPBD/Dinas), cari di Sekretariat Daerah (730701)
-            $responseSetda = $this->client->get($this->baseUrl . 'get_pegawai', [
-                'query' => ['unit_id' => '730701'],
+            $resSetda = $this->requestWithRetry($this->baseUrl . 'get_pegawai', [
+                'query'   => ['unit_id' => '730701'],
                 'headers' => ['Accept' => 'application/json'],
-                'timeout' => 10,
-            ]);
-            if ($responseSetda->getStatusCode() === 200) {
-                $listSetda = json_decode($responseSetda->getBody(), true);
+                'timeout' => 12,
+            ], 'GET');
+
+            if ($resSetda['success']) {
+                $listSetda = json_decode($resSetda['body'] ?? '', true);
                 if (is_array($listSetda)) {
                     foreach ($listSetda as $p) {
                         if (($p['nip'] ?? '') === $nip) {

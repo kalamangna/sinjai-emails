@@ -37,8 +37,8 @@ class PegawaiSyncService
                 $onProgress($index + 1, $total, $nip, $success, $statusMessage);
             }
 
-            // Jeda mikro 60ms (~16 request/detik) untuk melindungi server SIMPEG
-            usleep(60000);
+            // Jeda mikro 100ms (~10 request/detik) untuk menjaga beban server SIMPEG
+            usleep(100000);
         }
     }
 }

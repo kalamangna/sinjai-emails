@@ -30,6 +30,62 @@ class BsreApi
     }
 
     /**
+     * Kirim HTTP request dengan penanganan otomatis Rate Limit (429/503/Timeout) & Exponential Backoff
+     */
+    protected function requestWithRetry(string $url, array $options = [], string $method = 'POST', int $maxRetries = 3): array
+    {
+        $attempts = 0;
+        $delayMs = 1500;
+
+        while ($attempts <= $maxRetries) {
+            $attempts++;
+            try {
+                $options['http_errors'] = false;
+                $response = $this->client->request($method, $url, $options);
+                $statusCode = $response->getStatusCode();
+
+                // Jika rate limit (429) atau server overload (503/504), lakukan backoff & retry
+                if (in_array($statusCode, [429, 503, 504]) && $attempts <= $maxRetries) {
+                    $jitter = rand(100, 500);
+                    $waitMs = $delayMs + $jitter;
+                    log_message('warning', "BSrE API Rate Limited ({$statusCode}). Retrying in " . round($waitMs / 1000, 2) . "s (Attempt {$attempts}/{$maxRetries})...");
+                    usleep($waitMs * 1000);
+                    $delayMs *= 2;
+                    continue;
+                }
+
+                $body = json_decode($response->getBody(), true);
+                return [
+                    'success'    => ($statusCode >= 200 && $statusCode < 300),
+                    'statusCode' => $statusCode,
+                    'body'       => $body,
+                ];
+            } catch (\Throwable $e) {
+                if ($attempts <= $maxRetries) {
+                    $jitter = rand(100, 500);
+                    $waitMs = $delayMs + $jitter;
+                    log_message('warning', "BSrE API Connection Exception on {$url}: " . $e->getMessage() . ". Retrying in " . round($waitMs / 1000, 2) . "s (Attempt {$attempts}/{$maxRetries})...");
+                    usleep($waitMs * 1000);
+                    $delayMs *= 2;
+                    continue;
+                }
+
+                return [
+                    'success'    => false,
+                    'statusCode' => 500,
+                    'error'      => $e->getMessage(),
+                ];
+            }
+        }
+
+        return [
+            'success'    => false,
+            'statusCode' => 429,
+            'error'      => 'Batas percobaan terlampaui karena pembatasan request (BSrE Rate Limit).',
+        ];
+    }
+
+    /**
      * Check Status User (API V2)
      * Endpoint: /api/v2/user/check/status
      * 
@@ -46,45 +102,35 @@ class BsreApi
             $payload['email'] = $identifier;
         }
 
-        try {
-            $fullUrl = rtrim($this->baseUrl, '/') . '/api/v2/user/check/status';
+        $fullUrl = rtrim($this->baseUrl, '/') . '/api/v2/user/check/status';
 
-            $response = $this->client->request('POST', $fullUrl, [
-                'auth' => [$this->username, $this->password],
-                'json' => $payload,
-                'http_errors' => false,
-                'headers' => [
-                    'Content-Type' => 'application/json'
-                ]
-            ]);
+        $res = $this->requestWithRetry($fullUrl, [
+            'auth' => [$this->username, $this->password],
+            'json' => $payload,
+            'headers' => [
+                'Content-Type' => 'application/json'
+            ],
+            'timeout' => 15,
+        ], 'POST');
 
-            $body = json_decode($response->getBody(), true);
-            $statusCode = $response->getStatusCode();
-
+        if ($res['success']) {
+            $body = $res['body'] ?? [];
             log_message('info', 'BSrE API Response (Check Status): ' . print_r($body, true));
 
-            if ($statusCode >= 200 && $statusCode < 300) {
-                return [
-                    'success' => true,
-                    'data'    => $body,
-                    'code'    => $statusCode
-                ];
-            } else {
-                $msg = $body['message'] ?? $body['error'] ?? 'Gagal mengambil status dari BSrE';
-                return [
-                    'success' => false,
-                    'message' => $msg,
-                    'code'    => $statusCode
-                ];
-            }
-        } catch (\Throwable $e) {
-            $errorMsg = "BSrE API Error (Check Status). URL: [{$fullUrl}]. Message: " . $e->getMessage();
-            log_message('error', $errorMsg);
+            return [
+                'success' => true,
+                'data'    => $body,
+                'code'    => $res['statusCode'] ?? 200
+            ];
+        } else {
+            $body = $res['body'] ?? [];
+            $msg = $body['message'] ?? $body['error'] ?? $res['error'] ?? 'Gagal mengambil status dari BSrE';
+            log_message('error', "BSrE API Error (Check Status). URL: [{$fullUrl}]. Message: {$msg}");
 
             return [
                 'success' => false,
-                'message' => $errorMsg,
-                'code'    => 500
+                'message' => $msg,
+                'code'    => $res['statusCode'] ?? 500
             ];
         }
     }
