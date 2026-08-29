@@ -22,9 +22,10 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Dilengkapi sistem proteksi dan deteksi NIP duplikat (baik terhadap NIP yang sudah ada pada akun lain di database maupun antar-akun dalam batch evaluasi yang sama) untuk menjamin integritas data dan mencegah tumpang tindih akun.
   - Menambahkan sistem **Persistent Disk Cache per Unit Kerja** (`WRITEPATH . 'cache/simpeg_units_pegawai.json'`) sehingga proses eksekusi lanjutan (`--apply`) maupun simulasi berikutnya dapat berjalan **instan (0.05 detik)** tanpa perlu mengunduh ulang data API dari awal, dengan opsi `--refresh` untuk pembaruan paksa.
   - Dilengkapi mekanisme pre-fetching berbasis unit kerja dengan jeda dan retry adaptif untuk menghindari *rate limiting* pada server SIMPEG.
-- **Penyederhanaan UI Halaman Kategori ASN (`PNS`, `PPPK`, `PPPK PW`)**:
+- **Penyederhanaan UI & Penghapusan Logic Ekspor Halaman Kategori ASN (`PNS`, `PPPK`, `PPPK PW`)**:
   - Menghapus form filter bar pada halaman daftar Pegawai PNS (`/email/pns`), PPPK (`/email/pppk`), dan PPPK Paruh Waktu (`/email/pppk-pw`) untuk tampilan yang lebih bersih, fokus, dan cepat.
-  - Menyederhanakan header dengan memfokuskan tombol aksi utama pada Sync TTE dan Sync Pegawai.
+  - Menghapus logic, service (`generatePnsExcel`, `generatePnsCsv`), controller method (`exportPnsExcel`, `exportPnsCsv`), serta rute endpoint ekspor PNS untuk efisiensi kode dan perampingan arsitektur.
+  - Memfokuskan fungsionalitas header halaman pada tombol aksi sinkronisasi utama: **Sync TTE** dan **Sync Pegawai**.
 - **Command Analisis & Prosedur Pensiun PNS (`pns:check-pensiun`)**:
   - Menambahkan command CLI `pns:check-pensiun` untuk mendeteksi PNS purna tugas (BUP $\ge 60$ Tahun) via NIP dan mengeksekusi alur pensiun sistem secara penuh saat dijalankan dengan `--apply`: menangguhkan login email cPanel (`suspend_email_login`), melepaskan data kepegawaian, memindahkan akun ke Kotak Sampah (*Soft Delete* / Retensi 30 Hari), mencatat log audit, serta mengirimkan ringkasan notifikasi ke Telegram Admin.
   - Menambahkan opsi `--dtp` (alias `--penyuluh`) khusus untuk menyeleksi dan memproses pensiun/penangguhan akun PNS Penyuluh Pertanian pada Dinas Tanaman Pangan, Hortikultura dan Perkebunan yang status kepegawaiannya telah beralih ke Kementerian Pertanian RI (Inpres No. 3 Tahun 2025).

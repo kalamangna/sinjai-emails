@@ -148,29 +148,13 @@ class EmailListController extends BaseController
     {
         try {
             $params = [
-                'has_nip' => $this->request->getGet('has_nip'),
-                'bsre_status' => $this->request->getGet('bsre_status'),
-                'parent_unit_kerja_id' => $this->request->getGet('parent_unit_kerja_id'),
                 'use_pk_join' => false,
                 'per_page' => 100,
             ];
 
             $data = $this->emailService->getAsnList('PNS', $params);
 
-            $data['parent_unit_kerjas'] = $this->unitKerjaModel->where('parent_id', null)->orderBy('nama_unit_kerja', 'ASC')->findAll();
-
-            $data['bsre_status_options'] = [
-                'ISSUE'          => 'ISSUE',
-                'EXPIRED'        => 'EXPIRED',
-                'NO_CERTIFICATE' => 'NO_CERTIFICATE',
-                'NOT_REGISTERED' => 'NOT_REGISTERED',
-                'not_synced'     => 'BELUM SYNC',
-            ];
-
             $data['title'] = 'PNS';
-            $data['has_nip'] = $params['has_nip'];
-            $data['bsre_status'] = $params['bsre_status'];
-            $data['parent_unit_kerja_id'] = $params['parent_unit_kerja_id'];
             $data['back_url'] = site_url('email');
 
             return view('email/pns_list', $data);
@@ -185,7 +169,6 @@ class EmailListController extends BaseController
     {
         try {
             $params = [
-                'has_nip' => $this->request->getGet('has_nip'),
                 'use_pk_join' => true,
                 'per_page' => 100,
             ];
@@ -193,7 +176,6 @@ class EmailListController extends BaseController
             $data = $this->emailService->getAsnList('PPPK', $params);
 
             $data['title'] = 'PPPK';
-            $data['has_nip'] = $params['has_nip'];
             $data['back_url'] = site_url('email');
 
             return view('email/pppk_list', $data);
@@ -208,7 +190,6 @@ class EmailListController extends BaseController
     {
         try {
             $params = [
-                'has_nip' => $this->request->getGet('has_nip'),
                 'use_pk_join' => true,
                 'per_page' => 100,
             ];
@@ -216,7 +197,6 @@ class EmailListController extends BaseController
             $data = $this->emailService->getAsnList('PPPK PARUH WAKTU', $params);
 
             $data['title'] = 'PPPK PW';
-            $data['has_nip'] = $params['has_nip'];
             $data['back_url'] = site_url('email');
 
             return view('email/pppk_pw_list', $data);

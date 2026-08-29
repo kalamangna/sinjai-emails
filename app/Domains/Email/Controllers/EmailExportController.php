@@ -39,46 +39,6 @@ class EmailExportController extends BaseController
         }
     }
 
-    public function exportPnsExcel()
-    {
-        try {
-            $params = [
-                'has_nip' => $this->request->getGet('has_nip'),
-                'bsre_status' => $this->request->getGet('bsre_status'),
-                'parent_unit_kerja_id' => $this->request->getGet('parent_unit_kerja_id'),
-            ];
-
-            $result = $this->emailExportService->generatePnsExcel($params);
-
-            log_audit('EXPORT', 'Email', null, 'Ekspor Excel PNS');
-
-            return $this->response->download($result['path'], null)->setFileName($result['filename']);
-        } catch (\Throwable $e) {
-            $data['error'] = $e->getMessage();
-            return view('email/error', $data);
-        }
-    }
-
-    public function exportPnsCsv()
-    {
-        try {
-            $params = [
-                'has_nip' => $this->request->getGet('has_nip'),
-                'bsre_status' => $this->request->getGet('bsre_status'),
-                'parent_unit_kerja_id' => $this->request->getGet('parent_unit_kerja_id'),
-            ];
-
-            $result = $this->emailExportService->generatePnsCsv($params);
-
-            log_audit('EXPORT', 'Email', null, 'Ekspor CSV PNS');
-
-            return $this->response->download($result['path'], null)->setFileName($result['filename']);
-        } catch (\Throwable $e) {
-            $data['error'] = $e->getMessage();
-            return view('email/error', $data);
-        }
-    }
-
     public function exportUnitKerjaExcel($unitKerjaId)
     {
         try {
