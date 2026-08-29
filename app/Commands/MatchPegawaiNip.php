@@ -18,9 +18,10 @@ class MatchPegawaiNip extends BaseCommand
         'unit_id' => 'Target specific Unit Kerja ID or Name (optional)',
     ];
     protected $options = [
-        '--apply'       => 'Execute updates to the database. Without this flag, runs in simulation mode.',
-        '--unit'        => 'Target specific Unit Kerja ID or Name (optional)',
-        '--threshold'   => 'Similarity percentage threshold for fuzzy matching (default: 85)',
+        '--apply'         => 'Execute updates to the database. Without this flag, runs in simulation mode.',
+        '--unit'          => 'Target specific Unit Kerja ID or Name (optional)',
+        '--threshold'     => 'Similarity percentage threshold for fuzzy matching (default: 85)',
+        '--include-fuzzy' => 'Automatically apply fuzzy matches without interactive prompt',
     ];
 
     private array $cachedApiPegawai = [];
@@ -355,34 +356,116 @@ class MatchPegawaiNip extends BaseCommand
 
         // Eksekusi jika mode --apply
         if ($isApply) {
-            CLI::write("\nMenerapkan perubahan ke database...", 'yellow');
-            $appliedCount = 0;
+            CLI::write("\n================ MENERAPKAN PERUBAHAN ================", 'yellow');
+            $appliedExactCount = 0;
+            $appliedFuzzyCount = 0;
 
-            // Update exact matches
-            foreach ($exactMatches as $item) {
-                $acc = $item['account'];
-                $peg = $item['matched'];
-
-                $updateData = [
-                    'nip'              => $peg['nip'],
-                    'status_asn_id'    => $pnsId,
-                    'pangkat_golruang' => $peg['pangkat_golruang'] ?? null,
-                    'pangkat_nama'     => $peg['pangkat_nama'] ?? null,
-                ];
-
-                if (!empty($peg['jabatan_nama'])) {
-                    $updateData['jabatan'] = mb_strtoupper($peg['jabatan_nama'], 'UTF-8');
+            // 1. Update Exact Matches (100% Cocok)
+            if (!empty($exactMatches)) {
+                CLI::write("Memperbarui " . count($exactMatches) . " akun Cocok Sempurna (100%)...", 'cyan');
+                foreach ($exactMatches as $item) {
+                    $this->applyAccountUpdate($emailModel, $item['account'], $item['matched'], $pnsId);
+                    $appliedExactCount++;
                 }
-
-                $emailModel->update($acc['id'], $updateData);
-                $appliedCount++;
+                CLI::write("✓ Selesai: $appliedExactCount akun Cocok Sempurna berhasil diperbarui ke database.\n", 'green');
             }
 
-            CLI::write("Berhasil memperbarui $appliedCount akun dengan NIP dan data kepegawaian!", 'green');
+            // 2. Konfirmasi & Update Fuzzy Matches
+            $includeFuzzy = CLI::getOption('include-fuzzy') !== null || in_array('--include-fuzzy', $params);
+
+            if (!empty($fuzzyMatches)) {
+                CLI::write("----------------------------------------------------------", 'yellow');
+                CLI::write("Terdapat " . count($fuzzyMatches) . " akun Cocok Mirip (Fuzzy Match).", 'yellow');
+
+                if ($includeFuzzy) {
+                    // Jika flag --include-fuzzy disertakan, terapkan langsung semua
+                    CLI::write("Opsi --include-fuzzy aktif: Menerapkan semua akun fuzzy...", 'cyan');
+                    foreach ($fuzzyMatches as $item) {
+                        $this->applyAccountUpdate($emailModel, $item['account'], $item['matched'], $pnsId);
+                        $appliedFuzzyCount++;
+                    }
+                    CLI::write("✓ Selesai: $appliedFuzzyCount akun fuzzy berhasil diperbarui ke database.", 'green');
+                } else {
+                    // Tanya konfirmasi ke user
+                    $fuzzyChoice = CLI::prompt('Apakah Anda ingin meninjau & mengonfirmasi akun fuzzy ini?', ['y (tinjau per akun)', 'a (terapkan semua)', 'n (lewati semua)'], 'y');
+                    $fuzzyChoice = strtolower($fuzzyChoice);
+
+                    if ($fuzzyChoice === 'a' || $fuzzyChoice === 'all') {
+                        foreach ($fuzzyMatches as $item) {
+                            $this->applyAccountUpdate($emailModel, $item['account'], $item['matched'], $pnsId);
+                            $appliedFuzzyCount++;
+                        }
+                        CLI::write("✓ Selesai: $appliedFuzzyCount akun fuzzy berhasil diperbarui ke database.", 'green');
+                    } elseif ($fuzzyChoice === 'y' || $fuzzyChoice === 'yes') {
+                        $autoAllRemaining = false;
+                        foreach ($fuzzyMatches as $idx => $item) {
+                            $num = $idx + 1;
+                            $tot = count($fuzzyMatches);
+                            $acc = $item['account'];
+                            $peg = $item['matched'];
+                            $score = number_format($item['score'], 1);
+
+                            if (!$autoAllRemaining) {
+                                CLI::write("\n[$num/$tot] Konfirmasi Akun Fuzzy (Score: {$score}%):", 'cyan');
+                                CLI::write("  • Email      : {$acc['email']}");
+                                CLI::write("  • Nama Akun  : " . ($acc['name'] ?: '-'));
+                                CLI::write("  • Unit Kerja : " . ($acc['nama_unit_kerja'] ?: '-'));
+                                CLI::write("  ===> CALON SIMPEG :");
+                                CLI::write("  • NIP        : {$peg['nip']}", 'green');
+                                CLI::write("  • Nama SIMPEG: {$peg['nama']}", 'green');
+                                CLI::write("  • Jabatan    : " . ($peg['jabatan_nama'] ?? '-'), 'green');
+                                CLI::write("  • Gol / Pkt  : " . ($peg['pangkat_golruang'] ?? '-') . " / " . ($peg['pangkat_nama'] ?? '-'), 'green');
+
+                                $ans = CLI::prompt("Cocokkan akun ini ke NIP {$peg['nip']}?", ['y (ya)', 'n (lewati)', 'a (terapkan semua sisa)', 'q (berhenti)'], 'y');
+                                $ans = strtolower(substr(trim($ans), 0, 1));
+
+                                if ($ans === 'q') {
+                                    CLI::write("Proses review akun fuzzy dihentikan.", 'yellow');
+                                    break;
+                                } elseif ($ans === 'a') {
+                                    $autoAllRemaining = true;
+                                } elseif ($ans !== 'y') {
+                                    CLI::write("Dilewati.", 'light_gray');
+                                    continue;
+                                }
+                            }
+
+                            $this->applyAccountUpdate($emailModel, $acc, $peg, $pnsId);
+                            $appliedFuzzyCount++;
+                            CLI::write("✓ [{$acc['email']}] Berhasil diperbarui ke NIP {$peg['nip']}", 'green');
+                        }
+                    } else {
+                        CLI::write("Akun fuzzy dilewati (tidak ada perubahan database untuk akun fuzzy).", 'light_gray');
+                    }
+                }
+            }
+
+            $totalApplied = $appliedExactCount + $appliedFuzzyCount;
+            CLI::write("\n==========================================================", 'green');
+            CLI::write("TOTAL PEMBARUAN BERHASIL : $totalApplied Akun", 'green');
+            CLI::write("• Cocok Sempurna (100%) : $appliedExactCount Akun", 'green');
+            CLI::write("• Cocok Mirip (Fuzzy)   : $appliedFuzzyCount Akun", 'cyan');
+            CLI::write("==========================================================\n", 'green');
         } else {
-            CLI::write("💡 Tips: Untuk menerapkan hasil yang cocok 100% ke database, jalankan:", 'yellow');
+            CLI::write("💡 Tips: Untuk menerapkan hasil ke database, jalankan:", 'yellow');
             CLI::write("php spark sync:match-nip " . (!empty($unitFilter) ? "--unit=" . escapeshellarg($unitFilter) . " " : "") . "--apply\n", 'cyan');
         }
+    }
+
+    private function applyAccountUpdate(EmailModel $emailModel, array $account, array $pegawai, int $pnsId): void
+    {
+        $updateData = [
+            'nip'              => $pegawai['nip'],
+            'status_asn_id'    => $pnsId,
+            'pangkat_golruang' => $pegawai['pangkat_golruang'] ?? null,
+            'pangkat_nama'     => $pegawai['pangkat_nama'] ?? null,
+        ];
+
+        if (!empty($pegawai['jabatan_nama'])) {
+            $updateData['jabatan'] = mb_strtoupper($pegawai['jabatan_nama'], 'UTF-8');
+        }
+
+        $emailModel->update($account['id'], $updateData);
     }
 
     private function fetchApiPegawaiWithRetry($client, string $baseUrl, string $apiUnitId): array
