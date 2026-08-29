@@ -7,29 +7,11 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 # [29 Agustus 2026]
 
-## Rekonsiliasi & Pencocokan NIP PNS via API SIMPEG
-- **Command Rekonsiliasi NIP SIMPEG (`sync:match-nip`)**:
-  - Menambahkan command CLI `sync:match-nip` untuk pencocokan otomatis akun PNS tanpa NIP dengan master data kepegawaian API SIMPEG (`get_pegawai?unit_id=...`).
-  - Menegakkan filter ketat khusus akun berstatus **PNS** (`status_asn_id = 1`) agar tidak mencampur akun non-ASN atau status lainnya.
-  - Mendukung filter unit kerja fleksibel berbasis ID, nama unit, maupun positional argument (`php spark sync:match-nip [unit_id]`) yang otomatis menyertakan struktur hierarki sub-unit / UPTD di bawahnya.
-  - Mendukung normalisasi nama cerdas tingkat lanjut (pemisahan otomatis prefix gelar yang menempel seperti `DR.ANDI` -> `ANDI`, pembersihan gelar majemuk/spesialis seperti `S.Tr.Tra`, `S.Pt`, `S.Pi`, `S.M`, `M.K.M`, `M.Sc`, serta penanganan singkatan "A." -> "ANDI", "Muh." -> "Muhammad", "Abd." -> "Abdul") sehingga mayoritas akun fuzzy langsung terkonversi menjadi 100% Exact Match.
-  - Menyediakan mode simulasi (*dry-run*) dan mode eksekusi langsung (`--apply`) untuk memperbarui NIP, status ASN, pangkat, golongan, dan jabatan secara otomatis.
-  - Menambahkan fitur **Pencarian Lintas Unit Kerja (`--cross-unit`)** dengan proteksi ketat (*Regency-Wide Uniqueness Check* & *100% Exact Match Only*) untuk mendeteksi pegawai yang telah mengalami mutasi/pindah OPD, sekaligus memperbarui NIP dan menyelaraskan `unit_kerja_id` ke OPD barunya di SIMPEG secara aman tanpa risiko salah mapping nama homonim.
-  - Menambahkan sistem **Resolusi Homonim Berbasis Tahun Lahir Email**: Memecahkan akun bernama sama (homonim) secara presisi dengan mencocokkan angka tahun lahir pada username email (seperti `abdullah1967@`, `ernawati70@`, `alimuddin1973@`, `sudirman76@`) terhadap 4 digit pertama NIP SIMPEG.
-  - Menambahkan algoritma **Pencocokan Inisial Singkatan Nama (`isAbbreviatedMatch`)**: Mendukung pengenalan nama ber-inisial tengah/depan (seperti `A NINING A HAKIM` -> `ANDI NINING ANGRIANI HAKIM`, `MULIATI H` -> `MULIATI HALMA`) sehingga dapat terhubung secara 100% Exact Match ke NIP resmi di SIMPEG.
-  - Menambahkan fitur **Pencocokan Akun Pimpinan (`--match-jabatan`)** untuk mengenali akun pejabat/struktural (Kadis, Sekda, Camat, Asisten, Inspektur, Kabag, Sekdis, Kapus, Lurah) berdasarkan jabatan definitif yang sedang aktif di SIMPEG.
-  - Menambahkan alur konfirmasi interaktif per akun untuk hasil **Cocok Mirip (Fuzzy)** saat menjalankan `--apply` (dengan opsi tinjau per akun, terapkan semua, atau lewati semua), serta opsi flag `--include-fuzzy` untuk eksekusi otomatis.
-  - Dilengkapi sistem proteksi dan deteksi NIP duplikat (baik terhadap NIP yang sudah ada pada akun lain di database maupun antar-akun dalam batch evaluasi yang sama) untuk menjamin integritas data dan mencegah tumpang tindih akun.
-  - Menambahkan sistem **Persistent Disk Cache per Unit Kerja** (`WRITEPATH . 'cache/simpeg_units_pegawai.json'`) sehingga proses eksekusi lanjutan (`--apply`) maupun simulasi berikutnya dapat berjalan **instan (0.05 detik)** tanpa perlu mengunduh ulang data API dari awal, dengan opsi `--refresh` untuk pembaruan paksa.
-  - Dilengkapi mekanisme pre-fetching berbasis unit kerja dengan jeda dan retry adaptif untuk menghindari *rate limiting* pada server SIMPEG.
-- **Penyederhanaan UI & Penghapusan Logic Ekspor Halaman Kategori ASN (`PNS`, `PPPK`, `PPPK PW`)**:
+- **Penyederhanaan UI & Pembersihan Kode Migrasi ASN (`PNS`, `PPPK`, `PPPK PW`)**:
   - Menghapus form filter bar pada halaman daftar Pegawai PNS (`/email/pns`), PPPK (`/email/pppk`), dan PPPK Paruh Waktu (`/email/pppk-pw`) untuk tampilan yang lebih bersih, fokus, dan cepat.
   - Menghapus logic, service (`generatePnsExcel`, `generatePnsCsv`), controller method (`exportPnsExcel`, `exportPnsCsv`), serta rute endpoint ekspor PNS untuk efisiensi kode dan perampingan arsitektur.
+  - Membersihkan berkas command migrasi dan file redundan (`CheckPensiun.php`, `MatchPegawaiNip.php`, data CSV sementara, dan cache JSON lokal) setelah seluruh proses rekonsiliasi NIP dan penangguhan pensiun selesai dijalankan di production.
   - Memfokuskan fungsionalitas header halaman pada tombol aksi sinkronisasi utama: **Sync TTE** dan **Sync Pegawai**.
-- **Command Analisis & Prosedur Pensiun PNS (`pns:check-pensiun`)**:
-  - Menambahkan command CLI `pns:check-pensiun` untuk mendeteksi PNS purna tugas (BUP $\ge 60$ Tahun) via NIP dan mengeksekusi alur pensiun sistem secara penuh saat dijalankan dengan `--apply`: menangguhkan login email cPanel (`suspend_email_login`), melepaskan data kepegawaian, memindahkan akun ke Kotak Sampah (*Soft Delete* / Retensi 30 Hari), mencatat log audit, serta mengirimkan ringkasan notifikasi ke Telegram Admin.
-  - Menambahkan opsi `--dtp` (alias `--penyuluh`) khusus untuk menyeleksi dan memproses pensiun/penangguhan akun PNS Penyuluh Pertanian pada Dinas Tanaman Pangan, Hortikultura dan Perkebunan yang status kepegawaiannya telah beralih ke Kementerian Pertanian RI (Inpres No. 3 Tahun 2025).
-  - Menambahkan opsi `--unmatched` untuk mendeteksi dan mengeksekusi pensiun pada seluruh akun PNS tanpa NIP yang tidak terdaftar di database SIMPEG aktif (Purna Tugas/Mantan Pegawai).
 
 ## API Gateway & Integrasi Hierarki Unit Kerja
 - **Penyempurnaan Respon API Gateway**:
