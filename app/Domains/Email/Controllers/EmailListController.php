@@ -149,6 +149,7 @@ class EmailListController extends BaseController
         try {
             $params = [
                 'has_nip' => $this->request->getGet('has_nip'),
+                'bsre_status' => $this->request->getGet('bsre_status'),
                 'parent_unit_kerja_id' => $this->request->getGet('parent_unit_kerja_id'),
                 'use_pk_join' => false,
                 'per_page' => 100,
@@ -158,8 +159,17 @@ class EmailListController extends BaseController
 
             $data['parent_unit_kerjas'] = $this->unitKerjaModel->where('parent_id', null)->orderBy('nama_unit_kerja', 'ASC')->findAll();
 
+            $data['bsre_status_options'] = [
+                'ISSUE'          => 'ISSUE',
+                'EXPIRED'        => 'EXPIRED',
+                'NO_CERTIFICATE' => 'NO_CERTIFICATE',
+                'NOT_REGISTERED' => 'NOT_REGISTERED',
+                'not_synced'     => 'BELUM SYNC',
+            ];
+
             $data['title'] = 'PNS';
             $data['has_nip'] = $params['has_nip'];
+            $data['bsre_status'] = $params['bsre_status'];
             $data['parent_unit_kerja_id'] = $params['parent_unit_kerja_id'];
             $data['back_url'] = site_url('email');
 

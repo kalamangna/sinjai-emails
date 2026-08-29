@@ -660,6 +660,14 @@ class EmailExportService
             }
         }
 
+        if (!empty($params['bsre_status'])) {
+            if ($params['bsre_status'] === 'not_synced') {
+                $builder->groupStart()->where('emails.bsre_status', null)->orWhere('emails.bsre_status', '')->groupEnd();
+            } else {
+                $builder->where('emails.bsre_status', $params['bsre_status']);
+            }
+        }
+
         if (!empty($params['parent_unit_kerja_id'])) {
             $db = \Config\Database::connect();
             $parentId = $params['parent_unit_kerja_id'];
@@ -716,6 +724,14 @@ class EmailExportService
                 $builder->where('emails.nip !=', '')->where('emails.nip IS NOT NULL');
             } elseif ($params['has_nip'] === 'no') {
                 $builder->groupStart()->where('emails.nip', '')->orWhere('emails.nip', null)->groupEnd();
+            }
+        }
+
+        if (!empty($params['bsre_status'])) {
+            if ($params['bsre_status'] === 'not_synced') {
+                $builder->groupStart()->where('emails.bsre_status', null)->orWhere('emails.bsre_status', '')->groupEnd();
+            } else {
+                $builder->where('emails.bsre_status', $params['bsre_status']);
             }
         }
 

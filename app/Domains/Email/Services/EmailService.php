@@ -916,6 +916,17 @@ class EmailService
             $countModel->where('(unit_kerja.parent_id = ' . $db->escape($parentUnitKerjaId) . ' OR emails.unit_kerja_id = ' . $db->escape($parentUnitKerjaId) . ')');
         }
 
+        $bsreStatus = $params['bsre_status'] ?? null;
+        if (!empty($bsreStatus)) {
+            if ($bsreStatus === 'not_synced') {
+                $builder->groupStart()->where('emails.bsre_status', null)->orWhere('emails.bsre_status', '')->groupEnd();
+                $countModel->groupStart()->where('emails.bsre_status', null)->orWhere('emails.bsre_status', '')->groupEnd();
+            } else {
+                $builder->where('emails.bsre_status', $bsreStatus);
+                $countModel->where('emails.bsre_status', $bsreStatus);
+            }
+        }
+
         if ($usePkJoin) {
             $builder->select('MIN(pk.nomor) as nomor_pk')
                     ->join('pk', 'pk.email = emails.email', 'left')

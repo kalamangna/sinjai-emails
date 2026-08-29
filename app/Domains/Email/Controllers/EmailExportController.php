@@ -44,6 +44,7 @@ class EmailExportController extends BaseController
         try {
             $params = [
                 'has_nip' => $this->request->getGet('has_nip'),
+                'bsre_status' => $this->request->getGet('bsre_status'),
                 'parent_unit_kerja_id' => $this->request->getGet('parent_unit_kerja_id'),
             ];
 
@@ -63,6 +64,7 @@ class EmailExportController extends BaseController
         try {
             $params = [
                 'has_nip' => $this->request->getGet('has_nip'),
+                'bsre_status' => $this->request->getGet('bsre_status'),
                 'parent_unit_kerja_id' => $this->request->getGet('parent_unit_kerja_id'),
             ];
 

@@ -37,7 +37,7 @@
     <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
         <div class="p-6 border-b border-slate-100 bg-slate-50">
             <form action="<?= current_url() ?>" method="GET" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
-                <div class="md:col-span-3">
+                <div class="md:col-span-2">
                     <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Filter NIP</label>
                     <select name="has_nip" class="block w-full px-3 py-2 bg-white border <?= !empty($has_nip) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm appearance-none cursor-pointer transition-all">
                         <option value="">SEMUA PEGAWAI</option>
@@ -46,7 +46,17 @@
                     </select>
                 </div>
 
-                <div class="md:col-span-7">
+                <div class="md:col-span-3">
+                    <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Filter Status TTE</label>
+                    <select name="bsre_status" class="block w-full px-3 py-2 bg-white border <?= !empty($bsre_status) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm appearance-none cursor-pointer transition-all">
+                        <option value="">SEMUA STATUS TTE</option>
+                        <?php foreach ($bsre_status_options ?? [] as $key => $label): ?>
+                            <option value="<?= esc($key) ?>" <?= (($bsre_status ?? '') === $key) ? 'selected' : '' ?>><?= esc($label) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div class="md:col-span-5">
                     <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Filter Unit Kerja</label>
                     <select name="parent_unit_kerja_id" class="choices-search block w-full px-3 py-2 bg-white border <?= !empty($parent_unit_kerja_id) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm appearance-none cursor-pointer transition-all">
                         <option value="">SEMUA UNIT KERJA</option>
