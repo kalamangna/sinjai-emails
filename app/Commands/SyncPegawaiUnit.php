@@ -68,7 +68,7 @@ class SyncPegawaiUnit extends BaseCommand
 
         if (empty($unitId)) {
             CLI::error("Error: Unit ID is required.");
-            $this->showUsage();
+            CLI::write("Usage: php spark " . $this->usage, 'yellow');
             return;
         }
 
