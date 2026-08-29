@@ -7,26 +7,22 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 # [30 Agustus 2026]
 
-- **Normalisasi Jabatan Menyeluruh & Standarisasi Nomenklatur Pemkab Sinjai**:
-  - Menerapkan arsitektur normalisasi cerdas pada seluruh alur sinkronisasi SIMPEG (`PegawaiSyncService`, `EmailService::normalizeJabatanName`, `sync:pegawai-unit`, dan cron bulanan `sync:all --monthly`).
-  - Standarisasi format ringkas pimpinan struktural:
-    - `KEPALA DINAS` (untuk seluruh 21 Dinas Daerah dan Satpol PP & Damkar).
-    - `KEPALA BADAN` (untuk seluruh 7 Badan Daerah).
-    - `KEPALA BAGIAN` (untuk seluruh 10 Bagian Sekretariat Daerah).
-    - `CAMAT` (untuk seluruh 9 Kecamatan).
-    - `LURAH` (untuk seluruh 13 Kelurahan).
-    - `DIREKTUR` (untuk RSUD Sinjai dan RSUD Pratama Bulupaccing).
-    - `SEKRETARIS DINAS`, `SEKRETARIS BADAN`, `SEKRETARIS INSPEKTORAT`, `SEKRETARIS KECAMATAN`, `SEKRETARIS KELURAHAN`.
-  - Resolusi cerdas jabatan ganda/kombinasi tanda miring (`/`): memprioritaskan penugasan manajerial kepala unit/sekolah (contoh: *Kepala SDN / Guru Madya* $\rightarrow$ `KEPALA SDN ...`, *Dokter / Kepala Puskesmas* $\rightarrow$ `KEPALA UPTD PUSKESMAS ...`).
-  - Koreksi otomatis anomali teks SIMPEG:
-    - Pembersihan tanda baca liar di ujung (`.` dan `,`) serta pemadatan spasi ganda.
-    - Perbaikan penulisan singkatan bertitik `SUB.` $\rightarrow$ `SUB BAGIAN` / `SUB BIDANG`.
-    - Koreksi typo master data SIMPEG: `TEHNOLOGI` $\rightarrow$ `TEKNOLOGI`, `KOMSUMSI` $\rightarrow$ `KONSUMSI`, `HOLTIKULTURA` $\rightarrow$ `HORTIKULTURA`.
-    - Perlindungan kata ulang baku agar tidak terpecah spasi (contoh: `PERUNDANG-UNDANGAN`).
+- **Penanganan Rate Limit API Eksternal (Exponential Backoff & Jitter)**:
+  - Menerapkan mekanisme proteksi request cerdas `requestWithRetry` pada `PegawaiApi` (SIMPEG) dan `BsreApi` (BSrE) dengan jeda bertingkat (*exponential backoff*) 1.5s, 3s, 6s (+ jitter acak) saat menerima status HTTP `429` (Too Many Requests), `503` (Service Unavailable), atau `504` (Gateway Timeout).
+  - Menetapkan jeda mikro aman (`100ms`, ~10 req/s) di setiap iterasi worker untuk menjaga kestabilan server API.
+- **Standarisasi Nomenklatur Jabatan Fungsional & Pelaksana (PermenPAN-RB & BKN SIASN)**:
+  - Menyeragamkan seluruh format awalan tanda hubung SSCASN (`[JENJANG] - [PROFESI]`) menjadi format baku resmi SK Jabatan BKN (`[NAMA PROFESI] [JENJANG]`), contoh: `APOTEKER AHLI PERTAMA`, `ASISTEN APOTEKER TERAMPIL`, `PERAWAT TERAMPIL`, `PERAWAT AHLI PERTAMA`, `GURU KELAS AHLI PERTAMA`, `AUDITOR AHLI PERTAMA`, `PRANATA KOMPUTER AHLI PERTAMA`.
+  - Mengonversi jenjang fungsional era lama ke format modern: `Guru Pratama` $\rightarrow$ `GURU AHLI PERTAMA`, `Guru Dewasa` $\rightarrow$ `GURU AHLI MUDA`, `Perawat Pelaksana Lanjutan` $\rightarrow$ `PERAWAT MAHIR`, `Bidan Pelaksana` $\rightarrow$ `BIDAN TERAMPIL`.
+  - Mengoreksi otomatis kesalahan ketik (*typo*) master data: `Penelah` $\rightarrow$ `PENELAAH`, `Pengola` $\rightarrow$ `PENGOLAH`, `Pengadministrasian` $\rightarrow$ `PENGADMINISTRASI`, `Tehnis` $\rightarrow$ `TEKNIS`, `Pkn` $\rightarrow$ `PPKN`.
+- **Standarisasi Nomenklatur Instansi Khusus**:
+  - Satpol PP & Damkar: Standarisasi format pimpinan menjadi `KEPALA SATUAN` dan sekretaris menjadi `SEKRETARIS SATUAN`.
+  - Inspektorat Daerah: Standarisasi format pimpinan menjadi `INSPEKTUR`, sekretaris menjadi `SEKRETARIS INSPEKTORAT`, `INSPEKTUR PEMBANTU WILAYAH I s.d. IV`, `INSPEKTUR PEMBANTU INVESTIGASI`, serta pembersihan otomatis embel-embel instansi pada Kasubag.
+  - Perangkat Daerah Lainnya: Format ringkas `KEPALA DINAS`, `KEPALA BADAN`, `KEPALA BAGIAN`, `DIREKTUR`, `CAMAT`, `LURAH`.
+- **Penyediaan Wrapper Executable CLI `./sync`**:
+  - Menambahkan skrip executable `./sync` di root proyek untuk memudahkan eksekusi berbagai mode sinkronisasi via terminal (`./sync pegawai`, `./sync tte`, `./sync unit "<opd>"`, `./sync tte-unit "<opd>"`, `./sync daily/weekly/monthly`).
 - **Integrasi Sinkronisasi Mutasi Unit Kerja & Hierarki Parent-Child**:
   - Sinkronisasi otomatis `unit_kerja_id` berdasarkan pemetaan `unit_id` SIMPEG saat terjadi mutasi atau alih tugas pegawai ke OPD baru.
   - Proteksi penempatan *child unit*: akun yang telah ditempatkan pada sub-unit spesifik (Sekolah, Puskesmas, Kelurahan/Desa) tidak akan ditimpa atau diturunkan ke unit induk (*parent*) selama masih dalam rumpun OPD yang sama.
-  - Memastikan seluruh akun ber-NIP (PNS dan Pimpinan) ikut disinkronkan dan dinormalkan, dengan tetap mengecualikan formasi akun PPPK dan PPPK Paruh Waktu.
 
 ---
 
