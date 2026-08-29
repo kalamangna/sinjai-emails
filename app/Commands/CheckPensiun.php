@@ -489,6 +489,8 @@ class CheckPensiun extends BaseCommand
 
     private function executeRetirementWorkflow(EmailModel $emailModel, array $list, string $auditReason): void
     {
+        helper('audit');
+
         $cpanelApi = new CpanelApi();
         $cpanelSuccess = 0;
         $cpanelFailed = 0;
@@ -534,7 +536,9 @@ class CheckPensiun extends BaseCommand
             $emailModel->delete($acc['id']);
 
             // 4. Audit Log
-            log_audit('PENSIUN', 'Email', $acc['id'], "$auditReason diproses pensiun via CLI: " . $acc['email']);
+            if (function_exists('log_audit')) {
+                \log_audit('PENSIUN', 'Email', $acc['id'], "$auditReason diproses pensiun via CLI: " . $acc['email']);
+            }
 
             $appliedCount++;
         }
