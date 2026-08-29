@@ -14,12 +14,14 @@ class CheckPensiun extends BaseCommand
 {
     protected $group = 'App';
     protected $name = 'pns:check-pensiun';
-    protected $description = 'Analyze and process retirement workflow for PNS (BUP >= 60 Years or Unregistered/Purna PNS accounts).';
+    protected $description = 'Analyze and process retirement workflow for PNS (BUP >= 60 Years, Penyuluh DTP transferred to Kementan, or Unregistered PNS).';
     protected $usage = 'pns:check-pensiun [options]';
     protected $options = [
         '--apply'        => 'Execute retirement workflow: Suspend cPanel login, clear pegawai data, set pensiun_at, and soft-delete to Trash.',
+        '--dtp'          => 'Target specific 31 accounts of Dinas Tanaman Pangan (Penyuluh Pertanian transferred to Kementan RI / Purna Tugas)',
+        '--penyuluh'     => 'Alias for --dtp',
         '--age'          => 'Filter specific minimum age threshold for NIP evaluation (default: 60)',
-        '--unmatched'    => 'Target PNS accounts without NIP that are not registered in the active SIMPEG database (Purna Tugas/Mantan Pegawai)',
+        '--unmatched'    => 'Target all PNS accounts without NIP that are not registered in the active SIMPEG database (Purna Tugas/Mantan Pegawai)',
         '--include-near' => 'Include employees approaching retirement (age 59) in the export/review',
         '--export'       => 'Export list of retired PNS to CSV file',
     ];
@@ -28,6 +30,7 @@ class CheckPensiun extends BaseCommand
     {
         $isApply = CLI::getOption('apply') !== null || in_array('--apply', $params) || isset($params['apply']);
         $minAge = (int)(CLI::getOption('age') ?? 60);
+        $isDtp = CLI::getOption('dtp') !== null || in_array('--dtp', $params) || CLI::getOption('penyuluh') !== null || in_array('--penyuluh', $params);
         $isUnmatched = CLI::getOption('unmatched') !== null || in_array('--unmatched', $params);
         $includeNear = CLI::getOption('include-near') !== null || in_array('--include-near', $params);
         $isExport = CLI::getOption('export') !== null || in_array('--export', $params);
@@ -39,6 +42,11 @@ class CheckPensiun extends BaseCommand
         // 1. Ambil ID PNS Aktif
         $pnsStatus = $statusAsnModel->where('nama_status_asn', 'PNS')->first();
         $pnsId = $pnsStatus['id'] ?? 1;
+
+        if ($isDtp) {
+            $this->processDtpPenyuluhPns($emailModel, $unitModel, $pnsId, $isApply, $isExport);
+            return;
+        }
 
         if ($isUnmatched) {
             $this->processUnmatchedPns($emailModel, $unitModel, $pnsId, $isApply, $isExport);
@@ -220,6 +228,155 @@ class CheckPensiun extends BaseCommand
         if (!$isApply) {
             CLI::write("💡 Tips: Untuk memproses seluruh akun pensiun ke database (suspend login + pindah ke Trash), jalankan:", 'yellow');
             CLI::write("php spark pns:check-pensiun --apply\n", 'cyan');
+        }
+    }
+
+    private function processDtpPenyuluhPns(EmailModel $emailModel, UnitKerjaModel $unitModel, int $pnsId, bool $isApply, bool $isExport): void
+    {
+        CLI::write("==========================================================", 'yellow');
+        CLI::write("   PROSES PENSIUN / PENANGGUHAN AKUN PENYULUH DTP (KEMENTAN) ", 'yellow');
+        CLI::write("==========================================================", 'yellow');
+        CLI::write("Dasar Regulasi: Inpres No. 3 Thn 2025 (Pengalihan Penyuluh ke Kementan RI)\n", 'cyan');
+
+        // Cari Unit Kerja Dinas Tanaman Pangan
+        $units = $unitModel->like('nama_unit_kerja', 'TANAMAN PANGAN')->findAll();
+        $targetUnitIds = [];
+        $unitName = 'DINAS TANAMAN PANGAN, HORTIKULTURA DAN PERKEBUNAN';
+
+        foreach ($units as $u) {
+            $targetUnitIds[] = (int)$u['id'];
+            $childs = $unitModel->where('parent_id', $u['id'])->findAll();
+            foreach ($childs as $c) {
+                $targetUnitIds[] = (int)$c['id'];
+            }
+        }
+        $targetUnitIds = array_unique($targetUnitIds);
+
+        // Muat SIMPEG cache untuk cross-check
+        $cacheFile = WRITEPATH . 'cache/simpeg_units_pegawai.json';
+        $diskCache = file_exists($cacheFile) ? (json_decode(@file_get_contents($cacheFile), true) ?: []) : [];
+        $allPegawai = [];
+        foreach ($diskCache as $uData) {
+            if (!empty($uData['data']) && is_array($uData['data'])) {
+                foreach ($uData['data'] as $p) {
+                    $allPegawai[] = $p;
+                }
+            }
+        }
+
+        // Ambil akun PNS tanpa NIP di Dinas Tanaman Pangan
+        $accounts = $emailModel->select('emails.id, emails.user, emails.email, emails.name, emails.nip, emails.jabatan, emails.bsre_status, unit_kerja.nama_unit_kerja')
+            ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
+            ->where('emails.deleted_at IS NULL')
+            ->where('emails.pensiun_at IS NULL')
+            ->where('emails.status_asn_id', $pnsId)
+            ->whereIn('emails.unit_kerja_id', $targetUnitIds)
+            ->groupStart()
+                ->where('emails.nip IS NULL')
+                ->orWhere('emails.nip', '')
+            ->groupEnd()
+            ->orderBy('emails.name', 'ASC')
+            ->findAll();
+
+        $dtpRetireList = [];
+
+        foreach ($accounts as $acc) {
+            $accName = trim($acc['name'] ?? '');
+            if (empty($accName)) {
+                $accName = explode('@', $acc['email'])[0];
+                $accName = str_replace(['.', '_', '-'], ' ', $accName);
+            }
+
+            $normName = $this->normalizeName($accName);
+            $normNameNoAndi = trim(preg_replace('/^ANDI\s+/i', '', $normName));
+
+            // Cari apakah ada di SIMPEG aktif
+            $found = false;
+            foreach ($allPegawai as $p) {
+                $pNorm = $this->normalizeName($p['nama'] ?? '');
+                $pNormNoAndi = trim(preg_replace('/^ANDI\s+/i', '', $pNorm));
+
+                if ($normName === $pNorm || (!empty($normNameNoAndi) && $normNameNoAndi === $pNormNoAndi)) {
+                    $found = true;
+                    break;
+                }
+            }
+
+            // Jika tidak terdaftar di SIMPEG aktif daerah, masukkan ke daftar pensiun/pengalihan
+            if (!$found) {
+                $dtpRetireList[] = [
+                    'account' => $acc,
+                    'reason'  => 'Penyuluh Dialihkan ke Kementan RI / Purna Tugas Daerah',
+                ];
+            }
+        }
+
+        $totalFound = count($dtpRetireList);
+        CLI::write("Total Akun PNS Tanpa NIP di DTP       : " . count($accounts), 'yellow');
+        CLI::write("Akun Penyuluh/Purna Tidak di SIMPEG   : " . $totalFound . " Akun", 'red');
+        CLI::write("");
+
+        if ($totalFound > 0) {
+            CLI::write("--- [DAFTAR " . $totalFound . " AKUN PENYULUH DTP / PURNA TUGAS KEMENTAN] ---", 'red');
+            foreach ($dtpRetireList as $idx => $item) {
+                $acc = $item['account'];
+                $tte = $acc['bsre_status'] ?: 'NO_CERTIFICATE';
+                CLI::write(sprintf(
+                    "%2d. [%-32s] %-25s | TTE: %-15s | Status: %s",
+                    $idx + 1,
+                    $acc['email'],
+                    $acc['name'] ?: '-',
+                    $tte,
+                    $item['reason']
+                ), 'light_red');
+            }
+            CLI::write("");
+        }
+
+        if (!$isApply) {
+            CLI::write("MODE: [SIMULASI / DRY-RUN] (Tidak ada perubahan database)", 'cyan');
+            CLI::write("💡 Tips: Untuk memproses pensiun/penangguhan pada {$totalFound} akun ini (suspend login cPanel, hapus data kepegawaian & pindah ke Trash), jalankan:", 'yellow');
+            CLI::write("php spark pns:check-pensiun --dtp --apply\n", 'cyan');
+        } else {
+            CLI::write("MODE: [LIVE UPDATE / APPLY] (Alur Lengkap Pensiun & Penangguhan)", 'red');
+            $confirm = CLI::prompt("Apakah Anda yakin ingin memproses {$totalFound} akun Dinas Tanaman Pangan ini sebagai PENSIUN (suspend cPanel login, hapus data kepegawaian daerah & pindah ke Kotak Sampah)?", ['y', 'n']);
+            if (strtolower($confirm) !== 'y') {
+                CLI::write("Dibatalkan oleh pengguna.", 'yellow');
+                return;
+            }
+
+            $this->executeRetirementWorkflow($emailModel, $dtpRetireList, "Penyuluh Dialihkan ke Kementan RI / Pensiun DTP");
+        }
+
+        if ($isExport) {
+            $exportDir = WRITEPATH . 'exports';
+            if (!is_dir($exportDir)) {
+                mkdir($exportDir, 0777, true);
+            }
+            $filename = 'rekap_penyuluh_dtp_kementan_pensiun_' . date('YmdHis') . '.csv';
+            $filepath = $exportDir . '/' . $filename;
+            $fp = fopen($filepath, 'w');
+
+            fprintf($fp, chr(0xEF) . chr(0xBB) . chr(0xBF));
+            fputcsv($fp, ['No', 'Email', 'Nama Akun', 'Jabatan', 'Unit Kerja', 'Status TTE', 'Keterangan']);
+
+            $no = 1;
+            foreach ($dtpRetireList as $item) {
+                $acc = $item['account'];
+                fputcsv($fp, [
+                    $no++,
+                    $acc['email'] ?? '',
+                    $acc['name'] ?? '',
+                    $acc['jabatan'] ?? '',
+                    $acc['nama_unit_kerja'] ?? $unitName,
+                    $acc['bsre_status'] ?? 'NO_CERTIFICATE',
+                    $item['reason'],
+                ]);
+            }
+            fclose($fp);
+
+            CLI::write("✓ Berhasil mengekspor data ke file CSV:", 'green');
+            CLI::write("  $filepath\n", 'cyan');
         }
     }
 
