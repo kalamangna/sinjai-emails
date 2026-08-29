@@ -17,6 +17,7 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Menambahkan fitur **Pencarian Lintas Unit Kerja (`--cross-unit`)** dengan proteksi ketat (*Regency-Wide Uniqueness Check* & *100% Exact Match Only*) untuk mendeteksi pegawai yang telah mengalami mutasi/pindah OPD, sekaligus memperbarui NIP dan menyelaraskan `unit_kerja_id` ke OPD barunya di SIMPEG secara aman tanpa risiko salah mapping nama homonim.
   - Menambahkan alur konfirmasi interaktif per akun untuk hasil **Cocok Mirip (Fuzzy)** saat menjalankan `--apply` (dengan opsi tinjau per akun, terapkan semua, atau lewati semua), serta opsi flag `--include-fuzzy` untuk eksekusi otomatis.
   - Dilengkapi sistem proteksi dan deteksi NIP duplikat (baik terhadap NIP yang sudah ada pada akun lain di database maupun antar-akun dalam batch evaluasi yang sama) untuk menjamin integritas data dan mencegah tumpang tindih akun.
+  - Menambahkan sistem **Persistent Disk Cache per Unit Kerja** (`WRITEPATH . 'cache/simpeg_units_pegawai.json'`) sehingga proses eksekusi lanjutan (`--apply`) maupun simulasi berikutnya dapat berjalan **instan (0.05 detik)** tanpa perlu mengunduh ulang data API dari awal, dengan opsi `--refresh` untuk pembaruan paksa.
   - Dilengkapi mekanisme pre-fetching berbasis unit kerja dengan jeda dan retry adaptif untuk menghindari *rate limiting* pada server SIMPEG.
 
 ## API Gateway & Integrasi Hierarki Unit Kerja

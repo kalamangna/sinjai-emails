@@ -23,6 +23,7 @@ class MatchPegawaiNip extends BaseCommand
         '--threshold'     => 'Similarity percentage threshold for fuzzy matching (default: 85)',
         '--include-fuzzy' => 'Automatically apply fuzzy matches without interactive prompt',
         '--cross-unit'    => 'Search across all Unit Kerja if employee is not found in assigned unit (e.g. employee transferred/mutated)',
+        '--refresh'       => 'Force re-download master data from SIMPEG API instead of using local cache',
     ];
 
     private array $cachedApiPegawai = [];
@@ -176,8 +177,28 @@ class MatchPegawaiNip extends BaseCommand
             }
         }
 
+        $forceRefresh = CLI::getOption('refresh') !== null || in_array('--refresh', $params);
+        $cacheFile = WRITEPATH . 'cache/simpeg_units_pegawai.json';
+        $diskCache = [];
+
+        if (!$forceRefresh && file_exists($cacheFile)) {
+            $raw = @file_get_contents($cacheFile);
+            $diskCache = json_decode($raw, true) ?: [];
+        }
+
         $totalUnitsToFetch = count($neededApiUnits);
-        CLI::write("\nMengambil master data pegawai untuk $totalUnitsToFetch Unit Kerja dari API SIMPEG...", 'yellow');
+        $cachedCount = 0;
+        foreach (array_keys($neededApiUnits) as $apiUnitId) {
+            if (isset($diskCache[$apiUnitId]) && is_array($diskCache[$apiUnitId]['data']) && (time() - ($diskCache[$apiUnitId]['time'] ?? 0) < 86400)) {
+                $cachedCount++;
+            }
+        }
+
+        if ($cachedCount === $totalUnitsToFetch && $cachedCount > 0) {
+            CLI::write("\n⚡ Memuat master data dari cache lokal (Instan: $cachedCount Unit Kerja)...", 'green');
+        } else {
+            CLI::write("\nMenyiapkan master data pegawai untuk $totalUnitsToFetch Unit Kerja dari API SIMPEG...", 'yellow');
+        }
 
         $client = \Config\Services::curlrequest(['timeout' => 8, 'verify' => false]);
         $baseUrl = rtrim(env('PEGAWAI_BASE_URL') ?: 'https://apps.sinjaikab.go.id/api/pegawai', '/') . '/';
@@ -185,22 +206,41 @@ class MatchPegawaiNip extends BaseCommand
         $totalPegawaiFetched = 0;
         $unitIdx = 0;
         $allPegawaiList = [];
+        $hasCacheUpdate = false;
 
         foreach (array_keys($neededApiUnits) as $apiUnitId) {
             $unitIdx++;
-            $pegawaiList = $this->fetchApiPegawaiWithRetry($client, $baseUrl, $apiUnitId);
+
+            // Cek apakah ada di disk cache yang valid (< 24 jam)
+            if (!$forceRefresh && isset($diskCache[$apiUnitId]) && is_array($diskCache[$apiUnitId]['data']) && (time() - ($diskCache[$apiUnitId]['time'] ?? 0) < 86400)) {
+                $pegawaiList = $diskCache[$apiUnitId]['data'];
+            } else {
+                $pegawaiList = $this->fetchApiPegawaiWithRetry($client, $baseUrl, $apiUnitId);
+                $diskCache[$apiUnitId] = [
+                    'time' => time(),
+                    'data' => $pegawaiList,
+                ];
+                $hasCacheUpdate = true;
+                @file_put_contents($cacheFile, json_encode($diskCache));
+
+                $line = sprintf("⏳ Mengunduh data SIMPEG: [%d/%d] Unit %s (%d pegawai)   ", $unitIdx, $totalUnitsToFetch, $apiUnitId, count($pegawaiList));
+                CLI::print("\r" . str_pad($line, 70));
+                usleep(30000); // 30ms delay
+            }
+
             $this->cachedApiPegawai[$apiUnitId] = $pegawaiList;
             $totalPegawaiFetched += count($pegawaiList);
 
             foreach ($pegawaiList as $p) {
                 $allPegawaiList[] = $p;
             }
-
-            $line = sprintf("⏳ Mengunduh data SIMPEG: [%d/%d] Unit %s (%d pegawai)   ", $unitIdx, $totalUnitsToFetch, $apiUnitId, count($pegawaiList));
-            CLI::print("\r" . str_pad($line, 70));
-            usleep(50000); // 50ms delay
         }
-        CLI::write("\n✓ Selesai mengunduh master data: $totalPegawaiFetched pegawai dari SIMPEG.\n", 'green');
+
+        if ($hasCacheUpdate) {
+            @file_put_contents($cacheFile, json_encode($diskCache));
+        }
+
+        CLI::write("\n✓ Master data kepegawaian siap: $totalPegawaiFetched pegawai dari SIMPEG.\n", 'green');
 
         // Bangun indeks keunikan nama se-Kabupaten untuk proteksi Lintas Unit
         $globalExactNameIndex = [];
