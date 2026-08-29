@@ -23,7 +23,7 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **Ekspor CSV Halaman Pegawai PNS**:
   - Menambahkan tombol dan fitur **Export CSV** pada halaman daftar Pegawai PNS (`/email/pns`), mendukung filter aktif (NIP dan Unit Kerja) dengan kelengkapan data: No, Nama, NIP, Email, Jabatan, Golongan, Pangkat, Unit Kerja, OPD Induk, dan Status TTE.
 - **Command Analisis Status Pensiun PNS (`pns:check-pensiun`)**:
-  - Menambahkan command CLI `pns:check-pensiun` untuk menghitung usia PNS secara presisi dari 8 digit awal NIP (`YYYYMMDD`), mengelompokkannya berdasarkan Batas Usia Pensiun (BUP 58 & 60 Tahun), dan menyediakan opsi ekspor rekap ke format CSV (`--export`).
+  - Menambahkan command CLI `pns:check-pensiun` untuk menghitung usia PNS secara presisi dari 8 digit awal NIP (`YYYYMMDD`), menerapkan kriteria ketat **Batas Usia Pensiun (BUP) $\ge 60$ Tahun** (kelahiran $\le 1966$), serta opsi ekspor rekap ke format CSV (`--export`).
 
 ## API Gateway & Integrasi Hierarki Unit Kerja
 - **Penyempurnaan Respon API Gateway**:
