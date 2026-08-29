@@ -301,8 +301,10 @@ class MatchPegawaiNip extends BaseCommand
 
             $pegawaiList = !empty($apiUnitId) ? ($this->cachedApiPegawai[$apiUnitId] ?? []) : [];
             
+            $emailYear = $this->extractYearFromEmail($accEmail);
+
             // Tahap 1: Cocokkan di dalam Unit Kerja saat ini (jika ada unit_id)
-            $matchResult = !empty($pegawaiList) ? $this->findBestMatch($normAccName, $pegawaiList, $threshold) : ['type' => 'NONE'];
+            $matchResult = !empty($pegawaiList) ? $this->findBestMatch($normAccName, $pegawaiList, $threshold, $emailYear) : ['type' => 'NONE'];
             $isCross = false;
             $isLeadership = false;
             $leadershipRole = null;
@@ -947,7 +949,7 @@ class MatchPegawaiNip extends BaseCommand
         return [];
     }
 
-    private function findBestMatch(string $normAccName, array $pegawaiList, float $threshold): array
+    private function findBestMatch(string $normAccName, array $pegawaiList, float $threshold, ?int $expectedBirthYear = null): array
     {
         if (empty($normAccName) || empty($pegawaiList)) {
             return ['type' => 'NONE'];
@@ -956,11 +958,19 @@ class MatchPegawaiNip extends BaseCommand
         $bestFuzzy = null;
         $bestScore = 0;
         $normNoAndi = trim(preg_replace('/^ANDI\s+/i', '', $normAccName));
+        $accWords = explode(' ', $normAccName);
+        $firstAccWord = $accWords[0] ?? '';
 
         foreach ($pegawaiList as $peg) {
             $pegName = $peg['nama'] ?? '';
             $normPegName = $this->normalizeName($pegName);
             $normPegNoAndi = trim(preg_replace('/^ANDI\s+/i', '', $normPegName));
+            $pegBirthYear = (int)substr($peg['nip'] ?? '', 0, 4);
+
+            // Jika ada indikasi tahun lahir pada email, pastikan NIP sesuai
+            if ($expectedBirthYear !== null && $pegBirthYear > 1940 && $pegBirthYear !== $expectedBirthYear) {
+                continue;
+            }
 
             // 1. Exact Match setelah normalisasi
             if ($normAccName === $normPegName || (!empty($normNoAndi) && $normNoAndi === $normPegNoAndi)) {
@@ -982,7 +992,13 @@ class MatchPegawaiNip extends BaseCommand
                 ];
             }
 
-            // 3. Hitung similarity
+            // 3. Hitung similarity (Hanya jika kata pertama serupa, cegah nama beda seperti JAMALUDDIN vs AKMALUDDIN)
+            $pegWords = explode(' ', $normPegName);
+            $firstPegWord = $pegWords[0] ?? '';
+            if (!empty($firstAccWord) && !empty($firstPegWord) && $firstAccWord[0] !== $firstPegWord[0]) {
+                continue; // Huruf pertama beda, jangan dipaksa fuzzy
+            }
+
             similar_text($normAccName, $normPegName, $percent);
 
             if ($percent > $bestScore) {
