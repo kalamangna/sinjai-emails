@@ -5,6 +5,31 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [30 Agustus 2026]
+
+- **Normalisasi Jabatan Menyeluruh & Standarisasi Nomenklatur Pemkab Sinjai**:
+  - Menerapkan arsitektur normalisasi cerdas pada seluruh alur sinkronisasi SIMPEG (`PegawaiSyncService`, `EmailService::normalizeJabatanName`, `sync:pegawai-unit`, dan cron bulanan `sync:all --monthly`).
+  - Standarisasi format ringkas pimpinan struktural:
+    - `KEPALA DINAS` (untuk seluruh 21 Dinas Daerah dan Satpol PP & Damkar).
+    - `KEPALA BADAN` (untuk seluruh 7 Badan Daerah).
+    - `KEPALA BAGIAN` (untuk seluruh 10 Bagian Sekretariat Daerah).
+    - `CAMAT` (untuk seluruh 9 Kecamatan).
+    - `LURAH` (untuk seluruh 13 Kelurahan).
+    - `DIREKTUR` (untuk RSUD Sinjai dan RSUD Pratama Bulupaccing).
+    - `SEKRETARIS DINAS`, `SEKRETARIS BADAN`, `SEKRETARIS INSPEKTORAT`, `SEKRETARIS KECAMATAN`, `SEKRETARIS KELURAHAN`.
+  - Resolusi cerdas jabatan ganda/kombinasi tanda miring (`/`): memprioritaskan penugasan manajerial kepala unit/sekolah (contoh: *Kepala SDN / Guru Madya* $\rightarrow$ `KEPALA SDN ...`, *Dokter / Kepala Puskesmas* $\rightarrow$ `KEPALA UPTD PUSKESMAS ...`).
+  - Koreksi otomatis anomali teks SIMPEG:
+    - Pembersihan tanda baca liar di ujung (`.` dan `,`) serta pemadatan spasi ganda.
+    - Perbaikan penulisan singkatan bertitik `SUB.` $\rightarrow$ `SUB BAGIAN` / `SUB BIDANG`.
+    - Koreksi typo master data SIMPEG: `TEHNOLOGI` $\rightarrow$ `TEKNOLOGI`, `KOMSUMSI` $\rightarrow$ `KONSUMSI`, `HOLTIKULTURA` $\rightarrow$ `HORTIKULTURA`.
+    - Perlindungan kata ulang baku agar tidak terpecah spasi (contoh: `PERUNDANG-UNDANGAN`).
+- **Integrasi Sinkronisasi Mutasi Unit Kerja & Hierarki Parent-Child**:
+  - Sinkronisasi otomatis `unit_kerja_id` berdasarkan pemetaan `unit_id` SIMPEG saat terjadi mutasi atau alih tugas pegawai ke OPD baru.
+  - Proteksi penempatan *child unit*: akun yang telah ditempatkan pada sub-unit spesifik (Sekolah, Puskesmas, Kelurahan/Desa) tidak akan ditimpa atau diturunkan ke unit induk (*parent*) selama masih dalam rumpun OPD yang sama.
+  - Memastikan seluruh akun ber-NIP (PNS dan Pimpinan) ikut disinkronkan dan dinormalkan, dengan tetap mengecualikan formasi akun PPPK dan PPPK Paruh Waktu.
+
+---
+
 # [29 Agustus 2026]
 
 - **Penyederhanaan UI & Pembersihan Kode Migrasi ASN (`PNS`, `PPPK`, `PPPK PW`)**:

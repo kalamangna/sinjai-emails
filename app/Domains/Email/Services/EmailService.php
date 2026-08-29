@@ -1037,16 +1037,21 @@ class EmailService
             ->where('emails.nip', $nip)
             ->first();
 
-        // Guard: Hanya sinkronkan data untuk akun PNS (Abaikan PPPK dan PPPK Paruh Waktu)
-        if ($currentEmail) {
-            $statusPns = $this->statusAsnModel->where('nama_status_asn', 'PNS')->asArray()->first();
-            $pnsId = $statusPns['id'] ?? 1;
-            if ($currentEmail['status_asn_id'] != $pnsId) {
+        // Guard: Hanya abaikan akun PPPK dan PPPK Paruh Waktu
+        if ($currentEmail && !empty($currentEmail['status_asn_id'])) {
+            $statusPppk = $this->statusAsnModel->where('nama_status_asn', 'PPPK')->asArray()->first();
+            $statusPppkPw = $this->statusAsnModel->where('nama_status_asn', 'PPPK PARUH WAKTU')->asArray()->first();
+            $excludeIds = array_filter([
+                $statusPppk['id'] ?? null,
+                $statusPppkPw['id'] ?? null,
+            ]);
+
+            if (in_array($currentEmail['status_asn_id'], $excludeIds)) {
                 return [
                     'success' => true,
                     'skipped' => true,
-                    'reason'  => 'non_pns',
-                    'message' => 'Hanya akun PNS yang disinkronkan ke SIMPEG',
+                    'reason'  => 'pppk',
+                    'message' => 'Akun PPPK / PPPK Paruh Waktu - Data tidak disinkronkan',
                     'current' => $currentEmail,
                     'data'    => [
                         'jabatan'          => $currentEmail['jabatan'] ?? '-',
@@ -1091,20 +1096,18 @@ class EmailService
         $isPimpinan = ($currentEmail['pimpinan'] ?? 0) == 1;
         $updateData = [];
 
-        // 1. Sync Jabatan (skip for pimpinan)
-        if (!$isPimpinan) {
-            $rawJabatan = $source['jabatan_nama'] ?? $source['jabatan'] ?? null;
-            if ($rawJabatan) {
-                $cleanJab = $this->normalizeJabatanName($rawJabatan, $currentEmail['nama_unit_kerja'] ?? '');
-                if ($cleanJab && stripos($cleanJab, 'PLT') === false) {
-                    $updateData['jabatan'] = $cleanJab;
+        // 1. Sync Jabatan & Normalisasi
+        $rawJabatan = $source['jabatan_nama'] ?? $source['jabatan'] ?? ($currentEmail['jabatan'] ?? null);
+        if ($rawJabatan) {
+            $cleanJab = $this->normalizeJabatanName($rawJabatan, $currentEmail['nama_unit_kerja'] ?? '');
+            if ($cleanJab && stripos($cleanJab, 'PLT') === false) {
+                $updateData['jabatan'] = $cleanJab;
 
-                    if (!empty($source['jabatan_jenis_eselon'])) {
-                        $eselonStr   = str_replace(['.', ' '], '', $source['jabatan_jenis_eselon']);
-                        $eselonModel = new \App\Shared\Models\EselonModel();
-                        $eselon      = $eselonModel->where('nama_eselon', $eselonStr)->first();
-                        if ($eselon) $updateData['eselon_id'] = $eselon['id'];
-                    }
+                if (!empty($source['jabatan_jenis_eselon'])) {
+                    $eselonStr   = str_replace(['.', ' '], '', $source['jabatan_jenis_eselon']);
+                    $eselonModel = new \App\Shared\Models\EselonModel();
+                    $eselon      = $eselonModel->where('nama_eselon', $eselonStr)->first();
+                    if ($eselon) $updateData['eselon_id'] = $eselon['id'];
                 }
             }
         }
@@ -1112,6 +1115,14 @@ class EmailService
         // 2. Sync Pangkat & Golongan
         if (isset($source['pangkat_nama']))    $updateData['pangkat_nama']    = trim($source['pangkat_nama']);
         if (isset($source['pangkat_golruang'])) $updateData['pangkat_golruang'] = trim($source['pangkat_golruang']);
+
+        // 3. Sync Unit Kerja jika terjadi mutasi / pindah tugas di SIMPEG
+        if (!empty($source['unit_id'])) {
+            $targetUnit = $this->unitKerjaModel->where('api_unit_id', $source['unit_id'])->first();
+            if ($targetUnit && $targetUnit['id'] != $currentEmail['unit_kerja_id']) {
+                $updateData['unit_kerja_id'] = $targetUnit['id'];
+            }
+        }
 
         if (!empty($updateData)) {
             $this->emailModel->where('nip', $nip)->set($updateData)->update();
@@ -1123,9 +1134,7 @@ class EmailService
             return [
                 'success' => true,
                 'updated' => true,
-                'message' => $isPimpinan
-                    ? 'Data pangkat disinkronkan, jabatan pimpinan dipertahankan'
-                    : 'Data pegawai berhasil disinkronkan',
+                'message' => 'Data pegawai dan jabatan berhasil disinkronkan & dinormalkan',
                 'data'    => $responseData,
             ];
         }
@@ -1194,7 +1203,7 @@ class EmailService
         \App\Shared\Services\CacheService::invalidateDashboard();
     }
 
-    public function normalizeJabatanName(?string $jabatan, ?string $unitKerjaName = null): ?string
+    public function normalizeJabatanName(?string $jabatan, ?string $unitKerjaName = null, bool $isPimpinan = false): ?string
     {
         if (empty($jabatan)) {
             return null;
@@ -1203,15 +1212,77 @@ class EmailService
         $jab = mb_strtoupper(trim($jabatan), 'UTF-8');
         // Hapus karakter liar di akhir (titik ganda, titik koma, titik satu di ujung)
         $jab = preg_replace('/[,\.]+\s*$/', '', $jab);
+
+        // Jika akun pimpinan atau nama jabatan kepala dinas / badan / bagian / satpol / rsud, terapkan format ringkas pimpinan
+        if ($isPimpinan || stripos($jab, 'KEPALA DINAS') === 0 || stripos($jab, 'KEPALA BADAN') === 0 || stripos($jab, 'KEPALA BAGIAN') === 0 || stripos($jab, 'KEPALA SATUAN POLISI') === 0 || stripos($jab, 'DIREKTUR') === 0) {
+            if (!empty($unitKerjaName)) {
+                $unitUpper = strtoupper($unitKerjaName);
+                if (strpos($unitUpper, 'SATUAN POLISI') !== false || strpos($unitUpper, 'SATPOL') !== false) {
+                    return 'KEPALA DINAS';
+                } elseif (strpos($unitUpper, 'RUMAH SAKIT') !== false || strpos($unitUpper, 'RSUD') !== false) {
+                    return 'DIREKTUR';
+                } elseif (strpos($unitUpper, 'BAGIAN') !== false) {
+                    return 'KEPALA BAGIAN';
+                } elseif (strpos($unitUpper, 'DINAS') !== false) {
+                    return 'KEPALA DINAS';
+                } elseif (strpos($unitUpper, 'BADAN') !== false) {
+                    return 'KEPALA BADAN';
+                } elseif (strpos($unitUpper, 'KECAMATAN') !== false) {
+                    return 'CAMAT';
+                } elseif (strpos($unitUpper, 'KELURAHAN') !== false) {
+                    return 'LURAH';
+                }
+            }
+            if (stripos($jab, 'KEPALA BAGIAN') === 0) return 'KEPALA BAGIAN';
+            if (stripos($jab, 'KEPALA SATUAN POLISI') === 0) return 'KEPALA DINAS';
+            if (stripos($jab, 'DIREKTUR') === 0) return 'DIREKTUR';
+            if (stripos($jab, 'KEPALA DINAS') === 0) return 'KEPALA DINAS';
+            if (stripos($jab, 'KEPALA BADAN') === 0) return 'KEPALA BADAN';
+        }
+
+        // Resolusi jabatan kombinasi garis miring (Opsi B: Prioritas Tugas Manajerial/Kepala/Pimpinan)
+        if (strpos($jab, '/') !== false && !preg_match('/\b[IVX]+\/[A-D]\b/i', $jab)) {
+            $parts = explode('/', $jab);
+            if (count($parts) > 1 && strlen(trim($parts[0])) > 2 && strlen(trim($parts[1])) > 2) {
+                $managerialKeywords = ['KEPALA', 'DIREKTUR', 'KOORDINATOR', 'KETUA', 'WAKIL', 'SEKRETARIS', 'KASUBAG', 'KASI', 'KABID', 'PIMPINAN'];
+                $chosen = null;
+                foreach ($parts as $p) {
+                    $pUpper = strtoupper(trim($p));
+                    foreach ($managerialKeywords as $kw) {
+                        if (stripos($pUpper, $kw) !== false) {
+                            $chosen = $p;
+                            break 2;
+                        }
+                    }
+                }
+                if (!$chosen) {
+                    $chosen = $parts[0];
+                }
+                $jab = $chosen;
+            }
+        }
+
+        // Koreksi SUB. BAGIAN / SUB. BIDANG menjadi SUB BAGIAN / SUB BIDANG
+        $jab = preg_replace('/\bSUB\.\s*/i', 'SUB ', $jab);
+
         // Spasi sebelum/setelah tanda baca titik dan koma
         $jab = preg_replace('/\s+([,\.])/', '$1', $jab);
         $jab = preg_replace('/([,\.])\s+/', '$1 ', $jab);
         // Standarisasi slash (III/a tanpa spasi)
         $jab = preg_replace('/\s*\/\s*/', '/', $jab);
-        // Standarisasi tanda hubung spasi bersih e.g. " - "
-        $jab = preg_replace('/\s*-\s*/', ' - ', $jab);
+        // Spasi bersih untuk jenjang fungsional e.g. "AHLI PERTAMA - PRANATA KOMPUTER"
+        $jab = preg_replace('/\b(AHLI PERTAMA|AHLI MUDA|AHLI MADYA|AHLI UTAMA|TERAMPIL|MAHIR|PENYELIA)\s*-\s*/i', '$1 - ', $jab);
+        // Pastikan kata ulang tidak terpecah
+        $jab = preg_replace('/\b(PERUNDANG|UNDANG|SARANA|ORGANISASI)\s*-\s*(UNDANGAN|UNDANG|PRASARANA)\b/i', '$1-$2', $jab);
         // Hapus spasi ganda atau tab liar
         $jab = preg_replace('/\s+/', ' ', trim($jab));
+
+        // Koreksi typo umum di master data SIMPEG
+        $jab = str_replace(
+            ['TEHNOLOGI', 'KOMSUMSI', 'HOLTIKULTURA'],
+            ['TEKNOLOGI', 'KONSUMSI', 'HORTIKULTURA'],
+            $jab
+        );
 
         // Penyesuaian khusus jika hanya tertulis "SEKRETARIS"
         if ($jab === 'SEKRETARIS' && !empty($unitKerjaName)) {
