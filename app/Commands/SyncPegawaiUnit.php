@@ -109,18 +109,25 @@ class SyncPegawaiUnit extends BaseCommand
         $emailModel = new EmailModel();
         $builder = $emailModel->whereIn('unit_kerja_id', $unitIds);
 
+        $statusAsnModel = new StatusAsnModel();
+        $statusPns = $statusAsnModel->where('nama_status_asn', 'PNS')->first();
+        $pnsId = $statusPns['id'] ?? 1;
+
         if ($asnFilter) {
-            $statusAsnModel = new StatusAsnModel();
             $statusAsn = $statusAsnModel->where('nama_status_asn', strtoupper($asnFilter))->first();
 
             if (!$statusAsn) {
                 CLI::error("Error: Status ASN '$asnFilter' not found.");
-                CLI::write("Available statuses: PNS, PPPK, PPPK PARUH WAKTU", 'yellow');
+                CLI::write("Available statuses: PNS", 'yellow');
                 return;
             }
 
             $builder->where('status_asn_id', $statusAsn['id']);
             CLI::write("Filtering by ASN Status: " . strtoupper($asnFilter), 'cyan');
+        } else {
+            // Default hanya proses PNS (Abaikan PPPK dan PPPK Paruh Waktu)
+            $builder->where('status_asn_id', $pnsId);
+            CLI::write("Target Status Kepegawaian: PNS (ID: $pnsId)", 'cyan');
         }
 
         $emails = $builder->findAll();

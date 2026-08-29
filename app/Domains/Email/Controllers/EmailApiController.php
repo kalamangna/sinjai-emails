@@ -254,12 +254,11 @@ class EmailApiController extends BaseController
 
         $result = $this->emailService->syncPegawaiFromApi($nip);
 
-        // Handle PPPK Paruh Waktu skip case
-        if (!empty($result['skipped']) && $result['reason'] === 'pppk_pw') {
-            $current = $result['current'];
+        if (!empty($result['skipped'])) {
+            $current = $result['current'] ?? [];
             return $this->response->setJSON([
                 'success' => true,
-                'message' => 'Akun PPPK Paruh Waktu - Data tidak disinkronkan',
+                'message' => $result['message'] ?? 'Akun bukan PNS - Data tidak disinkronkan',
                 'data'    => [
                     'jabatan'          => $current['jabatan'] ?? '-',
                     'pangkat_nama'     => $current['pangkat_nama'] ?? '-',

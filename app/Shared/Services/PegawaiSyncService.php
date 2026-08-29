@@ -34,9 +34,11 @@ class PegawaiSyncService
                         'pangkat_golruang' => $source['pangkat_golruang'] ?? null
                     ];
                     
-                    // Normalisasi nama jabatan agar kapital semua (sesuai standar database)
-                    if (isset($source['jabatan'])) {
-                        $updateData['jabatan'] = mb_strtoupper($source['jabatan'], 'UTF-8');
+                    // Normalisasi nama jabatan agar bersih dan rapi (huruf kapital, tanpa trailing dot/koma/spasi ganda)
+                    if (!empty($source['jabatan'])) {
+                        $rawJ = mb_strtoupper(trim($source['jabatan']), 'UTF-8');
+                        $rawJ = preg_replace('/[,\.]+\s*$/', '', $rawJ);
+                        $updateData['jabatan'] = preg_replace('/\s+/', ' ', trim($rawJ));
                     }
                     
                     // Update ke database

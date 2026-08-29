@@ -1037,11 +1037,23 @@ class EmailService
             ->where('emails.nip', $nip)
             ->first();
 
-        // Guard: PPPK Paruh Waktu is not synced
+        // Guard: Hanya sinkronkan data untuk akun PNS (Abaikan PPPK dan PPPK Paruh Waktu)
         if ($currentEmail) {
-            $statusPppkPw = $this->statusAsnModel->where('nama_status_asn', 'PPPK PARUH WAKTU')->asArray()->first();
-            if ($statusPppkPw && $currentEmail['status_asn_id'] == $statusPppkPw['id']) {
-                return ['skipped' => true, 'reason' => 'pppk_pw', 'current' => $currentEmail];
+            $statusPns = $this->statusAsnModel->where('nama_status_asn', 'PNS')->asArray()->first();
+            $pnsId = $statusPns['id'] ?? 1;
+            if ($currentEmail['status_asn_id'] != $pnsId) {
+                return [
+                    'success' => true,
+                    'skipped' => true,
+                    'reason'  => 'non_pns',
+                    'message' => 'Hanya akun PNS yang disinkronkan ke SIMPEG',
+                    'current' => $currentEmail,
+                    'data'    => [
+                        'jabatan'          => $currentEmail['jabatan'] ?? '-',
+                        'pangkat_nama'     => $currentEmail['pangkat_nama'] ?? '-',
+                        'pangkat_golruang' => $currentEmail['pangkat_golruang'] ?? '-',
+                    ]
+                ];
             }
         }
 
@@ -1081,18 +1093,11 @@ class EmailService
 
         // 1. Sync Jabatan (skip for pimpinan)
         if (!$isPimpinan) {
-            $newJabatan = $source['jabatan_nama'] ?? $source['jabatan'] ?? null;
-            if ($newJabatan) {
-                $newJabatanUpper = mb_strtoupper($newJabatan, 'UTF-8');
-                if (stripos($newJabatanUpper, 'PLT') === false) {
-                    if (strpos($newJabatanUpper, 'SEKRETARIS') !== false) {
-                        $unitName = strtoupper($currentEmail['nama_unit_kerja'] ?? '');
-                        if (strpos($unitName, 'DINAS') !== false)       $newJabatanUpper = 'SEKRETARIS DINAS';
-                        elseif (strpos($unitName, 'BADAN') !== false)   $newJabatanUpper = 'SEKRETARIS BADAN';
-                        elseif (strpos($unitName, 'KECAMATAN') !== false) $newJabatanUpper = 'SEKRETARIS KECAMATAN';
-                        elseif (strpos($unitName, 'KELURAHAN') !== false) $newJabatanUpper = 'SEKRETARIS KELURAHAN';
-                    }
-                    $updateData['jabatan'] = $newJabatanUpper;
+            $rawJabatan = $source['jabatan_nama'] ?? $source['jabatan'] ?? null;
+            if ($rawJabatan) {
+                $cleanJab = $this->normalizeJabatanName($rawJabatan, $currentEmail['nama_unit_kerja'] ?? '');
+                if ($cleanJab && stripos($cleanJab, 'PLT') === false) {
+                    $updateData['jabatan'] = $cleanJab;
 
                     if (!empty($source['jabatan_jenis_eselon'])) {
                         $eselonStr   = str_replace(['.', ' '], '', $source['jabatan_jenis_eselon']);
@@ -1105,8 +1110,8 @@ class EmailService
         }
 
         // 2. Sync Pangkat & Golongan
-        if (isset($source['pangkat_nama']))    $updateData['pangkat_nama']    = $source['pangkat_nama'];
-        if (isset($source['pangkat_golruang'])) $updateData['pangkat_golruang'] = $source['pangkat_golruang'];
+        if (isset($source['pangkat_nama']))    $updateData['pangkat_nama']    = trim($source['pangkat_nama']);
+        if (isset($source['pangkat_golruang'])) $updateData['pangkat_golruang'] = trim($source['pangkat_golruang']);
 
         if (!empty($updateData)) {
             $this->emailModel->where('nip', $nip)->set($updateData)->update();
@@ -1187,5 +1192,36 @@ class EmailService
 
         // Clear dashboard caches
         \App\Shared\Services\CacheService::invalidateDashboard();
+    }
+
+    public function normalizeJabatanName(?string $jabatan, ?string $unitKerjaName = null): ?string
+    {
+        if (empty($jabatan)) {
+            return null;
+        }
+
+        $jab = mb_strtoupper(trim($jabatan), 'UTF-8');
+        // Hapus karakter liar di akhir (titik ganda, titik koma, titik satu di ujung)
+        $jab = preg_replace('/[,\.]+\s*$/', '', $jab);
+        // Spasi sebelum/setelah tanda baca titik dan koma
+        $jab = preg_replace('/\s+([,\.])/', '$1', $jab);
+        $jab = preg_replace('/([,\.])\s+/', '$1 ', $jab);
+        // Standarisasi slash (III/a tanpa spasi)
+        $jab = preg_replace('/\s*\/\s*/', '/', $jab);
+        // Standarisasi tanda hubung spasi bersih e.g. " - "
+        $jab = preg_replace('/\s*-\s*/', ' - ', $jab);
+        // Hapus spasi ganda atau tab liar
+        $jab = preg_replace('/\s+/', ' ', trim($jab));
+
+        // Penyesuaian khusus jika hanya tertulis "SEKRETARIS"
+        if ($jab === 'SEKRETARIS' && !empty($unitKerjaName)) {
+            $unitUpper = strtoupper($unitKerjaName);
+            if (strpos($unitUpper, 'DINAS') !== false)       $jab = 'SEKRETARIS DINAS';
+            elseif (strpos($unitUpper, 'BADAN') !== false)   $jab = 'SEKRETARIS BADAN';
+            elseif (strpos($unitUpper, 'KECAMATAN') !== false) $jab = 'SEKRETARIS KECAMATAN';
+            elseif (strpos($unitUpper, 'KELURAHAN') !== false) $jab = 'SEKRETARIS KELURAHAN';
+        }
+
+        return $jab;
     }
 }
