@@ -11,9 +11,10 @@ class CheckPensiun extends BaseCommand
 {
     protected $group = 'App';
     protected $name = 'pns:check-pensiun';
-    protected $description = 'Strictly analyze retirement status (BUP 60 Years) for all PNS accounts based on 18-digit NIP.';
+    protected $description = 'Strictly analyze and mark retirement status (BUP >= 60 Years) for all PNS accounts based on 18-digit NIP.';
     protected $usage = 'pns:check-pensiun [options]';
     protected $options = [
+        '--apply'        => 'Apply updates to the database: Mark PNS accounts aged >= 60 as PENSIUN in status_asn.',
         '--age'          => 'Filter specific minimum age threshold (default: 60)',
         '--include-near' => 'Include employees approaching retirement (age 59) in the export/review',
         '--export'       => 'Export list of retired PNS (age >= 60) to CSV file',
@@ -21,6 +22,7 @@ class CheckPensiun extends BaseCommand
 
     public function run(array $params)
     {
+        $isApply = CLI::getOption('apply') !== null || in_array('--apply', $params) || isset($params['apply']);
         $minAge = (int)(CLI::getOption('age') ?? 60);
         $includeNear = CLI::getOption('include-near') !== null || in_array('--include-near', $params);
         $isExport = CLI::getOption('export') !== null || in_array('--export', $params);
@@ -28,8 +30,18 @@ class CheckPensiun extends BaseCommand
         $emailModel = new EmailModel();
         $statusAsnModel = new StatusAsnModel();
 
+        // 1. Pastikan status PNS ada
         $pnsStatus = $statusAsnModel->where('nama_status_asn', 'PNS')->first();
         $pnsId = $pnsStatus['id'] ?? 1;
+
+        // 2. Pastikan status PENSIUN ada di database
+        $pensiunStatus = $statusAsnModel->where('nama_status_asn', 'PENSIUN')->first();
+        if (!$pensiunStatus) {
+            $statusAsnModel->insert(['nama_status_asn' => 'PENSIUN']);
+            $pensiunId = $statusAsnModel->getInsertID();
+        } else {
+            $pensiunId = (int)$pensiunStatus['id'];
+        }
 
         $accounts = $emailModel->select('emails.id, emails.email, emails.name, emails.nip, emails.jabatan, emails.pangkat_golruang, emails.pangkat_nama, unit_kerja.nama_unit_kerja')
             ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
@@ -70,9 +82,9 @@ class CheckPensiun extends BaseCommand
                         'age'        => $age,
                     ];
 
-                    if ($age >= 60) {
+                    if ($age >= $minAge) {
                         $retired60List[] = $item;
-                    } elseif ($age >= 59) {
+                    } elseif ($age >= ($minAge - 1)) {
                         $nearRetireList[] = $item;
                     } else {
                         $activeList[] = $item;
@@ -91,19 +103,33 @@ class CheckPensiun extends BaseCommand
         CLI::write("==========================================================", 'yellow');
         CLI::write("    ANALISIS STATUS PENSIUN PNS (KRITERIA KETAT: >= 60 THN) ", 'yellow');
         CLI::write("==========================================================", 'yellow');
+
+        if (!$isApply) {
+            CLI::write("MODE: [SIMULASI / DRY-RUN] (Tidak ada perubahan database)", 'cyan');
+            CLI::write("Gunakan flag --apply untuk memperbarui status_asn menjadi PENSIUN.", 'light_gray');
+        } else {
+            CLI::write("MODE: [LIVE UPDATE / APPLY] (Status akan diubah menjadi PENSIUN!)", 'red');
+            $confirm = CLI::prompt("Apakah Anda yakin ingin menandai " . count($retired60List) . " akun PNS (usia >= 60 thn) sebagai PENSIUN?", ['y', 'n']);
+            if (strtolower($confirm) !== 'y') {
+                CLI::write("Dibatalkan oleh pengguna.", 'yellow');
+                return;
+            }
+        }
+        CLI::write("");
+
         CLI::write("Tahun Evaluasi                   : " . $currentYear, 'cyan');
-        CLI::write("Ambang Batas Pensiun             : >= 60 Tahun (Lahir <= 1966)", 'green');
+        CLI::write("Ambang Batas Pensiun             : >= {$minAge} Tahun (Lahir <= " . ($currentYear - $minAge) . ")", 'green');
         CLI::write("Total Akun PNS di Database       : " . $totalAccounts, 'yellow');
         CLI::write("• Memiliki NIP Valid             : " . $withNip, 'green');
-        CLI::write("  - Usia Aktif (<= 58 Tahun)     : " . count($activeList) . " Akun", 'green');
-        CLI::write("  - Menjelang Pensiun (59 Tahun) : " . count($nearRetireList) . " Akun (MPP BUP 60)", 'cyan');
-        CLI::write("  - PENSIUN / PURNA TUGAS (>= 60): " . count($retired60List) . " Akun", 'red');
+        CLI::write("  - Usia Aktif (< " . ($minAge - 1) . " Tahun)     : " . count($activeList) . " Akun", 'green');
+        CLI::write("  - Menjelang Pensiun (" . ($minAge - 1) . " Tahun) : " . count($nearRetireList) . " Akun (MPP BUP 60)", 'cyan');
+        CLI::write("  - PENSIUN / PURNA TUGAS (>= {$minAge}): " . count($retired60List) . " Akun", 'red');
         CLI::write("• Belum Memiliki NIP             : " . $withoutNip . " Akun", 'light_gray');
         CLI::write("==========================================================\n");
 
         // Tampilkan Sampel Pensiun Usia >= 60 Tahun
         if (!empty($retired60List)) {
-            CLI::write("--- [DAFTAR PEGAWAI USIA >= 60 TAHUN (PURNA TUGAS / PENSIUN)] ---", 'red');
+            CLI::write("--- [DAFTAR PEGAWAI USIA >= {$minAge} TAHUN (PURNA TUGAS / PENSIUN)] ---", 'red');
             foreach (array_slice($retired60List, 0, 15) as $r) {
                 $acc = $r['account'];
                 CLI::write(sprintf(
@@ -117,7 +143,7 @@ class CheckPensiun extends BaseCommand
                 ), 'light_red');
             }
             if (count($retired60List) > 15) {
-                CLI::write("... dan " . (count($retired60List) - 15) . " pegawai pensiun lainnya (usia >= 60 tahun).\n");
+                CLI::write("... dan " . (count($retired60List) - 15) . " pegawai pensiun lainnya (usia >= {$minAge} tahun).\n");
             } else {
                 CLI::write("");
             }
@@ -125,7 +151,7 @@ class CheckPensiun extends BaseCommand
 
         // Tampilkan Sampel Menjelang Pensiun (59 Tahun)
         if (!empty($nearRetireList) && $includeNear) {
-            CLI::write("--- [SAMPEL PEGAWAI USIA 59 TAHUN (MENJELANG BUP 60)] ---", 'cyan');
+            CLI::write("--- [SAMPEL PEGAWAI USIA " . ($minAge - 1) . " TAHUN (MENJELANG BUP 60)] ---", 'cyan');
             foreach (array_slice($nearRetireList, 0, 10) as $r) {
                 $acc = $r['account'];
                 CLI::write(sprintf(
@@ -139,10 +165,27 @@ class CheckPensiun extends BaseCommand
                 ), 'cyan');
             }
             if (count($nearRetireList) > 10) {
-                CLI::write("... dan " . (count($nearRetireList) - 10) . " pegawai lainnya usia 59 tahun.\n");
+                CLI::write("... dan " . (count($nearRetireList) - 10) . " pegawai lainnya usia " . ($minAge - 1) . " tahun.\n");
             } else {
                 CLI::write("");
             }
+        }
+
+        // Eksekusi jika mode --apply
+        if ($isApply && !empty($retired60List)) {
+            CLI::write("\n================ MENERAPKAN STATUS PENSIUN ================", 'yellow');
+            CLI::write("Memperbarui status " . count($retired60List) . " akun menjadi PENSIUN (ID: $pensiunId)...", 'cyan');
+
+            $appliedCount = 0;
+            foreach ($retired60List as $item) {
+                $acc = $item['account'];
+                $emailModel->update($acc['id'], [
+                    'status_asn_id' => $pensiunId,
+                ]);
+                $appliedCount++;
+            }
+
+            CLI::write("✓ Selesai: $appliedCount akun PNS usia >= {$minAge} tahun berhasil ditandai sebagai PENSIUN di database!\n", 'green');
         }
 
         // Ekspor ke CSV jika flag --export
@@ -167,7 +210,7 @@ class CheckPensiun extends BaseCommand
 
             foreach ($exportData as $item) {
                 $acc = $item['account'];
-                $kat = $item['age'] >= 60 ? 'PENSIUN (Usia >= 60 Thn)' : 'Menjelang Pensiun (Usia 59 Thn)';
+                $kat = $item['age'] >= $minAge ? "PENSIUN (Usia >= {$minAge} Thn)" : "Menjelang Pensiun (Usia " . ($minAge - 1) . " Thn)";
                 fputcsv($fp, [
                     $no++,
                     $acc['name'] ?? '',
@@ -183,11 +226,13 @@ class CheckPensiun extends BaseCommand
             }
             fclose($fp);
 
-            CLI::write("✓ Berhasil mengekspor data PNS pensiun (>= 60 tahun) ke file CSV:", 'green');
+            CLI::write("✓ Berhasil mengekspor data PNS pensiun (>= {$minAge} tahun) ke file CSV:", 'green');
             CLI::write("  $filepath\n", 'cyan');
-        } else {
-            CLI::write("💡 Tips: Untuk mengekspor daftar seluruh PNS usia >= 60 tahun ke file CSV, jalankan:", 'yellow');
-            CLI::write("php spark pns:check-pensiun --export\n", 'cyan');
+        }
+
+        if (!$isApply) {
+            CLI::write("💡 Tips: Untuk menerapkan pembaruan status PENSIUN ke database, jalankan:", 'yellow');
+            CLI::write("php spark pns:check-pensiun --apply\n", 'cyan');
         }
     }
 }
