@@ -265,7 +265,7 @@ class CheckPensiun extends BaseCommand
             }
         }
 
-        // Ambil akun PNS tanpa NIP di Dinas Tanaman Pangan
+        // Ambil SEMUA akun PNS tanpa NIP di Dinas Tanaman Pangan
         $accounts = $emailModel->select('emails.id, emails.user, emails.email, emails.name, emails.nip, emails.jabatan, emails.bsre_status, unit_kerja.nama_unit_kerja')
             ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
             ->where('emails.deleted_at IS NULL')
@@ -282,39 +282,14 @@ class CheckPensiun extends BaseCommand
         $dtpRetireList = [];
 
         foreach ($accounts as $acc) {
-            $accName = trim($acc['name'] ?? '');
-            if (empty($accName)) {
-                $accName = explode('@', $acc['email'])[0];
-                $accName = str_replace(['.', '_', '-'], ' ', $accName);
-            }
-
-            $normName = $this->normalizeName($accName);
-            $normNameNoAndi = trim(preg_replace('/^ANDI\s+/i', '', $normName));
-
-            // Cari apakah ada di SIMPEG aktif
-            $found = false;
-            foreach ($allPegawai as $p) {
-                $pNorm = $this->normalizeName($p['nama'] ?? '');
-                $pNormNoAndi = trim(preg_replace('/^ANDI\s+/i', '', $pNorm));
-
-                if ($normName === $pNorm || (!empty($normNameNoAndi) && $normNameNoAndi === $pNormNoAndi)) {
-                    $found = true;
-                    break;
-                }
-            }
-
-            // Jika tidak terdaftar di SIMPEG aktif daerah, masukkan ke daftar pensiun/pengalihan
-            if (!$found) {
-                $dtpRetireList[] = [
-                    'account' => $acc,
-                    'reason'  => 'Penyuluh Dialihkan ke Kementan RI / Purna Tugas Daerah',
-                ];
-            }
+            $dtpRetireList[] = [
+                'account' => $acc,
+                'reason'  => 'Penyuluh Dialihkan ke Kementan RI / Purna Tugas Daerah',
+            ];
         }
 
         $totalFound = count($dtpRetireList);
-        CLI::write("Total Akun PNS Tanpa NIP di DTP       : " . count($accounts), 'yellow');
-        CLI::write("Akun Penyuluh/Purna Tidak di SIMPEG   : " . $totalFound . " Akun", 'red');
+        CLI::write("Total Akun PNS Tanpa NIP di DTP       : " . $totalFound . " Akun (Penyuluh Kementan / Purna)", 'red');
         CLI::write("");
 
         if ($totalFound > 0) {
