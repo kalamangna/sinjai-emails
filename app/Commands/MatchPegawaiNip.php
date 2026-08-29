@@ -131,7 +131,20 @@ class MatchPegawaiNip extends BaseCommand
             return;
         }
 
-        // 4. Kumpulkan semua api_unit_id yang dibutuhkan
+        // 4. Pre-load semua NIP yang sudah ada di database untuk deteksi duplikat
+        $existingNipRecords = $emailModel->select('id, email, name, nip')
+            ->where('deleted_at IS NULL')
+            ->where('nip IS NOT NULL')
+            ->where('nip !=', '')
+            ->findAll();
+
+        $existingNipMap = [];
+        foreach ($existingNipRecords as $rec) {
+            $norm = str_replace([' ', '.', '-', '\''], '', $rec['nip']);
+            $existingNipMap[$norm] = $rec;
+        }
+
+        // 5. Kumpulkan semua api_unit_id yang dibutuhkan
         $neededApiUnits = [];
         foreach ($accounts as $acc) {
             $uId = $acc['unit_kerja_id'] ?? null;
@@ -164,6 +177,8 @@ class MatchPegawaiNip extends BaseCommand
 
         $exactMatches = [];
         $fuzzyMatches = [];
+        $duplicateConflicts = [];
+        $claimedNipsInBatch = [];
         $unmatched = [];
 
         CLI::write("Memulai pencocokan data...", 'yellow');
@@ -191,18 +206,50 @@ class MatchPegawaiNip extends BaseCommand
             $pegawaiList = !empty($apiUnitId) ? ($this->cachedApiPegawai[$apiUnitId] ?? []) : [];
             $matchResult = $this->findBestMatch($normAccName, $pegawaiList, $threshold);
 
-            if ($matchResult['type'] === 'EXACT') {
-                $exactMatches[] = [
-                    'account' => $account,
-                    'matched' => $matchResult['pegawai'],
-                    'score'   => 100,
-                ];
-            } elseif ($matchResult['type'] === 'FUZZY') {
-                $fuzzyMatches[] = [
-                    'account' => $account,
-                    'matched' => $matchResult['pegawai'],
-                    'score'   => $matchResult['score'],
-                ];
+            if ($matchResult['type'] === 'EXACT' || $matchResult['type'] === 'FUZZY') {
+                $targetPeg = $matchResult['pegawai'];
+                $targetNipClean = str_replace([' ', '.', '-', '\''], '', $targetPeg['nip']);
+
+                // Proteksi 1: Cek apakah NIP ini sudah ada di database pada akun lain
+                if (isset($existingNipMap[$targetNipClean]) && $existingNipMap[$targetNipClean]['id'] != $account['id']) {
+                    $owner = $existingNipMap[$targetNipClean];
+                    $duplicateConflicts[] = [
+                        'account'        => $account,
+                        'matched'        => $targetPeg,
+                        'existing_owner' => $owner,
+                        'reason'         => "Sudah digunakan oleh akun: {$owner['email']}" . (!empty($owner['name']) ? " ({$owner['name']})" : ''),
+                    ];
+                    continue;
+                }
+
+                // Proteksi 2: Cek apakah NIP ini terduplikasi dengan akun lain di batch ini
+                if (isset($claimedNipsInBatch[$targetNipClean])) {
+                    $prior = $claimedNipsInBatch[$targetNipClean];
+                    $duplicateConflicts[] = [
+                        'account'        => $account,
+                        'matched'        => $targetPeg,
+                        'existing_owner' => $prior,
+                        'reason'         => "Duplikasi NIP dalam batch evaluasi dengan: {$prior['email']}",
+                    ];
+                    continue;
+                }
+
+                // NIP aman dan unik
+                $claimedNipsInBatch[$targetNipClean] = $account;
+
+                if ($matchResult['type'] === 'EXACT') {
+                    $exactMatches[] = [
+                        'account' => $account,
+                        'matched' => $targetPeg,
+                        'score'   => 100,
+                    ];
+                } else {
+                    $fuzzyMatches[] = [
+                        'account' => $account,
+                        'matched' => $targetPeg,
+                        'score'   => $matchResult['score'],
+                    ];
+                }
             } else {
                 $unmatched[] = [
                     'account' => $account,
@@ -216,6 +263,7 @@ class MatchPegawaiNip extends BaseCommand
         CLI::write("Total Akun Dievaluasi : " . $totalAccounts, 'yellow');
         CLI::write("Cocok Sempurna (100%) : " . count($exactMatches), 'green');
         CLI::write("Cocok Mirip (Fuzzy)   : " . count($fuzzyMatches), 'cyan');
+        CLI::write("Konflik Duplikat NIP  : " . count($duplicateConflicts) . " (Dilewati demi keamanan)", !empty($duplicateConflicts) ? 'yellow' : 'light_gray');
         CLI::write("Belum Cocok           : " . count($unmatched), 'red');
         CLI::write("===========================================================\n");
 
@@ -258,6 +306,28 @@ class MatchPegawaiNip extends BaseCommand
             }
             if (count($fuzzyMatches) > 10) {
                 CLI::write("... dan " . (count($fuzzyMatches) - 10) . " akun lainnya cocok fuzzy.\n");
+            } else {
+                CLI::write("");
+            }
+        }
+
+        // Tampilkan Sampel Konflik Duplikat NIP
+        if (!empty($duplicateConflicts)) {
+            CLI::write("--- [⚠️ SAMPEL KONFLIK NIP DUPLIKAT (DILEWATI)] ---", 'yellow');
+            foreach (array_slice($duplicateConflicts, 0, 10) as $d) {
+                $acc = $d['account'];
+                $peg = $d['matched'];
+                CLI::write(sprintf(
+                    "• [%s] %s  ==>  NIP: %s | %s [%s]",
+                    $acc['email'],
+                    $acc['name'] ?: '-',
+                    $peg['nip'],
+                    $peg['nama'],
+                    $d['reason']
+                ), 'yellow');
+            }
+            if (count($duplicateConflicts) > 10) {
+                CLI::write("... dan " . (count($duplicateConflicts) - 10) . " konflik lainnya dilewati.\n");
             } else {
                 CLI::write("");
             }

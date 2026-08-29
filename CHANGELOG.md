@@ -14,6 +14,7 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Mendukung filter unit kerja fleksibel berbasis ID, nama unit, maupun positional argument (`php spark sync:match-nip [unit_id]`) yang otomatis menyertakan struktur hierarki sub-unit / UPTD di bawahnya.
   - Mendukung normalisasi nama cerdas tingkat lanjut (pemisahan otomatis prefix gelar yang menempel seperti `DR.ANDI` -> `ANDI`, pembersihan gelar majemuk/spesialis seperti `S.Tr.Tra`, `S.Pt`, `S.Pi`, `S.M`, `M.K.M`, `M.Sc`, serta penanganan singkatan "A." -> "ANDI", "Muh." -> "Muhammad", "Abd." -> "Abdul") sehingga mayoritas akun fuzzy langsung terkonversi menjadi 100% Exact Match.
   - Menyediakan mode simulasi (*dry-run*) dan mode eksekusi langsung (`--apply`) untuk memperbarui NIP, status ASN, pangkat, golongan, dan jabatan secara otomatis.
+  - Dilengkapi sistem proteksi dan deteksi NIP duplikat (baik terhadap NIP yang sudah ada pada akun lain di database maupun antar-akun dalam batch evaluasi yang sama) untuk menjamin integritas data dan mencegah tumpang tindih akun.
   - Dilengkapi mekanisme pre-fetching berbasis unit kerja dengan jeda dan retry adaptif untuk menghindari *rate limiting* pada server SIMPEG.
 
 ## API Gateway & Integrasi Hierarki Unit Kerja
