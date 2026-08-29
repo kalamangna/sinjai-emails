@@ -12,7 +12,7 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Menambahkan command CLI `sync:match-nip` untuk pencocokan otomatis akun PNS tanpa NIP dengan master data kepegawaian API SIMPEG (`get_pegawai?unit_id=...`).
   - Menegakkan filter ketat khusus akun berstatus **PNS** (`status_asn_id = 1`) agar tidak mencampur akun non-ASN atau status lainnya.
   - Mendukung filter unit kerja fleksibel berbasis ID, nama unit, maupun positional argument (`php spark sync:match-nip [unit_id]`) yang otomatis menyertakan struktur hierarki sub-unit / UPTD di bawahnya.
-  - Mendukung normalisasi nama cerdas (pembersihan gelar akademik/keagamaan, penanganan singkatan nama umum seperti "A." -> "ANDI", "Muh." -> "Muhammad", "Abd." -> "Abdul").
+  - Mendukung normalisasi nama cerdas tingkat lanjut (pemisahan otomatis prefix gelar yang menempel seperti `DR.ANDI` -> `ANDI`, pembersihan gelar majemuk/spesialis seperti `S.Tr.Tra`, `S.Pt`, `S.Pi`, `S.M`, `M.K.M`, `M.Sc`, serta penanganan singkatan "A." -> "ANDI", "Muh." -> "Muhammad", "Abd." -> "Abdul") sehingga mayoritas akun fuzzy langsung terkonversi menjadi 100% Exact Match.
   - Menyediakan mode simulasi (*dry-run*) dan mode eksekusi langsung (`--apply`) untuk memperbarui NIP, status ASN, pangkat, golongan, dan jabatan secara otomatis.
   - Dilengkapi mekanisme pre-fetching berbasis unit kerja dengan jeda dan retry adaptif untuk menghindari *rate limiting* pada server SIMPEG.
 

@@ -396,34 +396,34 @@ class MatchPegawaiNip extends BaseCommand
     private function normalizeName(string $name): string
     {
         $name = mb_strtoupper($name, 'UTF-8');
+        $name = str_replace([',.', '.,', ';', '`', '\'', '"', '(', ')', '[', ']'], ' ', $name);
 
-        // Daftar gelar akademik, keagamaan, dan kehormatan umum
+        // 1. Pisahkan gelar depan yang menempel (contoh: "DR.ANDI" -> "DR ANDI", "HJ.NURLINA" -> "HJ NURLINA")
+        $name = preg_replace('/\b(PROF|DRS|DRA|DR|IR|HJ|H)\./i', ' $1 ', $name);
+
+        // 2. Hapus titik di dalam singkatan/gelar (misal "S.KOM." -> "SKOM", "S.IP." -> "SIP", "M.A.P" -> "MAP", "S.P." -> "SP")
+        $name = preg_replace('/(?<=[A-Z0-9])\.(?=[A-Z0-9])/i', '', $name);
+        $name = preg_replace('/[\.,]/', ' ', $name);
+        $name = preg_replace('/\s+/', ' ', trim($name));
+
+        // Daftar gelar akademik, keagamaan, profesi, dan kehormatan
         $titles = [
-            'PROF.', 'PROF', 'DR.', 'DRA.', 'DRS.', 'DR', 'DRA', 'DRS',
-            'IR.', 'IR', 'H.', 'HJ.', 'H', 'HJ',
-            'S.KOM.', 'S.KOM', 'S.PD.', 'S.PD', 'S.SOS.', 'S.SOS',
-            'S.STP.', 'S.STP', 'S.E.', 'S.E', 'S.H.', 'S.H', 'S.SI.', 'S.SI',
-            'S.KM.', 'S.KM', 'S.TR.KEB.', 'S.TR.KEB', 'S.TR.GZ.', 'S.TR.GZ',
-            'S.AP.', 'S.AP', 'S.IP.', 'S.IP', 'S.T.', 'S.T', 'S.P.', 'S.P',
-            'S.AG.', 'S.AG', 'S.KEP.', 'S.KEP', 'NS.', 'NS',
-            'M.SI.', 'M.SI', 'M.PD.', 'M.PD', 'M.M.', 'M.M', 'M.KOM.', 'M.KOM',
-            'M.AP.', 'M.AP', 'M.TR.AP.', 'M.TR.AP', 'M.KES.', 'M.KES', 'M.H.', 'M.H', 'M.AG.', 'M.AG',
-            'A.MD.', 'A.MD', 'A.MD.KEB', 'A.MD.KEP', 'AMD.', 'AMD',
-            'SKM', 'SE', 'SH', 'ST', 'SI', 'SP', 'MM', 'MSI', 'MPD', 'MH', 'MAP'
+            'PROF', 'DR', 'DRA', 'DRS', 'IR', 'H', 'HJ', 'HAJI', 'HAJJAH',
+            'SKOM', 'SPD', 'SSOS', 'SSTP', 'SE', 'SH', 'SSI', 'SKM', 'STRKEB', 'STRGZ', 'STRTRA', 'STR',
+            'SAP', 'SIP', 'ST', 'SP', 'SAG', 'SKEP', 'STP', 'SS', 'SKED', 'SIKOM', 'SFARM', 'SPT', 'SPI', 'SM',
+            'MSI', 'MPD', 'MM', 'MKOM', 'MAP', 'MTRAP', 'MKES', 'MH', 'MAG', 'MAK', 'MT', 'MIKOM', 'MP', 'MKM', 'MSC',
+            'AMD', 'AMDKEB', 'AMDKEP', 'AMDKL', 'AMDPK', 'AMKG', 'AMTEK',
+            'NS', 'APT', 'GR', 'AP', 'SEK', 'IP'
         ];
 
-        // Hapus karakter pemisah umum
-        $name = str_replace([',', ';', '`', '\''], ' ', $name);
-
-        // Hapus gelar dengan regex atau replace kata per kata
-        $words = preg_split('/\s+/', $name);
+        $words = explode(' ', $name);
         $cleanWords = [];
 
         foreach ($words as $w) {
-            $cleanW = trim($w, '. ');
+            $cleanW = trim($w);
             if (empty($cleanW)) continue;
 
-            if (in_array($cleanW, $titles) || in_array($w, $titles)) {
+            if (in_array($cleanW, $titles)) {
                 continue;
             }
 
@@ -437,6 +437,11 @@ class MatchPegawaiNip extends BaseCommand
             } else {
                 $cleanWords[] = $cleanW;
             }
+        }
+
+        // Jika kata pertama adalah singkatan 'A' (misal: "A ILHAM" atau "A ARDIN"), ubah ke "ANDI"
+        if (!empty($cleanWords) && ($cleanWords[0] === 'A' || $cleanWords[0] === 'ANDI')) {
+            $cleanWords[0] = 'ANDI';
         }
 
         return implode(' ', $cleanWords);
