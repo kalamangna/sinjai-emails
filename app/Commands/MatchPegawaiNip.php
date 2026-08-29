@@ -349,6 +349,23 @@ class MatchPegawaiNip extends BaseCommand
                             $crossRejectReason = "Ambigu Lintas Unit: Ditemukan " . count($candidates) . " pegawai bernama sama di OPD berbeda";
                         }
                     }
+                } else {
+                    // Coba cari kecocokan inisial singkatan se-Kabupaten (Contoh: "A NINING A HAKIM" vs "ANDI NINING ANGRIANI HAKIM")
+                    $abbrevCandidates = [];
+                    foreach ($allPegawaiList as $p) {
+                        $pNorm = $this->normalizeName($p['nama'] ?? '');
+                        if ($this->isAbbreviatedMatch($normAccName, $pNorm)) {
+                            $abbrevCandidates[] = $p;
+                        }
+                    }
+                    if (count($abbrevCandidates) === 1) {
+                        $matchResult = [
+                            'type'    => 'EXACT',
+                            'pegawai' => $abbrevCandidates[0],
+                            'score'   => 100,
+                        ];
+                        $isCross = true;
+                    }
                 }
             }
 
@@ -981,7 +998,16 @@ class MatchPegawaiNip extends BaseCommand
                 ];
             }
 
-            // 2. Exact match tanpa spasi (misal nama tersambung)
+            // 2. Exact match dengan inisial singkatan (Contoh: "A NINING A HAKIM" vs "ANDI NINING ANGRIANI HAKIM")
+            if ($this->isAbbreviatedMatch($normAccName, $normPegName) || (!empty($normNoAndi) && $this->isAbbreviatedMatch($normNoAndi, $normPegNoAndi))) {
+                return [
+                    'type'    => 'EXACT',
+                    'pegawai' => $peg,
+                    'score'   => 100,
+                ];
+            }
+
+            // 3. Exact match tanpa spasi (misal nama tersambung)
             $compactAcc = str_replace(' ', '', $normAccName);
             $compactPeg = str_replace(' ', '', $normPegName);
             if (strlen($compactAcc) > 4 && $compactAcc === $compactPeg) {
@@ -1090,6 +1116,25 @@ class MatchPegawaiNip extends BaseCommand
             if ($two >= 0 && $two <= 30) return 2000 + $two;
         }
         return null;
+    }
+
+    private function isAbbreviatedMatch(string $shortName, string $longName): bool
+    {
+        $sWords = explode(' ', trim($shortName));
+        $lWords = explode(' ', trim($longName));
+        if (count($sWords) !== count($lWords) || empty($sWords)) {
+            return false;
+        }
+
+        for ($i = 0; $i < count($sWords); $i++) {
+            $sw = $sWords[$i];
+            $lw = $lWords[$i];
+            if ($sw === $lw) continue;
+            if (strlen($sw) === 1 && strlen($lw) > 1 && $lw[0] === $sw) continue;
+            if (strlen($lw) === 1 && strlen($sw) > 1 && $sw[0] === $lw) continue;
+            return false;
+        }
+        return true;
     }
 
     private function findParamValue(array $params, string $prefix): ?string
