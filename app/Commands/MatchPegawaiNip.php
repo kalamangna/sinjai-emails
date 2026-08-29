@@ -12,11 +12,14 @@ class MatchPegawaiNip extends BaseCommand
 {
     protected $group = 'App';
     protected $name = 'sync:match-nip';
-    protected $description = 'Simulate or apply automatic NIP matching for PNS accounts using SIMPEG API.';
-    protected $usage = 'sync:match-nip [options]';
+    protected $description = 'Simulate or apply automatic NIP matching strictly for PNS accounts using SIMPEG API.';
+    protected $usage = 'sync:match-nip [unit_id] [options]';
+    protected $arguments = [
+        'unit_id' => 'Target specific Unit Kerja ID or Name (optional)',
+    ];
     protected $options = [
         '--apply'       => 'Execute updates to the database. Without this flag, runs in simulation mode.',
-        '--unit'        => 'Target specific Unit Kerja ID (optional)',
+        '--unit'        => 'Target specific Unit Kerja ID or Name (optional)',
         '--threshold'   => 'Similarity percentage threshold for fuzzy matching (default: 85)',
     ];
 
@@ -24,9 +27,17 @@ class MatchPegawaiNip extends BaseCommand
 
     public function run(array $params)
     {
-        $isApply = CLI::getOption('apply') !== null || in_array('--apply', $params);
-        $unitFilter = CLI::getOption('unit') ?? $this->findParamValue($params, 'unit=');
+        $isApply = CLI::getOption('apply') !== null || in_array('--apply', $params) || isset($params['apply']);
         $threshold = (float)(CLI::getOption('threshold') ?? $this->findParamValue($params, 'threshold=') ?? 85);
+        
+        // Robust parsing untuk unit filter (baik via positional $params[0], --unit=X, atau --unit X)
+        $unitFilter = CLI::getOption('unit') ?? $params['unit'] ?? null;
+        if (empty($unitFilter)) {
+            $unitFilter = $this->findParamValue($params, 'unit=');
+        }
+        if (empty($unitFilter) && isset($params[0]) && !in_array($params[0], ['--apply', '-apply', '--dry-run'])) {
+            $unitFilter = $params[0];
+        }
 
         CLI::write("==========================================================", 'yellow');
         CLI::write("       SIMPEG NIP MATCHING & RECONCILIATION TOOL          ", 'yellow');
@@ -49,44 +60,78 @@ class MatchPegawaiNip extends BaseCommand
         $unitModel = new UnitKerjaModel();
         $statusAsnModel = new StatusAsnModel();
 
-        // 1. Ambil ID status PNS
+        // 1. Pastikan yang dicek KHUSUS berstatus PNS
         $pnsStatus = $statusAsnModel->where('nama_status_asn', 'PNS')->first();
         $pnsId = $pnsStatus['id'] ?? 1;
 
-        // 2. Query akun PNS tanpa NIP
-        $builder = $emailModel->select('emails.id, emails.email, emails.name, emails.nip, emails.unit_kerja_id, emails.status_asn_id, unit_kerja.nama_unit_kerja, unit_kerja.api_unit_id, unit_kerja.parent_id')
-            ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
-            ->where('emails.deleted_at IS NULL')
-            ->groupStart()
-                ->where('emails.status_asn_id', $pnsId)
-                ->orWhere('emails.status_asn_id IS NULL')
-            ->groupEnd()
-            ->groupStart()
-                ->where('emails.nip IS NULL')
-                ->orWhere('emails.nip', '')
-            ->groupEnd();
+        CLI::write("Target Status Kepegawaian : [PNS (ID: $pnsId)]", 'green');
 
-        if (!empty($unitFilter)) {
-            $builder->where('emails.unit_kerja_id', $unitFilter);
-        }
-
-        $accounts = $builder->findAll();
-        $totalAccounts = count($accounts);
-
-        CLI::write("Total akun PNS tanpa NIP dievaluasi: $totalAccounts", 'cyan');
-        if ($totalAccounts === 0) {
-            CLI::write("Semua akun PNS sudah memiliki NIP atau tidak ada data yang memenuhi kriteria.", 'green');
-            return;
-        }
-
-        // 3. Pre-fetch unit data & mapping
+        // 2. Resolve Unit Kerja Filter & Hierarki
+        $targetUnitIds = [];
         $allUnits = $unitModel->findAll();
         $unitsById = [];
         foreach ($allUnits as $u) {
             $unitsById[$u['id']] = $u;
         }
 
-        // Kumpulkan semua api_unit_id yang dibutuhkan
+        if (!empty($unitFilter)) {
+            $targetUnit = null;
+            if (is_numeric($unitFilter)) {
+                $targetUnit = $unitsById[$unitFilter] ?? null;
+            }
+
+            if (!$targetUnit) {
+                // Cari berdasarkan api_unit_id atau kecocokan nama
+                foreach ($allUnits as $u) {
+                    if ($u['api_unit_id'] == $unitFilter || stripos($u['nama_unit_kerja'], $unitFilter) !== false) {
+                        $targetUnit = $u;
+                        break;
+                    }
+                }
+            }
+
+            if (!$targetUnit) {
+                CLI::error("Error: Unit Kerja '$unitFilter' tidak ditemukan di database.");
+                return;
+            }
+
+            // Sertakan unit induk dan seluruh unit turunannya (child units)
+            $targetUnitIds = [(int)$targetUnit['id']];
+            $childUnits = $unitModel->where('parent_id', $targetUnit['id'])->findAll();
+            foreach ($childUnits as $child) {
+                $targetUnitIds[] = (int)$child['id'];
+            }
+
+            CLI::write("Filter Unit Kerja         : " . $targetUnit['nama_unit_kerja'] . " (ID: {$targetUnit['id']})", 'cyan');
+            if (count($childUnits) > 0) {
+                CLI::write("                            Termasuk " . count($childUnits) . " sub-unit/UPTD.", 'light_gray');
+            }
+        }
+
+        // 3. Query akun KHUSUS PNS tanpa NIP
+        $builder = $emailModel->select('emails.id, emails.email, emails.name, emails.nip, emails.unit_kerja_id, emails.status_asn_id, unit_kerja.nama_unit_kerja, unit_kerja.api_unit_id, unit_kerja.parent_id')
+            ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
+            ->where('emails.deleted_at IS NULL')
+            ->where('emails.status_asn_id', $pnsId) // STRICTLY PNS
+            ->groupStart()
+                ->where('emails.nip IS NULL')
+                ->orWhere('emails.nip', '')
+            ->groupEnd();
+
+        if (!empty($targetUnitIds)) {
+            $builder->whereIn('emails.unit_kerja_id', $targetUnitIds);
+        }
+
+        $accounts = $builder->findAll();
+        $totalAccounts = count($accounts);
+
+        CLI::write("Total akun PNS tanpa NIP  : $totalAccounts", 'yellow');
+        if ($totalAccounts === 0) {
+            CLI::write("\nSemua akun PNS pada filter ini sudah memiliki NIP lengkap!", 'green');
+            return;
+        }
+
+        // 4. Kumpulkan semua api_unit_id yang dibutuhkan
         $neededApiUnits = [];
         foreach ($accounts as $acc) {
             $uId = $acc['unit_kerja_id'] ?? null;
@@ -100,7 +145,7 @@ class MatchPegawaiNip extends BaseCommand
         }
 
         $totalUnitsToFetch = count($neededApiUnits);
-        CLI::write("Mengambil master data pegawai untuk $totalUnitsToFetch Unit Kerja dari API SIMPEG...", 'yellow');
+        CLI::write("\nMengambil master data pegawai untuk $totalUnitsToFetch Unit Kerja dari API SIMPEG...", 'yellow');
 
         $client = \Config\Services::curlrequest(['timeout' => 15, 'verify' => false]);
         $baseUrl = rtrim(env('PEGAWAI_BASE_URL') ?: 'https://apps.sinjaikab.go.id/api/pegawai', '/') . '/';
@@ -266,7 +311,7 @@ class MatchPegawaiNip extends BaseCommand
             CLI::write("Berhasil memperbarui $appliedCount akun dengan NIP dan data kepegawaian!", 'green');
         } else {
             CLI::write("💡 Tips: Untuk menerapkan hasil yang cocok 100% ke database, jalankan:", 'yellow');
-            CLI::write("php spark sync:match-nip --apply\n", 'cyan');
+            CLI::write("php spark sync:match-nip " . (!empty($unitFilter) ? "--unit=" . escapeshellarg($unitFilter) . " " : "") . "--apply\n", 'cyan');
         }
     }
 
@@ -399,9 +444,12 @@ class MatchPegawaiNip extends BaseCommand
 
     private function findParamValue(array $params, string $prefix): ?string
     {
-        foreach ($params as $param) {
-            if (strpos($param, $prefix) === 0) {
-                return substr($param, strlen($prefix));
+        foreach ($params as $key => $val) {
+            if (is_string($key) && strpos($key, $prefix) === 0) {
+                return trim(substr($key, strlen($prefix)), '"\' ');
+            }
+            if (is_string($val) && strpos($val, $prefix) === 0) {
+                return trim(substr($val, strlen($prefix)), '"\' ');
             }
         }
         return null;
