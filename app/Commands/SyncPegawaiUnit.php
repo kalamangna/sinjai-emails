@@ -64,23 +64,29 @@ class SyncPegawaiUnit extends BaseCommand
      */
     public function run(array $params)
     {
-        $unitId = $params[0] ?? null;
+        $unitInput = $params[0] ?? CLI::getOption('unit') ?? null;
 
-        if (empty($unitId)) {
-            CLI::error("Error: Unit ID is required.");
-            CLI::write("Usage: php spark " . $this->usage, 'yellow');
+        if (empty($unitInput)) {
+            CLI::error("Error: Unit ID atau Nama Unit Kerja wajib diisi.");
+            CLI::write("Contoh ID   : php spark sync:pegawai-unit 343", 'yellow');
+            CLI::write("Contoh Nama : php spark sync:pegawai-unit \"Dinas Komunikasi\"", 'yellow');
             return;
         }
 
         $unitModel = new UnitKerjaModel();
-        $unit = $unitModel->find($unitId);
+        if (is_numeric($unitInput)) {
+            $unit = $unitModel->find($unitInput);
+        } else {
+            $unit = $unitModel->like('nama_unit_kerja', $unitInput)->first();
+        }
 
         if (!$unit) {
-            CLI::error("Error: Unit Kerja with ID $unitId not found.");
+            CLI::error("Error: Unit Kerja '$unitInput' tidak ditemukan.");
             return;
         }
 
-        CLI::write("Syncing Pegawai Data for Unit: " . $unit['nama_unit_kerja'], 'yellow');
+        $unitId = $unit['id'];
+        CLI::write("Syncing Pegawai Data for Unit: " . $unit['nama_unit_kerja'] . " (ID: $unitId)", 'yellow');
 
         // Mengambil semua ID Unit Kerja (Induk + Anak)
         $unitIds = [$unitId];
