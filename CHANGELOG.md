@@ -12,10 +12,10 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Menghapus logic, service (`generatePnsExcel`, `generatePnsCsv`), controller method (`exportPnsExcel`, `exportPnsCsv`), serta rute endpoint ekspor PNS untuk efisiensi kode dan perampingan arsitektur.
   - Membersihkan berkas command migrasi dan file redundan (`CheckPensiun.php`, `MatchPegawaiNip.php`, data CSV sementara, dan cache JSON lokal) setelah seluruh proses rekonsiliasi NIP dan penangguhan pensiun selesai dijalankan di production.
   - Memfokuskan fungsionalitas header halaman pada tombol aksi sinkronisasi utama: **Sync TTE** dan **Sync Pegawai**.
-- **Penyelarasan & Reset Logika Sinkronisasi Pegawai SIMPEG**:
-  - Membatasi logika sinkronisasi data pegawai (`syncPegawaiFromApi` & `sync:pegawai-unit`) secara ketat hanya untuk akun berstatus **PNS** (`status_asn_id = 1`), secara otomatis mengabaikan akun **PPPK** dan **PPPK Paruh Waktu** agar formasi khusus mereka tidak tertimpa.
-  - Memperbarui mekanisme normalisasi nama jabatan saat sinkronisasi: membersihkan tanda titik/koma liar di akhir, menghapus spasi ganda, serta merapikan spasi tanda hubung (` - `) dan garis miring (`/`).
-  - Menambahkan command CLI maintenance `email:normalize-jabatan` untuk membersihkan dan menormalkan data teks nama jabatan eksisting pada seluruh akun PNS di database production dengan dukungan mode simulasi dan eksekusi langsung (`--apply`).
+- **Penyelarasan & Integrasi Cron Bulanan Sinkronisasi Pegawai SIMPEG**:
+  - Membatasi logika sinkronisasi data pegawai (`syncPegawaiFromApi`, `sync:pegawai-unit`, dan cron bulanan `sync:all --monthly`) secara ketat hanya untuk akun berstatus **PNS** (`status_asn_id = 1`), secara otomatis mengabaikan akun **PPPK** dan **PPPK Paruh Waktu** agar formasi khusus mereka tidak tertimpa.
+  - Memperbarui mekanisme normalisasi nama jabatan pada seluruh jalur sinkronisasi (`PegawaiSyncService` & `EmailService`): membersihkan tanda titik/koma liar di akhir, menghapus spasi ganda, serta merapikan spasi tanda hubung (` - `) dan garis miring (`/`).
+  - Mengintegrasikan proses pembaruan dan normalisasi nama jabatan langsung ke dalam cron bulanan (`sync:all --monthly`) melalui background queue worker tanpa memerlukan command terpisah.
 
 ## API Gateway & Integrasi Hierarki Unit Kerja
 - **Penyempurnaan Respon API Gateway**:

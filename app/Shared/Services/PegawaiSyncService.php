@@ -35,9 +35,14 @@ class PegawaiSyncService
                     ];
                     
                     // Normalisasi nama jabatan agar bersih dan rapi (huruf kapital, tanpa trailing dot/koma/spasi ganda)
-                    if (!empty($source['jabatan'])) {
-                        $rawJ = mb_strtoupper(trim($source['jabatan']), 'UTF-8');
+                    $rawJabatan = $source['jabatan_nama'] ?? $source['jabatan'] ?? null;
+                    if (!empty($rawJabatan)) {
+                        $rawJ = mb_strtoupper(trim($rawJabatan), 'UTF-8');
                         $rawJ = preg_replace('/[,\.]+\s*$/', '', $rawJ);
+                        $rawJ = preg_replace('/\s+([,\.])/', '$1', $rawJ);
+                        $rawJ = preg_replace('/([,\.])\s+/', '$1 ', $rawJ);
+                        $rawJ = preg_replace('/\s*\/\s*/', '/', $rawJ);
+                        $rawJ = preg_replace('/\s*-\s*/', ' - ', $rawJ);
                         $updateData['jabatan'] = preg_replace('/\s+/', ' ', trim($rawJ));
                     }
                     
