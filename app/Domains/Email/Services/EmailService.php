@@ -1262,7 +1262,9 @@ class EmailService
             return 'SEKRETARIS INSPEKTORAT';
         } elseif (stripos($jab, 'SEKRETARIS BADAN') === 0 || stripos($jab, 'SEKRETARIS BPBD') === 0) {
             return 'SEKRETARIS BADAN';
-        } elseif (stripos($jab, 'SEKRETARIS DINAS') === 0 || stripos($jab, 'SEKRETARIS SATUAN POLISI') === 0) {
+        } elseif (stripos($jab, 'SEKRETARIS SATUAN') === 0 || stripos($jab, 'SEKRETARIS SATPOL') === 0) {
+            return 'SEKRETARIS SATUAN';
+        } elseif (stripos($jab, 'SEKRETARIS DINAS') === 0) {
             return 'SEKRETARIS DINAS';
         } elseif (stripos($jab, 'SEKRETARIS CAMAT') === 0 || stripos($jab, 'SEKRETARIS KECAMATAN') === 0) {
             return 'SEKRETARIS KECAMATAN';
@@ -1270,7 +1272,9 @@ class EmailService
             return 'SEKRETARIS KELURAHAN';
         } elseif ($jab === 'SEKRETARIS' && !empty($unitKerjaName)) {
             $unitUpper = strtoupper($unitKerjaName);
-            if (strpos($unitUpper, 'DINAS') !== false || strpos($unitUpper, 'SATPOL') !== false) {
+            if (strpos($unitUpper, 'SATUAN POLISI') !== false || strpos($unitUpper, 'SATPOL') !== false) {
+                return 'SEKRETARIS SATUAN';
+            } elseif (strpos($unitUpper, 'DINAS') !== false) {
                 return 'SEKRETARIS DINAS';
             } elseif (strpos($unitUpper, 'BADAN') !== false || strpos($unitUpper, 'BPBD') !== false) {
                 return 'SEKRETARIS BADAN';
