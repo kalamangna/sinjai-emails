@@ -1332,6 +1332,30 @@ class EmailService
             $jab = preg_replace('/\s+(SEKRETARIAT|PADA|KEC\.|KECAMATAN|DINAS|BADAN|INSPEKTORAT|SATPOL PP|SATUAN POLISI|UPTD RSUD|RSUD)\s+.*$/i', '', $jab);
         }
 
+        // 1. Standarisasi Jenjang Fungsional Guru Format Lama (PermenPAN-RB & BKN)
+        $jab = preg_replace('/\bGURU\s+PRATAMA(\s+TK\.?\s*I)?\b/i', 'GURU AHLI PERTAMA', $jab);
+        $jab = preg_replace('/\bGURU\s+DEWASA(\s+TK\.?\s*I)?\b/i', 'GURU AHLI MUDA', $jab);
+        $jab = preg_replace('/\bGURU\s+MUDA\s+TK\.?\s*I\b/i', 'GURU AHLI MUDA', $jab);
+        $jab = preg_replace('/\bGURU\s+PEMBINA\s+UTAMA\b/i', 'GURU AHLI UTAMA', $jab);
+        $jab = preg_replace('/\bGURU\s+PEMBINA(\s+TK\.?\s*I)?\b/i', 'GURU AHLI MADYA', $jab);
+
+        // 2. Standarisasi [Profesi] [Pertama/Muda/Madya/Utama] -> [Profesi] AHLI [Jenjang]
+        $profesiKeahlian = 'GURU|PERAWAT|BIDAN|DOKTER|AUDITOR|APOTEKER|EPIDEMIOLOG|SANITARIAN|NUTRISIONIS|ARSIPARIS|PUSTAKAWAN|PRANATA KOMPUTER|PENYULUH|PENGUJI|INSTRUKTUR|PERENCANA|STATISTISI|PENELITI|ANALIS KEBIJAKAN|ADMINISTRATOR KESEHATAN';
+        $jab = preg_replace("/\b({$profesiKeahlian})\s+PERTAMA\b/i", '$1 AHLI PERTAMA', $jab);
+        $jab = preg_replace("/\b({$profesiKeahlian})\s+MUDA\b/i", '$1 AHLI MUDA', $jab);
+        $jab = preg_replace("/\b({$profesiKeahlian})\s+MADYA\b/i", '$1 AHLI MADYA', $jab);
+        $jab = preg_replace("/\b({$profesiKeahlian})\s+UTAMA\b/i", '$1 AHLI UTAMA', $jab);
+
+        // 3. Standarisasi Jenjang Keterampilan Format Lama: Pelaksana Lanjutan -> Mahir, Pelaksana -> Terampil
+        $jab = preg_replace("/\b({$profesiKeahlian})\s+PELAKSANA\s+LANJUTAN\b/i", '$1 MAHIR', $jab);
+        $jab = preg_replace("/\bPELAKSANA\s+LANJUTAN\s*-\s*({$profesiKeahlian})\b/i", 'MAHIR - $1', $jab);
+        $jab = preg_replace("/\b({$profesiKeahlian})\s+PELAKSANA\b/i", '$1 TERAMPIL', $jab);
+        $jab = preg_replace("/\bPELAKSANA\s+({$profesiKeahlian})\b/i", '$1 TERAMPIL', $jab);
+
+        // 4. Koreksi Singkatan / Nomenklatur Mata Pelajaran & Teknis
+        $jab = preg_replace('/\bPKN\b/i', 'PPKN', $jab);
+        $jab = preg_replace('/\bTEHNIS\b/i', 'TEKNIS', $jab);
+
         // Spasi sebelum/setelah tanda baca titik dan koma
         $jab = preg_replace('/\s+([,\.])/', '$1', $jab);
         $jab = preg_replace('/([,\.])\s+/', '$1 ', $jab);
