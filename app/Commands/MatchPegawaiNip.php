@@ -387,8 +387,8 @@ class MatchPegawaiNip extends BaseCommand
                     CLI::write("✓ Selesai: $appliedFuzzyCount akun fuzzy berhasil diperbarui ke database.", 'green');
                 } else {
                     // Tanya konfirmasi ke user
-                    $fuzzyChoice = CLI::prompt('Apakah Anda ingin meninjau & mengonfirmasi akun fuzzy ini?', ['y (tinjau per akun)', 'a (terapkan semua)', 'n (lewati semua)'], 'y');
-                    $fuzzyChoice = strtolower($fuzzyChoice);
+                    $fuzzyChoice = CLI::prompt('Apakah Anda ingin meninjau & mengonfirmasi akun fuzzy ini? (y=tinjau per akun, a=terapkan semua, n=lewati semua)', ['y', 'a', 'n']);
+                    $fuzzyChoice = strtolower(trim($fuzzyChoice));
 
                     if ($fuzzyChoice === 'a' || $fuzzyChoice === 'all') {
                         foreach ($fuzzyMatches as $item) {
@@ -416,8 +416,8 @@ class MatchPegawaiNip extends BaseCommand
                                 CLI::write("  • Jabatan    : " . ($peg['jabatan_nama'] ?? '-'), 'green');
                                 CLI::write("  • Gol / Pkt  : " . ($peg['pangkat_golruang'] ?? '-') . " / " . ($peg['pangkat_nama'] ?? '-'), 'green');
 
-                                $ans = CLI::prompt("Cocokkan akun ini ke NIP {$peg['nip']}?", ['y (ya)', 'n (lewati)', 'a (terapkan semua sisa)', 'q (berhenti)'], 'y');
-                                $ans = strtolower(substr(trim($ans), 0, 1));
+                                $ans = CLI::prompt("Cocokkan akun ini ke NIP {$peg['nip']}? (y=ya, n=lewati, a=terapkan semua sisa, q=berhenti)", ['y', 'n', 'a', 'q']);
+                                $ans = strtolower(trim($ans));
 
                                 if ($ans === 'q') {
                                     CLI::write("Proses review akun fuzzy dihentikan.", 'yellow');
