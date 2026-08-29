@@ -70,6 +70,8 @@ class SyncAllCommand extends BaseCommand
         '--daily'   => 'Menjalankan tugas harian (Status TTE Pimpinan)',
         '--weekly'  => 'Menjalankan tugas mingguan (cPanel dan Website)',
         '--monthly' => 'Menjalankan tugas bulanan (Data ASN dan TTE Pegawai)',
+        '--pegawai' => 'Hanya menjalankan sinkronisasi data pegawai (Pangkat/Golongan/Jabatan/Mutasi)',
+        '--tte'     => 'Hanya menjalankan sinkronisasi status TTE BSrE',
     ];
 
     /**
@@ -82,10 +84,12 @@ class SyncAllCommand extends BaseCommand
         $isDaily = CLI::getOption('daily') !== null;
         $isWeekly = CLI::getOption('weekly') !== null;
         $isMonthly = CLI::getOption('monthly') !== null;
-        $runAll = !$isDaily && !$isWeekly && !$isMonthly;
+        $isPegawai = CLI::getOption('pegawai') !== null;
+        $isTte = CLI::getOption('tte') !== null;
+        $runAll = !$isDaily && !$isWeekly && !$isMonthly && !$isPegawai && !$isTte;
 
         $this->telegram = new TelegramLibrary();
-        $modeName = $runAll ? 'PENUH' : ($isDaily ? 'HARIAN' : ($isWeekly ? 'MINGGUAN' : 'BULANAN'));
+        $modeName = $runAll ? 'PENUH' : ($isPegawai ? 'DATA PEGAWAI' : ($isTte ? 'STATUS TTE' : ($isDaily ? 'HARIAN' : ($isWeekly ? 'MINGGUAN' : 'BULANAN'))));
         
         CLI::write("Starting Synchronization Process ($modeName)...", 'blue');
         $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
@@ -97,6 +101,10 @@ class SyncAllCommand extends BaseCommand
             $builder->addKeyValue('Objek', 'Email & Website', '🎯');
         } elseif ($isMonthly) {
             $builder->addKeyValue('Objek', 'Data & TTE Pegawai', '🎯');
+        } elseif ($isPegawai) {
+            $builder->addKeyValue('Objek', 'Data Pegawai (SIMPEG)', '🎯');
+        } elseif ($isTte) {
+            $builder->addKeyValue('Objek', 'Status TTE (BSrE)', '🎯');
         } else {
             $builder->addKeyValue('Objek', 'Semua Data', '🎯');
         }
@@ -114,9 +122,12 @@ class SyncAllCommand extends BaseCommand
             $this->syncWebExpirations();
         }
 
-        // Phase: Pegawai & TTE Pegawai Non-Pimpinan (Bulanan / All)
-        if ($runAll || $isMonthly) {
-            $this->syncTteStatus('pegawai'); // Sinkronisasi TTE Khusus Pegawai Non-Pimpinan
+        // Phase: Pegawai & TTE Pegawai
+        if ($runAll || $isMonthly || $isTte) {
+            $this->syncTteStatus('pegawai');
+        }
+
+        if ($runAll || $isMonthly || $isPegawai) {
             $this->syncPegawaiData();
         }
 

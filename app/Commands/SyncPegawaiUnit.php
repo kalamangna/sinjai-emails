@@ -112,8 +112,23 @@ class SyncPegawaiUnit extends BaseCommand
             }
         }
         
+        // Filter Role (Pimpinan vs Pegawai)
+        $roleFilter = CLI::getOption('role') ?? CLI::getOption('filter') ?? null;
+
         $emailModel = new EmailModel();
         $builder = $emailModel->whereIn('unit_kerja_id', $unitIds);
+
+        if ($roleFilter === 'pimpinan') {
+            $builder->groupStart()
+                ->where('pimpinan', 1)
+                ->orWhere('pimpinan_desa', 1)
+            ->groupEnd();
+            CLI::write("Filtering by Role: PIMPINAN", 'cyan');
+        } elseif ($roleFilter === 'pegawai') {
+            $builder->where('(pimpinan = 0 OR pimpinan IS NULL)')
+                ->where('(pimpinan_desa = 0 OR pimpinan_desa IS NULL)');
+            CLI::write("Filtering by Role: PEGAWAI (Non-Pimpinan)", 'cyan');
+        }
 
         if ($asnFilter) {
             $statusAsnModel = new StatusAsnModel();

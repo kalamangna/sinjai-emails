@@ -64,23 +64,29 @@ class SyncTteUnit extends BaseCommand
      */
     public function run(array $params)
     {
-        $unitId = $params[0] ?? null;
+        $unitInput = $params[0] ?? CLI::getOption('unit') ?? null;
 
-        if (empty($unitId)) {
-            CLI::error("Error: Unit ID is required.");
-            $this->showUsage();
+        if (empty($unitInput)) {
+            CLI::error("Error: Unit ID atau Nama Unit Kerja wajib diisi.");
+            CLI::write("Contoh ID   : php spark sync:tte-unit 343", 'yellow');
+            CLI::write("Contoh Nama : php spark sync:tte-unit \"Dinas Komunikasi\"", 'yellow');
             return;
         }
 
         $unitModel = new UnitKerjaModel();
-        $unit = $unitModel->find($unitId);
+        if (is_numeric($unitInput)) {
+            $unit = $unitModel->find($unitInput);
+        } else {
+            $unit = $unitModel->like('nama_unit_kerja', $unitInput)->first();
+        }
 
         if (!$unit) {
-            CLI::error("Error: Unit Kerja with ID $unitId not found.");
+            CLI::error("Error: Unit Kerja '$unitInput' tidak ditemukan.");
             return;
         }
 
-        CLI::write("Syncing TTE Status for Unit: " . $unit['nama_unit_kerja'], 'yellow');
+        $unitId = $unit['id'];
+        CLI::write("Syncing TTE Status for Unit: " . $unit['nama_unit_kerja'] . " (ID: $unitId)", 'yellow');
 
         // Mengambil semua ID Unit Kerja (Induk + Anak)
         $unitIds = [$unitId];
@@ -93,11 +99,11 @@ class SyncTteUnit extends BaseCommand
             CLI::write("Including " . (count($unitIds) - 1) . " child units.", 'cyan');
         }
 
-        // CI4 CLI parser sometimes parses --asn=PNS as key 'asn=PNS' with null value.
-        // Or properly as key 'asn' with value 'PNS'.
+        // Filter Role (Pimpinan vs Pegawai)
+        $roleFilter = CLI::getOption('role') ?? CLI::getOption('filter') ?? null;
+        
         $asnFilter = CLI::getOption('asn') ?? $params['asn'] ?? null;
         if (empty($asnFilter)) {
-            // Check for key 'asn=X' inside $params
             foreach ($params as $key => $val) {
                 if (strpos($key, 'asn=') === 0) {
                     $asnFilter = substr($key, 4);
@@ -108,6 +114,18 @@ class SyncTteUnit extends BaseCommand
         
         $emailModel = new EmailModel();
         $builder = $emailModel->whereIn('unit_kerja_id', $unitIds);
+
+        if ($roleFilter === 'pimpinan') {
+            $builder->groupStart()
+                ->where('pimpinan', 1)
+                ->orWhere('pimpinan_desa', 1)
+            ->groupEnd();
+            CLI::write("Filtering by Role: PIMPINAN", 'cyan');
+        } elseif ($roleFilter === 'pegawai') {
+            $builder->where('(pimpinan = 0 OR pimpinan IS NULL)')
+                ->where('(pimpinan_desa = 0 OR pimpinan_desa IS NULL)');
+            CLI::write("Filtering by Role: PEGAWAI (Non-Pimpinan)", 'cyan');
+        }
 
         if ($asnFilter) {
             $statusAsnModel = new StatusAsnModel();
