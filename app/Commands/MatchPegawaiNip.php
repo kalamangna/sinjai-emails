@@ -201,6 +201,18 @@ class MatchPegawaiNip extends BaseCommand
         }
         CLI::write("\nSelesai mengambil master data pegawai (Total: $totalPegawaiFetched pegawai dari SIMPEG).\n", 'green');
 
+        // Bangun indeks keunikan nama se-Kabupaten untuk proteksi Lintas Unit
+        $globalExactNameIndex = [];
+        foreach ($allPegawaiList as $p) {
+            $pNorm = $this->normalizeName($p['nama'] ?? '');
+            if (!empty($pNorm)) {
+                if (!isset($globalExactNameIndex[$pNorm])) {
+                    $globalExactNameIndex[$pNorm] = [];
+                }
+                $globalExactNameIndex[$pNorm][] = $p;
+            }
+        }
+
         $exactMatches = [];
         $fuzzyMatches = [];
         $crossUnitMatches = [];
@@ -235,14 +247,33 @@ class MatchPegawaiNip extends BaseCommand
             // Tahap 1: Cocokkan di dalam Unit Kerja saat ini
             $matchResult = $this->findBestMatch($normAccName, $pegawaiList, $threshold);
             $isCross = false;
+            $crossRejectReason = null;
 
             // Tahap 2: Jika tidak ketemu di unit asal dan opsi --cross-unit aktif
+            // Syarat Keamanan Ketat: Hanya berlaku jika COCOK 100% dan NAMA HANYA 1 ORANG di seluruh Kabupaten Sinjai!
             if ($matchResult['type'] === 'NONE' && $isCrossUnit && !empty($allPegawaiList)) {
-                $crossResult = $this->findBestMatch($normAccName, $allPegawaiList, $threshold);
-                if ($crossResult['type'] !== 'NONE') {
-                    $matchResult = $crossResult;
-                    $isCross = true;
+                if (isset($globalExactNameIndex[$normAccName])) {
+                    $candidates = $globalExactNameIndex[$normAccName];
+                    if (count($candidates) === 1) {
+                        $matchResult = [
+                            'type'    => 'EXACT',
+                            'pegawai' => $candidates[0],
+                            'score'   => 100,
+                        ];
+                        $isCross = true;
+                    } else {
+                        // Homonim: Ada lebih dari 1 orang bernama sama di OPD lain -> Lewati demi keamanan
+                        $crossRejectReason = "Ambigu Lintas Unit: Ditemukan " . count($candidates) . " pegawai bernama sama di OPD berbeda";
+                    }
                 }
+            }
+
+            if (!empty($crossRejectReason)) {
+                $unmatched[] = [
+                    'account' => $account,
+                    'reason'  => $crossRejectReason,
+                ];
+                continue;
             }
 
             if ($matchResult['type'] === 'EXACT' || $matchResult['type'] === 'FUZZY') {
