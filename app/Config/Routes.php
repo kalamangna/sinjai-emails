@@ -69,6 +69,8 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         $routes->get('pns', '\App\Domains\Email\Controllers\EmailListController::pnsList');
         $routes->get('exportPnsExcel', '\App\Domains\Email\Controllers\EmailExportController::exportPnsExcel');
         $routes->get('export_pns_excel', '\App\Domains\Email\Controllers\EmailExportController::exportPnsExcel');
+        $routes->get('exportPnsCsv', '\App\Domains\Email\Controllers\EmailExportController::exportPnsCsv');
+        $routes->get('export_pns_csv', '\App\Domains\Email\Controllers\EmailExportController::exportPnsCsv');
         $routes->get('pppk', '\App\Domains\Email\Controllers\EmailListController::pppkList');
         $routes->get('pppk-pw', '\App\Domains\Email\Controllers\EmailListController::pppkPwList');
         $routes->get('eselon', '\App\Domains\Email\Controllers\EmailListController::eselonList');

@@ -20,6 +20,8 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Dilengkapi sistem proteksi dan deteksi NIP duplikat (baik terhadap NIP yang sudah ada pada akun lain di database maupun antar-akun dalam batch evaluasi yang sama) untuk menjamin integritas data dan mencegah tumpang tindih akun.
   - Menambahkan sistem **Persistent Disk Cache per Unit Kerja** (`WRITEPATH . 'cache/simpeg_units_pegawai.json'`) sehingga proses eksekusi lanjutan (`--apply`) maupun simulasi berikutnya dapat berjalan **instan (0.05 detik)** tanpa perlu mengunduh ulang data API dari awal, dengan opsi `--refresh` untuk pembaruan paksa.
   - Dilengkapi mekanisme pre-fetching berbasis unit kerja dengan jeda dan retry adaptif untuk menghindari *rate limiting* pada server SIMPEG.
+- **Ekspor CSV Halaman Pegawai PNS**:
+  - Menambahkan tombol dan fitur **Export CSV** pada halaman daftar Pegawai PNS (`/email/pns`), mendukung filter aktif (NIP dan Unit Kerja) dengan kelengkapan data: No, Nama, NIP, Email, Jabatan, Golongan, Pangkat, Unit Kerja, OPD Induk, dan Status TTE.
 
 ## API Gateway & Integrasi Hierarki Unit Kerja
 - **Penyempurnaan Respon API Gateway**:

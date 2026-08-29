@@ -701,6 +701,62 @@ class EmailExportService
         return ['type' => 'excel', 'path' => $filepath, 'filename' => $filename];
     }
 
+    public function generatePnsCsv($params = [])
+    {
+        set_time_limit(0);
+        ini_set('memory_limit', '-1');
+
+        $statusPns = $this->statusAsnModel->where('nama_status_asn', 'PNS')->asArray()->first();
+        if (!$statusPns) throw new Exception('Status PNS belum dikonfigurasi.');
+
+        $builder = $this->emailModel->withDetails()->where('emails.status_asn_id', $statusPns['id']);
+
+        if (!empty($params['has_nip'])) {
+            if ($params['has_nip'] === 'yes') {
+                $builder->where('emails.nip !=', '')->where('emails.nip IS NOT NULL');
+            } elseif ($params['has_nip'] === 'no') {
+                $builder->groupStart()->where('emails.nip', '')->orWhere('emails.nip', null)->groupEnd();
+            }
+        }
+
+        if (!empty($params['parent_unit_kerja_id'])) {
+            $db = \Config\Database::connect();
+            $parentId = $params['parent_unit_kerja_id'];
+            $builder->where('(unit_kerja.parent_id = ' . $db->escape($parentId) . ' OR emails.unit_kerja_id = ' . $db->escape($parentId) . ')');
+        }
+
+        $emails = $builder->orderBy('emails.name', 'ASC')->findAll();
+
+        $filename = 'Data_PNS_' . date('YmdHis') . '.csv';
+        $filepath = WRITEPATH . 'uploads/' . $filename;
+        $fp = fopen($filepath, 'w');
+
+        // UTF-8 BOM agar rapi saat dibuka di Excel/Sheets
+        fprintf($fp, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
+        fputcsv($fp, ['No', 'Nama Pegawai', 'NIP', 'Email', 'Jabatan', 'Golongan', 'Pangkat', 'Unit Kerja', 'OPD Induk', 'Status TTE']);
+
+        $no = 1;
+        foreach ($emails as $email) {
+            fputcsv($fp, [
+                $no++,
+                $email['name'] ?? '',
+                $email['nip'] ? "\t" . $email['nip'] : '',
+                $email['email'] ?? '',
+                $email['jabatan'] ?? '',
+                $email['pangkat_golruang'] ?? '',
+                $email['pangkat_nama'] ?? '',
+                $email['nama_unit_kerja'] ?? '',
+                $email['nama_parent_unit_kerja'] ?? ($email['nama_unit_kerja'] ?? ''),
+                $email['bsre_status'] ?? 'Belum Sync',
+            ]);
+        }
+
+        fclose($fp);
+
+        return ['type' => 'csv', 'path' => $filepath, 'filename' => $filename];
+    }
+
     public function generateUnitKerjaCsv($unitKerjaId, $params = [])
     {
         set_time_limit(0);
