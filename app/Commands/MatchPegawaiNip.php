@@ -123,7 +123,7 @@ class MatchPegawaiNip extends BaseCommand
         }
 
         // 3. Query akun KHUSUS PNS tanpa NIP
-        $builder = $emailModel->select('emails.id, emails.email, emails.name, emails.nip, emails.unit_kerja_id, emails.status_asn_id, unit_kerja.nama_unit_kerja, unit_kerja.api_unit_id, unit_kerja.parent_id')
+        $builder = $emailModel->select('emails.id, emails.email, emails.name, emails.nip, emails.jabatan, emails.unit_kerja_id, emails.status_asn_id, unit_kerja.nama_unit_kerja, unit_kerja.api_unit_id, unit_kerja.parent_id')
             ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
             ->where('emails.deleted_at IS NULL')
             ->where('emails.status_asn_id', $pnsId) // STRICTLY PNS
@@ -281,6 +281,7 @@ class MatchPegawaiNip extends BaseCommand
         foreach ($accounts as $account) {
             $accName = trim($account['name'] ?? '');
             $accEmail = $account['email'];
+            $accJabatan = trim($account['jabatan'] ?? '');
             $unitId = $account['unit_kerja_id'];
             $unit = $unitsById[$unitId] ?? null;
 
@@ -349,9 +350,9 @@ class MatchPegawaiNip extends BaseCommand
                 }
             }
 
-            // Tahap 3: Jika belum ketemu, cek apakah ini akun Pimpinan / Jabatan Struktural
+            // Tahap 3: Jika belum ketemu, cek apakah ini akun Pimpinan / Jabatan Struktural (Kadis, Sekda, Camat, Asisten, dll.)
             if ($matchResult['type'] === 'NONE' && $isMatchJabatan) {
-                $leadMatch = $this->findLeadershipMatch($accEmail, $account['name'] ?? '', $pegawaiList, $allPegawaiList, $unit);
+                $leadMatch = $this->findLeadershipMatch($accEmail, $account['name'] ?? '', $accJabatan, $pegawaiList, $allPegawaiList, $unit);
                 if ($leadMatch !== null) {
                     $matchResult = [
                         'type'    => 'EXACT',
@@ -403,10 +404,14 @@ class MatchPegawaiNip extends BaseCommand
                 $claimedNipsInBatch[$targetNipClean] = $account;
 
                 if ($isLeadership) {
+                    $newApiUnitId = $targetPeg['unit_id'] ?? null;
+                    $newUnit = $newApiUnitId && isset($unitsByApiId[$newApiUnitId]) ? $unitsByApiId[$newApiUnitId] : null;
+
                     $leadershipMatches[] = [
                         'account'  => $account,
                         'matched'  => $targetPeg,
                         'position' => $leadershipRole,
+                        'new_unit' => $newUnit,
                         'score'    => 100,
                     ];
                 } elseif ($isCross) {
@@ -448,7 +453,7 @@ class MatchPegawaiNip extends BaseCommand
             CLI::write("Cocok Akun Pimpinan   : " . count($leadershipMatches) . " (Jabatan Struktural SIMPEG)", 'cyan');
         }
         if (!empty($crossUnitMatches)) {
-            CLI::write("Cocok Lintas Unit     : " . count($crossUnitMatches) . " (Mutasi OPD / Resolusi Unit)", 'purple');
+            CLI::write("Cocok Lintas Unit     : " . count($crossUnitMatches) . " (Mutasi / Resolusi OPD)", 'purple');
         }
         CLI::write("Cocok Mirip (Fuzzy)   : " . count($fuzzyMatches), 'cyan');
         CLI::write("Konflik Duplikat NIP  : " . count($duplicateConflicts) . " (Dilewati demi keamanan)", !empty($duplicateConflicts) ? 'yellow' : 'light_gray');
@@ -483,14 +488,16 @@ class MatchPegawaiNip extends BaseCommand
             foreach (array_slice($leadershipMatches, 0, 10) as $l) {
                 $acc = $l['account'];
                 $peg = $l['matched'];
+                $unitStr = $l['new_unit']['nama_unit_kerja'] ?? ($peg['jabatan_grup'] ?? '-');
                 CLI::write(sprintf(
-                    "• [%s] %s\n  Jabatan : %s\n  Pejabat : %s | NIP: %s (%s)",
+                    "• [%s] %s\n  Jabatan : %s\n  Pejabat : %s | NIP: %s (%s)\n  Unit    : %s",
                     $acc['email'],
                     $acc['name'] ?: '-',
                     $l['position'],
                     $peg['nama'],
                     $peg['nip'],
-                    $peg['jabatan_nama'] ?? '-'
+                    $peg['jabatan_nama'] ?? '-',
+                    $unitStr
                 ), 'light_cyan');
             }
             if (count($leadershipMatches) > 10) {
@@ -618,7 +625,8 @@ class MatchPegawaiNip extends BaseCommand
 
                 if ($leadChoice === 'a' || $leadChoice === 'all' || $leadChoice === 'y' || $leadChoice === 'yes') {
                     foreach ($leadershipMatches as $l) {
-                        $this->applyAccountUpdate($emailModel, $l['account'], $l['matched'], $pnsId);
+                        $newUnitId = $l['new_unit']['id'] ?? null;
+                        $this->applyAccountUpdate($emailModel, $l['account'], $l['matched'], $pnsId, $newUnitId);
                         $appliedLeadCount++;
                     }
                     CLI::write("✓ Selesai: $appliedLeadCount akun pimpinan berhasil diperbarui ke database.\n", 'green');
@@ -761,13 +769,16 @@ class MatchPegawaiNip extends BaseCommand
         $emailModel->update($account['id'], $updateData);
     }
 
-    private function findLeadershipMatch(string $email, string $rawName, array $unitPegawaiList, array $allPegawaiList, ?array $unit): ?array
+    private function findLeadershipMatch(string $email, string $rawName, string $rawJabatan, array $unitPegawaiList, array $allPegawaiList, ?array $unit): ?array
     {
         $username = strtolower(explode('@', $email)[0]);
         $cleanName = mb_strtoupper(trim($rawName), 'UTF-8');
+        $cleanJabatan = mb_strtoupper(trim($rawJabatan), 'UTF-8');
+        $normName = $this->normalizeName($rawName);
+        $normNameNoAndi = trim(preg_replace('/^ANDI\s+/i', '', $normName));
         
         // 1. Pola Sekda (Sekretaris Daerah)
-        if (strpos($username, 'sekda') !== false || strpos($cleanName, 'SEKRETARIS DAERAH') !== false) {
+        if (strpos($username, 'sekda') !== false || strpos($cleanName, 'SEKRETARIS DAERAH') !== false || strpos($cleanJabatan, 'SEKRETARIS DAERAH') !== false) {
             foreach ($allPegawaiList as $p) {
                 if (stripos($p['jabatan_nama'] ?? '', 'Sekretaris Daerah') !== false) {
                     return ['pegawai' => $p, 'position' => 'Sekretaris Daerah'];
@@ -776,11 +787,11 @@ class MatchPegawaiNip extends BaseCommand
         }
 
         // 2. Pola Asisten (Asisten 1, 2, 3 di Setda)
-        if (preg_match('/asisten(\d|satu|dua|tiga)/i', $username) || strpos($cleanName, 'ASISTEN') !== false) {
+        if (preg_match('/asisten(\d|satu|dua|tiga)/i', $username) || strpos($cleanName, 'ASISTEN') !== false || strpos($cleanJabatan, 'ASISTEN') !== false) {
             $num = '';
-            if (strpos($username, '1') !== false || strpos($username, 'satu') !== false || strpos($cleanName, ' I') !== false) $num = 'Pemerintahan';
-            if (strpos($username, '2') !== false || strpos($username, 'dua') !== false || strpos($cleanName, ' II') !== false) $num = 'Perekonomian';
-            if (strpos($username, '3') !== false || strpos($username, 'tiga') !== false || strpos($cleanName, ' III') !== false) $num = 'Administrasi';
+            if (strpos($username, '1') !== false || strpos($username, 'satu') !== false || strpos($cleanName, ' I') !== false || strpos($cleanJabatan, ' I') !== false) $num = 'Pemerintahan';
+            if (strpos($username, '2') !== false || strpos($username, 'dua') !== false || strpos($cleanName, ' II') !== false || strpos($cleanJabatan, ' II') !== false) $num = 'Perekonomian';
+            if (strpos($username, '3') !== false || strpos($username, 'tiga') !== false || strpos($cleanName, ' III') !== false || strpos($cleanJabatan, ' III') !== false) $num = 'Administrasi';
 
             if (!empty($num)) {
                 foreach ($allPegawaiList as $p) {
@@ -791,30 +802,54 @@ class MatchPegawaiNip extends BaseCommand
             }
         }
 
-        // 3. Pola Kepala Dinas / Kepala Badan / Kadis / Kaban pada Unit Kerja
-        if (strpos($username, 'kadis') !== false || strpos($username, 'kaban') !== false || strpos($cleanName, 'KEPALA DINAS') !== false || strpos($cleanName, 'KEPALA BADAN') !== false) {
-            $searchList = !empty($unitPegawaiList) ? $unitPegawaiList : $allPegawaiList;
-            foreach ($searchList as $p) {
+        // 3. Pola Camat (Contoh: andinasrun@sinjaikab.go.id - Jabatan: CAMAT -> NASRUN, S.IP. Camat Sinjai Barat)
+        if (strpos($username, 'camat') !== false || strpos($cleanName, 'CAMAT') !== false || strpos($cleanJabatan, 'CAMAT') !== false) {
+            $camatList = [];
+            foreach ($allPegawaiList as $p) {
                 $jab = $p['jabatan_nama'] ?? '';
-                if (stripos($jab, 'Kepala Dinas') !== false || stripos($jab, 'Kepala Badan') !== false) {
-                    return ['pegawai' => $p, 'position' => $jab];
+                if (preg_match('/\bCamat\b/i', $jab) && stripos($jab, 'Sekretaris') === false && stripos($jab, 'Seksi') === false) {
+                    $camatList[] = $p;
+                }
+            }
+
+            // Jika ada kecocokan nama camat (misal NASRUN dengan ANDI NASRUN)
+            foreach ($camatList as $c) {
+                $cNorm = $this->normalizeName($c['nama'] ?? '');
+                $cNormNoAndi = trim(preg_replace('/^ANDI\s+/i', '', $cNorm));
+
+                if ($normName === $cNorm || $normNameNoAndi === $cNormNoAndi || $normNameNoAndi === $cNorm || $normName === $cNormNoAndi) {
+                    return ['pegawai' => $c, 'position' => $c['jabatan_nama']];
+                }
+            }
+
+            // Jika akun ada di unit kerja kecamatan tertentu
+            if (!empty($unitPegawaiList)) {
+                foreach ($unitPegawaiList as $p) {
+                    $jab = $p['jabatan_nama'] ?? '';
+                    if (preg_match('/\bCamat\b/i', $jab) && stripos($jab, 'Sekretaris') === false && stripos($jab, 'Seksi') === false) {
+                        return ['pegawai' => $p, 'position' => $jab];
+                    }
                 }
             }
         }
 
-        // 4. Pola Camat
-        if (strpos($username, 'camat') !== false || strpos($cleanName, 'CAMAT') !== false) {
+        // 4. Pola Kepala Dinas / Kepala Badan / Kadis / Kaban pada Unit Kerja
+        if (strpos($username, 'kadis') !== false || strpos($username, 'kaban') !== false || strpos($cleanName, 'KEPALA DINAS') !== false || strpos($cleanName, 'KEPALA BADAN') !== false || strpos($cleanJabatan, 'KEPALA DINAS') !== false || strpos($cleanJabatan, 'KEPALA BADAN') !== false) {
             $searchList = !empty($unitPegawaiList) ? $unitPegawaiList : $allPegawaiList;
             foreach ($searchList as $p) {
                 $jab = $p['jabatan_nama'] ?? '';
-                if (preg_match('/\bCamat\b/i', $jab) && stripos($jab, 'Sekretaris') === false && stripos($jab, 'Seksi') === false) {
-                    return ['pegawai' => $p, 'position' => $jab];
+                if (stripos($jab, 'Kepala Dinas') !== false || stripos($jab, 'Kepala Badan') !== false) {
+                    $pNorm = $this->normalizeName($p['nama'] ?? '');
+                    $pNormNoAndi = trim(preg_replace('/^ANDI\s+/i', '', $pNorm));
+                    if (empty($normName) || $normName === $pNorm || $normNameNoAndi === $pNormNoAndi || strpos($username, 'kadis') !== false || strpos($username, 'kaban') !== false) {
+                        return ['pegawai' => $p, 'position' => $jab];
+                    }
                 }
             }
         }
 
         // 5. Pola Inspektur Daerah
-        if (strpos($username, 'inspektur') !== false || strpos($cleanName, 'INSPEKTUR') !== false) {
+        if (strpos($username, 'inspektur') !== false || strpos($cleanName, 'INSPEKTUR') !== false || strpos($cleanJabatan, 'INSPEKTUR') !== false) {
             $searchList = !empty($unitPegawaiList) ? $unitPegawaiList : $allPegawaiList;
             foreach ($searchList as $p) {
                 $jab = $p['jabatan_nama'] ?? '';
@@ -825,45 +860,61 @@ class MatchPegawaiNip extends BaseCommand
         }
 
         // 6. Pola Sekretaris Dinas / Sekretaris Badan (Sekdis / Sekban)
-        if (strpos($username, 'sekdis') !== false || strpos($username, 'sekban') !== false || strpos($cleanName, 'SEKRETARIS DINAS') !== false || strpos($cleanName, 'SEKRETARIS BADAN') !== false) {
+        if (strpos($username, 'sekdis') !== false || strpos($username, 'sekban') !== false || strpos($cleanName, 'SEKRETARIS DINAS') !== false || strpos($cleanName, 'SEKRETARIS BADAN') !== false || strpos($cleanJabatan, 'SEKRETARIS') !== false) {
             $searchList = !empty($unitPegawaiList) ? $unitPegawaiList : $allPegawaiList;
             foreach ($searchList as $p) {
                 $jab = $p['jabatan_nama'] ?? '';
-                if (stripos($jab, 'Sekretaris') !== false && stripos($jab, 'Daerah') === false) {
-                    return ['pegawai' => $p, 'position' => $jab];
+                if (stripos($jab, 'Sekretaris') !== false && stripos($jab, 'Daerah') === false && stripos($jab, 'Camat') === false) {
+                    $pNorm = $this->normalizeName($p['nama'] ?? '');
+                    $pNormNoAndi = trim(preg_replace('/^ANDI\s+/i', '', $pNorm));
+                    if (empty($normName) || $normName === $pNorm || $normNameNoAndi === $pNormNoAndi) {
+                        return ['pegawai' => $p, 'position' => $jab];
+                    }
                 }
             }
         }
 
         // 7. Pola Kepala Bagian (Kabag)
-        if (strpos($username, 'kabag') !== false || strpos($cleanName, 'KEPALA BAGIAN') !== false) {
+        if (strpos($username, 'kabag') !== false || strpos($cleanName, 'KEPALA BAGIAN') !== false || strpos($cleanJabatan, 'KEPALA BAGIAN') !== false) {
             $searchList = !empty($unitPegawaiList) ? $unitPegawaiList : $allPegawaiList;
             foreach ($searchList as $p) {
                 $jab = $p['jabatan_nama'] ?? '';
                 if (stripos($jab, 'Kepala Bagian') !== false) {
-                    return ['pegawai' => $p, 'position' => $jab];
+                    $pNorm = $this->normalizeName($p['nama'] ?? '');
+                    $pNormNoAndi = trim(preg_replace('/^ANDI\s+/i', '', $pNorm));
+                    if (empty($normName) || $normName === $pNorm || $normNameNoAndi === $pNormNoAndi) {
+                        return ['pegawai' => $p, 'position' => $jab];
+                    }
                 }
             }
         }
 
         // 8. Pola Kepala Puskesmas / Kapus
-        if (strpos($username, 'kapus') !== false || strpos($cleanName, 'KEPALA PUSKESMAS') !== false) {
+        if (strpos($username, 'kapus') !== false || strpos($cleanName, 'KEPALA PUSKESMAS') !== false || strpos($cleanJabatan, 'KEPALA PUSKESMAS') !== false) {
             $searchList = !empty($unitPegawaiList) ? $unitPegawaiList : $allPegawaiList;
             foreach ($searchList as $p) {
                 $jab = $p['jabatan_nama'] ?? '';
                 if (stripos($jab, 'Kepala Puskesmas') !== false || stripos($jab, 'Kepala UPTD') !== false) {
-                    return ['pegawai' => $p, 'position' => $jab];
+                    $pNorm = $this->normalizeName($p['nama'] ?? '');
+                    $pNormNoAndi = trim(preg_replace('/^ANDI\s+/i', '', $pNorm));
+                    if (empty($normName) || $normName === $pNorm || $normNameNoAndi === $pNormNoAndi) {
+                        return ['pegawai' => $p, 'position' => $jab];
+                    }
                 }
             }
         }
 
         // 9. Pola Lurah
-        if (strpos($username, 'lurah') !== false || strpos($cleanName, 'LURAH') !== false) {
+        if (strpos($username, 'lurah') !== false || strpos($cleanName, 'LURAH') !== false || strpos($cleanJabatan, 'LURAH') !== false) {
             $searchList = !empty($unitPegawaiList) ? $unitPegawaiList : $allPegawaiList;
             foreach ($searchList as $p) {
                 $jab = $p['jabatan_nama'] ?? '';
                 if (preg_match('/\bLurah\b/i', $jab)) {
-                    return ['pegawai' => $p, 'position' => $jab];
+                    $pNorm = $this->normalizeName($p['nama'] ?? '');
+                    $pNormNoAndi = trim(preg_replace('/^ANDI\s+/i', '', $pNorm));
+                    if (empty($normName) || $normName === $pNorm || $normNameNoAndi === $pNormNoAndi) {
+                        return ['pegawai' => $p, 'position' => $jab];
+                    }
                 }
             }
         }
@@ -904,13 +955,15 @@ class MatchPegawaiNip extends BaseCommand
 
         $bestFuzzy = null;
         $bestScore = 0;
+        $normNoAndi = trim(preg_replace('/^ANDI\s+/i', '', $normAccName));
 
         foreach ($pegawaiList as $peg) {
             $pegName = $peg['nama'] ?? '';
             $normPegName = $this->normalizeName($pegName);
+            $normPegNoAndi = trim(preg_replace('/^ANDI\s+/i', '', $normPegName));
 
             // 1. Exact Match setelah normalisasi
-            if ($normAccName === $normPegName) {
+            if ($normAccName === $normPegName || (!empty($normNoAndi) && $normNoAndi === $normPegNoAndi)) {
                 return [
                     'type'    => 'EXACT',
                     'pegawai' => $peg,
