@@ -33,7 +33,17 @@ class PegawaiSyncService
             if ($result['success']) {
                 $data = $result['data'];
                 // API Simpeg kadang mengembalikan array index 0, kadang langsung object
-                $source = (is_array($data) && isset($data[0])) ? $data[0] : $data;
+                $source = $data;
+                if (is_array($data) && isset($data[0])) {
+                    $definitif = null;
+                    foreach ($data as $item) {
+                        if (isset($item['jabatan_status_id']) && (int)$item['jabatan_status_id'] === 1) {
+                            $definitif = $item;
+                            break;
+                        }
+                    }
+                    $source = $definitif ?: $data[0];
+                }
                 
                 if (isset($source['pangkat_nama']) || isset($source['pangkat_golruang']) || isset($source['unit_id'])) {
                     $updateData = [];
@@ -58,6 +68,9 @@ class PegawaiSyncService
                     if (!empty($rawJabatan)) {
                         $rawJ = mb_strtoupper(trim($rawJabatan), 'UTF-8');
                         $rawJ = preg_replace('/[,\.]+\s*$/', '', $rawJ);
+
+                        // Hapus prefix PLT. / PLH. / PJ. / PJS.
+                        $rawJ = preg_replace('/^\s*(PLT|PLH|PJ|PJS)\.?\s+/i', '', $rawJ);
 
                         // Format ringkas pimpinan
                         if (stripos($rawJ, 'KEPALA DINAS') === 0 || stripos($rawJ, 'KEPALA SATUAN POLISI') === 0) {

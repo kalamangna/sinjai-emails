@@ -1070,7 +1070,17 @@ class EmailService
         }
 
         $data   = $result['data'];
-        $source = (is_array($data) && isset($data[0])) ? $data[0] : $data;
+        $source = $data;
+        if (is_array($data) && isset($data[0])) {
+            $definitif = null;
+            foreach ($data as $item) {
+                if (isset($item['jabatan_status_id']) && (int)$item['jabatan_status_id'] === 1) {
+                    $definitif = $item;
+                    break;
+                }
+            }
+            $source = $definitif ?: $data[0];
+        }
 
         $hasActualData = isset($source['jabatan_nama']) || isset($source['jabatan'])
                       || isset($source['pangkat_nama']) || isset($source['pangkat_golruang']);
@@ -1100,7 +1110,7 @@ class EmailService
         $rawJabatan = $source['jabatan_nama'] ?? $source['jabatan'] ?? ($currentEmail['jabatan'] ?? null);
         if ($rawJabatan) {
             $cleanJab = $this->normalizeJabatanName($rawJabatan, $currentEmail['nama_unit_kerja'] ?? '');
-            if ($cleanJab && stripos($cleanJab, 'PLT') === false) {
+            if ($cleanJab) {
                 $updateData['jabatan'] = $cleanJab;
 
                 if (!empty($source['jabatan_jenis_eselon'])) {
@@ -1212,6 +1222,9 @@ class EmailService
         $jab = mb_strtoupper(trim($jabatan), 'UTF-8');
         // Hapus karakter liar di akhir (titik ganda, titik koma, titik satu di ujung)
         $jab = preg_replace('/[,\.]+\s*$/', '', $jab);
+
+        // Hapus prefix PLT. / PLH. / PJ. / PJS.
+        $jab = preg_replace('/^\s*(PLT|PLH|PJ|PJS)\.?\s+/i', '', $jab);
 
         // Jika akun pimpinan atau nama jabatan kepala dinas / badan / bagian / satpol / rsud, terapkan format ringkas pimpinan
         if ($isPimpinan || stripos($jab, 'KEPALA DINAS') === 0 || stripos($jab, 'KEPALA BADAN') === 0 || stripos($jab, 'KEPALA BAGIAN') === 0 || stripos($jab, 'KEPALA SATUAN POLISI') === 0 || stripos($jab, 'DIREKTUR') === 0) {
