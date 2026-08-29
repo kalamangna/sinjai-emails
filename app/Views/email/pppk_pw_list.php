@@ -19,30 +19,8 @@
         </div>
     </div>
 
-    <!-- Tabel dan Filter -->
+    <!-- Tabel Pegawai -->
     <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
-        <div class="p-6 border-b border-slate-100 bg-slate-50">
-            <form action="<?= current_url() ?>" method="GET" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
-                <div class="md:col-span-10">
-                    <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Filter NIP</label>
-                    <select name="has_nip" class="block w-full px-3 py-2 bg-white border <?= !empty($has_nip) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm appearance-none cursor-pointer transition-all">
-                        <option value="">SEMUA PEGAWAI</option>
-                        <option value="yes" <?= ($has_nip ?? '') === 'yes' ? 'selected' : '' ?>>DENGAN NIP</option>
-                        <option value="no" <?= ($has_nip ?? '') === 'no' ? 'selected' : '' ?>>TANPA NIP</option>
-                    </select>
-                </div>
-
-                <div class="md:col-span-2 flex gap-2">
-                    <button type="submit" class="flex-1 btn btn-solid">
-                        <i class="fas fa-filter mr-2 text-white/80"></i> Filter
-                    </button>
-                    <a href="<?= current_url() ?>" class="btn btn-outline" title="Reset">
-                        <i class="fas fa-undo"></i>
-                    </a>
-                </div>
-            </form>
-        </div>
-
         <div class="overflow-x-auto">
             <table class="w-full text-left text-sm">
                 <thead class="bg-slate-50 text-slate-400 uppercase text-[10px] font-bold tracking-widest">

@@ -21,11 +21,11 @@
                     <i class="fas fa-sync-alt mr-2 group-hover:rotate-180 transition-transform duration-500 text-slate-700"></i>
                     <span class="text-slate-700">Sync Pegawai</span>
                 </button>
-                <a href="<?= site_url('email/export_pns_excel?' . ($_SERVER['QUERY_STRING'] ?? '')) ?>" class="flex-1 lg:flex-none btn btn-outline group bg-white">
+                <a href="<?= site_url('email/export_pns_excel') ?>" class="flex-1 lg:flex-none btn btn-outline group bg-white">
                     <i class="fas fa-file-excel mr-2 text-emerald-600 group-hover:scale-110 transition-transform"></i>
                     <span class="text-slate-700">Export Excel</span>
                 </a>
-                <a href="<?= site_url('email/export_pns_csv?' . ($_SERVER['QUERY_STRING'] ?? '')) ?>" class="flex-1 lg:flex-none btn btn-outline group bg-white">
+                <a href="<?= site_url('email/export_pns_csv') ?>" class="flex-1 lg:flex-none btn btn-outline group bg-white">
                     <i class="fas fa-file-csv mr-2 text-blue-600 group-hover:scale-110 transition-transform"></i>
                     <span class="text-slate-700">Export CSV</span>
                 </a>
@@ -33,52 +33,8 @@
         </div>
     </div>
 
-    <!-- Tabel dan Filter -->
+    <!-- Tabel Pegawai -->
     <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
-        <div class="p-6 border-b border-slate-100 bg-slate-50">
-            <form action="<?= current_url() ?>" method="GET" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
-                <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Filter NIP</label>
-                    <select name="has_nip" class="block w-full px-3 py-2 bg-white border <?= !empty($has_nip) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm appearance-none cursor-pointer transition-all">
-                        <option value="">SEMUA PEGAWAI</option>
-                        <option value="yes" <?= ($has_nip ?? '') === 'yes' ? 'selected' : '' ?>>DENGAN NIP</option>
-                        <option value="no" <?= ($has_nip ?? '') === 'no' ? 'selected' : '' ?>>TANPA NIP</option>
-                    </select>
-                </div>
-
-                <div class="md:col-span-3">
-                    <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Filter Status TTE</label>
-                    <select name="bsre_status" class="block w-full px-3 py-2 bg-white border <?= !empty($bsre_status) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm appearance-none cursor-pointer transition-all">
-                        <option value="">SEMUA STATUS TTE</option>
-                        <?php foreach ($bsre_status_options ?? [] as $key => $label): ?>
-                            <option value="<?= esc($key) ?>" <?= (($bsre_status ?? '') === $key) ? 'selected' : '' ?>><?= esc($label) ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-
-                <div class="md:col-span-5">
-                    <label class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Filter Unit Kerja</label>
-                    <select name="parent_unit_kerja_id" class="choices-search block w-full px-3 py-2 bg-white border <?= !empty($parent_unit_kerja_id) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm appearance-none cursor-pointer transition-all">
-                        <option value="">SEMUA UNIT KERJA</option>
-                        <?php foreach ($parent_unit_kerjas as $puk): ?>
-                            <option value="<?= esc($puk['id']) ?>" <?= ($parent_unit_kerja_id ?? '') == $puk['id'] ? 'selected' : '' ?>>
-                                <?= esc($puk['nama_unit_kerja']) ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-
-                <div class="md:col-span-2 flex gap-2">
-                    <button type="submit" class="flex-1 btn btn-solid">
-                        <i class="fas fa-filter mr-2 text-white/80"></i> Filter
-                    </button>
-                    <a href="<?= current_url() ?>" class="btn btn-outline" title="Reset">
-                        <i class="fas fa-undo"></i>
-                    </a>
-                </div>
-            </form>
-        </div>
-
         <div class="overflow-x-auto">
             <table class="w-full text-left text-sm">
                 <thead class="bg-slate-50 text-slate-400 uppercase text-[10px] font-bold tracking-widest">
