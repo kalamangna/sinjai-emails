@@ -1313,6 +1313,11 @@ class EmailService
         // Koreksi SUB. BAGIAN / SUB. BIDANG menjadi SUB BAGIAN / SUB BIDANG
         $jab = preg_replace('/\bSUB\.\s*/i', 'SUB ', $jab);
 
+        // Bersihkan embel-embel nama instansi di ujung nama Kasubag/Kasi/Kasubid
+        if (preg_match('/^(KEPALA SUB BAGIAN|KEPALA SEKSI|KEPALA SUB BIDANG)\s+/i', $jab)) {
+            $jab = preg_replace('/\s+(SEKRETARIAT|PADA|KEC\.|KECAMATAN|DINAS|BADAN)\s+.*$/i', '', $jab);
+        }
+
         // Spasi sebelum/setelah tanda baca titik dan koma
         $jab = preg_replace('/\s+([,\.])/', '$1', $jab);
         $jab = preg_replace('/([,\.])\s+/', '$1 ', $jab);

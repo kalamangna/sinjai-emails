@@ -124,6 +124,11 @@ class PegawaiSyncService
                         // Koreksi SUB. BAGIAN / SUB. BIDANG menjadi SUB BAGIAN / SUB BIDANG
                         $rawJ = preg_replace('/\bSUB\.\s*/i', 'SUB ', $rawJ);
 
+                        // Bersihkan embel-embel nama instansi di ujung nama Kasubag/Kasi/Kasubid
+                        if (preg_match('/^(KEPALA SUB BAGIAN|KEPALA SEKSI|KEPALA SUB BIDANG)\s+/i', $rawJ)) {
+                            $rawJ = preg_replace('/\s+(SEKRETARIAT|PADA|KEC\.|KECAMATAN|DINAS|BADAN)\s+.*$/i', '', $rawJ);
+                        }
+
                         $rawJ = preg_replace('/\s+([,\.])/', '$1', $rawJ);
                         $rawJ = preg_replace('/([,\.])\s+/', '$1 ', $rawJ);
                         $rawJ = preg_replace('/\s*\/\s*/', '/', $rawJ);
