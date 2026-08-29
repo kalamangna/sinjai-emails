@@ -313,7 +313,7 @@ class MatchPegawaiNip extends BaseCommand
         CLI::write("Cocok Sempurna (100%) : " . count($exactMatches), 'green');
         CLI::write("Cocok Mirip (Fuzzy)   : " . count($fuzzyMatches), 'cyan');
         if ($isCrossUnit) {
-            CLI::write("Cocok Lintas Unit     : " . count($crossUnitMatches) . " (Mutasi/Pindah OPD)", 'magenta');
+            CLI::write("Cocok Lintas Unit     : " . count($crossUnitMatches) . " (Mutasi/Pindah OPD)", 'purple');
         }
         CLI::write("Konflik Duplikat NIP  : " . count($duplicateConflicts) . " (Dilewati demi keamanan)", !empty($duplicateConflicts) ? 'yellow' : 'light_gray');
         CLI::write("Belum Cocok           : " . count($unmatched), 'red');
@@ -343,7 +343,7 @@ class MatchPegawaiNip extends BaseCommand
 
         // Tampilkan Sampel Cross-Unit Matches
         if (!empty($crossUnitMatches)) {
-            CLI::write("--- [SAMPEL 10 COCOK LINTAS UNIT (MUTASI OPD)] ---", 'magenta');
+            CLI::write("--- [SAMPEL 10 COCOK LINTAS UNIT (MUTASI OPD)] ---", 'purple');
             foreach (array_slice($crossUnitMatches, 0, 10) as $c) {
                 $acc = $c['account'];
                 $peg = $c['matched'];
@@ -359,7 +359,7 @@ class MatchPegawaiNip extends BaseCommand
                     $oldUnitName,
                     $newUnitName,
                     $c['score']
-                ), 'light_magenta');
+                ), 'light_purple');
             }
             if (count($crossUnitMatches) > 10) {
                 CLI::write("... dan " . (count($crossUnitMatches) - 10) . " akun lainnya cocok lintas unit.\n");
@@ -451,8 +451,8 @@ class MatchPegawaiNip extends BaseCommand
 
             // 2. Konfirmasi & Update Cross-Unit Matches
             if (!empty($crossUnitMatches)) {
-                CLI::write("----------------------------------------------------------", 'magenta');
-                CLI::write("Terdapat " . count($crossUnitMatches) . " akun Cocok Lintas Unit (Mutasi OPD).", 'magenta');
+                CLI::write("----------------------------------------------------------", 'purple');
+                CLI::write("Terdapat " . count($crossUnitMatches) . " akun Cocok Lintas Unit (Mutasi OPD).", 'purple');
                 $crossChoice = CLI::prompt('Apakah Anda ingin menerapkan akun lintas unit ini dan menyelaraskan Unit Kerja barunya?', ['y', 'a', 'n']);
                 $crossChoice = strtolower(trim($crossChoice));
 
@@ -541,7 +541,7 @@ class MatchPegawaiNip extends BaseCommand
             CLI::write("TOTAL PEMBARUAN BERHASIL : $totalApplied Akun", 'green');
             CLI::write("• Cocok Sempurna (100%) : $appliedExactCount Akun", 'green');
             if ($isCrossUnit) {
-                CLI::write("• Cocok Lintas Unit     : $appliedCrossCount Akun", 'magenta');
+                CLI::write("• Cocok Lintas Unit     : $appliedCrossCount Akun", 'purple');
             }
             CLI::write("• Cocok Mirip (Fuzzy)   : $appliedFuzzyCount Akun", 'cyan');
             CLI::write("==========================================================\n", 'green');
