@@ -1360,13 +1360,19 @@ class EmailService
         $jab = preg_replace('/\bPENGADMINISTRASIAN\b/i', 'PENGADMINISTRASI', $jab);
         $jab = preg_replace('/\b(PELAKASANA|PELAKSAN)\b/i', 'PELAKSANA', $jab);
 
+        // 5. Standarisasi Format SSCASN (JENJANG - NAMA PROFESI) menjadi Format Baku PermenPAN-RB & BKN (NAMA PROFESI JENJANG)
+        // Contoh: "AHLI PERTAMA - APOTEKER" -> "APOTEKER AHLI PERTAMA", "TERAMPIL - PERAWAT" -> "PERAWAT TERAMPIL"
+        if (preg_match('/^(AHLI PERTAMA|AHLI MUDA|AHLI MADYA|AHLI UTAMA|TERAMPIL|MAHIR|PENYELIA|PEMULA)\s*-\s*(.+)$/i', $jab, $matches)) {
+            $jenjang = trim($matches[1]);
+            $profesi = trim($matches[2]);
+            $jab = $profesi . ' ' . $jenjang;
+        }
+
         // Spasi sebelum/setelah tanda baca titik dan koma
         $jab = preg_replace('/\s+([,\.])/', '$1', $jab);
         $jab = preg_replace('/([,\.])\s+/', '$1 ', $jab);
         // Standarisasi slash (III/a tanpa spasi)
         $jab = preg_replace('/\s*\/\s*/', '/', $jab);
-        // Spasi bersih untuk jenjang fungsional e.g. "AHLI PERTAMA - PRANATA KOMPUTER"
-        $jab = preg_replace('/\b(AHLI PERTAMA|AHLI MUDA|AHLI MADYA|AHLI UTAMA|TERAMPIL|MAHIR|PENYELIA)\s*-\s*/i', '$1 - ', $jab);
         // Pastikan kata ulang tidak terpecah
         $jab = preg_replace('/\b(PERUNDANG|UNDANG|SARANA|ORGANISASI)\s*-\s*(UNDANGAN|UNDANG|PRASARANA)\b/i', '$1-$2', $jab);
         // Hapus spasi ganda atau tab liar
