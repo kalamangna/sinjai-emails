@@ -910,24 +910,30 @@ class MatchPegawaiNip extends BaseCommand
     private function normalizeName(string $name): string
     {
         $name = mb_strtoupper($name, 'UTF-8');
+
+        // 1. Hapus semua teks setelah koma (koma adalah pemisah standar nama dengan gelar-gelar belakang di SIMPEG)
+        if (strpos($name, ',') !== false) {
+            $name = substr($name, 0, strpos($name, ','));
+        }
+
         $name = str_replace([',.', '.,', ';', '`', '\'', '"', '(', ')', '[', ']'], ' ', $name);
 
-        // 1. Pisahkan gelar depan yang menempel (contoh: "DR.ANDI" -> "DR ANDI", "HJ.NURLINA" -> "HJ NURLINA")
-        $name = preg_replace('/\b(PROF|DRS|DRA|DR|IR|HJ|H)\./i', ' $1 ', $name);
+        // 2. Pisahkan gelar depan yang menempel (contoh: "DR.ANDI" -> "DR ANDI", "HJ.NURLINA" -> "HJ NURLINA")
+        $name = preg_replace('/\b(PROF|DRS|DRA|DR|IR|HJ|H|DRH)\.?\s+/i', ' ', $name);
 
-        // 2. Hapus titik di dalam singkatan/gelar (misal "S.KOM." -> "SKOM", "S.IP." -> "SIP", "M.A.P" -> "MAP", "S.P." -> "SP")
+        // 3. Hapus titik di dalam singkatan/gelar (misal "S.KOM." -> "SKOM", "S.IP." -> "SIP", "M.A.P" -> "MAP", "S.P." -> "SP")
         $name = preg_replace('/(?<=[A-Z0-9])\.(?=[A-Z0-9])/i', '', $name);
         $name = preg_replace('/[\.,]/', ' ', $name);
         $name = preg_replace('/\s+/', ' ', trim($name));
 
         // Daftar gelar akademik, keagamaan, profesi, dan kehormatan
         $titles = [
-            'PROF', 'DR', 'DRA', 'DRS', 'IR', 'H', 'HJ', 'HAJI', 'HAJJAH',
-            'SKOM', 'SPD', 'SSOS', 'SSTP', 'SE', 'SH', 'SSI', 'SKM', 'STRKEB', 'STRGZ', 'STRTRA', 'STR',
-            'SAP', 'SIP', 'ST', 'SP', 'SAG', 'SKEP', 'STP', 'SS', 'SKED', 'SIKOM', 'SFARM', 'SPT', 'SPI', 'SM',
-            'MSI', 'MPD', 'MM', 'MKOM', 'MAP', 'MTRAP', 'MKES', 'MH', 'MAG', 'MAK', 'MT', 'MIKOM', 'MP', 'MKM', 'MSC',
-            'AMD', 'AMDKEB', 'AMDKEP', 'AMDKL', 'AMDPK', 'AMKG', 'AMTEK',
-            'NS', 'APT', 'GR', 'AP', 'SEK', 'IP'
+            'PROF', 'DR', 'DRA', 'DRS', 'IR', 'H', 'HJ', 'HAJI', 'HAJJAH', 'DRH',
+            'SKOM', 'SPD', 'SSOS', 'SSTP', 'SE', 'SH', 'SSI', 'SKM', 'STRKEB', 'STRGZ', 'STRTRA', 'STR', 'STRIP',
+            'SAP', 'SIP', 'ST', 'SP', 'SAG', 'SKEP', 'STP', 'SS', 'SKED', 'SIKOM', 'SFARM', 'SPT', 'SPI', 'SM', 'SPKP', 'STPAR', 'SEI',
+            'MSI', 'MPD', 'MM', 'MKOM', 'MAP', 'MTRAP', 'MKES', 'MH', 'MAG', 'MAK', 'MT', 'MIKOM', 'MP', 'MKM', 'MSC', 'MANIMSC', 'MLING',
+            'AMD', 'AMDKEB', 'AMDKEP', 'AMDKL', 'AMDPK', 'AMKG', 'AMTEK', 'AMDPI', 'AMDRAD', 'AMKL',
+            'NS', 'APT', 'GR', 'AP', 'SEK', 'IP', 'CGCAE', 'CGRE'
         ];
 
         $words = explode(' ', $name);
