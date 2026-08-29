@@ -1240,6 +1240,36 @@ class EmailService
             if (stripos($jab, 'KEPALA BADAN') === 0) return 'KEPALA BADAN';
         }
 
+        // Format Ringkas Sekretaris OPD
+        if (stripos($jab, 'SEKRETARIS DAERAH') === 0) {
+            return 'SEKRETARIS DAERAH';
+        } elseif (stripos($jab, 'SEKRETARIS DPRD') === 0) {
+            return 'SEKRETARIS DPRD';
+        } elseif (stripos($jab, 'SEKRETARIS INSPEKTORAT') === 0) {
+            return 'SEKRETARIS INSPEKTORAT';
+        } elseif (stripos($jab, 'SEKRETARIS BADAN') === 0 || stripos($jab, 'SEKRETARIS BPBD') === 0) {
+            return 'SEKRETARIS BADAN';
+        } elseif (stripos($jab, 'SEKRETARIS DINAS') === 0 || stripos($jab, 'SEKRETARIS SATUAN POLISI') === 0) {
+            return 'SEKRETARIS DINAS';
+        } elseif (stripos($jab, 'SEKRETARIS CAMAT') === 0 || stripos($jab, 'SEKRETARIS KECAMATAN') === 0) {
+            return 'SEKRETARIS KECAMATAN';
+        } elseif (stripos($jab, 'SEKRETARIS LURAH') === 0 || stripos($jab, 'SEKRETARIS KELURAHAN') === 0) {
+            return 'SEKRETARIS KELURAHAN';
+        } elseif ($jab === 'SEKRETARIS' && !empty($unitKerjaName)) {
+            $unitUpper = strtoupper($unitKerjaName);
+            if (strpos($unitUpper, 'DINAS') !== false || strpos($unitUpper, 'SATPOL') !== false) {
+                return 'SEKRETARIS DINAS';
+            } elseif (strpos($unitUpper, 'BADAN') !== false || strpos($unitUpper, 'BPBD') !== false) {
+                return 'SEKRETARIS BADAN';
+            } elseif (strpos($unitUpper, 'INSPEKTORAT') !== false) {
+                return 'SEKRETARIS INSPEKTORAT';
+            } elseif (strpos($unitUpper, 'KECAMATAN') !== false) {
+                return 'SEKRETARIS KECAMATAN';
+            } elseif (strpos($unitUpper, 'KELURAHAN') !== false) {
+                return 'SEKRETARIS KELURAHAN';
+            }
+        }
+
         // Resolusi jabatan kombinasi garis miring (Opsi B: Prioritas Tugas Manajerial/Kepala/Pimpinan)
         if (strpos($jab, '/') !== false && !preg_match('/\b[IVX]+\/[A-D]\b/i', $jab)) {
             $parts = explode('/', $jab);
@@ -1260,6 +1290,11 @@ class EmailService
                 }
                 $jab = $chosen;
             }
+        }
+
+        // Tambahkan prefix KEPALA jika di SIMPEG hanya tertulis "BIDANG ...", "SUB BAGIAN ...", "SEKSI ...", "SUB BIDANG ..."
+        if (preg_match('/^(BIDANG|SUB BAGIAN|SUB\. BAGIAN|SUB BIDANG|SEKSI)\s+/i', $jab) && stripos($jab, 'KEPALA') === false) {
+            $jab = 'KEPALA ' . $jab;
         }
 
         // Koreksi SUB. BAGIAN / SUB. BIDANG menjadi SUB BAGIAN / SUB BIDANG
@@ -1283,15 +1318,6 @@ class EmailService
             ['TEKNOLOGI', 'KONSUMSI', 'HORTIKULTURA'],
             $jab
         );
-
-        // Penyesuaian khusus jika hanya tertulis "SEKRETARIS"
-        if ($jab === 'SEKRETARIS' && !empty($unitKerjaName)) {
-            $unitUpper = strtoupper($unitKerjaName);
-            if (strpos($unitUpper, 'DINAS') !== false)       $jab = 'SEKRETARIS DINAS';
-            elseif (strpos($unitUpper, 'BADAN') !== false)   $jab = 'SEKRETARIS BADAN';
-            elseif (strpos($unitUpper, 'KECAMATAN') !== false) $jab = 'SEKRETARIS KECAMATAN';
-            elseif (strpos($unitUpper, 'KELURAHAN') !== false) $jab = 'SEKRETARIS KELURAHAN';
-        }
 
         return $jab;
     }

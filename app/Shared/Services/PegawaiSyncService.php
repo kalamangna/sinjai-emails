@@ -68,6 +68,20 @@ class PegawaiSyncService
                             $rawJ = 'KEPALA BAGIAN';
                         } elseif (stripos($rawJ, 'DIREKTUR') === 0) {
                             $rawJ = 'DIREKTUR';
+                        } elseif (stripos($rawJ, 'SEKRETARIS DAERAH') === 0) {
+                            $rawJ = 'SEKRETARIS DAERAH';
+                        } elseif (stripos($rawJ, 'SEKRETARIS DPRD') === 0) {
+                            $rawJ = 'SEKRETARIS DPRD';
+                        } elseif (stripos($rawJ, 'SEKRETARIS INSPEKTORAT') === 0) {
+                            $rawJ = 'SEKRETARIS INSPEKTORAT';
+                        } elseif (stripos($rawJ, 'SEKRETARIS BADAN') === 0 || stripos($rawJ, 'SEKRETARIS BPBD') === 0) {
+                            $rawJ = 'SEKRETARIS BADAN';
+                        } elseif (stripos($rawJ, 'SEKRETARIS DINAS') === 0 || stripos($rawJ, 'SEKRETARIS SATUAN POLISI') === 0) {
+                            $rawJ = 'SEKRETARIS DINAS';
+                        } elseif (stripos($rawJ, 'SEKRETARIS CAMAT') === 0 || stripos($rawJ, 'SEKRETARIS KECAMATAN') === 0) {
+                            $rawJ = 'SEKRETARIS KECAMATAN';
+                        } elseif (stripos($rawJ, 'SEKRETARIS LURAH') === 0 || stripos($rawJ, 'SEKRETARIS KELURAHAN') === 0) {
+                            $rawJ = 'SEKRETARIS KELURAHAN';
                         } elseif (strpos($rawJ, '/') !== false && !preg_match('/\b[IVX]+\/[A-D]\b/i', $rawJ)) {
                             $parts = explode('/', $rawJ);
                             if (count($parts) > 1 && strlen(trim($parts[0])) > 2 && strlen(trim($parts[1])) > 2) {
@@ -89,13 +103,19 @@ class PegawaiSyncService
                             }
                         }
 
+                        // Tambahkan prefix KEPALA jika di SIMPEG hanya tertulis "BIDANG ...", "SUB BAGIAN ...", "SEKSI ...", "SUB BIDANG ..."
+                        if (preg_match('/^(BIDANG|SUB BAGIAN|SUB\. BAGIAN|SUB BIDANG|SEKSI)\s+/i', $rawJ) && stripos($rawJ, 'KEPALA') === false) {
+                            $rawJ = 'KEPALA ' . $rawJ;
+                        }
+
                         // Koreksi SUB. BAGIAN / SUB. BIDANG menjadi SUB BAGIAN / SUB BIDANG
                         $rawJ = preg_replace('/\bSUB\.\s*/i', 'SUB ', $rawJ);
 
                         $rawJ = preg_replace('/\s+([,\.])/', '$1', $rawJ);
                         $rawJ = preg_replace('/([,\.])\s+/', '$1 ', $rawJ);
                         $rawJ = preg_replace('/\s*\/\s*/', '/', $rawJ);
-                        $rawJ = preg_replace('/\s*-\s*/', ' - ', $rawJ);
+                        $rawJ = preg_replace('/\b(AHLI PERTAMA|AHLI MUDA|AHLI MADYA|AHLI UTAMA|TERAMPIL|MAHIR|PENYELIA)\s*-\s*/i', '$1 - ', $rawJ);
+                        $rawJ = preg_replace('/\b(PERUNDANG|UNDANG|SARANA|ORGANISASI)\s*-\s*(UNDANGAN|UNDANG|PRASARANA)\b/i', '$1-$2', $rawJ);
                         $rawJ = preg_replace('/\s+/', ' ', trim($rawJ));
                         $rawJ = str_replace(
                             ['TEHNOLOGI', 'KOMSUMSI', 'HOLTIKULTURA'],
