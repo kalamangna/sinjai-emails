@@ -1352,9 +1352,13 @@ class EmailService
         $jab = preg_replace("/\b({$profesiKeahlian})\s+PELAKSANA\b/i", '$1 TERAMPIL', $jab);
         $jab = preg_replace("/\bPELAKSANA\s+({$profesiKeahlian})\b/i", '$1 TERAMPIL', $jab);
 
-        // 4. Koreksi Singkatan / Nomenklatur Mata Pelajaran & Teknis
+        // 4. Koreksi Singkatan / Nomenklatur Mata Pelajaran & Teknis Pelaksana
         $jab = preg_replace('/\bPKN\b/i', 'PPKN', $jab);
         $jab = preg_replace('/\bTEHNIS\b/i', 'TEKNIS', $jab);
+        $jab = preg_replace('/\bPENELAH\b/i', 'PENELAAH', $jab);
+        $jab = preg_replace('/\bPENGOLA\b/i', 'PENGOLAH', $jab);
+        $jab = preg_replace('/\bPENGADMINISTRASIAN\b/i', 'PENGADMINISTRASI', $jab);
+        $jab = preg_replace('/\b(PELAKASANA|PELAKSAN)\b/i', 'PELAKSANA', $jab);
 
         // Spasi sebelum/setelah tanda baca titik dan koma
         $jab = preg_replace('/\s+([,\.])/', '$1', $jab);
