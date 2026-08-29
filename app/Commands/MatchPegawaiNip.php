@@ -448,7 +448,11 @@ class MatchPegawaiNip extends BaseCommand
             CLI::write("==========================================================\n", 'green');
         } else {
             CLI::write("💡 Tips: Untuk menerapkan hasil ke database, jalankan:", 'yellow');
-            CLI::write("php spark sync:match-nip " . (!empty($unitFilter) ? "--unit=" . escapeshellarg($unitFilter) . " " : "") . "--apply\n", 'cyan');
+            $unitArg = '';
+            if (!empty($unitFilter)) {
+                $unitArg = is_numeric($unitFilter) ? "$unitFilter " : (strpos($unitFilter, ' ') !== false ? "\"$unitFilter\" " : "$unitFilter ");
+            }
+            CLI::write("php spark sync:match-nip {$unitArg}--apply\n", 'cyan');
         }
     }
 
