@@ -179,7 +179,7 @@ class MatchPegawaiNip extends BaseCommand
         $totalUnitsToFetch = count($neededApiUnits);
         CLI::write("\nMengambil master data pegawai untuk $totalUnitsToFetch Unit Kerja dari API SIMPEG...", 'yellow');
 
-        $client = \Config\Services::curlrequest(['timeout' => 15, 'verify' => false]);
+        $client = \Config\Services::curlrequest(['timeout' => 8, 'verify' => false]);
         $baseUrl = rtrim(env('PEGAWAI_BASE_URL') ?: 'https://apps.sinjaikab.go.id/api/pegawai', '/') . '/';
 
         $totalPegawaiFetched = 0;
@@ -196,10 +196,11 @@ class MatchPegawaiNip extends BaseCommand
                 $allPegawaiList[] = $p;
             }
 
-            CLI::print("Progress: [$unitIdx/$totalUnitsToFetch] Unit $apiUnitId: " . count($pegawaiList) . " pegawai\r");
-            usleep(200000); // 200ms delay antar unit
+            $line = sprintf("⏳ Mengunduh data SIMPEG: [%d/%d] Unit %s (%d pegawai)   ", $unitIdx, $totalUnitsToFetch, $apiUnitId, count($pegawaiList));
+            CLI::print("\r" . str_pad($line, 70));
+            usleep(50000); // 50ms delay
         }
-        CLI::write("\nSelesai mengambil master data pegawai (Total: $totalPegawaiFetched pegawai dari SIMPEG).\n", 'green');
+        CLI::write("\n✓ Selesai mengunduh master data: $totalPegawaiFetched pegawai dari SIMPEG.\n", 'green');
 
         // Bangun indeks keunikan nama se-Kabupaten untuk proteksi Lintas Unit
         $globalExactNameIndex = [];
