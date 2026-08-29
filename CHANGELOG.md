@@ -22,8 +22,8 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Dilengkapi mekanisme pre-fetching berbasis unit kerja dengan jeda dan retry adaptif untuk menghindari *rate limiting* pada server SIMPEG.
 - **Ekspor CSV Halaman Pegawai PNS**:
   - Menambahkan tombol dan fitur **Export CSV** pada halaman daftar Pegawai PNS (`/email/pns`), mendukung filter aktif (NIP dan Unit Kerja) dengan kelengkapan data: No, Nama, NIP, Email, Jabatan, Golongan, Pangkat, Unit Kerja, OPD Induk, dan Status TTE.
-- **Command Analisis & Penandaan Status Pensiun PNS (`pns:check-pensiun`)**:
-  - Menambahkan command CLI `pns:check-pensiun` untuk menghitung usia PNS secara presisi dari 8 digit awal NIP (`YYYYMMDD`), menerapkan kriteria ketat **Batas Usia Pensiun (BUP) $\ge 60$ Tahun** (kelahiran $\le 1966$), menyediakan mode live update (`--apply`) untuk menandai status kepegawaian akun menjadi `PENSIUN` di database secara otomatis, serta opsi ekspor rekap ke format CSV (`--export`).
+- **Command Analisis & Prosedur Pensiun PNS (`pns:check-pensiun`)**:
+  - Menambahkan command CLI `pns:check-pensiun` untuk mendeteksi PNS purna tugas (BUP $\ge 60$ Tahun) via NIP dan mengeksekusi alur pensiun sistem secara penuh saat dijalankan dengan `--apply`: menangguhkan login email cPanel (`suspend_email_login`), melepaskan data kepegawaian, memindahkan akun ke Kotak Sampah (*Soft Delete* / Retensi 30 Hari), mencatat log audit, serta mengirimkan ringkasan notifikasi ke Telegram Admin.
 
 ## API Gateway & Integrasi Hierarki Unit Kerja
 - **Penyempurnaan Respon API Gateway**:
