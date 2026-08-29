@@ -159,8 +159,17 @@ class MatchPegawaiNip extends BaseCommand
         }
 
         // 5. Kumpulkan semua api_unit_id yang dibutuhkan
+        // Jika ada akun tanpa unit_kerja_id atau opsi --cross-unit aktif, muat seluruh unit se-Kabupaten
+        $hasUnitlessAccount = false;
+        foreach ($accounts as $acc) {
+            if (empty($acc['unit_kerja_id'])) {
+                $hasUnitlessAccount = true;
+                break;
+            }
+        }
+
         $neededApiUnits = [];
-        if ($isCrossUnit || $isMatchJabatan) {
+        if ($isCrossUnit || $isMatchJabatan || $hasUnitlessAccount) {
             foreach ($allUnits as $u) {
                 if (!empty($u['api_unit_id'])) {
                     $neededApiUnits[$u['api_unit_id']] = true;
@@ -202,7 +211,7 @@ class MatchPegawaiNip extends BaseCommand
             CLI::write("\nMenyiapkan master data pegawai untuk $totalUnitsToFetch Unit Kerja dari API SIMPEG...", 'yellow');
         }
 
-        $client = \Config\Services::curlrequest(['timeout' => 8, 'verify' => false]);
+        $client = \Config\Services::curlrequest(['timeout' => 10, 'verify' => false]);
         $baseUrl = rtrim(env('PEGAWAI_BASE_URL') ?: 'https://apps.sinjaikab.go.id/api/pegawai', '/') . '/';
 
         $totalPegawaiFetched = 0;
@@ -234,6 +243,9 @@ class MatchPegawaiNip extends BaseCommand
             $totalPegawaiFetched += count($pegawaiList);
 
             foreach ($pegawaiList as $p) {
+                if (empty($p['unit_id'])) {
+                    $p['unit_id'] = $apiUnitId;
+                }
                 $allPegawaiList[] = $p;
             }
         }
@@ -288,16 +300,16 @@ class MatchPegawaiNip extends BaseCommand
 
             $pegawaiList = !empty($apiUnitId) ? ($this->cachedApiPegawai[$apiUnitId] ?? []) : [];
             
-            // Tahap 1: Cocokkan di dalam Unit Kerja saat ini
-            $matchResult = $this->findBestMatch($normAccName, $pegawaiList, $threshold);
+            // Tahap 1: Cocokkan di dalam Unit Kerja saat ini (jika ada unit_id)
+            $matchResult = !empty($pegawaiList) ? $this->findBestMatch($normAccName, $pegawaiList, $threshold) : ['type' => 'NONE'];
             $isCross = false;
             $isLeadership = false;
             $leadershipRole = null;
             $crossRejectReason = null;
 
-            // Tahap 2: Jika tidak ketemu di unit asal dan opsi --cross-unit aktif
-            // Syarat Keamanan Ketat: Hanya berlaku jika COCOK 100% dan NAMA HANYA 1 ORANG di seluruh Kabupaten Sinjai (atau terpecahkan secara unik lewat tahun lahir pada email)!
-            if ($matchResult['type'] === 'NONE' && $isCrossUnit && !empty($allPegawaiList)) {
+            // Tahap 2: Jika tidak ketemu di unit asal (atau akun tidak memiliki unit_kerja_id) dan pencarian se-kabupaten aktif
+            $allowGlobalSearch = $isCrossUnit || empty($account['unit_kerja_id']);
+            if ($matchResult['type'] === 'NONE' && $allowGlobalSearch && !empty($allPegawaiList)) {
                 if (isset($globalExactNameIndex[$normAccName])) {
                     $candidates = $globalExactNameIndex[$normAccName];
                     if (count($candidates) === 1) {
@@ -423,7 +435,7 @@ class MatchPegawaiNip extends BaseCommand
             } else {
                 $unmatched[] = [
                     'account' => $account,
-                    'reason'  => empty($apiUnitId) ? 'Unit belum ter-mapping ke SIMPEG' : (empty($pegawaiList) ? 'Tidak ada data pegawai dari API unit' : 'Tidak ada nama yang cocok di unit ini'),
+                    'reason'  => empty($apiUnitId) ? 'Unit belum ter-mapping ke SIMPEG / Tanpa Unit' : (empty($pegawaiList) ? 'Tidak ada data pegawai dari API unit' : 'Tidak ada nama yang cocok di unit ini'),
                 ];
             }
         }
@@ -435,8 +447,8 @@ class MatchPegawaiNip extends BaseCommand
         if (!empty($leadershipMatches)) {
             CLI::write("Cocok Akun Pimpinan   : " . count($leadershipMatches) . " (Jabatan Struktural SIMPEG)", 'cyan');
         }
-        if ($isCrossUnit) {
-            CLI::write("Cocok Lintas Unit     : " . count($crossUnitMatches) . " (Mutasi/Pindah OPD)", 'purple');
+        if (!empty($crossUnitMatches)) {
+            CLI::write("Cocok Lintas Unit     : " . count($crossUnitMatches) . " (Mutasi OPD / Resolusi Unit)", 'purple');
         }
         CLI::write("Cocok Mirip (Fuzzy)   : " . count($fuzzyMatches), 'cyan');
         CLI::write("Konflik Duplikat NIP  : " . count($duplicateConflicts) . " (Dilewati demi keamanan)", !empty($duplicateConflicts) ? 'yellow' : 'light_gray');
@@ -490,7 +502,7 @@ class MatchPegawaiNip extends BaseCommand
 
         // Tampilkan Sampel Cross-Unit Matches
         if (!empty($crossUnitMatches)) {
-            CLI::write("--- [SAMPEL 10 COCOK LINTAS UNIT (MUTASI OPD)] ---", 'purple');
+            CLI::write("--- [SAMPEL 10 COCOK LINTAS UNIT (MUTASI / RESOLUSI OPD)] ---", 'purple');
             foreach (array_slice($crossUnitMatches, 0, 10) as $c) {
                 $acc = $c['account'];
                 $peg = $c['matched'];
@@ -618,7 +630,7 @@ class MatchPegawaiNip extends BaseCommand
             // 3. Konfirmasi & Update Cross-Unit Matches
             if (!empty($crossUnitMatches)) {
                 CLI::write("----------------------------------------------------------", 'purple');
-                CLI::write("Terdapat " . count($crossUnitMatches) . " akun Cocok Lintas Unit (Mutasi OPD).", 'purple');
+                CLI::write("Terdapat " . count($crossUnitMatches) . " akun Cocok Lintas Unit / Resolusi OPD.", 'purple');
                 $crossChoice = CLI::prompt('Apakah Anda ingin menerapkan akun lintas unit ini dan menyelaraskan Unit Kerja barunya?', ['y', 'a', 'n']);
                 $crossChoice = strtolower(trim($crossChoice));
 
@@ -709,7 +721,7 @@ class MatchPegawaiNip extends BaseCommand
             if (!empty($appliedLeadCount)) {
                 CLI::write("• Cocok Akun Pimpinan   : $appliedLeadCount Akun", 'cyan');
             }
-            if ($isCrossUnit) {
+            if (!empty($appliedCrossCount)) {
                 CLI::write("• Cocok Lintas Unit     : $appliedCrossCount Akun", 'purple');
             }
             CLI::write("• Cocok Mirip (Fuzzy)   : $appliedFuzzyCount Akun", 'cyan');
@@ -781,7 +793,8 @@ class MatchPegawaiNip extends BaseCommand
 
         // 3. Pola Kepala Dinas / Kepala Badan / Kadis / Kaban pada Unit Kerja
         if (strpos($username, 'kadis') !== false || strpos($username, 'kaban') !== false || strpos($cleanName, 'KEPALA DINAS') !== false || strpos($cleanName, 'KEPALA BADAN') !== false) {
-            foreach ($unitPegawaiList as $p) {
+            $searchList = !empty($unitPegawaiList) ? $unitPegawaiList : $allPegawaiList;
+            foreach ($searchList as $p) {
                 $jab = $p['jabatan_nama'] ?? '';
                 if (stripos($jab, 'Kepala Dinas') !== false || stripos($jab, 'Kepala Badan') !== false) {
                     return ['pegawai' => $p, 'position' => $jab];
@@ -791,7 +804,8 @@ class MatchPegawaiNip extends BaseCommand
 
         // 4. Pola Camat
         if (strpos($username, 'camat') !== false || strpos($cleanName, 'CAMAT') !== false) {
-            foreach ($unitPegawaiList as $p) {
+            $searchList = !empty($unitPegawaiList) ? $unitPegawaiList : $allPegawaiList;
+            foreach ($searchList as $p) {
                 $jab = $p['jabatan_nama'] ?? '';
                 if (preg_match('/\bCamat\b/i', $jab) && stripos($jab, 'Sekretaris') === false && stripos($jab, 'Seksi') === false) {
                     return ['pegawai' => $p, 'position' => $jab];
@@ -801,7 +815,8 @@ class MatchPegawaiNip extends BaseCommand
 
         // 5. Pola Inspektur Daerah
         if (strpos($username, 'inspektur') !== false || strpos($cleanName, 'INSPEKTUR') !== false) {
-            foreach ($unitPegawaiList as $p) {
+            $searchList = !empty($unitPegawaiList) ? $unitPegawaiList : $allPegawaiList;
+            foreach ($searchList as $p) {
                 $jab = $p['jabatan_nama'] ?? '';
                 if (stripos($jab, 'Inspektur Daerah') !== false || (stripos($jab, 'Inspektur') !== false && stripos($jab, 'Pembantu') === false)) {
                     return ['pegawai' => $p, 'position' => $jab];
@@ -811,7 +826,8 @@ class MatchPegawaiNip extends BaseCommand
 
         // 6. Pola Sekretaris Dinas / Sekretaris Badan (Sekdis / Sekban)
         if (strpos($username, 'sekdis') !== false || strpos($username, 'sekban') !== false || strpos($cleanName, 'SEKRETARIS DINAS') !== false || strpos($cleanName, 'SEKRETARIS BADAN') !== false) {
-            foreach ($unitPegawaiList as $p) {
+            $searchList = !empty($unitPegawaiList) ? $unitPegawaiList : $allPegawaiList;
+            foreach ($searchList as $p) {
                 $jab = $p['jabatan_nama'] ?? '';
                 if (stripos($jab, 'Sekretaris') !== false && stripos($jab, 'Daerah') === false) {
                     return ['pegawai' => $p, 'position' => $jab];
@@ -821,7 +837,8 @@ class MatchPegawaiNip extends BaseCommand
 
         // 7. Pola Kepala Bagian (Kabag)
         if (strpos($username, 'kabag') !== false || strpos($cleanName, 'KEPALA BAGIAN') !== false) {
-            foreach ($unitPegawaiList as $p) {
+            $searchList = !empty($unitPegawaiList) ? $unitPegawaiList : $allPegawaiList;
+            foreach ($searchList as $p) {
                 $jab = $p['jabatan_nama'] ?? '';
                 if (stripos($jab, 'Kepala Bagian') !== false) {
                     return ['pegawai' => $p, 'position' => $jab];
@@ -831,7 +848,8 @@ class MatchPegawaiNip extends BaseCommand
 
         // 8. Pola Kepala Puskesmas / Kapus
         if (strpos($username, 'kapus') !== false || strpos($cleanName, 'KEPALA PUSKESMAS') !== false) {
-            foreach ($unitPegawaiList as $p) {
+            $searchList = !empty($unitPegawaiList) ? $unitPegawaiList : $allPegawaiList;
+            foreach ($searchList as $p) {
                 $jab = $p['jabatan_nama'] ?? '';
                 if (stripos($jab, 'Kepala Puskesmas') !== false || stripos($jab, 'Kepala UPTD') !== false) {
                     return ['pegawai' => $p, 'position' => $jab];
@@ -841,7 +859,8 @@ class MatchPegawaiNip extends BaseCommand
 
         // 9. Pola Lurah
         if (strpos($username, 'lurah') !== false || strpos($cleanName, 'LURAH') !== false) {
-            foreach ($unitPegawaiList as $p) {
+            $searchList = !empty($unitPegawaiList) ? $unitPegawaiList : $allPegawaiList;
+            foreach ($searchList as $p) {
                 $jab = $p['jabatan_nama'] ?? '';
                 if (preg_match('/\bLurah\b/i', $jab)) {
                     return ['pegawai' => $p, 'position' => $jab];
