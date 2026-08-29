@@ -6190,10 +6190,6 @@ input:checked + .toggle-bg {
     inset: 0px;
   }
 
-  .md\:col-span-10 {
-    grid-column: span 10 / span 10;
-  }
-
   .md\:col-span-12 {
     grid-column: span 12 / span 12;
   }
