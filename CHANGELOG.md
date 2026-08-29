@@ -7,6 +7,13 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 # [29 Agustus 2026]
 
+## Rekonsiliasi & Pencocokan NIP PNS via API SIMPEG
+- **Command Rekonsiliasi NIP SIMPEG (`sync:match-nip`)**:
+  - Menambahkan command CLI `sync:match-nip` untuk pencocokan otomatis akun PNS tanpa NIP dengan master data kepegawaian API SIMPEG (`get_pegawai?unit_id=...`).
+  - Mendukung normalisasi nama cerdas (pembersihan gelar akademik/keagamaan, penanganan singkatan nama umum seperti "A." -> "ANDI", "Muh." -> "Muhammad", "Abd." -> "Abdul").
+  - Menyediakan mode simulasi (*dry-run*) dan mode eksekusi langsung (`--apply`) untuk memperbarui NIP, status ASN, pangkat, golongan, dan jabatan secara otomatis.
+  - Dilengkapi mekanisme pre-fetching berbasis unit kerja dengan jeda dan retry adaptif untuk menghindari *rate limiting* pada server SIMPEG.
+
 ## API Gateway & Integrasi Hierarki Unit Kerja
 - **Penyempurnaan Respon API Gateway**:
   - Menambahkan field `unit_kerja` (nama unit langsung/sub-unit) dan `parent_unit_kerja` (nama OPD induk) pada seluruh endpoint API Gateway (`/api/v1/emails`, `/api/v1/pns`, `/api/v1/pppk`, `/api/v1/pppk-pw`, dan `/api/v1/unit/{id}`).
