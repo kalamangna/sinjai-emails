@@ -296,7 +296,7 @@ class MatchPegawaiNip extends BaseCommand
             $crossRejectReason = null;
 
             // Tahap 2: Jika tidak ketemu di unit asal dan opsi --cross-unit aktif
-            // Syarat Keamanan Ketat: Hanya berlaku jika COCOK 100% dan NAMA HANYA 1 ORANG di seluruh Kabupaten Sinjai!
+            // Syarat Keamanan Ketat: Hanya berlaku jika COCOK 100% dan NAMA HANYA 1 ORANG di seluruh Kabupaten Sinjai (atau terpecahkan secara unik lewat tahun lahir pada email)!
             if ($matchResult['type'] === 'NONE' && $isCrossUnit && !empty($allPegawaiList)) {
                 if (isset($globalExactNameIndex[$normAccName])) {
                     $candidates = $globalExactNameIndex[$normAccName];
@@ -308,8 +308,31 @@ class MatchPegawaiNip extends BaseCommand
                         ];
                         $isCross = true;
                     } else {
-                        // Homonim: Ada lebih dari 1 orang bernama sama di OPD lain -> Lewati demi keamanan
-                        $crossRejectReason = "Ambigu Lintas Unit: Ditemukan " . count($candidates) . " pegawai bernama sama di OPD berbeda";
+                        // Homonim: Coba resolusi berdasarkan tahun lahir pada username email (contoh: abdullah1967@, ernawati70@)
+                        $emailYear = $this->extractYearFromEmail($accEmail);
+                        $yearMatched = false;
+                        if ($emailYear !== null) {
+                            $yearCandidates = [];
+                            foreach ($candidates as $cand) {
+                                $candYear = (int)substr($cand['nip'] ?? '', 0, 4);
+                                if ($candYear === $emailYear) {
+                                    $yearCandidates[] = $cand;
+                                }
+                            }
+                            if (count($yearCandidates) === 1) {
+                                $matchResult = [
+                                    'type'    => 'EXACT',
+                                    'pegawai' => $yearCandidates[0],
+                                    'score'   => 100,
+                                ];
+                                $isCross = true;
+                                $yearMatched = true;
+                            }
+                        }
+
+                        if (!$yearMatched) {
+                            $crossRejectReason = "Ambigu Lintas Unit: Ditemukan " . count($candidates) . " pegawai bernama sama di OPD berbeda";
+                        }
                     }
                 }
             }
@@ -965,6 +988,20 @@ class MatchPegawaiNip extends BaseCommand
         }
 
         return implode(' ', $cleanWords);
+    }
+
+    private function extractYearFromEmail(string $email): ?int
+    {
+        $user = explode('@', $email)[0];
+        if (preg_match('/(19\d{2}|20\d{2})$/', $user, $m)) {
+            return (int)$m[1];
+        }
+        if (preg_match('/(\d{2})$/', $user, $m)) {
+            $two = (int)$m[1];
+            if ($two >= 40 && $two <= 99) return 1900 + $two;
+            if ($two >= 0 && $two <= 30) return 2000 + $two;
+        }
+        return null;
     }
 
     private function findParamValue(array $params, string $prefix): ?string
