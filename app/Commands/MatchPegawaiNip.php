@@ -465,6 +465,10 @@ class MatchPegawaiNip extends BaseCommand
             $updateData['jabatan'] = mb_strtoupper($pegawai['jabatan_nama'], 'UTF-8');
         }
 
+        if (empty($account['name']) && !empty($pegawai['nama'])) {
+            $updateData['name'] = $pegawai['nama'];
+        }
+
         $emailModel->update($account['id'], $updateData);
     }
 
