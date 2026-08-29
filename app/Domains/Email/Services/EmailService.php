@@ -1222,15 +1222,19 @@ class EmailService
         $jab = mb_strtoupper(trim($jabatan), 'UTF-8');
         // Hapus karakter liar di akhir (titik ganda, titik koma, titik satu di ujung)
         $jab = preg_replace('/[,\.]+\s*$/', '', $jab);
+        // Padatkan spasi ganda atau tab liar sejak awal
+        $jab = preg_replace('/\s+/', ' ', $jab);
 
         // Hapus prefix PLT. / PLH. / PJ. / PJS.
         $jab = preg_replace('/^\s*(PLT|PLH|PJ|PJS)\.?\s+/i', '', $jab);
 
-        // Jika akun pimpinan atau nama jabatan kepala dinas / badan / bagian / satpol / rsud, terapkan format ringkas pimpinan
-        if ($isPimpinan || stripos($jab, 'KEPALA DINAS') === 0 || stripos($jab, 'KEPALA BADAN') === 0 || stripos($jab, 'KEPALA BAGIAN') === 0 || stripos($jab, 'KEPALA SATUAN') === 0 || stripos($jab, 'KEPALA SATPOL') === 0 || stripos($jab, 'DIREKTUR') === 0) {
+        // Jika akun pimpinan atau nama jabatan kepala dinas / badan / bagian / satpol / rsud / inspektorat, terapkan format ringkas pimpinan
+        if ($isPimpinan || stripos($jab, 'KEPALA DINAS') === 0 || stripos($jab, 'KEPALA BADAN') === 0 || stripos($jab, 'KEPALA BAGIAN') === 0 || stripos($jab, 'KEPALA SATUAN') === 0 || stripos($jab, 'KEPALA SATPOL') === 0 || stripos($jab, 'DIREKTUR') === 0 || (stripos($jab, 'INSPEKTUR') === 0 && stripos($jab, 'PEMBANTU') === false)) {
             if (!empty($unitKerjaName)) {
                 $unitUpper = strtoupper($unitKerjaName);
-                if (strpos($unitUpper, 'SATUAN POLISI') !== false || strpos($unitUpper, 'SATPOL') !== false) {
+                if (strpos($unitUpper, 'INSPEKTORAT') !== false) {
+                    return 'INSPEKTUR';
+                } elseif (strpos($unitUpper, 'SATUAN POLISI') !== false || strpos($unitUpper, 'SATPOL') !== false) {
                     return 'KEPALA SATUAN';
                 } elseif (strpos($unitUpper, 'RUMAH SAKIT') !== false || strpos($unitUpper, 'RSUD') !== false) {
                     return 'DIREKTUR';
@@ -1246,6 +1250,7 @@ class EmailService
                     return 'LURAH';
                 }
             }
+            if (stripos($jab, 'INSPEKTUR') === 0 && stripos($jab, 'PEMBANTU') === false) return 'INSPEKTUR';
             if (stripos($jab, 'KEPALA SATUAN') === 0 || stripos($jab, 'KEPALA SATPOL') === 0) return 'KEPALA SATUAN';
             if (stripos($jab, 'KEPALA BAGIAN') === 0) return 'KEPALA BAGIAN';
             if (stripos($jab, 'DIREKTUR') === 0) return 'DIREKTUR';
@@ -1272,14 +1277,14 @@ class EmailService
             return 'SEKRETARIS KELURAHAN';
         } elseif ($jab === 'SEKRETARIS' && !empty($unitKerjaName)) {
             $unitUpper = strtoupper($unitKerjaName);
-            if (strpos($unitUpper, 'SATUAN POLISI') !== false || strpos($unitUpper, 'SATPOL') !== false) {
+            if (strpos($unitUpper, 'INSPEKTORAT') !== false) {
+                return 'SEKRETARIS INSPEKTORAT';
+            } elseif (strpos($unitUpper, 'SATUAN POLISI') !== false || strpos($unitUpper, 'SATPOL') !== false) {
                 return 'SEKRETARIS SATUAN';
             } elseif (strpos($unitUpper, 'DINAS') !== false) {
                 return 'SEKRETARIS DINAS';
             } elseif (strpos($unitUpper, 'BADAN') !== false || strpos($unitUpper, 'BPBD') !== false) {
                 return 'SEKRETARIS BADAN';
-            } elseif (strpos($unitUpper, 'INSPEKTORAT') !== false) {
-                return 'SEKRETARIS INSPEKTORAT';
             } elseif (strpos($unitUpper, 'KECAMATAN') !== false) {
                 return 'SEKRETARIS KECAMATAN';
             } elseif (strpos($unitUpper, 'KELURAHAN') !== false) {
@@ -1287,11 +1292,16 @@ class EmailService
             }
         }
 
+        // Bersihkan embel-embel OPD pada Inspektur Pembantu (Irban)
+        if (stripos($jab, 'INSPEKTUR PEMBANTU') === 0) {
+            $jab = preg_replace('/\s+(INSPEKTORAT|PADA|DAERAH)\s*.*$/i', '', $jab);
+        }
+
         // Resolusi jabatan kombinasi garis miring (Opsi B: Prioritas Tugas Manajerial/Kepala/Pimpinan)
         if (strpos($jab, '/') !== false && !preg_match('/\b[IVX]+\/[A-D]\b/i', $jab)) {
             $parts = explode('/', $jab);
             if (count($parts) > 1 && strlen(trim($parts[0])) > 2 && strlen(trim($parts[1])) > 2) {
-                $managerialKeywords = ['KEPALA', 'DIREKTUR', 'KOORDINATOR', 'KETUA', 'WAKIL', 'SEKRETARIS', 'KASUBAG', 'KASI', 'KABID', 'PIMPINAN'];
+                $managerialKeywords = ['KEPALA', 'DIREKTUR', 'KOORDINATOR', 'KETUA', 'WAKIL', 'SEKRETARIS', 'KASUBAG', 'KASI', 'KABID', 'PIMPINAN', 'INSPEKTUR'];
                 $chosen = null;
                 foreach ($parts as $p) {
                     $pUpper = strtoupper(trim($p));
@@ -1319,7 +1329,7 @@ class EmailService
 
         // Bersihkan embel-embel nama instansi di ujung nama Kasubag/Kasi/Kasubid
         if (preg_match('/^(KEPALA SUB BAGIAN|KEPALA SEKSI|KEPALA SUB BIDANG)\s+/i', $jab)) {
-            $jab = preg_replace('/\s+(SEKRETARIAT|PADA|KEC\.|KECAMATAN|DINAS|BADAN)\s+.*$/i', '', $jab);
+            $jab = preg_replace('/\s+(SEKRETARIAT|PADA|KEC\.|KECAMATAN|DINAS|BADAN|INSPEKTORAT)\s+.*$/i', '', $jab);
         }
 
         // Spasi sebelum/setelah tanda baca titik dan koma
