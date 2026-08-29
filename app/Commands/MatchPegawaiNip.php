@@ -22,6 +22,7 @@ class MatchPegawaiNip extends BaseCommand
         '--unit'          => 'Target specific Unit Kerja ID or Name (optional)',
         '--threshold'     => 'Similarity percentage threshold for fuzzy matching (default: 85)',
         '--include-fuzzy' => 'Automatically apply fuzzy matches without interactive prompt',
+        '--cross-unit'    => 'Search across all Unit Kerja if employee is not found in assigned unit (e.g. employee transferred/mutated)',
     ];
 
     private array $cachedApiPegawai = [];
@@ -30,13 +31,14 @@ class MatchPegawaiNip extends BaseCommand
     {
         $isApply = CLI::getOption('apply') !== null || in_array('--apply', $params) || isset($params['apply']);
         $threshold = (float)(CLI::getOption('threshold') ?? $this->findParamValue($params, 'threshold=') ?? 85);
+        $isCrossUnit = CLI::getOption('cross-unit') !== null || in_array('--cross-unit', $params) || isset($params['cross-unit']);
         
         // Robust parsing untuk unit filter (baik via positional $params[0], --unit=X, atau --unit X)
         $unitFilter = CLI::getOption('unit') ?? $params['unit'] ?? null;
         if (empty($unitFilter)) {
             $unitFilter = $this->findParamValue($params, 'unit=');
         }
-        if (empty($unitFilter) && isset($params[0]) && !in_array($params[0], ['--apply', '-apply', '--dry-run'])) {
+        if (empty($unitFilter) && isset($params[0]) && !in_array($params[0], ['--apply', '-apply', '--dry-run', '--cross-unit', '--include-fuzzy'])) {
             $unitFilter = $params[0];
         }
 
@@ -66,13 +68,20 @@ class MatchPegawaiNip extends BaseCommand
         $pnsId = $pnsStatus['id'] ?? 1;
 
         CLI::write("Target Status Kepegawaian : [PNS (ID: $pnsId)]", 'green');
+        if ($isCrossUnit) {
+            CLI::write("Pencarian Lintas Unit     : [AKTIF]", 'cyan');
+        }
 
         // 2. Resolve Unit Kerja Filter & Hierarki
         $targetUnitIds = [];
         $allUnits = $unitModel->findAll();
         $unitsById = [];
+        $unitsByApiId = [];
         foreach ($allUnits as $u) {
             $unitsById[$u['id']] = $u;
+            if (!empty($u['api_unit_id'])) {
+                $unitsByApiId[$u['api_unit_id']] = $u;
+            }
         }
 
         if (!empty($unitFilter)) {
@@ -147,14 +156,23 @@ class MatchPegawaiNip extends BaseCommand
 
         // 5. Kumpulkan semua api_unit_id yang dibutuhkan
         $neededApiUnits = [];
-        foreach ($accounts as $acc) {
-            $uId = $acc['unit_kerja_id'] ?? null;
-            if (!$uId || !isset($unitsById[$uId])) continue;
+        if ($isCrossUnit) {
+            // Jika pencarian lintas unit aktif, muat semua unit SIMPEG
+            foreach ($allUnits as $u) {
+                if (!empty($u['api_unit_id'])) {
+                    $neededApiUnits[$u['api_unit_id']] = true;
+                }
+            }
+        } else {
+            foreach ($accounts as $acc) {
+                $uId = $acc['unit_kerja_id'] ?? null;
+                if (!$uId || !isset($unitsById[$uId])) continue;
 
-            $u = $unitsById[$uId];
-            $apiUnitId = $u['api_unit_id'] ?: (isset($unitsById[$u['parent_id']]) ? $unitsById[$u['parent_id']]['api_unit_id'] : null);
-            if (!empty($apiUnitId)) {
-                $neededApiUnits[$apiUnitId] = true;
+                $u = $unitsById[$uId];
+                $apiUnitId = $u['api_unit_id'] ?: (isset($unitsById[$u['parent_id']]) ? $unitsById[$u['parent_id']]['api_unit_id'] : null);
+                if (!empty($apiUnitId)) {
+                    $neededApiUnits[$apiUnitId] = true;
+                }
             }
         }
 
@@ -166,11 +184,18 @@ class MatchPegawaiNip extends BaseCommand
 
         $totalPegawaiFetched = 0;
         $unitIdx = 0;
+        $allPegawaiList = [];
+
         foreach (array_keys($neededApiUnits) as $apiUnitId) {
             $unitIdx++;
             $pegawaiList = $this->fetchApiPegawaiWithRetry($client, $baseUrl, $apiUnitId);
             $this->cachedApiPegawai[$apiUnitId] = $pegawaiList;
             $totalPegawaiFetched += count($pegawaiList);
+
+            foreach ($pegawaiList as $p) {
+                $allPegawaiList[] = $p;
+            }
+
             CLI::print("Progress: [$unitIdx/$totalUnitsToFetch] Unit $apiUnitId: " . count($pegawaiList) . " pegawai\r");
             usleep(200000); // 200ms delay antar unit
         }
@@ -178,6 +203,7 @@ class MatchPegawaiNip extends BaseCommand
 
         $exactMatches = [];
         $fuzzyMatches = [];
+        $crossUnitMatches = [];
         $duplicateConflicts = [];
         $claimedNipsInBatch = [];
         $unmatched = [];
@@ -198,14 +224,26 @@ class MatchPegawaiNip extends BaseCommand
 
             $normAccName = $this->normalizeName($accName);
 
-            // Tentukan api_unit_id
+            // Tentukan api_unit_id untuk unit kerja asal
             $apiUnitId = null;
             if ($unit) {
                 $apiUnitId = $unit['api_unit_id'] ?: (isset($unitsById[$unit['parent_id']]) ? $unitsById[$unit['parent_id']]['api_unit_id'] : null);
             }
 
             $pegawaiList = !empty($apiUnitId) ? ($this->cachedApiPegawai[$apiUnitId] ?? []) : [];
+            
+            // Tahap 1: Cocokkan di dalam Unit Kerja saat ini
             $matchResult = $this->findBestMatch($normAccName, $pegawaiList, $threshold);
+            $isCross = false;
+
+            // Tahap 2: Jika tidak ketemu di unit asal dan opsi --cross-unit aktif
+            if ($matchResult['type'] === 'NONE' && $isCrossUnit && !empty($allPegawaiList)) {
+                $crossResult = $this->findBestMatch($normAccName, $allPegawaiList, $threshold);
+                if ($crossResult['type'] !== 'NONE') {
+                    $matchResult = $crossResult;
+                    $isCross = true;
+                }
+            }
 
             if ($matchResult['type'] === 'EXACT' || $matchResult['type'] === 'FUZZY') {
                 $targetPeg = $matchResult['pegawai'];
@@ -238,7 +276,17 @@ class MatchPegawaiNip extends BaseCommand
                 // NIP aman dan unik
                 $claimedNipsInBatch[$targetNipClean] = $account;
 
-                if ($matchResult['type'] === 'EXACT') {
+                if ($isCross) {
+                    $newApiUnitId = $targetPeg['unit_id'] ?? null;
+                    $newUnit = $newApiUnitId && isset($unitsByApiId[$newApiUnitId]) ? $unitsByApiId[$newApiUnitId] : null;
+
+                    $crossUnitMatches[] = [
+                        'account'  => $account,
+                        'matched'  => $targetPeg,
+                        'new_unit' => $newUnit,
+                        'score'    => $matchResult['score'],
+                    ];
+                } elseif ($matchResult['type'] === 'EXACT') {
                     $exactMatches[] = [
                         'account' => $account,
                         'matched' => $targetPeg,
@@ -264,6 +312,9 @@ class MatchPegawaiNip extends BaseCommand
         CLI::write("Total Akun Dievaluasi : " . $totalAccounts, 'yellow');
         CLI::write("Cocok Sempurna (100%) : " . count($exactMatches), 'green');
         CLI::write("Cocok Mirip (Fuzzy)   : " . count($fuzzyMatches), 'cyan');
+        if ($isCrossUnit) {
+            CLI::write("Cocok Lintas Unit     : " . count($crossUnitMatches) . " (Mutasi/Pindah OPD)", 'magenta');
+        }
         CLI::write("Konflik Duplikat NIP  : " . count($duplicateConflicts) . " (Dilewati demi keamanan)", !empty($duplicateConflicts) ? 'yellow' : 'light_gray');
         CLI::write("Belum Cocok           : " . count($unmatched), 'red');
         CLI::write("===========================================================\n");
@@ -285,6 +336,33 @@ class MatchPegawaiNip extends BaseCommand
             }
             if (count($exactMatches) > 10) {
                 CLI::write("... dan " . (count($exactMatches) - 10) . " akun lainnya cocok 100%.\n");
+            } else {
+                CLI::write("");
+            }
+        }
+
+        // Tampilkan Sampel Cross-Unit Matches
+        if (!empty($crossUnitMatches)) {
+            CLI::write("--- [SAMPEL 10 COCOK LINTAS UNIT (MUTASI OPD)] ---", 'magenta');
+            foreach (array_slice($crossUnitMatches, 0, 10) as $c) {
+                $acc = $c['account'];
+                $peg = $c['matched'];
+                $oldUnitName = $acc['nama_unit_kerja'] ?: 'Tanpa Unit';
+                $newUnitName = $c['new_unit']['nama_unit_kerja'] ?? ('SIMPEG Unit: ' . ($peg['unit_id'] ?? '-'));
+                CLI::write(sprintf(
+                    "• [%s] %s\n  NIP: %s | %s (%s)\n  Unit Lama: %s  ==>  Unit Baru: %s (Score: %.1f%%)",
+                    $acc['email'],
+                    $acc['name'] ?: '-',
+                    $peg['nip'],
+                    $peg['nama'],
+                    $peg['jabatan_nama'] ?? '-',
+                    $oldUnitName,
+                    $newUnitName,
+                    $c['score']
+                ), 'light_magenta');
+            }
+            if (count($crossUnitMatches) > 10) {
+                CLI::write("... dan " . (count($crossUnitMatches) - 10) . " akun lainnya cocok lintas unit.\n");
             } else {
                 CLI::write("");
             }
@@ -359,6 +437,7 @@ class MatchPegawaiNip extends BaseCommand
             CLI::write("\n================ MENERAPKAN PERUBAHAN ================", 'yellow');
             $appliedExactCount = 0;
             $appliedFuzzyCount = 0;
+            $appliedCrossCount = 0;
 
             // 1. Update Exact Matches (100% Cocok)
             if (!empty($exactMatches)) {
@@ -370,7 +449,26 @@ class MatchPegawaiNip extends BaseCommand
                 CLI::write("✓ Selesai: $appliedExactCount akun Cocok Sempurna berhasil diperbarui ke database.\n", 'green');
             }
 
-            // 2. Konfirmasi & Update Fuzzy Matches
+            // 2. Konfirmasi & Update Cross-Unit Matches
+            if (!empty($crossUnitMatches)) {
+                CLI::write("----------------------------------------------------------", 'magenta');
+                CLI::write("Terdapat " . count($crossUnitMatches) . " akun Cocok Lintas Unit (Mutasi OPD).", 'magenta');
+                $crossChoice = CLI::prompt('Apakah Anda ingin menerapkan akun lintas unit ini dan menyelaraskan Unit Kerja barunya?', ['y', 'a', 'n']);
+                $crossChoice = strtolower(trim($crossChoice));
+
+                if ($crossChoice === 'a' || $crossChoice === 'all' || $crossChoice === 'y' || $crossChoice === 'yes') {
+                    foreach ($crossUnitMatches as $c) {
+                        $newUnitId = $c['new_unit']['id'] ?? null;
+                        $this->applyAccountUpdate($emailModel, $c['account'], $c['matched'], $pnsId, $newUnitId);
+                        $appliedCrossCount++;
+                    }
+                    CLI::write("✓ Selesai: $appliedCrossCount akun lintas unit berhasil diperbarui dan diselaraskan unit kerjanya.\n", 'green');
+                } else {
+                    CLI::write("Akun lintas unit dilewati.", 'light_gray');
+                }
+            }
+
+            // 3. Konfirmasi & Update Fuzzy Matches
             $includeFuzzy = CLI::getOption('include-fuzzy') !== null || in_array('--include-fuzzy', $params);
 
             if (!empty($fuzzyMatches)) {
@@ -378,7 +476,6 @@ class MatchPegawaiNip extends BaseCommand
                 CLI::write("Terdapat " . count($fuzzyMatches) . " akun Cocok Mirip (Fuzzy Match).", 'yellow');
 
                 if ($includeFuzzy) {
-                    // Jika flag --include-fuzzy disertakan, terapkan langsung semua
                     CLI::write("Opsi --include-fuzzy aktif: Menerapkan semua akun fuzzy...", 'cyan');
                     foreach ($fuzzyMatches as $item) {
                         $this->applyAccountUpdate($emailModel, $item['account'], $item['matched'], $pnsId);
@@ -386,7 +483,6 @@ class MatchPegawaiNip extends BaseCommand
                     }
                     CLI::write("✓ Selesai: $appliedFuzzyCount akun fuzzy berhasil diperbarui ke database.", 'green');
                 } else {
-                    // Tanya konfirmasi ke user
                     $fuzzyChoice = CLI::prompt('Apakah Anda ingin meninjau & mengonfirmasi akun fuzzy ini? (y=tinjau per akun, a=terapkan semua, n=lewati semua)', ['y', 'a', 'n']);
                     $fuzzyChoice = strtolower(trim($fuzzyChoice));
 
@@ -440,10 +536,13 @@ class MatchPegawaiNip extends BaseCommand
                 }
             }
 
-            $totalApplied = $appliedExactCount + $appliedFuzzyCount;
+            $totalApplied = $appliedExactCount + $appliedFuzzyCount + $appliedCrossCount;
             CLI::write("\n==========================================================", 'green');
             CLI::write("TOTAL PEMBARUAN BERHASIL : $totalApplied Akun", 'green');
             CLI::write("• Cocok Sempurna (100%) : $appliedExactCount Akun", 'green');
+            if ($isCrossUnit) {
+                CLI::write("• Cocok Lintas Unit     : $appliedCrossCount Akun", 'magenta');
+            }
             CLI::write("• Cocok Mirip (Fuzzy)   : $appliedFuzzyCount Akun", 'cyan');
             CLI::write("==========================================================\n", 'green');
         } else {
@@ -452,11 +551,12 @@ class MatchPegawaiNip extends BaseCommand
             if (!empty($unitFilter)) {
                 $unitArg = is_numeric($unitFilter) ? "$unitFilter " : (strpos($unitFilter, ' ') !== false ? "\"$unitFilter\" " : "$unitFilter ");
             }
-            CLI::write("php spark sync:match-nip {$unitArg}--apply\n", 'cyan');
+            $crossFlag = $isCrossUnit ? '--cross-unit ' : '';
+            CLI::write("php spark sync:match-nip {$unitArg}{$crossFlag}--apply\n", 'cyan');
         }
     }
 
-    private function applyAccountUpdate(EmailModel $emailModel, array $account, array $pegawai, int $pnsId): void
+    private function applyAccountUpdate(EmailModel $emailModel, array $account, array $pegawai, int $pnsId, ?int $newUnitId = null): void
     {
         $updateData = [
             'nip'              => $pegawai['nip'],
@@ -471,6 +571,10 @@ class MatchPegawaiNip extends BaseCommand
 
         if (empty($account['name']) && !empty($pegawai['nama'])) {
             $updateData['name'] = $pegawai['nama'];
+        }
+
+        if (!empty($newUnitId)) {
+            $updateData['unit_kerja_id'] = $newUnitId;
         }
 
         $emailModel->update($account['id'], $updateData);
