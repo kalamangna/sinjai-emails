@@ -72,6 +72,11 @@ case "$MODE" in
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Memulai sinkronisasi TTE untuk Unit: $ARG2..." | tee -a "$LOG_FILE"
         $PHP_BIN spark sync:tte-unit "$ARG2" 2>&1 | tee -a "$LOG_FILE"
         ;;
+    flush|clear)
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Membersihkan seluruh antrean background job..." | tee -a "$LOG_FILE"
+        $PHP_BIN spark queue:flush 2>&1 | tee -a "$LOG_FILE"
+        exit 0
+        ;;
     help|--help|-h)
         echo "================================================================="
         echo " 🏛️ SISTEM IDENTITAS DIGITAL - SCRIPT SINKRONISASI (./sync)"
@@ -80,11 +85,12 @@ case "$MODE" in
         echo "  ./sync              : Menjalankan sinkronisasi PENUH (Semua Objek)"
         echo "  ./sync pegawai      : Menjalankan sinkronisasi DATA PEGAWAI (SIMPEG)"
         echo "  ./sync tte          : Menjalankan sinkronisasi STATUS TTE (BSrE)"
+        echo "  ./sync unit <nama>  : Menjalankan sinkronisasi Pegawai per Unit Kerja"
+        echo "  ./sync tte-unit <n> : Menjalankan sinkronisasi TTE per Unit Kerja"
+        echo "  ./sync flush        : Membersihkan / mengosongkan seluruh antrean (Queue)"
         echo "  ./sync daily        : Menjalankan sinkronisasi HARIAN (TTE Pimpinan)"
         echo "  ./sync weekly       : Menjalankan sinkronisasi MINGGUAN (Email & Website)"
         echo "  ./sync monthly      : Menjalankan sinkronisasi BULANAN (Pegawai & TTE)"
-        echo "  ./sync unit <nama>  : Menjalankan sinkronisasi Pegawai per Unit Kerja"
-        echo "  ./sync tte-unit <n> : Menjalankan sinkronisasi TTE per Unit Kerja"
         echo "================================================================="
         exit 0
         ;;
