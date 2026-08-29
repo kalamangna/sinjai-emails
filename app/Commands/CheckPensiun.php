@@ -236,7 +236,8 @@ class CheckPensiun extends BaseCommand
         CLI::write("==========================================================", 'yellow');
         CLI::write("   PROSES PENSIUN / PENANGGUHAN AKUN PENYULUH DTP (KEMENTAN) ", 'yellow');
         CLI::write("==========================================================", 'yellow');
-        CLI::write("Dasar Regulasi: Inpres No. 3 Thn 2025 (Pengalihan Penyuluh ke Kementan RI)\n", 'cyan');
+        CLI::write("Dasar Regulasi : Inpres No. 3 Thn 2025 (Pengalihan Penyuluh ke Kementan RI)", 'cyan');
+        CLI::write("Status TTE     : DIABAIKAN (Semua penyuluh dialihkan ke Kementan RI / Purna)\n", 'green');
 
         // Cari Unit Kerja Dinas Tanaman Pangan
         $units = $unitModel->like('nama_unit_kerja', 'TANAMAN PANGAN')->findAll();
