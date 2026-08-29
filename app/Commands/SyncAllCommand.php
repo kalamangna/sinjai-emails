@@ -174,7 +174,7 @@ class SyncAllCommand extends BaseCommand
 
     private function syncTteStatus(string $scope = 'pimpinan')
     {
-        $scopeText = $scope === 'pegawai' ? 'Pegawai (Non-Pimpinan)' : 'Pimpinan';
+        $scopeText = $scope === 'pegawai' ? 'Pegawai (Non-Pimpinan)' : ($scope === 'all' ? 'Semua Akun' : 'Pimpinan');
         CLI::write("--- Phase 2: TTE Status Synchronization ($scopeText - Queued) ---", 'yellow');
         $this->syncStats['tte']['executed'] = true;
         $this->syncStats['tte']['scope'] = $scope;
@@ -192,12 +192,16 @@ class SyncAllCommand extends BaseCommand
                         ->where('(pimpinan_desa = 0 OR pimpinan_desa IS NULL)')
                         ->where('nip IS NOT NULL')
                         ->where('nip !=', '');
-            } else {
+            } elseif ($scope === 'pimpinan') {
                 // Khusus Pimpinan & Pimpinan Desa yang terdaftar di unit kerja
                 $builder->groupStart()
                             ->where('pimpinan', 1)
                             ->orWhere('pimpinan_desa', 1)
                         ->groupEnd();
+            } else {
+                // 'all': Seluruh akun (Pimpinan & Pegawai)
+                $builder->where('nip IS NOT NULL')
+                        ->where('nip !=', '');
             }
 
             $emails = $builder->findAll();
