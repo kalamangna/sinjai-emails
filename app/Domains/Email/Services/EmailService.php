@@ -1227,11 +1227,11 @@ class EmailService
         $jab = preg_replace('/^\s*(PLT|PLH|PJ|PJS)\.?\s+/i', '', $jab);
 
         // Jika akun pimpinan atau nama jabatan kepala dinas / badan / bagian / satpol / rsud, terapkan format ringkas pimpinan
-        if ($isPimpinan || stripos($jab, 'KEPALA DINAS') === 0 || stripos($jab, 'KEPALA BADAN') === 0 || stripos($jab, 'KEPALA BAGIAN') === 0 || stripos($jab, 'KEPALA SATUAN POLISI') === 0 || stripos($jab, 'DIREKTUR') === 0) {
+        if ($isPimpinan || stripos($jab, 'KEPALA DINAS') === 0 || stripos($jab, 'KEPALA BADAN') === 0 || stripos($jab, 'KEPALA BAGIAN') === 0 || stripos($jab, 'KEPALA SATUAN') === 0 || stripos($jab, 'KEPALA SATPOL') === 0 || stripos($jab, 'DIREKTUR') === 0) {
             if (!empty($unitKerjaName)) {
                 $unitUpper = strtoupper($unitKerjaName);
                 if (strpos($unitUpper, 'SATUAN POLISI') !== false || strpos($unitUpper, 'SATPOL') !== false) {
-                    return 'KEPALA DINAS';
+                    return 'KEPALA SATUAN';
                 } elseif (strpos($unitUpper, 'RUMAH SAKIT') !== false || strpos($unitUpper, 'RSUD') !== false) {
                     return 'DIREKTUR';
                 } elseif (strpos($unitUpper, 'BAGIAN') !== false) {
@@ -1246,8 +1246,8 @@ class EmailService
                     return 'LURAH';
                 }
             }
+            if (stripos($jab, 'KEPALA SATUAN') === 0 || stripos($jab, 'KEPALA SATPOL') === 0) return 'KEPALA SATUAN';
             if (stripos($jab, 'KEPALA BAGIAN') === 0) return 'KEPALA BAGIAN';
-            if (stripos($jab, 'KEPALA SATUAN POLISI') === 0) return 'KEPALA DINAS';
             if (stripos($jab, 'DIREKTUR') === 0) return 'DIREKTUR';
             if (stripos($jab, 'KEPALA DINAS') === 0) return 'KEPALA DINAS';
             if (stripos($jab, 'KEPALA BADAN') === 0) return 'KEPALA BADAN';
