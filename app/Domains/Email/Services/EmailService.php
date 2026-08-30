@@ -1234,6 +1234,25 @@ class EmailService
                             $resolvedUnitName = $child['nama_unit_kerja'];
                             break;
                         }
+
+                        // Mapping alias penomoran SMP per-kecamatan format lama SIMPEG
+                        if ($searchIsSmp && $childIsSmp) {
+                            $telluMap = [
+                                '1' => 'UPTD SMP NEGERI 10 SINJAI',
+                                '2' => 'UPTD SMP NEGERI 19 SINJAI',
+                                '3' => 'UPTD SMP NEGERI 20 SINJAI',
+                                '4' => 'UPTD SMP NEGERI 33 SINJAI',
+                            ];
+                            if (strpos($normSearch, 'TELLULIMPOE') !== false || strpos($normSearch, 'TELLU LIMPOE') !== false) {
+                                foreach ($telluMap as $num => $targetName) {
+                                    if (preg_match('/\b(SMPN|SMP)\s*' . $num . '\b/i', $normSearch) && $childName === $targetName) {
+                                        $resolvedUnitId = $child['id'];
+                                        $resolvedUnitName = $child['nama_unit_kerja'];
+                                        break 2;
+                                    }
+                                }
+                            }
+                        }
                         // Mapping khusus RSUD Pratama Bulupancing di bawah Dinas Kesehatan
                         if (strpos($childName, 'PRATAMA') !== false && (strpos($normSearch, 'BULUPANCING') !== false || strpos($normSearch, 'PRATAMA') !== false || strpos($normSearch, 'KELAS D') !== false)) {
                             $resolvedUnitId = $child['id'];
