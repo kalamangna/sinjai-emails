@@ -1206,6 +1206,19 @@ class EmailService
                             break;
                         }
 
+                        // SD number-based matching: cocokkan nomor SD dari SIMPEG (misal: SDN No. 10, SDN No.205)
+                        // ke format DB (SD NEG. NO. 10, SD NEG. NO. 205) — berguna saat nama desa berbeda ejaan
+                        if ($searchIsSd && $childIsSd) {
+                            if (preg_match('/\bSD[N]?\s*(?:NO\.?\s*|NEGERI\s*(?:NO\.?\s*)?)(\d+)\b/i', $normSearch, $mSearch)
+                                && preg_match('/\bSD\s*NEG\.?\s*NO\.?\s*(\d+)\b/i', $childName, $mChild)) {
+                                if ((int)$mSearch[1] === (int)$mChild[1]) {
+                                    $resolvedUnitId = $child['id'];
+                                    $resolvedUnitName = $child['nama_unit_kerja'];
+                                    break;
+                                }
+                            }
+                        }
+
                         // Reverse matching jika di database memuat nama kecamatan (misal: 'TK NEGERI BALLE SINJAI UTARA' sementara di SIMPEG hanya 'TK NEGERI BALLE')
                         if (!empty($normGrup) && strlen($normGrup) >= 5 && stripos($normChild, $normGrup) !== false) {
                             $resolvedUnitId = $child['id'];
