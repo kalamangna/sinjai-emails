@@ -1441,9 +1441,10 @@ class EmailService
 
         // Hapus prefix PLT. / PLH. / PJ. / PJS.
         $jab = preg_replace('/^\s*(PLT|PLH|PJ|PJS)\.?\s+/i', '', $jab);
-        // Perbaiki typo penulisan umum seperti KEPALKEPALA, KEP., dsb.
+        // Perbaiki typo penulisan umum seperti KEPALKEPALA, KEP., PENGENLOLA, dsb.
         $jab = preg_replace('/^KEPALKEPALA\b/i', 'KEPALA', $jab);
         $jab = preg_replace('/^KEP\.\s*/i', 'KEPALA ', $jab);
+        $jab = preg_replace('/\bPENGENLOLA\b/i', 'PENGELOLA', $jab);
 
         // Resolusi jabatan kombinasi garis miring (Utamakan Jabatan Struktural / Manajerial / Kepala)
         if (strpos($jab, '/') !== false && !preg_match('/\b[IVX]+\/[A-D]\b/i', $jab)) {
