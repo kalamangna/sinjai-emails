@@ -5,10 +5,10 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
-# [31 Agustus 2026] — Pembersihan Embel-Embel SUB KOORDINATOR & Standarisasi UPTD Lab DLHK
+# [31 Agustus 2026] — Pembersihan Embel-Embel Sub.Koordinator & Standarisasi UPTD Lab DLHK
 
-- **Pembersihan Embel-Embel SUB KOORDINATOR pada JF Penyetaraan**:
-  - Menghapus keterangan tugas subkoordinasi/struktural asal yang menempel pada jabatan fungsional hasil penyetaraan birokrasi (seperti `PENGAWAS LINGKUNGAN HIDUP AHLI MUDA SUB KOORDINATOR KEPALA SEKSI PERENCANAAN DAN KAJIAN DAMPAK LINGKUNGAN` $\rightarrow$ `PENGAWAS LINGKUNGAN HIDUP AHLI MUDA` dan `ANALIS KEBAKARAN AHLI MUDA/SUB KOORDINATOR OPERASIONAL DAMKAR` $\rightarrow$ `ANALIS KEBAKARAN AHLI MUDA`).
+- **Pembersihan Embel-Embel Sub.Koordinator pada JF Penyetaraan**:
+  - Menghapus keterangan tugas subkoordinasi/struktural asal dengan variasi penulisan titik/spasi/garis miring (`Sub.Koordinator`, `Sub Koordinator`, `Sub-Koordinator`, `/Sub Koordinator`) yang menempel pada jabatan fungsional hasil penyetaraan birokrasi (seperti `Pengendali Dampak Lingkungan Ahli Muda Sub.Koordinator Kasi Pengelolaan Sampah` $\rightarrow$ `PENGENDALI DAMPAK LINGKUNGAN AHLI MUDA`).
 - **Standarisasi UPTD Laboratorium DLHK**:
   - Menstandarisasi penamaan UPTD Laboratorium di bawah DLHK menjadi `KEPALA UPTD LABORATORIUM LINGKUNGAN HIDUP` dan `KEPALA TATA USAHA UPTD LABORATORIUM LINGKUNGAN HIDUP`.
 

@@ -1606,8 +1606,8 @@ class EmailService
             }
         }
 
-        // Hapus embel-embel /SUB KOORDINATOR ... atau SUB KOORDINATOR ... pada Jabatan Fungsional hasil Penyetaraan
-        $jab = preg_replace('/[\/\s]+(?:SUB\s*KOORDINATOR|SUBKOORDINATOR)\b.*$/i', '', $jab);
+        // Hapus embel-embel /SUB KOORDINATOR ... atau SUB.KOORDINATOR ... pada Jabatan Fungsional hasil Penyetaraan
+        $jab = preg_replace('/[\/\s]+(?:SUB[\s\.\-_]*KOORDINATOR)\b.*$/i', '', $jab);
 
         // Resolusi jabatan kombinasi garis miring (Utamakan Jabatan Struktural / Manajerial / Kepala)
         if (strpos($jab, '/') !== false && !preg_match('/\b[IVX]+\/[A-D]\b/i', $jab)) {
