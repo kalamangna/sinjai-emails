@@ -411,16 +411,11 @@
         let processed = 0;
         let success = 0;
         let failed = 0;
+        const retryContainers = [];
 
-        for (const container of validContainers) {
-            const statusAsnId = (container.getAttribute('data-status-asn-id') || '').trim();
-            const row = container.closest('tr');
-            const rowText = (container.innerText + ' ' + (row ? row.innerText : '')).toUpperCase();
-            if (statusAsnId !== '1' || rowText.includes('PPPK') || rowText.includes('NON-ASN')) {
-                continue;
-            }
-
+        const executeRowSync = async (container, isRetry = false) => {
             const nip = container.getAttribute('data-nip');
+            const row = container.closest('tr');
             const jabatanTarget = row ? (row.querySelector('.jabatan-sync-target') || row.querySelector('.jabatan-text')) : null;
             const unitTarget = row ? row.querySelector('.unit-kerja-sync-target') : null;
             let originalJabatan = '';
@@ -430,7 +425,7 @@
                 behavior: 'smooth',
                 block: 'center'
             });
-            
+
             // Skeleton state untuk Jabatan
             if (jabatanTarget) {
                 originalJabatan = jabatanTarget.getAttribute('data-original') || jabatanTarget.innerText.trim();
@@ -458,7 +453,7 @@
                         },
                         body: 'nip=' + encodeURIComponent(nip || '') + '&email=' + encodeURIComponent(emailAttr || '')
                     },
-                    2,
+                    isRetry ? 3 : 1,
                     (attempt, max, waitMs) => {
                         btn.innerHTML = `<i class="fas fa-hourglass-half animate-spin mr-2"></i> Pedinginan Rate Limit (${waitMs / 1000}s)...`;
                         if (jabatanTarget) {
@@ -469,7 +464,7 @@
 
                 const data = fetchResult.data;
 
-                if (data.success) {
+                if (data.success && !fetchResult.isRateLimited) {
                     if (jabatanTarget) {
                         if (data.no_data) {
                             jabatanTarget.innerHTML = `<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase border bg-amber-50 text-amber-600 border-amber-200" title="Data tidak ditemukan di API">NO DATA API</span>`;
@@ -496,11 +491,20 @@
                             unitTarget.innerHTML = originalUnit;
                         }
                     }
-                    success++;
+                    return 'success';
+                } else if (fetchResult.isRateLimited && !isRetry) {
+                    // Tandai sementara dan masukkan ke antrean ulang di akhir
+                    if (jabatanTarget) {
+                        jabatanTarget.innerHTML = `${originalJabatan} <span class="ml-1 px-1.5 py-0.5 rounded text-[8px] font-bold uppercase border bg-amber-50 text-amber-700 border-amber-300 animate-pulse" title="Rate limit terdeteksi - Akan diulang otomatis di akhir">ANTREAN ULANG</span>`;
+                    }
+                    if (unitTarget && originalUnit) {
+                        unitTarget.innerHTML = originalUnit;
+                    }
+                    return 'rate_limited';
                 } else {
                     if (jabatanTarget) {
                         if (fetchResult.isRateLimited) {
-                            jabatanTarget.innerHTML = `${originalJabatan} <span class="ml-1 px-1.5 py-0.5 rounded text-[8px] font-bold uppercase border bg-amber-50 text-amber-700 border-amber-300" title="API Terkena Rate Limit (Silakan coba beberapa saat lagi)">RATE LIMIT</span>`;
+                            jabatanTarget.innerHTML = `${originalJabatan} <span class="ml-1 px-1.5 py-0.5 rounded text-[8px] font-bold uppercase border bg-amber-50 text-amber-700 border-amber-300" title="API Terkena Rate Limit">RATE LIMIT</span>`;
                         } else {
                             jabatanTarget.innerHTML = `${originalJabatan} <span class="ml-1 px-1.5 py-0.5 rounded text-[8px] font-bold uppercase border bg-red-50 text-red-600 border-red-200" title="${data.message || 'Sinkronisasi Gagal'}">FAILED</span>`;
                         }
@@ -508,7 +512,7 @@
                     if (unitTarget && originalUnit) {
                         unitTarget.innerHTML = originalUnit;
                     }
-                    failed++;
+                    return 'failed';
                 }
             } catch (error) {
                 if (jabatanTarget) {
@@ -517,14 +521,54 @@
                 if (unitTarget && originalUnit) {
                     unitTarget.innerHTML = originalUnit;
                 }
-                failed++;
+                return 'failed';
+            }
+        };
+
+        // Pass 1: Eksekusi antrean utama
+        for (const container of validContainers) {
+            const statusAsnId = (container.getAttribute('data-status-asn-id') || '').trim();
+            const row = container.closest('tr');
+            const rowText = (container.innerText + ' ' + (row ? row.innerText : '')).toUpperCase();
+            if (statusAsnId !== '1' || rowText.includes('PPPK') || rowText.includes('NON-ASN')) {
+                continue;
             }
 
             processed++;
             btn.innerHTML = `<i class="fas fa-sync-alt animate-spin mr-2"></i> Sinkronisasi ${processed}/${validContainers.length}...`;
 
-            // Micro-pacing delay (200ms) untuk mencegah penumpukan request ke server
+            const outcome = await executeRowSync(container, false);
+            if (outcome === 'success') {
+                success++;
+            } else if (outcome === 'rate_limited') {
+                retryContainers.push(container);
+            } else {
+                failed++;
+            }
+
+            // Micro-pacing delay (200ms)
             await new Promise(resolve => setTimeout(resolve, 200));
+        }
+
+        // Pass 2: Jika ada baris yang terkena rate limit, kembali dan ulangi baris tersebut di akhir
+        if (retryContainers.length > 0) {
+            btn.innerHTML = `<i class="fas fa-hourglass-half animate-spin mr-2"></i> Pedinginan (3s) & Mengulang ${retryContainers.length} baris...`;
+            await new Promise(resolve => setTimeout(resolve, 3000));
+
+            let retryIndex = 0;
+            for (const container of retryContainers) {
+                retryIndex++;
+                btn.innerHTML = `<i class="fas fa-sync-alt animate-spin mr-2"></i> Mengulang baris (${retryIndex}/${retryContainers.length})...`;
+
+                const outcome = await executeRowSync(container, true);
+                if (outcome === 'success') {
+                    success++;
+                } else {
+                    failed++;
+                }
+
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
         }
 
         btn.innerHTML = originalBtnContent;
@@ -532,9 +576,9 @@
         btn.classList.remove('opacity-75', 'cursor-not-allowed');
 
         if (typeof window.showSyncResult === 'function') {
-            window.showSyncResult(processed, success, failed, true);
+            window.showSyncResult(validContainers.length, success, failed, true);
         } else {
-            alert(`Sinkronisasi Data Pegawai Selesai!\nTotal: ${processed}\nBerhasil: ${success}\nGagal: ${failed}`);
+            alert(`Sinkronisasi Data Pegawai Selesai!\nTotal: ${validContainers.length}\nBerhasil: ${success}\nGagal: ${failed}`);
         }
     };
 
