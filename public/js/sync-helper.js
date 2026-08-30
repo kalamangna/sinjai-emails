@@ -261,6 +261,8 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
                 unitTarget.innerHTML = '<div class="space-y-1.5 py-0.5"><div class="h-2.5 bg-slate-200 rounded animate-pulse w-20"></div><div class="h-3.5 bg-slate-200 rounded animate-pulse w-32"></div></div>';
             }
 
+            const emailAttr = row ? (row.getAttribute('data-email') || '') : '';
+
             try {
                 const response = await fetch(window.BASE_URL + '/email/sync_pegawai', {
                     method: 'POST',
@@ -268,7 +270,7 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
                         'Content-Type': 'application/x-www-form-urlencoded',
                         'X-Requested-With': 'XMLHttpRequest'
                     },
-                    body: 'nip=' + encodeURIComponent(nip)
+                    body: 'nip=' + encodeURIComponent(nip || '') + '&email=' + encodeURIComponent(emailAttr || '')
                 });
 
                 const data = await response.json();

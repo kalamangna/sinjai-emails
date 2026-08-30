@@ -247,9 +247,18 @@ class EmailApiController extends BaseController
 
     public function syncPegawai()
     {
-        $nip = $this->request->getVar('nip');
+        $nip = trim((string)$this->request->getVar('nip'));
+        $email = trim((string)$this->request->getVar('email'));
+
+        if (empty($nip) && !empty($email)) {
+            $record = $this->emailModel->where('email', $email)->first();
+            if ($record && !empty($record['nip'])) {
+                $nip = $record['nip'];
+            }
+        }
+
         if (empty($nip)) {
-            return $this->response->setJSON(['success' => false, 'message' => 'NIP required']);
+            return $this->response->setJSON(['success' => false, 'message' => 'NIP tidak ditemukan pada akun']);
         }
 
         $result = $this->emailService->syncPegawaiFromApi($nip);
@@ -260,9 +269,11 @@ class EmailApiController extends BaseController
                 'success' => true,
                 'message' => $result['message'] ?? 'Akun bukan PNS - Data tidak disinkronkan',
                 'data'    => [
-                    'jabatan'          => $current['jabatan'] ?? '-',
-                    'pangkat_nama'     => $current['pangkat_nama'] ?? '-',
-                    'pangkat_golruang' => $current['pangkat_golruang'] ?? '-',
+                    'jabatan'               => $current['jabatan'] ?? '-',
+                    'pangkat_nama'          => $current['pangkat_nama'] ?? '-',
+                    'pangkat_golruang'      => $current['pangkat_golruang'] ?? '-',
+                    'unit_kerja_name'       => $current['nama_unit_kerja'] ?? ($current['unit_kerja_name'] ?? '-'),
+                    'parent_unit_kerja_name'=> $current['parent_unit_kerja_name'] ?? '',
                 ]
             ]);
         }
