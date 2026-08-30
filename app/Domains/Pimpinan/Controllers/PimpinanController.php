@@ -63,6 +63,14 @@ class PimpinanController extends BaseController
                 ->orderBy('emails.name', 'ASC')
                 ->paginate($perPage);
 
+            $active_bsre_count = (clone $this->emailModel->getPimpinanBuilder())
+                ->where('emails.bsre_status', 'ISSUE')
+                ->countAllResults();
+
+            $expired_bsre_count = (clone $this->emailModel->getPimpinanBuilder())
+                ->where('emails.bsre_status', 'EXPIRED')
+                ->countAllResults();
+
             $pager = $this->emailModel->pager;
 
             $bsre_status_options = $this->getBsreStatusOptions();
@@ -71,6 +79,8 @@ class PimpinanController extends BaseController
                 'title' => 'Pimpinan',
                 'emails' => $emails,
                 'total_emails' => $total_emails,
+                'active_bsre_count' => $active_bsre_count,
+                'expired_bsre_count' => $expired_bsre_count,
                 'pager' => $pager,
                 'per_page' => $perPage,
                 'search' => $search,
@@ -125,13 +135,18 @@ class PimpinanController extends BaseController
 
             $emails = $emailBuilder
                 ->asArray()
-                ->orderBy('emails.eselon_id', 'ASC')
                 ->orderBy('COALESCE(parent_unit_kerja.nama_unit_kerja, unit_kerja.nama_unit_kerja)', 'ASC', false)
-                ->orderBy('unit_kerja.parent_id IS NOT NULL', 'ASC', false)
                 ->orderBy('unit_kerja.nama_unit_kerja', 'ASC')
-                ->orderBy('emails.jabatan', 'ASC')
                 ->orderBy('emails.name', 'ASC')
                 ->paginate($perPage);
+
+            $active_bsre_count = (clone $this->emailModel->getPimpinanDesaBuilder())
+                ->where('emails.bsre_status', 'ISSUE')
+                ->countAllResults();
+
+            $expired_bsre_count = (clone $this->emailModel->getPimpinanDesaBuilder())
+                ->where('emails.bsre_status', 'EXPIRED')
+                ->countAllResults();
 
             $pager = $this->emailModel->pager;
 
@@ -141,6 +156,8 @@ class PimpinanController extends BaseController
                 'title' => 'Kepala Desa',
                 'emails' => $emails,
                 'total_emails' => $total_emails,
+                'active_bsre_count' => $active_bsre_count,
+                'expired_bsre_count' => $expired_bsre_count,
                 'pager' => $pager,
                 'per_page' => $perPage,
                 'search' => $search,

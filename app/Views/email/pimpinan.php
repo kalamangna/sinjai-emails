@@ -30,38 +30,60 @@
 <div class="space-y-6">
     <!-- Navigasi dan Aksi -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <button onclick="history.back()" class="btn btn-outline">
+        <button onclick="history.back()" class="btn btn-outline text-xs">
             <i class="fas fa-arrow-left mr-2"></i> Kembali
         </button>
-        <div class="flex flex-wrap gap-2">
-            <a href="<?= site_url('email/export_pimpinan_pdf') ?>" class="btn btn-outline no-underline">
-                <i class="fas fa-file-pdf mr-2"></i> Export PDF
+
+        <div class="flex flex-wrap items-center gap-2">
+            <a href="<?= site_url('email/export_pimpinan_pdf') ?>" class="btn btn-outline text-xs px-3 py-2 no-underline">
+                <i class="fas fa-file-pdf mr-1.5 text-red-600"></i> Export PDF
             </a>
+
             <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
-                <button id="syncAllTteBtn" onclick="syncAllBsreStatus()" class="btn btn-solid group">
-                    <i class="fas fa-fingerprint mr-2 group-hover:scale-110 transition-transform"></i>
-                    <span>Sync TTE</span>
-                </button>
-                <button id="syncAllPegawaiBtn" onclick="syncAllPegawai()" class="btn btn-outline group bg-white">
-                    <i class="fas fa-sync-alt mr-2 group-hover:rotate-180 transition-transform duration-500 text-slate-700"></i>
-                    <span class="text-slate-700">Sync Pegawai</span>
-                </button>
+                <!-- Dropdown Sinkronisasi -->
+                <div class="relative group">
+                    <button id="mainSyncBtn" class="btn btn-solid text-xs px-3 py-2">
+                        <i class="fas fa-sync-alt mr-1.5 text-white/80"></i> Sync <i class="fas fa-chevron-down ml-1 text-[8px] opacity-50 transition-transform duration-300 group-hover:rotate-180"></i>
+                    </button>
+                    <div class="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 overflow-hidden">
+                        <button id="syncAllTteBtn" onclick="syncAllBsreStatus()" class="w-full px-4 py-3 text-left text-[10px] font-bold text-slate-700 uppercase tracking-widest hover:bg-slate-50 border-b border-slate-100 transition-colors focus:outline-none">
+                            <i class="fas fa-fw fa-fingerprint mr-2 text-slate-500"></i> Sync TTE
+                        </button>
+                        <button id="syncAllPegawaiBtn" onclick="syncAllPegawai()" class="w-full px-4 py-3 text-left text-[10px] font-bold text-slate-700 uppercase tracking-widest hover:bg-slate-50 transition-colors focus:outline-none">
+                            <i class="fas fa-fw fa-user-check mr-2 text-slate-500"></i> Sync Pegawai
+                        </button>
+                    </div>
+                </div>
             <?php endif; ?>
         </div>
     </div>
 
-    <!-- Header Halaman -->
-    <div class="bg-white border border-slate-200 rounded-lg p-6 shadow-sm">
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 bg-slate-100 border border-slate-200 rounded-lg flex items-center justify-center text-slate-700">
-                    <i class="fas fa-user-tie text-2xl"></i>
+    <!-- Informasi Pimpinan -->
+    <div class="bg-white border border-slate-200 rounded-lg p-4 sm:p-6 lg:p-8 shadow-sm">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 lg:gap-8">
+            <div class="flex items-center gap-4 sm:gap-6">
+                <div class="w-12 h-12 sm:w-16 sm:h-16 bg-slate-100 border border-slate-200 rounded-lg flex items-center justify-center text-slate-700 shrink-0">
+                    <i class="fas fa-user-tie text-xl sm:text-2xl"></i>
                 </div>
-                <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight">Pimpinan</h1>
+                <div class="flex flex-col">
+                    <h1 class="text-xl sm:text-2xl font-bold text-slate-800 uppercase tracking-tight">Pimpinan</h1>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Pemerintah Kabupaten Sinjai</p>
+                </div>
             </div>
-            <div class="bg-slate-50 px-6 py-2 rounded-lg border border-slate-200 text-center">
-                <p class="text-[10px] font-bold text-slate-700 uppercase tracking-widest">Total Email</p>
-                <p class="text-xl font-bold text-slate-800"><?= number_format($total_emails, 0, ',', '.') ?></p>
+
+            <div class="grid grid-cols-3 gap-3 w-full lg:w-auto shrink-0">
+                <div class="bg-white border border-slate-200 border-l-4 border-l-slate-700 rounded-lg p-3 text-center">
+                    <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Total Email</p>
+                    <p class="text-xl sm:text-2xl font-bold text-slate-800 mt-0.5"><?= number_format($total_emails ?? 0, 0, ',', '.') ?></p>
+                </div>
+                <div class="bg-white border border-slate-200 border-l-4 border-l-emerald-600 rounded-lg p-3 text-center">
+                    <p class="text-[9px] font-bold text-emerald-600 uppercase tracking-widest">TTE Aktif</p>
+                    <p class="text-xl sm:text-2xl font-bold text-slate-800 mt-0.5"><?= number_format($active_bsre_count ?? 0, 0, ',', '.') ?></p>
+                </div>
+                <div class="bg-white border border-slate-200 border-l-4 border-l-red-600 rounded-lg p-3 text-center">
+                    <p class="text-[9px] font-bold text-red-600 uppercase tracking-widest">TTE Expired</p>
+                    <p class="text-xl sm:text-2xl font-bold text-slate-800 mt-0.5"><?= number_format($expired_bsre_count ?? 0, 0, ',', '.') ?></p>
+                </div>
             </div>
         </div>
     </div>
