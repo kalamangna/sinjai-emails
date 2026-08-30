@@ -285,6 +285,7 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
                     } else {
                         elements.unit.innerHTML = originalContents.unit;
                     }
+                }
                 return true;
             } else {
                 if (elements.jabatan) elements.jabatan.innerHTML = originalContents.jabatan;
