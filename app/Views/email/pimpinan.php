@@ -154,7 +154,7 @@
                                     <span class="text-xs font-medium text-slate-700 uppercase tracking-tight leading-snug jabatan-sync-target"><?= esc($email['jabatan']) ?: '-' ?></span>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <div class="flex flex-col">
+                                    <div class="flex flex-col unit-kerja-sync-target">
                                         <?php if (!empty($email['parent_unit_kerja_name'])): ?>
                                             <span class="text-[10px] font-bold text-slate-700 uppercase leading-none"><?= esc($email['parent_unit_kerja_name']) ?></span>
                                             <span class="text-xs font-bold text-slate-800 uppercase tracking-tight mt-1"><?= esc($email['unit_kerja_name']) ?></span>

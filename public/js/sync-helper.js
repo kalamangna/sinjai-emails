@@ -237,18 +237,28 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
         for (const container of validContainers) {
             const nip = container.getAttribute('data-nip');
             const row = container.closest('tr');
-            const jabatanTarget = row.querySelector('.jabatan-sync-target');
+            const jabatanTarget = row.querySelector('.jabatan-sync-target') || row.querySelector('.jabatan-text');
+            const unitTarget = row.querySelector('.unit-kerja-sync-target');
             let originalJabatan = '';
+            let originalUnit = '';
 
             container.scrollIntoView({
                 behavior: 'smooth',
                 block: 'center'
             });
             
+            // Skeleton state untuk Jabatan
             if (jabatanTarget) {
                 originalJabatan = jabatanTarget.getAttribute('data-original') || jabatanTarget.innerText.trim();
                 jabatanTarget.setAttribute('data-original', originalJabatan);
-                jabatanTarget.innerHTML = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[8px] font-bold uppercase border bg-slate-50 text-slate-400 border-slate-200 animate-pulse"><i class="fas fa-spinner fa-spin mr-1"></i> SYNCING</span>';
+                jabatanTarget.innerHTML = '<div class="h-3.5 bg-slate-200 rounded animate-pulse w-36 my-0.5"></div>';
+            }
+
+            // Skeleton state untuk Unit Kerja
+            if (unitTarget) {
+                originalUnit = unitTarget.getAttribute('data-original') || unitTarget.innerHTML;
+                unitTarget.setAttribute('data-original', originalUnit);
+                unitTarget.innerHTML = '<div class="space-y-1.5 py-0.5"><div class="h-2.5 bg-slate-200 rounded animate-pulse w-20"></div><div class="h-3.5 bg-slate-200 rounded animate-pulse w-32"></div></div>';
             }
 
             try {
@@ -272,16 +282,39 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
                             jabatanTarget.setAttribute('data-original', newJabatan);
                         }
                     }
+
+                    if (unitTarget && data.data) {
+                        const parentName = data.data.parent_unit_kerja_name || '';
+                        const unitName = data.data.unit_kerja_name || '';
+                        if (unitName) {
+                            let unitHtml = '';
+                            if (parentName) {
+                                unitHtml = `<span class="text-[10px] font-bold text-slate-700 uppercase leading-none">${parentName}</span><span class="text-xs font-bold text-slate-800 uppercase tracking-tight mt-1">${unitName}</span>`;
+                            } else {
+                                unitHtml = `<span class="text-xs font-bold text-slate-800 uppercase tracking-tight">${unitName}</span>`;
+                            }
+                            unitTarget.innerHTML = unitHtml;
+                            unitTarget.setAttribute('data-original', unitHtml);
+                        } else if (originalUnit) {
+                            unitTarget.innerHTML = originalUnit;
+                        }
+                    }
                     success++;
                 } else {
                     if (jabatanTarget) {
                         jabatanTarget.innerHTML = `${originalJabatan} <span class="ml-1 px-1.5 py-0.5 rounded text-[8px] font-bold uppercase border bg-red-50 text-red-600 border-red-200" title="${data.message || 'Sinkronisasi Gagal'}">FAILED</span>`;
+                    }
+                    if (unitTarget && originalUnit) {
+                        unitTarget.innerHTML = originalUnit;
                     }
                     failed++;
                 }
             } catch (error) {
                 if (jabatanTarget) {
                     jabatanTarget.innerHTML = `${originalJabatan} <span class="ml-1 px-1.5 py-0.5 rounded text-[8px] font-bold uppercase border bg-red-50 text-red-600 border-red-200">ERROR</span>`;
+                }
+                if (unitTarget && originalUnit) {
+                    unitTarget.innerHTML = originalUnit;
                 }
                 failed++;
             }

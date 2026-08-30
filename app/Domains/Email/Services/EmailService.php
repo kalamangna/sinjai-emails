@@ -1196,6 +1196,26 @@ class EmailService
 
             \App\Shared\Services\CacheService::invalidateDashboard();
 
+            $unitKerjaId = $updateData['unit_kerja_id'] ?? ($currentEmail['unit_kerja_id'] ?? null);
+            $unitKerjaName = $currentEmail['nama_unit_kerja'] ?? ($currentEmail['unit_kerja_name'] ?? '');
+            $parentUnitKerjaName = $currentEmail['parent_unit_kerja_name'] ?? '';
+
+            if (!empty($unitKerjaId)) {
+                $u = $this->unitKerjaModel->find($unitKerjaId);
+                if ($u) {
+                    $unitKerjaName = $u['nama_unit_kerja'];
+                    if (!empty($u['parent_id'])) {
+                        $p = $this->unitKerjaModel->find($u['parent_id']);
+                        $parentUnitKerjaName = $p['nama_unit_kerja'] ?? '';
+                    } else {
+                        $parentUnitKerjaName = '';
+                    }
+                }
+            }
+
+            $updateData['unit_kerja_name'] = $unitKerjaName;
+            $updateData['parent_unit_kerja_name'] = $parentUnitKerjaName;
+
             $responseData = array_merge($currentEmail ?: [], $updateData);
 
             return [
@@ -1206,14 +1226,19 @@ class EmailService
             ];
         }
 
+        $unitKerjaName = $currentEmail['nama_unit_kerja'] ?? ($currentEmail['unit_kerja_name'] ?? '');
+        $parentUnitKerjaName = $currentEmail['parent_unit_kerja_name'] ?? '';
+
         return [
             'success' => true,
             'updated' => false,
             'message' => $isPimpinan ? 'Akun Pimpinan - Data jabatan tetap dipertahankan' : 'Data sudah terbaru',
             'data'    => [
-                'jabatan'          => $currentEmail['jabatan'] ?? '-',
-                'pangkat_nama'     => $currentEmail['pangkat_nama'] ?? '-',
-                'pangkat_golruang' => $currentEmail['pangkat_golruang'] ?? '-',
+                'jabatan'               => $currentEmail['jabatan'] ?? '-',
+                'pangkat_nama'          => $currentEmail['pangkat_nama'] ?? '-',
+                'pangkat_golruang'      => $currentEmail['pangkat_golruang'] ?? '-',
+                'unit_kerja_name'       => $unitKerjaName,
+                'parent_unit_kerja_name'=> $parentUnitKerjaName,
             ],
         ];
     }

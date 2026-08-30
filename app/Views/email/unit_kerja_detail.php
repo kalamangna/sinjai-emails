@@ -275,7 +275,7 @@
                                 </td>
                                 <?php if ($showUnitKerjaColumn ?? false): ?>
                                     <td class="px-6 py-4">
-                                        <div class="flex flex-col">
+                                        <div class="flex flex-col unit-kerja-sync-target">
                                             <span class="text-xs font-bold text-slate-800 uppercase tracking-tight"><?= esc($email['unit_kerja_name']) ?></span>
                                             <?php if (!empty($email['parent_unit_kerja_name'])): ?>
                                                 <span class="text-[9px] font-bold text-slate-500 uppercase leading-none mt-0.5"><?= esc($email['parent_unit_kerja_name']) ?></span>
@@ -789,11 +789,19 @@ echo view('components/modal', [
 
         for (const container of validContainers) {
             const nip = container.getAttribute('data-nip');
+            const row = container.closest('tr');
             const textElement = container.querySelector('.jabatan-text');
-            const originalJabatan = textElement.textContent;
+            const unitTarget = row ? row.querySelector('.unit-kerja-sync-target') : null;
+            const originalJabatan = textElement ? textElement.textContent : '';
+            const originalUnit = unitTarget ? unitTarget.innerHTML : '';
             
             container.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            textElement.innerHTML = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[8px] font-bold uppercase border bg-slate-50 text-slate-400 border-slate-200 animate-pulse"><i class="fas fa-spinner fa-spin mr-1"></i> SYNCING</span>';
+            if (textElement) {
+                textElement.innerHTML = '<div class="h-3.5 bg-slate-200 rounded animate-pulse w-36 my-0.5"></div>';
+            }
+            if (unitTarget) {
+                unitTarget.innerHTML = '<div class="space-y-1.5 py-0.5"><div class="h-2.5 bg-slate-200 rounded animate-pulse w-20"></div><div class="h-3.5 bg-slate-200 rounded animate-pulse w-32"></div></div>';
+            }
 
             try {
                 const response = await fetch('<?= site_url('email/sync_pegawai') ?>', {
@@ -809,20 +817,42 @@ echo view('components/modal', [
                 const data = await response.json();
 
                 if (data.success) {
-                    if (data.no_data) {
-                        textElement.innerHTML = `<span class="inline-flex items-center px-2 py-0.5 rounded text-[8px] font-bold uppercase border bg-amber-50 text-amber-600 border-amber-200" title="Data tidak ditemukan di API">NO DATA</span>`;
-                    } else if (data.data && data.data.jabatan) {
-                        textElement.textContent = data.data.jabatan;
-                    } else {
-                        textElement.textContent = originalJabatan;
+                    if (textElement) {
+                        if (data.no_data) {
+                            textElement.innerHTML = `<span class="inline-flex items-center px-2 py-0.5 rounded text-[8px] font-bold uppercase border bg-amber-50 text-amber-600 border-amber-200" title="Data tidak ditemukan di API">NO DATA</span>`;
+                        } else if (data.data && data.data.jabatan) {
+                            textElement.textContent = data.data.jabatan;
+                        } else {
+                            textElement.textContent = originalJabatan;
+                        }
+                    }
+
+                    if (unitTarget && data.data) {
+                        const parentName = data.data.parent_unit_kerja_name || '';
+                        const unitName = data.data.unit_kerja_name || '';
+                        if (unitName) {
+                            let unitHtml = `<span class="text-xs font-bold text-slate-800 uppercase tracking-tight">${unitName}</span>`;
+                            if (parentName) {
+                                unitHtml += `<span class="text-[9px] font-bold text-slate-500 uppercase leading-none mt-0.5">${parentName}</span>`;
+                            }
+                            unitTarget.innerHTML = unitHtml;
+                        } else if (originalUnit) {
+                            unitTarget.innerHTML = originalUnit;
+                        }
                     }
                     success++;
                 } else {
-                    textElement.innerHTML = `<span class="inline-flex items-center px-2 py-0.5 rounded text-[8px] font-bold uppercase border bg-red-50 text-red-600 border-red-200" title="${(data.message || 'Sinkronisasi Gagal').replace(/"/g, '&quot;')}">FAILED</span>`;
+                    if (textElement) {
+                        textElement.innerHTML = `<span class="inline-flex items-center px-2 py-0.5 rounded text-[8px] font-bold uppercase border bg-red-50 text-red-600 border-red-200" title="${(data.message || 'Sinkronisasi Gagal').replace(/"/g, '&quot;')}">FAILED</span>`;
+                    }
+                    if (unitTarget && originalUnit) {
+                        unitTarget.innerHTML = originalUnit;
+                    }
                     failed++;
                 }
             } catch (error) {
-                textElement.textContent = originalJabatan;
+                if (textElement) textElement.textContent = originalJabatan;
+                if (unitTarget && originalUnit) unitTarget.innerHTML = originalUnit;
                 failed++;
             }
 
