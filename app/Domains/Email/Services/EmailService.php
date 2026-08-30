@@ -1631,6 +1631,7 @@ class EmailService
         $jab = preg_replace('/\bPENGENLOLA\b/i', 'PENGELOLA', $jab);
         $jab = preg_replace('/\bPENGELOLAH\b/i', 'PENGOLAH', $jab);
         $jab = preg_replace('/\bGURUR\b/i', 'GURU', $jab);
+        $jab = preg_replace('/\bFISIOTRAPI\b/i', 'FISIOTERAPIS', $jab);
         $jab = preg_replace('/\bBULUPACCING\b/i', 'BULUPANCING', $jab);
         $jab = preg_replace('/\b(PUSKSEWAN|PUSKSE\s*WAN|PUSKES\s+WAN)\b/i', 'PUSKESWAN', $jab);
         $jab = preg_replace('/\bBBI\b/i', 'BALAI BENIH IKAN', $jab);

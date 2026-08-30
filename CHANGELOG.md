@@ -7,6 +7,8 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 # [31 Agustus 2026] — Standarisasi Jabatan Fungsional Kesehatan & Jenjang Keterampilan
 
+- **Koreksi Ejaan Profesi Fisioterapis**:
+  - Menambahkan koreksi otomatis typo ejaan `FISIOTRAPI` $\rightarrow$ **`FISIOTERAPIS`**.
 - **Standarisasi Jenjang Keterampilan Format Lama**:
   - Mengonversi format lama `Pelaksana Lanjutan` $\rightarrow$ **`Mahir`**, `Pelaksana Pemula` $\rightarrow$ **`Pemula`**, dan `[Profesi] Pelaksana` $\rightarrow$ **`[Profesi] Terampil`**.
 - **Konversi Nomenklatur Profesi Kesehatan**:
