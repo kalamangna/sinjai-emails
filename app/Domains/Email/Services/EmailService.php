@@ -1205,7 +1205,8 @@ class EmailService
                             $resolvedUnitName = $child['nama_unit_kerja'];
                             break;
                         }
-                        if (strpos($childName, 'UMUM') !== false && strpos($normSearch, 'UMUM') !== false && strpos($normSearch, 'HUKUM') === false) {
+                        // Mapping khusus RSUD Pratama Bulupancing di bawah Dinas Kesehatan
+                        if (strpos($childName, 'PRATAMA') !== false && (strpos($normSearch, 'BULUPANCING') !== false || strpos($normSearch, 'PRATAMA') !== false || strpos($normSearch, 'KELAS D') !== false)) {
                             $resolvedUnitId = $child['id'];
                             $resolvedUnitName = $child['nama_unit_kerja'];
                             break;
@@ -1222,7 +1223,7 @@ class EmailService
                     }
                 }
 
-                if ($resolvedUnitId != $currentEmail['unit_kerja_id']) {
+                if ($resolvedUnitId != ($currentEmail['unit_kerja_id'] ?? null)) {
                     $updateData['unit_kerja_id'] = $resolvedUnitId;
                 }
             }
@@ -1512,9 +1513,12 @@ class EmailService
             }
         }
 
-        // Format Baku Kepala Sekolah
+        // Format Baku Kepala Sekolah & Direktur
         if (preg_match('/^KEPALA\s+SEKOLAH\b/i', $jab)) {
             return 'KEPALA SEKOLAH';
+        }
+        if (preg_match('/^DIREKTUR\b/i', $jab)) {
+            return 'DIREKTUR';
         }
 
         // Tambahkan prefix KEPALA jika di SIMPEG hanya tertulis "BIDANG ...", "SUB BAGIAN ...", "SEKSI ...", "SUB BIDANG ..."
