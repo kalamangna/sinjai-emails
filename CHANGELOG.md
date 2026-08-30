@@ -5,6 +5,14 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [30 Agustus 2026] — Penambahan Kolom Jabatan pada Pencarian Unit Kerja
+
+- **Pencarian Berdasarkan Jabatan pada Detail Unit Kerja**:
+  - Menambahkan pencocokan kolom `emails.jabatan` pada *query filter* `getUnitKerjaDetail` di `EmailService`.
+  - Menyelaraskan filter pencarian kolom `jabatan` pada semua fungsi ekspor unit kerja (`generateUnitKerjaPdf`, `generateAccountDetailPdf`, `generateUnitKerjaExcel`, dan `generateUnitKerjaCsv`) di `EmailExportService`.
+
+---
+
 # [30 Agustus 2026] — Perbaikan Bug Normalisasi Unit Kerja Sekolah
 
 - **Fix: "Tk." (Tingkat Pangkat) Salah Terdeteksi sebagai TK (Taman Kanak-kanak)**:

@@ -417,7 +417,8 @@ class EmailService
                 $builder->groupStart();
                 $cleanSearch = str_replace([' ', '.', '-', '\''], '', $search);
                 $builder->like('emails.email', $search)
-                             ->orLike('emails.name', $search);
+                             ->orLike('emails.name', $search)
+                             ->orLike('emails.jabatan', $search);
                 if (is_numeric($cleanSearch) && (strlen($cleanSearch) >= 10)) {
                     $hash = $cleanSearch;
                     $builder->orWhere('emails.nik', $hash)

@@ -201,7 +201,8 @@ class EmailExportService
             $builder->groupStart();
             $cleanSearch = str_replace([' ', '.', '-', '\''], '', $search);
             $builder->like('email', $search)
-                ->orLike('name', $search);
+                ->orLike('name', $search)
+                ->orLike('jabatan', $search);
 
             if (is_numeric($cleanSearch) && strlen($cleanSearch) >= 10) {
                 $hash = $cleanSearch;
@@ -315,7 +316,8 @@ class EmailExportService
             $builder->groupStart();
             $cleanSearch = str_replace([' ', '.', '-', '\''], '', $search);
             $builder->like('email', $search)
-                ->orLike('name', $search);
+                ->orLike('name', $search)
+                ->orLike('jabatan', $search);
 
             if (is_numeric($cleanSearch) && strlen($cleanSearch) >= 10) {
                 $hash = $cleanSearch;
@@ -577,7 +579,8 @@ class EmailExportService
             $builder->groupStart();
             $cleanSearch = str_replace([' ', '.', '-', '\''], '', $search);
             $builder->like('emails.email', $search)
-                ->orLike('emails.name', $search);
+                ->orLike('emails.name', $search)
+                ->orLike('emails.jabatan', $search);
 
             if (is_numeric($cleanSearch) && strlen($cleanSearch) >= 10) {
                 $hash = $cleanSearch;
@@ -660,7 +663,8 @@ class EmailExportService
             $builder->groupStart();
             $cleanSearch = str_replace([' ', '.', '-', '\''], '', $search);
             $builder->like('email', $search)
-                ->orLike('name', $search);
+                ->orLike('name', $search)
+                ->orLike('jabatan', $search);
 
             if (is_numeric($cleanSearch) && strlen($cleanSearch) >= 10) {
                 $hash = $cleanSearch;
