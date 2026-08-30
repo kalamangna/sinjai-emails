@@ -5,6 +5,17 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [31 Agustus 2026] — Standarisasi Jabatan Fungsional Kesehatan & Jenjang Keterampilan
+
+- **Standarisasi Jenjang Keterampilan Format Lama**:
+  - Mengonversi format lama `Pelaksana Lanjutan` $\rightarrow$ **`Mahir`**, `Pelaksana Pemula` $\rightarrow$ **`Pemula`**, dan `[Profesi] Pelaksana` $\rightarrow$ **`[Profesi] Terampil`**.
+- **Konversi Nomenklatur Profesi Kesehatan**:
+  - Mengonversi nomenklatur profesi `Perawat Gigi` menjadi **`Terapis Gigi dan Mulut`** sesuai dengan PermenPAN-RB No. 37 Tahun 2019.
+- **Perluasan Rumpun Fungsional Kesehatan**:
+  - Memperluas daftar profesi fungsional tenaga kesehatan yang dinormalisasi secara otomatis mencakup *Fisioterapis, Pranata Laboratorium Kesehatan, Terapis Gigi dan Mulut, Radiografer, Asisten Apoteker, Refraksionis Optisien, Perekam Medis, Teknisi Elektromedis, Okupasi Terapis, Terapis Wicara, dll.*
+
+---
+
 # [31 Agustus 2026] — Pemetaan Presisi 10 Bagian Setda & Normalisasi Kasubag TU Pimpinan
 
 - **Penyempurnaan Pemetaan 10 Bagian Sekretariat Daerah**:

@@ -1852,8 +1852,15 @@ class EmailService
             $jab = preg_replace('/\s+(?:(?:PADA|DI)\s+)?(UPTD\s+|UPT\s+)?PUSKESMAS\b.*$/i', '', $jab);
         }
 
+        // Standarisasi Nomenklatur Profesi Kesehatan (Perawat Gigi -> Terapis Gigi dan Mulut sesuai PermenPAN-RB No. 37/2019)
+        $jab = preg_replace('/\bPERAWAT\s+GIGI\b/i', 'TERAPIS GIGI DAN MULUT', $jab);
+
+        // Standarisasi Jenjang Keterampilan Format Lama: Pelaksana Lanjutan -> Mahir, Pelaksana Pemula -> Pemula
+        $jab = preg_replace('/\bPELAKSANA\s+LANJUTAN\b/i', 'MAHIR', $jab);
+        $jab = preg_replace('/\bPELAKSANA\s+PEMULA\b/i', 'PEMULA', $jab);
+
         // Standarisasi Format SSCASN (JENJANG - NAMA PROFESI) menjadi Format Baku PermenPAN-RB & BKN (NAMA PROFESI JENJANG)
-        // Contoh: "AHLI PERTAMA - APOTEKER" -> "APOTEKER AHLI PERTAMA", "TERAMPIL - PERAWAT" -> "PERAWAT TERAMPIL"
+        // Contoh: "AHLI PERTAMA - APOTEKER" -> "APOTEKER AHLI PERTAMA", "TERAMPIL - PERAWAT" -> "PERAWAT TERAMPIL", "MAHIR - FISIOTERAPIS" -> "FISIOTERAPIS MAHIR"
         if (preg_match('/^(AHLI PERTAMA|AHLI MUDA|AHLI MADYA|AHLI UTAMA|TERAMPIL|MAHIR|PENYELIA|PEMULA)\s*-\s*(.+)$/i', $jab, $matches)) {
             $jenjang = trim($matches[1]);
             $profesi = trim($matches[2]);
@@ -1885,17 +1892,16 @@ class EmailService
         }
 
         // 2. Standarisasi [Profesi] [Pertama/Muda/Madya/Utama] -> [Profesi] AHLI [Jenjang]
-        $profesiKeahlian = 'GURU|PERAWAT|BIDAN|DOKTER|AUDITOR|APOTEKER|EPIDEMIOLOG|SANITARIAN|NUTRISIONIS|ARSIPARIS|PUSTAKAWAN|PRANATA KOMPUTER|PENYULUH|PENGUJI|INSTRUKTUR|PERENCANA|STATISTISI|PENELITI|ANALIS KEBIJAKAN|ADMINISTRATOR KESEHATAN|MEDIK VETERINER|PARAMEDIK VETERINER|PENGAWAS BIBIT TERNAK|PENGAWAS MUTU PAKAN';
+        $profesiKeahlian = 'GURU|PERAWAT|BIDAN|DOKTER|AUDITOR|APOTEKER|ASISTEN APOTEKER|EPIDEMIOLOG|SANITARIAN|NUTRISIONIS|ARSIPARIS|PUSTAKAWAN|PRANATA KOMPUTER|PENYULUH|PENGUJI|INSTRUKTUR|PERENCANA|STATISTISI|PENELITI|ANALIS KEBIJAKAN|ADMINISTRATOR KESEHATAN|MEDIK VETERINER|PARAMEDIK VETERINER|PENGAWAS BIBIT TERNAK|PENGAWAS MUTU PAKAN|FISIOTERAPIS|PRANATA LABORATORIUM KESEHATAN|PRANATA LABORATORIUM|TERAPIS GIGI DAN MULUT|RADIOGRAFER|REFRAKSIONIS OPTISIEN|TEKNISI ELEKTROMEDIS|PEREKAM MEDIS|OKUPASI TERAPIS|TERAPIS WICARA|ORTOTIS PROSTETIS|TEKNISI GIGI|FISIKAWAN MEDIS|PEMBIMBING KESEHATAN KERJA|ENTOMOLOG KESEHATAN';
         $jab = preg_replace("/\b({$profesiKeahlian})\s+PERTAMA\b/i", '$1 AHLI PERTAMA', $jab);
         $jab = preg_replace("/\b({$profesiKeahlian})\s+MUDA\b/i", '$1 AHLI MUDA', $jab);
         $jab = preg_replace("/\b({$profesiKeahlian})\s+MADYA\b/i", '$1 AHLI MADYA', $jab);
         $jab = preg_replace("/\b({$profesiKeahlian})\s+UTAMA\b/i", '$1 AHLI UTAMA', $jab);
 
         // 3. Standarisasi Jenjang Keterampilan Format Lama: Pelaksana Lanjutan -> Mahir, Pelaksana -> Terampil
-        $jab = preg_replace("/\b({$profesiKeahlian})\s+PELAKSANA\s+LANJUTAN\b/i", '$1 MAHIR', $jab);
-        $jab = preg_replace("/\bPELAKSANA\s+LANJUTAN\s*-\s*({$profesiKeahlian})\b/i", 'MAHIR - $1', $jab);
         $jab = preg_replace("/\b({$profesiKeahlian})\s+PELAKSANA\b/i", '$1 TERAMPIL', $jab);
         $jab = preg_replace("/\bPELAKSANA\s+({$profesiKeahlian})\b/i", '$1 TERAMPIL', $jab);
+        $jab = preg_replace("/\bPELAKSANA\s*-\s*({$profesiKeahlian})\b/i", '$1 TERAMPIL', $jab);
 
         // 4. Koreksi Singkatan / Nomenklatur Mata Pelajaran & Teknis Pelaksana
         $jab = preg_replace('/\bPKN\b/i', 'PPKN', $jab);
