@@ -58,7 +58,7 @@
                             <div class="flex items-center gap-2 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg">
                                 <span class="text-[10px] font-bold text-slate-700 uppercase tracking-widest">Status TTE:</span>
                                 <div id="bsre-status-container" class="flex items-center">
-                                    <span class="text-[10px] font-bold text-slate-700 animate-pulse uppercase">Memeriksa...</span>
+                                    <span class="inline-block h-4 w-16 bg-slate-200 rounded animate-pulse align-middle"></span>
                                 </div>
                                 <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
                                     <button id="sync-bsre-btn" onclick="syncBsreStatus('<?= esc($email['email'], 'js') ?>')" class="btn btn-solid btn-xs ml-2" data-tooltip-target="tooltip-sync-bsre">

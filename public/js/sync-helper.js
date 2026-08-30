@@ -31,7 +31,7 @@
             btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>';
         }
         
-        container.innerHTML = '<span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase border bg-slate-50 text-slate-400 border-slate-200 animate-pulse"><i class="fas fa-spinner fa-spin mr-1"></i> SYNCING</span>';
+        container.innerHTML = '<span class="inline-block h-4 w-16 bg-slate-200 rounded animate-pulse align-middle"></span>';
 
         try {
             const response = await fetch(window.BASE_URL + '/bsre/sync-status', {
