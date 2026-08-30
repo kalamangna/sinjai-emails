@@ -5,6 +5,15 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [31 Agustus 2026] — Normalisasi Jabatan Penelaah Teknis Kebijakan & Pembersihan Penugasan Subag
+
+- **Pembersihan Penugasan Seksi & Subag pada Penelaah Teknis Kebijakan**:
+  - Menghapus embel-embel seksi atau subbagian penugasan internal pada jabatan `PENELAAH TEKNIS KEBIJAKAN` dan staf pelaksana lainnya (seperti `PENELAAH TEKNIS KEBIJAKAN SEKSI PEMERINTAHAN` $\rightarrow$ `PENELAAH TEKNIS KEBIJAKAN`, `PENGADMINISTRASI PERKANTORAN SUBAG UMUM...` $\rightarrow$ `PENGADMINISTRASI PERKANTORAN`).
+- **Koreksi Typo & Singkatan**:
+  - Menambahkan penanganan otomatis koreksi variasi ejaan kata `TEKHNIS` $\rightarrow$ **`TEKNIS`**.
+
+---
+
 # [31 Agustus 2026] — Perbaikan Glitch Tooltip pada Donut Chart Status ASN & TTE
 
 - **Optimalisasi Tooltip Donut Chart**:
