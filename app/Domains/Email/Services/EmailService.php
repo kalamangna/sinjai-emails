@@ -1620,8 +1620,8 @@ class EmailService
             return 'DIREKTUR';
         }
 
-        // Standarisasi KEPALA UPT -> KEPALA UPTD (Format Baku Perangkat Daerah)
-        $jab = preg_replace('/\bKEPALA\s+UPT\s+(?!D\b)/i', 'KEPALA UPTD ', $jab);
+        // Standarisasi KEPALA/KTU UPT -> KEPALA/KTU UPTD (Format Baku Perangkat Daerah)
+        $jab = preg_replace('/\b(KEPALA\s+TATA\s+USAHA|KEPALA\s+TU|KTU|KEPALA)\s+UPT\s+(?!D\b)/i', '$1 UPTD ', $jab);
 
         // 1. Cek judul definitif pimpinan dari teks jabatan terlebih dahulu
         if (preg_match('/^LURAH\b/i', $jab) || (preg_match('/\bLURAH\b/i', $jab) && !preg_match('/\b(SEKRETARIS|SEKLUR|KEPALA\s+SEKSI|KASI|STAF|BENDAHARA|PENGELOLA|KELURAHAN)\b/i', $jab))) {
@@ -1751,6 +1751,7 @@ class EmailService
         } else {
             $jab = preg_replace('/\b(KTU|KEPALA\s+TU|KASUBAG\s+TU|KASUBAG\s+TATA\s+USAHA|KEPALA\s+SUB\s*BAGIAN\s+TATA\s+USAHA|SUB\s*BAGIAN\s+TATA\s+USAHA)\b/i', 'KEPALA TATA USAHA', $jab);
         }
+        $jab = preg_replace('/\b(KEPALA\s+TATA\s+USAHA|KEPALA)\s+UPT\s+(?!D\b)/i', '$1 UPTD ', $jab);
         $jab = preg_replace('/\bKASUBAG\b/i', 'KEPALA SUB BAGIAN', $jab);
         $jab = preg_replace('/\bKASUBBID\b/i', 'KEPALA SUB BIDANG', $jab);
         $jab = preg_replace('/\bKABID\b/i', 'KEPALA BIDANG', $jab);

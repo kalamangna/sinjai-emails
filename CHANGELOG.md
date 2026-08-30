@@ -5,6 +5,13 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [31 Agustus 2026] — Standarisasi Nomenklatur UPTD pada Jabatan Kepala Tata Usaha
+
+- **Standarisasi UPT ke UPTD pada Kepala Tata Usaha**:
+  - Menyelaraskan singkatan `UPT` menjadi `UPTD` pada jabatan `KEPALA TATA USAHA` teknis perangkat daerah (seperti `KEPALA TATA USAHA UPT PENGOLAHAN HASIL PETERNAKAN` $\rightarrow$ `KEPALA TATA USAHA UPTD PENGOLAHAN HASIL PETERNAKAN` dan `KEPALA TATA USAHA UPT PENGOLAHAN LOGAM` $\rightarrow$ `KEPALA TATA USAHA UPTD PENGOLAHAN LOGAM`).
+
+---
+
 # [31 Agustus 2026] — Pembersihan Prefix Jabatan Fungsional (JF/JFT/JFU) & Standarisasi KEPALA TU
 
 - **Pembersihan Prefix Jabatan Fungsional**:
