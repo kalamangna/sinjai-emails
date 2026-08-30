@@ -5,6 +5,15 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [31 Agustus 2026] — Standarisasi Nomenklatur Baku Kepala UPTD pada Perangkat Daerah
+
+- **Standarisasi Nomenklatur KEPALA UPTD**:
+  - Menyelaraskan seluruh variasi penulisan `KEPALA UPT` menjadi format yuridis baku perangkat daerah **`KEPALA UPTD`** (seperti `KEPALA UPTD RADIO SUARA BERSATU DAN TV SINJAI` dan `KEPALA UPTD PERLINDUNGAN PEREMPUAN DAN ANAK`).
+  - Mempertahankan format ringkas `KEPALA PUSKESMAS` dan `KEPALA TATA USAHA` pada UPTD Puskesmas, serta `KEPALA SEKOLAH` pada Satuan Pendidikan.
+  - Mempertahankan `KEPALA SUB BAGIAN TATA USAHA` khusus untuk RS Pratama Bulupancing.
+
+---
+
 # [31 Agustus 2026] — Pemeliharaan Nomenklatur Lengkap UPTD pada OPD Teknis Non-Child Unit
 
 - **Pemeliharaan Nama UPTD pada OPD Teknis**:

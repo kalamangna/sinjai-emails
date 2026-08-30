@@ -1620,6 +1620,9 @@ class EmailService
             return 'DIREKTUR';
         }
 
+        // Standarisasi KEPALA UPT -> KEPALA UPTD (Format Baku Perangkat Daerah)
+        $jab = preg_replace('/\bKEPALA\s+UPT\s+(?!D\b)/i', 'KEPALA UPTD ', $jab);
+
         // 1. Cek judul definitif pimpinan dari teks jabatan terlebih dahulu
         if (preg_match('/^LURAH\b/i', $jab) || (preg_match('/\bLURAH\b/i', $jab) && !preg_match('/\b(SEKRETARIS|SEKLUR|KEPALA\s+SEKSI|KASI|STAF|BENDAHARA|PENGELOLA|KELURAHAN)\b/i', $jab))) {
             return 'LURAH';
@@ -1769,7 +1772,7 @@ class EmailService
 
         // Bersihkan nama puskesmas pada KTU Puskesmas (karena Puskesmas adalah child unit)
         if (preg_match('/^KEPALA TATA USAHA\b/i', $jab)) {
-            $jab = preg_replace('/\s+(?:(?:PADA|DI)\s+)?(UPTD\s+)?PUSKESMAS\b.*$/i', '', $jab);
+            $jab = preg_replace('/\s+(?:(?:PADA|DI)\s+)?(UPTD\s+|UPT\s+)?PUSKESMAS\b.*$/i', '', $jab);
         }
 
         // 2. Bersihkan embel-embel lokasi/bagian pada Staf Pelaksana & Jabatan Fungsional (JF)
