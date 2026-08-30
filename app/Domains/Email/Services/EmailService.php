@@ -1742,8 +1742,8 @@ class EmailService
             $jab = preg_replace('/\s+(INSPEKTORAT|PADA|DAERAH)\s*.*$/i', '', $jab);
         }
 
-        // Standarisasi Singkatan Jabatan Struktural (KTU, Kasubag, Kasubid, Kabid, Kasi)
-        $jab = preg_replace('/\b(KTU|KASUBAG\s+TU|KASUBAG\s+TATA\s+USAHA)\b/i', 'KEPALA SUB BAGIAN TATA USAHA', $jab);
+        // Standarisasi Singkatan Jabatan Struktural (KTU, Kasubag, Kasubid, Kabid, Kasi, Kepala Tata Usaha)
+        $jab = preg_replace('/\b(KTU|KASUBAG\s+TU|KASUBAG\s+TATA\s+USAHA|KEPALA\s+TATA\s+USAHA|KEPALA\s+SUB\s*BAGIAN\s+TATA\s+USAHA|SUB\s*BAGIAN\s+TATA\s+USAHA)\b/i', 'KEPALA TATA USAHA', $jab);
         $jab = preg_replace('/\bKASUBAG\b/i', 'KEPALA SUB BAGIAN', $jab);
         $jab = preg_replace('/\bKASUBBID\b/i', 'KEPALA SUB BIDANG', $jab);
         $jab = preg_replace('/\bKABID\b/i', 'KEPALA BIDANG', $jab);
@@ -1757,9 +1757,9 @@ class EmailService
         // Koreksi SUB. BAGIAN / SUB. BIDANG menjadi SUB BAGIAN / SUB BIDANG
         $jab = preg_replace('/\bSUB\.\s*/i', 'SUB ', $jab);
 
-        // 1. Bersihkan akhiran OPD/Lokasi pada Jabatan Struktural (Kepala Dinas, Kabid, Kasubag, Kasi, dsb)
-        if (preg_match('/^(KEPALA BIDANG|KEPALA SUB BAGIAN|KEPALA SEKSI|KEPALA SUB BIDANG|SEKRETARIS|KEPALA DINAS|KEPALA BADAN|INSPEKTUR)\b/i', $jab)) {
-            $jab = preg_replace('/\s+(?:(?:PADA|DI)\s+)?(DINAS|BADAN|INSPEKTORAT|SEKRETARIAT|KANTOR|KECAMATAN|KEC\.|UPTD|UPT|PUSKESMAS|RSUD)\b.*$/i', '', $jab);
+        // 1. Bersihkan akhiran OPD/Lokasi pada Jabatan Struktural (Kepala Dinas, Kabid, Kasubag, Kasi, Kepala Tata Usaha, dsb)
+        if (preg_match('/^(KEPALA BIDANG|KEPALA SUB BAGIAN|KEPALA SEKSI|KEPALA SUB BIDANG|KEPALA TATA USAHA|SEKRETARIS|KEPALA DINAS|KEPALA BADAN|INSPEKTUR)\b/i', $jab)) {
+            $jab = preg_replace('/\s+(?:(?:PADA|DI)\s+)?(DINAS|BADAN|INSPEKTORAT|SEKRETARIAT|KANTOR|KECAMATAN|KEC\.|UPTD|UPT|PUSKESMAS|RSUD|RADIO|TV|BALAI|LOKA)\b.*$/i', '', $jab);
             $jab = preg_replace('/\s+(?:(?:PADA|DI)\s+)?KABUPATEN\s+SINJAI\s*.*$/i', '', $jab);
         }
 

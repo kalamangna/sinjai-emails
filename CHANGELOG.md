@@ -5,6 +5,15 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [31 Agustus 2026] — Standarisasi Jabatan Kepala Tata Usaha (KTU) di Lingkungan UPTD & Puskesmas
+
+- **Standarisasi Jabatan Kepala Tata Usaha (KTU)**:
+  - Menetapkan nama jabatan baku **`KEPALA TATA USAHA`** untuk seluruh pejabat tata usaha di lingkungan UPTD Teknis, UPTD Puskesmas, dan UPT RSUD Pratama.
+  - Membedakan secara tegas pejabat tata usaha UPTD/Puskesmas (`KEPALA TATA USAHA`) dengan pejabat struktural Eselon IV.a di Sekretariat OPD Induk (`KEPALA SUB BAGIAN UMUM DAN KEPEGAWAIAN`, `KEPALA SUB BAGIAN PROGRAM DAN KEUANGAN`).
+  - Membersihkan suffix unit kerja teknis seperti `RADIO`, `TV`, `BALAI`, `LOKA` dari nama jabatan struktural.
+
+---
+
 # [31 Agustus 2026] — Koreksi Pencocokan Sub-Unit Berbasis Batas Kata Utuh (Word Boundary)
 
 - **Pencegahan Tabrakan Substring Antar-Nama Sub-Unit**:
