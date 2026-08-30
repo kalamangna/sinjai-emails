@@ -1507,7 +1507,8 @@ class EmailService
             return null;
         }
 
-        $jab = mb_strtoupper(trim($jabatan), 'UTF-8');
+        $jab = trim(str_replace(["\xc2\xa0", "\u{00a0}", "\u{200b}"], ' ', (string)$jabatan));
+        $jab = mb_strtoupper($jab, 'UTF-8');
         // Hapus karakter liar di akhir (titik ganda, titik koma, titik satu di ujung)
         $jab = preg_replace('/[,\.]+\s*$/', '', $jab);
         // Padatkan spasi ganda atau tab liar sejak awal
@@ -1515,10 +1516,12 @@ class EmailService
 
         // Hapus prefix PLT. / PLH. / PJ. / PJS.
         $jab = preg_replace('/^\s*(PLT|PLH|PJ|PJS)\.?\s+/i', '', $jab);
-        // Perbaiki typo penulisan umum seperti KEPALKEPALA, KEP., PENGENLOLA, dsb.
+        // Perbaiki typo penulisan umum seperti KEPALKEPALA, KEP., PENGENLOLA, GURUR, dsb.
         $jab = preg_replace('/^KEPALKEPALA\b/i', 'KEPALA', $jab);
         $jab = preg_replace('/^KEP\.\s*/i', 'KEPALA ', $jab);
         $jab = preg_replace('/\bPENGENLOLA\b/i', 'PENGELOLA', $jab);
+        $jab = preg_replace('/\bPENGELOLAH\b/i', 'PENGOLAH', $jab);
+        $jab = preg_replace('/\bGURUR\b/i', 'GURU', $jab);
 
         // Resolusi jabatan kombinasi garis miring (Utamakan Jabatan Struktural / Manajerial / Kepala)
         if (strpos($jab, '/') !== false && !preg_match('/\b[IVX]+\/[A-D]\b/i', $jab)) {
@@ -1694,11 +1697,13 @@ class EmailService
         }
 
         // 1. Standarisasi Jenjang Fungsional Guru Format Lama (PermenPAN-RB & BKN)
-        $jab = preg_replace('/\bGURU\s+PRATAMA(\s+TK\.?\s*I)?\b/i', 'GURU AHLI PERTAMA', $jab);
-        $jab = preg_replace('/\bGURU\s+DEWASA(\s+TK\.?\s*I)?\b/i', 'GURU AHLI MUDA', $jab);
-        $jab = preg_replace('/\bGURU\s+MUDA\s+TK\.?\s*I\b/i', 'GURU AHLI MUDA', $jab);
-        $jab = preg_replace('/\bGURU\s+PEMBINA\s+UTAMA\b/i', 'GURU AHLI UTAMA', $jab);
-        $jab = preg_replace('/\bGURU\s+PEMBINA(\s+TK\.?\s*I)?\b/i', 'GURU AHLI MADYA', $jab);
+        if (preg_match('/^GURU\b/i', $jab)) {
+            $jab = preg_replace('/\b(TINGKAT|TK)[\.,\s]+[IVX\d]+\b/i', '', $jab);
+            $jab = preg_replace('/\bGURU\s+PRATAMA\b/i', 'GURU AHLI PERTAMA', $jab);
+            $jab = preg_replace('/\bGURU\s+DEWASA\b/i', 'GURU AHLI MUDA', $jab);
+            $jab = preg_replace('/\bGURU\s+PEMBINA\s+UTAMA\b/i', 'GURU AHLI UTAMA', $jab);
+            $jab = preg_replace('/\bGURU\s+PEMBINA\b/i', 'GURU AHLI MADYA', $jab);
+        }
 
         // 2. Standarisasi [Profesi] [Pertama/Muda/Madya/Utama] -> [Profesi] AHLI [Jenjang]
         $profesiKeahlian = 'GURU|PERAWAT|BIDAN|DOKTER|AUDITOR|APOTEKER|EPIDEMIOLOG|SANITARIAN|NUTRISIONIS|ARSIPARIS|PUSTAKAWAN|PRANATA KOMPUTER|PENYULUH|PENGUJI|INSTRUKTUR|PERENCANA|STATISTISI|PENELITI|ANALIS KEBIJAKAN|ADMINISTRATOR KESEHATAN';
@@ -1715,6 +1720,7 @@ class EmailService
 
         // 4. Koreksi Singkatan / Nomenklatur Mata Pelajaran & Teknis Pelaksana
         $jab = preg_replace('/\bPKN\b/i', 'PPKN', $jab);
+        $jab = preg_replace('/\bPENJASKES\b/i', 'PENJASORKES', $jab);
         $jab = preg_replace('/\bTEHNIS\b/i', 'TEKNIS', $jab);
         $jab = preg_replace('/\bPENELAH\b/i', 'PENELAAH', $jab);
         $jab = preg_replace('/\bPENGOLA\b/i', 'PENGOLAH', $jab);
@@ -1728,6 +1734,10 @@ class EmailService
             $profesi = trim($matches[2]);
             $jab = $profesi . ' ' . $jenjang;
         }
+
+        // 6. Standarisasi Format Fungsional Tanpa Kata "AHLI" (Contoh: "GURU KELAS PERTAMA" -> "GURU KELAS AHLI PERTAMA", "PAMONG BELAJAR MADYA" -> "PAMONG BELAJAR AHLI MADYA")
+        // Pengecualian: jangan tambahkan pada "SEKOLAH MENENGAH PERTAMA"
+        $jab = preg_replace('/(?<!\bAHLI)(?<!\bMENENGAH)\s+(PERTAMA|MUDA|MADYA|UTAMA)\b/i', ' AHLI $1', $jab);
 
         // Spasi sebelum/setelah tanda baca titik dan koma
         $jab = preg_replace('/\s+([,\.])/', '$1', $jab);

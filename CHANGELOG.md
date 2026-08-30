@@ -5,6 +5,16 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [30 Agustus 2026] — Penyempurnaan Normalisasi Jabatan Fungsional Guru & Tenaga Pendidik
+
+- **Penyempurnaan Logika Normalisasi Jabatan Guru**:
+  - Menghapus karakter spasi tak kasat mata (*non-breaking space* `\u00A0` dan `\u200B`) pada awal/akhir teks jabatan dari SIMPEG.
+  - Memperbaiki typo SIMPEG seperti `GURUR MUDA` $\rightarrow$ `GURU AHLI MUDA`, `PENGELOLAH` $\rightarrow$ `PENGOLAH`, dan `PENJASKES` $\rightarrow$ `PENJASORKES`.
+  - Membersihkan sisa akhiran jenjang tingkat lama (`Tk. I`, `Tingkat. I`, `Tk,I`) pada jabatan guru.
+  - Menstandarisasi formasi guru mata pelajaran & pamong belajar tanpa kata *"Ahli"* (seperti `Guru Kelas Pertama`, `Guru Matematika Pertama`, `Pamong Belajar Madya`) menjadi format baku PermenPAN-RB & BKN (`GURU KELAS AHLI PERTAMA`, `PAMONG BELAJAR AHLI MADYA`), dengan proteksi pengecualian kata *Sekolah Menengah Pertama* (SMP).
+
+---
+
 # [30 Agustus 2026] — Tampilan NIP pada Tabel Akun Pegawai
 
 - **Penyajian NIP Pegawai di Bawah Nama**:
