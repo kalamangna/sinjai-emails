@@ -190,7 +190,7 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
     /**
      * Sync single Pegawai data
      */
-    window.syncSinglePegawai = async function(nip, btn, elements = {}) {
+    window.syncSinglePegawai = async function(nip, btn, elements = {}, email = '') {
         const originalBtnContent = btn.innerHTML;
         
         btn.disabled = true;
@@ -209,7 +209,7 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
                         'Content-Type': 'application/x-www-form-urlencoded',
                         'X-Requested-With': 'XMLHttpRequest'
                     },
-                    body: 'nip=' + encodeURIComponent(nip)
+                    body: 'nip=' + encodeURIComponent(nip || '') + '&email=' + encodeURIComponent(email || '')
                 },
                 2,
                 (attempt, max, waitMs) => {
@@ -227,7 +227,7 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
 
             if (data.success) {
                 if (data.no_data) {
-                    const errorMsg = `Pegawai dengan NIP ${nip} tidak terdaftar di SIMPEG.`;
+                    const errorMsg = `Pegawai dengan NIP ${nip || email} tidak terdaftar di SIMPEG.`;
                     if (typeof window.showGlobalError === 'function') {
                         window.showGlobalError('Data Tidak Ditemukan', errorMsg);
                     } else {
@@ -246,6 +246,10 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
                 }
                 if (data.data.pangkat_golruang && elements.golru) {
                     elements.golru.textContent = data.data.pangkat_golruang;
+                }
+
+                if (typeof window.showSyncResult === 'function') {
+                    window.showSyncResult(1, 1, 0, true);
                 }
                 return true;
             } else {

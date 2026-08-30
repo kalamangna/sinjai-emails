@@ -118,8 +118,8 @@
                 <div class="px-4 sm:px-6 py-4 border-b border-slate-100 bg-slate-50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Profil</h3>
                     <div class="flex flex-wrap items-center gap-2">
-                        <?php if (in_array(session()->get('role'), ['super_admin', 'admin']) && !empty($email['nip']) && ($email['status_asn_id'] ?? 0) != 3): ?>
-                            <button onclick="syncPegawai('<?= esc($email['nip'], 'js') ?>', this)" class="btn btn-outline btn-xs uppercase tracking-widest transition-colors flex items-center" title="Sinkronkan Data Pegawai dari API">
+                        <?php if (in_array(session()->get('role'), ['super_admin', 'admin']) && !empty($email['nip']) && ($email['status_asn_id'] ?? 0) == 1): ?>
+                            <button onclick="syncPegawai('<?= esc($email['nip'], 'js') ?>', this, '<?= esc($email['email'], 'js') ?>')" class="btn btn-outline btn-xs uppercase tracking-widest transition-colors flex items-center" title="Sinkronkan Data Pegawai dari API">
                                 <i class="fas fa-sync-alt mr-1.5 text-slate-500"></i> Sync Pegawai
                             </button>
                         <?php endif; ?>
@@ -473,7 +473,7 @@
                 const hash = '<?= $verification_hash ?>';
 
                 if (status === 'ISSUE' && hash) {
-                    const profileUrl = '<?= site_url('verify/') ?>' + hash;
+                    const profileUrl = '<?= site_url('verifikasi/') ?>' + hash;
                     if (qrcodeImage) qrcodeImage.src = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' + encodeURIComponent(profileUrl);
                     if (qrcodeLink) qrcodeLink.href = profileUrl;
                     if (qrcodeCard) qrcodeCard.classList.remove('hidden');
@@ -484,13 +484,13 @@
         });
     }
 
-    function syncPegawai(nip, btn) {
+    function syncPegawai(nip, btn, email = '') {
         const elements = {
             jabatan: document.getElementById('jabatan-text'),
             pangkat: document.getElementById('pangkat-text'),
             golru: document.getElementById('golru-text')
         };
-        syncSinglePegawai(nip, btn, elements);
+        syncSinglePegawai(nip, btn, elements, email);
     }
 
     document.addEventListener('DOMContentLoaded', () => {
