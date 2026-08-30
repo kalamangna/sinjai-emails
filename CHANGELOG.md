@@ -5,6 +5,14 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [31 Agustus 2026] — Penyesuaian Urutan Parser SSCASN & Pembersihan Suffix OPD
+
+- **Penyesuaian Urutan Parser SSCASN & Pembersihan Suffix OPD**:
+  - Mengubah urutan eksekusi standarisasi format SSCASN (`AHLI PERTAMA - [PROFESI] [OPD]`) agar berjalan mendahului pembersihan lokasi, sehingga format API SIMPEG seperti `AHLI PERTAMA - MEDIK VETERINERDINAS PETERNAKAN DAN KESEHATAN HEWANDINAS PETERNAKAN DAN KESEHATAN HEWAN` terkonversi bersih menjadi **`MEDIK VETERINER AHLI PERTAMA`**.
+  - Memperluas daftar profesi keahlian untuk rumpun veteriner dan peternakan.
+
+---
+
 # [31 Agustus 2026] — Pembersihan Duplikasi Nama OPD & Penggabungan String pada Jabatan Fungsional
 
 - **Pembersihan Duplikasi & Penggabungan String Nama OPD**:

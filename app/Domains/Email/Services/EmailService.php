@@ -1778,6 +1778,14 @@ class EmailService
             $jab = preg_replace('/\s+(?:(?:PADA|DI)\s+)?(UPTD\s+|UPT\s+)?PUSKESMAS\b.*$/i', '', $jab);
         }
 
+        // Standarisasi Format SSCASN (JENJANG - NAMA PROFESI) menjadi Format Baku PermenPAN-RB & BKN (NAMA PROFESI JENJANG)
+        // Contoh: "AHLI PERTAMA - APOTEKER" -> "APOTEKER AHLI PERTAMA", "TERAMPIL - PERAWAT" -> "PERAWAT TERAMPIL"
+        if (preg_match('/^(AHLI PERTAMA|AHLI MUDA|AHLI MADYA|AHLI UTAMA|TERAMPIL|MAHIR|PENYELIA|PEMULA)\s*-\s*(.+)$/i', $jab, $matches)) {
+            $jenjang = trim($matches[1]);
+            $profesi = trim($matches[2]);
+            $jab = $profesi . ' ' . $jenjang;
+        }
+
         // 2. Bersihkan embel-embel lokasi/bagian pada Staf Pelaksana & Jabatan Fungsional (JF)
         // Hapus penyisipan nama OPD di tengah jabatan fungsional sebelum jenjang (misal: MEDIK VETERINER DINAS PETERNAKAN... AHLI PERTAMA)
         $jab = preg_replace('/\s+(DINAS|BADAN|INSPEKTORAT|SEKRETARIAT)\s+[A-Z\s]+(?=\s+(AHLI\s+(PERTAMA|MUDA|MADYA|UTAMA)|TERAMPIL|MAHIR|PENYELIA|PEMULA))/i', '', $jab);
@@ -1803,7 +1811,7 @@ class EmailService
         }
 
         // 2. Standarisasi [Profesi] [Pertama/Muda/Madya/Utama] -> [Profesi] AHLI [Jenjang]
-        $profesiKeahlian = 'GURU|PERAWAT|BIDAN|DOKTER|AUDITOR|APOTEKER|EPIDEMIOLOG|SANITARIAN|NUTRISIONIS|ARSIPARIS|PUSTAKAWAN|PRANATA KOMPUTER|PENYULUH|PENGUJI|INSTRUKTUR|PERENCANA|STATISTISI|PENELITI|ANALIS KEBIJAKAN|ADMINISTRATOR KESEHATAN';
+        $profesiKeahlian = 'GURU|PERAWAT|BIDAN|DOKTER|AUDITOR|APOTEKER|EPIDEMIOLOG|SANITARIAN|NUTRISIONIS|ARSIPARIS|PUSTAKAWAN|PRANATA KOMPUTER|PENYULUH|PENGUJI|INSTRUKTUR|PERENCANA|STATISTISI|PENELITI|ANALIS KEBIJAKAN|ADMINISTRATOR KESEHATAN|MEDIK VETERINER|PARAMEDIK VETERINER|PENGAWAS BIBIT TERNAK|PENGAWAS MUTU PAKAN';
         $jab = preg_replace("/\b({$profesiKeahlian})\s+PERTAMA\b/i", '$1 AHLI PERTAMA', $jab);
         $jab = preg_replace("/\b({$profesiKeahlian})\s+MUDA\b/i", '$1 AHLI MUDA', $jab);
         $jab = preg_replace("/\b({$profesiKeahlian})\s+MADYA\b/i", '$1 AHLI MADYA', $jab);
@@ -1823,14 +1831,6 @@ class EmailService
         $jab = preg_replace('/\bPENGOLA\b/i', 'PENGOLAH', $jab);
         $jab = preg_replace('/\bPENGADMINISTRASIAN\b/i', 'PENGADMINISTRASI', $jab);
         $jab = preg_replace('/\b(PELAKASANA|PELAKSAN)\b/i', 'PELAKSANA', $jab);
-
-        // 5. Standarisasi Format SSCASN (JENJANG - NAMA PROFESI) menjadi Format Baku PermenPAN-RB & BKN (NAMA PROFESI JENJANG)
-        // Contoh: "AHLI PERTAMA - APOTEKER" -> "APOTEKER AHLI PERTAMA", "TERAMPIL - PERAWAT" -> "PERAWAT TERAMPIL"
-        if (preg_match('/^(AHLI PERTAMA|AHLI MUDA|AHLI MADYA|AHLI UTAMA|TERAMPIL|MAHIR|PENYELIA|PEMULA)\s*-\s*(.+)$/i', $jab, $matches)) {
-            $jenjang = trim($matches[1]);
-            $profesi = trim($matches[2]);
-            $jab = $profesi . ' ' . $jenjang;
-        }
 
         // 6. Standarisasi Format Fungsional Tanpa Kata "AHLI" (Contoh: "GURU KELAS PERTAMA" -> "GURU KELAS AHLI PERTAMA", "PAMONG BELAJAR MADYA" -> "PAMONG BELAJAR AHLI MADYA")
         // Pengecualian: jangan tambahkan pada "SEKOLAH MENENGAH PERTAMA"
