@@ -5,6 +5,15 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [31 Agustus 2026] — Pembersihan Duplikasi Nama OPD & Penggabungan String pada Jabatan Fungsional
+
+- **Pembersihan Duplikasi & Penggabungan String Nama OPD**:
+  - Menangani anomali data SIMPEG berupa penggabungan/duplikasi nama OPD di tengah nama jabatan fungsional (seperti `MEDIK VETERINERDINAS PETERNAKAN DAN KESEHATAN HEWANDINAS PETERNAKAN DAN KESEHATAN HEWAN AHLI PERTAMA` $\rightarrow$ `MEDIK VETERINER AHLI PERTAMA`).
+  - Menambahkan pemisahan otomatis kata kunci instansi yang menempel tanpa spasi (*`VETERINERDINAS`* $\rightarrow$ *`VETERINER DINAS`*).
+  - Menambahkan dukungan jabatan fungsional rumpun peternakan & kesehatan hewan (`MEDIK VETERINER`, `PARAMEDIK VETERINER`, `PENGAWAS BIBIT TERNAK`, `PENGAWAS MUTU PAKAN`).
+
+---
+
 # [31 Agustus 2026] — Standarisasi Nomenklatur UPTD pada Jabatan Kepala Tata Usaha
 
 - **Standarisasi UPT ke UPTD pada Kepala Tata Usaha**:
