@@ -1591,6 +1591,11 @@ class EmailService
             $jab = preg_replace('/\s+(SEKRETARIAT|PADA|KEC\.|KECAMATAN|DINAS|BADAN|INSPEKTORAT|SATPOL PP|SATUAN POLISI|UPTD RSUD|RSUD|UPTD PUSKESMAS|PUSKESMAS|UPTD)\s+.*$/i', '', $jab);
         }
 
+        // Bersihkan embel-embel nama sekolah pada jabatan Guru (karena sudah tertera di kolom Unit Kerja)
+        if (preg_match('/^GURU\b/i', $jab)) {
+            $jab = preg_replace('/\s+(PADA|DI|UPTD\s+SPF|UPTD\s+SMP|UPTD\s+SD|UPTD|SDN|SMPN|SMAN|TKN|TK\s+NEGERI|SD\s+NEG|SMP\s+NEG|TK\s+NEG|SD\s+NEGERI|SMP\s+NEGERI)\s+.*$/i', '', $jab);
+        }
+
         // 1. Standarisasi Jenjang Fungsional Guru Format Lama (PermenPAN-RB & BKN)
         $jab = preg_replace('/\bGURU\s+PRATAMA(\s+TK\.?\s*I)?\b/i', 'GURU AHLI PERTAMA', $jab);
         $jab = preg_replace('/\bGURU\s+DEWASA(\s+TK\.?\s*I)?\b/i', 'GURU AHLI MUDA', $jab);
