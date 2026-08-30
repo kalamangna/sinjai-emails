@@ -1106,31 +1106,19 @@ class EmailService
         $isPimpinan = ($currentEmail['pimpinan'] ?? 0) == 1;
         $updateData = [];
 
-        // 1. Sync Jabatan & Normalisasi
-        $rawJabatan = $source['jabatan_nama'] ?? $source['jabatan'] ?? ($currentEmail['jabatan'] ?? null);
-        if ($rawJabatan) {
-            $cleanJab = $this->normalizeJabatanName($rawJabatan, $currentEmail['nama_unit_kerja'] ?? '');
-            if ($cleanJab) {
-                $updateData['jabatan'] = $cleanJab;
-
-                if (!empty($source['jabatan_jenis_eselon'])) {
-                    $eselonStr   = str_replace(['.', ' '], '', $source['jabatan_jenis_eselon']);
-                    $eselonModel = new \App\Shared\Models\EselonModel();
-                    $eselon      = $eselonModel->where('nama_eselon', $eselonStr)->first();
-                    if ($eselon) $updateData['eselon_id'] = $eselon['id'];
-                }
-            }
-        }
-
-        // 2. Sync Pangkat & Golongan
+        // 1. Sync Pangkat & Golongan
         if (isset($source['pangkat_nama']))    $updateData['pangkat_nama']    = trim($source['pangkat_nama']);
         if (isset($source['pangkat_golruang'])) $updateData['pangkat_golruang'] = trim($source['pangkat_golruang']);
 
-        // 3. Sync Unit Kerja jika terjadi mutasi / pindah tugas di SIMPEG
+        // 2. Sync Unit Kerja jika terjadi mutasi / pindah tugas di SIMPEG
+        $rawJabatan = $source['jabatan_nama'] ?? $source['jabatan'] ?? ($currentEmail['jabatan'] ?? null);
+        $resolvedUnitName = $currentEmail['nama_unit_kerja'] ?? '';
+
         if (!empty($source['unit_id'])) {
             $targetUnit = $this->unitKerjaModel->where('api_unit_id', $source['unit_id'])->first();
             if ($targetUnit) {
                 $resolvedUnitId = $targetUnit['id'];
+                $resolvedUnitName = $targetUnit['nama_unit_kerja'];
 
                 // Pimpinan Utama Setda (Sekda, Asisten, Staf Ahli, Bupati, Wabup) selalu berada langsung di SEKRETARIAT DAERAH (bukan sub-unit Bagian)
                 $isTopSetdaLeader = false;
@@ -1154,24 +1142,29 @@ class EmailService
 
                         if (stripos($cleanRawJab, $cleanChildNormalized) !== false) {
                             $resolvedUnitId = $child['id'];
+                            $resolvedUnitName = $child['nama_unit_kerja'];
                             break;
                         }
 
                         // Mapping sinonim umum Bagian Setda
                         if (strpos($childName, 'KESRA') !== false && (strpos($cleanRawJab, 'KESRA') !== false || strpos($cleanRawJab, 'KESEJAHTERAAN RAKYAT') !== false)) {
                             $resolvedUnitId = $child['id'];
+                            $resolvedUnitName = $child['nama_unit_kerja'];
                             break;
                         }
                         if (strpos($childName, 'PERENCANAAN') !== false && strpos($cleanRawJab, 'PERENCANAAN') !== false) {
                             $resolvedUnitId = $child['id'];
+                            $resolvedUnitName = $child['nama_unit_kerja'];
                             break;
                         }
                         if (strpos($childName, 'PENGADAAN') !== false && strpos($cleanRawJab, 'PENGADAAN') !== false) {
                             $resolvedUnitId = $child['id'];
+                            $resolvedUnitName = $child['nama_unit_kerja'];
                             break;
                         }
                         if (strpos($childName, 'UMUM') !== false && strpos($cleanRawJab, 'UMUM') !== false && strpos($cleanRawJab, 'HUKUM') === false) {
                             $resolvedUnitId = $child['id'];
+                            $resolvedUnitName = $child['nama_unit_kerja'];
                             break;
                         }
                     }
@@ -1182,11 +1175,27 @@ class EmailService
                     $currentUnit = $this->unitKerjaModel->find($currentEmail['unit_kerja_id']);
                     if ($currentUnit && $currentUnit['parent_id'] == $targetUnit['id']) {
                         $resolvedUnitId = $currentUnit['id'];
+                        $resolvedUnitName = $currentUnit['nama_unit_kerja'];
                     }
                 }
 
                 if ($resolvedUnitId != $currentEmail['unit_kerja_id']) {
                     $updateData['unit_kerja_id'] = $resolvedUnitId;
+                }
+            }
+        }
+
+        // 3. Sync Jabatan & Normalisasi Berdasarkan Unit yang Sudah Ter-resolve
+        if ($rawJabatan) {
+            $cleanJab = $this->normalizeJabatanName($rawJabatan, $resolvedUnitName, $isPimpinan);
+            if ($cleanJab) {
+                $updateData['jabatan'] = $cleanJab;
+
+                if (!empty($source['jabatan_jenis_eselon'])) {
+                    $eselonStr   = str_replace(['.', ' '], '', $source['jabatan_jenis_eselon']);
+                    $eselonModel = new \App\Shared\Models\EselonModel();
+                    $eselon      = $eselonModel->where('nama_eselon', $eselonStr)->first();
+                    if ($eselon) $updateData['eselon_id'] = $eselon['id'];
                 }
             }
         }
@@ -1310,46 +1319,30 @@ class EmailService
         // Hapus prefix PLT. / PLH. / PJ. / PJS.
         $jab = preg_replace('/^\s*(PLT|PLH|PJ|PJS)\.?\s+/i', '', $jab);
 
-        // Jika akun pimpinan atau nama jabatan kepala dinas / badan / bagian / satpol / rsud / inspektorat / camat / lurah, terapkan format ringkas pimpinan
-        if ($isPimpinan 
-            || stripos($jab, 'KEPALA DINAS') === 0 
-            || stripos($jab, 'KEPALA BADAN') === 0 
-            || stripos($jab, 'KEPALA BAGIAN') === 0 
-            || stripos($jab, 'KEPALA SATUAN') === 0 
-            || stripos($jab, 'KEPALA SATPOL') === 0 
-            || stripos($jab, 'DIREKTUR') === 0 
-            || stripos($jab, 'CAMAT') === 0 
-            || stripos($jab, 'LURAH') === 0 
-            || (stripos($jab, 'INSPEKTUR') === 0 && stripos($jab, 'PEMBANTU') === false)
-        ) {
-            if (!empty($unitKerjaName)) {
-                $unitUpper = strtoupper($unitKerjaName);
-                if (strpos($unitUpper, 'INSPEKTORAT') !== false) {
-                    return 'INSPEKTUR';
-                } elseif (strpos($unitUpper, 'SATUAN POLISI') !== false || strpos($unitUpper, 'SATPOL') !== false) {
-                    return 'KEPALA SATUAN';
-                } elseif (strpos($unitUpper, 'RUMAH SAKIT') !== false || strpos($unitUpper, 'RSUD') !== false) {
-                    return 'DIREKTUR';
-                } elseif (strpos($unitUpper, 'BAGIAN') !== false) {
-                    return 'KEPALA BAGIAN';
-                } elseif (strpos($unitUpper, 'DINAS') !== false) {
-                    return 'KEPALA DINAS';
-                } elseif (strpos($unitUpper, 'BADAN') !== false) {
-                    return 'KEPALA BADAN';
-                } elseif (strpos($unitUpper, 'KECAMATAN') !== false) {
-                    return 'CAMAT';
-                } elseif (strpos($unitUpper, 'KELURAHAN') !== false) {
-                    return 'LURAH';
-                }
-            }
-            if (stripos($jab, 'INSPEKTUR') === 0 && stripos($jab, 'PEMBANTU') === false) return 'INSPEKTUR';
-            if (stripos($jab, 'KEPALA SATUAN') === 0 || stripos($jab, 'KEPALA SATPOL') === 0) return 'KEPALA SATUAN';
-            if (stripos($jab, 'KEPALA BAGIAN') === 0) return 'KEPALA BAGIAN';
-            if (stripos($jab, 'DIREKTUR') === 0) return 'DIREKTUR';
-            if (stripos($jab, 'KEPALA DINAS') === 0) return 'KEPALA DINAS';
-            if (stripos($jab, 'KEPALA BADAN') === 0) return 'KEPALA BADAN';
-            if (stripos($jab, 'CAMAT') === 0) return 'CAMAT';
-            if (stripos($jab, 'LURAH') === 0) return 'LURAH';
+        // 1. Cek judul definitif pimpinan dari teks jabatan terlebih dahulu
+        if (stripos($jab, 'LURAH') === 0 || (stripos($jab, 'LURAH') !== false && stripos($jab, 'SEKRETARIS') === false && stripos($jab, 'SEKLUR') === false && stripos($jab, 'KEPALA SEKSI') === false && stripos($jab, 'KASI') === false && stripos($jab, 'STAF') === false)) {
+            return 'LURAH';
+        }
+        if (stripos($jab, 'CAMAT') === 0 || (stripos($jab, 'CAMAT') !== false && stripos($jab, 'SEKRETARIS') === false && stripos($jab, 'SEKCAM') === false && stripos($jab, 'KEPALA SEKSI') === false && stripos($jab, 'KASI') === false && stripos($jab, 'STAF') === false)) {
+            return 'CAMAT';
+        }
+        if (stripos($jab, 'KEPALA BAGIAN') === 0 || stripos($jab, 'KABAG') === 0) {
+            return 'KEPALA BAGIAN';
+        }
+        if (stripos($jab, 'KEPALA DINAS') === 0 || stripos($jab, 'KADIS') === 0) {
+            return 'KEPALA DINAS';
+        }
+        if (stripos($jab, 'KEPALA BADAN') === 0 || stripos($jab, 'KABAN') === 0) {
+            return 'KEPALA BADAN';
+        }
+        if (stripos($jab, 'KEPALA SATUAN') === 0 || stripos($jab, 'KEPALA SATPOL') === 0 || stripos($jab, 'KASAT POL') === 0 || stripos($jab, 'KASATPOL') === 0) {
+            return 'KEPALA SATUAN';
+        }
+        if (stripos($jab, 'DIREKTUR') === 0) {
+            return 'DIREKTUR';
+        }
+        if (stripos($jab, 'INSPEKTUR') === 0 && stripos($jab, 'PEMBANTU') === false && stripos($jab, 'IRBAN') === false) {
+            return 'INSPEKTUR';
         }
 
         // Normalisasi Khusus Asisten Sekda & Staf Ahli Bupati
@@ -1373,6 +1366,30 @@ class EmailService
                 return 'STAF AHLI BIDANG HUKUM, POLITIK DAN PEMERINTAHAN';
             }
             return $jab;
+        }
+
+        // Inferensi dari unit jika hanya berstatus pimpinan generik
+        if ($isPimpinan || stripos($jab, 'KEPALA') === 0 || stripos($jab, 'PIMPINAN') === 0) {
+            if (!empty($unitKerjaName)) {
+                $unitUpper = strtoupper($unitKerjaName);
+                if (strpos($unitUpper, 'KELURAHAN') !== false) {
+                    return 'LURAH';
+                } elseif (strpos($unitUpper, 'INSPEKTORAT') !== false) {
+                    return 'INSPEKTUR';
+                } elseif (strpos($unitUpper, 'SATUAN POLISI') !== false || strpos($unitUpper, 'SATPOL') !== false) {
+                    return 'KEPALA SATUAN';
+                } elseif (strpos($unitUpper, 'RUMAH SAKIT') !== false || strpos($unitUpper, 'RSUD') !== false) {
+                    return 'DIREKTUR';
+                } elseif (strpos($unitUpper, 'BAGIAN') !== false) {
+                    return 'KEPALA BAGIAN';
+                } elseif (strpos($unitUpper, 'DINAS') !== false) {
+                    return 'KEPALA DINAS';
+                } elseif (strpos($unitUpper, 'BADAN') !== false) {
+                    return 'KEPALA BADAN';
+                } elseif (strpos($unitUpper, 'KECAMATAN') !== false) {
+                    return 'CAMAT';
+                }
+            }
         }
 
         // Format Ringkas Sekretaris OPD
