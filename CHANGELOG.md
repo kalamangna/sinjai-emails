@@ -5,6 +5,13 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [30 Agustus 2026] — Tampilan NIP pada Tabel Akun Pegawai
+
+- **Penyajian NIP Pegawai di Bawah Nama**:
+  - Menampilkan NIP dengan format teks monospace (`font-mono text-slate-500`) tepat di bawah nama pegawai pada tabel daftar akun di halaman Detail Unit Kerja (`unit_kerja_detail.php`), Daftar Email Utama (`index.php`), dan Detail Eselon (`eselon_detail.php`).
+
+---
+
 # [30 Agustus 2026] — Penambahan Kolom Jabatan pada Pencarian Unit Kerja
 
 - **Pencarian Berdasarkan Jabatan pada Detail Unit Kerja**:
