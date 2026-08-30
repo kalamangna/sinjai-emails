@@ -16,6 +16,7 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 # [30 Agustus 2026] — Normalisasi Unit Kerja Sekolah
 
 - **Penambahan Unit Kerja Sekolah Baru (Dinas Pendidikan)**:
+  - Menambahkan `TK PERTIWI BONTOSALAMA SINJAI BARAT` sebagai child unit kerja Dinas Pendidikan (`parent_id = 348`), berdasarkan verifikasi `jabatan_grup` API SIMPEG untuk NIP 196708041987032005.
   - Menambahkan `TK PERTIWI PALAE SINJAI SELATAN` sebagai child unit kerja Dinas Pendidikan (`parent_id = 348`), berdasarkan verifikasi `jabatan_grup` API SIMPEG untuk NIP 197904232007012008.
   - Menambahkan `SD NEG. NO. 27 TONDONG` sebagai child unit kerja Dinas Pendidikan, berdasarkan verifikasi `jabatan_grup` API SIMPEG untuk NIP 197307101999032010.
 - **Perbaikan Penulisan Nama Unit Kerja**:
