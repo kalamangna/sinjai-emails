@@ -1546,7 +1546,7 @@ class EmailService
         }
 
         // Format Baku Kepala Sekolah, Kepala Puskesmas, & Direktur
-        if (preg_match('/^KEPALA\s+SEKOLAH\b/i', $jab)) {
+        if (preg_match('/^KEPALA\s+(SEKOLAH|(UPTD\s+(SPF\s+)?)?(SDN?|SMPN?|SMAN?|TKN?|SKB|TK|SD|SMP|SMA|SLB))\b/i', $jab)) {
             return 'KEPALA SEKOLAH';
         }
         if (preg_match('/^KEPALA\s+(UPTD\s+)?PUSKESMAS\b/i', $jab)) {
