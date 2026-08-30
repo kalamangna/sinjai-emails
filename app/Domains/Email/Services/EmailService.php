@@ -1167,6 +1167,8 @@ class EmailService
                     $s = preg_replace('/\b(TK\s*NEGERI|TKN)\b/i', 'TKN', $s);
                     $s = preg_replace('/\b(UPTD\s*PUSKESMAS|PUSKESMAS)\b/i', 'PUSKESMAS', $s);
                     $s = preg_replace('/\b(UPTD\s*RSUD|RSUD)\b/i', 'RSUD', $s);
+                    $s = preg_replace('/\b(UPTD\s*LABKESDA|LABORATORIUM\s*KESEHATAN\s*DAERAH|LABKESDA)\b/i', 'LABKESDA', $s);
+                    $s = preg_replace('/\b(UPTD\s*IFK|INSTALASI\s*FARMASI\s*KABUPATEN|INSTALASI\s*FARMASI|IFK|GFK)\b/i', 'IFK', $s);
                     $s = preg_replace('/\b(KANTOR\s*KELURAHAN|KELURAHAN|LURAH)\b/i', 'KELURAHAN', $s);
                     $s = preg_replace('/\b(BAGIAN)\b/i', 'BAGIAN', $s);
                     $s = str_replace(['/', '-', '.', ',', 'NO.'], ' ', $s);
@@ -1181,7 +1183,7 @@ class EmailService
                     foreach ($childUnits as $child) {
                         $childName = strtoupper($child['nama_unit_kerja']);
                         $normChild = $normalizeForMatching($childName);
-                        $cleanChildStripped = trim(preg_replace('/^(SDN|SMPN|SMAN|TKN|PUSKESMAS|RSUD|KELURAHAN|BAGIAN)\s+/i', '', $normChild));
+                        $cleanChildStripped = trim(preg_replace('/^(SDN|SMPN|SMAN|TKN|PUSKESMAS|RSUD|LABKESDA|IFK|KELURAHAN|BAGIAN)\s+/i', '', $normChild));
 
                         if (stripos($normSearch, $normChild) !== false || (!empty($cleanChildStripped) && stripos($normSearch, $cleanChildStripped) !== false)) {
                             $resolvedUnitId = $child['id'];
@@ -1207,6 +1209,13 @@ class EmailService
                         }
                         // Mapping khusus RSUD Pratama Bulupancing di bawah Dinas Kesehatan
                         if (strpos($childName, 'PRATAMA') !== false && (strpos($normSearch, 'BULUPANCING') !== false || strpos($normSearch, 'PRATAMA') !== false || strpos($normSearch, 'KELAS D') !== false)) {
+                            $resolvedUnitId = $child['id'];
+                            $resolvedUnitName = $child['nama_unit_kerja'];
+                            break;
+                        }
+                        // Mapping khusus UPTD Labkesda di bawah Dinas Kesehatan
+                        if ((strpos($childName, 'LABKESDA') !== false || strpos($childName, 'LABORATORIUM') !== false) && 
+                            (strpos($normSearch, 'LABORATORIUM') !== false || strpos($normSearch, 'LABKESDA') !== false)) {
                             $resolvedUnitId = $child['id'];
                             $resolvedUnitName = $child['nama_unit_kerja'];
                             break;
