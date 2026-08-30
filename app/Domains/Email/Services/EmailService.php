@@ -1156,6 +1156,14 @@ class EmailService
                     $s = preg_replace('/\b(BAGIAN)\b/i', 'BAGIAN', $s);
                     $s = preg_replace('/\b(KEC\.|KECAMATAN|KEC)\b/i', '', $s);
                     $s = str_replace(['/', '-', '.', ',', 'NO.'], ' ', $s);
+                    // Perbaikan ejaan nama tempat yang terkadang berbeda di SIMPEG vs data resmi
+                    $spellingFix = [
+                        'SANGIASERRI'   => 'SANGIASSERI',   // TK Pertiwi III Sangiaserri Sinjai Selatan
+                        'SAOTENGAH'     => 'SATENGAH',      // SDN No. 10 Saotengah (DB: SATENGAH)
+                    ];
+                    foreach ($spellingFix as $wrong => $correct) {
+                        $s = str_ireplace($wrong, $correct, $s);
+                    }
                     // Konversi angka romawi baku ke arab untuk konsistensi penomoran sekolah (misal: TK I -> TK 1, TK XII -> TK 12)
                     $romanMap = [
                         '/\bXII\b/' => '12', '/\bXI\b/' => '11', '/\bX\b/' => '10',
