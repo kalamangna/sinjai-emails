@@ -335,6 +335,7 @@ class SyncAllCommand extends BaseCommand
                                    ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
                                    ->where('emails.deleted_at IS NULL')
                                    ->where('emails.pensiun_at IS NULL')
+                                   ->where('emails.status_asn_id', 1) // Khusus PNS
                                    ->where('emails.nip IS NOT NULL')
                                    ->where('emails.nip !=', '')
                                    ->findAll();

@@ -1956,6 +1956,16 @@ class EmailService
         $jabatan = strtoupper(trim((string)($account['jabatan'] ?? '')));
         $eselonId = (int)($account['eselon_id'] ?? 0);
 
+        $statusAsnId = isset($account['status_asn_id']) ? (int)$account['status_asn_id'] : 1;
+        if ($statusAsnId !== 1) {
+            return [
+                'bup_age'     => 58,
+                'birth_date'  => null,
+                'tmt_pensiun' => null,
+                'is_pensiun'  => false,
+            ];
+        }
+
         // 1. Dapatkan Tanggal Lahir (dari NIP format YYYYMMDD... atau field tanggal_lahir)
         $birthDate = null;
         if (preg_match('/^(\d{4})(\d{2})(\d{2})/', $nip, $m)) {

@@ -66,17 +66,18 @@ class AutoPensiunCommand extends BaseCommand
         $emailModel = new EmailModel();
         $emailService = new EmailService();
 
-        // Ambil seluruh akun aktif yang memiliki NIP dan belum pensiun
+        // Ambil seluruh akun aktif berstatus PNS (status_asn_id = 1) yang memiliki NIP dan belum pensiun
         $accounts = $emailModel->select('emails.*, unit_kerja.nama_unit_kerja as unit_kerja_name')
                                ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
                                ->where('emails.deleted_at IS NULL')
                                ->where('emails.pensiun_at IS NULL')
+                               ->where('emails.status_asn_id', 1) // Khusus PNS
                                ->where('emails.nip IS NOT NULL')
                                ->where('emails.nip !=', '')
                                ->findAll();
 
         $totalChecked = count($accounts);
-        CLI::write("Memeriksa {$totalChecked} akun ASN aktif...\n", 'white');
+        CLI::write("Memeriksa {$totalChecked} akun PNS aktif...\n", 'white');
 
         $retiredAccounts = [];
 

@@ -8,7 +8,7 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 # [31 Agustus 2026] — Fitur Auto Pensiun Berbasis BUP & Pembaruan Antarmuka Kotak Sampah
 
 - **Fitur Auto Pensiun Berbasis Batas Usia Pensiun (BUP)**:
-  - Menambahkan kalkulator otomatis BUP ASN sesuai UU ASN & BKN: 58 tahun (Pelaksana/Pengawas/Administrator/JF Pertama-Muda-Terampil), 60 tahun (Pimpinan Tinggi Eselon II/JF Madya/Guru/Dokter/Pengawas Sekolah), dan 65 tahun (JF Utama) dengan perhitungan TMT Pensiun pada tanggal 1 bulan berikutnya (`calculateBupInfo`).
+  - Menambahkan kalkulator otomatis BUP ASN khusus PNS (`status_asn_id = 1`) sesuai UU ASN & BKN: 58 tahun (Pelaksana/Pengawas/Administrator/JF Pertama-Muda-Terampil), 60 tahun (Pimpinan Tinggi Eselon II/JF Madya/Guru/Dokter/Pengawas Sekolah), dan 65 tahun (JF Utama) dengan perhitungan TMT Pensiun pada tanggal 1 bulan berikutnya (`calculateBupInfo`).
   - Menambahkan method `processAutoPensiun` untuk otomatis menangguhkan login cPanel, mencatat `pensiun_at`, memindahkan data ke Kotak Sampah (*Soft Delete*), dan mengirim notifikasi audit ke Telegram Admin.
   - Menambahkan Spark CLI Command baru: `php spark email:auto-pensiun` (dengan opsi simulasi `--dry-run`).
   - Mengintegrasikan pengecekan Auto Pensiun ke dalam siklus *cron job* harian/bulanan `php spark sync:all`.
