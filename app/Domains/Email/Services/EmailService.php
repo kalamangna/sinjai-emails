@@ -1037,29 +1037,21 @@ class EmailService
             ->where('emails.nip', $nip)
             ->first();
 
-        // Guard: Hanya abaikan akun PPPK dan PPPK Paruh Waktu
-        if ($currentEmail && !empty($currentEmail['status_asn_id'])) {
-            $statusPppk = $this->statusAsnModel->where('nama_status_asn', 'PPPK')->asArray()->first();
-            $statusPppkPw = $this->statusAsnModel->where('nama_status_asn', 'PPPK PARUH WAKTU')->asArray()->first();
-            $excludeIds = array_filter([
-                $statusPppk['id'] ?? null,
-                $statusPppkPw['id'] ?? null,
-            ]);
-
-            if (in_array($currentEmail['status_asn_id'], $excludeIds)) {
-                return [
-                    'success' => true,
-                    'skipped' => true,
-                    'reason'  => 'pppk',
-                    'message' => 'Akun PPPK / PPPK Paruh Waktu - Data tidak disinkronkan',
-                    'current' => $currentEmail,
-                    'data'    => [
-                        'jabatan'          => $currentEmail['jabatan'] ?? '-',
-                        'pangkat_nama'     => $currentEmail['pangkat_nama'] ?? '-',
-                        'pangkat_golruang' => $currentEmail['pangkat_golruang'] ?? '-',
-                    ]
-                ];
-            }
+        // Guard: Pastikan hanya pegawai berstatus PNS (status_asn_id = 1) yang disinkronkan
+        if ($currentEmail && !empty($currentEmail['status_asn_id']) && (int)$currentEmail['status_asn_id'] !== 1) {
+            return [
+                'success' => true,
+                'skipped' => true,
+                'reason'  => 'non_pns',
+                'message' => 'Hanya pegawai berstatus PNS yang dapat disinkronkan dari SIMPEG.',
+                'current' => $currentEmail,
+                'data'    => [
+                    'jabatan'          => $currentEmail['jabatan'] ?? '-',
+                    'pangkat_nama'     => $currentEmail['pangkat_nama'] ?? '-',
+                    'pangkat_golruang' => $currentEmail['pangkat_golruang'] ?? '-',
+                    'eselon_name'      => null,
+                ]
+            ];
         }
 
         $pegawaiApi = new \App\Shared\Libraries\PegawaiApi();
@@ -1085,6 +1077,23 @@ class EmailService
                 }
             }
             $source = $definitif ?: $data[0];
+        }
+
+        // Guard API: Jika data SIMPEG menunjukkan status bukan PNS
+        if (isset($source['status_pns']) && (int)$source['status_pns'] !== 1) {
+            return [
+                'success' => true,
+                'skipped' => true,
+                'reason'  => 'non_pns',
+                'message' => 'Data SIMPEG menunjukkan pegawai bukan berstatus PNS.',
+                'current' => $currentEmail,
+                'data'    => [
+                    'jabatan'          => $currentEmail['jabatan'] ?? '-',
+                    'pangkat_nama'     => $currentEmail['pangkat_nama'] ?? '-',
+                    'pangkat_golruang' => $currentEmail['pangkat_golruang'] ?? '-',
+                    'eselon_name'      => null,
+                ]
+            ];
         }
 
         $hasActualData = isset($source['jabatan_nama']) || isset($source['jabatan'])

@@ -374,7 +374,13 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
      */
     window.syncAllPegawai = async function(btnId = 'batchSyncPegawaiBtn', confirmText = 'Sinkronkan data pegawai?') {
         const containers = document.querySelectorAll('[id^="pegawai-container-"]');
-        const validContainers = Array.from(containers).filter(c => c.getAttribute('data-nip') && c.getAttribute('data-nip').trim() !== '');
+        const validContainers = Array.from(containers).filter(c => {
+            const nip = (c.getAttribute('data-nip') || '').trim();
+            const statusAsnId = c.getAttribute('data-status-asn-id');
+            // Hanya proses akun berstatus PNS (status_asn_id === '1' atau jika belum terdata)
+            const isPns = !statusAsnId || statusAsnId === '1';
+            return nip !== '' && isPns;
+        });
 
         if (!validContainers.length) {
             if (typeof window.showGlobalError === 'function') {

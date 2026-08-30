@@ -53,7 +53,7 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <div class="flex flex-col" id="pegawai-container-<?= $email['id'] ?>" data-nip="<?= esc($email['nip']) ?>">
+                                    <div class="flex flex-col" id="pegawai-container-<?= $email['id'] ?>" data-nip="<?= esc($email['nip']) ?>" data-status-asn-id="<?= esc($email['status_asn_id'] ?? '1') ?>">
                                         <span class="font-bold text-slate-800 uppercase tracking-tight leading-tight"><?= esc($email['name']) ?></span>
                                         <span class="text-[10px] font-bold text-slate-500 mt-0.5">NIP: <?= esc($email['nip'] ?: '-') ?></span>
                                     </div>

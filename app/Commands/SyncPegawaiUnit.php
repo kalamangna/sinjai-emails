@@ -136,7 +136,7 @@ class SyncPegawaiUnit extends BaseCommand
 
             if (!$statusAsn) {
                 CLI::error("Error: Status ASN '$asnFilter' not found.");
-                CLI::write("Available statuses: PNS, PPPK, PPPK PARUH WAKTU", 'yellow');
+                CLI::write("Available statuses: PNS", 'yellow');
                 return;
             }
 
@@ -144,17 +144,11 @@ class SyncPegawaiUnit extends BaseCommand
             CLI::write("Filtering by ASN Status: " . strtoupper($asnFilter), 'cyan');
         } else {
             $statusAsnModel = new StatusAsnModel();
-            $statusPppk = $statusAsnModel->where('nama_status_asn', 'PPPK')->first();
-            $statusPppkPw = $statusAsnModel->where('nama_status_asn', 'PPPK PARUH WAKTU')->first();
-            $excludeIds = array_filter([
-                $statusPppk['id'] ?? null,
-                $statusPppkPw['id'] ?? null,
-            ]);
+            $statusPns = $statusAsnModel->where('nama_status_asn', 'PNS')->first();
+            $pnsId = $statusPns['id'] ?? 1;
 
-            if (!empty($excludeIds)) {
-                $builder->whereNotIn('status_asn_id', $excludeIds);
-            }
-            CLI::write("Target: Seluruh akun kecuali PPPK & PPPK Paruh Waktu", 'cyan');
+            $builder->where('status_asn_id', $pnsId);
+            CLI::write("Target: Hanya akun berstatus PNS (status_asn_id: $pnsId)", 'cyan');
         }
 
         $emails = $builder->findAll();

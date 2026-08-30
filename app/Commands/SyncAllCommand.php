@@ -237,20 +237,13 @@ class SyncAllCommand extends BaseCommand
             $statusAsnModel = new StatusAsnModel();
             $jobModel = new JobModel();
 
-            $statusPppk = $statusAsnModel->where('nama_status_asn', 'PPPK')->asArray()->first();
-            $statusPppkPw = $statusAsnModel->where('nama_status_asn', 'PPPK PARUH WAKTU')->asArray()->first();
-            $excludeStatusIds = array_filter([
-                $statusPppk['id'] ?? null,
-                $statusPppkPw['id'] ?? null,
-            ]);
+            $statusPns = $statusAsnModel->where('nama_status_asn', 'PNS')->asArray()->first();
+            $pnsStatusId = $statusPns['id'] ?? 1;
 
             $builder = $emailModel->select('nip')
                 ->where('emails.nip IS NOT NULL')
-                ->where('emails.nip !=', '');
-
-            if (!empty($excludeStatusIds)) {
-                $builder->whereNotIn('emails.status_asn_id', $excludeStatusIds);
-            }
+                ->where('emails.nip !=', '')
+                ->where('emails.status_asn_id', $pnsStatusId);
 
             $nips = array_column($builder->findAll(), 'nip');
             $nips = array_unique($nips);
