@@ -1155,6 +1155,14 @@ class EmailService
                     $s = preg_replace('/\b(KANTOR\s*KELURAHAN|KELURAHAN|LURAH)\b/i', 'KELURAHAN', $s);
                     $s = preg_replace('/\b(BAGIAN)\b/i', 'BAGIAN', $s);
                     $s = str_replace(['/', '-', '.', ',', 'NO.'], ' ', $s);
+                    // Konversi angka romawi baku ke arab untuk konsistensi penomoran sekolah (misal: TK I -> TK 1, TK XII -> TK 12)
+                    $romanMap = [
+                        '/\bXII\b/' => '12', '/\bXI\b/' => '11', '/\bX\b/' => '10',
+                        '/\bIX\b/' => '9', '/\bVIII\b/' => '8', '/\bVII\b/' => '7',
+                        '/\bVI\b/' => '6', '/\bV\b/' => '5', '/\bIV\b/' => '4',
+                        '/\bIII\b/' => '3', '/\bII\b/' => '2', '/\bI\b/' => '1'
+                    ];
+                    $s = preg_replace(array_keys($romanMap), array_values($romanMap), $s);
                     $s = preg_replace('/\s+/', ' ', $s);
                     return trim($s);
                 };
@@ -1166,6 +1174,20 @@ class EmailService
                     foreach ($childUnits as $child) {
                         $childName = strtoupper($child['nama_unit_kerja']);
                         $normChild = $normalizeForMatching($childName);
+
+                        // Cegah cross-type mismatch (TK mencocokkan SMP/SD, SMP mencocokkan SD/TK, dsb)
+                        $searchIsTk = (strpos($normSearch, 'TKN') !== false || strpos($normSearch, 'TK ') !== false);
+                        $searchIsSmp = (strpos($normSearch, 'SMPN') !== false || strpos($normSearch, 'SMP ') !== false);
+                        $searchIsSd = (strpos($normSearch, 'SDN') !== false || strpos($normSearch, 'SD ') !== false);
+
+                        $childIsTk = (strpos($normChild, 'TKN') !== false || strpos($childName, 'TK ') !== false);
+                        $childIsSmp = (strpos($normChild, 'SMPN') !== false || strpos($childName, 'SMP') !== false);
+                        $childIsSd = (strpos($normChild, 'SDN') !== false || strpos($childName, 'SD') !== false);
+
+                        if ($searchIsTk && !$childIsTk) continue;
+                        if ($searchIsSmp && !$childIsSmp) continue;
+                        if ($searchIsSd && !$childIsSd) continue;
+
                         $cleanChildStripped = trim(preg_replace('/^(SDN|SMPN|SMAN|TKN|PUSKESMAS|RSUD|LABKESDA|IFK|KELURAHAN|BAGIAN)\s+/i', '', $normChild));
 
                         $noSpaceSearch = str_replace(' ', '', $normSearch);
