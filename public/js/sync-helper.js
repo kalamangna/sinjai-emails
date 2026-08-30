@@ -285,11 +285,6 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
                     } else {
                         elements.unit.innerHTML = originalContents.unit;
                     }
-                }
-
-                if (typeof window.showSyncResult === 'function') {
-                    window.showSyncResult(1, 1, 0, true);
-                }
                 return true;
             } else {
                 if (elements.jabatan) elements.jabatan.innerHTML = originalContents.jabatan;
