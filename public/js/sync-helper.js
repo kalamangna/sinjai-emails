@@ -206,18 +206,19 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
 
         // Render Tailwind skeleton pulse placeholders
         if (elements.jabatan) {
-            elements.jabatan.innerHTML = '<div class="h-4 bg-slate-200 rounded animate-pulse w-48 my-0.5"></div>';
+            elements.jabatan.innerHTML = '<div class="h-4 bg-slate-200 rounded-md animate-pulse w-48 my-0.5"></div>';
         }
         if (elements.pangkat) {
-            elements.pangkat.innerHTML = '<div class="h-4 bg-slate-200 rounded animate-pulse w-32 my-0.5"></div>';
+            elements.pangkat.innerHTML = '<div class="h-4 bg-slate-200 rounded-md animate-pulse w-32 my-0.5"></div>';
         }
         if (elements.golru) {
-            elements.golru.innerHTML = '<div class="h-4 bg-slate-200 rounded animate-pulse w-16 my-0.5"></div>';
+            elements.golru.innerHTML = '<div class="h-4 bg-slate-200 rounded-md animate-pulse w-16 my-0.5"></div>';
         }
         if (elements.unit) {
             elements.unit.innerHTML = '<div class="space-y-1.5 py-0.5"><div class="h-2.5 bg-slate-200 rounded animate-pulse w-24"></div><div class="h-3.5 bg-slate-200 rounded animate-pulse w-44"></div></div>';
         }
-        if (elements.eselon && elements.eselonWrapper && !elements.eselonWrapper.classList.contains('hidden')) {
+        if (elements.eselon && elements.eselonWrapper) {
+            elements.eselonWrapper.classList.remove('hidden');
             elements.eselon.innerHTML = '<div class="h-3.5 bg-slate-200 rounded animate-pulse w-10 my-0.5 inline-block"></div>';
         }
 
@@ -249,6 +250,7 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
                     if (elements.golru) elements.golru.innerHTML = originalContents.golru;
                     if (elements.unit) elements.unit.innerHTML = originalContents.unit;
                     if (elements.eselon) elements.eselon.innerHTML = originalContents.eselon;
+                    if (elements.eselonWrapper && !originalContents.eselon) elements.eselonWrapper.classList.add('hidden');
 
                     const errorMsg = `Pegawai dengan NIP ${nip || email} tidak terdaftar di SIMPEG.`;
                     if (typeof window.showGlobalError === 'function') {
@@ -280,12 +282,18 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
                 if (elements.unit && data.data) {
                     const parentName = data.data.parent_unit_kerja_name || '';
                     const unitName = data.data.unit_kerja_name || '';
+                    const unitId = data.data.unit_kerja_id;
+                    const parentId = data.data.parent_unit_kerja_id;
                     if (unitName) {
                         let unitHtml = '';
                         if (parentName) {
-                            unitHtml += `<p class="text-[10px] font-bold text-slate-700 uppercase leading-none">${parentName}</p>`;
+                            unitHtml += `<a href="${window.BASE_URL}/email/unit_kerja/${parentId || unitId}" class="block no-underline group/parent">
+                                <p class="text-[10px] font-bold text-slate-700 uppercase group-hover/parent:text-slate-800 transition-colors leading-none">${parentName}</p>
+                            </a>`;
                         }
-                        unitHtml += `<p class="text-xs font-bold text-slate-800 uppercase leading-tight">${unitName}</p>`;
+                        unitHtml += `<a href="${window.BASE_URL}/email/unit_kerja/${unitId}" class="block no-underline group/child">
+                            <p class="text-xs font-bold text-slate-800 uppercase leading-tight group-hover/child:text-black transition-colors">${unitName}</p>
+                        </a>`;
                         elements.unit.innerHTML = unitHtml;
                     } else {
                         elements.unit.innerHTML = originalContents.unit;
@@ -297,6 +305,7 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
                         elements.eselon.textContent = data.data.eselon_name;
                         elements.eselonWrapper.classList.remove('hidden');
                     } else {
+                        elements.eselon.textContent = '';
                         elements.eselonWrapper.classList.add('hidden');
                     }
                 }
@@ -307,6 +316,7 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
                 if (elements.golru) elements.golru.innerHTML = originalContents.golru;
                 if (elements.unit) elements.unit.innerHTML = originalContents.unit;
                 if (elements.eselon) elements.eselon.innerHTML = originalContents.eselon;
+                if (elements.eselonWrapper && !originalContents.eselon) elements.eselonWrapper.classList.add('hidden');
 
                 const title = fetchResult.isRateLimited ? 'Rate Limit Terlampaui' : 'Gagal Sinkronisasi Pegawai';
                 const msg = fetchResult.isRateLimited 
@@ -328,6 +338,7 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
             if (elements.golru) elements.golru.innerHTML = originalContents.golru;
             if (elements.unit) elements.unit.innerHTML = originalContents.unit;
             if (elements.eselon) elements.eselon.innerHTML = originalContents.eselon;
+            if (elements.eselonWrapper && !originalContents.eselon) elements.eselonWrapper.classList.add('hidden');
 
             if (typeof window.showGlobalError === 'function') {
                 window.showGlobalError('Kesalahan Jaringan', 'Gagal menghubungi server API.');
