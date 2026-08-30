@@ -5,6 +5,15 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [31 Agustus 2026] — Standarisasi Frasa BARANG/JASA & Pemetaan Bagian Pengadaan Barang dan Jasa
+
+- **Standarisasi Frasa BARANG/JASA**:
+  - Mengonversi frasa `BARANG/JASA` menjadi `BARANG DAN JASA` sebelum pemrosesan pemecahan tanda garis miring, mencegah hilangnya kata `JASA` pada jabatan seperti `Kepala Sub Bagian Pengelolaan Barang/jasa` $\rightarrow$ `KEPALA SUB BAGIAN PENGELOLAAN BARANG DAN JASA`.
+- **Penyempurnaan Pemetaan Unit Bagian Pengadaan Barang dan Jasa**:
+  - Memperluas regex pengenalan `PENGADAAN` agar secara fleksibel mencakup variasi penulisan `BARANG JASA` tanpa konjungsi `DAN`.
+
+---
+
 # [31 Agustus 2026] — Pemetaan Otomatis 10 Bagian Sekretariat Daerah dari Subbagian & Jabatan Fungsional
 
 - **Pemetaan Otomatis 10 Child Unit (Bagian) Setda**:

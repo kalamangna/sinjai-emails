@@ -1257,7 +1257,7 @@ class EmailService
                                 $resolvedUnitName = $child['nama_unit_kerja'];
                                 break;
                             }
-                            if (strpos($childName, 'PENGADAAN') !== false && preg_match('/\b(PENGADAAN|BARANG DAN JASA|BARANG\/JASA|PBJ|LPSE)\b/i', $normSearch)) {
+                            if (strpos($childName, 'PENGADAAN') !== false && preg_match('/\b(PENGADAAN|BARANG\s*(?:DAN\s*)?JASA|BARANG\/JASA|PBJ|LPSE)\b/i', $normSearch)) {
                                 $resolvedUnitId = $child['id'];
                                 $resolvedUnitName = $child['nama_unit_kerja'];
                                 break;
@@ -1642,6 +1642,9 @@ class EmailService
                 $jab = 'KEPALA UPTD LABORATORIUM LINGKUNGAN';
             }
         }
+
+        // Standarisasi BARANG/JASA -> BARANG DAN JASA sebelum resolusi garis miring
+        $jab = preg_replace('/\bBARANG\s*\/\s*JASA\b/i', 'BARANG DAN JASA', $jab);
 
         // Hapus embel-embel /SUB KOORDINATOR ... atau SUB.KOORDINATOR ... pada Jabatan Fungsional hasil Penyetaraan
         $jab = preg_replace('/[\/\s]+(?:SUB[\s\.\-_]*KOORDINATOR)\b.*$/i', '', $jab);
