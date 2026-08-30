@@ -1114,6 +1114,12 @@ class EmailService
         // 1. Sync Pangkat & Golongan
         if (isset($source['pangkat_nama']))    $updateData['pangkat_nama']    = trim($source['pangkat_nama']);
         if (isset($source['pangkat_golruang'])) $updateData['pangkat_golruang'] = trim($source['pangkat_golruang']);
+        if (empty($currentEmail['name']) && !empty($source['nama'])) {
+            $updateData['name'] = trim($source['nama']);
+        }
+        if (empty($currentEmail['status_asn_id']) && !empty($source['status_pns'])) {
+            $updateData['status_asn_id'] = (int)$source['status_pns'] === 1 ? 1 : 2;
+        }
 
         // 2. Sync Unit Kerja jika terjadi mutasi / pindah tugas di SIMPEG
         $rawJabatan = $source['jabatan_nama'] ?? $source['jabatan'] ?? ($currentEmail['jabatan'] ?? null);
@@ -1136,40 +1142,55 @@ class EmailService
                     $isTopSetdaLeader = true;
                 }
 
-                // Cek apakah jabatan atau jabatan_grup dari API menyebutkan sub-unit khusus (misal Bagian, Kelurahan, Sekolah, Puskesmas) di bawah targetUnit
+                // Cek apakah jabatan atau jabatan_grup dari API menyebutkan sub-unit khusus (misal Sekolah, Puskesmas, Kelurahan, Bagian) di bawah targetUnit
                 $rawJabatanGrup = $source['jabatan_grup'] ?? '';
-                $cleanSearchText = strtoupper(str_replace(['/', '-', '.', ','], ' ', ($rawJabatan ?? '') . ' ' . $rawJabatanGrup));
+                $normalizeForMatching = function($str) {
+                    $s = mb_strtoupper((string)$str, 'UTF-8');
+                    $s = preg_replace('/\b(SD\s*NEG\.?\s*NO\.?|SD\s*NEGERI\s*NO\.?|SD\s*NEGERI|SD\s*NEG\.?|SDN)\b/i', 'SDN', $s);
+                    $s = preg_replace('/\b(SMP\s*NEGERI|SMPN)\b/i', 'SMPN', $s);
+                    $s = preg_replace('/\b(SMA\s*NEGERI|SMAN)\b/i', 'SMAN', $s);
+                    $s = preg_replace('/\b(TK\s*NEGERI|TKN)\b/i', 'TKN', $s);
+                    $s = preg_replace('/\b(UPTD\s*PUSKESMAS|PUSKESMAS)\b/i', 'PUSKESMAS', $s);
+                    $s = preg_replace('/\b(UPTD\s*RSUD|RSUD)\b/i', 'RSUD', $s);
+                    $s = preg_replace('/\b(KANTOR\s*KELURAHAN|KELURAHAN|LURAH)\b/i', 'KELURAHAN', $s);
+                    $s = preg_replace('/\b(BAGIAN)\b/i', 'BAGIAN', $s);
+                    $s = str_replace(['/', '-', '.', ',', 'NO.'], ' ', $s);
+                    $s = preg_replace('/\s+/', ' ', $s);
+                    return trim($s);
+                };
+
+                $normSearch = $normalizeForMatching(($rawJabatan ?? '') . ' ' . $rawJabatanGrup);
 
                 $childUnits = !$isTopSetdaLeader ? $this->unitKerjaModel->where('parent_id', $targetUnit['id'])->findAll() : [];
-                if (!empty($childUnits) && !empty(trim($cleanSearchText))) {
+                if (!empty($childUnits) && !empty($normSearch)) {
                     foreach ($childUnits as $child) {
                         $childName = strtoupper($child['nama_unit_kerja']);
-                        $cleanChildName = trim(preg_replace('/^(BAGIAN|KELURAHAN|PUSKESMAS|UPTD|SMPN|SDN|TK)\s+/i', '', $childName));
-                        $cleanChildNormalized = str_replace(['/', '-', '.', ','], ' ', $cleanChildName);
+                        $normChild = $normalizeForMatching($childName);
+                        $cleanChildStripped = trim(preg_replace('/^(SDN|SMPN|SMAN|TKN|PUSKESMAS|RSUD|KELURAHAN|BAGIAN)\s+/i', '', $normChild));
 
-                        if (stripos($cleanSearchText, $cleanChildNormalized) !== false) {
+                        if (stripos($normSearch, $normChild) !== false || (!empty($cleanChildStripped) && stripos($normSearch, $cleanChildStripped) !== false)) {
                             $resolvedUnitId = $child['id'];
                             $resolvedUnitName = $child['nama_unit_kerja'];
                             break;
                         }
 
                         // Mapping sinonim umum Bagian Setda
-                        if (strpos($childName, 'KESRA') !== false && (strpos($cleanSearchText, 'KESRA') !== false || strpos($cleanSearchText, 'KESEJAHTERAAN RAKYAT') !== false)) {
+                        if (strpos($childName, 'KESRA') !== false && (strpos($normSearch, 'KESRA') !== false || strpos($normSearch, 'KESEJAHTERAAN RAKYAT') !== false)) {
                             $resolvedUnitId = $child['id'];
                             $resolvedUnitName = $child['nama_unit_kerja'];
                             break;
                         }
-                        if (strpos($childName, 'PERENCANAAN') !== false && strpos($cleanSearchText, 'PERENCANAAN') !== false) {
+                        if (strpos($childName, 'PERENCANAAN') !== false && strpos($normSearch, 'PERENCANAAN') !== false) {
                             $resolvedUnitId = $child['id'];
                             $resolvedUnitName = $child['nama_unit_kerja'];
                             break;
                         }
-                        if (strpos($childName, 'PENGADAAN') !== false && strpos($cleanSearchText, 'PENGADAAN') !== false) {
+                        if (strpos($childName, 'PENGADAAN') !== false && strpos($normSearch, 'PENGADAAN') !== false) {
                             $resolvedUnitId = $child['id'];
                             $resolvedUnitName = $child['nama_unit_kerja'];
                             break;
                         }
-                        if (strpos($childName, 'UMUM') !== false && strpos($cleanSearchText, 'UMUM') !== false && strpos($cleanSearchText, 'HUKUM') === false) {
+                        if (strpos($childName, 'UMUM') !== false && strpos($normSearch, 'UMUM') !== false && strpos($normSearch, 'HUKUM') === false) {
                             $resolvedUnitId = $child['id'];
                             $resolvedUnitName = $child['nama_unit_kerja'];
                             break;
@@ -1375,8 +1396,9 @@ class EmailService
             return $jab;
         }
 
-        // Inferensi dari unit jika hanya berstatus pimpinan generik
-        if ($isPimpinan || stripos($jab, 'KEPALA') === 0 || stripos($jab, 'PIMPINAN') === 0) {
+        // Inferensi dari unit HANYA jika akun berstatus pimpinan kepala dinas/badan/camat/lurah utama
+        $isSubordinateLeader = preg_match('/\b(SEKOLAH|PUSKESMAS|UPTD|UPT|BIDANG|SEKSI|SUB\s*BAGIAN|SUBBAG|SUB\s*BIDANG|SUBBID|RUANGAN|INSTALASI|LABORATORIUM)\b/i', $jab);
+        if ($isPimpinan && !$isSubordinateLeader) {
             if (!empty($unitKerjaName)) {
                 $unitUpper = strtoupper($unitKerjaName);
                 if (strpos($unitUpper, 'KELURAHAN') !== false) {
@@ -1438,25 +1460,34 @@ class EmailService
             $jab = preg_replace('/\s+(INSPEKTORAT|PADA|DAERAH)\s*.*$/i', '', $jab);
         }
 
-        // Resolusi jabatan kombinasi garis miring (Opsi B: Prioritas Tugas Manajerial/Kepala/Pimpinan)
+        // Resolusi jabatan kombinasi garis miring (Kepala Sekolah/Guru ...)
         if (strpos($jab, '/') !== false && !preg_match('/\b[IVX]+\/[A-D]\b/i', $jab)) {
             $parts = explode('/', $jab);
             if (count($parts) > 1 && strlen(trim($parts[0])) > 2 && strlen(trim($parts[1])) > 2) {
-                $managerialKeywords = ['KEPALA', 'DIREKTUR', 'KOORDINATOR', 'KETUA', 'WAKIL', 'SEKRETARIS', 'KASUBAG', 'KASI', 'KABID', 'PIMPINAN', 'INSPEKTUR'];
-                $chosen = null;
+                // Jika terdapat bagian Guru / Fungsional, utamakan jabatan fungsional
+                $guruPart = null;
                 foreach ($parts as $p) {
-                    $pUpper = strtoupper(trim($p));
-                    foreach ($managerialKeywords as $kw) {
-                        if (stripos($pUpper, $kw) !== false) {
-                            $chosen = $p;
-                            break 2;
-                        }
+                    if (stripos($p, 'GURU') !== false) {
+                        $guruPart = $p;
+                        break;
                     }
                 }
-                if (!$chosen) {
-                    $chosen = $parts[0];
+                if ($guruPart) {
+                    $jab = $guruPart;
+                } else {
+                    $managerialKeywords = ['KEPALA', 'DIREKTUR', 'KOORDINATOR', 'KETUA', 'WAKIL', 'SEKRETARIS', 'KASUBAG', 'KASI', 'KABID', 'PIMPINAN', 'INSPEKTUR'];
+                    $chosen = null;
+                    foreach ($parts as $p) {
+                        $pUpper = strtoupper(trim($p));
+                        foreach ($managerialKeywords as $kw) {
+                            if (stripos($pUpper, $kw) !== false) {
+                                $chosen = $p;
+                                break 2;
+                            }
+                        }
+                    }
+                    $jab = $chosen ?: $parts[0];
                 }
-                $jab = $chosen;
             }
         }
 
