@@ -5,6 +5,15 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [31 Agustus 2026] — Pembersihan Prefix Jabatan Fungsional (JF/JFT/JFU) & Standarisasi KEPALA TU
+
+- **Pembersihan Prefix Jabatan Fungsional**:
+  - Menghapus prefix teknis `JF.`, `JF`, `JFT.`, `JFT`, `JFU.`, `JFU` di awal nama jabatan (seperti `JF PENGUJI KENDARAAN BERMOTOR PENYELIA` $\rightarrow$ `PENGUJI KENDARAAN BERMOTOR PENYELIA`).
+- **Standarisasi Singkatan KEPALA TU**:
+  - Menambahkan variasi singkatan `KEPALA TU` ke dalam pola ekspansi baku **`KEPALA TATA USAHA`** (seperti `KEPALA TU UPTD TERMINAL DAN PERPARKIRAN` $\rightarrow$ `KEPALA TATA USAHA UPTD TERMINAL DAN PERPARKIRAN`).
+
+---
+
 # [31 Agustus 2026] — Standarisasi Nomenklatur Baku Kepala UPTD pada Perangkat Daerah
 
 - **Standarisasi Nomenklatur KEPALA UPTD**:
