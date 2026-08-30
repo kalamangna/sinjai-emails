@@ -1742,8 +1742,15 @@ class EmailService
             $jab = preg_replace('/\s+(INSPEKTORAT|PADA|DAERAH)\s*.*$/i', '', $jab);
         }
 
+        $isHospital = (!empty($unitKerjaName) && (stripos($unitKerjaName, 'RUMAH SAKIT') !== false || stripos($unitKerjaName, 'RSUD') !== false || stripos($unitKerjaName, 'PRATAMA') !== false))
+                      || (stripos($jab, 'RSUD') !== false || stripos($jab, 'RUMAH SAKIT') !== false || stripos($jab, 'PRATAMA') !== false || stripos($jab, 'BULUPANCING') !== false);
+
         // Standarisasi Singkatan Jabatan Struktural (KTU, Kasubag, Kasubid, Kabid, Kasi, Kepala Tata Usaha)
-        $jab = preg_replace('/\b(KTU|KASUBAG\s+TU|KASUBAG\s+TATA\s+USAHA|KEPALA\s+TATA\s+USAHA|KEPALA\s+SUB\s*BAGIAN\s+TATA\s+USAHA|SUB\s*BAGIAN\s+TATA\s+USAHA)\b/i', 'KEPALA TATA USAHA', $jab);
+        if ($isHospital && preg_match('/\b(KTU|KASUBAG\s+TU|KASUBAG\s+TATA\s+USAHA|KEPALA\s+TATA\s+USAHA|KEPALA\s+SUB\s*BAGIAN\s+TATA\s+USAHA|SUB\s*BAGIAN\s+TATA\s+USAHA)\b/i', $jab)) {
+            $jab = 'KEPALA SUB BAGIAN TATA USAHA';
+        } else {
+            $jab = preg_replace('/\b(KTU|KASUBAG\s+TU|KASUBAG\s+TATA\s+USAHA|KEPALA\s+TATA\s+USAHA|KEPALA\s+SUB\s*BAGIAN\s+TATA\s+USAHA|SUB\s*BAGIAN\s+TATA\s+USAHA)\b/i', 'KEPALA TATA USAHA', $jab);
+        }
         $jab = preg_replace('/\bKASUBAG\b/i', 'KEPALA SUB BAGIAN', $jab);
         $jab = preg_replace('/\bKASUBBID\b/i', 'KEPALA SUB BIDANG', $jab);
         $jab = preg_replace('/\bKABID\b/i', 'KEPALA BIDANG', $jab);

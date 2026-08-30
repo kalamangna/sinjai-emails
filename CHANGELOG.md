@@ -5,6 +5,15 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [31 Agustus 2026] — Penyesuaian Nomenklatur Tata Usaha RS Pratama & UPTD/Puskesmas
+
+- **Penyesuaian Nomenklatur Tata Usaha**:
+  - Menetapkan nama jabatan baku **`KEPALA SUB BAGIAN TATA USAHA`** khusus untuk pejabat tata usaha pada UPT RSUD Kelas D Pratama.
+  - Menetapkan nama jabatan baku **`KEPALA TATA USAHA`** untuk pejabat tata usaha di lingkungan UPTD Teknis dan UPTD Puskesmas.
+  - Mempertahankan format **`KEPALA SUB BAGIAN UMUM DAN KEPEGAWAIAN`** dan **`KEPALA SUB BAGIAN PROGRAM DAN KEUANGAN`** pada pejabat Eselon IV.a Sekretariat OPD Induk.
+
+---
+
 # [31 Agustus 2026] — Standarisasi Jabatan Kepala Tata Usaha (KTU) di Lingkungan UPTD & Puskesmas
 
 - **Standarisasi Jabatan Kepala Tata Usaha (KTU)**:
