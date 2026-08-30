@@ -1250,18 +1250,28 @@ class EmailService
 
                         // Mapping alias penomoran SMP per-kecamatan format lama SIMPEG
                         if ($searchIsSmp && $childIsSmp) {
-                            $telluMap = [
-                                '1' => 'UPTD SMP NEGERI 10 SINJAI',
-                                '2' => 'UPTD SMP NEGERI 19 SINJAI',
-                                '3' => 'UPTD SMP NEGERI 20 SINJAI',
-                                '4' => 'UPTD SMP NEGERI 33 SINJAI',
+                            // Tabel: [keyword_kecamatan => [nomor_kecamatan => nama_UPTD_kabupaten]]
+                            $smpDistrictMap = [
+                                'TELLULIMPOE'  => [
+                                    '1' => 'UPTD SMP NEGERI 10 SINJAI',
+                                    '2' => 'UPTD SMP NEGERI 19 SINJAI',
+                                    '3' => 'UPTD SMP NEGERI 20 SINJAI',
+                                    '4' => 'UPTD SMP NEGERI 33 SINJAI',
+                                ],
+                                'BULUPODDO'    => [
+                                    '1' => 'UPTD SMP NEGERI 9 SINJAI',
+                                    '2' => 'UPTD SMP NEGERI 13 SINJAI',
+                                    '3' => 'UPTD SMP NEGERI 21 SINJAI',
+                                ],
                             ];
-                            if (strpos($normSearch, 'TELLULIMPOE') !== false || strpos($normSearch, 'TELLU LIMPOE') !== false) {
-                                foreach ($telluMap as $num => $targetName) {
-                                    if (preg_match('/\b(SMPN|SMP)\s*' . $num . '\b/i', $normSearch) && $childName === $targetName) {
-                                        $resolvedUnitId = $child['id'];
-                                        $resolvedUnitName = $child['nama_unit_kerja'];
-                                        break 2;
+                            foreach ($smpDistrictMap as $kecKeyword => $numMap) {
+                                if (strpos($normSearch, $kecKeyword) !== false) {
+                                    foreach ($numMap as $num => $targetName) {
+                                        if (preg_match('/\b(SMPN|SMP)\s*' . $num . '\b/i', $normSearch) && $childName === $targetName) {
+                                            $resolvedUnitId = $child['id'];
+                                            $resolvedUnitName = $child['nama_unit_kerja'];
+                                            break 3;
+                                        }
                                     }
                                 }
                             }
