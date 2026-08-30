@@ -13,9 +13,8 @@
             <table class="w-full text-left text-sm">
                 <thead class="bg-slate-50 text-slate-400 uppercase text-[10px] font-bold tracking-widest">
                     <tr>
-                        <th class="px-6 py-3 border-b border-slate-200">Email</th>
-                        <th class="px-6 py-3 border-b border-slate-200">Nama & NIP</th>
-                        <th class="px-6 py-3 border-b border-slate-200">Jabatan</th>
+                        <th class="px-6 py-3 border-b border-slate-200">Akun / Pengguna</th>
+                        <th class="px-6 py-3 border-b border-slate-200">Kepegawaian</th>
                         <th class="px-6 py-3 border-b border-slate-200">Unit Kerja</th>
                         <th class="px-6 py-3 border-b border-slate-200">Tgl Dihapus</th>
                         <th class="px-6 py-3 border-b border-slate-200 text-center">Aksi</th>
@@ -24,7 +23,7 @@
                 <tbody class="divide-y divide-slate-100">
                     <?php if (empty($emails)): ?>
                         <tr>
-                            <td colspan="6" class="px-6 py-20 text-center">
+                            <td colspan="5" class="px-6 py-20 text-center">
                                 <div class="flex flex-col items-center justify-center">
                                     <div class="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center mb-3">
                                         <i class="fas fa-search text-slate-300 text-lg"></i>
@@ -38,24 +37,19 @@
                             <tr class="hover:bg-slate-50 transition-colors">
                                 <td class="px-6 py-4">
                                     <div class="flex flex-col">
-                                        <div class="flex items-center gap-2">
-                                            <span class="font-medium text-slate-800 lowercase leading-tight"><?= esc($email['email']) ?></span>
-                                            <?php if (!empty($email['pensiun_at'])): ?>
-                                                <span class="px-1.5 py-0.5 rounded text-[8px] font-black uppercase bg-red-600 text-white leading-none tracking-tighter">PENSIUN</span>
-                                            <?php endif; ?>
-                                        </div>
+                                        <span class="font-medium text-slate-800 lowercase leading-tight"><?= esc($email['email']) ?></span>
+                                        <span class="text-xs font-bold text-slate-800 uppercase tracking-tight mt-0.5"><?= esc($email['name'] ?? '-') ?></span>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="flex flex-col">
-                                        <span class="text-xs font-bold text-slate-800 uppercase tracking-tight"><?= esc($email['name'] ?? '-') ?></span>
                                         <?php if (!empty($email['nip'])): ?>
-                                            <span class="text-[10px] font-medium text-slate-500 font-mono tracking-tight mt-0.5"><?= esc($email['nip']) ?></span>
+                                            <span class="text-[10px] font-medium text-slate-500 font-mono tracking-tight"><?= esc($email['nip']) ?></span>
+                                        <?php else: ?>
+                                            <span class="text-[10px] font-medium text-slate-400 italic">Tanpa NIP</span>
                                         <?php endif; ?>
+                                        <span class="text-xs font-semibold text-slate-700 uppercase tracking-tight mt-0.5"><?= esc($email['jabatan'] ?: '-') ?></span>
                                     </div>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <span class="text-xs font-semibold text-slate-700 uppercase tracking-tight"><?= esc($email['jabatan'] ?: '-') ?></span>
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="flex flex-col">

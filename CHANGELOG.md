@@ -13,7 +13,7 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Menambahkan Spark CLI Command baru: `php spark email:auto-pensiun` (dengan opsi simulasi `--dry-run`).
   - Mengintegrasikan pengecekan Auto Pensiun ke dalam siklus *cron job* harian/bulanan `php spark sync:all`.
 - **Pembaruan Halaman Kotak Sampah (`trash.php`)**:
-  - Menampilkan kolom informasi lengkap: **Nama & NIP**, **Jabatan**, dan **Unit Kerja** (beserta sub-unit).
+  - Merestrukturisasi tabel menjadi lebih proporsional dengan menggabungkan kolom **Akun / Pengguna** (Email & Nama) dan kolom **Kepegawaian** (NIP & Jabatan), serta kolom **Unit Kerja**.
   - Menambahkan badge indikator hitung mundur masa retensi 30 hari (*countdown*) sebelum akun dihapus permanen oleh sistem.
   - Mempertahankan integritas atribut kepegawaian saat akun ditandai pensiun / masuk ke kotak sampah.
 
