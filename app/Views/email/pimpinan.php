@@ -148,9 +148,6 @@
                                     <div class="flex flex-col" id="pegawai-container-<?= $email['id'] ?>" data-nip="<?= esc($email['nip'] ?? '') ?>">
                                         <span class="font-medium text-slate-800 lowercase leading-tight"><?= esc($email['email']) ?></span>
                                         <span class="text-[10px] font-bold text-slate-700 uppercase tracking-tight mt-0.5"><?= esc($email['name']) ?></span>
-                                        <?php if (!empty($email['nip'])): ?>
-                                            <span class="text-[9px] font-bold text-slate-400 mt-0.5 font-mono">NIP: <?= esc($email['nip']) ?></span>
-                                        <?php endif; ?>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">
