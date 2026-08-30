@@ -403,11 +403,14 @@ class EmailService
         $bsre_status = $params['bsre_status'] ?? null;
         $pimpinan_desa = $params['pimpinan_desa'] ?? 1;
         $password_status = $params['password_status'] ?? null;
+        $sub_unit = $params['sub_unit'] ?? 'with';
+
+        $targetUnitIds = (!empty($childrenIds) && $sub_unit === 'without') ? [$unitKerjaId] : $allUnitIds;
 
         $isKecamatan = stripos($unitKerja['nama_unit_kerja'], 'Kecamatan') !== false;
 
         // Start building the query for the emails list
-        $emailBuilder = $this->emailModel->withDetails()->whereIn('emails.unit_kerja_id', $allUnitIds);
+        $emailBuilder = $this->emailModel->withDetails()->whereIn('emails.unit_kerja_id', $targetUnitIds);
         if ($isKecamatan && $pimpinan_desa == 0) {
             $emailBuilder->where('emails.pimpinan_desa', 0);
         }
@@ -488,7 +491,7 @@ class EmailService
         $filtered_count = $emailBuilder->countAllResults(false);
 
         // Determine if we should show the Unit Kerja column (if there's more than one unit involved)
-        $showUnitKerjaColumn = !empty($childrenIds);
+        $showUnitKerjaColumn = !empty($childrenIds) && $sub_unit !== 'without';
 
         // Sorting logic
         if ($showUnitKerjaColumn) {
@@ -522,7 +525,7 @@ class EmailService
         $bsre_status_counts = [];
 
         // Calculate stats for the unit (affected by filters)
-        $statsBuilder = $this->emailModel->whereIn('emails.unit_kerja_id', $allUnitIds);
+        $statsBuilder = $this->emailModel->whereIn('emails.unit_kerja_id', $targetUnitIds);
         if ($isKecamatan && $pimpinan_desa == 0) {
             $statsBuilder->where('emails.pimpinan_desa', 0);
         }
@@ -568,7 +571,7 @@ class EmailService
         $total_emails_in_unit = array_sum(array_column($bsre_status_counts, 'count'));
 
         // Calculate ASN Status stats for the unit
-        $asnStatsBuilder = $this->emailModel->whereIn('emails.unit_kerja_id', $allUnitIds);
+        $asnStatsBuilder = $this->emailModel->whereIn('emails.unit_kerja_id', $targetUnitIds);
         if ($isKecamatan && $pimpinan_desa == 0) {
             $asnStatsBuilder->where('emails.pimpinan_desa', 0);
         }
@@ -601,7 +604,7 @@ class EmailService
         });
 
         // Calculate actual active count (suspended_login = 0)
-        $activeStatsBuilder = $this->emailModel->whereIn('emails.unit_kerja_id', $allUnitIds);
+        $activeStatsBuilder = $this->emailModel->whereIn('emails.unit_kerja_id', $targetUnitIds);
         if ($isKecamatan && $pimpinan_desa == 0) {
             $activeStatsBuilder->where('emails.pimpinan_desa', 0);
         }
@@ -623,6 +626,7 @@ class EmailService
             'status_asn_options' => $this->statusAsnModel->orderBy('nama_status_asn', 'ASC')->findAll(),
             'bsre_status_options' => $bsre_status_options,
             'bsre_status_counts' => $bsre_status_counts,
+            'sub_unit' => $sub_unit,
         ];
     }
 

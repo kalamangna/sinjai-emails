@@ -57,6 +57,7 @@ class EmailListController extends BaseController
                 'bsre_status' => $this->request->getGet('bsre_status'),
                 'pimpinan_desa' => $this->request->getGet('pimpinan_desa'),
                 'password_status' => $this->request->getGet('password_status'),
+                'sub_unit' => $this->request->getGet('sub_unit'),
             ];
 
             $data = $this->emailService->getUnitKerjaDetail($unitKerjaId, $params);
@@ -68,6 +69,7 @@ class EmailListController extends BaseController
             $data['bsre_status'] = $params['bsre_status'];
             $data['pimpinan_desa'] = $params['pimpinan_desa'] ?? 1;
             $data['password_status'] = $params['password_status'];
+            $data['sub_unit'] = $params['sub_unit'] ?? 'with';
             $data['back_url'] = site_url('email');
 
             return view('email/unit_kerja_detail', $data);

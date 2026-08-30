@@ -5,6 +5,14 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [31 Agustus 2026] — Filter Dengan / Tanpa Sub-Unit pada Detail Unit Kerja
+
+- **Filter Cakupan Sub-Unit pada Detail Unit Kerja**:
+  - Menambahkan filter `Dengan Sub Unit` (mencakup unit induk dan sub-unit) dan `Tanpa Sub Unit` (hanya unit induk) pada halaman Detail Unit Kerja yang memiliki child unit (seperti Setda, Dinkes, Disdik, Kecamatan).
+  - Menyesuaikan kalkulasi statistik (Total Email, TTE Aktif/Expired, Status ASN) serta fitur ekspor laporan (PDF, Excel, CSV) agar mematuhi filter sub-unit yang dipilih.
+
+---
+
 # [31 Agustus 2026] — Standarisasi Frasa BARANG/JASA & Pemetaan Bagian Pengadaan Barang dan Jasa
 
 - **Standarisasi Frasa BARANG/JASA**:

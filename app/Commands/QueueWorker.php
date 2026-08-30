@@ -104,7 +104,8 @@ class QueueWorker extends BaseCommand
                                 $filters['search'] ?? null,
                                 $filters['status_asn'] ?? null,
                                 $filters['bsre_status'] ?? null,
-                                $filters['pimpinan_desa'] ?? 1
+                                $filters['pimpinan_desa'] ?? 1,
+                                $filters['sub_unit'] ?? 'with'
                             );
                         } elseif ($task === 'export_account_detail_pdf' || $task === 'exportAccountDetailPdf') {
                             $result = $exportService->generateAccountDetailPdf(
@@ -112,7 +113,8 @@ class QueueWorker extends BaseCommand
                                 $filters['search'] ?? null,
                                 $filters['status_asn'] ?? null,
                                 $filters['bsre_status'] ?? null,
-                                $filters['pimpinan_desa'] ?? 1
+                                $filters['pimpinan_desa'] ?? 1,
+                                $filters['sub_unit'] ?? 'with'
                             );
                         }
 

@@ -198,7 +198,7 @@
     <div id="email-table-container" class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
         <div class="p-4 sm:p-6 border-b border-slate-100 bg-slate-50">
             <form id="unitDetailFilterForm" method="GET" action="" class="grid grid-cols-1 md:grid-cols-12 gap-y-4 gap-x-4 items-end">
-                <div class="md:col-span-5">
+                <div class="<?= !empty($child_units) ? 'md:col-span-3' : 'md:col-span-5' ?>">
                     <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-widest">Pencarian</label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-700">
@@ -207,6 +207,15 @@
                         <input type="text" name="search" value="<?= esc($search ?? '') ?>" class="block w-full pl-9 pr-3 py-2 bg-white border <?= !empty($search) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm transition-all placeholder-slate-400" placeholder="Cari...">
                     </div>
                 </div>
+                <?php if (!empty($child_units)): ?>
+                    <div class="md:col-span-2">
+                        <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-widest">Sub Unit</label>
+                        <select name="sub_unit" class="block w-full px-3 py-2 bg-white border <?= (($sub_unit ?? 'with') === 'without') ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm appearance-none cursor-pointer transition-all">
+                            <option value="with" <?= (($sub_unit ?? 'with') !== 'without') ? 'selected' : '' ?>>Dengan Sub Unit</option>
+                            <option value="without" <?= (($sub_unit ?? '') === 'without') ? 'selected' : '' ?>>Tanpa Sub Unit</option>
+                        </select>
+                    </div>
+                <?php endif; ?>
                 <div class="md:col-span-3">
                     <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-widest">Status ASN</label>
                     <select name="status_asn" class="block w-full px-3 py-2 bg-white border <?= !empty($status_asn) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm appearance-none cursor-pointer transition-all">

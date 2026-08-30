@@ -22,6 +22,7 @@ class EmailExportController extends BaseController
                 'search' => $this->request->getGet('search'),
                 'status_asn' => $this->request->getGet('status_asn'),
                 'bsre_status' => $this->request->getGet('bsre_status'),
+                'sub_unit' => $this->request->getGet('sub_unit'),
             ];
 
             $result = $this->emailExportService->generateUnitKerjaCsv($unitKerjaId, $params);
@@ -46,6 +47,7 @@ class EmailExportController extends BaseController
                 'search' => $this->request->getGet('search'),
                 'status_asn' => $this->request->getGet('status_asn'),
                 'bsre_status' => $this->request->getGet('bsre_status'),
+                'sub_unit' => $this->request->getGet('sub_unit'),
             ];
 
             $result = $this->emailExportService->generateUnitKerjaExcel($unitKerjaId, $params);
@@ -99,13 +101,15 @@ class EmailExportController extends BaseController
             $status_asn = $this->request->getGet('status_asn');
             $bsre_status = $this->request->getGet('bsre_status');
             $pimpinan_desa = $this->request->getGet('pimpinan_desa') ?? 1;
+            $sub_unit = $this->request->getGet('sub_unit');
 
             $filters = [
                 'unitKerjaId'   => $unitKerjaId,
                 'search'        => $search,
                 'status_asn'    => $status_asn,
                 'bsre_status'   => $bsre_status,
-                'pimpinan_desa' => $pimpinan_desa
+                'pimpinan_desa' => $pimpinan_desa,
+                'sub_unit'      => $sub_unit,
             ];
 
             $historyModel = new \App\Shared\Models\ExportHistoryModel();
@@ -144,13 +148,15 @@ class EmailExportController extends BaseController
             $status_asn = $this->request->getGet('status_asn');
             $bsre_status = $this->request->getGet('bsre_status');
             $pimpinan_desa = $this->request->getGet('pimpinan_desa') ?? 1;
+            $sub_unit = $this->request->getGet('sub_unit');
 
             $filters = [
                 'unitKerjaId'   => $unitKerjaId,
                 'search'        => $search,
                 'status_asn'    => $status_asn,
                 'bsre_status'   => $bsre_status,
-                'pimpinan_desa' => $pimpinan_desa
+                'pimpinan_desa' => $pimpinan_desa,
+                'sub_unit'      => $sub_unit,
             ];
 
             $historyModel = new \App\Shared\Models\ExportHistoryModel();

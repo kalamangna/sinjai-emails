@@ -173,7 +173,7 @@ class EmailExportService
         return $dompdf;
     }
 
-    public function generateUnitKerjaPdf($unitKerjaId, $search = null, $status_asn = null, $bsre_status = null, $pimpinan_desa = 1)
+    public function generateUnitKerjaPdf($unitKerjaId, $search = null, $status_asn = null, $bsre_status = null, $pimpinan_desa = 1, $sub_unit = 'with')
     {
         set_time_limit(0);
         ini_set('memory_limit', '-1');
@@ -185,10 +185,12 @@ class EmailExportService
         $childrenIds = array_column($children, 'id');
         $allUnitIds = array_merge([$unitKerjaId], $childrenIds);
 
+        $targetUnitIds = (!empty($childrenIds) && $sub_unit === 'without') ? [$unitKerjaId] : $allUnitIds;
+
         $isKecamatan = stripos($unitKerja['nama_unit_kerja'], 'Kecamatan') !== false;
 
         $builder = $this->emailModel->withDetails()
-            ->whereIn('unit_kerja_id', $allUnitIds)
+            ->whereIn('unit_kerja_id', $targetUnitIds)
             ->orderBy('emails.eselon_id IS NULL', 'ASC', false)
             ->orderBy('emails.eselon_id', 'ASC')
             ->orderBy('emails.status_asn_id IS NULL', 'ASC', false)
@@ -288,7 +290,7 @@ class EmailExportService
         ];
     }
 
-    public function generateAccountDetailPdf($unitKerjaId, $search = null, $status_asn = null, $bsre_status = null, $pimpinan_desa = 1)
+    public function generateAccountDetailPdf($unitKerjaId, $search = null, $status_asn = null, $bsre_status = null, $pimpinan_desa = 1, $sub_unit = 'with')
     {
         set_time_limit(0);
         ini_set('memory_limit', '-1');
@@ -300,10 +302,12 @@ class EmailExportService
         $childrenIds = array_column($children, 'id');
         $allUnitIds = array_merge([$unitKerjaId], $childrenIds);
 
+        $targetUnitIds = (!empty($childrenIds) && $sub_unit === 'without') ? [$unitKerjaId] : $allUnitIds;
+
         $isKecamatan = stripos($unitKerja['nama_unit_kerja'], 'Kecamatan') !== false;
 
         $builder = $this->emailModel->withDetails()
-            ->whereIn('unit_kerja_id', $allUnitIds)
+            ->whereIn('unit_kerja_id', $targetUnitIds)
             ->orderBy('emails.eselon_id IS NULL', 'ASC', false)
             ->orderBy('emails.eselon_id', 'ASC')
             ->orderBy('emails.status_asn_id IS NULL', 'ASC', false)
@@ -573,7 +577,10 @@ class EmailExportService
         $childrenIds = array_column($children, 'id');
         $allUnitIds = array_merge([$unitKerjaId], $childrenIds);
 
-        $builder = $this->emailModel->withDetails()->whereIn('unit_kerja_id', $allUnitIds);
+        $sub_unit = $params['sub_unit'] ?? 'with';
+        $targetUnitIds = (!empty($childrenIds) && $sub_unit === 'without') ? [$unitKerjaId] : $allUnitIds;
+
+        $builder = $this->emailModel->withDetails()->whereIn('unit_kerja_id', $targetUnitIds);
         if (!empty($params['search'])) {
             $search = $params['search'];
             $builder->groupStart();
@@ -657,7 +664,10 @@ class EmailExportService
         $childrenIds = array_column($children, 'id');
         $allUnitIds = array_merge([$unitKerjaId], $childrenIds);
 
-        $builder = $this->emailModel->whereIn('unit_kerja_id', $allUnitIds);
+        $sub_unit = $params['sub_unit'] ?? 'with';
+        $targetUnitIds = (!empty($childrenIds) && $sub_unit === 'without') ? [$unitKerjaId] : $allUnitIds;
+
+        $builder = $this->emailModel->whereIn('unit_kerja_id', $targetUnitIds);
         if (!empty($params['search'])) {
             $search = $params['search'];
             $builder->groupStart();
