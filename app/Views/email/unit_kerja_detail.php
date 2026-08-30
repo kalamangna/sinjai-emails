@@ -807,62 +807,95 @@ echo view('components/modal', [
                 unitTarget.innerHTML = '<div class="space-y-1.5 py-0.5"><div class="h-2.5 bg-slate-200 rounded animate-pulse w-20"></div><div class="h-3.5 bg-slate-200 rounded animate-pulse w-32"></div></div>';
             }
 
-            try {
-                const response = await fetch('<?= site_url('email/sync_pegawai') ?>', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRF-TOKEN': '<?= csrf_hash() ?>'
-                    },
-                    body: 'nip=' + encodeURIComponent(nip)
-                });
+            let fetchSuccess = false;
+            let lastData = null;
+            let isRateLimit = false;
 
-                const data = await response.json();
+            for (let attempt = 0; attempt <= 2; attempt++) {
+                try {
+                    const response = await fetch('<?= site_url('email/sync_pegawai') ?>', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRF-TOKEN': '<?= csrf_hash() ?>'
+                        },
+                        body: 'nip=' + encodeURIComponent(nip)
+                    });
 
-                if (data.success) {
-                    if (textElement) {
-                        if (data.no_data) {
-                            textElement.innerHTML = `<span class="inline-flex items-center px-2 py-0.5 rounded text-[8px] font-bold uppercase border bg-amber-50 text-amber-600 border-amber-200" title="Data tidak ditemukan di API">NO DATA</span>`;
-                        } else if (data.data && data.data.jabatan) {
-                            textElement.textContent = data.data.jabatan;
-                        } else {
-                            textElement.textContent = originalJabatan;
+                    const is429 = response.status === 429;
+                    lastData = await response.json().catch(() => null);
+
+                    isRateLimit = is429 || (lastData && (lastData.code === 429 || lastData.is_rate_limit || (lastData.message && /rate\s*limit|terlalu\s*banyak/i.test(lastData.message))));
+
+                    if (isRateLimit && attempt < 2) {
+                        const waitSec = (attempt + 1) * 2;
+                        syncBtn.innerHTML = `<i class="fas fa-hourglass-half animate-spin mr-2"></i> Pedinginan Rate Limit (${waitSec}s)...`;
+                        if (textElement) {
+                            textElement.innerHTML = `<span class="text-amber-600 font-bold text-[10px] animate-pulse"><i class="fas fa-hourglass-half mr-1"></i> RATE LIMIT (${waitSec}s)</span>`;
                         }
+                        await new Promise(resolve => setTimeout(resolve, waitSec * 1000));
+                        continue;
                     }
 
-                    if (unitTarget && data.data) {
-                        const parentName = data.data.parent_unit_kerja_name || '';
-                        const unitName = data.data.unit_kerja_name || '';
-                        if (unitName) {
-                            let unitHtml = `<span class="text-xs font-bold text-slate-800 uppercase tracking-tight">${unitName}</span>`;
-                            if (parentName) {
-                                unitHtml += `<span class="text-[9px] font-bold text-slate-500 uppercase leading-none mt-0.5">${parentName}</span>`;
-                            }
-                            unitTarget.innerHTML = unitHtml;
-                        } else if (originalUnit) {
-                            unitTarget.innerHTML = originalUnit;
+                    if (lastData && lastData.success) {
+                        fetchSuccess = true;
+                    }
+                    break;
+                } catch (error) {
+                    if (attempt < 2) {
+                        await new Promise(resolve => setTimeout(resolve, 2000));
+                        continue;
+                    }
+                    break;
+                }
+            }
+
+            if (fetchSuccess && lastData) {
+                if (textElement) {
+                    if (lastData.no_data) {
+                        textElement.innerHTML = `<span class="inline-flex items-center px-2 py-0.5 rounded text-[8px] font-bold uppercase border bg-amber-50 text-amber-600 border-amber-200" title="Data tidak ditemukan di API">NO DATA</span>`;
+                    } else if (lastData.data && lastData.data.jabatan) {
+                        textElement.textContent = lastData.data.jabatan;
+                    } else {
+                        textElement.textContent = originalJabatan;
+                    }
+                }
+
+                if (unitTarget && lastData.data) {
+                    const parentName = lastData.data.parent_unit_kerja_name || '';
+                    const unitName = lastData.data.unit_kerja_name || '';
+                    if (unitName) {
+                        let unitHtml = `<span class="text-xs font-bold text-slate-800 uppercase tracking-tight">${unitName}</span>`;
+                        if (parentName) {
+                            unitHtml += `<span class="text-[9px] font-bold text-slate-500 uppercase leading-none mt-0.5">${parentName}</span>`;
                         }
-                    }
-                    success++;
-                } else {
-                    if (textElement) {
-                        textElement.innerHTML = `<span class="inline-flex items-center px-2 py-0.5 rounded text-[8px] font-bold uppercase border bg-red-50 text-red-600 border-red-200" title="${(data.message || 'Sinkronisasi Gagal').replace(/"/g, '&quot;')}">FAILED</span>`;
-                    }
-                    if (unitTarget && originalUnit) {
+                        unitTarget.innerHTML = unitHtml;
+                    } else if (originalUnit) {
                         unitTarget.innerHTML = originalUnit;
                     }
-                    failed++;
                 }
-            } catch (error) {
-                if (textElement) textElement.textContent = originalJabatan;
-                if (unitTarget && originalUnit) unitTarget.innerHTML = originalUnit;
+                success++;
+            } else {
+                if (textElement) {
+                    if (isRateLimit) {
+                        textElement.innerHTML = `<span class="inline-flex items-center px-2 py-0.5 rounded text-[8px] font-bold uppercase border bg-amber-50 text-amber-700 border-amber-300" title="API Terkena Rate Limit (Silakan coba beberapa saat lagi)">RATE LIMIT</span>`;
+                    } else {
+                        textElement.innerHTML = `<span class="inline-flex items-center px-2 py-0.5 rounded text-[8px] font-bold uppercase border bg-red-50 text-red-600 border-red-200" title="${((lastData && lastData.message) ? lastData.message : 'Sinkronisasi Gagal').replace(/"/g, '&quot;')}">FAILED</span>`;
+                    }
+                }
+                if (unitTarget && originalUnit) {
+                    unitTarget.innerHTML = originalUnit;
+                }
                 failed++;
             }
 
             processed++;
             mainBtn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> PEG: ${processed}/${validContainers.length}`;
             syncBtn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Sinkronisasi ${processed}/${validContainers.length}...`;
+
+            // Micro-pacing delay (200ms) untuk mencegah penumpukan request ke server
+            await new Promise(resolve => setTimeout(resolve, 200));
         }
 
         mainBtn.disabled = false;

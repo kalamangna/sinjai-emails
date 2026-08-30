@@ -1066,7 +1066,12 @@ class EmailService
         $result     = $pegawaiApi->getPegawaiData($nip);
 
         if (!$result['success']) {
-            return ['success' => false, 'message' => $result['message'] ?? 'Gagal menghubungi API pegawai'];
+            return [
+                'success'       => false,
+                'code'          => $result['code'] ?? 500,
+                'is_rate_limit' => ($result['code'] ?? 0) === 429 || stripos($result['message'] ?? '', 'Rate Limit') !== false,
+                'message'       => $result['message'] ?? 'Gagal menghubungi API pegawai'
+            ];
         }
 
         $data   = $result['data'];

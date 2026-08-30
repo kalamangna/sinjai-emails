@@ -131,6 +131,63 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
     };
 
     /**
+     * Fetch API helper with automatic Rate Limit (429) backoff retry
+     */
+    async function fetchWithRateLimitRetry(url, options, maxRetries = 2, onWait = null) {
+        let attempts = 0;
+        let delay = 2000; // 2s initial cool-down
+
+        while (attempts <= maxRetries) {
+            try {
+                const response = await fetch(url, options);
+                const is429 = response.status === 429;
+                
+                let data = null;
+                try {
+                    data = await response.json();
+                } catch (e) {
+                    data = null;
+                }
+
+                const isRateLimited = is429 || (data && (data.code === 429 || data.is_rate_limit || (data.message && /rate\s*limit|terlalu\s*banyak/i.test(data.message))));
+
+                if (isRateLimited && attempts < maxRetries) {
+                    attempts++;
+                    if (typeof onWait === 'function') {
+                        onWait(attempts, maxRetries, delay);
+                    }
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    delay *= 2; // exponential backoff (2s -> 4s)
+                    continue;
+                }
+
+                return {
+                    ok: response.ok,
+                    status: response.status,
+                    isRateLimited: isRateLimited,
+                    data: data || { success: false, message: 'Respon tidak valid dari server' }
+                };
+            } catch (networkError) {
+                if (attempts < maxRetries) {
+                    attempts++;
+                    if (typeof onWait === 'function') {
+                        onWait(attempts, maxRetries, delay);
+                    }
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    delay *= 2;
+                    continue;
+                }
+                return {
+                    ok: false,
+                    status: 0,
+                    isRateLimited: false,
+                    data: { success: false, message: 'Masalah koneksi jaringan' }
+                };
+            }
+        }
+    }
+
+    /**
      * Sync single Pegawai data
      */
     window.syncSinglePegawai = async function(nip, btn, elements = {}) {
@@ -144,16 +201,23 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
         });
 
         try {
-            const response = await fetch(window.BASE_URL + '/email/sync_pegawai', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'X-Requested-With': 'XMLHttpRequest'
+            const fetchResult = await fetchWithRateLimitRetry(
+                window.BASE_URL + '/email/sync_pegawai',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: 'nip=' + encodeURIComponent(nip)
                 },
-                body: 'nip=' + encodeURIComponent(nip)
-            });
+                2,
+                (attempt, max, waitMs) => {
+                    btn.innerHTML = `<i class="fas fa-hourglass-half animate-spin mr-1"></i> COOLDOWN (${waitMs / 1000}s)`;
+                }
+            );
 
-            const data = await response.json();
+            const data = fetchResult.data;
             btn.disabled = false;
             btn.innerHTML = originalBtnContent;
             
@@ -185,10 +249,15 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
                 }
                 return true;
             } else {
+                const title = fetchResult.isRateLimited ? 'Rate Limit Terlampaui' : 'Gagal Sinkronisasi Pegawai';
+                const msg = fetchResult.isRateLimited 
+                    ? 'Server SIMPEG sedang membatasi frekuensi request (Rate Limit). Silakan tunggu beberapa saat sebelum mencoba kembali.'
+                    : (data.message || 'Gagal mengambil data dari API');
+                
                 if (typeof window.showGlobalError === 'function') {
-                    window.showGlobalError('Gagal Sinkronisasi Pegawai', data.message || 'Gagal mengambil data dari API');
+                    window.showGlobalError(title, msg);
                 } else {
-                    alert(data.message || 'Gagal mengambil data dari API');
+                    alert(msg);
                 }
                 return false;
             }
@@ -268,16 +337,27 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
             const emailAttr = row ? (row.getAttribute('data-email') || '') : '';
 
             try {
-                const response = await fetch(window.BASE_URL + '/email/sync_pegawai', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'X-Requested-With': 'XMLHttpRequest'
+                const fetchResult = await fetchWithRateLimitRetry(
+                    window.BASE_URL + '/email/sync_pegawai',
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: 'nip=' + encodeURIComponent(nip || '') + '&email=' + encodeURIComponent(emailAttr || '')
                     },
-                    body: 'nip=' + encodeURIComponent(nip || '') + '&email=' + encodeURIComponent(emailAttr || '')
-                });
+                    2,
+                    (attempt, max, waitMs) => {
+                        btn.innerHTML = `<i class="fas fa-hourglass-half animate-spin mr-2"></i> Pedinginan Rate Limit (${waitMs / 1000}s)...`;
+                        if (jabatanTarget) {
+                            jabatanTarget.innerHTML = `<span class="text-amber-600 font-bold text-[10px] animate-pulse"><i class="fas fa-hourglass-half mr-1"></i> RATE LIMIT (${waitMs / 1000}s)</span>`;
+                        }
+                    }
+                );
 
-                const data = await response.json();
+                const data = fetchResult.data;
+
                 if (data.success) {
                     if (jabatanTarget) {
                         if (data.no_data) {
@@ -308,7 +388,11 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
                     success++;
                 } else {
                     if (jabatanTarget) {
-                        jabatanTarget.innerHTML = `${originalJabatan} <span class="ml-1 px-1.5 py-0.5 rounded text-[8px] font-bold uppercase border bg-red-50 text-red-600 border-red-200" title="${data.message || 'Sinkronisasi Gagal'}">FAILED</span>`;
+                        if (fetchResult.isRateLimited) {
+                            jabatanTarget.innerHTML = `${originalJabatan} <span class="ml-1 px-1.5 py-0.5 rounded text-[8px] font-bold uppercase border bg-amber-50 text-amber-700 border-amber-300" title="API Terkena Rate Limit (Silakan coba beberapa saat lagi)">RATE LIMIT</span>`;
+                        } else {
+                            jabatanTarget.innerHTML = `${originalJabatan} <span class="ml-1 px-1.5 py-0.5 rounded text-[8px] font-bold uppercase border bg-red-50 text-red-600 border-red-200" title="${data.message || 'Sinkronisasi Gagal'}">FAILED</span>`;
+                        }
                     }
                     if (unitTarget && originalUnit) {
                         unitTarget.innerHTML = originalUnit;
@@ -327,6 +411,9 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
 
             processed++;
             btn.innerHTML = `<i class="fas fa-sync-alt animate-spin mr-2"></i> Sinkronisasi ${processed}/${validContainers.length}...`;
+
+            // Micro-pacing delay (200ms) untuk mencegah penumpukan request ke server
+            await new Promise(resolve => setTimeout(resolve, 200));
         }
 
         btn.innerHTML = originalBtnContent;
