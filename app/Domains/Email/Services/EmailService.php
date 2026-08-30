@@ -1147,7 +1147,7 @@ class EmailService
                     $s = preg_replace('/\b((UPTD\s+)?(SD\s*NEG\.?\s*NO\.?|SD\s*NEGERI\s*NO\.?|SD\s*NEGERI|SD\s*NEG\.?|SDN))\b/i', 'SDN', $s);
                     $s = preg_replace('/\b((UPTD\s+)?(SMP\s*NEGERI|SMPN))\b/i', 'SMPN', $s);
                     $s = preg_replace('/\b((UPTD\s+)?(SMA\s*NEGERI|SMAN))\b/i', 'SMAN', $s);
-                    $s = preg_replace('/\b((UPTD\s+)?(TK\s*NEGERI|TKN))\b/i', 'TKN', $s);
+                    $s = preg_replace('/\b((UPTD\s+)?(TK\s*NEGERI|TKN|TK\s*NEG\.?))\b/i', 'TKN', $s);
                     $s = preg_replace('/\b(UPTD\s*PUSKESMAS|PUSKESMAS)\b/i', 'PUSKESMAS', $s);
                     $s = preg_replace('/\b(UPTD\s*RSUD|RSUD)\b/i', 'RSUD', $s);
                     $s = preg_replace('/\b(UPTD\s*LABKESDA|LABORATORIUM\s*KESEHATAN\s*DAERAH|LABKESDA)\b/i', 'LABKESDA', $s);
