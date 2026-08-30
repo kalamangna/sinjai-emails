@@ -1131,38 +1131,40 @@ class EmailService
                     $isTopSetdaLeader = true;
                 }
 
-                // Cek apakah jabatan menyebutkan sub-unit khusus (misal Bagian, Kelurahan, Sekolah, Puskesmas) di bawah targetUnit
+                // Cek apakah jabatan atau jabatan_grup dari API menyebutkan sub-unit khusus (misal Bagian, Kelurahan, Sekolah, Puskesmas) di bawah targetUnit
+                $rawJabatanGrup = $source['jabatan_grup'] ?? '';
+                $cleanSearchText = strtoupper(str_replace(['/', '-', '.', ','], ' ', ($rawJabatan ?? '') . ' ' . $rawJabatanGrup));
+
                 $childUnits = !$isTopSetdaLeader ? $this->unitKerjaModel->where('parent_id', $targetUnit['id'])->findAll() : [];
-                if (!empty($childUnits) && !empty($rawJabatan)) {
-                    $cleanRawJab = strtoupper(str_replace(['/', '-', '.', ','], ' ', $rawJabatan));
+                if (!empty($childUnits) && !empty(trim($cleanSearchText))) {
                     foreach ($childUnits as $child) {
                         $childName = strtoupper($child['nama_unit_kerja']);
                         $cleanChildName = trim(preg_replace('/^(BAGIAN|KELURAHAN|PUSKESMAS|UPTD|SMPN|SDN|TK)\s+/i', '', $childName));
                         $cleanChildNormalized = str_replace(['/', '-', '.', ','], ' ', $cleanChildName);
 
-                        if (stripos($cleanRawJab, $cleanChildNormalized) !== false) {
+                        if (stripos($cleanSearchText, $cleanChildNormalized) !== false) {
                             $resolvedUnitId = $child['id'];
                             $resolvedUnitName = $child['nama_unit_kerja'];
                             break;
                         }
 
                         // Mapping sinonim umum Bagian Setda
-                        if (strpos($childName, 'KESRA') !== false && (strpos($cleanRawJab, 'KESRA') !== false || strpos($cleanRawJab, 'KESEJAHTERAAN RAKYAT') !== false)) {
+                        if (strpos($childName, 'KESRA') !== false && (strpos($cleanSearchText, 'KESRA') !== false || strpos($cleanSearchText, 'KESEJAHTERAAN RAKYAT') !== false)) {
                             $resolvedUnitId = $child['id'];
                             $resolvedUnitName = $child['nama_unit_kerja'];
                             break;
                         }
-                        if (strpos($childName, 'PERENCANAAN') !== false && strpos($cleanRawJab, 'PERENCANAAN') !== false) {
+                        if (strpos($childName, 'PERENCANAAN') !== false && strpos($cleanSearchText, 'PERENCANAAN') !== false) {
                             $resolvedUnitId = $child['id'];
                             $resolvedUnitName = $child['nama_unit_kerja'];
                             break;
                         }
-                        if (strpos($childName, 'PENGADAAN') !== false && strpos($cleanRawJab, 'PENGADAAN') !== false) {
+                        if (strpos($childName, 'PENGADAAN') !== false && strpos($cleanSearchText, 'PENGADAAN') !== false) {
                             $resolvedUnitId = $child['id'];
                             $resolvedUnitName = $child['nama_unit_kerja'];
                             break;
                         }
-                        if (strpos($childName, 'UMUM') !== false && strpos($cleanRawJab, 'UMUM') !== false && strpos($cleanRawJab, 'HUKUM') === false) {
+                        if (strpos($childName, 'UMUM') !== false && strpos($cleanSearchText, 'UMUM') !== false && strpos($cleanSearchText, 'HUKUM') === false) {
                             $resolvedUnitId = $child['id'];
                             $resolvedUnitName = $child['nama_unit_kerja'];
                             break;
