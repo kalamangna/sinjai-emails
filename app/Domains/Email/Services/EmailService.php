@@ -1220,10 +1220,12 @@ class EmailService
                 $updateData['jabatan'] = $cleanJab;
 
                 if (!empty($source['jabatan_jenis_eselon'])) {
-                    $eselonStr   = str_replace(['.', ' '], '', $source['jabatan_jenis_eselon']);
+                    $eselonStr   = str_replace(['.', ' ', '-'], '', $source['jabatan_jenis_eselon']);
                     $eselonModel = new \App\Shared\Models\EselonModel();
                     $eselon      = $eselonModel->where('nama_eselon', $eselonStr)->first();
-                    if ($eselon) $updateData['eselon_id'] = $eselon['id'];
+                    $updateData['eselon_id'] = $eselon ? $eselon['id'] : null;
+                } else {
+                    $updateData['eselon_id'] = null;
                 }
             }
         }
