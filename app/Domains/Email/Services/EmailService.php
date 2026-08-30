@@ -1132,8 +1132,19 @@ class EmailService
             if ($targetUnit) {
                 $resolvedUnitId = $targetUnit['id'];
 
+                // Pimpinan Utama Setda (Sekda, Asisten, Staf Ahli, Bupati, Wabup) selalu berada langsung di SEKRETARIAT DAERAH (bukan sub-unit Bagian)
+                $isTopSetdaLeader = false;
+                $upperRawJab = strtoupper($rawJabatan ?? '');
+                if (stripos($upperRawJab, 'SEKRETARIS DAERAH') !== false 
+                    || (stripos($upperRawJab, 'ASISTEN') !== false && stripos($upperRawJab, 'ASISTEN APOTEKER') === false)
+                    || stripos($upperRawJab, 'STAF AHLI') !== false
+                    || stripos($upperRawJab, 'BUPATI') !== false
+                    || stripos($upperRawJab, 'WAKIL BUPATI') !== false) {
+                    $isTopSetdaLeader = true;
+                }
+
                 // Cek apakah jabatan menyebutkan sub-unit khusus (misal Bagian, Kelurahan, Sekolah, Puskesmas) di bawah targetUnit
-                $childUnits = $this->unitKerjaModel->where('parent_id', $targetUnit['id'])->findAll();
+                $childUnits = !$isTopSetdaLeader ? $this->unitKerjaModel->where('parent_id', $targetUnit['id'])->findAll() : [];
                 if (!empty($childUnits) && !empty($rawJabatan)) {
                     $cleanRawJab = strtoupper(str_replace(['/', '-', '.', ','], ' ', $rawJabatan));
                     foreach ($childUnits as $child) {
@@ -1166,8 +1177,8 @@ class EmailService
                     }
                 }
 
-                // Jika akun saat ini sudah berada di sub-unit dari targetUnit dan tidak terdeteksi sub-unit baru, pertahankan sub-unit yang ada
-                if ($resolvedUnitId == $targetUnit['id'] && !empty($currentEmail['unit_kerja_id'])) {
+                // Jika akun saat ini sudah berada di sub-unit dari targetUnit dan tidak terdeteksi sub-unit baru (dan bukan Top Leader Setda), pertahankan sub-unit yang ada
+                if (!$isTopSetdaLeader && $resolvedUnitId == $targetUnit['id'] && !empty($currentEmail['unit_kerja_id'])) {
                     $currentUnit = $this->unitKerjaModel->find($currentEmail['unit_kerja_id']);
                     if ($currentUnit && $currentUnit['parent_id'] == $targetUnit['id']) {
                         $resolvedUnitId = $currentUnit['id'];
@@ -1314,6 +1325,29 @@ class EmailService
             if (stripos($jab, 'KEPALA BADAN') === 0) return 'KEPALA BADAN';
             if (stripos($jab, 'CAMAT') === 0) return 'CAMAT';
             if (stripos($jab, 'LURAH') === 0) return 'LURAH';
+        }
+
+        // Normalisasi Khusus Asisten Sekda & Staf Ahli Bupati
+        if (stripos($jab, 'ASISTEN') === 0 && stripos($jab, 'ASISTEN APOTEKER') === false) {
+            if (stripos($jab, 'PEMERINTAHAN') !== false || stripos($jab, 'KESRA') !== false || stripos($jab, 'KESEJAHTERAAN') !== false || preg_match('/\bASISTEN\s*(I|1)\b/i', $jab)) {
+                return 'ASISTEN PEMERINTAHAN DAN KESEJAHTERAAN RAKYAT';
+            } elseif (stripos($jab, 'EKONOMI') !== false || stripos($jab, 'PEREKONOMIAN') !== false || stripos($jab, 'PEMBANGUNAN') !== false || preg_match('/\bASISTEN\s*(II|2)\b/i', $jab)) {
+                return 'ASISTEN PEREKONOMIAN DAN PEMBANGUNAN';
+            } elseif (stripos($jab, 'ADMINISTRASI') !== false || stripos($jab, 'UMUM') !== false || preg_match('/\bASISTEN\s*(III|3)\b/i', $jab)) {
+                return 'ASISTEN ADMINISTRASI UMUM';
+            }
+            return $jab;
+        }
+
+        if (stripos($jab, 'STAF AHLI') === 0) {
+            if (stripos($jab, 'SOSIAL') !== false || stripos($jab, 'SDM') !== false || stripos($jab, 'SUMBER DAYA MANUSIA') !== false) {
+                return 'STAF AHLI BIDANG SOSIAL DAN SUMBER DAYA MANUSIA';
+            } elseif (stripos($jab, 'EKONOMI') !== false || stripos($jab, 'KEUANGAN') !== false || stripos($jab, 'PEMBANGUNAN') !== false) {
+                return 'STAF AHLI BIDANG EKONOMI, KEUANGAN DAN PEMBANGUNAN';
+            } elseif (stripos($jab, 'HUKUM') !== false || stripos($jab, 'POLITIK') !== false || stripos($jab, 'PEMERINTAHAN') !== false) {
+                return 'STAF AHLI BIDANG HUKUM, POLITIK DAN PEMERINTAHAN';
+            }
+            return $jab;
         }
 
         // Format Ringkas Sekretaris OPD
