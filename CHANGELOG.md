@@ -7,6 +7,18 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 # [30 Agustus 2026]
 
+- **Penyelarasan Modal Hasil Sinkronisasi Global**:
+  - Mengganti seluruh popup `alert()` browser pada proses sinkronisasi data pegawai dan TTE dengan modal hasil sinkronisasi terpadu `showSyncResult` (`global-sync-result-modal`) dan modal error terpadu `showGlobalError`.
+- **Perbaikan Prioritas Normalisasi Jabatan Pimpinan (Lurah vs Camat)**:
+  - Menetapkan prioritas judul jabatan definitif (`LURAH`, `CAMAT`, `KEPALA BAGIAN`, `KEPALA DINAS`, `KEPALA BADAN`, `KEPALA SATUAN`, `DIREKTUR`, `INSPEKTUR`) di atas inferensi unit induk, mencegah jabatan Lurah tertukar menjadi Camat saat berada di bawah unit induk Kantor Kecamatan.
+  - Memastikan resolusi sub-unit anak dieksekusi sebelum normalisasi jabatan pimpinan.
+- **Integrasi Bidang `jabatan_grup` Respon API SIMPEG untuk Pemetaan Child Unit**:
+  - Memanfaatkan bidang `jabatan_grup` dari respon API SIMPEG sebagai parameter pencocokan hierarki sub-unit anak (Kelurahan, Bagian Setda, UPTD RSUD/Puskesmas) dengan akurasi tinggi.
+- **Perbaikan TypeError pada Kelola Unit Kerja**:
+  - Memperbaiki `TypeError: count()` pada `app/Views/unit_kerja/manage.php` dengan menyelaraskan pengikatan data `$data['unit_kerja_list']` di `UnitKerjaController` serta menambahkan *null-safe check*.
+- **Penyempurnaan Tampilan Halaman Pimpinan & Skeleton Loading**:
+  - Menghapus tampilan teks NIP pada tabel pimpinan untuk tampilan yang lebih bersih dan proporsional.
+  - Menerapkan animasi *skeleton loading placeholder* (`animate-pulse`) pada sel jabatan dan unit kerja saat proses *fetch* data per baris berlangsung.
 - **Penanganan Rate Limit API Eksternal (Exponential Backoff & Jitter)**:
   - Menerapkan mekanisme proteksi request cerdas `requestWithRetry` pada `PegawaiApi` (SIMPEG) dan `BsreApi` (BSrE) dengan jeda bertingkat (*exponential backoff*) 1.5s, 3s, 6s (+ jitter acak) saat menerima status HTTP `429` (Too Many Requests), `503` (Service Unavailable), atau `504` (Gateway Timeout).
   - Menetapkan jeda mikro aman (`100ms`, ~10 req/s) di setiap iterasi worker untuk menjaga kestabilan server API.
