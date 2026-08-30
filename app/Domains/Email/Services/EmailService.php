@@ -1937,4 +1937,160 @@ class EmailService
 
         return $jab;
     }
+
+    /**
+     * Menghitung Batas Usia Pensiun (BUP) berdasarkan Jabatan, Eselon, dan NIP/Tanggal Lahir
+     * 
+     * Aturan:
+     * - 65 Tahun: JF Ahli Utama
+     * - 60 Tahun: Pimpinan Tinggi (Eselon II), JF Ahli Madya, Guru, Kepala Sekolah, Dokter, Pengawas Sekolah, Penilik
+     * - 58 Tahun: Pelaksana, Pengawas (Eselon IV), Administrator (Eselon III), JF Terampil/Mahir/Penyelia, JF Ahli Pertama & Muda
+     *
+     * @param array $account Data akun (nip, jabatan, eselon_id, tanggal_lahir)
+     * @return array ['bup_age' => int, 'birth_date' => string|null, 'tmt_pensiun' => string|null, 'is_pensiun' => bool]
+     */
+    public function calculateBupInfo(array $account): array
+    {
+        $nip = trim((string)($account['nip'] ?? ''));
+        $birthDateStr = trim((string)($account['tanggal_lahir'] ?? ''));
+        $jabatan = strtoupper(trim((string)($account['jabatan'] ?? '')));
+        $eselonId = (int)($account['eselon_id'] ?? 0);
+
+        // 1. Dapatkan Tanggal Lahir (dari NIP format YYYYMMDD... atau field tanggal_lahir)
+        $birthDate = null;
+        if (preg_match('/^(\d{4})(\d{2})(\d{2})/', $nip, $m)) {
+            $year = (int)$m[1];
+            $month = (int)$m[2];
+            $day = (int)$m[3];
+            if (checkdate($month, $day, $year) && $year >= 1940 && $year <= 2020) {
+                $birthDate = sprintf('%04d-%02d-%02d', $year, $month, $day);
+            }
+        }
+        if (!$birthDate && !empty($birthDateStr)) {
+            $ts = strtotime($birthDateStr);
+            if ($ts !== false) {
+                $birthDate = date('Y-m-d', $ts);
+            }
+        }
+
+        if (!$birthDate) {
+            return [
+                'bup_age'     => 58,
+                'birth_date'  => null,
+                'tmt_pensiun' => null,
+                'is_pensiun'  => false,
+            ];
+        }
+
+        // 2. Tentukan Usia BUP
+        $bupAge = 58; // Default: Pelaksana, Pengawas (Eselon IV), Administrator (Eselon III), JF Terampil/Mahir/Penyelia, JF Ahli Pertama & Muda
+
+        if (
+            stripos($jabatan, 'AHLI UTAMA') !== false ||
+            (stripos($jabatan, 'UTAMA') !== false && stripos($jabatan, 'AHLI') !== false)
+        ) {
+            $bupAge = 65;
+        } elseif (
+            stripos($jabatan, 'AHLI MADYA') !== false ||
+            stripos($jabatan, 'GURU') !== false ||
+            stripos($jabatan, 'KEPALA SEKOLAH') !== false ||
+            stripos($jabatan, 'PENGAWAS SEKOLAH') !== false ||
+            stripos($jabatan, 'PENILIK') !== false ||
+            stripos($jabatan, 'DOKTER') !== false ||
+            stripos($jabatan, 'KEPALA DINAS') === 0 ||
+            stripos($jabatan, 'KEPALA BADAN') === 0 ||
+            stripos($jabatan, 'INSPEKTUR') === 0 ||
+            stripos($jabatan, 'SEKRETARIS DAERAH') === 0 ||
+            stripos($jabatan, 'SEKRETARIS DPRD') === 0 ||
+            stripos($jabatan, 'STAF AHLI') === 0 ||
+            stripos($jabatan, 'ASISTEN') === 0 ||
+            $eselonId === 2
+        ) {
+            $bupAge = 60;
+        }
+
+        // 3. Hitung TMT Pensiun: Tanggal 1 bulan berikutnya setelah tanggal ulang tahun ke-BUP
+        $birthDateTime = new \DateTime($birthDate);
+        $bupYear = (int)$birthDateTime->format('Y') + $bupAge;
+        $birthMonth = (int)$birthDateTime->format('m');
+
+        $tmtYear = $bupYear;
+        $tmtMonth = $birthMonth + 1;
+        if ($tmtMonth > 12) {
+            $tmtMonth = 1;
+            $tmtYear++;
+        }
+        $tmtPensiun = sprintf('%04d-%02d-01', $tmtYear, $tmtMonth);
+        $today = date('Y-m-d');
+        $isPensiun = ($today >= $tmtPensiun);
+
+        return [
+            'bup_age'     => $bupAge,
+            'birth_date'  => $birthDate,
+            'tmt_pensiun' => $tmtPensiun,
+            'is_pensiun'  => $isPensiun,
+        ];
+    }
+
+    /**
+     * Memproses penangguhan akun yang mencapai masa pensiun (Auto Pensiun)
+     */
+    public function processAutoPensiun(array $email, string $reason = 'Mencapai Batas Usia Pensiun (BUP)'): bool
+    {
+        try {
+            $emailId = $email['id'] ?? null;
+            $emailAddress = $email['email'] ?? null;
+            if (!$emailId || !$emailAddress) {
+                return false;
+            }
+
+            // 1. Suspend login cPanel
+            try {
+                $cpanelApi = new \App\Shared\Libraries\CpanelApi();
+                $cpanelApi->suspend_email_login($emailAddress);
+            } catch (\Throwable $ce) {
+                log_message('error', 'Auto Pensiun cPanel suspend failed for ' . $emailAddress . ': ' . $ce->getMessage());
+            }
+
+            // 2. Update DB & Soft Delete
+            $model = new \App\Domains\Email\Models\EmailModel();
+            $model->update($emailId, [
+                'suspended_login' => 1,
+                'pensiun_at'      => date('Y-m-d H:i:s'),
+                'pimpinan'        => 0,
+                'pimpinan_desa'   => 0
+            ]);
+
+            // Soft delete (pindahkan ke Kotak Sampah)
+            $model->delete($emailId);
+
+            // 3. Log Audit
+            helper('audit');
+            log_audit('AUTO_PENSIUN', 'Email', $emailId, "Akun otomatis ditangguhkan ({$reason}): {$emailAddress}");
+
+            // 4. Kirim Notifikasi Telegram
+            try {
+                $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
+                $builder->setTitle('AKUN PENSIUN OTOMATIS DITANGGUHKAN', '🚫')
+                        ->addUserProfile(
+                            $email['name'] ?? '',
+                            !empty($email['nip']) ? 'NIP: ' . $email['nip'] : '',
+                            $email['jabatan'] ?? '',
+                            $email['unit_kerja_name'] ?? $email['nama_unit_kerja'] ?? '',
+                            $emailAddress
+                        )
+                        ->addText("\nℹ️ <i>Alasan: {$reason}</i>");
+
+                $telegram = new \App\Shared\Libraries\TelegramLibrary();
+                $telegram->sendMessage($builder->build());
+            } catch (\Throwable $te) {
+                log_message('error', 'Failed to send Telegram notification for auto retirement: ' . $te->getMessage());
+            }
+
+            return true;
+        } catch (\Throwable $e) {
+            log_message('error', 'Error in processAutoPensiun: ' . $e->getMessage());
+            return false;
+        }
+    }
 }

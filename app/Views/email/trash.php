@@ -14,7 +14,9 @@
                 <thead class="bg-slate-50 text-slate-400 uppercase text-[10px] font-bold tracking-widest">
                     <tr>
                         <th class="px-6 py-3 border-b border-slate-200">Email</th>
-                        <th class="px-6 py-3 border-b border-slate-200">Nama</th>
+                        <th class="px-6 py-3 border-b border-slate-200">Nama & NIP</th>
+                        <th class="px-6 py-3 border-b border-slate-200">Jabatan</th>
+                        <th class="px-6 py-3 border-b border-slate-200">Unit Kerja</th>
                         <th class="px-6 py-3 border-b border-slate-200">Tgl Dihapus</th>
                         <th class="px-6 py-3 border-b border-slate-200 text-center">Aksi</th>
                     </tr>
@@ -22,7 +24,7 @@
                 <tbody class="divide-y divide-slate-100">
                     <?php if (empty($emails)): ?>
                         <tr>
-                            <td colspan="4" class="px-6 py-20 text-center">
+                            <td colspan="6" class="px-6 py-20 text-center">
                                 <div class="flex flex-col items-center justify-center">
                                     <div class="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center mb-3">
                                         <i class="fas fa-search text-slate-300 text-lg"></i>
@@ -35,13 +37,60 @@
                         <?php foreach ($emails as $email): ?>
                             <tr class="hover:bg-slate-50 transition-colors">
                                 <td class="px-6 py-4">
-                                    <span class="font-medium text-slate-800 lowercase leading-tight"><?= esc($email['email']) ?></span>
+                                    <div class="flex flex-col">
+                                        <div class="flex items-center gap-2">
+                                            <span class="font-medium text-slate-800 lowercase leading-tight"><?= esc($email['email']) ?></span>
+                                            <?php if (!empty($email['pensiun_at'])): ?>
+                                                <span class="px-1.5 py-0.5 rounded text-[8px] font-black uppercase bg-red-600 text-white leading-none tracking-tighter">PENSIUN</span>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <span class="text-xs font-bold text-slate-800 uppercase tracking-tight"><?= esc($email['name'] ?? '-') ?></span>
+                                    <div class="flex flex-col">
+                                        <span class="text-xs font-bold text-slate-800 uppercase tracking-tight"><?= esc($email['name'] ?? '-') ?></span>
+                                        <?php if (!empty($email['nip'])): ?>
+                                            <span class="text-[10px] font-medium text-slate-500 font-mono tracking-tight mt-0.5"><?= esc($email['nip']) ?></span>
+                                        <?php endif; ?>
+                                    </div>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <span class="text-xs font-bold text-slate-800 uppercase tracking-tight"><?= esc($email['deleted_at']) ?></span>
+                                    <span class="text-xs font-semibold text-slate-700 uppercase tracking-tight"><?= esc($email['jabatan'] ?: '-') ?></span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex flex-col">
+                                        <?php if (!empty($email['parent_unit_kerja_name'])): ?>
+                                            <span class="text-[10px] font-bold text-slate-700 uppercase leading-none"><?= esc($email['parent_unit_kerja_name']) ?></span>
+                                            <span class="text-xs font-bold text-slate-800 uppercase tracking-tight mt-1"><?= esc($email['unit_kerja_name']) ?></span>
+                                        <?php elseif (!empty($email['unit_kerja_name'])): ?>
+                                            <span class="text-xs font-bold text-slate-800 uppercase tracking-tight"><?= esc($email['unit_kerja_name']) ?></span>
+                                        <?php else: ?>
+                                            <span class="text-xs text-slate-400 italic">-</span>
+                                        <?php endif; ?>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex flex-col">
+                                        <span class="text-xs font-bold text-slate-800 uppercase tracking-tight"><?= esc($email['deleted_at']) ?></span>
+                                        <?php
+                                        $deleteTime = strtotime($email['pensiun_at'] ?: $email['deleted_at']);
+                                        $daysPassed = floor((time() - $deleteTime) / 86400);
+                                        $daysLeft = max(0, 30 - $daysPassed);
+                                        ?>
+                                        <?php if ($daysLeft <= 0): ?>
+                                            <span class="text-[9px] font-bold text-red-600 uppercase tracking-tight mt-0.5 flex items-center gap-1">
+                                                <i class="fas fa-exclamation-triangle text-[8px]"></i> Siap Dihapus Permanen
+                                            </span>
+                                        <?php elseif ($daysLeft <= 5): ?>
+                                            <span class="text-[9px] font-bold text-red-500 uppercase tracking-tight mt-0.5 flex items-center gap-1">
+                                                <i class="fas fa-clock text-[8px]"></i> Sisa <?= $daysLeft ?> hari lagi
+                                            </span>
+                                        <?php else: ?>
+                                            <span class="text-[9px] font-medium text-slate-500 uppercase tracking-tight mt-0.5 flex items-center gap-1">
+                                                <i class="fas fa-history text-[8px]"></i> Sisa <?= $daysLeft ?> hari lagi
+                                            </span>
+                                        <?php endif; ?>
+                                    </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center">
                                     <div class="flex justify-center gap-2">

@@ -143,24 +143,9 @@ class EmailController extends BaseController
             $model = new EmailModel();
             $model->update($email['id'], [
                 'suspended_login' => 1,
-                'pensiun_at' => date('Y-m-d H:i:s'),
-                'unit_kerja_id' => null,
-                'nik' => null,
-                'nip' => null,
-                'jabatan' => null,
-                'golongan' => null,
-                'pangkat_golruang' => null,
-                'pangkat_nama' => null,
-                'status_asn_id' => null,
-                'eselon_id' => null,
-                'bsre_status' => null,
-                'pimpinan' => 0,
-                'pimpinan_desa' => 0,
-                'gelar_depan' => null,
-                'gelar_belakang' => null,
-                'tempat_lahir' => null,
-                'tanggal_lahir' => null,
-                'pendidikan' => null
+                'pensiun_at'      => date('Y-m-d H:i:s'),
+                'pimpinan'        => 0,
+                'pimpinan_desa'   => 0
             ]);
 
             // Move to Kotak Sampah (Soft Delete)

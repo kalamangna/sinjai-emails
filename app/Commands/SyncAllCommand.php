@@ -131,6 +131,11 @@ class SyncAllCommand extends BaseCommand
             $this->syncPegawaiData();
         }
 
+        // Phase: Auto Pensiun BUP Check
+        if ($runAll || $isMonthly || $isPegawai || $isDaily) {
+            $this->detectAutoPensiun();
+        }
+
         // Phase: Cleanup (Setiap kali sinkronisasi)
         $this->cleanupRetiredAccounts();
 
@@ -318,6 +323,49 @@ class SyncAllCommand extends BaseCommand
     }
 
 
+
+    private function detectAutoPensiun()
+    {
+        CLI::write('--- Phase: Auto Pensiun Detection (BUP) ---', 'yellow');
+        try {
+            $emailModel = new EmailModel();
+            $emailService = new \App\Domains\Email\Services\EmailService();
+
+            $accounts = $emailModel->select('emails.*, unit_kerja.nama_unit_kerja as unit_kerja_name')
+                                   ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
+                                   ->where('emails.deleted_at IS NULL')
+                                   ->where('emails.pensiun_at IS NULL')
+                                   ->where('emails.nip IS NOT NULL')
+                                   ->where('emails.nip !=', '')
+                                   ->findAll();
+
+            $retiredCount = 0;
+            foreach ($accounts as $acc) {
+                $bupInfo = $emailService->calculateBupInfo($acc);
+                if ($bupInfo['is_pensiun']) {
+                    $bupAge = $bupInfo['bup_age'];
+                    $tmt = $bupInfo['tmt_pensiun'];
+                    $reason = "Mencapai Batas Usia Pensiun (BUP {$bupAge} Thn - TMT {$tmt})";
+                    
+                    CLI::print("Auto retiring {$acc['email']} (BUP {$bupAge} th, TMT {$tmt})... ");
+                    if ($emailService->processAutoPensiun($acc, $reason)) {
+                        CLI::write('DONE', 'green');
+                        $retiredCount++;
+                    } else {
+                        CLI::write('FAILED', 'red');
+                    }
+                }
+            }
+
+            if ($retiredCount === 0) {
+                CLI::write('No active accounts reached BUP.', 'green');
+            } else {
+                CLI::write("Auto Pensiun completed. Total retired: {$retiredCount}", 'green');
+            }
+        } catch (\Throwable $e) {
+            CLI::error('ERROR in Auto Pensiun Detection: ' . $e->getMessage());
+        }
+    }
 
     private function cleanupRetiredAccounts()
     {
