@@ -1146,20 +1146,20 @@ class EmailService
                 $normalizeForMatching = function($str) {
                     $s = mb_strtoupper((string)$str, 'UTF-8');
                     $s = preg_replace('/\b(KAB\.\s*SINJAI|KABUPATEN\s*SINJAI|KAB\s*SINJAI)\b/i', '', $s);
-                    $s = preg_replace('/\b((UPTD\s+)?(SD\s*NEG\.?\s*NO\.?|SD\s*NEGERI\s*NO\.?|SD\s*NEGERI|SD\s*NEG\.?|SDN\s*NO\.?|SDN))\b/i', 'SDN', $s);
-                    $s = preg_replace('/\b((UPTD\s+)?(SMP\s*NEGERI|SMPN))\b/i', 'SMPN', $s);
-                    $s = preg_replace('/\b((UPTD\s+)?(SMA\s*NEGERI|SMAN))\b/i', 'SMAN', $s);
-                    $s = preg_replace('/\b((UPTD\s+)?(TK\s*NEGERI|TK\s*PERTIWI|TK\s*PGRI|TK\s*DHARMA\s*WANITA|TK\s*AISYIYAH|TKN|TK\s*NEG\.?))\b/i', 'TKN', $s);
-                    $s = preg_replace('/\b(UPTD\s*PUSKESMAS|PUSKESMAS)\b/i', 'PUSKESMAS', $s);
-                    $s = preg_replace('/\b(UPTD\s*RSUD|RSUD)\b/i', 'RSUD', $s);
-                    $s = preg_replace('/\b(UPTD\s*LABKESDA|LABORATORIUM\s*KESEHATAN\s*DAERAH|LABKESDA)\b/i', 'LABKESDA', $s);
-                    $s = preg_replace('/\b(UPTD\s*IFK|INSTALASI\s*FARMASI\s*KABUPATEN|INSTALASI\s*FARMASI|IFK|GFK)\b/i', 'IFK', $s);
-                    $s = preg_replace('/\b(KANTOR\s*KELURAHAN|KELURAHAN|LURAH)\b/i', 'KELURAHAN', $s);
-                    $s = preg_replace('/\b(BAGIAN)\b/i', 'BAGIAN', $s);
+                    $s = preg_replace('/\b((UPTD\s+)?(SD\s*NEG\.?\s*NO\.?|SD\s*NEGERI\s*NO\.?|SD\s*NEGERI|SD\s*NEG\.?|SDN\s*NO\.?|SDN))\b/i', 'SDN ', $s);
+                    $s = preg_replace('/\b((UPTD\s+)?(SMP\s*NEGERI|SMPN))\b/i', 'SMPN ', $s);
+                    $s = preg_replace('/\b((UPTD\s+)?(SMA\s*NEGERI|SMAN))\b/i', 'SMAN ', $s);
+                    $s = preg_replace('/\b((UPTD\s+)?(TK\s*NEGERI|TK\s*PERTIWI|TK\s*PGRI|TK\s*DHARMA\s*WANITA|TK\s*AISYIYAH|TKN|TK\s*NEG\.?))\b/i', 'TKN ', $s);
+                    $s = preg_replace('/\b(UPTD\s*PUSKESMAS|PUSKESMAS)\b/i', 'PUSKESMAS ', $s);
+                    $s = preg_replace('/\b(UPTD\s*RSUD|RSUD)\b/i', 'RSUD ', $s);
+                    $s = preg_replace('/\b(UPTD\s*LABKESDA|LABORATORIUM\s*KESEHATAN\s*DAERAH|LABKESDA)\b/i', 'LABKESDA ', $s);
+                    $s = preg_replace('/\b(UPTD\s*IFK|INSTALASI\s*FARMASI\s*KABUPATEN|INSTALASI\s*FARMASI|IFK|GFK)\b/i', 'IFK ', $s);
+                    $s = preg_replace('/\b(KANTOR\s*KELURAHAN|KELURAHAN|LURAH)\b/i', 'KELURAHAN ', $s);
+                    $s = preg_replace('/\b(BAGIAN)\b/i', 'BAGIAN ', $s);
                     $s = preg_replace('/\b(KEC\.|KECAMATAN|KEC)\b/i', '', $s);
-                    // Disambiguasi "Tk." (Tingkat/Level pangkat, misal "Guru Dewasa Tk. I") agar tidak
+                    // Disambiguasi "Tk." / "Tk" (Tingkat/Level pangkat, misal "Guru Dewasa Tk. I", "Guru Muda tk I") agar tidak
                     // terbaca sebagai "TK" (Taman Kanak-kanak) setelah str_replace('.')
-                    $s = preg_replace('/\bTK\.\s*(?=[IVXLCDM\d])/i', 'TINGKAT ', $s);
+                    $s = preg_replace('/\bTK\.?\s*(?=[IVXLCDM\d])/i', 'TINGKAT ', $s);
                     $s = str_replace(['/', '-', '.', ',', 'NO.'], ' ', $s);
                     // Perbaikan ejaan nama tempat yang terkadang berbeda di SIMPEG vs data resmi
                     $spellingFix = [
@@ -1200,7 +1200,7 @@ class EmailService
                         $normChild = $normalizeForMatching($childName);
 
                         // Cegah cross-type mismatch (TK mencocokkan SMP/SD, SMP mencocokkan SD/TK, dsb)
-                        $searchIsTk = (strpos($normSearch, 'TKN') !== false || strpos($normSearch, 'TK ') !== false);
+                        $searchIsTk = (strpos($normSearch, 'TKN') !== false || preg_match('/\bTK\s+(?!TINGKAT)/i', $normSearch));
                         $searchIsSmp = (strpos($normSearch, 'SMPN') !== false || strpos($normSearch, 'SMP ') !== false);
                         $searchIsSd = (strpos($normSearch, 'SDN') !== false || strpos($normSearch, 'SD ') !== false);
 

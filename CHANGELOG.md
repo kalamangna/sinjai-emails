@@ -5,8 +5,11 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
-# [31 Agustus 2026] — Koreksi Spesifik Typo Penomoran & Ejaan Sekolah Dasar SIMPEG
+# [31 Agustus 2026] — Disambiguasi Jenjang Pangkat Guru dan Koreksi Ejaan Sekolah Dasar
 
+- **Disambiguasi Level Pangkat Era Lama vs Jenjang Sekolah**:
+  - Menangani variasi penulisan pangkat `tk I` (tanpa tanda titik) agar tidak salah teridentifikasi sebagai jenjang sekolah Taman Kanak-kanak (*TK*), sehingga pencocokan ke Sekolah Dasar (seperti `SD NEG. NO. 185 MACCONGI` pada akun Hermiwaty) dapat berjalan akurat.
+  - Memastikan token prefix `SDN`, `SMPN`, `SMAN`, `TKN` memiliki spasi pemisah standar untuk menjaga keutuhan penomoran sekolah.
 - **Penyempurnaan Regex & Ejaan Nama Sekolah**:
   - Memperbaiki penanganan typo penomoran SD di SIMPEG (seperti `SDN No. 253 Tarangkeke` yang secara resmi adalah `SD NEG. NO. 235 TARANGKEKE`) agar tidak terjadi duplikasi nomor pada saat proses pencocokan string regex.
   - Memastikan variasi nama SD seperti `Macconggi` langsung terpetakan ke `SD NEG. NO. 185 MACCONGI`.
