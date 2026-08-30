@@ -38,8 +38,13 @@
                 <i class="fas fa-file-pdf mr-2"></i> Export PDF
             </a>
             <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
-                <button id="syncAllTteBtn" onclick="syncAllBsreStatus()" class="btn btn-solid">
-                    <i class="fas fa-fingerprint mr-2 text-white/80"></i> Sync TTE
+                <button id="syncAllTteBtn" onclick="syncAllBsreStatus()" class="btn btn-solid group">
+                    <i class="fas fa-fingerprint mr-2 group-hover:scale-110 transition-transform"></i>
+                    <span>Sync TTE</span>
+                </button>
+                <button id="syncAllPegawaiBtn" onclick="syncAllPegawai()" class="btn btn-outline group bg-white">
+                    <i class="fas fa-sync-alt mr-2 group-hover:rotate-180 transition-transform duration-500 text-slate-700"></i>
+                    <span class="text-slate-700">Sync Pegawai</span>
                 </button>
             <?php endif; ?>
         </div>
@@ -118,13 +123,16 @@
                                 data-parent-unit-kerja="<?= esc(strtoupper($email['parent_unit_kerja_name'] ?? '')) ?>"
                                 data-status="<?= $statusAttr ?>">
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex flex-col">
+                                    <div class="flex flex-col" id="pegawai-container-<?= $email['id'] ?>" data-nip="<?= esc($email['nip'] ?? '') ?>">
                                         <span class="font-medium text-slate-800 lowercase leading-tight"><?= esc($email['email']) ?></span>
                                         <span class="text-[10px] font-bold text-slate-700 uppercase tracking-tight mt-0.5"><?= esc($email['name']) ?></span>
+                                        <?php if (!empty($email['nip'])): ?>
+                                            <span class="text-[9px] font-bold text-slate-400 mt-0.5 font-mono">NIP: <?= esc($email['nip']) ?></span>
+                                        <?php endif; ?>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <span class="text-xs font-medium text-slate-700 uppercase tracking-tight leading-snug"><?= esc($email['jabatan']) ?: '-' ?></span>
+                                    <span class="text-xs font-medium text-slate-700 uppercase tracking-tight leading-snug jabatan-sync-target"><?= esc($email['jabatan']) ?: '-' ?></span>
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="flex flex-col">
@@ -203,6 +211,10 @@
 <script>
     function syncAllBsreStatus() {
         window.syncAllBsreStatus('syncAllTteBtn', 'Sinkronkan status sertifikat untuk semua pimpinan yang tampil?');
+    }
+
+    function syncAllPegawai() {
+        window.syncAllPegawai('syncAllPegawaiBtn', 'Sinkronkan data pegawai dari API untuk pimpinan yang memiliki NIP?');
     }
 
     document.addEventListener("DOMContentLoaded", function() {
