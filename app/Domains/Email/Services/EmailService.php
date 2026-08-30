@@ -1427,6 +1427,9 @@ class EmailService
 
         // Hapus prefix PLT. / PLH. / PJ. / PJS.
         $jab = preg_replace('/^\s*(PLT|PLH|PJ|PJS)\.?\s+/i', '', $jab);
+        // Perbaiki typo penulisan umum seperti KEPALKEPALA, KEP., dsb.
+        $jab = preg_replace('/^KEPALKEPALA\b/i', 'KEPALA', $jab);
+        $jab = preg_replace('/^KEP\.\s*/i', 'KEPALA ', $jab);
 
         // Resolusi jabatan kombinasi garis miring (Utamakan Jabatan Struktural / Manajerial / Kepala)
         if (strpos($jab, '/') !== false && !preg_match('/\b[IVX]+\/[A-D]\b/i', $jab)) {
@@ -1448,7 +1451,7 @@ class EmailService
         }
 
         // Format Baku Kepala Sekolah, Kepala Puskesmas, & Direktur
-        if (preg_match('/^KEPALA\s+(SEKOLAH|(UPTD\s+(SPF\s+)?)?(SDN?|SMPN?|SMAN?|TKN?|SKB|TK|SD|SMP|SMA|SLB))\b/i', $jab)) {
+        if (preg_match('/^(KEPALA|KEPALKEPALA|KEP\.?)\s+(SEKOLAH|(UPTD\s+(SPF\s+)?)?(SDN?|SMPN?|SMAN?|TKN?|SKB|TK|SD|SMP|SMA|SLB))\b/i', $jab)) {
             return 'KEPALA SEKOLAH';
         }
         if (preg_match('/^KEPALA\s+(UPTD\s+)?PUSKESMAS\b/i', $jab)) {
