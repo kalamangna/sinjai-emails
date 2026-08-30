@@ -15,6 +15,7 @@ class PegawaiSyncService
     public function processBatch(array $nipList, ?callable $onProgress = null)
     {
         $emailService = new EmailService();
+        $nipList = array_values($nipList);
         $total = count($nipList);
 
         foreach ($nipList as $index => $nip) {
