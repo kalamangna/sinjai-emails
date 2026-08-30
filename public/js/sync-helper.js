@@ -3,11 +3,9 @@
  * Centralized JS for TTE Status and Pegawai API Synchronizations.
  */
 
-if (typeof window.syncAllBsreStatus === 'undefined') {
-
-    /**
-     * Helper to render the BSrE status badge
-     */
+/**
+ * Helper to render the BSrE status badge
+ */
     window.renderBsreStatus = function(status, containerId) {
         const container = document.getElementById(containerId);
         if (!container) return;
@@ -539,4 +537,4 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
             alert(`Sinkronisasi Data Pegawai Selesai!\nTotal: ${processed}\nBerhasil: ${success}\nGagal: ${failed}`);
         }
     };
-}
+
