@@ -235,13 +235,13 @@
 <script>
     function handleSyncAllTte() {
         if (typeof window.syncAllBsreStatus === 'function') {
-            window.syncAllBsreStatus('syncAllTteBtn', 'Sinkronkan status sertifikat untuk semua pimpinan yang tampil?');
+            window.syncAllBsreStatus('syncAllTteBtn', 'Sinkronkan status TTE?');
         }
     }
 
     function handleSyncAllPegawai() {
         if (typeof window.syncAllPegawai === 'function') {
-            window.syncAllPegawai('syncAllPegawaiBtn', 'Sinkronkan data pegawai dari API untuk pimpinan yang memiliki NIP?');
+            window.syncAllPegawai('syncAllPegawaiBtn', 'Sinkronkan data pegawai?');
         }
     }
 

@@ -675,7 +675,7 @@ echo view('components/modal', [
         const containers = document.querySelectorAll('[id^="bsre-status-"]');
         if (!containers.length) return;
 
-        if (!confirm(`Sinkronkan status sertifikat untuk ${containers.length} akun dalam unit ini?`)) {
+        if (!confirm('Sinkronkan status TTE?')) {
             return;
         }
 
@@ -769,7 +769,7 @@ echo view('components/modal', [
             return;
         }
 
-        if (!confirm(`Sinkronkan data pegawai dari API untuk ${validContainers.length} pegawai yang memiliki NIP?`)) {
+        if (!confirm('Sinkronkan data pegawai?')) {
             return;
         }
 

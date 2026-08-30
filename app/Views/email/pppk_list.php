@@ -109,11 +109,11 @@
 <?php echo $this->section('scripts'); ?>
 <script>
     function syncAllOnPage() {
-        window.syncAllBsreStatus('batchSyncBtn', 'Sinkronisasi akan mengecek status TTE untuk semua akun di halaman ini satu per satu. Lanjutkan?');
+        window.syncAllBsreStatus('batchSyncBtn', 'Sinkronkan status TTE?');
     }
 
     function syncAllPegawai() {
-        window.syncAllPegawai('batchSyncPegawaiBtn', 'Sinkronkan data pegawai dari API untuk pegawai yang memiliki NIP?');
+        window.syncAllPegawai('batchSyncPegawaiBtn', 'Sinkronkan data pegawai?');
     }
 
     document.addEventListener('DOMContentLoaded', () => {

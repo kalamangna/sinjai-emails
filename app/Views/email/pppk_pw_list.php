@@ -106,7 +106,7 @@
 <?= $this->section('scripts') ?>
 <script>
     function syncAllOnPage() {
-        window.syncAllBsreStatus('batchSyncBtn', 'Sinkronisasi akan mengecek status TTE untuk semua akun di halaman ini satu per satu. Lanjutkan?');
+        window.syncAllBsreStatus('batchSyncBtn', 'Sinkronkan status TTE?');
     }
 
     document.addEventListener('DOMContentLoaded', () => {

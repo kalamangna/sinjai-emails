@@ -73,7 +73,7 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
     /**
      * Sync all BSrE status on page sequentially
      */
-    window.syncAllBsreStatus = async function(btnId = 'syncAllTteBtn', confirmText = 'Sinkronkan status sertifikat untuk semua akun?') {
+    window.syncAllBsreStatus = async function(btnId = 'syncAllTteBtn', confirmText = 'Sinkronkan status TTE?') {
         const containers = document.querySelectorAll('[id^="bsre-status-"]');
         if (!containers.length) return;
 
@@ -210,7 +210,7 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
     /**
      * Sync all Pegawai data on page sequentially
      */
-    window.syncAllPegawai = async function(btnId = 'batchSyncPegawaiBtn', confirmText = 'Sinkronkan data pegawai dari API?') {
+    window.syncAllPegawai = async function(btnId = 'batchSyncPegawaiBtn', confirmText = 'Sinkronkan data pegawai?') {
         const containers = document.querySelectorAll('[id^="pegawai-container-"]');
         const validContainers = Array.from(containers).filter(c => c.getAttribute('data-nip') && c.getAttribute('data-nip').trim() !== '');
 

@@ -220,7 +220,7 @@
 <script>
     function handleSyncAllTte() {
         if (typeof window.syncAllBsreStatus === 'function') {
-            window.syncAllBsreStatus('syncAllTteBtn', 'Sinkronkan status sertifikat untuk semua kepala desa yang tampil?');
+            window.syncAllBsreStatus('syncAllTteBtn', 'Sinkronkan status TTE?');
         }
     }
 
