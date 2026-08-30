@@ -1132,12 +1132,34 @@ class EmailService
             if ($targetUnit) {
                 $resolvedUnitId = $targetUnit['id'];
 
-                // Cek apakah jabatan menyebutkan sub-unit khusus (misal Kelurahan, Sekolah, Puskesmas) di bawah targetUnit
+                // Cek apakah jabatan menyebutkan sub-unit khusus (misal Bagian, Kelurahan, Sekolah, Puskesmas) di bawah targetUnit
                 $childUnits = $this->unitKerjaModel->where('parent_id', $targetUnit['id'])->findAll();
                 if (!empty($childUnits) && !empty($rawJabatan)) {
+                    $cleanRawJab = strtoupper(str_replace(['/', '-', '.', ','], ' ', $rawJabatan));
                     foreach ($childUnits as $child) {
-                        $cleanChildName = trim(preg_replace('/^(KELURAHAN|PUSKESMAS|UPTD|SMPN|SDN|TK)\s+/i', '', $child['nama_unit_kerja']));
-                        if (stripos($rawJabatan, $cleanChildName) !== false) {
+                        $childName = strtoupper($child['nama_unit_kerja']);
+                        $cleanChildName = trim(preg_replace('/^(BAGIAN|KELURAHAN|PUSKESMAS|UPTD|SMPN|SDN|TK)\s+/i', '', $childName));
+                        $cleanChildNormalized = str_replace(['/', '-', '.', ','], ' ', $cleanChildName);
+
+                        if (stripos($cleanRawJab, $cleanChildNormalized) !== false) {
+                            $resolvedUnitId = $child['id'];
+                            break;
+                        }
+
+                        // Mapping sinonim umum Bagian Setda
+                        if (strpos($childName, 'KESRA') !== false && (strpos($cleanRawJab, 'KESRA') !== false || strpos($cleanRawJab, 'KESEJAHTERAAN RAKYAT') !== false)) {
+                            $resolvedUnitId = $child['id'];
+                            break;
+                        }
+                        if (strpos($childName, 'PERENCANAAN') !== false && strpos($cleanRawJab, 'PERENCANAAN') !== false) {
+                            $resolvedUnitId = $child['id'];
+                            break;
+                        }
+                        if (strpos($childName, 'PENGADAAN') !== false && strpos($cleanRawJab, 'PENGADAAN') !== false) {
+                            $resolvedUnitId = $child['id'];
+                            break;
+                        }
+                        if (strpos($childName, 'UMUM') !== false && strpos($cleanRawJab, 'UMUM') !== false && strpos($cleanRawJab, 'HUKUM') === false) {
                             $resolvedUnitId = $child['id'];
                             break;
                         }
