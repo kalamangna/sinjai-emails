@@ -1144,10 +1144,10 @@ class EmailService
                 $rawJabatanGrup = $source['jabatan_grup'] ?? '';
                 $normalizeForMatching = function($str) {
                     $s = mb_strtoupper((string)$str, 'UTF-8');
-                    $s = preg_replace('/\b(SD\s*NEG\.?\s*NO\.?|SD\s*NEGERI\s*NO\.?|SD\s*NEGERI|SD\s*NEG\.?|SDN)\b/i', 'SDN', $s);
-                    $s = preg_replace('/\b(SMP\s*NEGERI|SMPN)\b/i', 'SMPN', $s);
-                    $s = preg_replace('/\b(SMA\s*NEGERI|SMAN)\b/i', 'SMAN', $s);
-                    $s = preg_replace('/\b(TK\s*NEGERI|TKN)\b/i', 'TKN', $s);
+                    $s = preg_replace('/\b((UPTD\s+)?(SD\s*NEG\.?\s*NO\.?|SD\s*NEGERI\s*NO\.?|SD\s*NEGERI|SD\s*NEG\.?|SDN))\b/i', 'SDN', $s);
+                    $s = preg_replace('/\b((UPTD\s+)?(SMP\s*NEGERI|SMPN))\b/i', 'SMPN', $s);
+                    $s = preg_replace('/\b((UPTD\s+)?(SMA\s*NEGERI|SMAN))\b/i', 'SMAN', $s);
+                    $s = preg_replace('/\b((UPTD\s+)?(TK\s*NEGERI|TKN))\b/i', 'TKN', $s);
                     $s = preg_replace('/\b(UPTD\s*PUSKESMAS|PUSKESMAS)\b/i', 'PUSKESMAS', $s);
                     $s = preg_replace('/\b(UPTD\s*RSUD|RSUD)\b/i', 'RSUD', $s);
                     $s = preg_replace('/\b(UPTD\s*LABKESDA|LABORATORIUM\s*KESEHATAN\s*DAERAH|LABKESDA)\b/i', 'LABKESDA', $s);
