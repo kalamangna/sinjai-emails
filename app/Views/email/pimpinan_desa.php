@@ -41,7 +41,7 @@
 
             <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
                 <!-- Tombol Sinkronisasi TTE -->
-                <button id="syncAllTteBtn" onclick="syncAllBsreStatus()" class="btn btn-solid text-xs px-3 py-2">
+                <button id="syncAllTteBtn" onclick="handleSyncAllTte()" class="btn btn-solid text-xs px-3 py-2">
                     <i class="fas fa-fingerprint mr-1.5 text-white/80"></i> Sync TTE
                 </button>
             <?php endif; ?>
@@ -214,10 +214,14 @@
         <?= view('components/pagination', ['items' => $emails, 'pager' => $pager, 'label' => 'akun']) ?>
     </div>
 </div>
+<?= $this->endSection() ?>
 
+<?= $this->section('scripts') ?>
 <script>
-    function syncAllBsreStatus() {
-        window.syncAllBsreStatus('syncAllTteBtn', 'Sinkronkan status sertifikat untuk semua kepala desa yang tampil?');
+    function handleSyncAllTte() {
+        if (typeof window.syncAllBsreStatus === 'function') {
+            window.syncAllBsreStatus('syncAllTteBtn', 'Sinkronkan status sertifikat untuk semua kepala desa yang tampil?');
+        }
     }
 
     document.addEventListener("DOMContentLoaded", function() {

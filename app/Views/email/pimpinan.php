@@ -46,10 +46,10 @@
                         <i class="fas fa-sync-alt mr-1.5 text-white/80"></i> Sync <i class="fas fa-chevron-down ml-1 text-[8px] opacity-50 transition-transform duration-300 group-hover:rotate-180"></i>
                     </button>
                     <div class="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 overflow-hidden">
-                        <button id="syncAllTteBtn" onclick="syncAllBsreStatus()" class="w-full px-4 py-3 text-left text-[10px] font-bold text-slate-700 uppercase tracking-widest hover:bg-slate-50 border-b border-slate-100 transition-colors focus:outline-none">
+                        <button id="syncAllTteBtn" onclick="handleSyncAllTte()" class="w-full px-4 py-3 text-left text-[10px] font-bold text-slate-700 uppercase tracking-widest hover:bg-slate-50 border-b border-slate-100 transition-colors focus:outline-none">
                             <i class="fas fa-fw fa-fingerprint mr-2 text-slate-500"></i> Sync TTE
                         </button>
-                        <button id="syncAllPegawaiBtn" onclick="syncAllPegawai()" class="w-full px-4 py-3 text-left text-[10px] font-bold text-slate-700 uppercase tracking-widest hover:bg-slate-50 transition-colors focus:outline-none">
+                        <button id="syncAllPegawaiBtn" onclick="handleSyncAllPegawai()" class="w-full px-4 py-3 text-left text-[10px] font-bold text-slate-700 uppercase tracking-widest hover:bg-slate-50 transition-colors focus:outline-none">
                             <i class="fas fa-fw fa-user-check mr-2 text-slate-500"></i> Sync Pegawai
                         </button>
                     </div>
@@ -229,14 +229,20 @@
         <?= view('components/pagination', ['items' => $emails, 'pager' => $pager, 'label' => 'akun']) ?>
     </div>
 </div>
+<?= $this->endSection() ?>
 
+<?= $this->section('scripts') ?>
 <script>
-    function syncAllBsreStatus() {
-        window.syncAllBsreStatus('syncAllTteBtn', 'Sinkronkan status sertifikat untuk semua pimpinan yang tampil?');
+    function handleSyncAllTte() {
+        if (typeof window.syncAllBsreStatus === 'function') {
+            window.syncAllBsreStatus('syncAllTteBtn', 'Sinkronkan status sertifikat untuk semua pimpinan yang tampil?');
+        }
     }
 
-    function syncAllPegawai() {
-        window.syncAllPegawai('syncAllPegawaiBtn', 'Sinkronkan data pegawai dari API untuk pimpinan yang memiliki NIP?');
+    function handleSyncAllPegawai() {
+        if (typeof window.syncAllPegawai === 'function') {
+            window.syncAllPegawai('syncAllPegawaiBtn', 'Sinkronkan data pegawai dari API untuk pimpinan yang memiliki NIP?');
+        }
     }
 
     document.addEventListener("DOMContentLoaded", function() {
