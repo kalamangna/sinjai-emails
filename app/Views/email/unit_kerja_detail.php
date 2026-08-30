@@ -271,7 +271,7 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <div class="flex flex-col gap-1" id="pegawai-container-<?= esc($email['user']) ?>" data-nip="<?= esc($email['nip']) ?>" data-status-asn-id="<?= esc($email['status_asn_id'] ?? '') ?>">
+                                    <div class="flex flex-col gap-1" id="pegawai-container-<?= esc($email['user']) ?>" data-nip="<?= esc($email['nip'] ?? '') ?>" data-email="<?= esc($email['email'] ?? '') ?>" data-status-asn-id="<?= esc($email['status_asn_id'] ?? '') ?>">
                                         <span class="text-xs font-medium text-slate-700 uppercase tracking-tight jabatan-text"><?= esc($email['jabatan']) ?: '-' ?></span>
                                         <span class="text-[9px] font-bold text-slate-700 uppercase tracking-widest"><?= !empty($email['status_asn']) ? esc($email['status_asn']) : 'NON-ASN' ?></span>
                                     </div>
@@ -767,13 +767,13 @@ echo view('components/modal', [
 
     async function syncAllPegawai() {
         const containers = document.querySelectorAll('[id^="pegawai-container-"]');
-        const validContainers = Array.from(containers).filter(c => c.getAttribute('data-nip') && c.getAttribute('data-nip').trim() !== '');
+        const validContainers = Array.from(containers).filter(c => (c.getAttribute('data-nip') && c.getAttribute('data-nip').trim() !== '') || (c.getAttribute('data-email') && c.getAttribute('data-email').trim() !== ''));
         
         if (!validContainers.length) {
             if (typeof window.showGlobalError === 'function') {
-                window.showGlobalError('Info Sinkronisasi', 'Tidak ada data NIP yang dapat disinkronkan.');
+                window.showGlobalError('Info Sinkronisasi', 'Tidak ada data akun yang dapat disinkronkan.');
             } else {
-                alert('Tidak ada data NIP yang dapat disinkronkan.');
+                alert('Tidak ada data akun yang dapat disinkronkan.');
             }
             return;
         }
@@ -797,7 +797,8 @@ echo view('components/modal', [
         let failed = 0;
 
         for (const container of validContainers) {
-            const nip = container.getAttribute('data-nip');
+            const nip = container.getAttribute('data-nip') || '';
+            const email = container.getAttribute('data-email') || '';
             const row = container.closest('tr');
             const textElement = container.querySelector('.jabatan-text');
             const unitTarget = row ? row.querySelector('.unit-kerja-sync-target') : null;
@@ -825,7 +826,7 @@ echo view('components/modal', [
                             'X-Requested-With': 'XMLHttpRequest',
                             'X-CSRF-TOKEN': '<?= csrf_hash() ?>'
                         },
-                        body: 'nip=' + encodeURIComponent(nip)
+                        body: 'nip=' + encodeURIComponent(nip) + '&email=' + encodeURIComponent(email)
                     });
 
                     const is429 = response.status === 429;

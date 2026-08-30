@@ -5,6 +5,16 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [31 Agustus 2026] — Standarisasi Jabatan Kepala UPTD Teknis & Peningkatan Keandalan Sinkronisasi SIMPEG
+
+- **Standarisasi Jabatan Pimpinan UPTD Teknis**:
+  - Menetapkan nama jabatan baku **`KEPALA UPTD`** untuk seluruh pimpinan UPTD teknis non-sekolah dan non-puskesmas (misal: UPT Perlindungan Perempuan dan Anak, UPT Radio Suara Bersatu dan TV Sinjai, UPTD Labkesda, UPTD Metrologi, dsb.).
+- **Peningkatan Keandalan Sinkronisasi Akun Pegawai**:
+  - Menambahkan pengiriman parameter `email` bersama `nip` pada AJAX sinkronisasi di halaman Detail Unit Kerja (`unit_kerja_detail.php`), sehingga akun yang belum memiliki NIP di database tetap dapat disinkronkan secara mulus.
+  - Memastikan update data pasca-sinkronisasi dieksekusi berdasarkan Primary Key ID akun dan kolom NIP yang kosong otomatis terisi dari respon API SIMPEG.
+
+---
+
 # [31 Agustus 2026] — Normalisasi Jabatan Struktural RSUD Pratama & Pemetaan Sub-Unit Dinas Kesehatan
 
 - **Normalisasi Jabatan Struktural & Pembersihan Suffix Unit Kerja**:

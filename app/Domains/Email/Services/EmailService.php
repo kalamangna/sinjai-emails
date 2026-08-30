@@ -1113,6 +1113,9 @@ class EmailService
         // 1. Sync Pangkat & Golongan
         if (isset($source['pangkat_nama']))    $updateData['pangkat_nama']    = trim($source['pangkat_nama']);
         if (isset($source['pangkat_golruang'])) $updateData['pangkat_golruang'] = trim($source['pangkat_golruang']);
+        if (empty($currentEmail['nip']) && !empty($source['nip'])) {
+            $updateData['nip'] = trim($source['nip']);
+        }
         if (empty($currentEmail['name']) && !empty($source['nama'])) {
             $updateData['name'] = trim($source['nama']);
         }
@@ -1427,7 +1430,7 @@ class EmailService
         }
 
         if (!empty($updateData)) {
-            $this->emailModel->where('nip', $nip)->set($updateData)->update();
+            $this->emailModel->update($currentEmail['id'], $updateData);
 
             \App\Shared\Services\CacheService::invalidateDashboard();
 
@@ -1621,6 +1624,9 @@ class EmailService
         if (preg_match('/^DIREKTUR\b/i', $jab)) {
             return 'DIREKTUR';
         }
+        if (preg_match('/^KEPALA\s+(UPTD|UPT)\b/i', $jab)) {
+            return 'KEPALA UPTD';
+        }
 
         // 1. Cek judul definitif pimpinan dari teks jabatan terlebih dahulu
         if (preg_match('/^LURAH\b/i', $jab) || (preg_match('/\bLURAH\b/i', $jab) && !preg_match('/\b(SEKRETARIS|SEKLUR|KEPALA\s+SEKSI|KASI|STAF|BENDAHARA|PENGELOLA|KELURAHAN)\b/i', $jab))) {
@@ -1689,6 +1695,15 @@ class EmailService
                     return 'KEPALA BADAN';
                 } elseif (strpos($unitUpper, 'KECAMATAN') !== false) {
                     return 'CAMAT';
+                } elseif (strpos($unitUpper, 'UPTD') !== false || strpos($unitUpper, 'UPT ') !== false) {
+                    if (strpos($unitUpper, 'PUSKESMAS') !== false) {
+                        return 'KEPALA PUSKESMAS';
+                    } elseif (strpos($unitUpper, 'RUMAH SAKIT') !== false || strpos($unitUpper, 'RSUD') !== false) {
+                        return 'DIREKTUR';
+                    } elseif (strpos($unitUpper, 'SD') !== false || strpos($unitUpper, 'SMP') !== false || strpos($unitUpper, 'TK') !== false) {
+                        return 'KEPALA SEKOLAH';
+                    }
+                    return 'KEPALA UPTD';
                 }
             }
         }
