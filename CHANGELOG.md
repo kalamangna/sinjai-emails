@@ -5,6 +5,15 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [31 Agustus 2026] — Pemeliharaan Nomenklatur Lengkap UPTD pada OPD Teknis Non-Child Unit
+
+- **Pemeliharaan Nama UPTD pada OPD Teknis**:
+  - Mempertahankan nama lengkap UPTD teknis pada kolom jabatan (seperti `KEPALA UPT RADIO SUARA BERSATU DAN TV SINJAI`, `KEPALA UPT PERLINDUNGAN PEREMPUAN DAN ANAK`, dan `KEPALA TATA USAHA RADIO SINJAI BERSATU DAN TV SINJAI`) karena UPTD tersebut berada langsung di bawah dinas induk dan tidak dibuatkan entitas child unit terpisah.
+  - Mempertahankan format ringkas `KEPALA PUSKESMAS` dan `KEPALA TATA USAHA` pada UPTD Puskesmas, serta `KEPALA SEKOLAH` pada Satuan Pendidikan karena nama unit kerjanya sudah tertera mandiri pada kolom Unit Kerja.
+  - Menetapkan `KEPALA SUB BAGIAN TATA USAHA` khusus untuk RS Pratama Bulupancing.
+
+---
+
 # [31 Agustus 2026] — Penyesuaian Nomenklatur Tata Usaha RS Pratama & UPTD/Puskesmas
 
 - **Penyesuaian Nomenklatur Tata Usaha**:

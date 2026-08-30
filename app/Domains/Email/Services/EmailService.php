@@ -1619,9 +1619,6 @@ class EmailService
         if (preg_match('/^DIREKTUR\b/i', $jab)) {
             return 'DIREKTUR';
         }
-        if (preg_match('/^KEPALA\s+(UPTD|UPT)\b/i', $jab)) {
-            return 'KEPALA UPTD';
-        }
 
         // 1. Cek judul definitif pimpinan dari teks jabatan terlebih dahulu
         if (preg_match('/^LURAH\b/i', $jab) || (preg_match('/\bLURAH\b/i', $jab) && !preg_match('/\b(SEKRETARIS|SEKLUR|KEPALA\s+SEKSI|KASI|STAF|BENDAHARA|PENGELOLA|KELURAHAN)\b/i', $jab))) {
@@ -1749,7 +1746,7 @@ class EmailService
         if ($isHospital && preg_match('/\b(KTU|KASUBAG\s+TU|KASUBAG\s+TATA\s+USAHA|KEPALA\s+TATA\s+USAHA|KEPALA\s+SUB\s*BAGIAN\s+TATA\s+USAHA|SUB\s*BAGIAN\s+TATA\s+USAHA)\b/i', $jab)) {
             $jab = 'KEPALA SUB BAGIAN TATA USAHA';
         } else {
-            $jab = preg_replace('/\b(KTU|KASUBAG\s+TU|KASUBAG\s+TATA\s+USAHA|KEPALA\s+TATA\s+USAHA|KEPALA\s+SUB\s*BAGIAN\s+TATA\s+USAHA|SUB\s*BAGIAN\s+TATA\s+USAHA)\b/i', 'KEPALA TATA USAHA', $jab);
+            $jab = preg_replace('/\b(KTU|KASUBAG\s+TU|KASUBAG\s+TATA\s+USAHA|KEPALA\s+SUB\s*BAGIAN\s+TATA\s+USAHA|SUB\s*BAGIAN\s+TATA\s+USAHA)\b/i', 'KEPALA TATA USAHA', $jab);
         }
         $jab = preg_replace('/\bKASUBAG\b/i', 'KEPALA SUB BAGIAN', $jab);
         $jab = preg_replace('/\bKASUBBID\b/i', 'KEPALA SUB BIDANG', $jab);
@@ -1764,10 +1761,15 @@ class EmailService
         // Koreksi SUB. BAGIAN / SUB. BIDANG menjadi SUB BAGIAN / SUB BIDANG
         $jab = preg_replace('/\bSUB\.\s*/i', 'SUB ', $jab);
 
-        // 1. Bersihkan akhiran OPD/Lokasi pada Jabatan Struktural (Kepala Dinas, Kabid, Kasubag, Kasi, Kepala Tata Usaha, dsb)
-        if (preg_match('/^(KEPALA BIDANG|KEPALA SUB BAGIAN|KEPALA SEKSI|KEPALA SUB BIDANG|KEPALA TATA USAHA|SEKRETARIS|KEPALA DINAS|KEPALA BADAN|INSPEKTUR)\b/i', $jab)) {
-            $jab = preg_replace('/\s+(?:(?:PADA|DI)\s+)?(DINAS|BADAN|INSPEKTORAT|SEKRETARIAT|KANTOR|KECAMATAN|KEC\.|UPTD|UPT|PUSKESMAS|RSUD|RADIO|TV|BALAI|LOKA)\b.*$/i', '', $jab);
+        // 1. Bersihkan akhiran OPD/Lokasi pada Jabatan Struktural (Kepala Dinas, Kabid, Kasubag, Kasi, dsb)
+        if (preg_match('/^(KEPALA BIDANG|KEPALA SUB BAGIAN|KEPALA SEKSI|KEPALA SUB BIDANG|SEKRETARIS|KEPALA DINAS|KEPALA BADAN|INSPEKTUR)\b/i', $jab)) {
+            $jab = preg_replace('/\s+(?:(?:PADA|DI)\s+)?(DINAS|BADAN|INSPEKTORAT|SEKRETARIAT|KANTOR|KECAMATAN|KEC\.|UPTD|UPT|PUSKESMAS|RSUD)\b.*$/i', '', $jab);
             $jab = preg_replace('/\s+(?:(?:PADA|DI)\s+)?KABUPATEN\s+SINJAI\s*.*$/i', '', $jab);
+        }
+
+        // Bersihkan nama puskesmas pada KTU Puskesmas (karena Puskesmas adalah child unit)
+        if (preg_match('/^KEPALA TATA USAHA\b/i', $jab)) {
+            $jab = preg_replace('/\s+(?:(?:PADA|DI)\s+)?(UPTD\s+)?PUSKESMAS\b.*$/i', '', $jab);
         }
 
         // 2. Bersihkan embel-embel lokasi/bagian pada Staf Pelaksana & Jabatan Fungsional (JF)
