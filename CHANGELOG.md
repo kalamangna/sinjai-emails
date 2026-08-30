@@ -5,6 +5,13 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [31 Agustus 2026] — Pemetaan Otomatis 10 Bagian Sekretariat Daerah dari Subbagian & Jabatan Fungsional
+
+- **Pemetaan Otomatis 10 Child Unit (Bagian) Setda**:
+  - Menambahkan aturan pencocokan cerdas berdasarkan kata kunci Subbagian dan Jabatan Fungsional pada `syncPegawaiFromApi` sehingga seluruh pejabat dan staf di lingkungan Sekretariat Daerah otomatis dipetakan ke 10 Bagian Setda terkait (seperti `KEPALA SUB BAGIAN PROTOKOL` $\rightarrow$ `BAGIAN PROTOKOL DAN KOMUNIKASI PIMPINAN`, Subbagian PBJ $\rightarrow$ `BAGIAN PENGADAAN BARANG DAN JASA`, Subbagian Rumah Tangga $\rightarrow$ `BAGIAN UMUM DAN PERLENGKAPAN`, dsb.).
+
+---
+
 # [31 Agustus 2026] — Nomenklatur Kepala Bagian & Kasubag TU Kepegawaian Sekretariat DPRD
 
 - **Pemeliharaan Nama Lengkap Kepala Bagian Setwan & RSUD**:

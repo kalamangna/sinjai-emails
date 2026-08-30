@@ -1250,21 +1250,58 @@ class EmailService
                             break;
                         }
 
-                        // Mapping sinonim umum Bagian Setda
-                        if (strpos($childName, 'KESRA') !== false && (strpos($normSearch, 'KESRA') !== false || strpos($normSearch, 'KESEJAHTERAAN RAKYAT') !== false)) {
-                            $resolvedUnitId = $child['id'];
-                            $resolvedUnitName = $child['nama_unit_kerja'];
-                            break;
-                        }
-                        if (strpos($childName, 'PERENCANAAN') !== false && strpos($normSearch, 'PERENCANAAN') !== false) {
-                            $resolvedUnitId = $child['id'];
-                            $resolvedUnitName = $child['nama_unit_kerja'];
-                            break;
-                        }
-                        if (strpos($childName, 'PENGADAAN') !== false && strpos($normSearch, 'PENGADAAN') !== false) {
-                            $resolvedUnitId = $child['id'];
-                            $resolvedUnitName = $child['nama_unit_kerja'];
-                            break;
+                        // Mapping komprehensif Subbagian dan Jabatan Fungsional ke 10 Bagian Setda
+                        if ((int)$targetUnit['id'] === 600) {
+                            if (strpos($childName, 'PROTOKOL') !== false && preg_match('/\b(PROTOKOL|KOMUNIKASI PIMPINAN|DOKUMENTASI PIMPINAN|PRANATA HUMAS|HUMAS)\b/i', $normSearch)) {
+                                $resolvedUnitId = $child['id'];
+                                $resolvedUnitName = $child['nama_unit_kerja'];
+                                break;
+                            }
+                            if (strpos($childName, 'PENGADAAN') !== false && preg_match('/\b(PENGADAAN|BARANG DAN JASA|BARANG\/JASA|PBJ|LPSE)\b/i', $normSearch)) {
+                                $resolvedUnitId = $child['id'];
+                                $resolvedUnitName = $child['nama_unit_kerja'];
+                                break;
+                            }
+                            if (strpos($childName, 'UMUM') !== false && preg_match('/\b(RUMAH TANGGA|PERLENGKAPAN|TU PIMPINAN|TATA USAHA PIMPINAN|KEPEGAWAIAN SETDA)\b/i', $normSearch)) {
+                                $resolvedUnitId = $child['id'];
+                                $resolvedUnitName = $child['nama_unit_kerja'];
+                                break;
+                            }
+                            if (strpos($childName, 'ORGANISASI') !== false && preg_match('/\b(ORGANISASI|KELEMBAGAAN|TATA LAKSANA|REFORMASI BIROKRASI|ANJAB)\b/i', $normSearch)) {
+                                $resolvedUnitId = $child['id'];
+                                $resolvedUnitName = $child['nama_unit_kerja'];
+                                break;
+                            }
+                            if (strpos($childName, 'KESRA') !== false && preg_match('/\b(KESRA|KEMASYARAKATAN|KESEJAHTERAAN|BINA MENTAL|SPIRITUAL|SOSIAL KEMASYARAKATAN)\b/i', $normSearch)) {
+                                $resolvedUnitId = $child['id'];
+                                $resolvedUnitName = $child['nama_unit_kerja'];
+                                break;
+                            }
+                            if (strpos($childName, 'PEREKONOMIAN') !== false && preg_match('/\b(PEREKONOMIAN|BUMD|BLUD|SDA|SUMBER DAYA ALAM)\b/i', $normSearch)) {
+                                $resolvedUnitId = $child['id'];
+                                $resolvedUnitName = $child['nama_unit_kerja'];
+                                break;
+                            }
+                            if (strpos($childName, 'PEMERINTAHAN') !== false && preg_match('/\b(PEMERINTAHAN|KEWILAYAHAN|OTONOMI DAERAH)\b/i', $normSearch)) {
+                                $resolvedUnitId = $child['id'];
+                                $resolvedUnitName = $child['nama_unit_kerja'];
+                                break;
+                            }
+                            if (strpos($childName, 'PEMBANGUNAN') !== false && preg_match('/\b(PEMBANGUNAN|PENGENDALIAN PROGRAM|EVALUASI PROGRAM|EVALUASI DAN PELAPORAN)\b/i', $normSearch)) {
+                                $resolvedUnitId = $child['id'];
+                                $resolvedUnitName = $child['nama_unit_kerja'];
+                                break;
+                            }
+                            if (strpos($childName, 'HUKUM') !== false && preg_match('/\b(HUKUM|PERUNDANG-UNDANGAN|BANTUAN HUKUM|DOKUMENTASI HUKUM|PENYULUH HUKUM|ANALIS HUKUM)\b/i', $normSearch)) {
+                                $resolvedUnitId = $child['id'];
+                                $resolvedUnitName = $child['nama_unit_kerja'];
+                                break;
+                            }
+                            if (strpos($childName, 'PERENCANAAN') !== false && preg_match('/\b(PERENCANAAN|KEUANGAN|AKUNTANSI|PERENCANA)\b/i', $normSearch)) {
+                                $resolvedUnitId = $child['id'];
+                                $resolvedUnitName = $child['nama_unit_kerja'];
+                                break;
+                            }
                         }
 
                         // Mapping alias penomoran SMP per-kecamatan format lama SIMPEG
