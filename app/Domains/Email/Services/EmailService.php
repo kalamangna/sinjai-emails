@@ -1252,8 +1252,17 @@ class EmailService
                 }
             }
 
+            $eselonId = array_key_exists('eselon_id', $updateData) ? $updateData['eselon_id'] : ($currentEmail['eselon_id'] ?? null);
+            $eselonName = null;
+            if (!empty($eselonId)) {
+                $eselonModel = new \App\Shared\Models\EselonModel();
+                $es = $eselonModel->find($eselonId);
+                $eselonName = $es ? $es['nama_eselon'] : null;
+            }
+
             $updateData['unit_kerja_name'] = $unitKerjaName;
             $updateData['parent_unit_kerja_name'] = $parentUnitKerjaName;
+            $updateData['eselon_name'] = $eselonName;
 
             $responseData = array_merge($currentEmail ?: [], $updateData);
 

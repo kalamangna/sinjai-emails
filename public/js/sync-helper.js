@@ -200,7 +200,8 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
             jabatan: elements.jabatan ? elements.jabatan.innerHTML : '',
             pangkat: elements.pangkat ? elements.pangkat.innerHTML : '',
             golru: elements.golru ? elements.golru.innerHTML : '',
-            unit: elements.unit ? elements.unit.innerHTML : ''
+            unit: elements.unit ? elements.unit.innerHTML : '',
+            eselon: elements.eselon ? elements.eselon.innerHTML : ''
         };
 
         // Render Tailwind skeleton pulse placeholders
@@ -215,6 +216,9 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
         }
         if (elements.unit) {
             elements.unit.innerHTML = '<div class="space-y-1.5 py-0.5"><div class="h-2.5 bg-slate-200 rounded animate-pulse w-24"></div><div class="h-3.5 bg-slate-200 rounded animate-pulse w-44"></div></div>';
+        }
+        if (elements.eselon && elements.eselonWrapper && !elements.eselonWrapper.classList.contains('hidden')) {
+            elements.eselon.innerHTML = '<div class="h-3.5 bg-slate-200 rounded animate-pulse w-10 my-0.5 inline-block"></div>';
         }
 
         try {
@@ -244,6 +248,7 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
                     if (elements.pangkat) elements.pangkat.innerHTML = originalContents.pangkat;
                     if (elements.golru) elements.golru.innerHTML = originalContents.golru;
                     if (elements.unit) elements.unit.innerHTML = originalContents.unit;
+                    if (elements.eselon) elements.eselon.innerHTML = originalContents.eselon;
 
                     const errorMsg = `Pegawai dengan NIP ${nip || email} tidak terdaftar di SIMPEG.`;
                     if (typeof window.showGlobalError === 'function') {
@@ -286,12 +291,22 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
                         elements.unit.innerHTML = originalContents.unit;
                     }
                 }
+
+                if (elements.eselon && elements.eselonWrapper) {
+                    if (data.data.eselon_name) {
+                        elements.eselon.textContent = data.data.eselon_name;
+                        elements.eselonWrapper.classList.remove('hidden');
+                    } else {
+                        elements.eselonWrapper.classList.add('hidden');
+                    }
+                }
                 return true;
             } else {
                 if (elements.jabatan) elements.jabatan.innerHTML = originalContents.jabatan;
                 if (elements.pangkat) elements.pangkat.innerHTML = originalContents.pangkat;
                 if (elements.golru) elements.golru.innerHTML = originalContents.golru;
                 if (elements.unit) elements.unit.innerHTML = originalContents.unit;
+                if (elements.eselon) elements.eselon.innerHTML = originalContents.eselon;
 
                 const title = fetchResult.isRateLimited ? 'Rate Limit Terlampaui' : 'Gagal Sinkronisasi Pegawai';
                 const msg = fetchResult.isRateLimited 
@@ -312,6 +327,7 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
             if (elements.pangkat) elements.pangkat.innerHTML = originalContents.pangkat;
             if (elements.golru) elements.golru.innerHTML = originalContents.golru;
             if (elements.unit) elements.unit.innerHTML = originalContents.unit;
+            if (elements.eselon) elements.eselon.innerHTML = originalContents.eselon;
 
             if (typeof window.showGlobalError === 'function') {
                 window.showGlobalError('Kesalahan Jaringan', 'Gagal menghubungi server API.');

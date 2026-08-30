@@ -183,14 +183,12 @@
                                             <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px] font-bold uppercase border border-slate-200"><?= !empty($email['status_asn']) ? esc($email['status_asn']) : 'NON-ASN' ?></span>
                                         </p>
                                     </div>
-                                    <?php if (($email['status_asn_id'] ?? 0) == 1 && !empty($email['eselon_name'])): ?>
-                                        <div>
-                                            <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">Eselon</label>
-                                            <p class="text-sm font-semibold text-slate-800 uppercase mt-1">
-                                                <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px] font-bold uppercase border border-slate-200"><?= $email['eselon_name'] ?></span>
-                                            </p>
-                                        </div>
-                                    <?php endif; ?>
+                                    <div id="eselon-wrapper" class="<?= (($email['status_asn_id'] ?? 0) == 1 && !empty($email['eselon_name'])) ? '' : 'hidden' ?>">
+                                        <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">Eselon</label>
+                                        <p class="text-sm font-semibold text-slate-800 uppercase mt-1">
+                                            <span id="eselon-text" class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px] font-bold uppercase border border-slate-200"><?= esc($email['eselon_name'] ?? '') ?></span>
+                                        </p>
+                                    </div>
                                 </div>
 
                                 <?php if (($email['status_asn_id'] ?? 0) == 1): ?>
@@ -489,7 +487,9 @@
             jabatan: document.getElementById('jabatan-text'),
             pangkat: document.getElementById('pangkat-text'),
             golru: document.getElementById('golru-text'),
-            unit: document.getElementById('unit-kerja-container')
+            unit: document.getElementById('unit-kerja-container'),
+            eselon: document.getElementById('eselon-text'),
+            eselonWrapper: document.getElementById('eselon-wrapper')
         };
         syncSinglePegawai(nip, btn, elements, email);
     }
