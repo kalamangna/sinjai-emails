@@ -1588,7 +1588,7 @@ class EmailService
 
         // Bersihkan embel-embel nama instansi di ujung nama Kabid/Kasubag/Kasi/Kasubid
         if (preg_match('/^(KEPALA BIDANG|KEPALA SUB BAGIAN|KEPALA SEKSI|KEPALA SUB BIDANG)\s+/i', $jab)) {
-            $jab = preg_replace('/\s+(SEKRETARIAT|PADA|KEC\.|KECAMATAN|DINAS|BADAN|INSPEKTORAT|SATPOL PP|SATUAN POLISI|UPTD RSUD|RSUD|UPTD PUSKESMAS|PUSKESMAS|UPTD)\s+.*$/i', '', $jab);
+            $jab = preg_replace('/\s+(SEKRETARIAT|PADA|KEC\.|KECAMATAN|DINAS|BADAN|INSPEKTORAT|SATPOL PP|SATUAN POLISI|UPTD RSUD|RSUD|UPTD PUSKESMAS|PUSKESMAS|UPTD|KELURAHAN|KEL\.)\s+.*$/i', '', $jab);
         }
 
         // Bersihkan embel-embel nama sekolah pada jabatan Guru (karena sudah tertera di kolom Unit Kerja)
