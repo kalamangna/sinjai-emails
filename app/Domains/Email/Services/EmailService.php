@@ -1145,7 +1145,8 @@ class EmailService
                 $rawJabatanGrup = $source['jabatan_grup'] ?? '';
                 $normalizeForMatching = function($str) {
                     $s = mb_strtoupper((string)$str, 'UTF-8');
-                    $s = preg_replace('/\b((UPTD\s+)?(SD\s*NEG\.?\s*NO\.?|SD\s*NEGERI\s*NO\.?|SD\s*NEGERI|SD\s*NEG\.?|SDN))\b/i', 'SDN', $s);
+                    $s = preg_replace('/\b(KAB\.\s*SINJAI|KABUPATEN\s*SINJAI|KAB\s*SINJAI)\b/i', '', $s);
+                    $s = preg_replace('/\b((UPTD\s+)?(SD\s*NEG\.?\s*NO\.?|SD\s*NEGERI\s*NO\.?|SD\s*NEGERI|SD\s*NEG\.?|SDN\s*NO\.?|SDN))\b/i', 'SDN', $s);
                     $s = preg_replace('/\b((UPTD\s+)?(SMP\s*NEGERI|SMPN))\b/i', 'SMPN', $s);
                     $s = preg_replace('/\b((UPTD\s+)?(SMA\s*NEGERI|SMAN))\b/i', 'SMAN', $s);
                     $s = preg_replace('/\b((UPTD\s+)?(TK\s*NEGERI|TK\s*PERTIWI|TK\s*PGRI|TK\s*DHARMA\s*WANITA|TK\s*AISYIYAH|TKN|TK\s*NEG\.?))\b/i', 'TKN', $s);
@@ -1164,6 +1165,14 @@ class EmailService
                     $spellingFix = [
                         'SANGIASERRI'   => 'SANGIASSERI',   // TK Pertiwi III Sangiaserri Sinjai Selatan
                         'SAOTENGAH'     => 'SATENGAH',      // SDN No. 10 Saotengah (DB: SATENGAH)
+                        'TARANGKEKE'    => '235 TARANGKEKE',
+                        'PAOLOTONGE'    => 'PALOTTONGNGENG',
+                        'PAALOTONNGE'   => 'PALOTTONGNGENG',
+                        'MACCONGGI'     => '185 MACCONGI',
+                        'CONGOE'        => 'CONGKOE',
+                        'BATULEPPA'     => 'BATU LAPPA',
+                        'PUSSANTI'      => '76 PUSANTI',
+                        '277 BALANG'    => '227 BALANG',
                     ];
                     foreach ($spellingFix as $wrong => $correct) {
                         $s = str_ireplace($wrong, $correct, $s);
@@ -1218,11 +1227,10 @@ class EmailService
                             break;
                         }
 
-                        // SD number-based matching: cocokkan nomor SD dari SIMPEG (misal: SDN No. 10, SDN No.205)
-                        // ke format DB (SD NEG. NO. 10, SD NEG. NO. 205) — berguna saat nama desa berbeda ejaan
+                        // SD number-based matching: cocokkan nomor SD dari SIMPEG ke format DB
                         if ($searchIsSd && $childIsSd) {
-                            if (preg_match('/\bSD[N]?\s*(?:NO\.?\s*|NEGERI\s*(?:NO\.?\s*)?)(\d+)\b/i', $normSearch, $mSearch)
-                                && preg_match('/\bSD\s*NEG\.?\s*NO\.?\s*(\d+)\b/i', $childName, $mChild)) {
+                            if (preg_match('/\bSDN\s*(?:NO\s*)?(\d+)\b/i', $normSearch, $mSearch)
+                                && preg_match('/\bSDN\s*(?:NO\s*)?(\d+)\b/i', $normChild, $mChild)) {
                                 if ((int)$mSearch[1] === (int)$mChild[1]) {
                                     $resolvedUnitId = $child['id'];
                                     $resolvedUnitName = $child['nama_unit_kerja'];
@@ -1264,16 +1272,56 @@ class EmailService
                         if ($searchIsSmp && $childIsSmp) {
                             // Tabel: [keyword_kecamatan => [nomor_kecamatan => nama_UPTD_kabupaten]]
                             $smpDistrictMap = [
-                                'TELLULIMPOE'  => [
+                                'TELLULIMPOE'    => [
                                     '1' => 'UPTD SMP NEGERI 10 SINJAI',
                                     '2' => 'UPTD SMP NEGERI 19 SINJAI',
                                     '3' => 'UPTD SMP NEGERI 20 SINJAI',
                                     '4' => 'UPTD SMP NEGERI 33 SINJAI',
                                 ],
-                                'BULUPODDO'    => [
+                                'BULUPODDO'      => [
                                     '1' => 'UPTD SMP NEGERI 9 SINJAI',
                                     '2' => 'UPTD SMP NEGERI 13 SINJAI',
                                     '3' => 'UPTD SMP NEGERI 21 SINJAI',
+                                    '4' => 'UPTD SMP NEGERI 36 SINJAI',
+                                ],
+                                'PULAU SEMBILAN' => [
+                                    '1' => 'UPTD SMP NEGERI 14 SINJAI',
+                                ],
+                                'SINJAI BARAT'   => [
+                                    '1' => 'UPTD SMP NEGERI 8 SINJAI',
+                                    '2' => 'UPTD SMP NEGERI 12 SINJAI',
+                                    '3' => 'UPTD SMP NEGERI 17 SINJAI',
+                                    '4' => 'UPTD SMP NEGERI 26 SINJAI',
+                                ],
+                                'SINJAI BORONG'  => [
+                                    '1' => 'UPTD SMP NEGERI 11 SINJAI',
+                                    '2' => 'UPTD SMP NEGERI 18 SINJAI',
+                                    '3' => 'UPTD SMP NEGERI 23 SINJAI',
+                                ],
+                                'SINJAI SELATAN' => [
+                                    '1' => 'UPTD SMP NEGERI 3 SINJAI',
+                                    '2' => 'UPTD SMP NEGERI 7 SINJAI',
+                                    '3' => 'UPTD SMP NEGERI 15 SINJAI',
+                                    '4' => 'UPTD SMP NEGERI 22 SINJAI',
+                                    '5' => 'UPTD SMP NEGERI 24 SINJAI',
+                                    '6' => 'UPTD SMP NEGERI 29 SINJAI',
+                                    '7' => 'UPTD SMP NEGERI 30 SINJAI',
+                                ],
+                                'SINJAI TENGAH'  => [
+                                    '1' => 'UPTD SMP NEGERI 5 SINJAI',
+                                    '2' => 'UPTD SMP NEGERI 16 SINJAI',
+                                    '3' => 'UPTD SMP NEGERI 25 SINJAI',
+                                ],
+                                'SINJAI TIMUR'   => [
+                                    '1' => 'UPTD SMP NEGERI 4 SINJAI',
+                                    '2' => 'UPTD SMP NEGERI 6 SINJAI',
+                                    '3' => 'UPTD SMP NEGERI 27 SINJAI',
+                                    '4' => 'UPTD SMP NEGERI 32 SINJAI',
+                                ],
+                                'SINJAI UTARA'   => [
+                                    '1' => 'UPTD SMP NEGERI 1 SINJAI',
+                                    '2' => 'UPTD SMP NEGERI 2 SINJAI',
+                                    '3' => 'UPTD SMP NEGERI 3 SINJAI',
                                 ],
                             ];
                             foreach ($smpDistrictMap as $kecKeyword => $numMap) {
@@ -1291,12 +1339,22 @@ class EmailService
                             // Mapping SMP Satap (Satu Atap) ke UPTD SMP Negeri Sinjai
                             $satapMap = [
                                 'KARANGKO'      => 'UPTD SMP NEGERI 28 SINJAI',
+                                'KANRUNG'       => 'UPTD SMP NEGERI 28 SINJAI',
+                                'SINJAI TENGAH' => 'UPTD SMP NEGERI 28 SINJAI',
                                 'PATTONGKO'     => 'UPTD SMP NEGERI 33 SINJAI',
                                 'BURUNG LOE'    => 'UPTD SMP NEGERI 38 SINJAI',
+                                'BURUNG LOE I'  => 'UPTD SMP NEGERI 38 SINJAI',
+                                'BURUNGLOE'     => 'UPTD SMP NEGERI 38 SINJAI',
                                 'KANALO'        => 'UPTD SMP NEGERI 35 SINJAI',
+                                'KANALO I'      => 'UPTD SMP NEGERI 35 SINJAI',
+                                'KANALO II'     => 'UPTD SMP NEGERI 35 SINJAI',
                                 'BALAPPANGI'    => 'UPTD SMP NEGERI 36 SINJAI',
-                                'BARAMBANG'     => 'UPTD SMP NEGERI 39 SINJAI',
+                                'PALANGKA'      => 'UPTD SMP NEGERI 37 SINJAI',
                                 'BIKERU'        => 'UPTD SMP NEGERI 37 SINJAI',
+                                'BARAMBANG'     => 'UPTD SMP NEGERI 39 SINJAI',
+                                'TASOSSO'       => 'UPTD SMP NEGERI 39 SINJAI',
+                                'TASSOSO'       => 'UPTD SMP NEGERI 39 SINJAI',
+                                'TERASA'        => 'UPTD SMP NEGERI 40 SINJAI',
                                 'PUNCAK'        => 'UPTD SMP NEGERI 40 SINJAI',
                             ];
                             foreach ($satapMap as $keyword => $targetName) {
@@ -1305,6 +1363,15 @@ class EmailService
                                     $resolvedUnitName = $child['nama_unit_kerja'];
                                     break 2;
                                 }
+                            }
+                        }
+
+                        // Mapping khusus TK Negeri
+                        if ($searchIsTk && $childIsTk) {
+                            if (strpos($normSearch, 'MANGARABOMBANG') !== false && $childName === 'TK NEGERI V SINJAI TIMUR') {
+                                $resolvedUnitId = $child['id'];
+                                $resolvedUnitName = $child['nama_unit_kerja'];
+                                break;
                             }
                         }
                         // Mapping khusus RSUD Pratama Bulupancing di bawah Dinas Kesehatan

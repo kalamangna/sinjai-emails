@@ -5,6 +5,16 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [30 Agustus 2026] — Penyempurnaan Pemetaan Otomatis Sub-Unit Kerja Sekolah (SD, SMP, Satap, TK)
+
+- **Penyempurnaan Algoritma Pemetaan Sekolah ke Sub-Unit Dinas Pendidikan**:
+  - Menyelaraskan pencocokan penomoran UPTD SD Negeri (`SDN [nomor]` $\rightarrow$ `SD NEG. NO. [nomor]`) agar langsung terpetakan secara presisi tanpa terhalang perbedaan penulisan nama desa/kabupaten pada SIMPEG.
+  - Melengkapi tabel relasi SMP format per-kecamatan di seluruh 9 kecamatan ke UPTD SMP Negeri resmi Kabupaten Sinjai (UPTD SMPN 1 s.d. 40 Sinjai).
+  - Melengkapi pemetaan SMP Satu Atap (Satap) seperti Satap Sinjai Tengah/Kanrung (UPTD SMPN 28), Satap Burung Loe (UPTD SMPN 38), Satap Tasosso (UPTD SMPN 39), Satap Terasa (UPTD SMPN 40), Satap Balappangi (UPTD SMPN 36), Satap Palangka (UPTD SMPN 37), dan Satap Kanalo (UPTD SMPN 35).
+  - Menambahkan koreksi typo SIMPEG dan alias khusus penamaan sekolah (contoh: SDN 253 Tarangkeke $\rightarrow$ SD NEG. NO. 235 TARANGKEKE, SDN Pussanti $\rightarrow$ SD NEG. NO. 76 PUSANTI, SDN 277 Balang $\rightarrow$ SD NEG. NO. 227 BALANG, TK Pertiwi V Mangarabombang $\rightarrow$ TK NEGERI V SINJAI TIMUR).
+
+---
+
 # [30 Agustus 2026] — Penyempurnaan Normalisasi Jabatan Fungsional Guru & Tenaga Pendidik
 
 - **Penyempurnaan Logika Normalisasi Jabatan Guru**:
