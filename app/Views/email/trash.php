@@ -14,8 +14,6 @@
                 <thead class="bg-slate-50 text-slate-400 uppercase text-[10px] font-bold tracking-widest">
                     <tr>
                         <th class="px-6 py-3 border-b border-slate-200">Akun / Pengguna</th>
-                        <th class="px-6 py-3 border-b border-slate-200">Kepegawaian</th>
-                        <th class="px-6 py-3 border-b border-slate-200">Unit Kerja</th>
                         <th class="px-6 py-3 border-b border-slate-200">Tgl Dihapus</th>
                         <th class="px-6 py-3 border-b border-slate-200 text-center">Aksi</th>
                     </tr>
@@ -23,7 +21,7 @@
                 <tbody class="divide-y divide-slate-100">
                     <?php if (empty($emails)): ?>
                         <tr>
-                            <td colspan="5" class="px-6 py-20 text-center">
+                            <td colspan="3" class="px-6 py-20 text-center">
                                 <div class="flex flex-col items-center justify-center">
                                     <div class="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center mb-3">
                                         <i class="fas fa-search text-slate-300 text-lg"></i>
@@ -39,28 +37,6 @@
                                     <div class="flex flex-col">
                                         <span class="font-medium text-slate-800 lowercase leading-tight"><?= esc($email['email']) ?></span>
                                         <span class="text-xs font-bold text-slate-800 uppercase tracking-tight mt-0.5"><?= esc($email['name'] ?? '-') ?></span>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <div class="flex flex-col">
-                                        <?php if (!empty($email['nip'])): ?>
-                                            <span class="text-[10px] font-medium text-slate-500 font-mono tracking-tight"><?= esc($email['nip']) ?></span>
-                                        <?php else: ?>
-                                            <span class="text-[10px] font-medium text-slate-400 italic">Tanpa NIP</span>
-                                        <?php endif; ?>
-                                        <span class="text-xs font-semibold text-slate-700 uppercase tracking-tight mt-0.5"><?= esc($email['jabatan'] ?: '-') ?></span>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <div class="flex flex-col">
-                                        <?php if (!empty($email['parent_unit_kerja_name'])): ?>
-                                            <span class="text-[10px] font-bold text-slate-700 uppercase leading-none"><?= esc($email['parent_unit_kerja_name']) ?></span>
-                                            <span class="text-xs font-bold text-slate-800 uppercase tracking-tight mt-1"><?= esc($email['unit_kerja_name']) ?></span>
-                                        <?php elseif (!empty($email['unit_kerja_name'])): ?>
-                                            <span class="text-xs font-bold text-slate-800 uppercase tracking-tight"><?= esc($email['unit_kerja_name']) ?></span>
-                                        <?php else: ?>
-                                            <span class="text-xs text-slate-400 italic">-</span>
-                                        <?php endif; ?>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
