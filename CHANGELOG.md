@@ -5,6 +5,16 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [31 Agustus 2026] — Pemetaan Presisi 10 Bagian Setda & Normalisasi Kasubag TU Pimpinan
+
+- **Penyempurnaan Pemetaan 10 Bagian Sekretariat Daerah**:
+  - Memperluas aturan kata kunci subbagian (seperti Subbagian TU Pimpinan, BUMD/BLUD, Penyusunan Program, Perbendaharaan) ke masing-masing Bagian Setda terkait.
+  - Memperketat regex pimpinan utama Setda (`isTopSetdaLeader`) agar tidak keliru menandai `Kepala Sub Bagian TU Pimpinan Sekda, Staf Ahli dan Kepegawaian` sebagai pimpinan puncak, sehingga dapat dipetakan secara akurat ke *Bagian Umum dan Perlengkapan*.
+- **Normalisasi Jabatan Kasubag TU Pimpinan**:
+  - Menjaga nomenklatur `KEPALA SUB BAGIAN TATA USAHA PIMPINAN SEKDA, STAF AHLI DAN KEPEGAWAIAN` agar tidak diubah menjadi `KEPALA TATA USAHA`.
+
+---
+
 # [31 Agustus 2026] — Filter Dengan / Tanpa Sub-Unit pada Detail Unit Kerja
 
 - **Filter Cakupan Sub-Unit pada Detail Unit Kerja**:

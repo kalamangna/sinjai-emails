@@ -1140,11 +1140,11 @@ class EmailService
                 // Pimpinan Utama Setda (Sekda, Asisten, Staf Ahli, Bupati, Wabup) selalu berada langsung di SEKRETARIAT DAERAH (bukan sub-unit Bagian)
                 $isTopSetdaLeader = false;
                 $upperRawJab = strtoupper($rawJabatan ?? '');
-                if (stripos($upperRawJab, 'SEKRETARIS DAERAH') !== false 
-                    || (stripos($upperRawJab, 'ASISTEN') !== false && stripos($upperRawJab, 'ASISTEN APOTEKER') === false)
-                    || stripos($upperRawJab, 'STAF AHLI') !== false
-                    || stripos($upperRawJab, 'BUPATI') !== false
-                    || stripos($upperRawJab, 'WAKIL BUPATI') !== false) {
+                if ((preg_match('/\b(SEKRETARIS DAERAH|SEKDA)\b/i', $upperRawJab) && stripos($upperRawJab, 'TATA USAHA PIMPINAN') === false && stripos($upperRawJab, 'TU PIMPINAN') === false)
+                    || (preg_match('/\bASISTEN\s+(?:PEMERINTAHAN|PEREKONOMIAN|ADMINISTRASI|BIDANG|SEKRETARIAT)\b/i', $upperRawJab) || (stripos($upperRawJab, 'ASISTEN') === 0 && stripos($upperRawJab, 'ASISTEN APOTEKER') === false))
+                    || (preg_match('/\bSTAF\s+AHLI\s+BUPATI\b/i', $upperRawJab) || (stripos($upperRawJab, 'STAF AHLI') === 0))
+                    || (stripos($upperRawJab, 'BUPATI') === 0 && stripos($upperRawJab, 'WAKIL BUPATI') === false)
+                    || (stripos($upperRawJab, 'WAKIL BUPATI') === 0)) {
                     $isTopSetdaLeader = true;
                 }
 
@@ -1266,7 +1266,7 @@ class EmailService
                                 $resolvedUnitName = $child['nama_unit_kerja'];
                                 break;
                             }
-                            if (strpos($childName, 'UMUM') !== false && preg_match('/\b(RUMAH TANGGA|PERLENGKAPAN|TU PIMPINAN|TATA USAHA PIMPINAN|KEPEGAWAIAN SETDA)\b/i', $normSearch)) {
+                            if (strpos($childName, 'UMUM') !== false && preg_match('/\b(RUMAH TANGGA|PERLENGKAPAN|TU PIMPINAN|TATA USAHA PIMPINAN|TATA USAHA DAN KEPEGAWAIAN|KEPEGAWAIAN SETDA|BAGIAN UMUM)\b/i', $normSearch)) {
                                 $resolvedUnitId = $child['id'];
                                 $resolvedUnitName = $child['nama_unit_kerja'];
                                 break;
@@ -1281,7 +1281,7 @@ class EmailService
                                 $resolvedUnitName = $child['nama_unit_kerja'];
                                 break;
                             }
-                            if (strpos($childName, 'PEREKONOMIAN') !== false && preg_match('/\b(PEREKONOMIAN|BUMD|BLUD|SDA|SUMBER DAYA ALAM)\b/i', $normSearch)) {
+                            if (strpos($childName, 'PEREKONOMIAN') !== false && preg_match('/\b(PEREKONOMIAN|BUMD|BLUD|BADAN USAHA MILIK DAERAH|BADAN LAYANAN UMUM|SDA|SUMBER DAYA ALAM)\b/i', $normSearch)) {
                                 $resolvedUnitId = $child['id'];
                                 $resolvedUnitName = $child['nama_unit_kerja'];
                                 break;
@@ -1291,7 +1291,7 @@ class EmailService
                                 $resolvedUnitName = $child['nama_unit_kerja'];
                                 break;
                             }
-                            if (strpos($childName, 'PEMBANGUNAN') !== false && preg_match('/\b(PEMBANGUNAN|PENGENDALIAN PROGRAM|EVALUASI PROGRAM|EVALUASI DAN PELAPORAN)\b/i', $normSearch)) {
+                            if (strpos($childName, 'PEMBANGUNAN') !== false && preg_match('/\b(PEMBANGUNAN|PENYUSUNAN PROGRAM|PENYUSUN PROGRAM|PENGENDALIAN PROGRAM|EVALUASI PROGRAM|EVALUASI DAN PELAPORAN)\b/i', $normSearch)) {
                                 $resolvedUnitId = $child['id'];
                                 $resolvedUnitName = $child['nama_unit_kerja'];
                                 break;
@@ -1301,7 +1301,7 @@ class EmailService
                                 $resolvedUnitName = $child['nama_unit_kerja'];
                                 break;
                             }
-                            if (strpos($childName, 'PERENCANAAN') !== false && preg_match('/\b(PERENCANAAN|KEUANGAN|AKUNTANSI|PERENCANA)\b/i', $normSearch)) {
+                            if (strpos($childName, 'PERENCANAAN') !== false && preg_match('/\b(PERENCANAAN|KEUANGAN|PERBENDAHARAAN|AKUNTANSI|PERENCANA)\b/i', $normSearch)) {
                                 $resolvedUnitId = $child['id'];
                                 $resolvedUnitName = $child['nama_unit_kerja'];
                                 break;
@@ -1822,7 +1822,7 @@ class EmailService
         if ($isHospital && preg_match('/\b(KTU|KEPALA\s+TU|KASUBAG\s+TU|KASUBAG\s+TATA\s+USAHA|KEPALA\s+TATA\s+USAHA|KEPALA\s+SUB\s*BAGIAN\s+TATA\s+USAHA|SUB\s*BAGIAN\s+TATA\s+USAHA)\b/i', $jab)) {
             $jab = 'KEPALA SUB BAGIAN TATA USAHA';
         } else {
-            $jab = preg_replace('/\b(KTU|KEPALA\s+TU|KASUBAG\s+TU|KASUBAG\s+TATA\s+USAHA(?! DAN)|KEPALA\s+SUB\s*BAGIAN\s+TATA\s+USAHA(?! DAN)|SUB\s*BAGIAN\s+TATA\s+USAHA(?! DAN))\b/i', 'KEPALA TATA USAHA', $jab);
+            $jab = preg_replace('/\b(KTU|KEPALA\s+TU|KASUBAG\s+TU|KASUBAG\s+TATA\s+USAHA(?!\s+(DAN|PIMPINAN))|KEPALA\s+SUB\s*BAGIAN\s+TATA\s+USAHA(?!\s+(DAN|PIMPINAN))|SUB\s*BAGIAN\s+TATA\s+USAHA(?!\s+(DAN|PIMPINAN)))\b/i', 'KEPALA TATA USAHA', $jab);
         }
         $jab = preg_replace('/\b(KEPALA\s+TATA\s+USAHA|KEPALA)\s+UPT\s+(?!D\b)/i', '$1 UPTD ', $jab);
         $jab = preg_replace('/\bKASUBAG\b/i', 'KEPALA SUB BAGIAN', $jab);
