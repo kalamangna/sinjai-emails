@@ -1165,13 +1165,13 @@ class EmailService
                     $spellingFix = [
                         'SANGIASERRI'   => 'SANGIASSERI',   // TK Pertiwi III Sangiaserri Sinjai Selatan
                         'SAOTENGAH'     => 'SATENGAH',      // SDN No. 10 Saotengah (DB: SATENGAH)
-                        'TARANGKEKE'    => '235 TARANGKEKE',
+                        '253 TARANGKEKE'=> '235 TARANGKEKE',
                         'PAOLOTONGE'    => 'PALOTTONGNGENG',
                         'PAALOTONNGE'   => 'PALOTTONGNGENG',
-                        'MACCONGGI'     => '185 MACCONGI',
+                        'MACCONGGI'     => 'MACCONGI',
                         'CONGOE'        => 'CONGKOE',
                         'BATULEPPA'     => 'BATU LAPPA',
-                        'PUSSANTI'      => '76 PUSANTI',
+                        'PUSSANTI'      => 'PUSANTI',
                         '277 BALANG'    => '227 BALANG',
                     ];
                     foreach ($spellingFix as $wrong => $correct) {

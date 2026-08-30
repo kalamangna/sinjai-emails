@@ -5,6 +5,14 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [31 Agustus 2026] — Koreksi Spesifik Typo Penomoran & Ejaan Sekolah Dasar SIMPEG
+
+- **Penyempurnaan Regex & Ejaan Nama Sekolah**:
+  - Memperbaiki penanganan typo penomoran SD di SIMPEG (seperti `SDN No. 253 Tarangkeke` yang secara resmi adalah `SD NEG. NO. 235 TARANGKEKE`) agar tidak terjadi duplikasi nomor pada saat proses pencocokan string regex.
+  - Memastikan variasi nama SD seperti `Macconggi` langsung terpetakan ke `SD NEG. NO. 185 MACCONGI`.
+
+---
+
 # [30 Agustus 2026] — Penyempurnaan Pemetaan Otomatis Sub-Unit Kerja Sekolah (SD, SMP, Satap, TK)
 
 - **Penyempurnaan Algoritma Pemetaan Sekolah ke Sub-Unit Dinas Pendidikan**:
