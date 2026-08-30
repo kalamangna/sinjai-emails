@@ -250,23 +250,53 @@ class EmailApiController extends BaseController
         $nip = trim((string)$this->request->getVar('nip'));
         $email = trim((string)$this->request->getVar('email'));
 
-        if (empty($nip) && !empty($email)) {
-            $record = $this->emailModel->where('email', $email)->first();
-            if ($record && !empty($record['nip'])) {
-                $nip = $record['nip'];
-            }
+        $record = null;
+        if (!empty($email)) {
+            $record = $this->emailModel
+                ->select('emails.*, unit_kerja.nama_unit_kerja')
+                ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
+                ->where('emails.email', $email)
+                ->first();
+        } elseif (!empty($nip)) {
+            $record = $this->emailModel
+                ->select('emails.*, unit_kerja.nama_unit_kerja')
+                ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
+                ->where('emails.nip', $nip)
+                ->first();
+        }
+
+        if (empty($nip) && $record && !empty($record['nip'])) {
+            $nip = $record['nip'];
+        }
+
+        // Guard: Jika akun sudah terdata bukan PNS, skip hit API SIMPEG secara langsung
+        if ($record && !empty($record['status_asn_id']) && (int)$record['status_asn_id'] !== 1) {
+            return $this->response->setJSON([
+                'success' => true,
+                'skipped' => true,
+                'message' => 'Akun bukan berstatus PNS (API SIMPEG dilewati)',
+                'data'    => [
+                    'jabatan'               => $record['jabatan'] ?? '-',
+                    'pangkat_nama'          => $record['pangkat_nama'] ?? '-',
+                    'pangkat_golruang'      => $record['pangkat_golruang'] ?? '-',
+                    'unit_kerja_name'       => $record['nama_unit_kerja'] ?? ($record['unit_kerja_name'] ?? '-'),
+                    'parent_unit_kerja_name'=> $record['parent_unit_kerja_name'] ?? '',
+                    'eselon_name'           => null,
+                ]
+            ]);
         }
 
         if (empty($nip)) {
             return $this->response->setJSON(['success' => false, 'message' => 'NIP tidak ditemukan pada akun']);
         }
 
-        $result = $this->emailService->syncPegawaiFromApi($nip);
+        $result = $this->emailService->syncPegawaiFromApi($nip, $email);
 
         if (!empty($result['skipped'])) {
             $current = $result['current'] ?? [];
             return $this->response->setJSON([
                 'success' => true,
+                'skipped' => true,
                 'message' => $result['message'] ?? 'Akun bukan PNS - Data tidak disinkronkan',
                 'data'    => [
                     'jabatan'               => $current['jabatan'] ?? '-',
@@ -274,6 +304,7 @@ class EmailApiController extends BaseController
                     'pangkat_golruang'      => $current['pangkat_golruang'] ?? '-',
                     'unit_kerja_name'       => $current['nama_unit_kerja'] ?? ($current['unit_kerja_name'] ?? '-'),
                     'parent_unit_kerja_name'=> $current['parent_unit_kerja_name'] ?? '',
+                    'eselon_name'           => null,
                 ]
             ]);
         }

@@ -1029,21 +1029,27 @@ class EmailService
             ->findAll();
     }
 
-    public function syncPegawaiFromApi(string $nip): array
+    public function syncPegawaiFromApi(string $nip, ?string $fallbackEmail = null): array
     {
-        $currentEmail = $this->emailModel
+        $builder = $this->emailModel
             ->select('emails.*, unit_kerja.nama_unit_kerja')
-            ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
-            ->where('emails.nip', $nip)
-            ->first();
+            ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left');
 
-        // Guard: Pastikan hanya pegawai berstatus PNS (status_asn_id = 1) yang disinkronkan
+        if (!empty($nip)) {
+            $builder->where('emails.nip', $nip);
+        } elseif (!empty($fallbackEmail)) {
+            $builder->where('emails.email', $fallbackEmail);
+        }
+
+        $currentEmail = $builder->first();
+
+        // Guard: Pastikan hanya pegawai berstatus PNS (status_asn_id = 1) yang disinkronkan. Lewati hit API jika bukan PNS.
         if ($currentEmail && !empty($currentEmail['status_asn_id']) && (int)$currentEmail['status_asn_id'] !== 1) {
             return [
                 'success' => true,
                 'skipped' => true,
                 'reason'  => 'non_pns',
-                'message' => 'Hanya pegawai berstatus PNS yang dapat disinkronkan dari SIMPEG.',
+                'message' => 'Hanya pegawai berstatus PNS yang dapat disinkronkan dari SIMPEG (API dilewati).',
                 'current' => $currentEmail,
                 'data'    => [
                     'jabatan'          => $currentEmail['jabatan'] ?? '-',
