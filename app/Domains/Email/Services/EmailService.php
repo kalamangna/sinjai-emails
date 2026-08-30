@@ -1586,8 +1586,8 @@ class EmailService
         // Koreksi SUB. BAGIAN / SUB. BIDANG menjadi SUB BAGIAN / SUB BIDANG
         $jab = preg_replace('/\bSUB\.\s*/i', 'SUB ', $jab);
 
-        // Bersihkan embel-embel nama instansi di ujung nama Kabid/Kasubag/Kasi/Kasubid
-        if (preg_match('/^(KEPALA BIDANG|KEPALA SUB BAGIAN|KEPALA SEKSI|KEPALA SUB BIDANG)\s+/i', $jab)) {
+        // Bersihkan embel-embel nama instansi di ujung nama Pejabat Struktural & Staf Pelaksana
+        if (preg_match('/^(KEPALA BIDANG|KEPALA SUB BAGIAN|KEPALA SEKSI|KEPALA SUB BIDANG|PENGADMINISTRASI|PENGELOLA|OPERATOR|PRANATA|BENDAHARA|PENGEMUDI|PRAMU|PETUGAS|STAF|TEKNISI|FASILITATOR|PENYUSUN|PEMERIKSA|ANALIS)\b/i', $jab)) {
             $jab = preg_replace('/\s+(SEKRETARIAT|PADA|KEC\.|KECAMATAN|DINAS|BADAN|INSPEKTORAT|SATPOL PP|SATUAN POLISI|UPTD RSUD|RSUD|UPTD PUSKESMAS|PUSKESMAS|UPTD|KELURAHAN|KEL\.)\s+.*$/i', '', $jab);
         }
 
