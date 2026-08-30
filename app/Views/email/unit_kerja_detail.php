@@ -511,6 +511,9 @@ echo view('components/modal', [
                     height: 180,
                     fontFamily: 'Inter, sans-serif'
                 },
+                tooltip: {
+                    enabled: false
+                },
                 stroke: {
                     width: 2,
                     colors: ['#ffffff']
@@ -580,6 +583,9 @@ echo view('components/modal', [
                     type: 'donut',
                     height: 180,
                     fontFamily: 'Inter, sans-serif'
+                },
+                tooltip: {
+                    enabled: false
                 },
                 stroke: {
                     width: 2,

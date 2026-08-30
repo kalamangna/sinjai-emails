@@ -301,6 +301,9 @@
                 height: 180,
                 fontFamily: 'Inter, sans-serif'
             },
+            tooltip: {
+                enabled: false
+            },
             stroke: {
                 width: 2,
                 colors: ['#ffffff']

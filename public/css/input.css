@@ -58,3 +58,7 @@
 .apexcharts-canvas .apexcharts-datalabels-group .apexcharts-text.apexcharts-datalabel-label {
     font-size: 10px !important;
 }
+
+.apexcharts-canvas .apexcharts-tooltip {
+    pointer-events: none !important;
+}

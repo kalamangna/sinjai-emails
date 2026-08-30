@@ -5,6 +5,15 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [31 Agustus 2026] — Perbaikan Glitch Tooltip pada Donut Chart Status ASN & TTE
+
+- **Optimalisasi Tooltip Donut Chart**:
+  - Menonaktifkan *floating tooltip* bawaan ApexCharts (`tooltip: { enabled: false }`) pada grafik donut Status TTE dan Status ASN di halaman Detail Unit Kerja (`unit_kerja_detail.php`), Dashboard (`home/index.php`), Monitoring Web OPD (`web_opd/index.php`), dan Web Desa/Kelurahan (`web_desa_kelurahan/index.php`) untuk menghilangkan *glitch/flickering* saat kursor diarahkan ke irisan chart.
+  - Memanfaatkan indikator dinamis di bagian tengah lingkaran (*center donut label*) yang secara responsif menampilkan rincian nama kategori dan jumlah akun.
+  - Menambahkan aturan `pointer-events: none !important;` pada kelas `.apexcharts-tooltip` di `input.css`.
+
+---
+
 # [31 Agustus 2026] — Normalisasi Jabatan Kelurahan/Kecamatan & Pembersihan Penugasan Seksi
 
 - **Pembersihan Nama Kelurahan/Kecamatan pada Jabatan Struktural**:
