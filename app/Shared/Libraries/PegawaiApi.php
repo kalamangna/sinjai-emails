@@ -95,10 +95,10 @@ class PegawaiApi
     /**
      * Kirim HTTP request dengan penanganan otomatis Rate Limit (429/503/Timeout) & Exponential Backoff
      */
-    protected function requestWithRetry(string $url, array $options = [], string $method = 'GET', int $maxRetries = 3): array
+    protected function requestWithRetry(string $url, array $options = [], string $method = 'GET', int $maxRetries = 4): array
     {
         $attempts = 0;
-        $delayMs = 1500; // 1.5 detik initial delay
+        $delayMs = 2500; // 2.5 detik initial delay
 
         while ($attempts <= $maxRetries) {
             $attempts++;
@@ -109,11 +109,11 @@ class PegawaiApi
 
                 // Jika rate limit (429) atau server overload (503/504), lakukan backoff & retry
                 if (in_array($statusCode, [429, 503, 504]) && $attempts <= $maxRetries) {
-                    $jitter = rand(100, 500);
+                    $jitter = rand(200, 800);
                     $waitMs = $delayMs + $jitter;
                     log_message('warning', "SIMPEG API Rate Limited ({$statusCode}) on {$url}. Retrying in " . round($waitMs / 1000, 2) . "s (Attempt {$attempts}/{$maxRetries})...");
                     usleep($waitMs * 1000);
-                    $delayMs *= 2; // Exponential backoff (1.5s -> 3s -> 6s)
+                    $delayMs = min($delayMs * 2, 10000); // Exponential backoff (2.5s -> 5s -> 10s)
                     continue;
                 }
 
