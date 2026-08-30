@@ -5,6 +5,15 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [31 Agustus 2026] — Nomenklatur Kepala Bagian & Kasubag TU Kepegawaian Sekretariat DPRD
+
+- **Pemeliharaan Nama Lengkap Kepala Bagian Setwan & RSUD**:
+  - Mempertahankan nama lengkap Bagian pada Sekretariat DPRD (seperti `KEPALA BAGIAN UMUM DAN KEUANGAN`, `KEPALA BAGIAN PERSIDANGAN DAN PERUNDANG-UNDANGAN`, `KEPALA BAGIAN FASILITASI PENGANGGARAN DAN PENGAWASAN`) dan RSUD (`KEPALA BAGIAN TATA USAHA`) karena entitas tersebut tidak memiliki child unit terpisah.
+- **Standarisasi Kasubag Tata Usaha dan Kepegawaian**:
+  - Menetapkan nama baku `KEPALA SUB BAGIAN TATA USAHA DAN KEPEGAWAIAN` pada Sekretariat DPRD / OPD Induk dan membersihkan akhiran instansi (seperti `KEPALA TATA USAHA DAN KEPEGAWAIAN SEKRETARIAT DPRD KAB. SINJAI` $\rightarrow$ `KEPALA SUB BAGIAN TATA USAHA DAN KEPEGAWAIAN`).
+
+---
+
 # [31 Agustus 2026] — Pembersihan Nama Bidang Induk pada Kasi & Satpol PP/BPBD pada Kabid
 
 - **Pembersihan Nama Bidang Induk pada Jabatan Seksi & Subbagian**:

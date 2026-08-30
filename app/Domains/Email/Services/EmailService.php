@@ -1649,8 +1649,15 @@ class EmailService
         if (preg_match('/^CAMAT\b/i', $jab) || (preg_match('/\bCAMAT\b/i', $jab) && !preg_match('/\b(SEKRETARIS|SEKCAM|KEPALA\s+SEKSI|KASI|STAF|BENDAHARA|PENGELOLA|KECAMATAN)\b/i', $jab))) {
             return 'CAMAT';
         }
+        // KEPALA BAGIAN di Unit yang memiliki Child Unit Bagian (Setda Bagian Hukum/Umum) disederhanakan,
+        // sedangkan di Sekretariat DPRD dan RSUD (non-child unit), nama Bagian tetap dipertahankan penuh
         if (stripos($jab, 'KEPALA BAGIAN') === 0 || stripos($jab, 'KABAG') === 0) {
-            return 'KEPALA BAGIAN';
+            $jab = preg_replace('/^KABAG\b/i', 'KEPALA BAGIAN', $jab);
+            if (!empty($unitKerjaName) && strpos(strtoupper($unitKerjaName), 'BAGIAN ') === 0) {
+                return 'KEPALA BAGIAN';
+            }
+            $jab = preg_replace('/\s+(?:(?:PADA|DI)\s+)?(SEKRETARIAT\s+DPRD|SETWAN|KABUPATEN\s+SINJAI)\b.*$/i', '', $jab);
+            return trim($jab);
         }
         if (stripos($jab, 'KEPALA DINAS') === 0 || stripos($jab, 'KADIS') === 0) {
             return 'KEPALA DINAS';
@@ -1764,11 +1771,14 @@ class EmailService
         $isHospital = (!empty($unitKerjaName) && (stripos($unitKerjaName, 'RUMAH SAKIT') !== false || stripos($unitKerjaName, 'RSUD') !== false || stripos($unitKerjaName, 'PRATAMA') !== false))
                       || (stripos($jab, 'RSUD') !== false || stripos($jab, 'RUMAH SAKIT') !== false || stripos($jab, 'PRATAMA') !== false || stripos($jab, 'BULUPANCING') !== false);
 
+        // Koreksi Kasubag Tata Usaha dan Kepegawaian di OPD/Sekretariat
+        $jab = preg_replace('/^KEPALA\s+TATA\s+USAHA\s+DAN\s+KEPEGAWAIAN\b/i', 'KEPALA SUB BAGIAN TATA USAHA DAN KEPEGAWAIAN', $jab);
+
         // Standarisasi Singkatan Jabatan Struktural (KTU, Kepala TU, Kasubag, Kasubid, Kabid, Kasi, Kepala Tata Usaha)
         if ($isHospital && preg_match('/\b(KTU|KEPALA\s+TU|KASUBAG\s+TU|KASUBAG\s+TATA\s+USAHA|KEPALA\s+TATA\s+USAHA|KEPALA\s+SUB\s*BAGIAN\s+TATA\s+USAHA|SUB\s*BAGIAN\s+TATA\s+USAHA)\b/i', $jab)) {
             $jab = 'KEPALA SUB BAGIAN TATA USAHA';
         } else {
-            $jab = preg_replace('/\b(KTU|KEPALA\s+TU|KASUBAG\s+TU|KASUBAG\s+TATA\s+USAHA|KEPALA\s+SUB\s*BAGIAN\s+TATA\s+USAHA|SUB\s*BAGIAN\s+TATA\s+USAHA)\b/i', 'KEPALA TATA USAHA', $jab);
+            $jab = preg_replace('/\b(KTU|KEPALA\s+TU|KASUBAG\s+TU|KASUBAG\s+TATA\s+USAHA(?! DAN)|KEPALA\s+SUB\s*BAGIAN\s+TATA\s+USAHA(?! DAN)|SUB\s*BAGIAN\s+TATA\s+USAHA(?! DAN))\b/i', 'KEPALA TATA USAHA', $jab);
         }
         $jab = preg_replace('/\b(KEPALA\s+TATA\s+USAHA|KEPALA)\s+UPT\s+(?!D\b)/i', '$1 UPTD ', $jab);
         $jab = preg_replace('/\bKASUBAG\b/i', 'KEPALA SUB BAGIAN', $jab);
@@ -1790,7 +1800,7 @@ class EmailService
         }
         if (preg_match('/^(KEPALA BIDANG|KEPALA SUB BAGIAN|KEPALA SEKSI|KEPALA SUB BIDANG|SEKRETARIS|KEPALA DINAS|KEPALA BADAN|INSPEKTUR)\b/i', $jab)) {
             $jab = preg_replace('/\s+(?:(?:PADA|DI)\s+)?(DINAS|BADAN|INSPEKTORAT|SEKRETARIAT|KANTOR|KECAMATAN|KEC\.|UPTD|UPT|PUSKESMAS|RSUD|SATPOL\s*PP|SATUAN\s+POLISI|SATPOL|BPBD)\b.*$/i', '', $jab);
-            $jab = preg_replace('/\s+(?:(?:PADA|DI)\s+)?KABUPATEN\s+SINJAI\s*.*$/i', '', $jab);
+            $jab = preg_replace('/\s+(?:(?:PADA|DI)\s+)?(?:KABUPATEN|KAB\.)\s+SINJAI\s*.*$/i', '', $jab);
         }
 
         // Bersihkan nama puskesmas pada KTU Puskesmas (karena Puskesmas adalah child unit)
