@@ -387,9 +387,9 @@
         });
 
         if (!validContainers.length) {
-            const infoMsg = 'Tidak ada akun berstatus PNS yang dapat disinkronkan pada tabel / filter saat ini.';
+            const infoMsg = 'Hanya akun PNS yang dapat disinkronkan.';
             if (typeof window.showGlobalError === 'function') {
-                window.showGlobalError('Info Sinkronisasi', infoMsg);
+                window.showGlobalError('Info', infoMsg);
             } else {
                 alert(infoMsg);
             }
