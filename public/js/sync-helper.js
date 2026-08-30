@@ -215,7 +215,11 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
         const validContainers = Array.from(containers).filter(c => c.getAttribute('data-nip') && c.getAttribute('data-nip').trim() !== '');
 
         if (!validContainers.length) {
-            alert('Tidak ada data NIP yang dapat disinkronkan.');
+            if (typeof window.showGlobalError === 'function') {
+                window.showGlobalError('Info Sinkronisasi', 'Tidak ada data NIP yang dapat disinkronkan.');
+            } else {
+                alert('Tidak ada data NIP yang dapat disinkronkan.');
+            }
             return;
         }
 
@@ -328,6 +332,11 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
         btn.innerHTML = originalBtnContent;
         btn.disabled = false;
         btn.classList.remove('opacity-75', 'cursor-not-allowed');
-        alert(`Sinkronisasi Data Pegawai Selesai!\nTotal: ${processed}\nBerhasil: ${success}\nGagal: ${failed}`);
+
+        if (typeof window.showSyncResult === 'function') {
+            window.showSyncResult(processed, success, failed, true);
+        } else {
+            alert(`Sinkronisasi Data Pegawai Selesai!\nTotal: ${processed}\nBerhasil: ${success}\nGagal: ${failed}`);
+        }
     };
 }

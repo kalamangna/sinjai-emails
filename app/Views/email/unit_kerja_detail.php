@@ -765,7 +765,11 @@ echo view('components/modal', [
         const validContainers = Array.from(containers).filter(c => c.getAttribute('data-nip') && c.getAttribute('data-nip').trim() !== '');
         
         if (!validContainers.length) {
-            alert('Tidak ada data NIP yang dapat disinkronkan.');
+            if (typeof window.showGlobalError === 'function') {
+                window.showGlobalError('Info Sinkronisasi', 'Tidak ada data NIP yang dapat disinkronkan.');
+            } else {
+                alert('Tidak ada data NIP yang dapat disinkronkan.');
+            }
             return;
         }
 
