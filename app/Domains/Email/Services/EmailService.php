@@ -1541,7 +1541,7 @@ class EmailService
                         }
                     }
                 }
-                $jab = $chosen ?: $parts[0];
+                $jab = trim($chosen ?: $parts[0]);
             }
         }
 
