@@ -5,6 +5,17 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [31 Agustus 2026] — Normalisasi Jabatan Kelurahan/Kecamatan & Pembersihan Penugasan Seksi
+
+- **Pembersihan Nama Kelurahan/Kecamatan pada Jabatan Struktural**:
+  - Menghapus akhiran nama Kelurahan atau Kecamatan pada jabatan struktural Kasi dan Kasubag (seperti `KEPALA SEKSI PEMERINTAHAN KELURAHAN BALANGNIPA` $\rightarrow$ `KEPALA SEKSI PEMERINTAHAN`, `KEPALA SUB BAGIAN PROGRAM DAN KEUANGAN KEC. SINJAI UTARA` $\rightarrow$ `KEPALA SUB BAGIAN PROGRAM DAN KEUANGAN`).
+- **Pembersihan Penugasan Seksi pada Staf Pelaksana**:
+  - Menghapus embel-embel seksi/bidang penugasan pada staf pelaksana (*"PENGOLAH DATA DAN INFORMASI SEKSI PEMBANGUNAN..."* $\rightarrow$ *"PENGOLAH DATA DAN INFORMASI"*).
+- **Koreksi Typo**:
+  - Menambahkan koreksi otomatis kesalahan penulisan kata `PELAYANAAN` $\rightarrow$ **`PELAYANAN`**.
+
+---
+
 # [31 Agustus 2026] — Standarisasi Jabatan Fungsional Kesehatan & Jenjang Keterampilan
 
 - **Koreksi Ejaan Profesi Fisioterapis**:
