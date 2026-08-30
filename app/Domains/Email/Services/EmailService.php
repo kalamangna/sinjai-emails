@@ -1252,6 +1252,25 @@ class EmailService
                                     }
                                 }
                             }
+
+                            // Mapping SMP Satap (Satu Atap) ke UPTD SMP Negeri Sinjai
+                            $satapMap = [
+                                'KARANGKO'      => 'UPTD SMP NEGERI 28 SINJAI',
+                                'PATTONGKO'     => 'UPTD SMP NEGERI 33 SINJAI',
+                                'BURUNG LOE'    => 'UPTD SMP NEGERI 38 SINJAI',
+                                'KANALO'        => 'UPTD SMP NEGERI 35 SINJAI',
+                                'BALAPPANGI'    => 'UPTD SMP NEGERI 36 SINJAI',
+                                'BARAMBANG'     => 'UPTD SMP NEGERI 39 SINJAI',
+                                'BIKERU'        => 'UPTD SMP NEGERI 37 SINJAI',
+                                'PUNCAK'        => 'UPTD SMP NEGERI 40 SINJAI',
+                            ];
+                            foreach ($satapMap as $keyword => $targetName) {
+                                if (strpos($normSearch, $keyword) !== false && $childName === $targetName) {
+                                    $resolvedUnitId = $child['id'];
+                                    $resolvedUnitName = $child['nama_unit_kerja'];
+                                    break 2;
+                                }
+                            }
                         }
                         // Mapping khusus RSUD Pratama Bulupancing di bawah Dinas Kesehatan
                         if (strpos($childName, 'PRATAMA') !== false && (strpos($normSearch, 'BULUPANCING') !== false || strpos($normSearch, 'PRATAMA') !== false || strpos($normSearch, 'KELAS D') !== false)) {
