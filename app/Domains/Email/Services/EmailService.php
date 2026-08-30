@@ -1155,6 +1155,9 @@ class EmailService
                     $s = preg_replace('/\b(KANTOR\s*KELURAHAN|KELURAHAN|LURAH)\b/i', 'KELURAHAN', $s);
                     $s = preg_replace('/\b(BAGIAN)\b/i', 'BAGIAN', $s);
                     $s = preg_replace('/\b(KEC\.|KECAMATAN|KEC)\b/i', '', $s);
+                    // Disambiguasi "Tk." (Tingkat/Level pangkat, misal "Guru Dewasa Tk. I") agar tidak
+                    // terbaca sebagai "TK" (Taman Kanak-kanak) setelah str_replace('.')
+                    $s = preg_replace('/\bTK\.\s*(?=[IVXLCDM\d])/i', 'TINGKAT ', $s);
                     $s = str_replace(['/', '-', '.', ',', 'NO.'], ' ', $s);
                     // Perbaikan ejaan nama tempat yang terkadang berbeda di SIMPEG vs data resmi
                     $spellingFix = [

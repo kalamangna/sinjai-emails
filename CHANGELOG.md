@@ -5,6 +5,14 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [30 Agustus 2026] — Perbaikan Bug Normalisasi Unit Kerja Sekolah
+
+- **Fix: "Tk." (Tingkat Pangkat) Salah Terdeteksi sebagai TK (Taman Kanak-kanak)**:
+  - Memperbaiki bug pada fungsi `normalizeForMatching` di `EmailService` di mana singkatan `"Tk."` (Tingkat, misal *Guru Dewasa Tk. I*) berubah menjadi `"TK 1"` setelah normalisasi titik, sehingga `searchIsTk = true` dan seluruh child SD/SMP di-skip tanpa diperiksa.
+  - Solusi: menambahkan langkah `preg_replace('/\bTK\.\s*(?=[IVXLCDM\d])/i', 'TINGKAT ', $s)` sebelum `str_replace('.')` untuk mengubah `"Tk. I/II/III"` → `"TINGKAT 1/2/3"` sebelum konversi romawi, sehingga tidak bertabrakan dengan deteksi jenis unit TK sekolah.
+
+---
+
 # [30 Agustus 2026] — Normalisasi Unit Kerja Sekolah
 
 - **Penambahan Unit Kerja Sekolah Baru (Dinas Pendidikan)**:
