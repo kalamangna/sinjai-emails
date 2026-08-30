@@ -5,6 +5,13 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [31 Agustus 2026] — Koreksi Typo Nomenklatur PUSKSEWAN menjadi PUSKESWAN
+
+- **Koreksi Typo PUSKSEWAN**:
+  - Menambahkan penanganan otomatis koreksi typo SIMPEG dari `PUSKSEWAN` atau `PUSKES WAN` menjadi format baku **`PUSKESWAN`** (Pusat Kesehatan Hewan), seperti `KEPALA TATA USAHA UPTD PUSKSEWAN` $\rightarrow$ `KEPALA TATA USAHA UPTD PUSKESWAN`.
+
+---
+
 # [31 Agustus 2026] — Penyesuaian Urutan Parser SSCASN & Pembersihan Suffix OPD
 
 - **Penyesuaian Urutan Parser SSCASN & Pembersihan Suffix OPD**:

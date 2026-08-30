@@ -1591,6 +1591,7 @@ class EmailService
         $jab = preg_replace('/\bPENGELOLAH\b/i', 'PENGOLAH', $jab);
         $jab = preg_replace('/\bGURUR\b/i', 'GURU', $jab);
         $jab = preg_replace('/\bBULUPACCING\b/i', 'BULUPANCING', $jab);
+        $jab = preg_replace('/\b(PUSKSEWAN|PUSKSE\s*WAN|PUSKES\s+WAN)\b/i', 'PUSKESWAN', $jab);
 
         // Resolusi jabatan kombinasi garis miring (Utamakan Jabatan Struktural / Manajerial / Kepala)
         if (strpos($jab, '/') !== false && !preg_match('/\b[IVX]+\/[A-D]\b/i', $jab)) {
