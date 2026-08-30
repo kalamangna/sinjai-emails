@@ -271,6 +271,21 @@ class EmailApiController extends BaseController
 
         // Guard: Jika akun sudah terdata bukan PNS, skip hit API SIMPEG secara langsung
         if ($record && !empty($record['status_asn_id']) && (int)$record['status_asn_id'] !== 1) {
+            $unitKerjaName = '';
+            $parentUnitKerjaName = '';
+            $parentUnitKerjaId = null;
+            if (!empty($record['unit_kerja_id'])) {
+                $u = $this->unitKerjaModel->find($record['unit_kerja_id']);
+                if ($u) {
+                    $unitKerjaName = $u['nama_unit_kerja'];
+                    if (!empty($u['parent_id'])) {
+                        $p = $this->unitKerjaModel->find($u['parent_id']);
+                        $parentUnitKerjaName = $p['nama_unit_kerja'] ?? '';
+                        $parentUnitKerjaId = $p['id'] ?? null;
+                    }
+                }
+            }
+
             return $this->response->setJSON([
                 'success' => true,
                 'skipped' => true,
@@ -279,8 +294,11 @@ class EmailApiController extends BaseController
                     'jabatan'               => $record['jabatan'] ?? '-',
                     'pangkat_nama'          => $record['pangkat_nama'] ?? '-',
                     'pangkat_golruang'      => $record['pangkat_golruang'] ?? '-',
-                    'unit_kerja_name'       => $record['nama_unit_kerja'] ?? ($record['unit_kerja_name'] ?? '-'),
-                    'parent_unit_kerja_name'=> $record['parent_unit_kerja_name'] ?? '',
+                    'unit_kerja_id'         => $record['unit_kerja_id'] ?? null,
+                    'unit_kerja_name'       => $unitKerjaName ?: ($record['nama_unit_kerja'] ?? ($record['unit_kerja_name'] ?? '-')),
+                    'parent_unit_kerja_name'=> $parentUnitKerjaName,
+                    'parent_unit_kerja_id'  => $parentUnitKerjaId,
+                    'parent_id'             => $parentUnitKerjaId,
                     'eselon_name'           => null,
                 ]
             ]);
@@ -293,20 +311,7 @@ class EmailApiController extends BaseController
         $result = $this->emailService->syncPegawaiFromApi($nip, $email);
 
         if (!empty($result['skipped'])) {
-            $current = $result['current'] ?? [];
-            return $this->response->setJSON([
-                'success' => true,
-                'skipped' => true,
-                'message' => $result['message'] ?? 'Akun bukan PNS - Data tidak disinkronkan',
-                'data'    => [
-                    'jabatan'               => $current['jabatan'] ?? '-',
-                    'pangkat_nama'          => $current['pangkat_nama'] ?? '-',
-                    'pangkat_golruang'      => $current['pangkat_golruang'] ?? '-',
-                    'unit_kerja_name'       => $current['nama_unit_kerja'] ?? ($current['unit_kerja_name'] ?? '-'),
-                    'parent_unit_kerja_name'=> $current['parent_unit_kerja_name'] ?? '',
-                    'eselon_name'           => null,
-                ]
-            ]);
+            return $this->response->setJSON($result);
         }
 
         return $this->response->setJSON($result);
