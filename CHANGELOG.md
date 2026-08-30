@@ -5,6 +5,16 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [31 Agustus 2026] — Normalisasi Jabatan Struktural RSUD Pratama & Pemetaan Sub-Unit Dinas Kesehatan
+
+- **Normalisasi Jabatan Struktural & Pembersihan Suffix Unit Kerja**:
+  - Membersihkan suffix unit kerja langsung pada jabatan struktural (seperti `UPTD RSUD Bulupaccing` pada `Kepala Seksi Pelayanan Penunjang`) sehingga menghasilkan nama jabatan ringkas dan baku (`KEPALA SEKSI PELAYANAN PENUNJANG`).
+  - Mengoreksi penulisan ejaan `BULUPACCING` $\rightarrow$ `BULUPANCING`.
+- **Pemetaan Sub-Unit UPT RSUD Kelas D Pratama**:
+  - Memastikan pencocokan sub-unit UPT RSUD Kelas D Pratama mengenali variasi penulisan `BULUPACCING` pada jabatan penempatan di SIMPEG.
+
+---
+
 # [31 Agustus 2026] — Disambiguasi Jenjang Pangkat Guru dan Koreksi Ejaan Sekolah Dasar
 
 - **Disambiguasi Level Pangkat Era Lama vs Jenjang Sekolah**:

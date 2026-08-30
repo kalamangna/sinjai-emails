@@ -1173,6 +1173,7 @@ class EmailService
                         'BATULEPPA'     => 'BATU LAPPA',
                         'PUSSANTI'      => 'PUSANTI',
                         '277 BALANG'    => '227 BALANG',
+                        'BULUPACCING'   => 'BULUPANCING',
                     ];
                     foreach ($spellingFix as $wrong => $correct) {
                         $s = str_ireplace($wrong, $correct, $s);
@@ -1375,7 +1376,7 @@ class EmailService
                             }
                         }
                         // Mapping khusus RSUD Pratama Bulupancing di bawah Dinas Kesehatan
-                        if (strpos($childName, 'PRATAMA') !== false && (strpos($normSearch, 'BULUPANCING') !== false || strpos($normSearch, 'PRATAMA') !== false || strpos($normSearch, 'KELAS D') !== false)) {
+                        if (strpos($childName, 'PRATAMA') !== false && (strpos($normSearch, 'BULUPANCING') !== false || strpos($normSearch, 'BULUPACCING') !== false || strpos($normSearch, 'PRATAMA') !== false || strpos($normSearch, 'KELAS D') !== false)) {
                             $resolvedUnitId = $child['id'];
                             $resolvedUnitName = $child['nama_unit_kerja'];
                             break;
@@ -1589,6 +1590,7 @@ class EmailService
         $jab = preg_replace('/\bPENGENLOLA\b/i', 'PENGELOLA', $jab);
         $jab = preg_replace('/\bPENGELOLAH\b/i', 'PENGOLAH', $jab);
         $jab = preg_replace('/\bGURUR\b/i', 'GURU', $jab);
+        $jab = preg_replace('/\bBULUPACCING\b/i', 'BULUPANCING', $jab);
 
         // Resolusi jabatan kombinasi garis miring (Utamakan Jabatan Struktural / Manajerial / Kepala)
         if (strpos($jab, '/') !== false && !preg_match('/\b[IVX]+\/[A-D]\b/i', $jab)) {
@@ -1747,8 +1749,8 @@ class EmailService
 
         // 1. Bersihkan akhiran OPD/Lokasi pada Jabatan Struktural (Kepala Dinas, Kabid, Kasubag, Kasi, dsb)
         if (preg_match('/^(KEPALA BIDANG|KEPALA SUB BAGIAN|KEPALA SEKSI|KEPALA SUB BIDANG|SEKRETARIS|KEPALA DINAS|KEPALA BADAN|INSPEKTUR)\b/i', $jab)) {
-            $jab = preg_replace('/\s+(PADA|DI)\s+(DINAS|BADAN|INSPEKTORAT|SEKRETARIAT|KANTOR|KECAMATAN|KEC\.|UPTD|PUSKESMAS|RSUD)\s*.*$/i', '', $jab);
-            $jab = preg_replace('/\s+(PADA|DI)\s+KABUPATEN\s+SINJAI\s*.*$/i', '', $jab);
+            $jab = preg_replace('/\s+(?:(?:PADA|DI)\s+)?(DINAS|BADAN|INSPEKTORAT|SEKRETARIAT|KANTOR|KECAMATAN|KEC\.|UPTD|UPT|PUSKESMAS|RSUD)\b.*$/i', '', $jab);
+            $jab = preg_replace('/\s+(?:(?:PADA|DI)\s+)?KABUPATEN\s+SINJAI\s*.*$/i', '', $jab);
         }
 
         // 2. Bersihkan embel-embel lokasi/bagian pada Staf Pelaksana & Jabatan Fungsional (JF)
