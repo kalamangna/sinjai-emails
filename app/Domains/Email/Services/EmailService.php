@@ -1085,50 +1085,6 @@ class EmailService
             $source = $definitif ?: $data[0];
         }
 
-        // Guard API: Hanya skip jika data SIMPEG benar-benar bukan PNS/CPNS (tidak memiliki NIP PNS 18 digit dan tidak memiliki golongan PNS)
-        if (isset($source['status_pns']) && (int)$source['status_pns'] !== 1) {
-            $hasPnsGolru = !empty($source['pangkat_golruang']) && preg_match('/^[I|V|X]+\/[a-e]/i', $source['pangkat_golruang']);
-            $is18DigitNip = strlen($nip) === 18 && (strpos($nip, '19') === 0 || strpos($nip, '20') === 0);
-
-            if (!$hasPnsGolru && !$is18DigitNip) {
-                $unitKerjaId = $currentEmail['unit_kerja_id'] ?? null;
-                $unitKerjaName = '';
-                $parentUnitKerjaName = '';
-                $parentUnitKerjaId = null;
-
-                if (!empty($unitKerjaId)) {
-                    $u = $this->unitKerjaModel->find($unitKerjaId);
-                    if ($u) {
-                        $unitKerjaName = $u['nama_unit_kerja'];
-                        if (!empty($u['parent_id'])) {
-                            $p = $this->unitKerjaModel->find($u['parent_id']);
-                            $parentUnitKerjaName = $p['nama_unit_kerja'] ?? '';
-                            $parentUnitKerjaId = $p['id'] ?? null;
-                        }
-                    }
-                }
-
-                return [
-                    'success' => true,
-                    'skipped' => true,
-                    'reason'  => 'non_pns',
-                    'message' => 'Data SIMPEG menunjukkan pegawai bukan berstatus PNS.',
-                    'current' => $currentEmail,
-                    'data'    => [
-                        'jabatan'               => $currentEmail['jabatan'] ?? '-',
-                        'pangkat_nama'          => $currentEmail['pangkat_nama'] ?? '-',
-                        'pangkat_golruang'      => $currentEmail['pangkat_golruang'] ?? '-',
-                        'unit_kerja_id'         => $unitKerjaId,
-                        'unit_kerja_name'       => $unitKerjaName,
-                        'parent_unit_kerja_name'=> $parentUnitKerjaName,
-                        'parent_unit_kerja_id'  => $parentUnitKerjaId,
-                        'parent_id'             => $parentUnitKerjaId,
-                        'eselon_name'           => null,
-                    ]
-                ];
-            }
-        }
-
         $hasActualData = isset($source['jabatan_nama']) || isset($source['jabatan'])
                       || isset($source['pangkat_nama']) || isset($source['pangkat_golruang']);
 
@@ -1159,8 +1115,8 @@ class EmailService
         if (empty($currentEmail['name']) && !empty($source['nama'])) {
             $updateData['name'] = trim($source['nama']);
         }
-        if (empty($currentEmail['status_asn_id']) && !empty($source['status_pns'])) {
-            $updateData['status_asn_id'] = (int)$source['status_pns'] === 1 ? 1 : 2;
+        if (empty($currentEmail['status_asn_id'])) {
+            $updateData['status_asn_id'] = 1;
         }
 
         // 2. Sync Unit Kerja jika terjadi mutasi / pindah tugas di SIMPEG
