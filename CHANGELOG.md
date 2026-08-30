@@ -5,6 +5,15 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [31 Agustus 2026] — Pembersihan Nama Bidang Induk pada Kasi & Satpol PP/BPBD pada Kabid
+
+- **Pembersihan Nama Bidang Induk pada Jabatan Seksi & Subbagian**:
+  - Menghapus akhiran nama bidang/bagian/sekretariat induk yang tersemat pada nama seksi (seperti `KEPALA SEKSI PEMBINAAN DAN PENCEGAHAN KEBAKARAN BIDANG PEMADAM KEBAKARAN` $\rightarrow$ `KEPALA SEKSI PEMBINAAN DAN PENCEGAHAN KEBAKARAN`).
+- **Pembersihan Nama Instansi Satpol PP & BPBD pada Jabatan Kepala Bidang**:
+  - Menghapus akhiran nama instansi Satpol PP & Damkar serta BPBD pada jabatan Kepala Bidang (seperti `KEPALA BIDANG PENEGAKAN PERDA SATPOL PP DAN PEMADAM KEBAKARAN` $\rightarrow$ `KEPALA BIDANG PENEGAKAN PERDA`).
+
+---
+
 # [31 Agustus 2026] — Standarisasi Nomenklatur Baku UPTD Laboratorium Lingkungan DLHK
 
 - **Standarisasi UPTD Laboratorium Lingkungan DLHK**:

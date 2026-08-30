@@ -1785,8 +1785,11 @@ class EmailService
         $jab = preg_replace('/\bSUB\.\s*/i', 'SUB ', $jab);
 
         // 1. Bersihkan akhiran OPD/Lokasi pada Jabatan Struktural (Kepala Dinas, Kabid, Kasubag, Kasi, dsb)
+        if (preg_match('/^(KEPALA SEKSI|KEPALA SUB BAGIAN|KEPALA SUB BIDANG)\s+/i', $jab)) {
+            $jab = preg_replace('/^(KEPALA\s+(?:SEKSI|SUB\s*BAGIAN|SUB\s*BIDANG)\s+.+?)\s+(?:(?:PADA|DI)\s+)?(?:BIDANG|BAGIAN|SEKRETARIAT)\b.*$/i', '$1', $jab);
+        }
         if (preg_match('/^(KEPALA BIDANG|KEPALA SUB BAGIAN|KEPALA SEKSI|KEPALA SUB BIDANG|SEKRETARIS|KEPALA DINAS|KEPALA BADAN|INSPEKTUR)\b/i', $jab)) {
-            $jab = preg_replace('/\s+(?:(?:PADA|DI)\s+)?(DINAS|BADAN|INSPEKTORAT|SEKRETARIAT|KANTOR|KECAMATAN|KEC\.|UPTD|UPT|PUSKESMAS|RSUD)\b.*$/i', '', $jab);
+            $jab = preg_replace('/\s+(?:(?:PADA|DI)\s+)?(DINAS|BADAN|INSPEKTORAT|SEKRETARIAT|KANTOR|KECAMATAN|KEC\.|UPTD|UPT|PUSKESMAS|RSUD|SATPOL\s*PP|SATUAN\s+POLISI|SATPOL|BPBD)\b.*$/i', '', $jab);
             $jab = preg_replace('/\s+(?:(?:PADA|DI)\s+)?KABUPATEN\s+SINJAI\s*.*$/i', '', $jab);
         }
 
