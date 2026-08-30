@@ -1460,35 +1460,28 @@ class EmailService
             $jab = preg_replace('/\s+(INSPEKTORAT|PADA|DAERAH)\s*.*$/i', '', $jab);
         }
 
-        // Resolusi jabatan kombinasi garis miring (Kepala Sekolah/Guru ...)
+        // Resolusi jabatan kombinasi garis miring (Utamakan Jabatan Struktural / Manajerial / Kepala)
         if (strpos($jab, '/') !== false && !preg_match('/\b[IVX]+\/[A-D]\b/i', $jab)) {
             $parts = explode('/', $jab);
             if (count($parts) > 1 && strlen(trim($parts[0])) > 2 && strlen(trim($parts[1])) > 2) {
-                // Jika terdapat bagian Guru / Fungsional, utamakan jabatan fungsional
-                $guruPart = null;
+                $managerialKeywords = ['KEPALA', 'DIREKTUR', 'KOORDINATOR', 'KETUA', 'WAKIL', 'SEKRETARIS', 'KASUBAG', 'KASI', 'KABID', 'PIMPINAN', 'INSPEKTUR'];
+                $chosen = null;
                 foreach ($parts as $p) {
-                    if (stripos($p, 'GURU') !== false) {
-                        $guruPart = $p;
-                        break;
-                    }
-                }
-                if ($guruPart) {
-                    $jab = $guruPart;
-                } else {
-                    $managerialKeywords = ['KEPALA', 'DIREKTUR', 'KOORDINATOR', 'KETUA', 'WAKIL', 'SEKRETARIS', 'KASUBAG', 'KASI', 'KABID', 'PIMPINAN', 'INSPEKTUR'];
-                    $chosen = null;
-                    foreach ($parts as $p) {
-                        $pUpper = strtoupper(trim($p));
-                        foreach ($managerialKeywords as $kw) {
-                            if (stripos($pUpper, $kw) !== false) {
-                                $chosen = $p;
-                                break 2;
-                            }
+                    $pUpper = strtoupper(trim($p));
+                    foreach ($managerialKeywords as $kw) {
+                        if (stripos($pUpper, $kw) !== false) {
+                            $chosen = $p;
+                            break 2;
                         }
                     }
-                    $jab = $chosen ?: $parts[0];
                 }
+                $jab = $chosen ?: $parts[0];
             }
+        }
+
+        // Format Baku Kepala Sekolah
+        if (preg_match('/^KEPALA\s+SEKOLAH\b/i', $jab)) {
+            return 'KEPALA SEKOLAH';
         }
 
         // Tambahkan prefix KEPALA jika di SIMPEG hanya tertulis "BIDANG ...", "SUB BAGIAN ...", "SEKSI ...", "SUB BIDANG ..."
