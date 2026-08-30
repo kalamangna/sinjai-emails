@@ -376,17 +376,22 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
         const containers = document.querySelectorAll('[id^="pegawai-container-"]');
         const validContainers = Array.from(containers).filter(c => {
             const nip = (c.getAttribute('data-nip') || '').trim();
-            const statusAsnId = c.getAttribute('data-status-asn-id');
-            // Hanya proses akun berstatus PNS (status_asn_id === '1' atau jika belum terdata)
-            const isPns = !statusAsnId || statusAsnId === '1';
-            return nip !== '' && isPns;
+            const statusAsnId = (c.getAttribute('data-status-asn-id') || '').trim();
+            const row = c.closest('tr');
+            const rowText = (c.innerText + ' ' + (row ? row.innerText : '')).toUpperCase();
+            const isNonPns = rowText.includes('PPPK') || rowText.includes('NON-ASN') || rowText.includes('HONORER');
+
+            // HANYA proses akun yang benar-benar berstatus PNS (status_asn_id === '1' dan bukan PPPK/Non-ASN)
+            const isPns = statusAsnId === '1' || (statusAsnId === '' && !isNonPns);
+            return nip !== '' && isPns && !isNonPns;
         });
 
         if (!validContainers.length) {
+            const infoMsg = 'Tidak ada akun berstatus PNS yang dapat disinkronkan pada tabel / filter saat ini.';
             if (typeof window.showGlobalError === 'function') {
-                window.showGlobalError('Info Sinkronisasi', 'Tidak ada data NIP yang dapat disinkronkan.');
+                window.showGlobalError('Info Sinkronisasi', infoMsg);
             } else {
-                alert('Tidak ada data NIP yang dapat disinkronkan.');
+                alert(infoMsg);
             }
             return;
         }
@@ -407,6 +412,12 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
         let failed = 0;
 
         for (const container of validContainers) {
+            const statusAsnId = (container.getAttribute('data-status-asn-id') || '').trim();
+            const containerText = container.innerText.toUpperCase();
+            if ((statusAsnId && statusAsnId !== '1') || containerText.includes('PPPK') || containerText.includes('NON-ASN')) {
+                continue;
+            }
+
             const nip = container.getAttribute('data-nip');
             const row = container.closest('tr');
             const jabatanTarget = row.querySelector('.jabatan-sync-target') || row.querySelector('.jabatan-text');
