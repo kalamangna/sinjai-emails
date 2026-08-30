@@ -1147,13 +1147,14 @@ class EmailService
                     $s = preg_replace('/\b((UPTD\s+)?(SD\s*NEG\.?\s*NO\.?|SD\s*NEGERI\s*NO\.?|SD\s*NEGERI|SD\s*NEG\.?|SDN))\b/i', 'SDN', $s);
                     $s = preg_replace('/\b((UPTD\s+)?(SMP\s*NEGERI|SMPN))\b/i', 'SMPN', $s);
                     $s = preg_replace('/\b((UPTD\s+)?(SMA\s*NEGERI|SMAN))\b/i', 'SMAN', $s);
-                    $s = preg_replace('/\b((UPTD\s+)?(TK\s*NEGERI|TKN|TK\s*NEG\.?))\b/i', 'TKN', $s);
+                    $s = preg_replace('/\b((UPTD\s+)?(TK\s*NEGERI|TK\s*PERTIWI|TK\s*PGRI|TK\s*DHARMA\s*WANITA|TK\s*AISYIYAH|TKN|TK\s*NEG\.?))\b/i', 'TKN', $s);
                     $s = preg_replace('/\b(UPTD\s*PUSKESMAS|PUSKESMAS)\b/i', 'PUSKESMAS', $s);
                     $s = preg_replace('/\b(UPTD\s*RSUD|RSUD)\b/i', 'RSUD', $s);
                     $s = preg_replace('/\b(UPTD\s*LABKESDA|LABORATORIUM\s*KESEHATAN\s*DAERAH|LABKESDA)\b/i', 'LABKESDA', $s);
                     $s = preg_replace('/\b(UPTD\s*IFK|INSTALASI\s*FARMASI\s*KABUPATEN|INSTALASI\s*FARMASI|IFK|GFK)\b/i', 'IFK', $s);
                     $s = preg_replace('/\b(KANTOR\s*KELURAHAN|KELURAHAN|LURAH)\b/i', 'KELURAHAN', $s);
                     $s = preg_replace('/\b(BAGIAN)\b/i', 'BAGIAN', $s);
+                    $s = preg_replace('/\b(KEC\.|KECAMATAN|KEC)\b/i', '', $s);
                     $s = str_replace(['/', '-', '.', ',', 'NO.'], ' ', $s);
                     // Konversi angka romawi baku ke arab untuk konsistensi penomoran sekolah (misal: TK I -> TK 1, TK XII -> TK 12)
                     $romanMap = [
