@@ -1406,11 +1406,41 @@ class EmailService
         // Hapus prefix PLT. / PLH. / PJ. / PJS.
         $jab = preg_replace('/^\s*(PLT|PLH|PJ|PJS)\.?\s+/i', '', $jab);
 
+        // Resolusi jabatan kombinasi garis miring (Utamakan Jabatan Struktural / Manajerial / Kepala)
+        if (strpos($jab, '/') !== false && !preg_match('/\b[IVX]+\/[A-D]\b/i', $jab)) {
+            $parts = explode('/', $jab);
+            if (count($parts) > 1 && strlen(trim($parts[0])) > 2 && strlen(trim($parts[1])) > 2) {
+                $managerialKeywords = ['KEPALA', 'DIREKTUR', 'KOORDINATOR', 'KETUA', 'WAKIL', 'SEKRETARIS', 'KASUBAG', 'KASI', 'KABID', 'PIMPINAN', 'INSPEKTUR'];
+                $chosen = null;
+                foreach ($parts as $p) {
+                    $pUpper = strtoupper(trim($p));
+                    foreach ($managerialKeywords as $kw) {
+                        if (stripos($pUpper, $kw) !== false) {
+                            $chosen = $p;
+                            break 2;
+                        }
+                    }
+                }
+                $jab = trim($chosen ?: $parts[0]);
+            }
+        }
+
+        // Format Baku Kepala Sekolah, Kepala Puskesmas, & Direktur
+        if (preg_match('/^KEPALA\s+(SEKOLAH|(UPTD\s+(SPF\s+)?)?(SDN?|SMPN?|SMAN?|TKN?|SKB|TK|SD|SMP|SMA|SLB))\b/i', $jab)) {
+            return 'KEPALA SEKOLAH';
+        }
+        if (preg_match('/^KEPALA\s+(UPTD\s+)?PUSKESMAS\b/i', $jab)) {
+            return 'KEPALA PUSKESMAS';
+        }
+        if (preg_match('/^DIREKTUR\b/i', $jab)) {
+            return 'DIREKTUR';
+        }
+
         // 1. Cek judul definitif pimpinan dari teks jabatan terlebih dahulu
-        if (stripos($jab, 'LURAH') === 0 || (stripos($jab, 'LURAH') !== false && stripos($jab, 'SEKRETARIS') === false && stripos($jab, 'SEKLUR') === false && stripos($jab, 'KEPALA SEKSI') === false && stripos($jab, 'KASI') === false && stripos($jab, 'STAF') === false)) {
+        if (preg_match('/^LURAH\b/i', $jab) || (preg_match('/\bLURAH\b/i', $jab) && !preg_match('/\b(SEKRETARIS|SEKLUR|KEPALA\s+SEKSI|KASI|STAF|BENDAHARA|PENGELOLA|KELURAHAN)\b/i', $jab))) {
             return 'LURAH';
         }
-        if (stripos($jab, 'CAMAT') === 0 || (stripos($jab, 'CAMAT') !== false && stripos($jab, 'SEKRETARIS') === false && stripos($jab, 'SEKCAM') === false && stripos($jab, 'KEPALA SEKSI') === false && stripos($jab, 'KASI') === false && stripos($jab, 'STAF') === false)) {
+        if (preg_match('/^CAMAT\b/i', $jab) || (preg_match('/\bCAMAT\b/i', $jab) && !preg_match('/\b(SEKRETARIS|SEKCAM|KEPALA\s+SEKSI|KASI|STAF|BENDAHARA|PENGELOLA|KECAMATAN)\b/i', $jab))) {
             return 'CAMAT';
         }
         if (stripos($jab, 'KEPALA BAGIAN') === 0 || stripos($jab, 'KABAG') === 0) {
@@ -1424,9 +1454,6 @@ class EmailService
         }
         if (stripos($jab, 'KEPALA SATUAN') === 0 || stripos($jab, 'KEPALA SATPOL') === 0 || stripos($jab, 'KASAT POL') === 0 || stripos($jab, 'KASATPOL') === 0) {
             return 'KEPALA SATUAN';
-        }
-        if (stripos($jab, 'DIREKTUR') === 0) {
-            return 'DIREKTUR';
         }
         if (stripos($jab, 'INSPEKTUR') === 0 && stripos($jab, 'PEMBANTU') === false && stripos($jab, 'IRBAN') === false) {
             return 'INSPEKTUR';
@@ -1525,36 +1552,6 @@ class EmailService
         $jab = preg_replace('/\bKASUBBID\b/i', 'KEPALA SUB BIDANG', $jab);
         $jab = preg_replace('/\bKABID\b/i', 'KEPALA BIDANG', $jab);
         $jab = preg_replace('/\bKASI\b/i', 'KEPALA SEKSI', $jab);
-
-        // Resolusi jabatan kombinasi garis miring (Utamakan Jabatan Struktural / Manajerial / Kepala)
-        if (strpos($jab, '/') !== false && !preg_match('/\b[IVX]+\/[A-D]\b/i', $jab)) {
-            $parts = explode('/', $jab);
-            if (count($parts) > 1 && strlen(trim($parts[0])) > 2 && strlen(trim($parts[1])) > 2) {
-                $managerialKeywords = ['KEPALA', 'DIREKTUR', 'KOORDINATOR', 'KETUA', 'WAKIL', 'SEKRETARIS', 'KASUBAG', 'KASI', 'KABID', 'PIMPINAN', 'INSPEKTUR'];
-                $chosen = null;
-                foreach ($parts as $p) {
-                    $pUpper = strtoupper(trim($p));
-                    foreach ($managerialKeywords as $kw) {
-                        if (stripos($pUpper, $kw) !== false) {
-                            $chosen = $p;
-                            break 2;
-                        }
-                    }
-                }
-                $jab = trim($chosen ?: $parts[0]);
-            }
-        }
-
-        // Format Baku Kepala Sekolah, Kepala Puskesmas, & Direktur
-        if (preg_match('/^KEPALA\s+(SEKOLAH|(UPTD\s+(SPF\s+)?)?(SDN?|SMPN?|SMAN?|TKN?|SKB|TK|SD|SMP|SMA|SLB))\b/i', $jab)) {
-            return 'KEPALA SEKOLAH';
-        }
-        if (preg_match('/^KEPALA\s+(UPTD\s+)?PUSKESMAS\b/i', $jab)) {
-            return 'KEPALA PUSKESMAS';
-        }
-        if (preg_match('/^DIREKTUR\b/i', $jab)) {
-            return 'DIREKTUR';
-        }
 
         // Tambahkan prefix KEPALA jika di SIMPEG hanya tertulis "BIDANG ...", "SUB BAGIAN ...", "SEKSI ...", "SUB BIDANG ..."
         if (preg_match('/^(BIDANG|SUB BAGIAN|SUB\. BAGIAN|SUB BIDANG|SEKSI)\s+/i', $jab) && stripos($jab, 'KEPALA') === false) {
