@@ -1228,8 +1228,18 @@ class EmailService
         // Hapus prefix PLT. / PLH. / PJ. / PJS.
         $jab = preg_replace('/^\s*(PLT|PLH|PJ|PJS)\.?\s+/i', '', $jab);
 
-        // Jika akun pimpinan atau nama jabatan kepala dinas / badan / bagian / satpol / rsud / inspektorat, terapkan format ringkas pimpinan
-        if ($isPimpinan || stripos($jab, 'KEPALA DINAS') === 0 || stripos($jab, 'KEPALA BADAN') === 0 || stripos($jab, 'KEPALA BAGIAN') === 0 || stripos($jab, 'KEPALA SATUAN') === 0 || stripos($jab, 'KEPALA SATPOL') === 0 || stripos($jab, 'DIREKTUR') === 0 || (stripos($jab, 'INSPEKTUR') === 0 && stripos($jab, 'PEMBANTU') === false)) {
+        // Jika akun pimpinan atau nama jabatan kepala dinas / badan / bagian / satpol / rsud / inspektorat / camat / lurah, terapkan format ringkas pimpinan
+        if ($isPimpinan 
+            || stripos($jab, 'KEPALA DINAS') === 0 
+            || stripos($jab, 'KEPALA BADAN') === 0 
+            || stripos($jab, 'KEPALA BAGIAN') === 0 
+            || stripos($jab, 'KEPALA SATUAN') === 0 
+            || stripos($jab, 'KEPALA SATPOL') === 0 
+            || stripos($jab, 'DIREKTUR') === 0 
+            || stripos($jab, 'CAMAT') === 0 
+            || stripos($jab, 'LURAH') === 0 
+            || (stripos($jab, 'INSPEKTUR') === 0 && stripos($jab, 'PEMBANTU') === false)
+        ) {
             if (!empty($unitKerjaName)) {
                 $unitUpper = strtoupper($unitKerjaName);
                 if (strpos($unitUpper, 'INSPEKTORAT') !== false) {
@@ -1256,6 +1266,8 @@ class EmailService
             if (stripos($jab, 'DIREKTUR') === 0) return 'DIREKTUR';
             if (stripos($jab, 'KEPALA DINAS') === 0) return 'KEPALA DINAS';
             if (stripos($jab, 'KEPALA BADAN') === 0) return 'KEPALA BADAN';
+            if (stripos($jab, 'CAMAT') === 0) return 'CAMAT';
+            if (stripos($jab, 'LURAH') === 0) return 'LURAH';
         }
 
         // Format Ringkas Sekretaris OPD
