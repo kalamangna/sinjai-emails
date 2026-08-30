@@ -1168,6 +1168,8 @@ class EmailService
                 };
 
                 $normSearch = $normalizeForMatching(($rawJabatan ?? '') . ' ' . $rawJabatanGrup);
+                $normGrup = $normalizeForMatching($rawJabatanGrup ?? '');
+                $cleanGrupStripped = trim(preg_replace('/^(SDN|SMPN|SMAN|TKN|PUSKESMAS|RSUD|LABKESDA|IFK|KELURAHAN|BAGIAN)\s+/i', '', $normGrup));
 
                 $childUnits = !$isTopSetdaLeader ? $this->unitKerjaModel->where('parent_id', $targetUnit['id'])->findAll() : [];
                 if (!empty($childUnits) && !empty($normSearch)) {
@@ -1198,6 +1200,18 @@ class EmailService
                             || (!empty($cleanChildStripped) && stripos($normSearch, $cleanChildStripped) !== false)
                             || (!empty($noSpaceClean) && strlen($noSpaceClean) >= 4 && stripos($noSpaceSearch, $noSpaceClean) !== false)
                             || (!empty($noSpaceChild) && strlen($noSpaceChild) >= 4 && stripos($noSpaceSearch, $noSpaceChild) !== false)) {
+                            $resolvedUnitId = $child['id'];
+                            $resolvedUnitName = $child['nama_unit_kerja'];
+                            break;
+                        }
+
+                        // Reverse matching jika di database memuat nama kecamatan (misal: 'TK NEGERI BALLE SINJAI UTARA' sementara di SIMPEG hanya 'TK NEGERI BALLE')
+                        if (!empty($normGrup) && strlen($normGrup) >= 5 && stripos($normChild, $normGrup) !== false) {
+                            $resolvedUnitId = $child['id'];
+                            $resolvedUnitName = $child['nama_unit_kerja'];
+                            break;
+                        }
+                        if (!empty($cleanGrupStripped) && strlen($cleanGrupStripped) >= 4 && stripos($cleanChildStripped, $cleanGrupStripped) !== false) {
                             $resolvedUnitId = $child['id'];
                             $resolvedUnitName = $child['nama_unit_kerja'];
                             break;
