@@ -1272,7 +1272,10 @@ class EmailService
 
             $unitKerjaId = $updateData['unit_kerja_id'] ?? ($currentEmail['unit_kerja_id'] ?? null);
             $unitKerjaName = $currentEmail['nama_unit_kerja'] ?? ($currentEmail['unit_kerja_name'] ?? '');
-            $parentUnitKerjaName = $currentEmail['parent_unit_kerja_name'] ?? '';
+            $unitKerjaId = array_key_exists('unit_kerja_id', $updateData) ? $updateData['unit_kerja_id'] : ($currentEmail['unit_kerja_id'] ?? null);
+            $unitKerjaName = '';
+            $parentUnitKerjaName = '';
+            $parentUnitKerjaId = null;
 
             if (!empty($unitKerjaId)) {
                 $u = $this->unitKerjaModel->find($unitKerjaId);
@@ -1281,8 +1284,7 @@ class EmailService
                     if (!empty($u['parent_id'])) {
                         $p = $this->unitKerjaModel->find($u['parent_id']);
                         $parentUnitKerjaName = $p['nama_unit_kerja'] ?? '';
-                    } else {
-                        $parentUnitKerjaName = '';
+                        $parentUnitKerjaId = $p['id'] ?? null;
                     }
                 }
             }
@@ -1297,6 +1299,8 @@ class EmailService
 
             $updateData['unit_kerja_name'] = $unitKerjaName;
             $updateData['parent_unit_kerja_name'] = $parentUnitKerjaName;
+            $updateData['parent_unit_kerja_id'] = $parentUnitKerjaId;
+            $updateData['parent_id'] = $parentUnitKerjaId;
             $updateData['eselon_name'] = $eselonName;
 
             $responseData = array_merge($currentEmail ?: [], $updateData);
@@ -1309,8 +1313,30 @@ class EmailService
             ];
         }
 
-        $unitKerjaName = $currentEmail['nama_unit_kerja'] ?? ($currentEmail['unit_kerja_name'] ?? '');
-        $parentUnitKerjaName = $currentEmail['parent_unit_kerja_name'] ?? '';
+        $unitKerjaId = $currentEmail['unit_kerja_id'] ?? null;
+        $unitKerjaName = '';
+        $parentUnitKerjaName = '';
+        $parentUnitKerjaId = null;
+
+        if (!empty($unitKerjaId)) {
+            $u = $this->unitKerjaModel->find($unitKerjaId);
+            if ($u) {
+                $unitKerjaName = $u['nama_unit_kerja'];
+                if (!empty($u['parent_id'])) {
+                    $p = $this->unitKerjaModel->find($u['parent_id']);
+                    $parentUnitKerjaName = $p['nama_unit_kerja'] ?? '';
+                    $parentUnitKerjaId = $p['id'] ?? null;
+                }
+            }
+        }
+
+        $eselonId = $currentEmail['eselon_id'] ?? null;
+        $eselonName = null;
+        if (!empty($eselonId)) {
+            $eselonModel = new \App\Shared\Models\EselonModel();
+            $es = $eselonModel->find($eselonId);
+            $eselonName = $es ? $es['nama_eselon'] : null;
+        }
 
         return [
             'success' => true,
@@ -1320,8 +1346,12 @@ class EmailService
                 'jabatan'               => $currentEmail['jabatan'] ?? '-',
                 'pangkat_nama'          => $currentEmail['pangkat_nama'] ?? '-',
                 'pangkat_golruang'      => $currentEmail['pangkat_golruang'] ?? '-',
+                'unit_kerja_id'         => $unitKerjaId,
                 'unit_kerja_name'       => $unitKerjaName,
                 'parent_unit_kerja_name'=> $parentUnitKerjaName,
+                'parent_unit_kerja_id'  => $parentUnitKerjaId,
+                'parent_id'             => $parentUnitKerjaId,
+                'eselon_name'           => $eselonName,
             ],
         ];
     }
