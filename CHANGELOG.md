@@ -5,6 +5,17 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [30 Agustus 2026] — Normalisasi Unit Kerja Sekolah
+
+- **Penambahan Unit Kerja Sekolah Baru (Dinas Pendidikan)**:
+  - Menambahkan `TK PERTIWI PALAE SINJAI SELATAN` sebagai child unit kerja Dinas Pendidikan (`parent_id = 348`), berdasarkan verifikasi `jabatan_grup` API SIMPEG untuk NIP 197904232007012008.
+  - Menambahkan `SD NEG. NO. 27 TONDONG` sebagai child unit kerja Dinas Pendidikan, berdasarkan verifikasi `jabatan_grup` API SIMPEG untuk NIP 197307101999032010.
+- **Perbaikan Penulisan Nama Unit Kerja**:
+  - Mengoreksi `SD NEG. NO. 27 TONDONG SINJAI TIMUR` → `SD NEG. NO. 27 TONDONG` agar konsisten dengan format penamaan SD lainnya (tanpa keterangan wilayah).
+  - Mengoreksi `TK NEGERI XI PANRENG` → `TK NEGERI XI PANRENG SINJAI UTARA` agar konsisten dengan format penamaan TK lainnya (dengan keterangan wilayah). Kecamatan Sinjai Utara dikonfirmasi dari data `jabatan_grup` API SIMPEG.
+
+---
+
 # [30 Agustus 2026]
 
 - **Penyelarasan Modal Hasil Sinkronisasi Global**:
