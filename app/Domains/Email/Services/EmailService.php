@@ -1592,6 +1592,10 @@ class EmailService
         $jab = preg_replace('/\bGURUR\b/i', 'GURU', $jab);
         $jab = preg_replace('/\bBULUPACCING\b/i', 'BULUPANCING', $jab);
         $jab = preg_replace('/\b(PUSKSEWAN|PUSKSE\s*WAN|PUSKES\s+WAN)\b/i', 'PUSKESWAN', $jab);
+        $jab = preg_replace('/\bBBI\b/i', 'BALAI BENIH IKAN', $jab);
+        $jab = preg_replace('/^KEPALA\s+(TATA\s+USAHA|TU|KTU)\s+(UPTD\s+)?BALAI\s+BENIH\s+IKAN\b/i', 'KEPALA TATA USAHA UPTD BALAI BENIH IKAN', $jab);
+        $jab = preg_replace('/^KTU\s+(UPTD\s+)?BALAI\s+BENIH\s+IKAN\b/i', 'KEPALA TATA USAHA UPTD BALAI BENIH IKAN', $jab);
+        $jab = preg_replace('/^KEPALA\s+(UPTD\s+)?BALAI\s+BENIH\s+IKAN\b/i', 'KEPALA UPTD BALAI BENIH IKAN', $jab);
 
         // Resolusi jabatan kombinasi garis miring (Utamakan Jabatan Struktural / Manajerial / Kepala)
         if (strpos($jab, '/') !== false && !preg_match('/\b[IVX]+\/[A-D]\b/i', $jab)) {

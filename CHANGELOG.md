@@ -5,6 +5,15 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [31 Agustus 2026] — Standarisasi Singkatan BBI (Balai Benih Ikan) pada UPTD Perikanan
+
+- **Standarisasi Singkatan BBI**:
+  - Menambahkan ekspansi otomatis singkatan `BBI` menjadi format baku **`BALAI BENIH IKAN`** (UPTD Balai Benih Ikan Dinas Perikanan).
+  - Mengonversi `KEPALA TATA USAHA BBI` / `KEPALA TU BBI` / `KTU BBI` $\rightarrow$ **`KEPALA TATA USAHA UPTD BALAI BENIH IKAN`**.
+  - Mengonversi `KEPALA BBI` / `KEPALA UPTD BBI` $\rightarrow$ **`KEPALA UPTD BALAI BENIH IKAN`**.
+
+---
+
 # [31 Agustus 2026] — Koreksi Typo Nomenklatur PUSKSEWAN menjadi PUSKESWAN
 
 - **Koreksi Typo PUSKSEWAN**:
