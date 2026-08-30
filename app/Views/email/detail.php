@@ -222,7 +222,7 @@
                                 </div>
                                 <div>
                                     <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">Unit Kerja</label>
-                                    <div class="bg-slate-50 border border-slate-200 rounded-lg p-3 hover:border-slate-800 transition-all space-y-1 mt-1">
+                                    <div id="unit-kerja-container" class="bg-slate-50 border border-slate-200 rounded-lg p-3 hover:border-slate-800 transition-all space-y-1 mt-1">
                                         <?php if (!empty($unit_kerja)): ?>
                                             <?php if (!empty($parent_unit_kerja)): ?>
                                                 <a href="<?= site_url('email/unit_kerja/' . $parent_unit_kerja['id']) ?>" class="block no-underline group/parent">
@@ -488,7 +488,8 @@
         const elements = {
             jabatan: document.getElementById('jabatan-text'),
             pangkat: document.getElementById('pangkat-text'),
-            golru: document.getElementById('golru-text')
+            golru: document.getElementById('golru-text'),
+            unit: document.getElementById('unit-kerja-container')
         };
         syncSinglePegawai(nip, btn, elements, email);
     }

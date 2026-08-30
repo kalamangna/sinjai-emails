@@ -196,9 +196,26 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
         btn.disabled = true;
         btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> SYNCING';
         
-        Object.values(elements).forEach(el => {
-            if (el) el.classList.add('animate-pulse', 'text-slate-400');
-        });
+        const originalContents = {
+            jabatan: elements.jabatan ? elements.jabatan.innerHTML : '',
+            pangkat: elements.pangkat ? elements.pangkat.innerHTML : '',
+            golru: elements.golru ? elements.golru.innerHTML : '',
+            unit: elements.unit ? elements.unit.innerHTML : ''
+        };
+
+        // Render Tailwind skeleton pulse placeholders
+        if (elements.jabatan) {
+            elements.jabatan.innerHTML = '<div class="h-4 bg-slate-200 rounded animate-pulse w-48 my-0.5"></div>';
+        }
+        if (elements.pangkat) {
+            elements.pangkat.innerHTML = '<div class="h-4 bg-slate-200 rounded animate-pulse w-32 my-0.5"></div>';
+        }
+        if (elements.golru) {
+            elements.golru.innerHTML = '<div class="h-4 bg-slate-200 rounded animate-pulse w-16 my-0.5"></div>';
+        }
+        if (elements.unit) {
+            elements.unit.innerHTML = '<div class="space-y-1.5 py-0.5"><div class="h-2.5 bg-slate-200 rounded animate-pulse w-24"></div><div class="h-3.5 bg-slate-200 rounded animate-pulse w-44"></div></div>';
+        }
 
         try {
             const fetchResult = await fetchWithRateLimitRetry(
@@ -220,13 +237,14 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
             const data = fetchResult.data;
             btn.disabled = false;
             btn.innerHTML = originalBtnContent;
-            
-            Object.values(elements).forEach(el => {
-                if (el) el.classList.remove('animate-pulse', 'text-slate-400');
-            });
 
             if (data.success) {
                 if (data.no_data) {
+                    if (elements.jabatan) elements.jabatan.innerHTML = originalContents.jabatan;
+                    if (elements.pangkat) elements.pangkat.innerHTML = originalContents.pangkat;
+                    if (elements.golru) elements.golru.innerHTML = originalContents.golru;
+                    if (elements.unit) elements.unit.innerHTML = originalContents.unit;
+
                     const errorMsg = `Pegawai dengan NIP ${nip || email} tidak terdaftar di SIMPEG.`;
                     if (typeof window.showGlobalError === 'function') {
                         window.showGlobalError('Data Tidak Ditemukan', errorMsg);
@@ -235,17 +253,38 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
                     }
                     return true;
                 }
+
                 if (data.data.jabatan && elements.jabatan) {
                     elements.jabatan.textContent = data.data.jabatan;
-                    if (elements.jabatan.classList.contains('text-slate-400')) {
-                        elements.jabatan.classList.remove('text-slate-400');
-                    }
+                } else if (elements.jabatan) {
+                    elements.jabatan.innerHTML = originalContents.jabatan;
                 }
+
                 if (data.data.pangkat_nama && elements.pangkat) {
                     elements.pangkat.textContent = data.data.pangkat_nama;
+                } else if (elements.pangkat) {
+                    elements.pangkat.innerHTML = originalContents.pangkat;
                 }
+
                 if (data.data.pangkat_golruang && elements.golru) {
                     elements.golru.textContent = data.data.pangkat_golruang;
+                } else if (elements.golru) {
+                    elements.golru.innerHTML = originalContents.golru;
+                }
+
+                if (elements.unit && data.data) {
+                    const parentName = data.data.parent_unit_kerja_name || '';
+                    const unitName = data.data.unit_kerja_name || '';
+                    if (unitName) {
+                        let unitHtml = '';
+                        if (parentName) {
+                            unitHtml += `<p class="text-[10px] font-bold text-slate-700 uppercase leading-none">${parentName}</p>`;
+                        }
+                        unitHtml += `<p class="text-xs font-bold text-slate-800 uppercase leading-tight">${unitName}</p>`;
+                        elements.unit.innerHTML = unitHtml;
+                    } else {
+                        elements.unit.innerHTML = originalContents.unit;
+                    }
                 }
 
                 if (typeof window.showSyncResult === 'function') {
@@ -253,6 +292,11 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
                 }
                 return true;
             } else {
+                if (elements.jabatan) elements.jabatan.innerHTML = originalContents.jabatan;
+                if (elements.pangkat) elements.pangkat.innerHTML = originalContents.pangkat;
+                if (elements.golru) elements.golru.innerHTML = originalContents.golru;
+                if (elements.unit) elements.unit.innerHTML = originalContents.unit;
+
                 const title = fetchResult.isRateLimited ? 'Rate Limit Terlampaui' : 'Gagal Sinkronisasi Pegawai';
                 const msg = fetchResult.isRateLimited 
                     ? 'Server SIMPEG sedang membatasi frekuensi request (Rate Limit). Silakan tunggu beberapa saat sebelum mencoba kembali.'
@@ -268,9 +312,11 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
         } catch (error) {
             btn.disabled = false;
             btn.innerHTML = originalBtnContent;
-            Object.values(elements).forEach(el => {
-                if (el) el.classList.remove('animate-pulse', 'text-slate-400');
-            });
+            if (elements.jabatan) elements.jabatan.innerHTML = originalContents.jabatan;
+            if (elements.pangkat) elements.pangkat.innerHTML = originalContents.pangkat;
+            if (elements.golru) elements.golru.innerHTML = originalContents.golru;
+            if (elements.unit) elements.unit.innerHTML = originalContents.unit;
+
             if (typeof window.showGlobalError === 'function') {
                 window.showGlobalError('Kesalahan Jaringan', 'Gagal menghubungi server API.');
             } else {
