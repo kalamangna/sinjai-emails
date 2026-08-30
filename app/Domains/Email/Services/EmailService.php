@@ -1214,8 +1214,11 @@ class EmailService
                     }
                 }
 
-                // Jika akun saat ini sudah berada di sub-unit dari targetUnit dan tidak terdeteksi sub-unit baru (dan bukan Top Leader Setda), pertahankan sub-unit yang ada
-                if (!$isTopSetdaLeader && $resolvedUnitId == $targetUnit['id'] && !empty($currentEmail['unit_kerja_id'])) {
+                // Cek apakah jabatan atau jabatan_grup merupakan divisi internal OPD (Sub Bagian, Bidang, Seksi, Sekretariat)
+                $isOpdInternalDivision = preg_match('/\b(SUB\s*BAGIAN|BIDANG|SEKSI|SEKRETARIAT|KEPALA\s*DINAS|KEPALA\s*BADAN|INSPEKTUR|KASUBAG|KABID|KASI|SEKRETARIS\s*DINAS|SEKRETARIS\s*BADAN|SEKRETARIS\s*INSPEKTORAT)\b/i', ($rawJabatan ?? '') . ' ' . $rawJabatanGrup);
+
+                // Hanya pertahankan sub-unit yang ada jika BUKAN divisi internal OPD dan BUKAN Top Leader Setda
+                if (!$isTopSetdaLeader && !$isOpdInternalDivision && $resolvedUnitId == $targetUnit['id'] && !empty($currentEmail['unit_kerja_id'])) {
                     $currentUnit = $this->unitKerjaModel->find($currentEmail['unit_kerja_id']);
                     if ($currentUnit && $currentUnit['parent_id'] == $targetUnit['id']) {
                         $resolvedUnitId = $currentUnit['id'];
