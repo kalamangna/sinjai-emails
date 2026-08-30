@@ -754,7 +754,7 @@
 
     </script>
 
-    <script src="<?= base_url('js/sync-helper.js') ?>"></script>
+    <script src="<?= base_url('js/sync-helper.js') ?>?v=<?= file_exists(FCPATH . 'js/sync-helper.js') ? filemtime(FCPATH . 'js/sync-helper.js') : time() ?>"></script>
     <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
 
     <?= $this->renderSection('scripts') ?>

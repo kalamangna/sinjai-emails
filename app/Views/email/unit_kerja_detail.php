@@ -60,7 +60,7 @@
                         <button id="syncAllTteBtn" onclick="syncAllBsreStatus()" class="w-full px-4 py-3 text-left text-[10px] font-bold text-slate-700 uppercase tracking-widest hover:bg-slate-50 border-b border-slate-100 transition-colors focus:outline-none">
                             <i class="fas fa-fw fa-fingerprint mr-2 text-slate-500"></i> Sync TTE
                         </button>
-                        <button id="syncAllPegawaiBtn" onclick="syncAllPegawai()" class="w-full px-4 py-3 text-left text-[10px] font-bold text-slate-700 uppercase tracking-widest hover:bg-slate-50 transition-colors focus:outline-none">
+                        <button id="syncAllPegawaiBtn" onclick="syncAllPegawai('syncAllPegawaiBtn')" class="w-full px-4 py-3 text-left text-[10px] font-bold text-slate-700 uppercase tracking-widest hover:bg-slate-50 transition-colors focus:outline-none">
                             <i class="fas fa-fw fa-user-check mr-2 text-slate-500"></i> Sync Pegawai
                         </button>
                     </div>

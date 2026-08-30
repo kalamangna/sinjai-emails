@@ -372,18 +372,20 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
     /**
      * Sync all Pegawai data on page sequentially
      */
-    window.syncAllPegawai = async function(btnId = 'batchSyncPegawaiBtn', confirmText = 'Sinkronkan data pegawai?') {
+    window.syncAllPegawai = async function(btnId = 'syncAllPegawaiBtn', confirmText = 'Sinkronkan data pegawai PNS?') {
         const containers = document.querySelectorAll('[id^="pegawai-container-"]');
         const validContainers = Array.from(containers).filter(c => {
             const nip = (c.getAttribute('data-nip') || '').trim();
             const statusAsnId = (c.getAttribute('data-status-asn-id') || '').trim();
             const row = c.closest('tr');
             const rowText = (c.innerText + ' ' + (row ? row.innerText : '')).toUpperCase();
-            const isNonPns = rowText.includes('PPPK') || rowText.includes('NON-ASN') || rowText.includes('HONORER');
+            
+            const isNonPns = statusAsnId === '2' || statusAsnId === '3' || statusAsnId === '4' ||
+                             rowText.includes('PPPK') || rowText.includes('NON-ASN') || rowText.includes('HONORER');
 
-            // HANYA proses akun yang benar-benar berstatus PNS (status_asn_id === '1' dan bukan PPPK/Non-ASN)
-            const isPns = statusAsnId === '1' || (statusAsnId === '' && !isNonPns);
-            return nip !== '' && isPns && !isNonPns;
+            // HANYA proses jika jelas berstatus PNS (status_asn_id === '1' dan bukan PPPK/Non-ASN)
+            const isPns = statusAsnId === '1' && !isNonPns;
+            return nip !== '' && isPns;
         });
 
         if (!validContainers.length) {
@@ -400,12 +402,13 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
             return;
         }
 
-        const btn = document.getElementById(btnId);
-        if (!btn) return;
-        const originalBtnContent = btn.innerHTML;
+        const btn = document.getElementById(btnId) || document.getElementById('batchSyncPegawaiBtn') || document.getElementById('mainSyncBtn');
+        const originalBtnContent = btn ? btn.innerHTML : '';
 
-        btn.disabled = true;
-        btn.classList.add('opacity-75', 'cursor-not-allowed');
+        if (btn) {
+            btn.disabled = true;
+            btn.classList.add('opacity-75', 'cursor-not-allowed');
+        }
 
         let processed = 0;
         let success = 0;
@@ -413,15 +416,15 @@ if (typeof window.syncAllBsreStatus === 'undefined') {
 
         for (const container of validContainers) {
             const statusAsnId = (container.getAttribute('data-status-asn-id') || '').trim();
-            const containerText = container.innerText.toUpperCase();
-            if ((statusAsnId && statusAsnId !== '1') || containerText.includes('PPPK') || containerText.includes('NON-ASN')) {
+            const row = container.closest('tr');
+            const rowText = (container.innerText + ' ' + (row ? row.innerText : '')).toUpperCase();
+            if (statusAsnId !== '1' || rowText.includes('PPPK') || rowText.includes('NON-ASN')) {
                 continue;
             }
 
             const nip = container.getAttribute('data-nip');
-            const row = container.closest('tr');
-            const jabatanTarget = row.querySelector('.jabatan-sync-target') || row.querySelector('.jabatan-text');
-            const unitTarget = row.querySelector('.unit-kerja-sync-target');
+            const jabatanTarget = row ? (row.querySelector('.jabatan-sync-target') || row.querySelector('.jabatan-text')) : null;
+            const unitTarget = row ? row.querySelector('.unit-kerja-sync-target') : null;
             let originalJabatan = '';
             let originalUnit = '';
 
