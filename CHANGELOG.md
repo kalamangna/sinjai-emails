@@ -5,6 +5,14 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [31 Agustus 2026] — Koreksi Pencocokan Sub-Unit Berbasis Batas Kata Utuh (Word Boundary)
+
+- **Pencegahan Tabrakan Substring Antar-Nama Sub-Unit**:
+  - Menghapus pencarian string tanpa spasi yang sempat menyebabkan tabrakan karakter antar-kata (seperti kata `ASKA` yang tidak sengaja terbentuk di antara `...PUSKESMAS KAMPALA...`), sehingga akun Kepala Puskesmas Kampala (Asrul) sempat keliru terpetakan ke Puskesmas Aska.
+  - Menerapkan pencocokan berbasis batas kata utuh (*word boundary regex* `\b[NAMA]\b`) untuk memastikan resolusi unit kerja selalu presisi dan tidak tertukar.
+
+---
+
 # [31 Agustus 2026] — Standarisasi Jabatan Kepala UPTD Teknis & Peningkatan Keandalan Sinkronisasi SIMPEG
 
 - **Standarisasi Jabatan Pimpinan UPTD Teknis**:
