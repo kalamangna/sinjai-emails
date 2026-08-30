@@ -1129,8 +1129,32 @@ class EmailService
         // 3. Sync Unit Kerja jika terjadi mutasi / pindah tugas di SIMPEG
         if (!empty($source['unit_id'])) {
             $targetUnit = $this->unitKerjaModel->where('api_unit_id', $source['unit_id'])->first();
-            if ($targetUnit && $targetUnit['id'] != $currentEmail['unit_kerja_id']) {
-                $updateData['unit_kerja_id'] = $targetUnit['id'];
+            if ($targetUnit) {
+                $resolvedUnitId = $targetUnit['id'];
+
+                // Cek apakah jabatan menyebutkan sub-unit khusus (misal Kelurahan, Sekolah, Puskesmas) di bawah targetUnit
+                $childUnits = $this->unitKerjaModel->where('parent_id', $targetUnit['id'])->findAll();
+                if (!empty($childUnits) && !empty($rawJabatan)) {
+                    foreach ($childUnits as $child) {
+                        $cleanChildName = trim(preg_replace('/^(KELURAHAN|PUSKESMAS|UPTD|SMPN|SDN|TK)\s+/i', '', $child['nama_unit_kerja']));
+                        if (stripos($rawJabatan, $cleanChildName) !== false) {
+                            $resolvedUnitId = $child['id'];
+                            break;
+                        }
+                    }
+                }
+
+                // Jika akun saat ini sudah berada di sub-unit dari targetUnit dan tidak terdeteksi sub-unit baru, pertahankan sub-unit yang ada
+                if ($resolvedUnitId == $targetUnit['id'] && !empty($currentEmail['unit_kerja_id'])) {
+                    $currentUnit = $this->unitKerjaModel->find($currentEmail['unit_kerja_id']);
+                    if ($currentUnit && $currentUnit['parent_id'] == $targetUnit['id']) {
+                        $resolvedUnitId = $currentUnit['id'];
+                    }
+                }
+
+                if ($resolvedUnitId != $currentEmail['unit_kerja_id']) {
+                    $updateData['unit_kerja_id'] = $resolvedUnitId;
+                }
             }
         }
 
