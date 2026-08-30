@@ -1597,12 +1597,12 @@ class EmailService
         $jab = preg_replace('/^KTU\s+(UPTD\s+)?BALAI\s+BENIH\s+IKAN\b/i', 'KEPALA TATA USAHA UPTD BALAI BENIH IKAN', $jab);
         $jab = preg_replace('/^KEPALA\s+(UPTD\s+)?BALAI\s+BENIH\s+IKAN\b/i', 'KEPALA UPTD BALAI BENIH IKAN', $jab);
 
-        // Standarisasi UPTD Laboratorium DLHK -> LABORATORIUM LINGKUNGAN HIDUP
+        // Standarisasi UPTD Laboratorium DLHK -> LABORATORIUM LINGKUNGAN
         if (!empty($unitKerjaName) && (stripos($unitKerjaName, 'LINGKUNGAN HIDUP') !== false || stripos($unitKerjaName, 'DLHK') !== false)) {
-            if (preg_match('/^KEPALA\s+(TATA\s+USAHA|TU|KTU)\s+(UPTD\s+|UPT\s+)?LABORATORIUM$/i', $jab) || preg_match('/^KTU\s+(UPTD\s+|UPT\s+)?LABORATORIUM$/i', $jab)) {
-                $jab = 'KEPALA TATA USAHA UPTD LABORATORIUM LINGKUNGAN HIDUP';
-            } elseif (preg_match('/^KEPALA\s+(UPTD\s+|UPT\s+)?LABORATORIUM$/i', $jab)) {
-                $jab = 'KEPALA UPTD LABORATORIUM LINGKUNGAN HIDUP';
+            if (preg_match('/^KEPALA\s+(TATA\s+USAHA|TU|KTU)\s+(UPTD\s+|UPT\s+)?LABORATORIUM(\s+LINGKUNGAN(\s+HIDUP)?)?$/i', $jab) || preg_match('/^KTU\s+(UPTD\s+|UPT\s+)?LABORATORIUM(\s+LINGKUNGAN(\s+HIDUP)?)?$/i', $jab)) {
+                $jab = 'KEPALA TATA USAHA UPTD LABORATORIUM LINGKUNGAN';
+            } elseif (preg_match('/^KEPALA\s+(UPTD\s+|UPT\s+)?LABORATORIUM(\s+LINGKUNGAN(\s+HIDUP)?)?$/i', $jab)) {
+                $jab = 'KEPALA UPTD LABORATORIUM LINGKUNGAN';
             }
         }
 

@@ -5,6 +5,13 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [31 Agustus 2026] — Standarisasi Nomenklatur Baku UPTD Laboratorium Lingkungan DLHK
+
+- **Standarisasi UPTD Laboratorium Lingkungan DLHK**:
+  - Menstandarisasi penamaan UPTD Laboratorium di bawah DLHK ke format baku nasional (**Permen LHK No. P.23/2020**) menjadi **`KEPALA UPTD LABORATORIUM LINGKUNGAN`** dan **`KEPALA TATA USAHA UPTD LABORATORIUM LINGKUNGAN`**.
+
+---
+
 # [31 Agustus 2026] — Pembersihan Embel-Embel Sub.Koordinator & Standarisasi UPTD Lab DLHK
 
 - **Pembersihan Embel-Embel Sub.Koordinator pada JF Penyetaraan**:
