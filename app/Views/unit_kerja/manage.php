@@ -35,7 +35,7 @@
         <div class="bg-slate-50 px-6 py-4 border-b border-slate-200 flex justify-between items-center">
             <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Daftar Unit Kerja</h3>
             <span class="text-[10px] font-bold text-slate-700 bg-white border border-slate-200 px-2 py-0.5 rounded-full shadow-sm">
-                TOTAL: <?= number_format(count($unit_kerja_list), 0, ',', '.') ?>
+                TOTAL: <?= number_format(!empty($unit_kerja_list) ? count($unit_kerja_list) : 0, 0, ',', '.') ?>
             </span>
         </div>
 

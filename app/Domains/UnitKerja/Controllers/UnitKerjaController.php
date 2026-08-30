@@ -54,6 +54,7 @@ class UnitKerjaController extends BaseController
             ->asArray()
             ->findAll();
 
+        $data['unit_kerja_list'] = $unitKerjaList;
         $data['unitKerjaList'] = $unitKerjaList;
         $data['parents_with_children'] = $parentsWithChildren;
         $data['search'] = $search;
