@@ -1460,6 +1460,13 @@ class EmailService
             $jab = preg_replace('/\s+(INSPEKTORAT|PADA|DAERAH)\s*.*$/i', '', $jab);
         }
 
+        // Standarisasi Singkatan Jabatan Struktural (KTU, Kasubag, Kasubid, Kabid, Kasi)
+        $jab = preg_replace('/\b(KTU|KASUBAG\s+TU|KASUBAG\s+TATA\s+USAHA)\b/i', 'KEPALA SUB BAGIAN TATA USAHA', $jab);
+        $jab = preg_replace('/\bKASUBAG\b/i', 'KEPALA SUB BAGIAN', $jab);
+        $jab = preg_replace('/\bKASUBBID\b/i', 'KEPALA SUB BIDANG', $jab);
+        $jab = preg_replace('/\bKABID\b/i', 'KEPALA BIDANG', $jab);
+        $jab = preg_replace('/\bKASI\b/i', 'KEPALA SEKSI', $jab);
+
         // Resolusi jabatan kombinasi garis miring (Utamakan Jabatan Struktural / Manajerial / Kepala)
         if (strpos($jab, '/') !== false && !preg_match('/\b[IVX]+\/[A-D]\b/i', $jab)) {
             $parts = explode('/', $jab);
@@ -1494,7 +1501,7 @@ class EmailService
 
         // Bersihkan embel-embel nama instansi di ujung nama Kabid/Kasubag/Kasi/Kasubid
         if (preg_match('/^(KEPALA BIDANG|KEPALA SUB BAGIAN|KEPALA SEKSI|KEPALA SUB BIDANG)\s+/i', $jab)) {
-            $jab = preg_replace('/\s+(SEKRETARIAT|PADA|KEC\.|KECAMATAN|DINAS|BADAN|INSPEKTORAT|SATPOL PP|SATUAN POLISI|UPTD RSUD|RSUD)\s+.*$/i', '', $jab);
+            $jab = preg_replace('/\s+(SEKRETARIAT|PADA|KEC\.|KECAMATAN|DINAS|BADAN|INSPEKTORAT|SATPOL PP|SATUAN POLISI|UPTD RSUD|RSUD|UPTD PUSKESMAS|PUSKESMAS|UPTD)\s+.*$/i', '', $jab);
         }
 
         // 1. Standarisasi Jenjang Fungsional Guru Format Lama (PermenPAN-RB & BKN)
