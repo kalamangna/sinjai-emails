@@ -1185,7 +1185,14 @@ class EmailService
                         $normChild = $normalizeForMatching($childName);
                         $cleanChildStripped = trim(preg_replace('/^(SDN|SMPN|SMAN|TKN|PUSKESMAS|RSUD|LABKESDA|IFK|KELURAHAN|BAGIAN)\s+/i', '', $normChild));
 
-                        if (stripos($normSearch, $normChild) !== false || (!empty($cleanChildStripped) && stripos($normSearch, $cleanChildStripped) !== false)) {
+                        $noSpaceSearch = str_replace(' ', '', $normSearch);
+                        $noSpaceChild = str_replace(' ', '', $normChild);
+                        $noSpaceClean = str_replace(' ', '', $cleanChildStripped);
+
+                        if (stripos($normSearch, $normChild) !== false 
+                            || (!empty($cleanChildStripped) && stripos($normSearch, $cleanChildStripped) !== false)
+                            || (!empty($noSpaceClean) && strlen($noSpaceClean) >= 4 && stripos($noSpaceSearch, $noSpaceClean) !== false)
+                            || (!empty($noSpaceChild) && strlen($noSpaceChild) >= 4 && stripos($noSpaceSearch, $noSpaceChild) !== false)) {
                             $resolvedUnitId = $child['id'];
                             $resolvedUnitName = $child['nama_unit_kerja'];
                             break;
