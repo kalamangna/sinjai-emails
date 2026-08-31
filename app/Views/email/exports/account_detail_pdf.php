@@ -239,11 +239,15 @@
                     <td style="text-align: center; color: #64748b;"><?= $nomor++ ?></td>
                     <td>
                         <strong><?= esc(strtoupper($email['name'] ?? '')) ?></strong>
-                        <?php 
-                        $displayJab = (!empty($email['is_plt_in_this_unit']) && !empty($email['jabatan_plt'])) ? $email['jabatan_plt'] : ($email['jabatan'] ?? '');
-                        if (!empty($displayJab)):
-                        ?>
-                            <br><small style="color: #475569; font-size: 8px;"><?= esc(strtoupper($displayJab)) ?></small>
+                        <?php if (!empty($email['is_plt_in_this_unit']) && !empty($email['jabatan_plt'])): ?>
+                            <br><small style="color: #b45309; font-size: 8px;"><?= esc(strtoupper($email['jabatan_plt'])) ?></small>
+                        <?php else: ?>
+                            <?php if (!empty($email['jabatan'])): ?>
+                                <br><small style="color: #475569; font-size: 8px;"><?= esc(strtoupper($email['jabatan'])) ?></small>
+                            <?php endif; ?>
+                            <?php if (!empty($email['jabatan_plt'])): ?>
+                                <br><small style="color: #b45309; font-size: 8px;"><?= esc(strtoupper($email['jabatan_plt'])) ?></small>
+                            <?php endif; ?>
                         <?php endif; ?>
                     </td>
                     <td><?= esc($email['nip'] ?: '') ?></td>

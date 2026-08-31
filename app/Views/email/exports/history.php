@@ -20,11 +20,11 @@
             <table class="w-full text-left text-sm border-collapse">
                 <thead class="bg-slate-50 text-slate-400 uppercase text-[10px] font-bold tracking-widest">
                     <tr>
-                        <th class="px-6 py-3 border-b border-slate-200">Tipe Laporan</th>
-                        <th class="px-6 py-3 border-b border-slate-200">Status</th>
+                        <th class="px-6 py-3 border-b border-slate-200 min-w-[280px]">Tipe Laporan</th>
+                        <th class="px-6 py-3 border-b border-slate-200 w-28 whitespace-nowrap">Status</th>
                         <th class="px-6 py-3 border-b border-slate-200">Nama File</th>
-                        <th class="px-6 py-3 border-b border-slate-200 whitespace-nowrap">Waktu Mulai</th>
-                        <th class="px-6 py-3 border-b border-slate-200 text-right">Aksi</th>
+                        <th class="px-6 py-3 border-b border-slate-200 w-36 whitespace-nowrap">Waktu Mulai</th>
+                        <th class="px-6 py-3 border-b border-slate-200 w-36 text-right whitespace-nowrap">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
@@ -72,7 +72,7 @@
                                 </td>
                                 <td class="px-6 py-4 text-sm text-slate-600">
                                     <?php if ($h['file_name']) : ?>
-                                        <span class="font-mono text-xs"><?= esc($h['file_name']) ?></span>
+                                        <span class="font-mono text-xs break-all"><?= esc($h['file_name']) ?></span>
                                     <?php else : ?>
                                         <span class="text-slate-400 italic">-</span>
                                     <?php endif; ?>
@@ -81,25 +81,25 @@
                                     <p class="font-medium text-slate-800 leading-tight"><?= date('d M Y', strtotime($h['created_at'])) ?></p>
                                     <p class="text-[10px] text-slate-500 font-medium mt-1 uppercase tracking-widest"><?= date('H:i', strtotime($h['created_at'])) ?> WIB</p>
                                 </td>
-                                <td class="px-6 py-4 text-right">
-                                    <div class="flex items-center justify-end gap-2">
+                                <td class="px-6 py-4 text-right whitespace-nowrap">
+                                    <div class="flex items-center justify-end gap-1.5 flex-nowrap">
                                         <?php if ($h['status'] === 'COMPLETED' && $h['file_path']) : ?>
-                                            <a href="<?= site_url('reports/download/' . $h['id']) ?>" target="_blank" id="download-btn-<?= $h['id'] ?>" class="inline-flex items-center justify-center px-3 py-1.5 bg-indigo-50 text-indigo-600 rounded text-[10px] uppercase font-bold hover:bg-indigo-100 transition-colors">
-                                                <i class="fas fa-eye mr-1.5"></i> Lihat PDF
+                                            <a href="<?= site_url('reports/download/' . $h['id']) ?>" target="_blank" id="download-btn-<?= $h['id'] ?>" class="btn btn-outline whitespace-nowrap shrink-0 !py-1.5 !px-3 !text-[10px] !font-bold uppercase tracking-wider text-slate-700 hover:text-slate-900 no-underline shadow-xs">
+                                                <i class="fas fa-file-pdf mr-1.5 text-red-600"></i> Lihat PDF
                                             </a>
                                         <?php elseif ($h['status'] === 'FAILED') : ?>
-                                            <button onclick="showGlobalError('Detail Kesalahan Export', '<?= addslashes($h['error_message'] ?? 'Terjadi kesalahan saat memproses laporan.') ?>')" class="inline-flex items-center justify-center px-3 py-1.5 bg-slate-50 text-slate-600 rounded text-[10px] uppercase font-bold hover:bg-slate-100 transition-colors">
+                                            <button onclick="showGlobalError('Detail Kesalahan Export', '<?= addslashes($h['error_message'] ?? 'Terjadi kesalahan saat memproses laporan.') ?>')" class="btn btn-outline whitespace-nowrap shrink-0 !py-1.5 !px-3 !text-[10px] !font-bold uppercase tracking-wider text-rose-600 hover:bg-rose-50 border-rose-200">
                                                 <i class="fas fa-info-circle mr-1.5"></i> Info
                                             </button>
                                         <?php else : ?>
-                                            <button disabled class="inline-flex items-center justify-center px-3 py-1.5 bg-slate-50 text-slate-400 rounded text-[10px] uppercase font-bold cursor-not-allowed">
-                                                <i class="fas fa-hourglass-half mr-1.5"></i> Proses
+                                            <button disabled class="btn btn-outline whitespace-nowrap shrink-0 !py-1.5 !px-3 !text-[10px] !font-bold uppercase tracking-wider text-slate-400 opacity-60 cursor-not-allowed">
+                                                <i class="fas fa-spinner fa-spin mr-1.5"></i> Memproses
                                             </button>
                                         <?php endif; ?>
                                         
                                         <form action="<?= site_url('reports/delete/' . $h['id']) ?>" method="post" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus riwayat ini? File PDF juga akan terhapus.')">
-                                            <button type="submit" class="inline-flex items-center justify-center px-2 py-1.5 bg-rose-50 text-rose-600 rounded text-[10px] uppercase font-bold hover:bg-rose-100 transition-colors" title="Hapus">
-                                                <i class="fas fa-trash-alt"></i>
+                                            <button type="submit" class="btn btn-outline shrink-0 !w-8 !h-8 !p-0 text-slate-400 hover:text-rose-600 hover:bg-rose-50 hover:border-rose-200 justify-center" title="Hapus Riwayat">
+                                                <i class="fas fa-trash-alt text-xs"></i>
                                             </button>
                                         </form>
                                     </div>
@@ -140,7 +140,7 @@ if ($needsRefresh):
 <?php 
 // Check if we need to trigger the worker (either from flashdata or if there are pending jobs)
 $hasPendingJobs = false;
-foreach ($histories as $h) {
+foreach ($histories ?? [] as $h) {
     if ($h['status'] === 'PENDING' || $h['status'] === 'PROCESSING') {
         $hasPendingJobs = true;
         break;
@@ -155,24 +155,5 @@ $shouldTriggerWorker = session()->getFlashdata('trigger_worker') || $hasPendingJ
     fetch('<?= site_url('api_trigger_queue') ?>').catch(e => console.error(e));
 </script>
 <?php endif; ?>
-
-<script>
-    // Auto-download new completed PDFs
-    const completedJobs = document.querySelectorAll('a[id^="download-btn-"]');
-    const autoDownloaded = JSON.parse(localStorage.getItem('auto_downloaded') || '[]');
-    
-    completedJobs.forEach(btn => {
-        const id = btn.id.replace('download-btn-', '');
-        if (!autoDownloaded.includes(id)) {
-            autoDownloaded.push(id);
-            localStorage.setItem('auto_downloaded', JSON.stringify(autoDownloaded));
-            
-            const iframe = document.createElement('iframe');
-            iframe.style.display = 'none';
-            iframe.src = btn.href;
-            document.body.appendChild(iframe);
-        }
-    });
-</script>
 
 <?= $this->endSection() ?>

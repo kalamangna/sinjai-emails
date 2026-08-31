@@ -186,52 +186,15 @@ class EmailExportService
         $allUnitIds = array_merge([$unitKerjaId], $childrenIds);
 
         $targetUnitIds = (!empty($childrenIds) && $sub_unit === 'without') ? [$unitKerjaId] : $allUnitIds;
+        $targetIdsString = implode(',', array_map('intval', $targetUnitIds));
 
         $isKecamatan = stripos($unitKerja['nama_unit_kerja'], 'Kecamatan') !== false;
 
         $builder = $this->emailModel->withDetails()
-            ->whereIn('unit_kerja_id', $targetUnitIds)
-            ->orderBy('emails.eselon_id IS NULL', 'ASC', false)
-            ->orderBy('emails.eselon_id', 'ASC')
-            ->orderBy('emails.status_asn_id IS NULL', 'ASC', false)
-            ->orderBy('emails.status_asn_id', 'ASC')
-            ->orderBy('emails.jabatan', 'ASC')
-            ->orderBy('emails.name', 'ASC');
-
-        if ($isKecamatan && $pimpinan_desa == 0) $builder->where('pimpinan_desa', 0);
-        if ($search) {
-            $builder->groupStart();
-            $cleanSearch = str_replace([' ', '.', '-', '\''], '', $search);
-            $builder->like('email', $search)
-                ->orLike('name', $search)
-                ->orLike('jabatan', $search);
-
-            if (is_numeric($cleanSearch) && strlen($cleanSearch) >= 10) {
-                $hash = $cleanSearch;
-                $builder->orWhere('nik', $hash)
-                    ->orWhere('nip', $hash);
-            }
-            $builder->groupEnd();
-        }
-        if ($status_asn) $builder->where('emails.status_asn_id', $status_asn);
-        if ($bsre_status) {
-            if ($bsre_status === 'not_synced') {
-                $builder->groupStart()->where('emails.bsre_status', null)->orWhere('emails.bsre_status', '')->groupEnd();
-            } else {
-                $builder->where('emails.bsre_status', $bsre_status);
-            }
-        }
-
-        $emails = $builder->findAll();
-        $uniqueUnitKerjaIds = array_unique(array_column($emails, 'unit_kerja_id'));
-        $showUnitKerjaColumn = count($uniqueUnitKerjaIds) > 1;
-
-        $targetIdsString = implode(',', array_map('intval', $allUnitIds));
-        $builder = $this->emailModel->withDetails()
             ->select("(CASE WHEN emails.unit_kerja_plt_id IN ({$targetIdsString}) AND (emails.unit_kerja_id NOT IN ({$targetIdsString}) OR emails.unit_kerja_id IS NULL) THEN 1 ELSE 0 END) as is_plt_in_this_unit", false)
             ->groupStart()
-                ->whereIn('emails.unit_kerja_id', $allUnitIds)
-                ->orWhereIn('emails.unit_kerja_plt_id', $allUnitIds)
+                ->whereIn('emails.unit_kerja_id', $targetUnitIds)
+                ->orWhereIn('emails.unit_kerja_plt_id', $targetUnitIds)
             ->groupEnd();
 
         if ($isKecamatan && $pimpinan_desa == 0) $builder->where('pimpinan_desa', 0);
@@ -259,22 +222,28 @@ class EmailExportService
             }
         }
 
-        if ($showUnitKerjaColumn) {
-            $builder->orderBy('emails.eselon_id IS NULL', 'ASC', false)
-                    ->orderBy('emails.eselon_id', 'ASC')
-                    ->orderBy('emails.status_asn_id IS NULL', 'ASC', false)
-                    ->orderBy('emails.status_asn_id', 'ASC')
-                    ->orderBy('unit_kerja.nama_unit_kerja', 'ASC')
-                    ->orderBy('emails.name', 'ASC');
-        } else {
-            $builder->orderBy('emails.eselon_id IS NULL', 'ASC', false)
-                    ->orderBy('emails.eselon_id', 'ASC')
-                    ->orderBy('emails.status_asn_id IS NULL', 'ASC', false)
-                    ->orderBy('emails.status_asn_id', 'ASC')
-                    ->orderBy('emails.name', 'ASC');
-        }
-
         $emails = $builder->findAll();
+        $uniqueUnitKerjaIds = array_unique(array_filter(array_column($emails, 'unit_kerja_id')));
+        $showUnitKerjaColumn = count($uniqueUnitKerjaIds) > 1;
+
+        usort($emails, function($a, $b) use ($showUnitKerjaColumn) {
+            $eselonA = $a['eselon_id'] ? (int)$a['eselon_id'] : 999;
+            $eselonB = $b['eselon_id'] ? (int)$b['eselon_id'] : 999;
+            if ($eselonA !== $eselonB) return $eselonA <=> $eselonB;
+
+            $asnA = $a['status_asn_id'] ? (int)$a['status_asn_id'] : 999;
+            $asnB = $b['status_asn_id'] ? (int)$b['status_asn_id'] : 999;
+            if ($asnA !== $asnB) return $asnA <=> $asnB;
+
+            if ($showUnitKerjaColumn) {
+                $unitA = $a['unit_kerja_name'] ?? '';
+                $unitB = $b['unit_kerja_name'] ?? '';
+                $cmpUnit = strnatcasecmp($unitA, $unitB);
+                if ($cmpUnit !== 0) return $cmpUnit;
+            }
+
+            return strnatcasecmp($a['name'] ?? '', $b['name'] ?? '');
+        });
 
         $data = [
             'unit_kerja' => $unitKerja,
@@ -318,13 +287,7 @@ class EmailExportService
             ->groupStart()
                 ->whereIn('emails.unit_kerja_id', $targetUnitIds)
                 ->orWhereIn('emails.unit_kerja_plt_id', $targetUnitIds)
-            ->groupEnd()
-            ->orderBy('emails.eselon_id IS NULL', 'ASC', false)
-            ->orderBy('emails.eselon_id', 'ASC')
-            ->orderBy('emails.status_asn_id IS NULL', 'ASC', false)
-            ->orderBy('emails.status_asn_id', 'ASC')
-            ->orderBy('emails.jabatan', 'ASC')
-            ->orderBy('emails.name', 'ASC');
+            ->groupEnd();
 
         if ($isKecamatan && $pimpinan_desa == 0) $builder->where('pimpinan_desa', 0);
         if ($search) {
@@ -352,52 +315,27 @@ class EmailExportService
         }
 
         $emails = $builder->findAll();
-        $uniqueUnitKerjaIds = array_unique(array_column($emails, 'unit_kerja_id'));
+        $uniqueUnitKerjaIds = array_unique(array_filter(array_column($emails, 'unit_kerja_id')));
         $showUnitKerjaColumn = count($uniqueUnitKerjaIds) > 1;
 
-        // Apply refined sorting
-        $builder = $this->emailModel->withDetails()
-            ->whereIn('unit_kerja_id', $allUnitIds);
+        usort($emails, function($a, $b) use ($showUnitKerjaColumn) {
+            $eselonA = $a['eselon_id'] ? (int)$a['eselon_id'] : 999;
+            $eselonB = $b['eselon_id'] ? (int)$b['eselon_id'] : 999;
+            if ($eselonA !== $eselonB) return $eselonA <=> $eselonB;
 
-        if ($isKecamatan && $pimpinan_desa == 0) $builder->where('pimpinan_desa', 0);
-        if ($search) {
-            $builder->groupStart();
-            $cleanSearch = str_replace([' ', '.', '-', '\''], '', $search);
-            $builder->like('email', $search)
-                ->orLike('name', $search);
+            $asnA = $a['status_asn_id'] ? (int)$a['status_asn_id'] : 999;
+            $asnB = $b['status_asn_id'] ? (int)$b['status_asn_id'] : 999;
+            if ($asnA !== $asnB) return $asnA <=> $asnB;
 
-            if (is_numeric($cleanSearch) && strlen($cleanSearch) >= 10) {
-                $hash = $cleanSearch;
-                $builder->orWhere('nik', $hash)
-                    ->orWhere('nip', $hash);
+            if ($showUnitKerjaColumn) {
+                $unitA = $a['unit_kerja_name'] ?? '';
+                $unitB = $b['unit_kerja_name'] ?? '';
+                $cmpUnit = strnatcasecmp($unitA, $unitB);
+                if ($cmpUnit !== 0) return $cmpUnit;
             }
-            $builder->groupEnd();
-        }
-        if ($status_asn) $builder->where('emails.status_asn_id', $status_asn);
-        if ($bsre_status) {
-            if ($bsre_status === 'not_synced') {
-                $builder->groupStart()->where('emails.bsre_status', null)->orWhere('emails.bsre_status', '')->groupEnd();
-            } else {
-                $builder->where('emails.bsre_status', $bsre_status);
-            }
-        }
 
-        if ($showUnitKerjaColumn) {
-            $builder->orderBy('emails.eselon_id IS NULL', 'ASC', false)
-                    ->orderBy('emails.eselon_id', 'ASC')
-                    ->orderBy('emails.status_asn_id IS NULL', 'ASC', false)
-                    ->orderBy('emails.status_asn_id', 'ASC')
-                    ->orderBy('unit_kerja.nama_unit_kerja', 'ASC')
-                    ->orderBy('emails.name', 'ASC');
-        } else {
-            $builder->orderBy('emails.eselon_id IS NULL', 'ASC', false)
-                    ->orderBy('emails.eselon_id', 'ASC')
-                    ->orderBy('emails.status_asn_id IS NULL', 'ASC', false)
-                    ->orderBy('emails.status_asn_id', 'ASC')
-                    ->orderBy('emails.name', 'ASC');
-        }
-
-        $emails = $builder->findAll();
+            return strnatcasecmp($a['name'] ?? '', $b['name'] ?? '');
+        });
 
         $data = [
             'unit_kerja' => $unitKerja,
