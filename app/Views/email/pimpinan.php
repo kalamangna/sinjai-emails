@@ -151,8 +151,8 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <div class="flex flex-col gap-1">
-                                        <span class="text-xs font-medium text-slate-700 uppercase tracking-tight leading-snug jabatan-sync-target"><?= esc($email['jabatan']) ?: '-' ?></span>
+                                    <div class="flex flex-col gap-1 jabatan-sync-target">
+                                        <span class="text-xs font-medium text-slate-700 uppercase tracking-tight leading-snug"><?= esc($email['jabatan']) ?: '-' ?></span>
                                         <?php if (!empty($email['jabatan_plt'])): ?>
                                             <span class="text-xs font-medium text-amber-700 uppercase tracking-tight leading-snug"><?= esc($email['jabatan_plt']) ?></span>
                                         <?php endif; ?>

@@ -17,7 +17,7 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Menerapkan mekanisme *bypass/mock* pada [`CpanelApi.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Shared/Libraries/CpanelApi.php) dan [`SyncService.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Shared/Services/SyncService.php) saat berjalan di lingkungan lokal (`CI_ENVIRONMENT = development` atau `CPANEL_MOCK = true`), sehingga seluruh request cPanel tidak menembus server live produksi.
 - **Logika Sinkronisasi Pegawai PNS**:
   - Menyesuaikan filter antrean sinkronisasi pada [`sync-helper.js`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/public/js/sync-helper.js) agar secara ketat hanya mengeksekusi akun ber-NIP (`nip !== ''`) dan bukan berstatus PPPK/Non-ASN.
-  - Memperbarui skeleton loading placeholder pada field jabatan, eselon, pangkat, dan unit penugasan Plt.
+  - Memperbarui skeleton loading placeholder pada field jabatan, eselon, pangkat, dan unit penugasan Plt, termasuk dukungan *skeleton loading* multi-baris (definitif dan Plt) pada [`pimpinan.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/pimpinan.php).
 - **Aset & Antarmuka**:
   - Membangun dan mengompilasi berkas CSS Tailwind (`npm run build`).
 

@@ -455,9 +455,9 @@
 
             // Skeleton state untuk Jabatan
             if (jabatanTarget) {
-                originalJabatan = jabatanTarget.getAttribute('data-original') || jabatanTarget.innerText.trim();
+                originalJabatan = jabatanTarget.getAttribute('data-original') || jabatanTarget.innerHTML;
                 jabatanTarget.setAttribute('data-original', originalJabatan);
-                jabatanTarget.innerHTML = '<div class="h-3.5 bg-slate-200 rounded animate-pulse w-36 my-0.5"></div>';
+                jabatanTarget.innerHTML = '<div class="space-y-1.5 py-0.5"><div class="h-3.5 bg-slate-200 rounded animate-pulse w-36"></div><div class="h-3 bg-amber-100 rounded animate-pulse w-28"></div></div>';
             }
 
             // Skeleton state untuk Unit Kerja
@@ -494,9 +494,14 @@
                         if (data.no_data) {
                             jabatanTarget.innerHTML = `<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase border bg-amber-50 text-amber-600 border-amber-200" title="Data tidak ditemukan di API">NO DATA API</span>`;
                         } else {
-                            const newJabatan = data.data?.jabatan || originalJabatan;
-                            jabatanTarget.innerHTML = `<span class="text-emerald-600 font-bold">${newJabatan}</span>`;
-                            jabatanTarget.setAttribute('data-original', newJabatan);
+                            const newJabatan = data.data?.jabatan || '-';
+                            const newJabatanPlt = data.data?.jabatan_plt || '';
+                            let jabatanHtml = `<span class="text-xs font-medium text-slate-700 uppercase tracking-tight leading-snug">${newJabatan}</span>`;
+                            if (newJabatanPlt) {
+                                jabatanHtml += `<span class="text-xs font-medium text-amber-700 uppercase tracking-tight leading-snug mt-0.5">${newJabatanPlt}</span>`;
+                            }
+                            jabatanTarget.innerHTML = jabatanHtml;
+                            jabatanTarget.setAttribute('data-original', jabatanHtml);
                         }
                     }
 
