@@ -152,8 +152,19 @@ document.addEventListener("DOMContentLoaded", function () {
     generateBtn.disabled = true;
     generateBtn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Memproses...`;
     submitBtn.disabled = true;
-    resultsTableBody.innerHTML =
-      '<tr><td colspan="8" class="px-10 py-12 text-center text-emerald-700 font-bold uppercase tracking-widest text-[10px] animate-pulse">Sedang memproses dan memeriksa data...</td></tr>';
+    const skeletonRow = `
+      <tr class="animate-pulse">
+        <td class="px-6 py-4"><div class="h-3.5 w-6 bg-slate-200 rounded"></div></td>
+        <td class="px-6 py-4"><div class="h-3.5 w-32 bg-slate-200 rounded"></div></td>
+        <td class="px-6 py-4"><div class="h-3.5 w-28 bg-slate-200 rounded"></div></td>
+        <td class="px-6 py-4"><div class="h-3.5 w-36 bg-slate-200 rounded"></div></td>
+        <td class="px-6 py-4"><div class="h-3.5 w-24 bg-slate-200 rounded"></div></td>
+        <td class="px-6 py-4"><div class="h-3.5 w-20 bg-slate-200 rounded"></div></td>
+        <td class="px-6 py-4"><div class="h-5 w-16 bg-slate-200 rounded-full"></div></td>
+        <td class="px-6 py-4"><div class="h-4 w-4 bg-slate-200 rounded"></div></td>
+      </tr>
+    `;
+    resultsTableBody.innerHTML = skeletonRow.repeat(4);
 
     try {
         const trimmedNiks = finalNiks;
@@ -756,9 +767,8 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    const badgeBase = "inline-flex items-center gap-1 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border-0 shadow-sm";
     const statusCell = editedCell.closest("tr").cells[6];
-    statusCell.innerHTML = `<span class="${badgeBase} bg-slate-100 text-slate-600"><i class="fas fa-spinner fa-spin"></i>Checking...</span>`;
+    statusCell.innerHTML = `<span class="inline-block h-5 w-20 bg-slate-200 rounded-full animate-pulse align-middle"></span>`;
     const result = await checkEmailAvailability(user.email);
     user.isAvailable = result.available;
     user.isDuplicate = userBatch.some(

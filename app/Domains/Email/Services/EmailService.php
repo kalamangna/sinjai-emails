@@ -1579,7 +1579,7 @@ class EmailService
                     $cleanSearchPlt = strtoupper($source['jabatan_plt']);
                     foreach ($pltChildren as $pChild) {
                         $pChildName = strtoupper($pChild['nama_unit_kerja']);
-                        $strippedChild = trim(preg_replace('/^(BAGIAN|BIDANG|SEKRETARIAT|UPTD|KANTOR)\s+/i', '', $pChildName));
+                        $strippedChild = trim(preg_replace('/^(BAGIAN|BIDANG|SEKRETARIAT|UPTD|KANTOR|KELURAHAN|DESA)\s+/i', '', $pChildName));
                         if (strpos($cleanSearchPlt, $pChildName) !== false || (!empty($strippedChild) && strpos($cleanSearchPlt, $strippedChild) !== false)) {
                             $resolvedPltUnitId = $pChild['id'];
                             $targetPltUnitName = $pChild['nama_unit_kerja'];
