@@ -167,7 +167,14 @@
                                             <span class="text-xs font-bold text-slate-800 uppercase tracking-tight"><?= esc($email['unit_kerja_name']) ?></span>
                                         <?php endif; ?>
                                         <?php if (!empty($email['unit_kerja_plt_name']) && $email['unit_kerja_plt_name'] !== $email['unit_kerja_name']): ?>
-                                            <span class="text-xs font-bold text-amber-700 uppercase tracking-tight mt-1"><?= esc($email['unit_kerja_plt_name']) ?></span>
+                                            <div class="flex flex-col mt-1.5 pt-1.5 border-t border-slate-100">
+                                                <?php if (!empty($email['parent_unit_kerja_plt_name'])): ?>
+                                                    <span class="text-[10px] font-bold text-amber-600 uppercase leading-none"><?= esc($email['parent_unit_kerja_plt_name']) ?></span>
+                                                    <span class="text-xs font-bold text-amber-700 uppercase tracking-tight mt-0.5"><?= esc($email['unit_kerja_plt_name']) ?></span>
+                                                <?php else: ?>
+                                                    <span class="text-xs font-bold text-amber-700 uppercase tracking-tight"><?= esc($email['unit_kerja_plt_name']) ?></span>
+                                                <?php endif; ?>
+                                            </div>
                                         <?php endif; ?>
                                     </div>
                                 </td>

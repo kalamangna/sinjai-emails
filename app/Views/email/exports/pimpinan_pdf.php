@@ -243,7 +243,13 @@
                         <td>
                             <?= $unitKerjaContent ?>
                             <?php if (!empty($email['unit_kerja_plt_name']) && $email['unit_kerja_plt_name'] !== ($email['unit_kerja_name'] ?? '')): ?>
-                                <br><span style="color: #b45309;"><?= esc(strtoupper($email['unit_kerja_plt_name'])) ?></span>
+                                <br>
+                                <?php if (!empty($email['parent_unit_kerja_plt_name'])): ?>
+                                    <small style="color: #b45309; font-size: 8px;"><?= esc(strtoupper($email['parent_unit_kerja_plt_name'])) ?></small><br>
+                                    <span style="color: #b45309; font-weight: bold;"><?= esc(strtoupper($email['unit_kerja_plt_name'])) ?></span>
+                                <?php else: ?>
+                                    <span style="color: #b45309;"><?= esc(strtoupper($email['unit_kerja_plt_name'])) ?></span>
+                                <?php endif; ?>
                             <?php endif; ?>
                         </td>
                     <?php endif; ?>

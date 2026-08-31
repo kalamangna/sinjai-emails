@@ -83,10 +83,11 @@ class EmailModel extends Model
 
     public function withDetails()
     {
-        return $this->select($this->standardColumns . ', unit_kerja.nama_unit_kerja as unit_kerja_name, parent_unit_kerja.nama_unit_kerja as parent_unit_kerja_name, unit_kerja_plt.nama_unit_kerja as unit_kerja_plt_name, status_asn.nama_status_asn as status_asn, eselon.nama_eselon as eselon_name')
+        return $this->select($this->standardColumns . ', unit_kerja.nama_unit_kerja as unit_kerja_name, parent_unit_kerja.nama_unit_kerja as parent_unit_kerja_name, unit_kerja_plt.nama_unit_kerja as unit_kerja_plt_name, parent_unit_kerja_plt.nama_unit_kerja as parent_unit_kerja_plt_name, status_asn.nama_status_asn as status_asn, eselon.nama_eselon as eselon_name')
             ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
             ->join('unit_kerja as parent_unit_kerja', 'parent_unit_kerja.id = unit_kerja.parent_id', 'left')
             ->join('unit_kerja as unit_kerja_plt', 'unit_kerja_plt.id = emails.unit_kerja_plt_id', 'left')
+            ->join('unit_kerja as parent_unit_kerja_plt', 'parent_unit_kerja_plt.id = unit_kerja_plt.parent_id', 'left')
             ->join('status_asn', 'status_asn.id = emails.status_asn_id', 'left')
             ->join('eselon', 'eselon.id = emails.eselon_id', 'left');
     }

@@ -5,6 +5,17 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [31 Agustus 2026] — Integrasi Hierarki Sub Unit Kerja Plt
+
+- **Dukungan Hierarki Sub Unit Kerja Plt**:
+  - Menambahkan relasi *left join* `parent_unit_kerja_plt` pada [`EmailModel.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Domains/Email/Models/EmailModel.php) untuk mengambil nama unit induk dan sub unit penugasan Plt.
+  - Memperbarui logika sinkronisasi jabatan Plt pada [`EmailService.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Domains/Email/Services/EmailService.php) agar otomatis memetakan nama bagian/divisi ke sub unit kerja terkait (seperti *Bagian Pengadaan Barang dan Jasa* di bawah *Sekretariat Daerah*).
+  - Menyelaraskan tampilan unit kerja Plt berjenjang (induk & sub unit) pada antarmuka web ([`pimpinan.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/pimpinan.php)) dan dokumen cetak PDF ([`pimpinan_pdf.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/exports/pimpinan_pdf.php)).
+- **Aset & Antarmuka**:
+  - Membangun dan mengompilasi berkas CSS Tailwind (`npm run build`).
+
+---
+
 # [31 Agustus 2026] — Penyempurnaan PDF Plt & Perapian Riwayat Laporan
 
 - **Penyempurnaan Jabatan Plt Dokumen PDF**:
