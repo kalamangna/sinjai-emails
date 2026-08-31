@@ -203,14 +203,82 @@ class PegawaiApi
             $data['jabatan_plt'] = $pltJabatan;
             $data['unit_id_plt'] = $pltUnitId;
         } else {
-            $data['jabatan_plt'] = null;
-            $data['unit_id_plt'] = null;
+            // Jika profil utama adalah jabatan definitif, cek apakah pegawai sedang ditugaskan sebagai Plt di OPD lain
+            $pltAssignment = $this->findPltAssignment($nip);
+            if ($pltAssignment) {
+                $data['jabatan_plt'] = $pltAssignment['jabatan_nama'] ?? $pltAssignment['jabatan'] ?? null;
+                $data['unit_id_plt'] = $pltAssignment['unit_id'] ?? null;
+            } else {
+                $data['jabatan_plt'] = null;
+                $data['unit_id_plt'] = null;
+            }
         }
 
         return [
             'success' => true,
             'data'    => $data
         ];
+    }
+
+    /**
+     * Mengambil seluruh penugasan Plt aktif di SIMPEG lintas OPD (dicache 1 jam)
+     */
+    public function getAllPltAssignments(): array
+    {
+        $cacheKey = 'simpeg_all_plt_assignments';
+        $cached = cache($cacheKey);
+        if (is_array($cached)) {
+            return $cached;
+        }
+
+        $db = \Config\Database::connect();
+        $units = $db->table('unit_kerja')
+            ->select('api_unit_id, nama_unit_kerja')
+            ->where('api_unit_id IS NOT NULL')
+            ->where('api_unit_id !=', '')
+            ->get()
+            ->getResultArray();
+
+        $pltMap = [];
+        foreach ($units as $u) {
+            $res = $this->requestWithRetry($this->baseUrl . 'get_pegawai', [
+                'query'   => ['unit_id' => $u['api_unit_id']],
+                'headers' => ['Accept' => 'application/json'],
+                'timeout' => 5,
+            ], 'GET');
+
+            if ($res['success']) {
+                $list = json_decode($res['body'] ?? '', true);
+                if (is_array($list)) {
+                    foreach ($list as $p) {
+                        $sId = (int)($p['jabatan_status_id'] ?? 1);
+                        $jNama = trim($p['jabatan_nama'] ?? $p['jabatan'] ?? '');
+                        if (($sId === 2 || stripos($jNama, 'Plt') === 0 || stripos($jNama, 'Plh') === 0) && !empty($p['nip'])) {
+                            $pltMap[$p['nip']] = [
+                                'nip'          => $p['nip'],
+                                'nama'         => $p['nama'] ?? '',
+                                'jabatan_nama' => $jNama,
+                                'unit_id'      => $u['api_unit_id'],
+                                'unit_nama'    => $u['nama_unit_kerja']
+                            ];
+                        }
+                    }
+                }
+            }
+        }
+
+        cache()->save($cacheKey, $pltMap, 3600);
+        return $pltMap;
+    }
+
+    /**
+     * Mencari apakah seorang pegawai ditugaskan sebagai Plt di OPD lain
+     */
+    public function findPltAssignment($nip): ?array
+    {
+        if (empty($nip)) return null;
+        $allPlt = $this->getAllPltAssignments();
+        return $allPlt[$nip] ?? null;
     }
 
     /**
