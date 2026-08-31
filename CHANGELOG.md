@@ -5,6 +5,18 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [31 Agustus 2026] — Tampilan Indikator BUP & Perapian Filter Detail Unit Kerja
+
+- **Indikator Batas Usia Pensiun (BUP) di Tabel Unit Kerja**:
+  - Menambahkan fungsi helper `hitungBupInfo()` pada [`TanggalHelper.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Shared/Helpers/TanggalHelper.php) untuk menghitung usia BUP (58/60/65 tahun), tanggal lahir, TMT pensiun, dan sisa waktu pensiun bagi semua ASN.
+  - Menampilkan badge adaptif BUP di kolom *Jabatan / Status* pada [`unit_kerja_detail.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/unit_kerja_detail.php) khusus bagi ASN yang $\le 1$ tahun menuju TMT pensiun (Badge Amber) atau telah mencapai masa pensiun (Badge Rose).
+- **Penyederhanaan & Perapian Grid Filter Toolbar**:
+  - Menghapus filter dropdown Sub Unit dan menyelaraskan seluruh kontrol (Pencarian, Status ASN, Status TTE, Password, Tombol Filter & Reset) ke dalam 1 baris grid (12 kolom) yang rapi.
+- **Aset & Antarmuka**:
+  - Membangun dan mengompilasi ulang berkas CSS Tailwind (`npm run build`).
+
+---
+
 # [31 Agustus 2026] — Fitur Kebijakan Retensi Log 90 Hari (Database & Filesystem)
 
 - **Kebijakan & Perintah Pembersihan Retensi Log**:
