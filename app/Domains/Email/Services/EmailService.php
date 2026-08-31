@@ -638,6 +638,7 @@ class EmailService
             'unit_kerja' => $unitKerja,
             'parent_unit' => !empty($unitKerja['parent_id']) ? $this->unitKerjaModel->find($unitKerja['parent_id']) : null,
             'child_units' => $children,
+            'target_unit_ids' => $targetUnitIds,
             'emails' => $emails,
             'total_emails' => $total_emails_in_unit,
             'filtered_count' => $filtered_count,

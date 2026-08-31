@@ -274,8 +274,16 @@
                                     <div class="flex flex-col gap-1" id="pegawai-container-<?= esc($email['user']) ?>" data-nip="<?= esc($email['nip'] ?? '') ?>" data-email="<?= esc($email['email'] ?? '') ?>" data-status-asn-id="<?= esc($email['status_asn_id'] ?? '') ?>">
                                         <?php
                                         $displayJabatan = (!empty($email['is_plt_in_this_unit']) && !empty($email['jabatan_plt'])) ? $email['jabatan_plt'] : ($email['jabatan'] ?: '-');
+                                        $isPltInSameUnit = !empty($email['unit_kerja_plt_id']) && (
+                                            $email['unit_kerja_plt_id'] == $unit_kerja['id'] || 
+                                            $email['unit_kerja_plt_id'] == ($email['unit_kerja_id'] ?? null) ||
+                                            (!empty($target_unit_ids) && in_array($email['unit_kerja_plt_id'], $target_unit_ids))
+                                        );
                                         ?>
                                         <span class="text-xs font-medium text-slate-700 uppercase tracking-tight jabatan-text"><?= esc($displayJabatan) ?></span>
+                                        <?php if (!empty($email['jabatan_plt']) && empty($email['is_plt_in_this_unit']) && $isPltInSameUnit): ?>
+                                            <span class="text-xs font-medium text-amber-700 uppercase tracking-tight leading-snug"><?= esc($email['jabatan_plt']) ?></span>
+                                        <?php endif; ?>
                                         <span class="text-[9px] font-bold text-slate-700 uppercase tracking-widest"><?= !empty($email['status_asn']) ? esc($email['status_asn']) : 'NON-ASN' ?></span>
                                     </div>
                                 </td>
@@ -287,6 +295,9 @@
                                                 <span class="text-xs font-bold text-slate-800 uppercase tracking-tight mt-1"><?= esc($email['unit_kerja_name']) ?></span>
                                             <?php else: ?>
                                                 <span class="text-xs font-bold text-slate-800 uppercase tracking-tight"><?= esc($email['unit_kerja_name']) ?></span>
+                                            <?php endif; ?>
+                                            <?php if (!empty($email['unit_kerja_plt_name']) && $email['unit_kerja_plt_name'] !== $email['unit_kerja_name'] && $isPltInSameUnit): ?>
+                                                <span class="text-xs font-bold text-amber-700 uppercase tracking-tight mt-1"><?= esc($email['unit_kerja_plt_name']) ?></span>
                                             <?php endif; ?>
                                         </div>
                                     </td>

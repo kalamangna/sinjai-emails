@@ -226,12 +226,21 @@
                 elseif (in_array($statusTte, ['NO_CERTIFICATE', 'RENEW', 'WAITING_FOR_VERIFICATION'])) $color = '#d97706';
                 elseif ($statusTte === 'NEW') $color = '#0d9488';
 
+                $isPltInSameUnit = !empty($email['unit_kerja_plt_id']) && (
+                    $email['unit_kerja_plt_id'] == ($unit_kerja['id'] ?? null) || 
+                    $email['unit_kerja_plt_id'] == ($email['unit_kerja_id'] ?? null) ||
+                    (!empty($target_unit_ids) && in_array($email['unit_kerja_plt_id'], $target_unit_ids))
+                );
+
                 $unitKerjaContent = '';
                 if ($showUnitKerjaColumn) {
                     if (!empty($email['parent_unit_kerja_name'])) {
-                        $unitKerjaContent = esc(strtoupper($email['unit_kerja_name'] ?? '')) . '<br><small style="color: #64748b; font-size: 8px;">' . esc(strtoupper($email['parent_unit_kerja_name'])) . '</small>';
+                        $unitKerjaContent = '<small style="color: #64748b; font-size: 8px;">' . esc(strtoupper($email['parent_unit_kerja_name'])) . '</small><br>' . esc(strtoupper($email['unit_kerja_name'] ?? ''));
                     } else {
                         $unitKerjaContent = esc(strtoupper($email['unit_kerja_name'] ?? ''));
+                    }
+                    if (!empty($email['unit_kerja_plt_name']) && $email['unit_kerja_plt_name'] !== $email['unit_kerja_name'] && $isPltInSameUnit) {
+                        $unitKerjaContent .= '<br><small style="color: #b45309; font-size: 8px;">' . esc(strtoupper($email['unit_kerja_plt_name'])) . '</small>';
                     }
                 }
             ?>
@@ -241,8 +250,13 @@
                         <strong><?= esc(strtoupper($email['name'] ?? '')) ?></strong>
                         <?php if (!empty($email['is_plt_in_this_unit']) && !empty($email['jabatan_plt'])): ?>
                             <br><small style="color: #b45309; font-size: 8px;"><?= esc(strtoupper($email['jabatan_plt'])) ?></small>
-                        <?php elseif (!empty($email['jabatan'])): ?>
-                            <br><small style="color: #475569; font-size: 8px;"><?= esc(strtoupper($email['jabatan'])) ?></small>
+                        <?php else: ?>
+                            <?php if (!empty($email['jabatan'])): ?>
+                                <br><small style="color: #475569; font-size: 8px;"><?= esc(strtoupper($email['jabatan'])) ?></small>
+                            <?php endif; ?>
+                            <?php if (!empty($email['jabatan_plt']) && $isPltInSameUnit): ?>
+                                <br><small style="color: #b45309; font-size: 8px;"><?= esc(strtoupper($email['jabatan_plt'])) ?></small>
+                            <?php endif; ?>
                         <?php endif; ?>
                     </td>
                     <td><?= esc($email['nip'] ?: '') ?></td>

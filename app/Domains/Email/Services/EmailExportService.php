@@ -247,6 +247,7 @@ class EmailExportService
 
         $data = [
             'unit_kerja' => $unitKerja,
+            'target_unit_ids' => $targetUnitIds,
             'emails' => $emails,
             'showUnitKerjaColumn' => $showUnitKerjaColumn,
             'logoSrc' => $this->getLogoSrc(),
@@ -339,6 +340,7 @@ class EmailExportService
 
         $data = [
             'unit_kerja' => $unitKerja,
+            'target_unit_ids' => $targetUnitIds,
             'emails' => $emails,
             'showUnitKerjaColumn' => $showUnitKerjaColumn,
             'logoSrc' => $this->getLogoSrc(),
