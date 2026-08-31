@@ -5,10 +5,8 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
-# [31 Agustus 2026] — Pembersihan Password Akun, Penyempurnaan PDF Plt & Perapian Riwayat Laporan
+# [31 Agustus 2026] — Penyempurnaan PDF Plt & Perapian Riwayat Laporan
 
-- **Keamanan & Pembersihan Data Akun**:
-  - Mengosongkan (`NULL`) seluruh data kata sandi (*plain text password*) pada tabel `emails` melalui migrasi [`2026-08-31-203600_ClearAllPasswordsInEmails.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Database/Migrations/2026-08-31-203600_ClearAllPasswordsInEmails.php).
 - **Penyempurnaan Jabatan Plt Dokumen PDF**:
   - Memperbaiki logika query pada [`EmailExportService.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Domains/Email/Services/EmailExportService.php) agar penugasan Plt lintas OPD (`is_plt_in_this_unit`) dan kolom `jabatan_plt` masuk ke dalam dokumen PDF Daftar Akun & Detail Akun Unit Kerja.
   - Menyelaraskan pewarnaan aksen amber (`#b45309`) untuk penugasan Plt pada [`account_detail_pdf.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/exports/account_detail_pdf.php).
