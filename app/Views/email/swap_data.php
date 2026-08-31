@@ -13,16 +13,6 @@
         </div>
     </div>
 
-    <?php if (session()->getFlashdata('error')) : ?>
-        <div class="p-4 bg-red-50 border border-red-200 rounded-lg flex items-start">
-            <i class="fas fa-exclamation-circle text-red-500 mt-0.5 mr-3"></i>
-            <div>
-                <h4 class="text-[10px] font-bold text-red-800 uppercase tracking-wider mb-1">Gagal</h4>
-                <p class="text-xs text-red-600"><?= session()->getFlashdata('error') ?></p>
-            </div>
-        </div>
-    <?php endif; ?>
-
     <div class="bg-white border border-slate-200 rounded-2xl shadow-sm">
         <div class="bg-slate-50 px-6 py-4 border-b border-slate-200">
             <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Konfigurasi Swap</h3>

@@ -170,7 +170,10 @@
             const mapInput = id => document.getElementById(id).value.split('\n').map(s => s.trim());
 
             const identifiers = mapInput('identifier_input');
-            if (!identifiers.some(s => s)) return alert('Masukkan setidaknya satu identitas.');
+            if (!identifiers.some(s => s)) {
+                showGlobalAlert('Perhatian', 'Masukkan minimal satu identitas.', 'warning');
+                return;
+            }
 
             updateBtn.disabled = true;
             updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Memproses...';
@@ -208,7 +211,7 @@
                 
                 renderResults(result.results);
             } catch (error) {
-                alert('Gagal memperbarui: ' + error.message);
+                showGlobalError('Gagal Memperbarui', 'Gagal memperbarui: ' + error.message);
             } finally {
                 updateBtn.disabled = false;
                 updateBtn.innerHTML = '<i class="fas fa-save mr-2 text-white/80"></i> Update Data PK';

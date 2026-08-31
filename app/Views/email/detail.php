@@ -22,7 +22,7 @@
         </div>
         <div class="grid grid-cols-2 gap-2 w-full sm:flex sm:w-auto">
             <?php if ($showPk = in_array($email['status_asn_id'] ?? 0, [2, 3])): ?>
-                <a href="<?= site_url('email/export_single_perjanjian_kerja_pdf/' . $email['user']) ?>" class="btn btn-outline no-underline justify-center flex-1 sm:flex-none">
+                <a href="<?= site_url('email/export_single_perjanjian_kerja_pdf/' . $email['user']) ?>" target="_blank" class="btn btn-outline no-underline justify-center flex-1 sm:flex-none">
                     <i class="fas fa-file-contract mr-2 text-slate-700"></i> Export PK
                 </a>
             <?php endif; ?>

@@ -54,7 +54,7 @@
                 return { success: true, status: data.bsre_status };
             } else {
                 const errorMsg = data.message || 'Gagal';
-                container.innerHTML = `<button onclick="if(typeof window.showGlobalError==='function') { window.showGlobalError('Gagal Sinkronisasi', '${errorMsg.replace(/'/g, "\\'")}'); } else { alert('${errorMsg.replace(/'/g, "\\'")}'); }" class="px-2 py-0.5 rounded text-[9px] font-bold uppercase border bg-red-50 text-red-600 border-red-200 hover:bg-red-100 transition-colors">ERROR</button>`;
+                container.innerHTML = `<button onclick="if(typeof window.showGlobalError==='function') { window.showGlobalError('Gagal Sinkronisasi', '${errorMsg.replace(/'/g, "\\'")}'); }" class="px-2 py-0.5 rounded text-[9px] font-bold uppercase border bg-red-50 text-red-600 border-red-200 hover:bg-red-100 transition-colors">ERROR</button>`;
                 return { success: false };
             }
         } catch (error) {
@@ -63,7 +63,7 @@
                 btn.innerHTML = originalBtnContent;
             }
             const errorMsg = 'Masalah Koneksi Jaringan';
-            container.innerHTML = `<button onclick="if(typeof window.showGlobalError==='function') { window.showGlobalError('Kesalahan Jaringan', '${errorMsg}'); } else { alert('${errorMsg}'); }" class="px-2 py-0.5 rounded text-[9px] font-bold uppercase border bg-red-50 text-red-600 border-red-200 hover:bg-red-100 transition-colors">ERROR</button>`;
+            container.innerHTML = `<button onclick="if(typeof window.showGlobalError==='function') { window.showGlobalError('Kesalahan Jaringan', '${errorMsg}'); }" class="px-2 py-0.5 rounded text-[9px] font-bold uppercase border bg-red-50 text-red-600 border-red-200 hover:bg-red-100 transition-colors">ERROR</button>`;
             return { success: false };
         }
     };
@@ -123,8 +123,6 @@
 
         if (typeof window.showSyncResult === 'function') {
             window.showSyncResult(processed, success, failed);
-        } else {
-            alert(`Sinkronisasi Selesai!\nTotal: ${processed}\nBerhasil: ${success}\nGagal: ${failed}`);
         }
     };
 
@@ -260,8 +258,6 @@
                     const errorMsg = `Pegawai dengan NIP ${nip || email} tidak terdaftar di SIMPEG.`;
                     if (typeof window.showGlobalError === 'function') {
                         window.showGlobalError('Data Tidak Ditemukan', errorMsg);
-                    } else {
-                        alert(errorMsg);
                     }
                     return true;
                 }
@@ -337,8 +333,6 @@
                 
                 if (typeof window.showGlobalError === 'function') {
                     window.showGlobalError(title, msg);
-                } else {
-                    alert(msg);
                 }
                 return false;
             }
@@ -360,8 +354,6 @@
 
             if (typeof window.showGlobalError === 'function') {
                 window.showGlobalError('Kesalahan Jaringan', 'Gagal menghubungi server API.');
-            } else {
-                alert('Gagal menghubungi server API.');
             }
             return false;
         }
@@ -388,10 +380,10 @@
 
         if (!validContainers.length) {
             const infoMsg = 'Hanya akun PNS yang dapat disinkronkan.';
-            if (typeof window.showGlobalError === 'function') {
+            if (typeof window.showGlobalAlert === 'function') {
+                window.showGlobalAlert('Info Sinkronisasi', infoMsg, 'info');
+            } else if (typeof window.showGlobalError === 'function') {
                 window.showGlobalError('Info', infoMsg);
-            } else {
-                alert(infoMsg);
             }
             return;
         }
@@ -577,8 +569,6 @@
 
         if (typeof window.showSyncResult === 'function') {
             window.showSyncResult(validContainers.length, success, failed, true);
-        } else {
-            alert(`Sinkronisasi Data Pegawai Selesai!\nTotal: ${validContainers.length}\nBerhasil: ${success}\nGagal: ${failed}`);
         }
     };
 

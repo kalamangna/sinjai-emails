@@ -35,7 +35,7 @@
         </button>
 
         <div class="flex flex-wrap items-center gap-2">
-            <a href="<?= site_url('email/export_pimpinan_desa_pdf') ?>" class="btn btn-outline text-xs px-3 py-2 no-underline">
+            <a href="<?= site_url('email/export_pimpinan_desa_pdf') ?>" target="_blank" class="btn btn-outline text-xs px-3 py-2 no-underline">
                 <i class="fas fa-file-pdf mr-1.5 text-red-600"></i> Export PDF
             </a>
 

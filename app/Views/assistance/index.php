@@ -11,7 +11,7 @@
                 <a href="<?= site_url('assistance/create') ?>" class="flex-1 lg:flex-none btn btn-solid no-underline">
                     <i class="fas fa-plus mr-2 text-white/80"></i> Tambah
                 </a>
-                <a href="<?= site_url('assistance/export_pdf?' . ($_SERVER['QUERY_STRING'] ?? '')) ?>" class="flex-1 lg:flex-none btn btn-outline no-underline">
+                <a href="<?= site_url('assistance/export_pdf?' . ($_SERVER['QUERY_STRING'] ?? '')) ?>" target="_blank" class="flex-1 lg:flex-none btn btn-outline no-underline">
                     <i class="fas fa-file-pdf mr-2"></i> Export PDF
                 </a>
             </div>

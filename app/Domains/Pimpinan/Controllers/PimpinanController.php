@@ -187,7 +187,7 @@ class PimpinanController extends BaseController
             $pdfContent = $dompdf->output();
             return $this->response
                 ->setContentType('application/pdf')
-                ->setHeader('Content-Disposition', 'attachment; filename="' . $filename . '"')
+                ->setHeader('Content-Disposition', 'inline; filename="' . $filename . '"')
                 ->setBody($pdfContent);
         } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
@@ -208,7 +208,7 @@ class PimpinanController extends BaseController
             $pdfContent = $dompdf->output();
             return $this->response
                 ->setContentType('application/pdf')
-                ->setHeader('Content-Disposition', 'attachment; filename="' . $filename . '"')
+                ->setHeader('Content-Disposition', 'inline; filename="' . $filename . '"')
                 ->setBody($pdfContent);
         } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();

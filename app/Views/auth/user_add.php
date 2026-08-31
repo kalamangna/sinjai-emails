@@ -71,7 +71,7 @@
         btnCheck.addEventListener('click', async function() {
             const nip = nipInput.value.trim();
             if (!nip) {
-                alert('Silakan masukkan NIP terlebih dahulu.');
+                showGlobalAlert('Perhatian', 'Masukkan NIP terlebih dahulu.', 'warning');
                 return;
             }
 
@@ -99,10 +99,10 @@
                     infoBox.classList.remove('hidden');
                     btnSave.disabled = false;
                 } else {
-                    alert(result.message || 'Data pegawai tidak ditemukan.');
+                    showGlobalAlert('Informasi', result.message || 'Data pegawai tidak ditemukan.', 'warning');
                 }
             } catch (error) {
-                alert('Gagal menghubungi API Pegawai. Silakan coba lagi nanti.');
+                showGlobalError('Koneksi Gagal', 'Gagal menghubungi API Pegawai. Silakan coba lagi nanti.');
             } finally {
                 btnCheck.disabled = false;
                 btnCheck.innerHTML = '<i class="fas fa-search mr-2"></i> Cek Data';

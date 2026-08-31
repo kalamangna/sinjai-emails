@@ -33,7 +33,7 @@
         <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight">Website OPD</h1>
 
         <div class="flex items-center gap-2 w-full lg:w-auto">
-            <a href="<?= site_url('web_opd/export_pdf') ?>" class="flex-1 lg:flex-none btn btn-outline no-underline">
+            <a href="<?= site_url('web_opd/export_pdf') ?>" target="_blank" class="flex-1 lg:flex-none btn btn-outline no-underline">
                 <i class="fas fa-file-pdf mr-2"></i> Export PDF
             </a>
         </div>

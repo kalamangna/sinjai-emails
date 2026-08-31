@@ -36,7 +36,9 @@ document.addEventListener('DOMContentLoaded', function() {
             populateTextareas(result.data, expectedHeaders.split(','));
 
         } catch (error) {
-            alert(`Error: ${error.message}`);
+            if (typeof window.showGlobalError === 'function') {
+                window.showGlobalError('Gagal Impor File', error.message);
+            }
         } finally {
             showGlobalLoading(false);
             event.target.value = ''; // Reset file input
@@ -67,7 +69,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        alert(`${data.length} baris berhasil diimpor dari file. Silakan periksa data sebelum melanjutkan.`);
+        if (typeof window.showGlobalAlert === 'function') {
+            window.showGlobalAlert('Impor Berhasil', `${data.length} baris berhasil diimpor.`, 'success');
+        }
     }
 
     // This function needs to be available globally or defined in this file

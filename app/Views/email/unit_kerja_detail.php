@@ -651,12 +651,12 @@ echo view('components/modal', [
             .then(r => r.json()).then(data => {
                 if (!data.success) {
                     modal.classList.add('hidden');
-                    return alert(data.message || 'Gagal mengambil data email.');
+                    return showGlobalError('Gagal Mengambil Data', data.message || 'Gagal mengambil data email.');
                 }
 
                 if (!data.emails || !data.emails.length) {
                     modal.classList.add('hidden');
-                    return alert('Tidak ditemukan data PPPK atau PPPK Paruh Waktu di unit ini.');
+                    return showGlobalAlert('Informasi', 'Tidak ada data PPPK di unit ini.', 'info');
                 }
 
                 const emails = data.emails;
@@ -782,10 +782,10 @@ echo view('components/modal', [
         const validContainers = Array.from(containers).filter(c => (c.getAttribute('data-nip') && c.getAttribute('data-nip').trim() !== '') || (c.getAttribute('data-email') && c.getAttribute('data-email').trim() !== ''));
         
         if (!validContainers.length) {
-            if (typeof window.showGlobalError === 'function') {
+            if (typeof window.showGlobalAlert === 'function') {
+                window.showGlobalAlert('Info Sinkronisasi', 'Tidak ada data akun yang dapat disinkronkan.', 'info');
+            } else if (typeof window.showGlobalError === 'function') {
                 window.showGlobalError('Info Sinkronisasi', 'Tidak ada data akun yang dapat disinkronkan.');
-            } else {
-                alert('Tidak ada data akun yang dapat disinkronkan.');
             }
             return;
         }
@@ -1030,7 +1030,7 @@ echo view('components/modal', [
         })).filter(a => Boolean(a.email));
 
         if (!accounts.length) {
-            alert('Tidak ada akun yang dapat diperbarui.');
+            showGlobalAlert('Informasi', 'Tidak ada akun yang dapat diperbarui.', 'info');
             return;
         }
 
@@ -1039,11 +1039,11 @@ echo view('components/modal', [
         if (_batchPwMode === 'manual') {
             manualPassword = (document.getElementById('batchPasswordInput').value || '').trim();
             if (!manualPassword) {
-                alert('Password tidak boleh kosong.');
+                showGlobalAlert('Perhatian', 'Password tidak boleh kosong.', 'warning');
                 return;
             }
             if (manualPassword.length < 8) {
-                alert('Password minimal 8 karakter.');
+                showGlobalAlert('Perhatian', 'Password minimal 8 karakter.', 'warning');
                 return;
             }
         }

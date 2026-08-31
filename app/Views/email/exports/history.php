@@ -14,16 +14,6 @@
         </div>
     </div>
 
-    <!-- Alert Success -->
-    <?php if (session()->getFlashdata('success')) : ?>
-        <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 rounded-lg flex items-start shadow-sm" role="alert">
-            <i class="fas fa-check-circle mt-0.5 mr-3 text-emerald-500"></i>
-            <div class="text-sm font-medium">
-                <?= session()->getFlashdata('success') ?>
-            </div>
-        </div>
-    <?php endif; ?>
-
     <!-- Table Card -->
     <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
@@ -94,11 +84,11 @@
                                 <td class="px-6 py-4 text-right">
                                     <div class="flex items-center justify-end gap-2">
                                         <?php if ($h['status'] === 'COMPLETED' && $h['file_path']) : ?>
-                                            <a href="<?= site_url('reports/download/' . $h['id']) ?>" id="download-btn-<?= $h['id'] ?>" class="inline-flex items-center justify-center px-3 py-1.5 bg-indigo-50 text-indigo-600 rounded text-[10px] uppercase font-bold hover:bg-indigo-100 transition-colors">
-                                                <i class="fas fa-download mr-1.5"></i> Download
+                                            <a href="<?= site_url('reports/download/' . $h['id']) ?>" target="_blank" id="download-btn-<?= $h['id'] ?>" class="inline-flex items-center justify-center px-3 py-1.5 bg-indigo-50 text-indigo-600 rounded text-[10px] uppercase font-bold hover:bg-indigo-100 transition-colors">
+                                                <i class="fas fa-eye mr-1.5"></i> Lihat PDF
                                             </a>
                                         <?php elseif ($h['status'] === 'FAILED') : ?>
-                                            <button onclick="alert('Error: <?= addslashes($h['error_message']) ?>')" class="inline-flex items-center justify-center px-3 py-1.5 bg-slate-50 text-slate-600 rounded text-[10px] uppercase font-bold hover:bg-slate-100 transition-colors">
+                                            <button onclick="showGlobalError('Detail Kesalahan Export', '<?= addslashes($h['error_message'] ?? 'Terjadi kesalahan saat memproses laporan.') ?>')" class="inline-flex items-center justify-center px-3 py-1.5 bg-slate-50 text-slate-600 rounded text-[10px] uppercase font-bold hover:bg-slate-100 transition-colors">
                                                 <i class="fas fa-info-circle mr-1.5"></i> Info
                                             </button>
                                         <?php else : ?>

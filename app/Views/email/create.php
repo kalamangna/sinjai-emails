@@ -146,7 +146,7 @@
         const unitKerja = unitKerjaSelect.value;
 
         if (!name || !unitKerja) {
-            alert('Silakan lengkapi data wajib (Nama Lengkap dan Unit Kerja).');
+            showGlobalAlert('Perhatian', 'Lengkapi Nama Lengkap dan Unit Kerja.', 'warning');
             return;
         }
 

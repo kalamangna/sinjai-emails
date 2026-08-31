@@ -121,7 +121,7 @@ class WebDesaKelurahanController extends BaseController
         $pdfContent = $result['dompdf']->output();
         return $this->response
             ->setContentType('application/pdf')
-            ->setHeader('Content-Disposition', 'attachment; filename="' . $result['filename'] . '"')
+            ->setHeader('Content-Disposition', 'inline; filename="' . $result['filename'] . '"')
             ->setBody($pdfContent);
     }
 

@@ -5,6 +5,23 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [31 Agustus 2026] — Migrasi Modal Dialog Terpadu, Penyederhanaan Teks & Preview Ekspor PDF
+
+- **Migrasi Modal Dialog Global & Pembersihan Alert Browser**:
+  - Menambahkan modal dialog terpadu `global-alert-modal` dan JavaScript helper `showGlobalAlert(title, message, type, onOk)` pada [`main.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/layouts/main.php) dengan dukungan varian visual (*success*, *warning*, *error*, *info*).
+  - Mengganti seluruh sisa pemanggilan native `alert()` browser pada seluruh modul JavaScript ([`sync-helper.js`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/public/js/sync-helper.js), [`batch.js`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/public/js/batch.js), [`batch-update.js`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/public/js/batch-update.js), [`batch-pk.js`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/public/js/batch-pk.js), [`unit-kerja-batch.js`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/public/js/unit-kerja-batch.js)) dan tampilan view ([`create.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/create.php), [`user_add.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/auth/user_add.php), [`pk.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/batch/pk.php), [`update.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/batch/update.php), [`unit_kerja_detail.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/unit_kerja_detail.php), [`history.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/exports/history.php)).
+  - Menyederhanakan seluruh pesan teks (*microcopy*) modal agar ringkas, kontekstual, dan *to the point*.
+  - Menghapus duplikasi flash message pada [`history.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/exports/history.php) dan [`swap_data.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/swap_data.php).
+- **Pratinjau (*Inline Preview*) Seluruh Ekspor PDF**:
+  - Mengubah header HTTP response seluruh dokumen PDF menjadi `Content-Disposition: inline` pada [`PimpinanController.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Domains/Pimpinan/Controllers/PimpinanController.php), [`EmailExportController.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Domains/Email/Controllers/EmailExportController.php), [`AssistanceController.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Domains/Assistance/Controllers/AssistanceController.php), [`WebOpdController.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Domains/Website/Controllers/WebOpdController.php), dan [`WebDesaKelurahanController.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Domains/Website/Controllers/WebDesaKelurahanController.php).
+  - Menambahkan atribut `target="_blank"` pada tombol ekspor PDF agar langsung membuka pratinjau tab baru peramban tanpa mengunduh langsung.
+- **Penyempurnaan PDF Unit Kerja**:
+  - Menyelaraskan tampilan penugasan Plt pada dokumen PDF Unit Kerja ([`unit_kerja_pdf.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/exports/unit_kerja_pdf.php)) dengan warna aksen amber (`#b45309`).
+- **Aset & Antarmuka**:
+  - Membangun dan mengompilasi berkas CSS Tailwind (`npm run build`).
+
+---
+
 # [31 Agustus 2026] — Integrasi Jabatan Plt (Pelaksana Tugas) & Normalisasi Nama Jabatan
 
 - **Manajemen & Penanganan Jabatan Plt**:

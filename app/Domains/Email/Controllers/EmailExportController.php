@@ -69,7 +69,7 @@ class EmailExportController extends BaseController
             $pdfContent = $result['dompdf']->output();
             return $this->response
                 ->setContentType('application/pdf')
-                ->setHeader('Content-Disposition', 'attachment; filename="' . $result['filename'] . '"')
+                ->setHeader('Content-Disposition', 'inline; filename="' . $result['filename'] . '"')
                 ->setBody($pdfContent);
         } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
@@ -257,7 +257,11 @@ class EmailExportController extends BaseController
 
         $path = WRITEPATH . $history['file_path'];
         if (file_exists($path)) {
-            return $this->response->download($path, null)->setFileName($history['file_name']);
+            $mime = mime_content_type($path) ?: 'application/pdf';
+            return $this->response
+                ->setContentType($mime)
+                ->setHeader('Content-Disposition', 'inline; filename="' . $history['file_name'] . '"')
+                ->setBody(file_get_contents($path));
         } else {
             throw new \CodeIgniter\Exceptions\PageNotFoundException('File fisik tidak ditemukan, mungkin sudah dihapus otomatis.');
         }

@@ -41,7 +41,7 @@
         </div>
 
         <div class="flex items-center gap-2 w-full lg:w-auto">
-            <a href="<?= site_url('web_desa_kelurahan/export_pdf') ?>" class="flex-1 lg:flex-none btn btn-outline no-underline">
+            <a href="<?= site_url('web_desa_kelurahan/export_pdf') ?>" target="_blank" class="flex-1 lg:flex-none btn btn-outline no-underline">
                 <i class="fas fa-file-pdf mr-2"></i> Export PDF
             </a>
             <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>

@@ -208,6 +208,30 @@
     ], ['saveData' => false]);
     ?>
 
+    <!-- Global Alert Modal -->
+    <?php
+    $alertContent = '
+        <div class="flex flex-col items-center gap-3 py-2">
+            <div id="alert-modal-icon" class="w-12 h-12 rounded-full flex items-center justify-center text-xl bg-blue-100 text-blue-600 mb-1">
+                <i class="fas fa-info"></i>
+            </div>
+            <div id="alert-modal-message" class="text-xs font-medium text-slate-600 leading-relaxed text-center px-2"></div>
+        </div>
+    ';
+    $alertFooter = '
+        <button onclick="handleGlobalAlertOk()" class="px-6 py-2 bg-slate-800 text-white text-[10px] font-bold uppercase tracking-widest rounded-lg hover:bg-slate-700 transition-colors focus:outline-none">
+            OK
+        </button>
+    ';
+    echo view('components/modal', [
+        'id'      => 'global-alert-modal',
+        'title'   => 'Pemberitahuan',
+        'size'    => 'sm',
+        'content' => $alertContent,
+        'footer'  => $alertFooter,
+    ], ['saveData' => false]);
+    ?>
+
 
     <?php $isPublic = $isPublic ?? false; ?>
     <!-- Sidebar -->
@@ -680,6 +704,42 @@
 
         function hideGlobalError() {
             closeModal('global-error-modal');
+        }
+
+        // Global Alert modal helpers
+        window._onGlobalAlertOk = null;
+        function showGlobalAlert(title, message, type = 'info', onOk = null) {
+            const titleEl = document.getElementById('global-alert-modal-title');
+            const messageEl = document.getElementById('alert-modal-message');
+            const iconEl = document.getElementById('alert-modal-icon');
+            if (titleEl) titleEl.innerText = title || 'Pemberitahuan';
+            if (messageEl) messageEl.innerText = message || '';
+            if (iconEl) {
+                if (type === 'success') {
+                    iconEl.className = 'w-12 h-12 rounded-full flex items-center justify-center text-xl bg-emerald-100 text-emerald-600 mb-1';
+                    iconEl.innerHTML = '<i class="fas fa-check"></i>';
+                } else if (type === 'warning') {
+                    iconEl.className = 'w-12 h-12 rounded-full flex items-center justify-center text-xl bg-amber-100 text-amber-600 mb-1';
+                    iconEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
+                } else if (type === 'error') {
+                    iconEl.className = 'w-12 h-12 rounded-full flex items-center justify-center text-xl bg-red-100 text-red-600 mb-1';
+                    iconEl.innerHTML = '<i class="fas fa-times"></i>';
+                } else {
+                    iconEl.className = 'w-12 h-12 rounded-full flex items-center justify-center text-xl bg-blue-100 text-blue-600 mb-1';
+                    iconEl.innerHTML = '<i class="fas fa-info"></i>';
+                }
+            }
+            window._onGlobalAlertOk = (typeof onOk === 'function') ? onOk : null;
+            openModal('global-alert-modal');
+        }
+
+        function handleGlobalAlertOk() {
+            closeModal('global-alert-modal');
+            if (typeof window._onGlobalAlertOk === 'function') {
+                const callback = window._onGlobalAlertOk;
+                window._onGlobalAlertOk = null;
+                callback();
+            }
         }
 
         /**

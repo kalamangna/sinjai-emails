@@ -38,7 +38,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 submitBtn.disabled = false;
 
             } catch (error) {
-                alert(`Error: ${error.message}`);
+                if (typeof window.showGlobalError === 'function') {
+                    window.showGlobalError('Gagal Impor File', error.message);
+                }
             } finally {
                 showGlobalLoading(false);
                 event.target.value = ''; // Reset file input
@@ -87,13 +89,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 const result = await response.json();
 
                 if (result.success) {
-                    alert(`Berhasil: ${result.summary.success}, Gagal: ${result.summary.fail}`);
-                    window.location.href = '/unit_kerja/manage';
+                    if (typeof window.showGlobalAlert === 'function') {
+                        window.showGlobalAlert('Batch Berhasil', `Berhasil: ${result.summary.success}, Gagal: ${result.summary.fail}`, 'success', () => {
+                            window.location.href = '/unit_kerja/manage';
+                        });
+                    } else {
+                        window.location.href = '/unit_kerja/manage';
+                    }
                 } else {
-                    alert('Gagal memproses batch: ' + (result.message || 'Unknown error'));
+                    if (typeof window.showGlobalError === 'function') {
+                        window.showGlobalError('Gagal Memproses Batch', result.message || 'Unknown error');
+                    }
                 }
             } catch (error) {
-                alert('Error: ' + error.message);
+                if (typeof window.showGlobalError === 'function') {
+                    window.showGlobalError('Terjadi Kesalahan', error.message);
+                }
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = '<i class="fas fa-save mr-2 text-white/80"></i> Simpan Batch';

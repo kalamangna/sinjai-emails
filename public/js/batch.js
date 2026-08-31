@@ -69,7 +69,9 @@ document.addEventListener("DOMContentLoaded", function () {
         populateInputsFromSpreadsheet(result.data);
 
     } catch (error) {
-        alert(`Error: ${error.message}`);
+        if (typeof window.showGlobalError === 'function') {
+            window.showGlobalError('Gagal Impor Spreadsheet', error.message);
+        }
     } finally {
         showGlobalLoading(false);
         // Reset file input so user can upload the same file again if needed
@@ -91,7 +93,9 @@ document.addEventListener("DOMContentLoaded", function () {
     nipInput.value = nips;
     nikInput.value = niks;
 
-    alert(`${data.length} baris berhasil diimpor dari file Excel. Silakan pilih Status ASN dan Unit Kerja, lalu klik 'Preview'.`);
+    if (typeof window.showGlobalAlert === 'function') {
+        window.showGlobalAlert('Impor Berhasil', `${data.length} baris berhasil diimpor.`, 'success');
+    }
   }
 
   generateBtn.addEventListener("click", async function () {
@@ -114,7 +118,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     if (filteredRows.length === 0) {
-      alert("Please enter data for at least one record.");
+      if (typeof window.showGlobalAlert === 'function') {
+        window.showGlobalAlert('Perhatian', 'Masukkan minimal satu baris data.', 'warning');
+      }
       return;
     }
 
@@ -128,12 +134,14 @@ document.addEventListener("DOMContentLoaded", function () {
     const singleUnitKerja = unitKerjaInputSingle.value;
 
     if (finalNames.some((n) => n === ""))
-      validationError = "One or more rows are missing a name.";
+      validationError = "Nama lengkap belum diisi.";
     else if (finalNips.some((n) => n === ""))
-      validationError = "One or more rows are missing a NIP.";
+      validationError = "NIP belum diisi.";
     
     if (validationError) {
-      alert(validationError);
+      if (typeof window.showGlobalAlert === 'function') {
+        window.showGlobalAlert('Perhatian', validationError, 'warning');
+      }
       return;
     }
 
@@ -308,7 +316,9 @@ document.addEventListener("DOMContentLoaded", function () {
         renderResults(userBatch);
     } catch (error) {
         console.error("Preview error:", error);
-        alert("Gagal memproses preview: " + error.message);
+        if (typeof window.showGlobalError === 'function') {
+            window.showGlobalError('Gagal Preview', error.message);
+        }
         resultsTableBody.innerHTML = '<tr><td colspan="8" class="px-10 py-12 text-center text-red-500 font-bold uppercase tracking-widest text-[10px]">Gagal memproses preview. Silakan coba lagi.</td></tr>';
     } finally {
         generateBtn.disabled = false;
@@ -319,7 +329,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
   submitBtn.addEventListener("click", async function () {
     if (validUserBatch.length === 0) {
-      alert("No valid emails to submit.");
+      if (typeof window.showGlobalAlert === 'function') {
+        window.showGlobalAlert('Perhatian', 'Tidak ada data valid untuk dieksekusi.', 'warning');
+      }
       return;
     }
 
@@ -409,17 +421,23 @@ document.addEventListener("DOMContentLoaded", function () {
       if (failureCount > 0) {
         userBatch = userBatch.filter((user) => user.status === "failed");
         renderResults(userBatch);
-        alert(
-          `Batch selesai dengan ${failureCount} kesalahan. Silakan periksa log. Untuk kesalahan password lemah, password sudah diperbarui otomatis, silakan klik "Eksekusi" kembali.`,
-        );
+        if (typeof window.showGlobalAlert === 'function') {
+            window.showGlobalAlert('Hasil Eksekusi', `Proses selesai dengan ${failureCount} gagal. Periksa log atau klik Eksekusi kembali.`, 'warning');
+        }
         progressSection.style.display = "none";
       } else {
         renderResults(userBatch);
-        alert(`Berhasil membuat ${successCount} akun email!`);
-        setTimeout(() => {
-          const redirectUrl = window.EMAIL_REDIRECT_URL || (window.BASE_URL + "/email");
-          window.location.href = redirectUrl;
-        }, 1000);
+        if (typeof window.showGlobalAlert === 'function') {
+            window.showGlobalAlert('Berhasil', `${successCount} akun email berhasil dibuat.`, 'success', () => {
+                const redirectUrl = window.EMAIL_REDIRECT_URL || (window.BASE_URL + "/email");
+                window.location.href = redirectUrl;
+            });
+        } else {
+            setTimeout(() => {
+                const redirectUrl = window.EMAIL_REDIRECT_URL || (window.BASE_URL + "/email");
+                window.location.href = redirectUrl;
+            }, 1000);
+        }
       }
     } finally {
       submitBtn.innerHTML = `<i class="fas fa-cloud-upload-alt mr-2 text-white/80"></i> Eksekusi`;
