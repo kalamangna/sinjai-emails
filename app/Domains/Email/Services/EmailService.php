@@ -516,6 +516,19 @@ class EmailService
         if ($showUnitKerjaColumn) {
             $emailBuilder->orderBy('emails.eselon_id IS NULL', 'ASC', false)
                         ->orderBy('emails.eselon_id', 'ASC')
+                        ->orderBy("(CASE 
+                            WHEN emails.jabatan LIKE '%SEKRETARIS DAERAH%' THEN 1 
+                            WHEN emails.jabatan LIKE '%ASISTEN PEMERINTAHAN%' THEN 2 
+                            WHEN emails.jabatan LIKE '%ASISTEN PEREKONOMIAN%' THEN 3 
+                            WHEN emails.jabatan LIKE '%ASISTEN ADMINISTRASI%' THEN 4 
+                            WHEN emails.jabatan LIKE '%ASISTEN%' THEN 5
+                            WHEN emails.jabatan LIKE '%STAF AHLI BIDANG HUKUM%' THEN 6
+                            WHEN emails.jabatan LIKE '%STAF AHLI BIDANG EKONOMI%' THEN 7
+                            WHEN emails.jabatan LIKE '%STAF AHLI BIDANG SOSIAL%' THEN 8
+                            WHEN emails.jabatan LIKE '%STAF AHLI%' THEN 9
+                            WHEN (emails.jabatan LIKE '%KEPALA BAGIAN%' OR emails.jabatan_plt LIKE '%KEPALA BAGIAN%') THEN 10
+                            WHEN (emails.jabatan LIKE '%KEPALA SUB BAGIAN%' OR emails.jabatan_plt LIKE '%KEPALA SUB BAGIAN%') THEN 11
+                            ELSE 12 END)", "ASC", false)
                         ->orderBy("(CASE WHEN (CASE WHEN emails.unit_kerja_plt_id IN ({$targetIdsString}) AND (emails.unit_kerja_id NOT IN ({$targetIdsString}) OR emails.unit_kerja_id IS NULL) THEN emails.unit_kerja_plt_id ELSE emails.unit_kerja_id END) = {$unitKerjaId} THEN 0 ELSE 1 END)", "ASC", false)
                         ->orderBy("(CASE WHEN emails.unit_kerja_plt_id IN ({$targetIdsString}) AND (emails.unit_kerja_id NOT IN ({$targetIdsString}) OR emails.unit_kerja_id IS NULL) THEN unit_kerja_plt.nama_unit_kerja ELSE unit_kerja.nama_unit_kerja END)", "ASC", false)
                         ->orderBy('emails.status_asn_id IS NULL', 'ASC', false)

@@ -226,10 +226,31 @@ class EmailExportService
         $uniqueUnitKerjaIds = array_unique(array_filter(array_column($emails, 'unit_kerja_id')));
         $showUnitKerjaColumn = count($uniqueUnitKerjaIds) > 1;
 
-        usort($emails, function($a, $b) use ($unitKerjaId, $showUnitKerjaColumn) {
+        $getJabatanRank = function($email) {
+            $jab = strtoupper($email['jabatan'] ?? '');
+            $plt = strtoupper($email['jabatan_plt'] ?? '');
+            if (strpos($jab, 'SEKRETARIS DAERAH') !== false) return 1;
+            if (strpos($jab, 'ASISTEN PEMERINTAHAN') !== false) return 2;
+            if (strpos($jab, 'ASISTEN PEREKONOMIAN') !== false) return 3;
+            if (strpos($jab, 'ASISTEN ADMINISTRASI') !== false) return 4;
+            if (strpos($jab, 'ASISTEN') !== false) return 5;
+            if (strpos($jab, 'STAF AHLI BIDANG HUKUM') !== false) return 6;
+            if (strpos($jab, 'STAF AHLI BIDANG EKONOMI') !== false) return 7;
+            if (strpos($jab, 'STAF AHLI BIDANG SOSIAL') !== false) return 8;
+            if (strpos($jab, 'STAF AHLI') !== false) return 9;
+            if (strpos($jab, 'KEPALA BAGIAN') !== false || strpos($plt, 'KEPALA BAGIAN') !== false) return 10;
+            if (strpos($jab, 'KEPALA SUB BAGIAN') !== false || strpos($plt, 'KEPALA SUB BAGIAN') !== false) return 11;
+            return 12;
+        };
+
+        usort($emails, function($a, $b) use ($unitKerjaId, $showUnitKerjaColumn, $getJabatanRank) {
             $eselonA = $a['eselon_id'] ? (int)$a['eselon_id'] : 999;
             $eselonB = $b['eselon_id'] ? (int)$b['eselon_id'] : 999;
             if ($eselonA !== $eselonB) return $eselonA <=> $eselonB;
+
+            $rankA = $getJabatanRank($a);
+            $rankB = $getJabatanRank($b);
+            if ($rankA !== $rankB) return $rankA <=> $rankB;
 
             if ($showUnitKerjaColumn) {
                 $aUnitId = !empty($a['is_plt_in_this_unit']) ? ($a['unit_kerja_plt_id'] ?? 0) : ($a['unit_kerja_id'] ?? 0);
@@ -328,10 +349,31 @@ class EmailExportService
         $uniqueUnitKerjaIds = array_unique(array_filter(array_column($emails, 'unit_kerja_id')));
         $showUnitKerjaColumn = count($uniqueUnitKerjaIds) > 1;
 
-        usort($emails, function($a, $b) use ($unitKerjaId, $showUnitKerjaColumn) {
+        $getJabatanRank = function($email) {
+            $jab = strtoupper($email['jabatan'] ?? '');
+            $plt = strtoupper($email['jabatan_plt'] ?? '');
+            if (strpos($jab, 'SEKRETARIS DAERAH') !== false) return 1;
+            if (strpos($jab, 'ASISTEN PEMERINTAHAN') !== false) return 2;
+            if (strpos($jab, 'ASISTEN PEREKONOMIAN') !== false) return 3;
+            if (strpos($jab, 'ASISTEN ADMINISTRASI') !== false) return 4;
+            if (strpos($jab, 'ASISTEN') !== false) return 5;
+            if (strpos($jab, 'STAF AHLI BIDANG HUKUM') !== false) return 6;
+            if (strpos($jab, 'STAF AHLI BIDANG EKONOMI') !== false) return 7;
+            if (strpos($jab, 'STAF AHLI BIDANG SOSIAL') !== false) return 8;
+            if (strpos($jab, 'STAF AHLI') !== false) return 9;
+            if (strpos($jab, 'KEPALA BAGIAN') !== false || strpos($plt, 'KEPALA BAGIAN') !== false) return 10;
+            if (strpos($jab, 'KEPALA SUB BAGIAN') !== false || strpos($plt, 'KEPALA SUB BAGIAN') !== false) return 11;
+            return 12;
+        };
+
+        usort($emails, function($a, $b) use ($unitKerjaId, $showUnitKerjaColumn, $getJabatanRank) {
             $eselonA = $a['eselon_id'] ? (int)$a['eselon_id'] : 999;
             $eselonB = $b['eselon_id'] ? (int)$b['eselon_id'] : 999;
             if ($eselonA !== $eselonB) return $eselonA <=> $eselonB;
+
+            $rankA = $getJabatanRank($a);
+            $rankB = $getJabatanRank($b);
+            if ($rankA !== $rankB) return $rankA <=> $rankB;
 
             if ($showUnitKerjaColumn) {
                 $aUnitId = !empty($a['is_plt_in_this_unit']) ? ($a['unit_kerja_plt_id'] ?? 0) : ($a['unit_kerja_id'] ?? 0);
