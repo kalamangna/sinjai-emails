@@ -2,42 +2,53 @@
 
 <?= $this->section('content') ?>
 <div class="space-y-6">
+    <!-- Header Halaman -->
     <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
         <div>
-            <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight">Kotak Sampah</h1>
+            <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight"><?= $title ?? 'Kotak Sampah' ?></h1>
+            <p class="text-[10px] font-bold text-slate-700 uppercase tracking-widest mt-1">
+                Total: <span class="text-slate-800"><?= number_format(count($emails ?? []), 0, ',', '.') ?></span> Akun
+            </p>
         </div>
     </div>
 
+    <!-- Tabel Kotak Sampah -->
     <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
-            <table class="w-full text-left text-sm">
+            <table class="w-full text-left text-sm min-w-[700px]">
                 <thead class="bg-slate-50 text-slate-400 uppercase text-[10px] font-bold tracking-widest">
                     <tr>
-                        <th class="px-6 py-3 border-b border-slate-200">Akun / Pengguna</th>
+                        <th class="px-6 py-3 border-b border-slate-200 w-16 text-center">No.</th>
+                        <th class="px-6 py-3 border-b border-slate-200">Akun</th>
                         <th class="px-6 py-3 border-b border-slate-200">Unit Kerja</th>
                         <th class="px-6 py-3 border-b border-slate-200">Tgl Dihapus</th>
-                        <th class="px-6 py-3 border-b border-slate-200 text-center">Aksi</th>
+                        <th class="px-6 py-3 border-b border-slate-200 text-center w-28">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
                     <?php if (empty($emails)): ?>
                         <tr>
-                            <td colspan="4" class="px-6 py-20 text-center">
+                            <td colspan="5" class="px-6 py-20 text-center">
                                 <div class="flex flex-col items-center justify-center">
                                     <div class="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center mb-3">
-                                        <i class="fas fa-search text-slate-300 text-lg"></i>
+                                        <i class="fas fa-trash-alt text-slate-300 text-lg"></i>
                                     </div>
                                     <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest italic">Data tidak ditemukan</span>
                                 </div>
                             </td>
                         </tr>
                     <?php else: ?>
-                        <?php foreach ($emails as $email): ?>
+                        <?php $no = 1; foreach ($emails as $email): ?>
                             <tr class="hover:bg-slate-50 transition-colors">
+                                <td class="px-6 py-4 text-center">
+                                    <span class="text-[10px] font-bold text-slate-700 font-mono">
+                                        <?= $no++ ?>
+                                    </span>
+                                </td>
                                 <td class="px-6 py-4">
                                     <div class="flex flex-col">
                                         <span class="font-medium text-slate-800 lowercase leading-tight"><?= esc($email['email']) ?></span>
-                                        <span class="text-xs font-bold text-slate-800 uppercase tracking-tight mt-0.5"><?= esc($email['name'] ?? '-') ?></span>
+                                        <span class="text-[10px] font-bold text-slate-700 uppercase tracking-tight mt-0.5"><?= esc($email['name'] ?? '-') ?></span>
                                         <?php if (!empty($email['nip'])): ?>
                                             <span class="text-[10px] font-medium text-slate-500 font-mono tracking-tight mt-0.5"><?= esc($email['nip']) ?></span>
                                         <?php endif; ?>
@@ -56,24 +67,24 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex flex-col">
-                                        <span class="text-xs font-bold text-slate-800 uppercase tracking-tight"><?= esc($email['deleted_at']) ?></span>
+                                    <div class="flex flex-col gap-1">
+                                        <span class="text-xs font-bold text-slate-800 uppercase tracking-tight"><?= !empty($email['deleted_at']) ? formatTanggalWaktu($email['deleted_at']) : '-' ?></span>
                                         <?php
                                         $deleteTime = strtotime($email['pensiun_at'] ?: $email['deleted_at']);
                                         $daysPassed = floor((time() - $deleteTime) / 86400);
                                         $daysLeft = max(0, 30 - $daysPassed);
                                         ?>
                                         <?php if ($daysLeft <= 0): ?>
-                                            <span class="text-[9px] font-bold text-red-600 uppercase tracking-tight mt-0.5 flex items-center gap-1">
-                                                <i class="fas fa-exclamation-triangle text-[8px]"></i> Siap Dihapus Permanen
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-bold uppercase bg-red-100 text-red-700 border border-red-200 w-fit">
+                                                <i class="fas fa-exclamation-triangle text-[8px]"></i> Siap Hapus
                                             </span>
                                         <?php elseif ($daysLeft <= 5): ?>
-                                            <span class="text-[9px] font-bold text-red-500 uppercase tracking-tight mt-0.5 flex items-center gap-1">
-                                                <i class="fas fa-clock text-[8px]"></i> Sisa <?= $daysLeft ?> hari lagi
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-bold uppercase bg-amber-100 text-amber-700 border border-amber-200 w-fit">
+                                                <i class="fas fa-clock text-[8px]"></i> Sisa <?= $daysLeft ?> hari
                                             </span>
                                         <?php else: ?>
-                                            <span class="text-[9px] font-medium text-slate-500 uppercase tracking-tight mt-0.5 flex items-center gap-1">
-                                                <i class="fas fa-history text-[8px]"></i> Sisa <?= $daysLeft ?> hari lagi
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-medium uppercase bg-slate-100 text-slate-600 border border-slate-200 w-fit">
+                                                <i class="fas fa-history text-[8px]"></i> Sisa <?= $daysLeft ?> hari
                                             </span>
                                         <?php endif; ?>
                                     </div>
@@ -83,7 +94,7 @@
                                         <a href="<?= site_url('email/trash/restore/' . $email['id']) ?>" class="btn btn-table text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700" title="Pulihkan" onclick="return confirm('Pulihkan akun ini?');">
                                             <i class="fas fa-undo text-xs"></i>
                                         </a>
-                                        <form action="<?= site_url('email/trash/force_delete/' . $email['id']) ?>" method="post" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus permanen akun ini? Tidak dapat dibatalkan.');">
+                                        <form action="<?= site_url('email/trash/force_delete/' . $email['id']) ?>" method="post" class="inline" onsubmit="return confirm('Hapus permanen akun ini?');">
                                             <?= csrf_field() ?>
                                             <button type="submit" class="btn btn-table-danger text-red-600 hover:bg-red-50 hover:text-red-700" title="Hapus Permanen">
                                                 <i class="fas fa-trash-alt text-xs"></i>

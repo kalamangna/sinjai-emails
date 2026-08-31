@@ -5,6 +5,15 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [31 Agustus 2026] — Penyederhanaan Tampilan Kotak Sampah & Kompilasi CSS
+
+- **Penyelarasan & Penyederhanaan Antarmuka Kotak Sampah (`trash.php`)**:
+  - Menyelaraskan tata letak tabel dengan menambahkan kolom **No.** font mono, kolom **Akun** (Email, Nama, NIP), kolom **Unit Kerja** (Instansi Induk & Sub-Unit), kolom **Tgl Dihapus** (Tanggal & Badge Hitung Mundur Sisa Hari Ringkas), serta kolom **Aksi**.
+  - Menyederhanakan copy teks (*microcopy*) agar lebih ringkas dan konsisten dengan halaman tabel lainnya di sistem.
+  - Membangun dan mengompilasi ulang aset CSS Tailwind (`npm run build`).
+
+---
+
 # [31 Agustus 2026] — Retensi Data NIP & Unit Kerja pada Akun Pensiun di Kotak Sampah
 
 - **Retensi Data NIP & Unit Kerja saat Pensiun/Soft Delete**:
