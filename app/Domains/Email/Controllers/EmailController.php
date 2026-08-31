@@ -155,12 +155,12 @@ class EmailController extends BaseController
 
             // 3. Audit Log
             helper('audit');
-            log_audit('PENSIUN', 'Email', $email['id'], 'Akun ditandai pensiun / ditangguhkan: ' . $email['email']);
+            log_audit('PENSIUN', 'Email', $email['id'], 'Pensiun: ' . $email['email']);
 
             // 4. Send Telegram Notification
             try {
                 $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
-                $builder->setTitle('AKUN EMAIL DITANGGUHKAN', '🚫')
+                $builder->setTitle('AKUN PENSIUN', '🚫')
                         ->addUserProfile(
                             $email['name'] ?? '',
                             !empty($email['nip']) ? 'NIP: ' . $email['nip'] : '',
@@ -259,7 +259,7 @@ class EmailController extends BaseController
             $this->emailService->updatePassword($username, $password);
 
             helper('audit');
-            log_audit('CHANGE_PASSWORD', 'Email', null, 'Password diubah untuk akun: ' . $username . '@sinjaikab.go.id');
+            log_audit('CHANGE_PASSWORD', 'Email', null, 'Ubah password: ' . $username . '@sinjaikab.go.id');
 
             return redirect()->to('email/detail/' . $username)->with('success', 'Password berhasil diperbarui.');
         } catch (\Throwable $e) {
@@ -338,7 +338,7 @@ class EmailController extends BaseController
             // Send Telegram Notification
             try {
                 $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
-                $builder->setTitle('AKUN EMAIL DIHAPUS PERMANEN', '🔥')
+                $builder->setTitle('AKUN DIHAPUS PERMANEN', '🔥')
                         ->addDivider()
                         ->addUserProfile(
                             $email['name'] ?? '',

@@ -346,7 +346,7 @@ class SyncAllCommand extends BaseCommand
                 if ($bupInfo['is_pensiun']) {
                     $bupAge = $bupInfo['bup_age'];
                     $tmt = $bupInfo['tmt_pensiun'];
-                    $reason = "Mencapai Batas Usia Pensiun (BUP {$bupAge} Thn - TMT {$tmt})";
+                    $reason = "BUP {$bupAge} Thn";
                     
                     CLI::print("Auto retiring {$acc['email']} (BUP {$bupAge} th, TMT {$tmt})... ");
                     if ($emailService->processAutoPensiun($acc, $reason)) {
@@ -420,8 +420,8 @@ class SyncAllCommand extends BaseCommand
             if (!empty($deletedList)) {
                 $totalDeleted = count($deletedList);
                 $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
-                $builder->setTitle('PEMBERSIHAN AKUN OTOMATIS', '🧹');
-                $builder->addText("🗑️ <b>$totalDeleted Akun Pensiun Dihapus Permanen:</b>");
+                $builder->setTitle('PEMBERSIHAN KOTAK SAMPAH', '🧹');
+                $builder->addText("🗑️ <b>$totalDeleted Akun Dihapus Permanen (Retensi 30 Hari):</b>");
 
                 foreach (array_slice($deletedList, 0, 5) as $item) {
                     $builder->addBullet($item);

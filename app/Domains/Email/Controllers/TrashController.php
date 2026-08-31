@@ -48,12 +48,12 @@ class TrashController extends BaseController
                        ->update();
             
             helper('audit');
-            log_audit('RESTORE', 'Email', $id, 'Restored email from trash: ' . $email['email']);
+            log_audit('RESTORE', 'Email', $id, 'Pulihkan akun: ' . $email['email']);
             
             // Send Telegram Notification
             try {
                 $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
-                $builder->setTitle('AKUN EMAIL DIPULIHKAN', '✅')
+                $builder->setTitle('AKUN DIPULIHKAN', '✅')
                         ->addDivider()
                         ->addUserProfile(
                             $email['name'] ?? '',
@@ -93,12 +93,12 @@ class TrashController extends BaseController
             \App\Shared\Services\CacheService::invalidateDashboard();
 
             helper('audit');
-            log_audit('FORCE_DELETE', 'Email', $id, 'Permanently deleted email: ' . $email['email']);
+            log_audit('FORCE_DELETE', 'Email', $id, 'Hapus permanen: ' . $email['email']);
             
             // Send Telegram Notification
             try {
                 $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
-                $builder->setTitle('AKUN EMAIL DIHAPUS PERMANEN', '🔥')
+                $builder->setTitle('AKUN DIHAPUS PERMANEN', '🔥')
                         ->addDivider()
                         ->addUserProfile(
                             $email['name'] ?? '',

@@ -76,7 +76,7 @@ class BackupCommand extends BaseCommand
             CLI::error("Backup gagal! Error: " . $e->getMessage());
             
             $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
-            $builder->setTitle('GAGAL BACKUP DATABASE', '🚨')
+            $builder->setTitle('BACKUP DATABASE GAGAL', '❌')
                     ->addDivider()
                     ->addKeyValue('Error', htmlspecialchars($e->getMessage()), '❌');
             

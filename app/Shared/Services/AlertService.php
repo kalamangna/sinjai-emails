@@ -83,11 +83,10 @@ class AlertService
                 return;
             }
 
-            $builder->addText("⚠️ <b>$count TTE Pimpinan Expired:</b>");
             foreach (array_slice($expired, 0, 5) as $acc) {
                 $builder->addUserProfile(
                     $acc['name'] ?? $acc['email'],
-                    '',
+                    !empty($acc['nip']) ? 'NIP: ' . $acc['nip'] : '',
                     $acc['jabatan'] ?? '',
                     $acc['unit_name'] ?? '',
                     $acc['email'] ?? ''
@@ -129,12 +128,11 @@ class AlertService
             return;
         }
 
-        $builder->addText("⚠️ <b>$count Akun Kuota &gt;90%:</b>");
         foreach (array_slice($highUsage, 0, 5) as $acc) {
             $extra = "📊 " . round($acc['diskusedpercent_float'], 1) . "% (" . htmlspecialchars($acc['humandiskused'] ?? '', ENT_NOQUOTES, 'UTF-8') . ")";
             $builder->addUserProfile(
                 $acc['name'] ?? $acc['email'],
-                '',
+                !empty($acc['nip']) ? 'NIP: ' . $acc['nip'] : '',
                 $acc['jabatan'] ?? '',
                 $acc['unit_name'] ?? '',
                 $acc['email'] ?? '',
@@ -156,7 +154,6 @@ class AlertService
             return;
         }
 
-        $builder->addText("⚠️ <b>$count Domain Kedaluwarsa &lt;30 Hari:</b>");
         foreach (array_slice($expiring, 0, 5) as $web) {
             $domain = htmlspecialchars($web['domain'] ?? '', ENT_NOQUOTES, 'UTF-8');
             $sisa = (int)$web['sisa_hari'];
@@ -178,7 +175,7 @@ class AlertService
                 if (is_cli()) CLI::write("Found $count accounts with high usage (>90%)", 'red');
                 
                 $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
-                $builder->setTitle('PERINGATAN KUOTA EMAIL PENUH', '⚠️')
+                $builder->setTitle('KUOTA EMAIL (>90%)', '⚠️')
                         ->addDivider();
                 $this->appendQuotaReport($builder);
                 $this->telegram->sendMessage($builder->build());
@@ -201,7 +198,7 @@ class AlertService
                 if (is_cli()) CLI::write('No expired TTE accounts found.', 'green');
                 if ($sendIfSafe) {
                     $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
-                    $builder->setTitle('LAPORAN TTE PIMPINAN EXPIRED', '🔔')
+                    $builder->setTitle('TTE PIMPINAN EXPIRED', '🔏')
                             ->addDivider()
                             ->addText("✅ Seluruh TTE pimpinan dalam kondisi aman.");
                     $this->telegram->sendMessage($builder->build());
@@ -211,7 +208,7 @@ class AlertService
 
             if (is_cli()) CLI::write("Total Pimpinan Expired: $count", 'cyan');
             $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
-            $builder->setTitle('LAPORAN TTE PIMPINAN EXPIRED', '🔔')
+            $builder->setTitle('TTE PIMPINAN EXPIRED', '🔏')
                     ->addDivider();
             $this->appendTteReport($builder);
             $this->telegram->sendMessage($builder->build());
@@ -231,7 +228,7 @@ class AlertService
                 if (is_cli()) CLI::write("Found $count website domains expiring soon", 'red');
                 
                 $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
-                $builder->setTitle('PERINGATAN MASA AKTIF WEBSITE', '🌐')
+                $builder->setTitle('DOMAIN EXPIRED (<30 HARI)', '🌐')
                         ->addDivider();
                 $this->appendWebExpirationReport($builder);
                 $this->telegram->sendMessage($builder->build());

@@ -5,6 +5,18 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [31 Agustus 2026] — Standarisasi Teks Log Audit & Penyelarasan Notifikasi Telegram
+
+- **Standarisasi Log Audit (*Audit Trail*)**:
+  - Menyeragamkan seluruh string teks `log_audit()` ke format Bahasa Indonesia yang ringkas, padat, dan *to the point* pada aksi Pensiun, Auto Pensiun, Buat Akun, Ubah Password, Pulihkan Akun, Hapus Permanen, Login/Logout, serta Helpdesk.
+- **Penyelarasan Notifikasi Telegram Admin**:
+  - Memperbaiki helper `TelegramMessageBuilder::addUserProfile()` agar nomor identitas NIP selalu dicetak konsisten di bawah nama pemilik akun.
+  - Menyeragamkan judul dan format notifikasi monitoring: `KUOTA EMAIL (>90%)`, `TTE PIMPINAN EXPIRED`, dan `DOMAIN EXPIRED (<30 HARI)`.
+  - Menghapus subjudul duplikatif pada pesan alert sistem agar tampilan pesan di Telegram lebih bersih, padat, dan langsung menampilkan rincian data.
+  - Menyelaraskan seluruh judul aksi siklus akun: `AKUN BARU DIBUAT`, `AUTO PENSIUN`, `AKUN PENSIUN`, `AKUN DIPULIHKAN`, `AKUN DIHAPUS PERMANEN`, `PEMBERSIHAN KOTAK SAMPAH`, `BACKUP DATABASE GAGAL`, dan `ANTREAN EKSPOR GAGAL`.
+
+---
+
 # [31 Agustus 2026] — Penyederhanaan Tampilan Kotak Sampah & Kompilasi CSS
 
 - **Penyelarasan & Penyederhanaan Antarmuka Kotak Sampah (`trash.php`)**:

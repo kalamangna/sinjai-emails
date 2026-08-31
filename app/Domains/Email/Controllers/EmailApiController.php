@@ -224,7 +224,7 @@ class EmailApiController extends BaseController
 
             // Audit Log
             helper('audit');
-            log_audit('CREATE', 'Email', $email, 'Akun baru dibuat: ' . $data['email']);
+            log_audit('CREATE', 'Email', $email, 'Buat akun: ' . $data['email']);
 
             // Clear Dashboard Cache
             \App\Shared\Services\CacheService::invalidateDashboard();

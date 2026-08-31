@@ -709,11 +709,11 @@ class EmailService
                 }
 
                 $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
-                $builder->setTitle('AKUN EMAIL BARU DIBUAT', '✅')
+                $builder->setTitle('AKUN BARU DIBUAT', '✅')
                         ->addDivider()
                         ->addUserProfile(
                             $data['name'] ?? '',
-                            '',
+                            !empty($data['nip']) ? 'NIP: ' . $data['nip'] : '',
                             $data['jabatan'] ?? '',
                             $unitKerjaName,
                             $data['email']
@@ -2045,7 +2045,7 @@ class EmailService
     /**
      * Memproses penangguhan akun yang mencapai masa pensiun (Auto Pensiun)
      */
-    public function processAutoPensiun(array $email, string $reason = 'Mencapai Batas Usia Pensiun (BUP)'): bool
+    public function processAutoPensiun(array $email, string $reason = 'BUP'): bool
     {
         try {
             $emailId = $email['id'] ?? null;
@@ -2076,12 +2076,12 @@ class EmailService
 
             // 3. Log Audit
             helper('audit');
-            log_audit('AUTO_PENSIUN', 'Email', $emailId, "Akun otomatis ditangguhkan ({$reason}): {$emailAddress}");
+            log_audit('AUTO_PENSIUN', 'Email', $emailId, "Auto pensiun ({$reason}): {$emailAddress}");
 
             // 4. Kirim Notifikasi Telegram
             try {
                 $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
-                $builder->setTitle('AKUN PENSIUN OTOMATIS DITANGGUHKAN', '🚫')
+                $builder->setTitle('AUTO PENSIUN', '🚫')
                         ->addUserProfile(
                             $email['name'] ?? '',
                             !empty($email['nip']) ? 'NIP: ' . $email['nip'] : '',
@@ -2089,7 +2089,7 @@ class EmailService
                             $email['unit_kerja_name'] ?? $email['nama_unit_kerja'] ?? '',
                             $emailAddress
                         )
-                        ->addText("\nℹ️ <i>Alasan: {$reason}</i>");
+                        ->addText("\nℹ️ <i>Keterangan: {$reason}</i>");
 
                 $telegram = new \App\Shared\Libraries\TelegramLibrary();
                 $telegram->sendMessage($builder->build());

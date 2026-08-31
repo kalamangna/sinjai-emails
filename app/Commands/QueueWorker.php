@@ -170,7 +170,7 @@ class QueueWorker extends BaseCommand
                 CLI::error("Job #{$job['id']} permanently failed after 3 attempts.");
                 $telegram = new \App\Shared\Libraries\TelegramLibrary();
                 $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
-                $builder->setTitle('CRITICAL ERROR: QUEUE WORKER', '🚨')
+                $builder->setTitle('ANTREAN EKSPOR GAGAL', '❌')
                         ->addDivider()
                         ->addKeyValue('Job', "#{$job['id']} — $type", '📋')
                         ->addKeyValue('Error', $e->getMessage(), '❌');

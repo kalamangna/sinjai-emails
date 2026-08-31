@@ -69,7 +69,7 @@ class HelpdeskAdminController extends BaseController
         }
 
         helper('audit');
-        log_audit('UPDATE', 'Helpdesk', $id, 'Updated ticket status to ' . $newStatus . ': ' . ($result['ticket']['tiket_id'] ?? ''));
+        log_audit('UPDATE', 'Helpdesk', $id, 'Ubah status tiket ' . ($result['ticket']['tiket_id'] ?? '') . ' ke ' . $newStatus);
 
         return redirect()->to('admin/helpdesk/detail/' . $id)->with('success', 'Status tiket berhasil diperbarui.');
     }
@@ -82,7 +82,7 @@ class HelpdeskAdminController extends BaseController
         $this->helpdeskModel->delete($id);
 
         helper('audit');
-        log_audit('DELETE', 'Helpdesk', $id, 'Deleted ticket: ' . $ticket['tiket_id']);
+        log_audit('DELETE', 'Helpdesk', $id, 'Hapus tiket: ' . $ticket['tiket_id']);
 
         return redirect()->to('admin/helpdesk')->with('success', 'Tiket berhasil dihapus.');
     }

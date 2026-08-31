@@ -126,7 +126,7 @@ class AutoPensiunCommand extends BaseCommand
             }
 
             CLI::print("    Memproses penangguhan (cPanel suspend & soft delete)... ");
-            $reason = "Mencapai Batas Usia Pensiun (BUP {$bupAge} Thn - TMT {$tmt})";
+            $reason = "BUP {$bupAge} Thn";
             $res = $emailService->processAutoPensiun($acc, $reason);
 
             if ($res) {

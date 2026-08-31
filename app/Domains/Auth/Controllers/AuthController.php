@@ -38,7 +38,7 @@ class AuthController extends BaseController
 
             session()->set($sessionData);
 
-            log_audit('LOGIN', 'User', $sessionData['id'], 'User login berhasil: ' . $sessionData['username']);
+            log_audit('LOGIN', 'User', $sessionData['id'], 'Login: ' . $sessionData['username']);
 
             return redirect()->to('dashboard')->with('success', 'Selamat datang kembali, ' . $sessionData['name']);
         } catch (\Throwable $e) {
@@ -48,7 +48,7 @@ class AuthController extends BaseController
 
     public function logout()
     {
-        log_audit('LOGOUT', 'User', session()->get('id'), 'User melakukan logout: ' . session()->get('username'));
+        log_audit('LOGOUT', 'User', session()->get('id'), 'Logout: ' . session()->get('username'));
         session()->destroy();
         return redirect()->to('/login');
     }

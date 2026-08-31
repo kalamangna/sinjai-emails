@@ -101,6 +101,9 @@ class TelegramMessageBuilder
         if (!empty($name)) {
             $lines[] = "👤 <b>" . mb_strtoupper(trim((string)$name)) . "</b>";
         }
+        if (!empty($identitas)) {
+            $lines[] = "🆔 " . trim((string)$identitas);
+        }
         if (!empty($email)) {
             $lines[] = "📧 " . trim((string)$email);
         }

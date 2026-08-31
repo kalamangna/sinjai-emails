@@ -104,7 +104,7 @@ class EmailListController extends BaseController
             $emailService->updatePassword($username, $password);
 
             helper('audit');
-            log_audit('CHANGE_PASSWORD', 'Email', null, 'Password diubah untuk akun: ' . $email);
+            log_audit('CHANGE_PASSWORD', 'Email', null, 'Ubah password: ' . $email);
 
             return $this->response->setJSON(['success' => true, 'message' => 'Password berhasil diperbarui.']);
         } catch (\Throwable $e) {
