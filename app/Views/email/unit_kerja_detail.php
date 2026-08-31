@@ -276,6 +276,9 @@
                                         $displayJabatan = (!empty($email['is_plt_in_this_unit']) && !empty($email['jabatan_plt'])) ? $email['jabatan_plt'] : ($email['jabatan'] ?: '-');
                                         ?>
                                         <span class="text-xs font-medium text-slate-700 uppercase tracking-tight jabatan-text"><?= esc($displayJabatan) ?></span>
+                                        <?php if (empty($email['is_plt_in_this_unit']) && !empty($email['jabatan_plt'])): ?>
+                                            <span class="text-xs font-medium text-amber-700 uppercase tracking-tight"><?= esc($email['jabatan_plt']) ?></span>
+                                        <?php endif; ?>
                                         <span class="text-[9px] font-bold text-slate-700 uppercase tracking-widest"><?= !empty($email['status_asn']) ? esc($email['status_asn']) : 'NON-ASN' ?></span>
                                     </div>
                                 </td>

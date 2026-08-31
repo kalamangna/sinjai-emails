@@ -1128,7 +1128,12 @@ class EmailService
             ->select('emails.*, unit_kerja.nama_unit_kerja')
             ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left');
 
-        if (!empty($nip)) {
+        if (!empty($nip) && !empty($fallbackEmail)) {
+            $builder->groupStart()
+                ->where('emails.nip', $nip)
+                ->orWhere('emails.email', $fallbackEmail)
+            ->groupEnd();
+        } elseif (!empty($nip)) {
             $builder->where('emails.nip', $nip);
         } elseif (!empty($fallbackEmail)) {
             $builder->where('emails.email', $fallbackEmail);
@@ -1136,8 +1141,15 @@ class EmailService
 
         $currentEmail = $builder->first();
 
+        if (!$currentEmail) {
+            return [
+                'success' => false,
+                'message' => 'Akun tidak ditemukan di database lokal.'
+            ];
+        }
+
         // Guard: Pastikan hanya pegawai berstatus PNS (status_asn_id = 1) yang disinkronkan. Lewati hit API jika bukan PNS.
-        if ($currentEmail && !empty($currentEmail['status_asn_id']) && (int)$currentEmail['status_asn_id'] !== 1) {
+        if (!empty($currentEmail['status_asn_id']) && (int)$currentEmail['status_asn_id'] !== 1) {
             return [
                 'success' => true,
                 'skipped' => true,
@@ -1846,8 +1858,27 @@ class EmailService
             return $jab;
         }
 
+        if (stripos($jab, 'SEKRETARIS DINAS') === 0 || stripos($jab, 'SEKDIS') === 0) {
+            return 'SEKRETARIS DINAS';
+        }
+        if (stripos($jab, 'SEKRETARIS BADAN') === 0 || stripos($jab, 'SEKBAN') === 0) {
+            return 'SEKRETARIS BADAN';
+        }
+        if (stripos($jab, 'SEKRETARIS INSPEKTORAT') === 0) {
+            return 'SEKRETARIS INSPEKTORAT';
+        }
+        if (stripos($jab, 'SEKRETARIS CAMAT') === 0 || stripos($jab, 'SEKCAM') === 0) {
+            return 'SEKRETARIS CAMAT';
+        }
+        if (stripos($jab, 'SEKRETARIS LURAH') === 0 || stripos($jab, 'SEKLUR') === 0) {
+            return 'SEKRETARIS LURAH';
+        }
+        if (stripos($jab, 'SEKRETARIS DPRD') === 0 || stripos($jab, 'SEKWAN') === 0) {
+            return 'SEKRETARIS DPRD';
+        }
+
         // Inferensi dari unit HANYA jika akun berstatus pimpinan kepala dinas/badan/camat/lurah utama
-        $isSubordinateLeader = preg_match('/\b(SEKOLAH|PUSKESMAS|UPTD|UPT|BIDANG|SEKSI|SUB\s*BAGIAN|SUBBAG|SUB\s*BIDANG|SUBBID|RUANGAN|INSTALASI|LABORATORIUM)\b/i', $jab);
+        $isSubordinateLeader = preg_match('/\b(SEKRETARIS|SEKRETARIAT|SEKDIS|SEKBAN|SEKCAM|SEKLUR|SEKWAN|SEKOLAH|PUSKESMAS|UPTD|UPT|BIDANG|SEKSI|SUB\s*BAGIAN|SUBBAG|SUB\s*BIDANG|SUBBID|RUANGAN|INSTALASI|LABORATORIUM)\b/i', $jab);
         if ($isPimpinan && !$isSubordinateLeader) {
             if (!empty($unitKerjaName)) {
                 $unitUpper = strtoupper($unitKerjaName);

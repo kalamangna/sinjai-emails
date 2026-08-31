@@ -227,25 +227,12 @@
                                 <?php endif; ?>
                                 <div>
                                     <div class="flex items-center justify-between mb-1">
-                                        <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight"><?= !empty($email['jabatan_plt']) ? 'Jabatan Definitif' : 'Jabatan' ?></label>
+                                        <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">Jabatan</label>
                                     </div>
                                     <p id="jabatan-text" class="text-sm font-semibold text-slate-800 uppercase leading-snug"><?= esc($email['jabatan']) ?: '-' ?></p>
-                                    <?php if (!empty($email['jabatan_plt'])): ?>
-                                        <div class="mt-2 pt-2 border-t border-slate-100">
-                                            <label class="block text-[9px] font-bold text-amber-800 uppercase tracking-tight mb-1">Jabatan Pelaksana Tugas (Plt)</label>
-                                            <div class="flex items-center gap-2">
-                                                <span class="px-2 py-0.5 rounded bg-amber-50 text-amber-800 text-[10px] font-bold uppercase border border-amber-200">
-                                                    <?= esc($email['jabatan_plt']) ?>
-                                                </span>
-                                                <?php if (!empty($unit_kerja_plt)): ?>
-                                                    <span class="text-xs font-semibold text-slate-700 uppercase"><?= esc($unit_kerja_plt['nama_unit_kerja']) ?></span>
-                                                <?php endif; ?>
-                                            </div>
-                                        </div>
-                                    <?php endif; ?>
                                 </div>
                                 <div>
-                                    <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight"><?= !empty($email['jabatan_plt']) ? 'Unit Kerja Definitif' : 'Unit Kerja' ?></label>
+                                    <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">Unit Kerja</label>
                                     <div id="unit-kerja-container" class="bg-slate-50 border border-slate-200 rounded-lg p-3 hover:border-slate-800 transition-all space-y-1 mt-1">
                                         <?php if (!empty($unit_kerja)): ?>
                                             <?php if (!empty($parent_unit_kerja)): ?>
@@ -260,23 +247,31 @@
                                             <p class="text-xs font-bold text-slate-700 uppercase italic">TIDAK TERDAFTAR</p>
                                         <?php endif; ?>
                                     </div>
-                                    <?php if (!empty($unit_kerja_plt) && (!empty($unit_kerja) ? ($unit_kerja_plt['id'] != $unit_kerja['id']) : true)): ?>
-                                        <div class="mt-2.5">
-                                            <label class="block text-[9px] font-bold text-amber-800 uppercase tracking-tight mb-1">Unit Kerja Penugasan (Plt)</label>
-                                            <div class="bg-amber-50/60 border border-amber-200/80 rounded-lg p-3 hover:border-amber-400 transition-all space-y-1">
-                                                <?php if (!empty($parent_unit_kerja_plt)): ?>
-                                                    <a href="<?= site_url('email/unit_kerja/' . $parent_unit_kerja_plt['id']) ?>" class="block no-underline group/parent">
-                                                        <p class="text-[10px] font-bold text-slate-700 uppercase group-hover/parent:text-slate-800 transition-colors leading-none"><?= esc($parent_unit_kerja_plt['nama_unit_kerja']) ?></p>
-                                                    </a>
-                                                <?php endif; ?>
-                                                <a href="<?= site_url('email/unit_kerja/' . $unit_kerja_plt['id']) ?>" class="block no-underline group/child flex items-center justify-between">
-                                                    <p class="text-xs font-bold text-slate-800 uppercase leading-tight group-hover/child:text-black transition-colors"><?= esc($unit_kerja_plt['nama_unit_kerja']) ?></p>
-                                                    <span class="px-1.5 py-0.5 rounded text-[8px] font-bold uppercase bg-amber-100 text-amber-800 border border-amber-300">PLT</span>
-                                                </a>
-                                            </div>
-                                        </div>
-                                    <?php endif; ?>
                                 </div>
+                                <?php if (!empty($email['jabatan_plt'])): ?>
+                                    <div>
+                                        <label class="block text-[9px] font-bold text-amber-800 uppercase tracking-tight mb-1">Pelaksana Tugas</label>
+                                        <div class="bg-amber-50/60 border border-amber-200/80 rounded-lg p-3 hover:border-amber-400 transition-all space-y-2">
+                                            <div>
+                                                <span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 text-[10px] font-bold uppercase border border-amber-300">
+                                                    <?= esc($email['jabatan_plt']) ?>
+                                                </span>
+                                            </div>
+                                            <?php if (!empty($unit_kerja_plt)): ?>
+                                                <div class="pt-1.5 border-t border-amber-200/60">
+                                                    <?php if (!empty($parent_unit_kerja_plt)): ?>
+                                                        <a href="<?= site_url('email/unit_kerja/' . $parent_unit_kerja_plt['id']) ?>" class="block no-underline group/parent">
+                                                            <p class="text-[10px] font-bold text-slate-700 uppercase group-hover/parent:text-slate-800 transition-colors leading-none"><?= esc($parent_unit_kerja_plt['nama_unit_kerja']) ?></p>
+                                                        </a>
+                                                    <?php endif; ?>
+                                                    <a href="<?= site_url('email/unit_kerja/' . $unit_kerja_plt['id']) ?>" class="block no-underline group/child mt-0.5">
+                                                        <p class="text-xs font-bold text-slate-800 uppercase leading-tight group-hover/child:text-black transition-colors"><?= esc($unit_kerja_plt['nama_unit_kerja']) ?></p>
+                                                    </a>
+                                                </div>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>

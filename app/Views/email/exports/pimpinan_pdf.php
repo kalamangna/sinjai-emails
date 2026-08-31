@@ -233,9 +233,19 @@
                         <strong><?= esc(strtoupper($email['name'] ?? '')) ?></strong><br>
                         <span style="color: #475569; font-size: 9px;"><span><?= esc($email['email'] ?? '') ?></span></span>
                     </td>
-                    <td><?= esc($email['jabatan'] ?? '') ?></td>
+                    <td>
+                        <?= esc($email['jabatan'] ?? '') ?>
+                        <?php if (!empty($email['jabatan_plt'])): ?>
+                            <br><span style="color: #b45309;"><?= esc($email['jabatan_plt']) ?></span>
+                        <?php endif; ?>
+                    </td>
                     <?php if ($showUnitKerjaColumn): ?>
-                        <td><?= $unitKerjaContent ?></td>
+                        <td>
+                            <?= $unitKerjaContent ?>
+                            <?php if (!empty($email['unit_kerja_plt_name']) && $email['unit_kerja_plt_name'] !== ($email['unit_kerja_name'] ?? '')): ?>
+                                <br><span style="color: #b45309;"><?= esc(strtoupper($email['unit_kerja_plt_name'])) ?></span>
+                            <?php endif; ?>
+                        </td>
                     <?php endif; ?>
                     <td style="color: <?= $color ?>; font-weight: bold; font-size: 9px;"><?= esc($statusTte) ?></td>
                 </tr>

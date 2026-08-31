@@ -151,7 +151,12 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <span class="text-xs font-medium text-slate-700 uppercase tracking-tight leading-snug jabatan-sync-target"><?= esc($email['jabatan']) ?: '-' ?></span>
+                                    <div class="flex flex-col gap-1">
+                                        <span class="text-xs font-medium text-slate-700 uppercase tracking-tight leading-snug jabatan-sync-target"><?= esc($email['jabatan']) ?: '-' ?></span>
+                                        <?php if (!empty($email['jabatan_plt'])): ?>
+                                            <span class="text-xs font-medium text-amber-700 uppercase tracking-tight leading-snug"><?= esc($email['jabatan_plt']) ?></span>
+                                        <?php endif; ?>
+                                    </div>
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="flex flex-col unit-kerja-sync-target">
@@ -160,6 +165,9 @@
                                             <span class="text-xs font-bold text-slate-800 uppercase tracking-tight mt-1"><?= esc($email['unit_kerja_name']) ?></span>
                                         <?php else: ?>
                                             <span class="text-xs font-bold text-slate-800 uppercase tracking-tight"><?= esc($email['unit_kerja_name']) ?></span>
+                                        <?php endif; ?>
+                                        <?php if (!empty($email['unit_kerja_plt_name']) && $email['unit_kerja_plt_name'] !== $email['unit_kerja_name']): ?>
+                                            <span class="text-xs font-bold text-amber-700 uppercase tracking-tight mt-1"><?= esc($email['unit_kerja_plt_name']) ?></span>
                                         <?php endif; ?>
                                     </div>
                                 </td>
