@@ -181,6 +181,20 @@ php spark sync:pegawai-unit 5
 php spark sync:pegawai-unit 5 --asn="PPPK PARUH WAKTU"
 ```
 
+### 🧹 Pemeliharaan & Retensi Sistem
+
+Sistem dilengkapi perintah CLI mandiri untuk pemeliharaan data dan efisiensi basis data:
+
+```bash
+# 1. Pembersihan Retensi Log (Default: 90 Hari / 3 Bulan)
+php spark audit:clean
+php spark audit:clean --days=90 --dry-run   # Mode simulasi
+
+# 2. Deteksi & Penangguhan Otomatis Akun Pensiun Berbasis BUP
+php spark email:auto-pensiun
+php spark email:auto-pensiun --dry-run     # Mode simulasi
+```
+
 ### 📢 Notifikasi Telegram
 
 Sistem ini mendukung laporan otomatis ke Telegram. Untuk mengaktifkannya, tambahkan kredensial berikut ke file `.env`:

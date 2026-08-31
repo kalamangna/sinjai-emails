@@ -5,6 +5,15 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [31 Agustus 2026] — Fitur Kebijakan Retensi Log 90 Hari (Database & Filesystem)
+
+- **Kebijakan & Perintah Pembersihan Retensi Log**:
+  - Menambahkan Spark CLI Command baru: `php spark audit:clean [--days=90] [--dry-run]` untuk membersihkan rekaman riwayat `audit_logs` pada basis data serta berkas log `writable/logs/log-*.log` pada filesystem yang telah melewati batas umur simpan (default: 90 hari / 3 bulan).
+  - Menambahkan method `countOldLogs` dan `purgeOldLogs` pada [`AuditLogModel`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Shared/Models/AuditLogModel.php).
+  - Mengintegrasikan fungsi pembersihan retensi log secara otomatis ke dalam siklus cron job harian pada [`SyncAllCommand`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Commands/SyncAllCommand.php).
+
+---
+
 # [31 Agustus 2026] — Standarisasi Teks Log Audit & Penyelarasan Notifikasi Telegram
 
 - **Standarisasi Log Audit (*Audit Trail*)**:

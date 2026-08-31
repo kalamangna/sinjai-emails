@@ -138,6 +138,7 @@ class SyncAllCommand extends BaseCommand
 
         // Phase: Cleanup (Setiap kali sinkronisasi)
         $this->cleanupRetiredAccounts();
+        $this->cleanupLogs(90);
 
         // Clear Dashboard Cache so timestamps update immediately
         \App\Shared\Services\CacheService::invalidateDashboard();
@@ -435,6 +436,51 @@ class SyncAllCommand extends BaseCommand
 
         } catch (\Throwable $e) {
             CLI::error('Error during cleanup: ' . $e->getMessage());
+        }
+    }
+
+    private function cleanupLogs(int $days = 90)
+    {
+        CLI::write("Cleaning up expired system and audit logs (older than {$days} days)...", 'yellow');
+        try {
+            // 1. Purge database audit_logs
+            $auditModel = new \App\Shared\Models\AuditLogModel();
+            $deletedRows = $auditModel->purgeOldLogs($days);
+            if ($deletedRows > 0) {
+                CLI::write("Purged {$deletedRows} old audit log records from database.", 'green');
+            }
+
+            // 2. Purge filesystem logs
+            $logsDir = rtrim(WRITEPATH, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'logs' . DIRECTORY_SEPARATOR;
+            $cutoffTimestamp = strtotime("-{$days} days");
+            $deletedFiles = 0;
+
+            if (is_dir($logsDir)) {
+                $files = glob($logsDir . 'log-*.log');
+                if (!empty($files)) {
+                    foreach ($files as $filePath) {
+                        $filename = basename($filePath);
+                        if (preg_match('/^log-(\d{4}-\d{2}-\d{2})\.log$/', $filename, $matches)) {
+                            $logDate = strtotime($matches[1]);
+                            if ($logDate && $logDate < $cutoffTimestamp) {
+                                if (@unlink($filePath)) {
+                                    $deletedFiles++;
+                                }
+                            }
+                        } elseif (filemtime($filePath) < $cutoffTimestamp) {
+                            if (@unlink($filePath)) {
+                                $deletedFiles++;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if ($deletedFiles > 0) {
+                CLI::write("Purged {$deletedFiles} old filesystem log files.", 'green');
+            }
+        } catch (\Throwable $e) {
+            CLI::error('Error during log cleanup: ' . $e->getMessage());
         }
     }
 

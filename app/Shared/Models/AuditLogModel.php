@@ -70,5 +70,24 @@ class AuditLogModel extends Model
                     ->orderBy('count', 'DESC')
                     ->findAll();
     }
+
+    /**
+     * Hitung total log yang melewati batas masa retensi
+     */
+    public function countOldLogs(int $days = 90): int
+    {
+        $cutoffDate = date('Y-m-d H:i:s', strtotime("-{$days} days"));
+        return $this->where('created_at <', $cutoffDate)->countAllResults();
+    }
+
+    /**
+     * Hapus permanen log yang melewati batas masa retensi
+     */
+    public function purgeOldLogs(int $days = 90): int
+    {
+        $cutoffDate = date('Y-m-d H:i:s', strtotime("-{$days} days"));
+        $this->where('created_at <', $cutoffDate)->delete();
+        return $this->db->affectedRows();
+    }
 }
 
