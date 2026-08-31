@@ -5,6 +5,17 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [31 Agustus 2026] — Retensi Data NIP & Unit Kerja pada Akun Pensiun di Kotak Sampah
+
+- **Retensi Data NIP & Unit Kerja saat Pensiun/Soft Delete**:
+  - Mempertahankan data identitas NIP, unit kerja, dan profil ASN pada akun yang ditandai pensiun / auto-pensiun (`markPensiun` dan `processAutoPensiun`) agar integritas riwayat historis tetap terjaga.
+  - Memastikan pencabutan hak akses dan status keamanan tetap berjalan: menangguhkan login email (`suspended_login = 1`), mengisi `pensiun_at`, mencabut peran pimpinan, dan memindahkan akun ke Kotak Sampah (*Soft Delete*).
+- **Pembaruan Tampilan Kotak Sampah (`trash.php`)**:
+  - Menambahkan kolom **Unit Kerja** (termasuk unit kerja induk jika ada) pada tabel Kotak Sampah.
+  - Menampilkan nomor **NIP** di bawah nama pemilik akun untuk memudahkan identifikasi dan verifikasi sebelum pemulihan (*restore*) atau pembersihan permanen.
+
+---
+
 # [31 Agustus 2026] — Fitur Auto Pensiun Berbasis BUP & Pembaruan Antarmuka Kotak Sampah
 
 - **Fitur Auto Pensiun Berbasis Batas Usia Pensiun (BUP)**:
