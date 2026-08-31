@@ -226,7 +226,23 @@ class EmailExportService
         $uniqueUnitKerjaIds = array_unique(array_filter(array_column($emails, 'unit_kerja_id')));
         $showUnitKerjaColumn = count($uniqueUnitKerjaIds) > 1;
 
-        usort($emails, function($a, $b) use ($showUnitKerjaColumn) {
+        usort($emails, function($a, $b) use ($unitKerjaId, $showUnitKerjaColumn) {
+            if ($showUnitKerjaColumn) {
+                $aUnitId = !empty($a['is_plt_in_this_unit']) ? ($a['unit_kerja_plt_id'] ?? 0) : ($a['unit_kerja_id'] ?? 0);
+                $bUnitId = !empty($b['is_plt_in_this_unit']) ? ($b['unit_kerja_plt_id'] ?? 0) : ($b['unit_kerja_id'] ?? 0);
+
+                $aIsParent = ($aUnitId == $unitKerjaId) ? 0 : 1;
+                $bIsParent = ($bUnitId == $unitKerjaId) ? 0 : 1;
+
+                if ($aIsParent !== $bIsParent) return $aIsParent <=> $bIsParent;
+
+                $aUnitName = !empty($a['is_plt_in_this_unit']) ? ($a['unit_kerja_plt_name'] ?? '') : ($a['unit_kerja_name'] ?? '');
+                $bUnitName = !empty($b['is_plt_in_this_unit']) ? ($b['unit_kerja_plt_name'] ?? '') : ($b['unit_kerja_name'] ?? '');
+
+                $cmpUnit = strnatcasecmp($aUnitName, $bUnitName);
+                if ($cmpUnit !== 0) return $cmpUnit;
+            }
+
             $eselonA = $a['eselon_id'] ? (int)$a['eselon_id'] : 999;
             $eselonB = $b['eselon_id'] ? (int)$b['eselon_id'] : 999;
             if ($eselonA !== $eselonB) return $eselonA <=> $eselonB;
@@ -234,13 +250,6 @@ class EmailExportService
             $asnA = $a['status_asn_id'] ? (int)$a['status_asn_id'] : 999;
             $asnB = $b['status_asn_id'] ? (int)$b['status_asn_id'] : 999;
             if ($asnA !== $asnB) return $asnA <=> $asnB;
-
-            if ($showUnitKerjaColumn) {
-                $unitA = $a['unit_kerja_name'] ?? '';
-                $unitB = $b['unit_kerja_name'] ?? '';
-                $cmpUnit = strnatcasecmp($unitA, $unitB);
-                if ($cmpUnit !== 0) return $cmpUnit;
-            }
 
             return strnatcasecmp($a['name'] ?? '', $b['name'] ?? '');
         });
@@ -319,7 +328,23 @@ class EmailExportService
         $uniqueUnitKerjaIds = array_unique(array_filter(array_column($emails, 'unit_kerja_id')));
         $showUnitKerjaColumn = count($uniqueUnitKerjaIds) > 1;
 
-        usort($emails, function($a, $b) use ($showUnitKerjaColumn) {
+        usort($emails, function($a, $b) use ($unitKerjaId, $showUnitKerjaColumn) {
+            if ($showUnitKerjaColumn) {
+                $aUnitId = !empty($a['is_plt_in_this_unit']) ? ($a['unit_kerja_plt_id'] ?? 0) : ($a['unit_kerja_id'] ?? 0);
+                $bUnitId = !empty($b['is_plt_in_this_unit']) ? ($b['unit_kerja_plt_id'] ?? 0) : ($b['unit_kerja_id'] ?? 0);
+
+                $aIsParent = ($aUnitId == $unitKerjaId) ? 0 : 1;
+                $bIsParent = ($bUnitId == $unitKerjaId) ? 0 : 1;
+
+                if ($aIsParent !== $bIsParent) return $aIsParent <=> $bIsParent;
+
+                $aUnitName = !empty($a['is_plt_in_this_unit']) ? ($a['unit_kerja_plt_name'] ?? '') : ($a['unit_kerja_name'] ?? '');
+                $bUnitName = !empty($b['is_plt_in_this_unit']) ? ($b['unit_kerja_plt_name'] ?? '') : ($b['unit_kerja_name'] ?? '');
+
+                $cmpUnit = strnatcasecmp($aUnitName, $bUnitName);
+                if ($cmpUnit !== 0) return $cmpUnit;
+            }
+
             $eselonA = $a['eselon_id'] ? (int)$a['eselon_id'] : 999;
             $eselonB = $b['eselon_id'] ? (int)$b['eselon_id'] : 999;
             if ($eselonA !== $eselonB) return $eselonA <=> $eselonB;
@@ -327,13 +352,6 @@ class EmailExportService
             $asnA = $a['status_asn_id'] ? (int)$a['status_asn_id'] : 999;
             $asnB = $b['status_asn_id'] ? (int)$b['status_asn_id'] : 999;
             if ($asnA !== $asnB) return $asnA <=> $asnB;
-
-            if ($showUnitKerjaColumn) {
-                $unitA = $a['unit_kerja_name'] ?? '';
-                $unitB = $b['unit_kerja_name'] ?? '';
-                $cmpUnit = strnatcasecmp($unitA, $unitB);
-                if ($cmpUnit !== 0) return $cmpUnit;
-            }
 
             return strnatcasecmp($a['name'] ?? '', $b['name'] ?? '');
         });

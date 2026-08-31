@@ -234,13 +234,21 @@
 
                 $unitKerjaContent = '';
                 if ($showUnitKerjaColumn) {
-                    if (!empty($email['parent_unit_kerja_name'])) {
-                        $unitKerjaContent = '<small style="color: #64748b; font-size: 8px;">' . esc(strtoupper($email['parent_unit_kerja_name'])) . '</small><br>' . esc(strtoupper($email['unit_kerja_name'] ?? ''));
+                    if (!empty($email['is_plt_in_this_unit'])) {
+                        if (!empty($email['parent_unit_kerja_plt_name'])) {
+                            $unitKerjaContent = '<small style="color: #64748b; font-size: 8px;">' . esc(strtoupper($email['parent_unit_kerja_plt_name'])) . '</small><br><span style="color: #b45309;">' . esc(strtoupper($email['unit_kerja_plt_name'] ?? '')) . '</span>';
+                        } else {
+                            $unitKerjaContent = '<span style="color: #b45309;">' . esc(strtoupper($email['unit_kerja_plt_name'] ?? '')) . '</span>';
+                        }
                     } else {
-                        $unitKerjaContent = esc(strtoupper($email['unit_kerja_name'] ?? ''));
-                    }
-                    if (!empty($email['unit_kerja_plt_name']) && $email['unit_kerja_plt_name'] !== $email['unit_kerja_name'] && $isPltInSameUnit) {
-                        $unitKerjaContent .= '<br><small style="color: #b45309; font-size: 8px;">' . esc(strtoupper($email['unit_kerja_plt_name'])) . '</small>';
+                        if (!empty($email['parent_unit_kerja_name'])) {
+                            $unitKerjaContent = '<small style="color: #64748b; font-size: 8px;">' . esc(strtoupper($email['parent_unit_kerja_name'])) . '</small><br>' . esc(strtoupper($email['unit_kerja_name'] ?? ''));
+                        } else {
+                            $unitKerjaContent = esc(strtoupper($email['unit_kerja_name'] ?? ''));
+                        }
+                        if (!empty($email['unit_kerja_plt_name']) && $email['unit_kerja_plt_name'] !== $email['unit_kerja_name'] && $isPltInSameUnit) {
+                            $unitKerjaContent .= '<br><small style="color: #b45309; font-size: 8px;">' . esc(strtoupper($email['unit_kerja_plt_name'])) . '</small>';
+                        }
                     }
                 }
             ?>

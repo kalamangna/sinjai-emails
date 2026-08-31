@@ -514,11 +514,12 @@ class EmailService
 
         // Sorting logic
         if ($showUnitKerjaColumn) {
-            $emailBuilder->orderBy('emails.eselon_id IS NULL', 'ASC', false)
+            $emailBuilder->orderBy("(CASE WHEN (CASE WHEN emails.unit_kerja_plt_id IN ({$targetIdsString}) AND (emails.unit_kerja_id NOT IN ({$targetIdsString}) OR emails.unit_kerja_id IS NULL) THEN emails.unit_kerja_plt_id ELSE emails.unit_kerja_id END) = {$unitKerjaId} THEN 0 ELSE 1 END)", "ASC", false)
+                        ->orderBy("(CASE WHEN emails.unit_kerja_plt_id IN ({$targetIdsString}) AND (emails.unit_kerja_id NOT IN ({$targetIdsString}) OR emails.unit_kerja_id IS NULL) THEN unit_kerja_plt.nama_unit_kerja ELSE unit_kerja.nama_unit_kerja END)", "ASC", false)
+                        ->orderBy('emails.eselon_id IS NULL', 'ASC', false)
                         ->orderBy('emails.eselon_id', 'ASC')
                         ->orderBy('emails.status_asn_id IS NULL', 'ASC', false)
                         ->orderBy('emails.status_asn_id', 'ASC')
-                        ->orderBy('unit_kerja.nama_unit_kerja', 'ASC')
                         ->orderBy('emails.name', 'ASC');
         } else {
             $emailBuilder->orderBy('emails.eselon_id IS NULL', 'ASC', false)
@@ -1578,6 +1579,8 @@ class EmailService
                 if ($targetPltUnit) {
                     $pltChildren = $this->unitKerjaModel->where('parent_id', $targetPltUnit['id'])->findAll();
                     $cleanSearchPlt = strtoupper($source['jabatan_plt']);
+                    $cleanSearchPlt = preg_replace('/\bBARANG\s*\/\s*JASA\b/i', 'BARANG DAN JASA', $cleanSearchPlt);
+                    $cleanSearchPlt = preg_replace('/\s*\/\s*/', ' ', $cleanSearchPlt);
                     foreach ($pltChildren as $pChild) {
                         $pChildName = strtoupper($pChild['nama_unit_kerja']);
                         $strippedChild = trim(preg_replace('/^(BAGIAN|BIDANG|SEKRETARIAT|UPTD|KANTOR|KELURAHAN|DESA)\s+/i', '', $pChildName));

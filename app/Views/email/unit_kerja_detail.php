@@ -290,14 +290,23 @@
                                 <?php if ($showUnitKerjaColumn ?? false): ?>
                                     <td class="px-6 py-4">
                                         <div class="flex flex-col unit-kerja-sync-target">
-                                            <?php if (!empty($email['parent_unit_kerja_name'])): ?>
-                                                <span class="text-[10px] font-bold text-slate-700 uppercase leading-none"><?= esc($email['parent_unit_kerja_name']) ?></span>
-                                                <span class="text-xs font-bold text-slate-800 uppercase tracking-tight mt-1"><?= esc($email['unit_kerja_name']) ?></span>
+                                            <?php if (!empty($email['is_plt_in_this_unit'])): ?>
+                                                <?php if (!empty($email['parent_unit_kerja_plt_name'])): ?>
+                                                    <span class="text-[10px] font-bold text-slate-700 uppercase leading-none"><?= esc($email['parent_unit_kerja_plt_name']) ?></span>
+                                                    <span class="text-xs font-bold text-amber-700 uppercase tracking-tight mt-1"><?= esc($email['unit_kerja_plt_name']) ?></span>
+                                                <?php else: ?>
+                                                    <span class="text-xs font-bold text-amber-700 uppercase tracking-tight"><?= esc($email['unit_kerja_plt_name']) ?></span>
+                                                <?php endif; ?>
                                             <?php else: ?>
-                                                <span class="text-xs font-bold text-slate-800 uppercase tracking-tight"><?= esc($email['unit_kerja_name']) ?></span>
-                                            <?php endif; ?>
-                                            <?php if (!empty($email['unit_kerja_plt_name']) && $email['unit_kerja_plt_name'] !== $email['unit_kerja_name'] && $isPltInSameUnit): ?>
-                                                <span class="text-xs font-bold text-amber-700 uppercase tracking-tight mt-1"><?= esc($email['unit_kerja_plt_name']) ?></span>
+                                                <?php if (!empty($email['parent_unit_kerja_name'])): ?>
+                                                    <span class="text-[10px] font-bold text-slate-700 uppercase leading-none"><?= esc($email['parent_unit_kerja_name']) ?></span>
+                                                    <span class="text-xs font-bold text-slate-800 uppercase tracking-tight mt-1"><?= esc($email['unit_kerja_name']) ?></span>
+                                                <?php else: ?>
+                                                    <span class="text-xs font-bold text-slate-800 uppercase tracking-tight"><?= esc($email['unit_kerja_name']) ?></span>
+                                                <?php endif; ?>
+                                                <?php if (!empty($email['unit_kerja_plt_name']) && $email['unit_kerja_plt_name'] !== $email['unit_kerja_name'] && $isPltInSameUnit): ?>
+                                                    <span class="text-xs font-bold text-amber-700 uppercase tracking-tight mt-1"><?= esc($email['unit_kerja_plt_name']) ?></span>
+                                                <?php endif; ?>
                                             <?php endif; ?>
                                         </div>
                                     </td>
