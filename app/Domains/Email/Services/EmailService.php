@@ -932,8 +932,21 @@ class EmailService
 
         if (!empty($bupStatus)) {
             $bupAgeSql = "(CASE 
-                WHEN emails.jabatan LIKE '%AHLI UTAMA%' THEN 65
-                WHEN emails.jabatan LIKE '%AHLI MADYA%' OR emails.jabatan LIKE '%GURU%' OR emails.jabatan LIKE '%DOKTER%' OR emails.jabatan LIKE 'KEPALA DINAS%' OR emails.jabatan LIKE 'SEKRETARIS DAERAH%' THEN 60
+                WHEN UPPER(emails.jabatan) LIKE '%AHLI UTAMA%' THEN 65
+                WHEN UPPER(emails.jabatan) LIKE '%AHLI MADYA%' 
+                  OR UPPER(emails.jabatan) LIKE '%GURU%' 
+                  OR UPPER(emails.jabatan) LIKE '%KEPALA SEKOLAH%'
+                  OR UPPER(emails.jabatan) LIKE '%PENGAWAS SEKOLAH%'
+                  OR UPPER(emails.jabatan) LIKE '%PENILIK%'
+                  OR UPPER(emails.jabatan) LIKE '%DOKTER%' 
+                  OR UPPER(emails.jabatan) LIKE 'KEPALA DINAS%' 
+                  OR UPPER(emails.jabatan) LIKE 'KEPALA BADAN%' 
+                  OR UPPER(emails.jabatan) LIKE 'INSPEKTUR%' 
+                  OR UPPER(emails.jabatan) LIKE 'SEKRETARIS DAERAH%' 
+                  OR UPPER(emails.jabatan) LIKE 'SEKRETARIS DPRD%' 
+                  OR UPPER(emails.jabatan) LIKE 'STAF AHLI%' 
+                  OR UPPER(emails.jabatan) LIKE 'ASISTEN%' 
+                  OR emails.eselon_id = 2 THEN 60
                 ELSE 58
             END)";
 
@@ -954,12 +967,6 @@ class EmailService
                         ->where("{$tmtPensiunSql} <= CURDATE()");
                 $countModel->where("emails.nip REGEXP '^[0-9]{18}$'")
                            ->where("{$tmtPensiunSql} <= CURDATE()");
-            } elseif (in_array($bupStatus, ['58', '60', '65'])) {
-                $targetAge = (int)$bupStatus;
-                $builder->where("emails.nip REGEXP '^[0-9]{18}$'")
-                        ->where("{$bupAgeSql} = {$targetAge}");
-                $countModel->where("emails.nip REGEXP '^[0-9]{18}$'")
-                           ->where("{$bupAgeSql} = {$targetAge}");
             }
         }
 

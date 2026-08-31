@@ -5,6 +5,15 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [31 Agustus 2026] — Standarisasi Logika & Frasa Ringkas Filter BUP Pegawai ASN
+
+- **Penyederhanaan Frasa & Indikator BUP**:
+  - Menyederhanakan opsi filter dropdown BUP menjadi 2 pilihan spesifik: **`BUP < 1 Tahun`** dan **`Mencapai BUP`** pada seluruh halaman ASN ([`pns_list.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/pns_list.php), [`pppk_list.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/pppk_list.php), [`pppk_pw_list.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/pppk_pw_list.php)).
+  - Menyertakan tanggal TMT langsung di dalam badge BUP (`BUP [Usia] • TMT [Tanggal]`) dan menyederhanakan teks tooltip saat hover menjadi frasa ringkas (*to the point*): `Sisa X Bulan` atau `Mencapai BUP`.
+  - Mengoptimalkan logika query SQL pada [`EmailService.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Domains/Email/Services/EmailService.php) untuk penghitungan dan penyaringan BUP berbasis database.
+
+---
+
 # [31 Agustus 2026] — Integrasi Indikator & Filter BUP pada Halaman Pegawai ASN
 
 - **Indikator & Filter BUP pada Daftar Pegawai (PNS, PPPK, PPPK Paruh Waktu)**:

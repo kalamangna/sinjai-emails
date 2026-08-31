@@ -175,11 +175,8 @@ class EmailListController extends BaseController
                 'not_synced' => 'NOT_SYNCED',
             ];
             $data['bup_status_options'] = [
-                'approaching' => 'Mendekati Pensiun (≤ 1 Thn)',
-                'pensiun'     => 'Telah Mencapai BUP',
-                '58'          => 'BUP 58 Tahun',
-                '60'          => 'BUP 60 Tahun',
-                '65'          => 'BUP 65 Tahun',
+                'approaching' => 'BUP < 1 Tahun',
+                'pensiun'     => 'Mencapai BUP',
             ];
             $data['back_url'] = site_url('email');
 
@@ -220,11 +217,8 @@ class EmailListController extends BaseController
                 'not_synced' => 'NOT_SYNCED',
             ];
             $data['bup_status_options'] = [
-                'approaching' => 'Mendekati Pensiun (≤ 1 Thn)',
-                'pensiun'     => 'Telah Mencapai BUP',
-                '58'          => 'BUP 58 Tahun',
-                '60'          => 'BUP 60 Tahun',
-                '65'          => 'BUP 65 Tahun',
+                'approaching' => 'BUP < 1 Tahun',
+                'pensiun'     => 'Mencapai BUP',
             ];
             $data['back_url'] = site_url('email');
 
@@ -265,11 +259,8 @@ class EmailListController extends BaseController
                 'not_synced' => 'NOT_SYNCED',
             ];
             $data['bup_status_options'] = [
-                'approaching' => 'Mendekati Pensiun (≤ 1 Thn)',
-                'pensiun'     => 'Telah Mencapai BUP',
-                '58'          => 'BUP 58 Tahun',
-                '60'          => 'BUP 60 Tahun',
-                '65'          => 'BUP 65 Tahun',
+                'approaching' => 'BUP < 1 Tahun',
+                'pensiun'     => 'Mencapai BUP',
             ];
             $data['back_url'] = site_url('email');
 

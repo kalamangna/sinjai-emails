@@ -97,12 +97,10 @@
                                                 $bupBadgeClass = $bupInfo['is_pensiun']
                                                     ? 'bg-rose-50 text-rose-700 border-rose-200'
                                                     : 'bg-amber-50 text-amber-700 border-amber-200';
-                                                $bupTooltip = $bupInfo['is_pensiun']
-                                                    ? 'Telah mencapai BUP (TMT ' . formatTanggal($bupInfo['tmt_pensiun']) . ')'
-                                                    : 'Mendekati BUP: ' . $bupInfo['sisa_waktu_label'] . ' (TMT ' . formatTanggal($bupInfo['tmt_pensiun']) . ')';
+                                                $bupTooltip = $bupInfo['sisa_waktu_label'];
                                             ?>
                                                 <span class="px-1.5 py-0.5 rounded text-[8px] font-bold uppercase border <?= $bupBadgeClass ?>" title="<?= esc($bupTooltip) ?>">
-                                                    BUP <?= $bupInfo['bup_age'] ?> THN
+                                                    BUP <?= $bupInfo['bup_age'] ?> • TMT <?= formatSingkat($bupInfo['tmt_pensiun']) ?>
                                                 </span>
                                             <?php endif; ?>
                                         </div>

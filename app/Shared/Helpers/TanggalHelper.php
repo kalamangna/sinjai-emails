@@ -328,9 +328,9 @@ if (!function_exists('hitungBupInfo')) {
         $isPensiun = ($diffDays <= 0);
         $isApproaching = ($diffDays <= 365); // Kurang dari 1 tahun atau sudah lewat
 
-        // Label sisa waktu
+        // Label sisa waktu (singkat & to the point)
         if ($isPensiun) {
-            $sisaWaktuLabel = 'Telah mencapai BUP';
+            $sisaWaktuLabel = 'Mencapai BUP';
         } else {
             $diffMonths = (int)round($diffDays / 30.44);
             if ($diffMonths > 0) {
