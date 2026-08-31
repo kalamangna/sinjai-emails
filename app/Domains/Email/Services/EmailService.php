@@ -369,12 +369,24 @@ class EmailService
             $parent_unit_kerja = $this->unitKerjaModel->find($unit_kerja['parent_id']);
         }
 
+        $unit_kerja_plt = null;
+        if (!empty($email_detail['unit_kerja_plt_id'])) {
+            $unit_kerja_plt = $this->unitKerjaModel->find($email_detail['unit_kerja_plt_id']);
+        }
+
+        $parent_unit_kerja_plt = null;
+        if (!empty($unit_kerja_plt['parent_id'])) {
+            $parent_unit_kerja_plt = $this->unitKerjaModel->find($unit_kerja_plt['parent_id']);
+        }
+
         $pk_data = $this->pkModel->where('email', $email_detail['email'])->first();
 
         return [
             'email' => $email_detail,
             'unit_kerja' => $unit_kerja,
             'parent_unit_kerja' => $parent_unit_kerja,
+            'unit_kerja_plt' => $unit_kerja_plt,
+            'parent_unit_kerja_plt' => $parent_unit_kerja_plt,
             'pk_data' => $pk_data,
             'unit_kerja_options' => $this->unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->asArray()->findAll(),
             'status_asn_options' => $this->statusAsnModel->orderBy('nama_status_asn', 'ASC')->asArray()->findAll(),
