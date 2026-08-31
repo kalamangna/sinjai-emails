@@ -227,6 +227,10 @@ class EmailExportService
         $showUnitKerjaColumn = count($uniqueUnitKerjaIds) > 1;
 
         usort($emails, function($a, $b) use ($unitKerjaId, $showUnitKerjaColumn) {
+            $eselonA = $a['eselon_id'] ? (int)$a['eselon_id'] : 999;
+            $eselonB = $b['eselon_id'] ? (int)$b['eselon_id'] : 999;
+            if ($eselonA !== $eselonB) return $eselonA <=> $eselonB;
+
             if ($showUnitKerjaColumn) {
                 $aUnitId = !empty($a['is_plt_in_this_unit']) ? ($a['unit_kerja_plt_id'] ?? 0) : ($a['unit_kerja_id'] ?? 0);
                 $bUnitId = !empty($b['is_plt_in_this_unit']) ? ($b['unit_kerja_plt_id'] ?? 0) : ($b['unit_kerja_id'] ?? 0);
@@ -242,10 +246,6 @@ class EmailExportService
                 $cmpUnit = strnatcasecmp($aUnitName, $bUnitName);
                 if ($cmpUnit !== 0) return $cmpUnit;
             }
-
-            $eselonA = $a['eselon_id'] ? (int)$a['eselon_id'] : 999;
-            $eselonB = $b['eselon_id'] ? (int)$b['eselon_id'] : 999;
-            if ($eselonA !== $eselonB) return $eselonA <=> $eselonB;
 
             $asnA = $a['status_asn_id'] ? (int)$a['status_asn_id'] : 999;
             $asnB = $b['status_asn_id'] ? (int)$b['status_asn_id'] : 999;
@@ -329,6 +329,10 @@ class EmailExportService
         $showUnitKerjaColumn = count($uniqueUnitKerjaIds) > 1;
 
         usort($emails, function($a, $b) use ($unitKerjaId, $showUnitKerjaColumn) {
+            $eselonA = $a['eselon_id'] ? (int)$a['eselon_id'] : 999;
+            $eselonB = $b['eselon_id'] ? (int)$b['eselon_id'] : 999;
+            if ($eselonA !== $eselonB) return $eselonA <=> $eselonB;
+
             if ($showUnitKerjaColumn) {
                 $aUnitId = !empty($a['is_plt_in_this_unit']) ? ($a['unit_kerja_plt_id'] ?? 0) : ($a['unit_kerja_id'] ?? 0);
                 $bUnitId = !empty($b['is_plt_in_this_unit']) ? ($b['unit_kerja_plt_id'] ?? 0) : ($b['unit_kerja_id'] ?? 0);
@@ -344,10 +348,6 @@ class EmailExportService
                 $cmpUnit = strnatcasecmp($aUnitName, $bUnitName);
                 if ($cmpUnit !== 0) return $cmpUnit;
             }
-
-            $eselonA = $a['eselon_id'] ? (int)$a['eselon_id'] : 999;
-            $eselonB = $b['eselon_id'] ? (int)$b['eselon_id'] : 999;
-            if ($eselonA !== $eselonB) return $eselonA <=> $eselonB;
 
             $asnA = $a['status_asn_id'] ? (int)$a['status_asn_id'] : 999;
             $asnB = $b['status_asn_id'] ? (int)$b['status_asn_id'] : 999;
