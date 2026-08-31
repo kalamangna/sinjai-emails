@@ -5,6 +5,15 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [31 Agustus 2026] — Pembersihan Kategori Pensiun dari Tabel Status ASN
+
+- **Pembersihan Data Status ASN**:
+  - Menghapus baris `PENSIUN` (ID 4) dari tabel `status_asn` melalui migrasi [`2026-08-31-203000_RemovePensiunFromStatusAsn.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Database/Migrations/2026-08-31-203000_RemovePensiunFromStatusAsn.php) agar dropdown dan filter Status ASN murni hanya menampilkan formasi resmi (**PNS**, **PPPK**, **PPPK PARUH WAKTU**).
+- **Aset & Antarmuka**:
+  - Membangun dan mengompilasi berkas CSS Tailwind (`npm run build`).
+
+---
+
 # [31 Agustus 2026] — Migrasi Modal Dialog Terpadu, Penyederhanaan Teks & Preview Ekspor PDF
 
 - **Migrasi Modal Dialog Global & Pembersihan Alert Browser**:
