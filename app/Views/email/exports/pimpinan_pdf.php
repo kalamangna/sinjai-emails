@@ -221,7 +221,7 @@
                 $unitKerjaContent = '';
                 if ($showUnitKerjaColumn) {
                     if (!empty($email['parent_unit_kerja_name'])) {
-                        $unitKerjaContent = esc(strtoupper($email['unit_kerja_name'] ?? '')) . '<br><small style="color: #64748b; font-size: 8px;">' . esc(strtoupper($email['parent_unit_kerja_name'])) . '</small>';
+                        $unitKerjaContent = '<small style="color: #64748b; font-size: 8px;">' . esc(strtoupper($email['parent_unit_kerja_name'])) . '</small><br>' . esc(strtoupper($email['unit_kerja_name'] ?? ''));
                     } else {
                         $unitKerjaContent = esc(strtoupper($email['unit_kerja_name'] ?? ''));
                     }
@@ -243,13 +243,7 @@
                         <td>
                             <?= $unitKerjaContent ?>
                             <?php if (!empty($email['unit_kerja_plt_name']) && $email['unit_kerja_plt_name'] !== ($email['unit_kerja_name'] ?? '')): ?>
-                                <br>
-                                <?php if (!empty($email['parent_unit_kerja_plt_name'])): ?>
-                                    <small style="color: #b45309; font-size: 8px;"><?= esc(strtoupper($email['parent_unit_kerja_plt_name'])) ?></small><br>
-                                    <span style="color: #b45309; font-weight: bold;"><?= esc(strtoupper($email['unit_kerja_plt_name'])) ?></span>
-                                <?php else: ?>
-                                    <span style="color: #b45309;"><?= esc(strtoupper($email['unit_kerja_plt_name'])) ?></span>
-                                <?php endif; ?>
+                                <br><span style="color: #b45309;"><?= esc(strtoupper($email['unit_kerja_plt_name'])) ?></span>
                             <?php endif; ?>
                         </td>
                     <?php endif; ?>

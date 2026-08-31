@@ -133,7 +133,7 @@ class EmailExportController extends BaseController
 
             // Instead of cURL, tell the history page to trigger the worker via AJAX
             session()->setFlashdata('trigger_worker', true);
-            session()->setFlashdata('success', 'Permintaan Export PDF berhasil ditambahkan ke antrean. File akan segera tersedia di Riwayat Laporan.');
+            session()->setFlashdata('success', 'Ekspor PDF berhasil ditambahkan ke antrean.');
             return redirect()->to('reports/history');
         } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
@@ -179,7 +179,7 @@ class EmailExportController extends BaseController
             log_audit('EXPORT', 'Email', $unitKerjaId, 'Antrean Ekspor PDF Detail Akun Unit Kerja');
 
             session()->setFlashdata('trigger_worker', true);
-            session()->setFlashdata('success', 'Permintaan Export Detail Akun PDF berhasil ditambahkan ke antrean. File akan segera tersedia di Riwayat Laporan.');
+            session()->setFlashdata('success', 'Ekspor PDF berhasil ditambahkan ke antrean.');
             return redirect()->to('reports/history');
         } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();

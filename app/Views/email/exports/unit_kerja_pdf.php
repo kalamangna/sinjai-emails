@@ -201,7 +201,7 @@
         <thead>
             <tr>
                 <th style="width: 20px; text-align: center;">No.</th>
-                <th class="col-nama">Nama <?= ($showUnitKerjaColumn ? '/ NIP' : '') ?></th>
+                <th class="col-nama">Nama / Jabatan<?= ($showUnitKerjaColumn ? ' / NIP' : '') ?></th>
                 <?php if (!$showUnitKerjaColumn): ?>
                     <th style="width: 100px;">NIP</th>
                 <?php endif; ?>
@@ -240,13 +240,8 @@
                         <strong><?= esc(strtoupper($email['name'] ?? '')) ?></strong>
                         <?php if (!empty($email['is_plt_in_this_unit']) && !empty($email['jabatan_plt'])): ?>
                             <br><small style="color: #b45309; font-size: 8px;"><?= esc(strtoupper($email['jabatan_plt'])) ?></small>
-                        <?php else: ?>
-                            <?php if (!empty($email['jabatan'])): ?>
-                                <br><small style="color: #475569; font-size: 8px;"><?= esc(strtoupper($email['jabatan'])) ?></small>
-                            <?php endif; ?>
-                            <?php if (!empty($email['jabatan_plt'])): ?>
-                                <br><small style="color: #b45309; font-size: 8px;"><?= esc(strtoupper($email['jabatan_plt'])) ?></small>
-                            <?php endif; ?>
+                        <?php elseif (!empty($email['jabatan'])): ?>
+                            <br><small style="color: #475569; font-size: 8px;"><?= esc(strtoupper($email['jabatan'])) ?></small>
                         <?php endif; ?>
                         <?php if ($showUnitKerjaColumn && !empty($email['nip'])): ?>
                             <br><small style="color: #64748b; font-size: 8px;">NIP: <?= esc($email['nip']) ?></small>

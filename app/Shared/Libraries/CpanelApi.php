@@ -14,8 +14,26 @@ class CpanelApi
         $this->config = config('Cpanel');
     }
 
+    public function isLocalEnvironment(): bool
+    {
+        return (defined('ENVIRONMENT') && ENVIRONMENT === 'development')
+            || (env('CI_ENVIRONMENT') === 'development')
+            || (env('CPANEL_MOCK') === true || env('CPANEL_MOCK') === 'true');
+    }
+
     private function make_request(string $module, string $function, string $method = 'GET', array $parameters = [])
     {
+        // Bypass live requests in local/development environment
+        if ($this->isLocalEnvironment()) {
+            log_message('info', "CpanelApi [Lokal/Dev Bypass]: {$module}/{$function}");
+            return [
+                'status'   => 1,
+                'data'     => ['result' => 1],
+                'errors'   => null,
+                'messages' => ['Simulasi cPanel (Mode Pengembangan / Lokal)']
+            ];
+        }
+
         // 1. Get raw values
         $rawHost = $this->config->cpanel_host ?? '';
         $rawPort = (string)($this->config->cpanel_port ?? '');

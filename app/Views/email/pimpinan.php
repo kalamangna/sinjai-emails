@@ -145,7 +145,7 @@
                                 data-parent-unit-kerja="<?= esc(strtoupper($email['parent_unit_kerja_name'] ?? '')) ?>"
                                 data-status="<?= $statusAttr ?>">
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex flex-col" id="pegawai-container-<?= $email['id'] ?>" data-nip="<?= esc($email['nip'] ?? '') ?>" data-status-asn-id="<?= esc($email['status_asn_id'] ?? '') ?>">
+                                    <div class="flex flex-col" id="pegawai-container-<?= $email['id'] ?>" data-nip="<?= esc($email['nip'] ?? '') ?>" data-email="<?= esc($email['email'] ?? '') ?>" data-status-asn-id="<?= esc($email['status_asn_id'] ?? '') ?>">
                                         <span class="font-medium text-slate-800 lowercase leading-tight"><?= esc($email['email']) ?></span>
                                         <span class="text-[10px] font-bold text-slate-700 uppercase tracking-tight mt-0.5"><?= esc($email['name']) ?></span>
                                     </div>
@@ -167,14 +167,7 @@
                                             <span class="text-xs font-bold text-slate-800 uppercase tracking-tight"><?= esc($email['unit_kerja_name']) ?></span>
                                         <?php endif; ?>
                                         <?php if (!empty($email['unit_kerja_plt_name']) && $email['unit_kerja_plt_name'] !== $email['unit_kerja_name']): ?>
-                                            <div class="flex flex-col mt-1.5 pt-1.5 border-t border-slate-100">
-                                                <?php if (!empty($email['parent_unit_kerja_plt_name'])): ?>
-                                                    <span class="text-[10px] font-bold text-amber-600 uppercase leading-none"><?= esc($email['parent_unit_kerja_plt_name']) ?></span>
-                                                    <span class="text-xs font-bold text-amber-700 uppercase tracking-tight mt-0.5"><?= esc($email['unit_kerja_plt_name']) ?></span>
-                                                <?php else: ?>
-                                                    <span class="text-xs font-bold text-amber-700 uppercase tracking-tight"><?= esc($email['unit_kerja_plt_name']) ?></span>
-                                                <?php endif; ?>
-                                            </div>
+                                            <span class="text-xs font-bold text-amber-700 uppercase tracking-tight mt-1"><?= esc($email['unit_kerja_plt_name']) ?></span>
                                         <?php endif; ?>
                                     </div>
                                 </td>

@@ -5,6 +5,24 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [1 September 2026] — Penyelarasan Hierarki Unit PDF, Pengaman Dev cPanel & Perapian Sinkronisasi Pegawai
+
+- **Penyelarasan Kolom & Dokumen PDF**:
+  - Mengubah header kolom tabel PDF dari `NAMA` menjadi `NAMA / JABATAN` pada [`account_detail_pdf.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/exports/account_detail_pdf.php) dan [`unit_kerja_pdf.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/exports/unit_kerja_pdf.php).
+  - Menyelaraskan urutan hierarki unit kerja pada [`pimpinan_pdf.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/exports/pimpinan_pdf.php) agar sesuai dengan tabel web (Unit Induk di atas dengan warna abu-abu, Sub Unit di bawah dengan teks standar normal tanpa *bold*).
+  - Menghapus tampilan penugasan Plt di OPD lain pada tabel & PDF unit kerja definitif ([`unit_kerja_detail.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/unit_kerja_detail.php), [`unit_kerja_pdf.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/exports/unit_kerja_pdf.php), [`account_detail_pdf.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/exports/account_detail_pdf.php)).
+- **Penyederhanaan Pesan Notifikasi**:
+  - Mempersingkat pesan notifikasi antrean ekspor PDF pada [`EmailExportController.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Domains/Email/Controllers/EmailExportController.php) menjadi `Ekspor PDF berhasil ditambahkan ke antrean.`.
+- **Pengaman Environment Pengembangan/Lokal (cPanel Mock)**:
+  - Menerapkan mekanisme *bypass/mock* pada [`CpanelApi.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Shared/Libraries/CpanelApi.php) dan [`SyncService.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Shared/Services/SyncService.php) saat berjalan di lingkungan lokal (`CI_ENVIRONMENT = development` atau `CPANEL_MOCK = true`), sehingga seluruh request cPanel tidak menembus server live produksi.
+- **Logika Sinkronisasi Pegawai PNS**:
+  - Menyesuaikan filter antrean sinkronisasi pada [`sync-helper.js`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/public/js/sync-helper.js) agar secara ketat hanya mengeksekusi akun ber-NIP (`nip !== ''`) dan bukan berstatus PPPK/Non-ASN.
+  - Memperbarui skeleton loading placeholder pada field jabatan, eselon, pangkat, dan unit penugasan Plt.
+- **Aset & Antarmuka**:
+  - Membangun dan mengompilasi berkas CSS Tailwind (`npm run build`).
+
+---
+
 # [31 Agustus 2026] — Integrasi Hierarki Sub Unit Kerja Plt
 
 - **Dukungan Hierarki Sub Unit Kerja Plt**:

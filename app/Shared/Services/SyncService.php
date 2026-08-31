@@ -24,6 +24,15 @@ class SyncService
     {
         require_once APPPATH . 'Shared/Helpers/TanggalHelper.php';
 
+        if ((defined('ENVIRONMENT') && ENVIRONMENT === 'development') || env('CI_ENVIRONMENT') === 'development') {
+            log_message('info', 'SyncService: Sinkronisasi cPanel dilewati di environment lokal/development.');
+            return [
+                'status'   => 'success',
+                'message'  => 'Sinkronisasi cPanel disimulasikan (Mode Lokal/Dev).',
+                'raw_data' => []
+            ];
+        }
+
         // 1. Fetch all accounts from cPanel
         $all_emails = $this->cpanelApi->get_email_accounts_detailed();
 

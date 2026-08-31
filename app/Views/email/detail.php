@@ -248,30 +248,21 @@
                                         <?php endif; ?>
                                     </div>
                                 </div>
-                                <?php if (!empty($email['jabatan_plt'])): ?>
-                                    <div>
-                                        <label class="block text-[9px] font-bold text-amber-800 uppercase tracking-tight mb-1">Pelaksana Tugas</label>
-                                        <div class="bg-amber-50/60 border border-amber-200/80 rounded-lg p-3 hover:border-amber-400 transition-all space-y-2">
-                                            <div>
-                                                <span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 text-[10px] font-bold uppercase border border-amber-300">
-                                                    <?= esc($email['jabatan_plt']) ?>
-                                                </span>
-                                            </div>
-                                            <?php if (!empty($unit_kerja_plt)): ?>
-                                                <div class="pt-1.5 border-t border-amber-200/60">
-                                                    <?php if (!empty($parent_unit_kerja_plt)): ?>
-                                                        <a href="<?= site_url('email/unit_kerja/' . $parent_unit_kerja_plt['id']) ?>" class="block no-underline group/parent">
-                                                            <p class="text-[10px] font-bold text-slate-700 uppercase group-hover/parent:text-slate-800 transition-colors leading-none"><?= esc($parent_unit_kerja_plt['nama_unit_kerja']) ?></p>
-                                                        </a>
-                                                    <?php endif; ?>
-                                                    <a href="<?= site_url('email/unit_kerja/' . $unit_kerja_plt['id']) ?>" class="block no-underline group/child mt-0.5">
-                                                        <p class="text-xs font-bold text-slate-800 uppercase leading-tight group-hover/child:text-black transition-colors"><?= esc($unit_kerja_plt['nama_unit_kerja']) ?></p>
-                                                    </a>
-                                                </div>
-                                            <?php endif; ?>
+                                <div id="plt-section" class="<?= !empty($email['jabatan_plt']) ? '' : 'hidden' ?>">
+                                    <label class="block text-[9px] font-bold text-amber-800 uppercase tracking-tight mb-1">Pelaksana Tugas</label>
+                                    <div class="bg-amber-50/60 border border-amber-200/80 rounded-lg p-3 hover:border-amber-400 transition-all space-y-2">
+                                        <div>
+                                            <span id="jabatan-plt-text" class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 text-[10px] font-bold uppercase border border-amber-300">
+                                                <?= esc($email['jabatan_plt'] ?? '') ?>
+                                            </span>
+                                        </div>
+                                        <div id="unit-kerja-plt-container" class="pt-1.5 border-t border-amber-200/60 <?= !empty($unit_kerja_plt) ? '' : 'hidden' ?>">
+                                            <a id="unit-kerja-plt-link" href="<?= !empty($unit_kerja_plt) ? site_url('email/unit_kerja/' . $unit_kerja_plt['id']) : '#' ?>" class="block no-underline group/child">
+                                                <p id="unit-kerja-plt-text" class="text-xs font-bold text-slate-800 uppercase leading-tight group-hover/child:text-black transition-colors"><?= esc($unit_kerja_plt['nama_unit_kerja'] ?? '') ?></p>
+                                            </a>
                                         </div>
                                     </div>
-                                <?php endif; ?>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -526,7 +517,12 @@
             golru: document.getElementById('golru-text'),
             unit: document.getElementById('unit-kerja-container'),
             eselon: document.getElementById('eselon-text'),
-            eselonWrapper: document.getElementById('eselon-wrapper')
+            eselonWrapper: document.getElementById('eselon-wrapper'),
+            pltSection: document.getElementById('plt-section'),
+            jabatanPlt: document.getElementById('jabatan-plt-text'),
+            unitPltWrapper: document.getElementById('unit-kerja-plt-container'),
+            unitPltLink: document.getElementById('unit-kerja-plt-link'),
+            unitPltText: document.getElementById('unit-kerja-plt-text')
         };
         syncSinglePegawai(nip, btn, elements, email);
     }

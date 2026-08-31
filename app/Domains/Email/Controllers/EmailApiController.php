@@ -253,20 +253,22 @@ class EmailApiController extends BaseController
         $record = null;
         if (!empty($email)) {
             $record = $this->emailModel
-                ->select('emails.*, unit_kerja.nama_unit_kerja')
+                ->select('emails.*, unit_kerja.nama_unit_kerja, unit_kerja.api_unit_id, parent_unit.api_unit_id as parent_api_unit_id')
                 ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
+                ->join('unit_kerja as parent_unit', 'parent_unit.id = unit_kerja.parent_id', 'left')
                 ->where('emails.email', $email)
                 ->first();
         } elseif (!empty($nip)) {
             $record = $this->emailModel
-                ->select('emails.*, unit_kerja.nama_unit_kerja')
+                ->select('emails.*, unit_kerja.nama_unit_kerja, unit_kerja.api_unit_id, parent_unit.api_unit_id as parent_api_unit_id')
                 ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
+                ->join('unit_kerja as parent_unit', 'parent_unit.id = unit_kerja.parent_id', 'left')
                 ->where('emails.nip', $nip)
                 ->first();
         }
 
         if (empty($nip) && $record && !empty($record['nip'])) {
-            $nip = $record['nip'];
+            $nip = trim($record['nip']);
         }
 
         // Guard: Jika akun sudah terdata bukan PNS, skip hit API SIMPEG secara langsung

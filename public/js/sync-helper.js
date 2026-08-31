@@ -197,7 +197,9 @@
             pangkat: elements.pangkat ? elements.pangkat.innerHTML : '',
             golru: elements.golru ? elements.golru.innerHTML : '',
             unit: elements.unit ? elements.unit.innerHTML : '',
-            eselon: elements.eselon ? elements.eselon.textContent.trim() : ''
+            eselon: elements.eselon ? elements.eselon.textContent.trim() : '',
+            jabatanPlt: elements.jabatanPlt ? elements.jabatanPlt.textContent.trim() : '',
+            unitPltText: elements.unitPltText ? elements.unitPltText.textContent.trim() : ''
         };
         const defaultEselonClass = 'px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px] font-bold uppercase border border-slate-200';
 
@@ -217,6 +219,12 @@
         if (elements.eselon && elements.eselonWrapper && !elements.eselonWrapper.classList.contains('hidden')) {
             elements.eselon.className = 'inline-block h-4 w-12 bg-slate-200 rounded animate-pulse align-middle';
             elements.eselon.textContent = '';
+        }
+        if (elements.jabatanPlt) {
+            elements.jabatanPlt.innerHTML = '<span class="inline-block h-3 w-28 bg-amber-200 rounded animate-pulse align-middle"></span>';
+        }
+        if (elements.unitPltText) {
+            elements.unitPltText.innerHTML = '<span class="inline-block h-3.5 w-36 bg-slate-200 rounded animate-pulse align-middle"></span>';
         }
 
         try {
@@ -254,6 +262,8 @@
                         if (originalContents.eselon) elements.eselonWrapper.classList.remove('hidden');
                         else elements.eselonWrapper.classList.add('hidden');
                     }
+                    if (elements.jabatanPlt) elements.jabatanPlt.textContent = originalContents.jabatanPlt;
+                    if (elements.unitPltText) elements.unitPltText.textContent = originalContents.unitPltText;
 
                     const errorMsg = `Pegawai dengan NIP ${nip || email} tidak terdaftar di SIMPEG.`;
                     if (typeof window.showGlobalError === 'function') {
@@ -311,6 +321,26 @@
                         elements.eselonWrapper.classList.add('hidden');
                     }
                 }
+
+                if (elements.pltSection) {
+                    if (data.data.jabatan_plt) {
+                        elements.pltSection.classList.remove('hidden');
+                        if (elements.jabatanPlt) {
+                            elements.jabatanPlt.textContent = data.data.jabatan_plt;
+                        }
+                        if (elements.unitPltWrapper && elements.unitPltText && elements.unitPltLink) {
+                            if (data.data.unit_kerja_plt_name) {
+                                elements.unitPltText.textContent = data.data.unit_kerja_plt_name;
+                                elements.unitPltLink.href = `${window.BASE_URL}/email/unit_kerja/${data.data.unit_kerja_plt_id}`;
+                                elements.unitPltWrapper.classList.remove('hidden');
+                            } else {
+                                elements.unitPltWrapper.classList.add('hidden');
+                            }
+                        }
+                    } else {
+                        elements.pltSection.classList.add('hidden');
+                    }
+                }
                 return true;
             } else {
                 if (elements.jabatan) elements.jabatan.innerHTML = originalContents.jabatan;
@@ -325,6 +355,8 @@
                     if (originalContents.eselon) elements.eselonWrapper.classList.remove('hidden');
                     else elements.eselonWrapper.classList.add('hidden');
                 }
+                if (elements.jabatanPlt) elements.jabatanPlt.textContent = originalContents.jabatanPlt;
+                if (elements.unitPltText) elements.unitPltText.textContent = originalContents.unitPltText;
 
                 const title = fetchResult.isRateLimited ? 'Rate Limit Terlampaui' : 'Gagal Sinkronisasi Pegawai';
                 const msg = fetchResult.isRateLimited 
@@ -373,13 +405,15 @@
             const isNonPns = statusAsnId === '2' || statusAsnId === '3' || statusAsnId === '4' ||
                              rowText.includes('PPPK') || rowText.includes('NON-ASN') || rowText.includes('HONORER');
 
-            // HANYA proses jika jelas berstatus PNS (status_asn_id === '1' dan bukan PPPK/Non-ASN)
-            const isPns = statusAsnId === '1' && !isNonPns;
-            return nip !== '' && isPns;
+            if (isNonPns) {
+                return false;
+            }
+
+            return nip !== '';
         });
 
         if (!validContainers.length) {
-            const infoMsg = 'Hanya akun PNS yang dapat disinkronkan.';
+            const infoMsg = 'Tidak ada akun PNS ber-NIP yang dapat disinkronkan.';
             if (typeof window.showGlobalAlert === 'function') {
                 window.showGlobalAlert('Info Sinkronisasi', infoMsg, 'info');
             } else if (typeof window.showGlobalError === 'function') {
@@ -406,8 +440,9 @@
         const retryContainers = [];
 
         const executeRowSync = async (container, isRetry = false) => {
-            const nip = container.getAttribute('data-nip');
+            const nip = (container.getAttribute('data-nip') || '').trim();
             const row = container.closest('tr');
+            const emailAttr = (container.getAttribute('data-email') || (row ? (row.getAttribute('data-email') || '') : '')).trim();
             const jabatanTarget = row ? (row.querySelector('.jabatan-sync-target') || row.querySelector('.jabatan-text')) : null;
             const unitTarget = row ? row.querySelector('.unit-kerja-sync-target') : null;
             let originalJabatan = '';
@@ -429,10 +464,8 @@
             if (unitTarget) {
                 originalUnit = unitTarget.getAttribute('data-original') || unitTarget.innerHTML;
                 unitTarget.setAttribute('data-original', originalUnit);
-                unitTarget.innerHTML = '<div class="space-y-1.5 py-0.5"><div class="h-2.5 bg-slate-200 rounded animate-pulse w-20"></div><div class="h-3.5 bg-slate-200 rounded animate-pulse w-32"></div></div>';
+                unitTarget.innerHTML = '<div class="space-y-1.5 py-0.5"><div class="h-2.5 bg-slate-200 rounded animate-pulse w-24"></div><div class="h-3.5 bg-slate-200 rounded animate-pulse w-36"></div></div>';
             }
-
-            const emailAttr = row ? (row.getAttribute('data-email') || '') : '';
 
             try {
                 const fetchResult = await fetchWithRateLimitRetry(
@@ -470,12 +503,16 @@
                     if (unitTarget && data.data) {
                         const parentName = data.data.parent_unit_kerja_name || '';
                         const unitName = data.data.unit_kerja_name || '';
+                        const pltUnitName = data.data.unit_kerja_plt_name || '';
                         if (unitName) {
                             let unitHtml = '';
                             if (parentName) {
                                 unitHtml = `<span class="text-[10px] font-bold text-slate-700 uppercase leading-none">${parentName}</span><span class="text-xs font-bold text-slate-800 uppercase tracking-tight mt-1">${unitName}</span>`;
                             } else {
                                 unitHtml = `<span class="text-xs font-bold text-slate-800 uppercase tracking-tight">${unitName}</span>`;
+                            }
+                            if (pltUnitName && pltUnitName !== unitName) {
+                                unitHtml += `<span class="text-xs font-bold text-amber-700 uppercase tracking-tight mt-1">${pltUnitName}</span>`;
                             }
                             unitTarget.innerHTML = unitHtml;
                             unitTarget.setAttribute('data-original', unitHtml);
@@ -519,13 +556,6 @@
 
         // Pass 1: Eksekusi antrean utama
         for (const container of validContainers) {
-            const statusAsnId = (container.getAttribute('data-status-asn-id') || '').trim();
-            const row = container.closest('tr');
-            const rowText = (container.innerText + ' ' + (row ? row.innerText : '')).toUpperCase();
-            if (statusAsnId !== '1' || rowText.includes('PPPK') || rowText.includes('NON-ASN')) {
-                continue;
-            }
-
             processed++;
             btn.innerHTML = `<i class="fas fa-sync-alt animate-spin mr-2"></i> Sinkronisasi ${processed}/${validContainers.length}...`;
 

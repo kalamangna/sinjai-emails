@@ -272,6 +272,36 @@ class PegawaiApi
     }
 
     /**
+     * Mengambil daftar pegawai dalam suatu unit kerja dari SIMPEG
+     */
+    public function getPegawaiByUnit(string $unitId): array
+    {
+        if (empty($unitId)) {
+            return ['success' => false, 'message' => 'Unit ID required'];
+        }
+
+        $res = $this->requestWithRetry($this->baseUrl . 'get_pegawai', [
+            'query'   => ['unit_id' => $unitId],
+            'headers' => ['Accept' => 'application/json'],
+            'timeout' => 12,
+        ], 'GET');
+
+        if (!$res['success']) {
+            return [
+                'success' => false,
+                'message' => $res['error'] ?? 'Gagal mengambil data pegawai unit',
+                'code'    => $res['statusCode'] ?? 500
+            ];
+        }
+
+        $list = json_decode($res['body'] ?? '', true);
+        return [
+            'success' => true,
+            'data'    => is_array($list) ? $list : []
+        ];
+    }
+
+    /**
      * Mencari apakah seorang pegawai ditugaskan sebagai Plt di OPD lain
      */
     public function findPltAssignment($nip): ?array
