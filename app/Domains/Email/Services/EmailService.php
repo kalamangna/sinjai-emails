@@ -895,6 +895,8 @@ class EmailService
             throw new Exception("Status {$asnStatusName} belum dikonfigurasi di sistem.");
         }
 
+        $search = $params['search'] ?? null;
+        $bupStatus = $params['bup_status'] ?? null;
         $hasNip = $params['has_nip'] ?? null;
         $parentUnitKerjaId = $params['parent_unit_kerja_id'] ?? null;
         $usePkJoin = $params['use_pk_join'] ?? false;
@@ -904,6 +906,62 @@ class EmailService
         
         $countModel = new EmailModel();
         $countModel->where('emails.status_asn_id', $statusAsn['id']);
+
+        if (!empty($search)) {
+            $cleanSearch = str_replace([' ', '.', '-', "'"], '', $search);
+            $builder->groupStart()
+                ->like('emails.name', $search)
+                ->orLike('emails.email', $search)
+                ->orLike('emails.jabatan', $search);
+            if (is_numeric($cleanSearch) && strlen($cleanSearch) >= 6) {
+                $builder->orLike('emails.nip', $cleanSearch)
+                        ->orLike('emails.nik', $cleanSearch);
+            }
+            $builder->groupEnd();
+
+            $countModel->groupStart()
+                ->like('emails.name', $search)
+                ->orLike('emails.email', $search)
+                ->orLike('emails.jabatan', $search);
+            if (is_numeric($cleanSearch) && strlen($cleanSearch) >= 6) {
+                $countModel->orLike('emails.nip', $cleanSearch)
+                           ->orLike('emails.nik', $cleanSearch);
+            }
+            $countModel->groupEnd();
+        }
+
+        if (!empty($bupStatus)) {
+            $bupAgeSql = "(CASE 
+                WHEN emails.jabatan LIKE '%AHLI UTAMA%' THEN 65
+                WHEN emails.jabatan LIKE '%AHLI MADYA%' OR emails.jabatan LIKE '%GURU%' OR emails.jabatan LIKE '%DOKTER%' OR emails.jabatan LIKE 'KEPALA DINAS%' OR emails.jabatan LIKE 'SEKRETARIS DAERAH%' THEN 60
+                ELSE 58
+            END)";
+
+            $tmtPensiunSql = "DATE_ADD(
+                STR_TO_DATE(CONCAT(SUBSTRING(emails.nip, 1, 4), '-', SUBSTRING(emails.nip, 5, 2), '-01'), '%Y-%m-%d'), 
+                INTERVAL ({$bupAgeSql} * 12 + 1) MONTH
+            )";
+
+            if ($bupStatus === 'approaching') {
+                $builder->where("emails.nip REGEXP '^[0-9]{18}$'")
+                        ->where("{$tmtPensiunSql} > CURDATE()")
+                        ->where("{$tmtPensiunSql} <= DATE_ADD(CURDATE(), INTERVAL 1 YEAR)");
+                $countModel->where("emails.nip REGEXP '^[0-9]{18}$'")
+                           ->where("{$tmtPensiunSql} > CURDATE()")
+                           ->where("{$tmtPensiunSql} <= DATE_ADD(CURDATE(), INTERVAL 1 YEAR)");
+            } elseif ($bupStatus === 'pensiun') {
+                $builder->where("emails.nip REGEXP '^[0-9]{18}$'")
+                        ->where("{$tmtPensiunSql} <= CURDATE()");
+                $countModel->where("emails.nip REGEXP '^[0-9]{18}$'")
+                           ->where("{$tmtPensiunSql} <= CURDATE()");
+            } elseif (in_array($bupStatus, ['58', '60', '65'])) {
+                $targetAge = (int)$bupStatus;
+                $builder->where("emails.nip REGEXP '^[0-9]{18}$'")
+                        ->where("{$bupAgeSql} = {$targetAge}");
+                $countModel->where("emails.nip REGEXP '^[0-9]{18}$'")
+                           ->where("{$bupAgeSql} = {$targetAge}");
+            }
+        }
 
         if ($hasNip === 'yes') {
             $builder->where('emails.nip !=', '')->where('emails.nip IS NOT NULL');

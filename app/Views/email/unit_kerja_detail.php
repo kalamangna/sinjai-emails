@@ -273,23 +273,7 @@
                                 <td class="px-6 py-4">
                                     <div class="flex flex-col gap-1" id="pegawai-container-<?= esc($email['user']) ?>" data-nip="<?= esc($email['nip'] ?? '') ?>" data-email="<?= esc($email['email'] ?? '') ?>" data-status-asn-id="<?= esc($email['status_asn_id'] ?? '') ?>">
                                         <span class="text-xs font-medium text-slate-700 uppercase tracking-tight jabatan-text"><?= esc($email['jabatan']) ?: '-' ?></span>
-                                        <div class="flex items-center gap-1.5 flex-wrap">
-                                            <span class="text-[9px] font-bold text-slate-700 uppercase tracking-widest"><?= !empty($email['status_asn']) ? esc($email['status_asn']) : 'NON-ASN' ?></span>
-                                            <?php
-                                            $bupInfo = hitungBupInfo($email);
-                                            if ($bupInfo && ($bupInfo['is_approaching'] || $bupInfo['is_pensiun'])):
-                                                $bupBadgeClass = $bupInfo['is_pensiun']
-                                                    ? 'bg-rose-50 text-rose-700 border-rose-200'
-                                                    : 'bg-amber-50 text-amber-700 border-amber-200';
-                                                $bupTooltip = $bupInfo['is_pensiun']
-                                                    ? 'Telah mencapai BUP (TMT ' . formatTanggal($bupInfo['tmt_pensiun']) . ')'
-                                                    : 'Mendekati BUP: ' . $bupInfo['sisa_waktu_label'] . ' (TMT ' . formatTanggal($bupInfo['tmt_pensiun']) . ')';
-                                            ?>
-                                                <span class="px-1.5 py-0.5 rounded text-[8px] font-bold uppercase border <?= $bupBadgeClass ?>" title="<?= esc($bupTooltip) ?>">
-                                                    BUP <?= $bupInfo['bup_age'] ?> THN
-                                                </span>
-                                            <?php endif; ?>
-                                        </div>
+                                        <span class="text-[9px] font-bold text-slate-700 uppercase tracking-widest"><?= !empty($email['status_asn']) ? esc($email['status_asn']) : 'NON-ASN' ?></span>
                                     </div>
                                 </td>
                                 <?php if ($showUnitKerjaColumn ?? false): ?>

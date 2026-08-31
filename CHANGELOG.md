@@ -5,6 +5,18 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [31 Agustus 2026] — Integrasi Indikator & Filter BUP pada Halaman Pegawai ASN
+
+- **Indikator & Filter BUP pada Daftar Pegawai (PNS, PPPK, PPPK Paruh Waktu)**:
+  - Memindahkan indikator BUP ke 3 halaman pegawai ([`pns_list.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/pns_list.php), [`pppk_list.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/pppk_list.php), [`pppk_pw_list.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/pppk_pw_list.php)) dan meletakkannya di samping nomor NIP/identitas.
+  - Menambahkan toolbar filter lengkap (Pencarian, Filter BUP, Status TTE, Tombol Filter & Reset) pada ketiga halaman pegawai dengan susunan 1 baris grid yang simetris (4-3-3-2 kolom).
+  - Memperbarui method `getAsnList` pada [`EmailService.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Domains/Email/Services/EmailService.php) dan controller [`EmailListController.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Domains/Email/Controllers/EmailListController.php) untuk memproses pencarian teks dan filter status BUP di tingkat database.
+  - Mengembalikan tampilan kolom tabel Detail Unit Kerja ([`unit_kerja_detail.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/unit_kerja_detail.php)) ke format standar.
+- **Aset & Antarmuka**:
+  - Membangun dan mengompilasi ulang berkas CSS Tailwind (`npm run build`).
+
+---
+
 # [31 Agustus 2026] — Tampilan Indikator BUP & Perapian Filter Detail Unit Kerja
 
 - **Indikator Batas Usia Pensiun (BUP) di Tabel Unit Kerja**:

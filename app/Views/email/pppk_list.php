@@ -26,6 +26,46 @@
 
     <!-- Tabel Pegawai -->
     <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+        <div class="p-4 sm:p-6 border-b border-slate-100 bg-slate-50">
+            <form id="pppkFilterForm" method="GET" action="" class="grid grid-cols-1 md:grid-cols-12 gap-y-4 gap-x-4 items-end">
+                <div class="md:col-span-4">
+                    <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-widest">Pencarian</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-700">
+                            <i class="fas fa-search text-xs"></i>
+                        </span>
+                        <input type="text" name="search" value="<?= esc($search ?? '') ?>" class="block w-full pl-9 pr-3 py-2 bg-white border <?= !empty($search) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm transition-all placeholder-slate-400" placeholder="Cari nama, email, NIP...">
+                    </div>
+                </div>
+                <div class="md:col-span-3">
+                    <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-widest">Filter BUP</label>
+                    <select name="bup_status" class="block w-full px-3 py-2 bg-white border <?= !empty($bup_status) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm appearance-none cursor-pointer transition-all">
+                        <option value="">Semua BUP</option>
+                        <?php foreach ($bup_status_options as $key => $label): ?>
+                            <option value="<?= esc($key) ?>" <?= (($bup_status ?? '') === $key) ? 'selected' : '' ?>><?= esc($label) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="md:col-span-3">
+                    <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-widest">Status TTE</label>
+                    <select name="bsre_status" class="block w-full px-3 py-2 bg-white border <?= !empty($bsre_status) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm appearance-none cursor-pointer transition-all">
+                        <option value="">Semua Status</option>
+                        <?php foreach ($bsre_status_options as $key => $label): ?>
+                            <option value="<?= esc($key) ?>" <?= (($bsre_status ?? '') === $key) ? 'selected' : '' ?>><?= esc($label) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="md:col-span-2 flex gap-2">
+                    <button type="submit" class="flex-1 btn btn-solid text-xs">
+                        <i class="fas fa-filter mr-1.5 text-white/80"></i> Filter
+                    </button>
+                    <a href="<?= site_url('email/pppk') ?>" class="btn btn-outline text-xs px-3" title="Reset">
+                        <i class="fas fa-undo"></i>
+                    </a>
+                </div>
+            </form>
+        </div>
+
         <div class="overflow-x-auto">
             <table class="w-full text-left text-sm">
                 <thead class="bg-slate-50 text-slate-400 uppercase text-[10px] font-bold tracking-widest">
@@ -49,7 +89,23 @@
                                 <td class="px-6 py-4">
                                     <div class="flex flex-col" id="pegawai-container-<?php echo $email['id']; ?>" data-nip="<?php echo esc($email['nip']); ?>">
                                         <span class="font-bold text-slate-800 uppercase tracking-tight leading-tight"><?php echo esc($email['name']); ?></span>
-                                        <span class="text-[10px] font-bold text-slate-500 mt-0.5">NIP: <?php echo esc($email['nip'] ?: '-'); ?></span>
+                                        <div class="flex items-center gap-1.5 flex-wrap mt-0.5">
+                                            <span class="text-[10px] font-bold text-slate-500 font-mono">NIP: <?php echo esc($email['nip'] ?: '-'); ?></span>
+                                            <?php
+                                            $bupInfo = hitungBupInfo($email);
+                                            if ($bupInfo && ($bupInfo['is_approaching'] || $bupInfo['is_pensiun'])):
+                                                $bupBadgeClass = $bupInfo['is_pensiun']
+                                                    ? 'bg-rose-50 text-rose-700 border-rose-200'
+                                                    : 'bg-amber-50 text-amber-700 border-amber-200';
+                                                $bupTooltip = $bupInfo['is_pensiun']
+                                                    ? 'Telah mencapai BUP (TMT ' . formatTanggal($bupInfo['tmt_pensiun']) . ')'
+                                                    : 'Mendekati BUP: ' . $bupInfo['sisa_waktu_label'] . ' (TMT ' . formatTanggal($bupInfo['tmt_pensiun']) . ')';
+                                            ?>
+                                                <span class="px-1.5 py-0.5 rounded text-[8px] font-bold uppercase border <?= $bupBadgeClass ?>" title="<?= esc($bupTooltip) ?>">
+                                                    BUP <?= $bupInfo['bup_age'] ?> THN
+                                                </span>
+                                            <?php endif; ?>
+                                        </div>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">

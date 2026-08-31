@@ -151,12 +151,36 @@ class EmailListController extends BaseController
         try {
             $params = [
                 'use_pk_join' => false,
-                'per_page' => 100,
+                'per_page'    => $this->request->getGet('per_page') ?? 100,
+                'search'      => $this->request->getGet('search'),
+                'bsre_status' => $this->request->getGet('bsre_status'),
+                'bup_status'  => $this->request->getGet('bup_status'),
             ];
 
             $data = $this->emailService->getAsnList('PNS', $params);
 
             $data['title'] = 'PNS';
+            $data['search'] = $params['search'];
+            $data['bsre_status'] = $params['bsre_status'];
+            $data['bup_status'] = $params['bup_status'];
+            $data['bsre_status_options'] = [
+                'ISSUE' => 'ISSUE',
+                'EXPIRED' => 'EXPIRED',
+                'REVOKE' => 'REVOKE',
+                'SUSPEND' => 'SUSPEND',
+                'WAITING_FOR_VERIFICATION' => 'WAITING_FOR_VERIFICATION',
+                'RENEW' => 'RENEW',
+                'NO_CERTIFICATE' => 'NO_CERTIFICATE',
+                'NEW' => 'NEW',
+                'not_synced' => 'NOT_SYNCED',
+            ];
+            $data['bup_status_options'] = [
+                'approaching' => 'Mendekati Pensiun (≤ 1 Thn)',
+                'pensiun'     => 'Telah Mencapai BUP',
+                '58'          => 'BUP 58 Tahun',
+                '60'          => 'BUP 60 Tahun',
+                '65'          => 'BUP 65 Tahun',
+            ];
             $data['back_url'] = site_url('email');
 
             return view('email/pns_list', $data);
@@ -172,12 +196,36 @@ class EmailListController extends BaseController
         try {
             $params = [
                 'use_pk_join' => true,
-                'per_page' => 100,
+                'per_page'    => $this->request->getGet('per_page') ?? 100,
+                'search'      => $this->request->getGet('search'),
+                'bsre_status' => $this->request->getGet('bsre_status'),
+                'bup_status'  => $this->request->getGet('bup_status'),
             ];
 
             $data = $this->emailService->getAsnList('PPPK', $params);
 
             $data['title'] = 'PPPK';
+            $data['search'] = $params['search'];
+            $data['bsre_status'] = $params['bsre_status'];
+            $data['bup_status'] = $params['bup_status'];
+            $data['bsre_status_options'] = [
+                'ISSUE' => 'ISSUE',
+                'EXPIRED' => 'EXPIRED',
+                'REVOKE' => 'REVOKE',
+                'SUSPEND' => 'SUSPEND',
+                'WAITING_FOR_VERIFICATION' => 'WAITING_FOR_VERIFICATION',
+                'RENEW' => 'RENEW',
+                'NO_CERTIFICATE' => 'NO_CERTIFICATE',
+                'NEW' => 'NEW',
+                'not_synced' => 'NOT_SYNCED',
+            ];
+            $data['bup_status_options'] = [
+                'approaching' => 'Mendekati Pensiun (≤ 1 Thn)',
+                'pensiun'     => 'Telah Mencapai BUP',
+                '58'          => 'BUP 58 Tahun',
+                '60'          => 'BUP 60 Tahun',
+                '65'          => 'BUP 65 Tahun',
+            ];
             $data['back_url'] = site_url('email');
 
             return view('email/pppk_list', $data);
@@ -193,12 +241,36 @@ class EmailListController extends BaseController
         try {
             $params = [
                 'use_pk_join' => true,
-                'per_page' => 100,
+                'per_page'    => $this->request->getGet('per_page') ?? 100,
+                'search'      => $this->request->getGet('search'),
+                'bsre_status' => $this->request->getGet('bsre_status'),
+                'bup_status'  => $this->request->getGet('bup_status'),
             ];
 
             $data = $this->emailService->getAsnList('PPPK PARUH WAKTU', $params);
 
             $data['title'] = 'PPPK PW';
+            $data['search'] = $params['search'];
+            $data['bsre_status'] = $params['bsre_status'];
+            $data['bup_status'] = $params['bup_status'];
+            $data['bsre_status_options'] = [
+                'ISSUE' => 'ISSUE',
+                'EXPIRED' => 'EXPIRED',
+                'REVOKE' => 'REVOKE',
+                'SUSPEND' => 'SUSPEND',
+                'WAITING_FOR_VERIFICATION' => 'WAITING_FOR_VERIFICATION',
+                'RENEW' => 'RENEW',
+                'NO_CERTIFICATE' => 'NO_CERTIFICATE',
+                'NEW' => 'NEW',
+                'not_synced' => 'NOT_SYNCED',
+            ];
+            $data['bup_status_options'] = [
+                'approaching' => 'Mendekati Pensiun (≤ 1 Thn)',
+                'pensiun'     => 'Telah Mencapai BUP',
+                '58'          => 'BUP 58 Tahun',
+                '60'          => 'BUP 60 Tahun',
+                '65'          => 'BUP 65 Tahun',
+            ];
             $data['back_url'] = site_url('email');
 
             return view('email/pppk_pw_list', $data);
