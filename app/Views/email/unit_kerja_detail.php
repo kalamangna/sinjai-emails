@@ -272,7 +272,10 @@
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="flex flex-col gap-1" id="pegawai-container-<?= esc($email['user']) ?>" data-nip="<?= esc($email['nip'] ?? '') ?>" data-email="<?= esc($email['email'] ?? '') ?>" data-status-asn-id="<?= esc($email['status_asn_id'] ?? '') ?>">
-                                        <span class="text-xs font-medium text-slate-700 uppercase tracking-tight jabatan-text"><?= esc($email['jabatan']) ?: '-' ?></span>
+                                        <?php
+                                        $displayJabatan = (!empty($email['is_plt_in_this_unit']) && !empty($email['jabatan_plt'])) ? $email['jabatan_plt'] : ($email['jabatan'] ?: '-');
+                                        ?>
+                                        <span class="text-xs font-medium text-slate-700 uppercase tracking-tight jabatan-text"><?= esc($displayJabatan) ?></span>
                                         <span class="text-[9px] font-bold text-slate-700 uppercase tracking-widest"><?= !empty($email['status_asn']) ? esc($email['status_asn']) : 'NON-ASN' ?></span>
                                     </div>
                                 </td>

@@ -237,7 +237,15 @@
             ?>
                 <tr>
                     <td style="text-align: center; color: #64748b;"><?= $nomor++ ?></td>
-                    <td><strong><?= esc(strtoupper($email['name'] ?? '')) ?></strong></td>
+                    <td>
+                        <strong><?= esc(strtoupper($email['name'] ?? '')) ?></strong>
+                        <?php 
+                        $displayJab = (!empty($email['is_plt_in_this_unit']) && !empty($email['jabatan_plt'])) ? $email['jabatan_plt'] : ($email['jabatan'] ?? '');
+                        if (!empty($displayJab)):
+                        ?>
+                            <br><small style="color: #475569; font-size: 8px;"><?= esc(strtoupper($displayJab)) ?></small>
+                        <?php endif; ?>
+                    </td>
                     <td><?= esc($email['nip'] ?: '') ?></td>
                     <td><?= esc($email['nik'] ?: '') ?></td>
                     <td style="color: #475569;"><span><?= esc($email['email'] ?? '') ?></span></td>

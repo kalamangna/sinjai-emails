@@ -406,11 +406,17 @@ class EmailService
         $sub_unit = $params['sub_unit'] ?? 'with';
 
         $targetUnitIds = (!empty($childrenIds) && $sub_unit === 'without') ? [$unitKerjaId] : $allUnitIds;
+        $targetIdsString = implode(',', array_map('intval', $targetUnitIds));
 
         $isKecamatan = stripos($unitKerja['nama_unit_kerja'], 'Kecamatan') !== false;
 
-        // Start building the query for the emails list
-        $emailBuilder = $this->emailModel->withDetails()->whereIn('emails.unit_kerja_id', $targetUnitIds);
+        // Start building the query for the emails list (including Plt accounts in this unit)
+        $emailBuilder = $this->emailModel->withDetails()
+            ->select("(CASE WHEN emails.unit_kerja_plt_id IN ({$targetIdsString}) AND (emails.unit_kerja_id NOT IN ({$targetIdsString}) OR emails.unit_kerja_id IS NULL) THEN 1 ELSE 0 END) as is_plt_in_this_unit", false)
+            ->groupStart()
+                ->whereIn('emails.unit_kerja_id', $targetUnitIds)
+                ->orWhereIn('emails.unit_kerja_plt_id', $targetUnitIds)
+            ->groupEnd();
         if ($isKecamatan && $pimpinan_desa == 0) {
             $emailBuilder->where('emails.pimpinan_desa', 0);
         }
@@ -421,7 +427,8 @@ class EmailService
                 $cleanSearch = str_replace([' ', '.', '-', '\''], '', $search);
                 $builder->like('emails.email', $search)
                              ->orLike('emails.name', $search)
-                             ->orLike('emails.jabatan', $search);
+                             ->orLike('emails.jabatan', $search)
+                             ->orLike('emails.jabatan_plt', $search);
                 if (is_numeric($cleanSearch) && (strlen($cleanSearch) >= 10)) {
                     $hash = $cleanSearch;
                     $builder->orWhere('emails.nik', $hash)
@@ -525,7 +532,11 @@ class EmailService
         $bsre_status_counts = [];
 
         // Calculate stats for the unit (affected by filters)
-        $statsBuilder = $this->emailModel->whereIn('emails.unit_kerja_id', $targetUnitIds);
+        $statsBuilder = $this->emailModel
+            ->groupStart()
+                ->whereIn('emails.unit_kerja_id', $targetUnitIds)
+                ->orWhereIn('emails.unit_kerja_plt_id', $targetUnitIds)
+            ->groupEnd();
         if ($isKecamatan && $pimpinan_desa == 0) {
             $statsBuilder->where('emails.pimpinan_desa', 0);
         }
@@ -1528,6 +1539,24 @@ class EmailService
                     $updateData['eselon_id'] = null;
                 }
             }
+        }
+
+        // 4. Sync Jabatan Plt & Unit Kerja Plt jika ada
+        if (!empty($source['jabatan_plt'])) {
+            $targetPltUnitName = null;
+            if (!empty($source['unit_id_plt'])) {
+                $targetPltUnit = $this->unitKerjaModel->where('api_unit_id', $source['unit_id_plt'])->first();
+                $updateData['unit_kerja_plt_id'] = $targetPltUnit ? $targetPltUnit['id'] : null;
+                $targetPltUnitName = $targetPltUnit['nama_unit_kerja'] ?? null;
+            } else {
+                $updateData['unit_kerja_plt_id'] = null;
+            }
+
+            $cleanPlt = $this->normalizeJabatanName($source['jabatan_plt'], $targetPltUnitName, true);
+            $updateData['jabatan_plt'] = 'PLT. ' . preg_replace('/^(PLT|PLH|PJ|PJS)\.?\s+/i', '', (string)$cleanPlt);
+        } else {
+            $updateData['jabatan_plt'] = null;
+            $updateData['unit_kerja_plt_id'] = null;
         }
 
         if (!empty($updateData)) {

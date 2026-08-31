@@ -185,16 +185,26 @@ class PegawaiApi
             ];
         }
 
-        // Resolusi otomatis: Gunakan Jabatan Definitif saja jika API mengembalikan data Plt/Plh
+        // Resolusi otomatis: Tangkap data Plt/Plh jika ada, dan cari Jabatan Definitif
         $jNama = $data['jabatan_nama'] ?? $data['jabatan'] ?? '';
         $statusId = (int)($data['jabatan_status_id'] ?? 1);
         $isPlt = ($statusId === 2) || (stripos($jNama, 'Plt') === 0) || (stripos($jNama, 'Plh') === 0);
 
         if ($isPlt) {
+            $pltJabatan = $jNama;
+            $pltUnitId  = $data['unit_id'] ?? null;
+
             $definitifFound = $this->findDefinitifPosition($nip, $data['unit_id'] ?? null);
             if ($definitifFound) {
                 $data = array_merge($data, $definitifFound);
             }
+
+            // Simpan info Plt terpisah agar jabatan definitif tetap bersih
+            $data['jabatan_plt'] = $pltJabatan;
+            $data['unit_id_plt'] = $pltUnitId;
+        } else {
+            $data['jabatan_plt'] = null;
+            $data['unit_id_plt'] = null;
         }
 
         return [

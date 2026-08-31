@@ -238,8 +238,14 @@
                     <td style="text-align: center; color: #64748b;"><?= $nomor++ ?></td>
                     <td>
                         <strong><?= esc(strtoupper($email['name'] ?? '')) ?></strong>
+                        <?php 
+                        $displayJab = (!empty($email['is_plt_in_this_unit']) && !empty($email['jabatan_plt'])) ? $email['jabatan_plt'] : ($email['jabatan'] ?? '');
+                        if (!empty($displayJab)):
+                        ?>
+                            <br><small style="color: #475569; font-size: 8px;"><?= esc(strtoupper($displayJab)) ?></small>
+                        <?php endif; ?>
                         <?php if ($showUnitKerjaColumn && !empty($email['nip'])): ?>
-                            <br><small style="color: #64748b; font-size: 8px;"><?= esc($email['nip']) ?></small>
+                            <br><small style="color: #64748b; font-size: 8px;">NIP: <?= esc($email['nip']) ?></small>
                         <?php endif; ?>
                     </td>
                     <?php if (!$showUnitKerjaColumn): ?>

@@ -226,16 +226,22 @@ class EmailExportService
         $uniqueUnitKerjaIds = array_unique(array_column($emails, 'unit_kerja_id'));
         $showUnitKerjaColumn = count($uniqueUnitKerjaIds) > 1;
 
-        // Apply refined sorting
+        $targetIdsString = implode(',', array_map('intval', $allUnitIds));
         $builder = $this->emailModel->withDetails()
-            ->whereIn('unit_kerja_id', $allUnitIds);
+            ->select("(CASE WHEN emails.unit_kerja_plt_id IN ({$targetIdsString}) AND (emails.unit_kerja_id NOT IN ({$targetIdsString}) OR emails.unit_kerja_id IS NULL) THEN 1 ELSE 0 END) as is_plt_in_this_unit", false)
+            ->groupStart()
+                ->whereIn('emails.unit_kerja_id', $allUnitIds)
+                ->orWhereIn('emails.unit_kerja_plt_id', $allUnitIds)
+            ->groupEnd();
 
         if ($isKecamatan && $pimpinan_desa == 0) $builder->where('pimpinan_desa', 0);
         if ($search) {
             $builder->groupStart();
             $cleanSearch = str_replace([' ', '.', '-', '\''], '', $search);
             $builder->like('email', $search)
-                ->orLike('name', $search);
+                ->orLike('name', $search)
+                ->orLike('jabatan', $search)
+                ->orLike('jabatan_plt', $search);
 
             if (is_numeric($cleanSearch) && strlen($cleanSearch) >= 10) {
                 $hash = $cleanSearch;
@@ -303,11 +309,16 @@ class EmailExportService
         $allUnitIds = array_merge([$unitKerjaId], $childrenIds);
 
         $targetUnitIds = (!empty($childrenIds) && $sub_unit === 'without') ? [$unitKerjaId] : $allUnitIds;
+        $targetIdsString = implode(',', array_map('intval', $targetUnitIds));
 
         $isKecamatan = stripos($unitKerja['nama_unit_kerja'], 'Kecamatan') !== false;
 
         $builder = $this->emailModel->withDetails()
-            ->whereIn('unit_kerja_id', $targetUnitIds)
+            ->select("(CASE WHEN emails.unit_kerja_plt_id IN ({$targetIdsString}) AND (emails.unit_kerja_id NOT IN ({$targetIdsString}) OR emails.unit_kerja_id IS NULL) THEN 1 ELSE 0 END) as is_plt_in_this_unit", false)
+            ->groupStart()
+                ->whereIn('emails.unit_kerja_id', $targetUnitIds)
+                ->orWhereIn('emails.unit_kerja_plt_id', $targetUnitIds)
+            ->groupEnd()
             ->orderBy('emails.eselon_id IS NULL', 'ASC', false)
             ->orderBy('emails.eselon_id', 'ASC')
             ->orderBy('emails.status_asn_id IS NULL', 'ASC', false)
@@ -321,7 +332,8 @@ class EmailExportService
             $cleanSearch = str_replace([' ', '.', '-', '\''], '', $search);
             $builder->like('email', $search)
                 ->orLike('name', $search)
-                ->orLike('jabatan', $search);
+                ->orLike('jabatan', $search)
+                ->orLike('jabatan_plt', $search);
 
             if (is_numeric($cleanSearch) && strlen($cleanSearch) >= 10) {
                 $hash = $cleanSearch;

@@ -5,6 +5,19 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [31 Agustus 2026] — Integrasi Jabatan Plt (Pelaksana Tugas) & Normalisasi Nama Jabatan
+
+- **Manajemen & Penanganan Jabatan Plt**:
+  - Menambahkan kolom `jabatan_plt` dan `unit_kerja_plt_id` pada tabel `emails` melalui migrasi [`2026-08-31-194100_AddJabatanPltToEmails.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Database/Migrations/2026-08-31-194100_AddJabatanPltToEmails.php).
+  - Mengintegrasikan resolusi tugas Plt pada [`PegawaiApi.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Shared/Libraries/PegawaiApi.php) dan [`EmailService.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Domains/Email/Services/EmailService.php) agar tetap menyimpan jabatan definitif di unit induk sekaligus mencatat tugas Plt di unit tujuan.
+  - Menstandarisasi penulisan nama jabatan Plt pimpinan secara ringkas tanpa pengulangan nama instansi/OPD (contoh: `PLT. KEPALA DINAS`, `PLT. KEPALA BADAN`, `PLT. CAMAT`, `PLT. LURAH`, `PLT. DIREKTUR`).
+- **Integrasi Antarmuka & Dokumen Export**:
+  - Menampilkan pegawai Plt pada tabel Web Detail Unit Kerja ([`unit_kerja_detail.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/unit_kerja_detail.php)) dan Dokumen Export PDF ([`unit_kerja_pdf.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/exports/unit_kerja_pdf.php) & [`account_detail_pdf.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/exports/account_detail_pdf.php)) di unit kerja Plt tujuan.
+- **Aset & Antarmuka**:
+  - Membangun dan mengompilasi ulang berkas CSS Tailwind (`npm run build`).
+
+---
+
 # [31 Agustus 2026] — Integrasi Indikator BUP pada Halaman Detail Akun
 
 - **Tampilan Indikator BUP pada Detail Akun (`detail.php`)**:
