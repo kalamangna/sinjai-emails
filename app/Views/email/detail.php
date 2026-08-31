@@ -84,6 +84,18 @@
                             </span>
                         <?php endif; ?>
 
+                        <?php
+                        $bupInfo = hitungBupInfo($email);
+                        if ($bupInfo && ($bupInfo['is_approaching'] || $bupInfo['is_pensiun'])):
+                            $bupHeaderClass = $bupInfo['is_pensiun']
+                                ? 'bg-rose-100 text-rose-700 border-rose-200'
+                                : 'bg-amber-100 text-amber-800 border-amber-200';
+                        ?>
+                            <span class="px-2.5 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider border <?= $bupHeaderClass ?>" title="<?= esc($bupInfo['sisa_waktu_label']) ?>">
+                                <i class="fas fa-user-clock mr-1"></i> BUP <?= $bupInfo['bup_age'] ?> • TMT <?= formatTanggal($bupInfo['tmt_pensiun']) ?>
+                            </span>
+                        <?php endif; ?>
+
                         <?php if (($email['pimpinan'] ?? 0) == 1): ?>
                             <span class="px-2.5 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-700 border border-slate-200">
                                 <i class="fas fa-user-tie mr-1"></i> Pimpinan OPD
@@ -174,7 +186,19 @@
                             <div class="space-y-4">
                                 <div>
                                     <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">NIP</label>
-                                    <p class="text-sm font-semibold text-slate-800 font-mono"><?= esc($email['nip']) ?: '-' ?></p>
+                                    <div class="flex items-center gap-2 flex-wrap mt-0.5">
+                                        <p class="text-sm font-semibold text-slate-800 font-mono"><?= esc($email['nip']) ?: '-' ?></p>
+                                        <?php if ($bupInfo && ($bupInfo['is_approaching'] || $bupInfo['is_pensiun'])): ?>
+                                            <?php
+                                            $bupBadgeClass = $bupInfo['is_pensiun']
+                                                ? 'bg-rose-50 text-rose-700 border-rose-200'
+                                                : 'bg-amber-50 text-amber-700 border-amber-200';
+                                            ?>
+                                            <span class="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase border <?= $bupBadgeClass ?>" title="<?= esc($bupInfo['sisa_waktu_label']) ?>">
+                                                BUP <?= $bupInfo['bup_age'] ?> • TMT <?= formatSingkat($bupInfo['tmt_pensiun']) ?>
+                                            </span>
+                                        <?php endif; ?>
+                                    </div>
                                 </div>
                                 <div class="grid grid-cols-2 gap-4">
                                     <div>

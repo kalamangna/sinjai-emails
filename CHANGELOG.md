@@ -5,6 +5,15 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [31 Agustus 2026] — Integrasi Indikator BUP pada Halaman Detail Akun
+
+- **Tampilan Indikator BUP pada Detail Akun (`detail.php`)**:
+  - Menambahkan badge BUP berukuran penuh pada bagian header profil akun (`BUP [Usia] • TMT [Tanggal Lengkap]`) berdampingan dengan badge status TTE dan pimpinan.
+  - Menambahkan badge ringkas BUP di samping nomor NIP pada kartu Profil bagian Kepegawaian (`BUP [Usia] • TMT [Tanggal Singkat]`).
+  - Indikator otomatis muncul khusus untuk ASN yang $\le 1$ tahun menuju TMT pensiun atau telah mencapai BUP.
+
+---
+
 # [31 Agustus 2026] — Standarisasi Logika & Frasa Ringkas Filter BUP Pegawai ASN
 
 - **Penyederhanaan Frasa & Indikator BUP**:
