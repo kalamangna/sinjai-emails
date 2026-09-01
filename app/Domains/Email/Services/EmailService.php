@@ -1275,6 +1275,9 @@ class EmailService
         if (empty($currentEmail['nip']) && !empty($source['nip'])) {
             $updateData['nip'] = trim($source['nip']);
         }
+        if (empty($currentEmail['nik']) && !empty($source['nik'])) {
+            $updateData['nik'] = trim($source['nik']);
+        }
         if (empty($currentEmail['name']) && !empty($source['nama'])) {
             $updateData['name'] = trim($source['nama']);
         }

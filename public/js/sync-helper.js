@@ -193,6 +193,7 @@
         btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> SYNCING';
         
         const originalContents = {
+            nik: elements.nik ? elements.nik.innerHTML : '',
             jabatan: elements.jabatan ? elements.jabatan.innerHTML : '',
             pangkat: elements.pangkat ? elements.pangkat.innerHTML : '',
             golru: elements.golru ? elements.golru.innerHTML : '',
@@ -204,6 +205,9 @@
         const defaultEselonClass = 'px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px] font-bold uppercase border border-slate-200';
 
         // Render Tailwind skeleton pulse placeholders
+        if (elements.nik) {
+            elements.nik.innerHTML = '<div class="h-4 bg-slate-200 rounded-md animate-pulse w-36 my-0.5"></div>';
+        }
         if (elements.jabatan) {
             elements.jabatan.innerHTML = '<div class="h-4 bg-slate-200 rounded-md animate-pulse w-48 my-0.5"></div>';
         }
@@ -250,6 +254,7 @@
 
             if (data.success) {
                 if (data.no_data) {
+                    if (elements.nik) elements.nik.innerHTML = originalContents.nik;
                     if (elements.jabatan) elements.jabatan.innerHTML = originalContents.jabatan;
                     if (elements.pangkat) elements.pangkat.innerHTML = originalContents.pangkat;
                     if (elements.golru) elements.golru.innerHTML = originalContents.golru;
@@ -270,6 +275,12 @@
                         window.showGlobalError('Data Tidak Ditemukan', errorMsg);
                     }
                     return true;
+                }
+
+                if (data.data.nik && elements.nik) {
+                    elements.nik.textContent = data.data.nik;
+                } else if (elements.nik) {
+                    elements.nik.innerHTML = originalContents.nik;
                 }
 
                 if (data.data.jabatan && elements.jabatan) {

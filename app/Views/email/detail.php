@@ -140,7 +140,7 @@
                             <div class="space-y-4">
                                 <div>
                                     <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">NIK</label>
-                                    <p class="text-sm font-semibold text-slate-800 font-mono"><?= esc($email['nik']) ?: '-' ?></p>
+                                    <p id="nik-text" class="text-sm font-semibold text-slate-800 font-mono"><?= esc($email['nik']) ?: '-' ?></p>
                                 </div>
                                 <div>
                                     <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">Tempat, Tanggal Lahir</label>
@@ -512,6 +512,7 @@
 
     function syncPegawai(nip, btn, email = '') {
         const elements = {
+            nik: document.getElementById('nik-text'),
             jabatan: document.getElementById('jabatan-text'),
             pangkat: document.getElementById('pangkat-text'),
             golru: document.getElementById('golru-text'),
