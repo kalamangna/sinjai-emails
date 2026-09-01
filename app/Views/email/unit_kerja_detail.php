@@ -271,23 +271,33 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <div class="flex flex-col gap-1" id="pegawai-container-<?= esc($email['user']) ?>" data-nip="<?= esc($email['nip'] ?? '') ?>" data-email="<?= esc($email['email'] ?? '') ?>" data-status-asn-id="<?= esc($email['status_asn_id'] ?? '') ?>">
-                                        <?php
-                                        $displayJabatan = (!empty($email['is_plt_in_this_unit']) && !empty($email['jabatan_plt'])) ? $email['jabatan_plt'] : ($email['jabatan'] ?: '-');
-                                        $isPltInSameUnit = !empty($email['unit_kerja_plt_id']) && (
-                                            $email['unit_kerja_plt_id'] == $unit_kerja['id'] || 
-                                            $email['unit_kerja_plt_id'] == ($email['unit_kerja_id'] ?? null) ||
-                                            (!empty($target_unit_ids) && in_array($email['unit_kerja_plt_id'], $target_unit_ids))
-                                        );
-                                        ?>
-                                        <?php if (!empty($email['is_plt_in_this_unit'])): ?>
-                                            <span class="text-xs font-medium text-amber-700 uppercase tracking-tight jabatan-text"><?= esc($displayJabatan) ?></span>
-                                        <?php else: ?>
-                                            <span class="text-xs font-medium text-slate-700 uppercase tracking-tight jabatan-text"><?= esc($displayJabatan) ?></span>
-                                            <?php if (!empty($email['jabatan_plt']) && $isPltInSameUnit): ?>
-                                                <span class="text-xs font-medium text-amber-700 uppercase tracking-tight leading-snug"><?= esc($email['jabatan_plt']) ?></span>
+                                    <?php
+                                    $displayJabatan = (!empty($email['is_plt_in_this_unit']) && !empty($email['jabatan_plt'])) ? $email['jabatan_plt'] : ($email['jabatan'] ?: '-');
+                                    $isPltInSameUnit = !empty($email['unit_kerja_plt_id']) && (
+                                        $email['unit_kerja_plt_id'] == $unit_kerja['id'] || 
+                                        $email['unit_kerja_plt_id'] == ($email['unit_kerja_id'] ?? null) ||
+                                        (!empty($target_unit_ids) && in_array($email['unit_kerja_plt_id'], $target_unit_ids))
+                                    );
+                                    $hasPltRow = (!empty($email['is_plt_in_this_unit']) || (!empty($email['jabatan_plt']) && $isPltInSameUnit));
+                                    ?>
+                                    <div class="flex flex-col gap-1" id="pegawai-container-<?= esc($email['user']) ?>" 
+                                        data-nip="<?= esc($email['nip'] ?? '') ?>" 
+                                        data-email="<?= esc($email['email'] ?? '') ?>" 
+                                        data-status-asn-id="<?= esc($email['status_asn_id'] ?? '') ?>"
+                                        data-is-plt="<?= !empty($email['is_plt_in_this_unit']) ? '1' : '0' ?>"
+                                        data-has-plt="<?= $hasPltRow ? '1' : '0' ?>"
+                                        data-current-unit-id="<?= esc($unit_kerja['id']) ?>"
+                                        data-target-unit-ids="<?= esc(implode(',', $target_unit_ids ?? [$unit_kerja['id']])) ?>">
+                                        <div class="jabatan-sync-target flex flex-col gap-0.5">
+                                            <?php if (!empty($email['is_plt_in_this_unit'])): ?>
+                                                <span class="text-xs font-medium text-amber-700 uppercase tracking-tight leading-snug"><?= esc($displayJabatan) ?></span>
+                                            <?php else: ?>
+                                                <span class="text-xs font-medium text-slate-700 uppercase tracking-tight leading-snug"><?= esc($displayJabatan) ?></span>
+                                                <?php if (!empty($email['jabatan_plt']) && $isPltInSameUnit): ?>
+                                                    <span class="text-xs font-medium text-amber-700 uppercase tracking-tight leading-snug"><?= esc($email['jabatan_plt']) ?></span>
+                                                <?php endif; ?>
                                             <?php endif; ?>
-                                        <?php endif; ?>
+                                        </div>
                                         <span class="text-[9px] font-bold text-slate-700 uppercase tracking-widest"><?= !empty($email['status_asn']) ? esc($email['status_asn']) : 'NON-ASN' ?></span>
                                     </div>
                                 </td>
@@ -833,14 +843,19 @@ echo view('components/modal', [
             const nip = container.getAttribute('data-nip') || '';
             const email = container.getAttribute('data-email') || '';
             const row = container.closest('tr');
-            const textElement = container.querySelector('.jabatan-text');
+            const jabatanTarget = container.querySelector('.jabatan-sync-target') || container.querySelector('.jabatan-text');
             const unitTarget = row ? row.querySelector('.unit-kerja-sync-target') : null;
-            const originalJabatan = textElement ? textElement.textContent : '';
+            const originalJabatan = jabatanTarget ? jabatanTarget.innerHTML : '';
             const originalUnit = unitTarget ? unitTarget.innerHTML : '';
+            const hasPlt = container.getAttribute('data-has-plt') === '1';
             
             container.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            if (textElement) {
-                textElement.innerHTML = '<div class="h-3.5 bg-slate-200 rounded animate-pulse w-36 my-0.5"></div>';
+            if (jabatanTarget) {
+                if (hasPlt) {
+                    jabatanTarget.innerHTML = '<div class="space-y-1 py-0.5"><div class="h-3.5 bg-slate-200 rounded animate-pulse w-36"></div><div class="h-3 bg-amber-200/80 rounded animate-pulse w-28"></div></div>';
+                } else {
+                    jabatanTarget.innerHTML = '<div class="py-0.5"><div class="h-3.5 bg-slate-200 rounded animate-pulse w-36"></div></div>';
+                }
             }
             if (unitTarget) {
                 unitTarget.innerHTML = '<div class="space-y-1.5 py-0.5"><div class="h-2.5 bg-slate-200 rounded animate-pulse w-20"></div><div class="h-3.5 bg-slate-200 rounded animate-pulse w-32"></div></div>';
@@ -870,8 +885,8 @@ echo view('components/modal', [
                     if (isRateLimit && attempt < 2) {
                         const waitSec = (attempt + 1) * 2;
                         syncBtn.innerHTML = `<i class="fas fa-hourglass-half animate-spin mr-2"></i> Pedinginan Rate Limit (${waitSec}s)...`;
-                        if (textElement) {
-                            textElement.innerHTML = `<span class="text-amber-600 font-bold text-[10px] animate-pulse"><i class="fas fa-hourglass-half mr-1"></i> RATE LIMIT (${waitSec}s)</span>`;
+                        if (jabatanTarget) {
+                            jabatanTarget.innerHTML = `<span class="text-amber-600 font-bold text-[10px] animate-pulse"><i class="fas fa-hourglass-half mr-1"></i> RATE LIMIT (${waitSec}s)</span>`;
                         }
                         await new Promise(resolve => setTimeout(resolve, waitSec * 1000));
                         continue;
@@ -891,36 +906,88 @@ echo view('components/modal', [
             }
 
             if (fetchSuccess && lastData) {
-                if (textElement) {
+                if (jabatanTarget) {
                     if (lastData.no_data) {
-                        textElement.innerHTML = `<span class="inline-flex items-center px-2 py-0.5 rounded text-[8px] font-bold uppercase border bg-amber-50 text-amber-600 border-amber-200" title="Data tidak ditemukan di API">NO DATA</span>`;
-                    } else if (lastData.data && lastData.data.jabatan) {
-                        textElement.textContent = lastData.data.jabatan;
+                        jabatanTarget.innerHTML = `<span class="inline-flex items-center px-2 py-0.5 rounded text-[8px] font-bold uppercase border bg-amber-50 text-amber-600 border-amber-200" title="Data tidak ditemukan di API">NO DATA</span>`;
+                    } else if (lastData.data) {
+                        const isPltInThisUnit = container.getAttribute('data-is-plt') === '1';
+                        const currentUnitId = container.getAttribute('data-current-unit-id') || '';
+                        const targetUnitIds = (container.getAttribute('data-target-unit-ids') || '').split(',').filter(Boolean);
+                        
+                        const newJabatan = lastData.data.jabatan || '-';
+                        const newJabatanPlt = lastData.data.jabatan_plt || '';
+                        const newUnitPltId = lastData.data.unit_kerja_plt_id ? String(lastData.data.unit_kerja_plt_id) : '';
+                        const newUnitId = lastData.data.unit_kerja_id ? String(lastData.data.unit_kerja_id) : '';
+                        
+                        const isPltInSameUnit = newUnitPltId && (
+                            newUnitPltId === currentUnitId ||
+                            newUnitPltId === newUnitId ||
+                            targetUnitIds.includes(newUnitPltId)
+                        );
+
+                        let jabatanHtml = '';
+                        if (isPltInThisUnit) {
+                            const mainPlt = newJabatanPlt || newJabatan;
+                            jabatanHtml = `<span class="text-xs font-medium text-amber-700 uppercase tracking-tight leading-snug">${mainPlt}</span>`;
+                            container.setAttribute('data-has-plt', '1');
+                        } else {
+                            jabatanHtml = `<span class="text-xs font-medium text-slate-700 uppercase tracking-tight leading-snug">${newJabatan}</span>`;
+                            if (newJabatanPlt && isPltInSameUnit) {
+                                jabatanHtml += `<span class="text-xs font-medium text-amber-700 uppercase tracking-tight leading-snug">${newJabatanPlt}</span>`;
+                                container.setAttribute('data-has-plt', '1');
+                            } else {
+                                container.setAttribute('data-has-plt', '0');
+                            }
+                        }
+                        jabatanTarget.innerHTML = jabatanHtml;
                     } else {
-                        textElement.textContent = originalJabatan;
+                        jabatanTarget.innerHTML = originalJabatan;
                     }
                 }
 
                 if (unitTarget && lastData.data) {
+                    const isPltInThisUnit = container.getAttribute('data-is-plt') === '1';
+                    const currentUnitId = container.getAttribute('data-current-unit-id') || '';
+                    const targetUnitIds = (container.getAttribute('data-target-unit-ids') || '').split(',').filter(Boolean);
+                    const newUnitPltId = lastData.data.unit_kerja_plt_id ? String(lastData.data.unit_kerja_plt_id) : '';
+                    const newUnitId = lastData.data.unit_kerja_id ? String(lastData.data.unit_kerja_id) : '';
+                    const isPltInSameUnit = newUnitPltId && (
+                        newUnitPltId === currentUnitId ||
+                        newUnitPltId === newUnitId ||
+                        targetUnitIds.includes(newUnitPltId)
+                    );
+
                     const parentName = lastData.data.parent_unit_kerja_name || '';
                     const unitName = lastData.data.unit_kerja_name || '';
-                    if (unitName) {
-                        let unitHtml = `<span class="text-xs font-bold text-slate-800 uppercase tracking-tight">${unitName}</span>`;
-                        if (parentName) {
-                            unitHtml += `<span class="text-[9px] font-bold text-slate-500 uppercase leading-none mt-0.5">${parentName}</span>`;
+                    const parentPltName = lastData.data.parent_unit_kerja_plt_name || '';
+                    const pltUnitName = lastData.data.unit_kerja_plt_name || '';
+
+                    let unitHtml = '';
+                    if (isPltInThisUnit) {
+                        if (parentPltName) {
+                            unitHtml = `<span class="text-[10px] font-bold text-slate-700 uppercase leading-none">${parentPltName}</span><span class="text-xs font-bold text-amber-700 uppercase tracking-tight mt-1">${pltUnitName || unitName}</span>`;
+                        } else {
+                            unitHtml = `<span class="text-xs font-bold text-amber-700 uppercase tracking-tight">${pltUnitName || unitName}</span>`;
                         }
-                        unitTarget.innerHTML = unitHtml;
-                    } else if (originalUnit) {
-                        unitTarget.innerHTML = originalUnit;
+                    } else {
+                        if (parentName) {
+                            unitHtml = `<span class="text-[10px] font-bold text-slate-700 uppercase leading-none">${parentName}</span><span class="text-xs font-bold text-slate-800 uppercase tracking-tight mt-1">${unitName}</span>`;
+                        } else {
+                            unitHtml = `<span class="text-xs font-bold text-slate-800 uppercase tracking-tight">${unitName}</span>`;
+                        }
+                        if (pltUnitName && pltUnitName !== unitName && isPltInSameUnit) {
+                            unitHtml += `<span class="text-xs font-bold text-amber-700 uppercase tracking-tight mt-1">${pltUnitName}</span>`;
+                        }
                     }
+                    unitTarget.innerHTML = unitHtml;
                 }
                 success++;
             } else {
-                if (textElement) {
+                if (jabatanTarget) {
                     if (isRateLimit) {
-                        textElement.innerHTML = `<span class="inline-flex items-center px-2 py-0.5 rounded text-[8px] font-bold uppercase border bg-amber-50 text-amber-700 border-amber-300" title="API Terkena Rate Limit (Silakan coba beberapa saat lagi)">RATE LIMIT</span>`;
+                        jabatanTarget.innerHTML = `<span class="inline-flex items-center px-2 py-0.5 rounded text-[8px] font-bold uppercase border bg-amber-50 text-amber-700 border-amber-300" title="API Terkena Rate Limit (Silakan coba beberapa saat lagi)">RATE LIMIT</span>`;
                     } else {
-                        textElement.innerHTML = `<span class="inline-flex items-center px-2 py-0.5 rounded text-[8px] font-bold uppercase border bg-red-50 text-red-600 border-red-200" title="${((lastData && lastData.message) ? lastData.message : 'Sinkronisasi Gagal').replace(/"/g, '&quot;')}">FAILED</span>`;
+                        jabatanTarget.innerHTML = `<span class="inline-flex items-center px-2 py-0.5 rounded text-[8px] font-bold uppercase border bg-red-50 text-red-600 border-red-200" title="${((lastData && lastData.message) ? lastData.message : 'Sinkronisasi Gagal').replace(/"/g, '&quot;')}">FAILED</span>`;
                     }
                 }
                 if (unitTarget && originalUnit) {

@@ -3168,6 +3168,10 @@ input:checked + .toggle-bg {
   justify-items: stretch;
 }
 
+.gap-0\.5 {
+  gap: 0.125rem;
+}
+
 .gap-1 {
   gap: 0.25rem;
 }
@@ -3870,6 +3874,10 @@ input:checked + .toggle-bg {
 .bg-amber-200 {
   --tw-bg-opacity: 1;
   background-color: rgb(253 230 138 / var(--tw-bg-opacity, 1));
+}
+
+.bg-amber-200\/80 {
+  background-color: rgb(253 230 138 / 0.8);
 }
 
 .bg-amber-50 {

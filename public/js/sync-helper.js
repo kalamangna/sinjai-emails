@@ -464,11 +464,17 @@
                 block: 'center'
             });
 
+            const hasPlt = container.getAttribute('data-has-plt') === '1';
+
             // Skeleton state untuk Jabatan
             if (jabatanTarget) {
                 originalJabatan = jabatanTarget.getAttribute('data-original') || jabatanTarget.innerHTML;
                 jabatanTarget.setAttribute('data-original', originalJabatan);
-                jabatanTarget.innerHTML = '<div class="space-y-1.5 py-0.5"><div class="h-3.5 bg-slate-200 rounded animate-pulse w-36"></div><div class="h-3 bg-amber-100 rounded animate-pulse w-28"></div></div>';
+                if (hasPlt) {
+                    jabatanTarget.innerHTML = '<div class="space-y-1 py-0.5"><div class="h-3.5 bg-slate-200 rounded animate-pulse w-36"></div><div class="h-3 bg-amber-200/80 rounded animate-pulse w-28"></div></div>';
+                } else {
+                    jabatanTarget.innerHTML = '<div class="py-0.5"><div class="h-3.5 bg-slate-200 rounded animate-pulse w-36"></div></div>';
+                }
             }
 
             // Skeleton state untuk Unit Kerja
@@ -505,11 +511,34 @@
                         if (data.no_data) {
                             jabatanTarget.innerHTML = `<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase border bg-amber-50 text-amber-600 border-amber-200" title="Data tidak ditemukan di API">NO DATA API</span>`;
                         } else {
+                            const isPltInThisUnit = container.getAttribute('data-is-plt') === '1';
+                            const currentUnitId = container.getAttribute('data-current-unit-id') || '';
+                            const targetUnitIds = (container.getAttribute('data-target-unit-ids') || '').split(',').filter(Boolean);
+                            
                             const newJabatan = data.data?.jabatan || '-';
                             const newJabatanPlt = data.data?.jabatan_plt || '';
-                            let jabatanHtml = `<span class="text-xs font-medium text-slate-700 uppercase tracking-tight leading-snug">${newJabatan}</span>`;
-                            if (newJabatanPlt) {
-                                jabatanHtml += `<span class="text-xs font-medium text-amber-700 uppercase tracking-tight leading-snug mt-0.5">${newJabatanPlt}</span>`;
+                            const newUnitPltId = data.data?.unit_kerja_plt_id ? String(data.data.unit_kerja_plt_id) : '';
+                            const newUnitId = data.data?.unit_kerja_id ? String(data.data.unit_kerja_id) : '';
+                            
+                            const isPltInSameUnit = newUnitPltId && (
+                                newUnitPltId === currentUnitId ||
+                                newUnitPltId === newUnitId ||
+                                targetUnitIds.includes(newUnitPltId)
+                            );
+
+                            let jabatanHtml = '';
+                            if (isPltInThisUnit) {
+                                const mainPlt = newJabatanPlt || newJabatan;
+                                jabatanHtml = `<span class="text-xs font-medium text-amber-700 uppercase tracking-tight leading-snug">${mainPlt}</span>`;
+                                container.setAttribute('data-has-plt', '1');
+                            } else {
+                                jabatanHtml = `<span class="text-xs font-medium text-slate-700 uppercase tracking-tight leading-snug">${newJabatan}</span>`;
+                                if (newJabatanPlt && isPltInSameUnit) {
+                                    jabatanHtml += `<span class="text-xs font-medium text-amber-700 uppercase tracking-tight leading-snug">${newJabatanPlt}</span>`;
+                                    container.setAttribute('data-has-plt', '1');
+                                } else {
+                                    container.setAttribute('data-has-plt', '0');
+                                }
                             }
                             jabatanTarget.innerHTML = jabatanHtml;
                             jabatanTarget.setAttribute('data-original', jabatanHtml);
@@ -517,24 +546,41 @@
                     }
 
                     if (unitTarget && data.data) {
+                        const isPltInThisUnit = container.getAttribute('data-is-plt') === '1';
+                        const currentUnitId = container.getAttribute('data-current-unit-id') || '';
+                        const targetUnitIds = (container.getAttribute('data-target-unit-ids') || '').split(',').filter(Boolean);
+                        const newUnitPltId = data.data?.unit_kerja_plt_id ? String(data.data.unit_kerja_plt_id) : '';
+                        const newUnitId = data.data?.unit_kerja_id ? String(data.data.unit_kerja_id) : '';
+                        const isPltInSameUnit = newUnitPltId && (
+                            newUnitPltId === currentUnitId ||
+                            newUnitPltId === newUnitId ||
+                            targetUnitIds.includes(newUnitPltId)
+                        );
+
                         const parentName = data.data.parent_unit_kerja_name || '';
                         const unitName = data.data.unit_kerja_name || '';
+                        const parentPltName = data.data.parent_unit_kerja_plt_name || '';
                         const pltUnitName = data.data.unit_kerja_plt_name || '';
-                        if (unitName) {
-                            let unitHtml = '';
+
+                        let unitHtml = '';
+                        if (isPltInThisUnit) {
+                            if (parentPltName) {
+                                unitHtml = `<span class="text-[10px] font-bold text-slate-700 uppercase leading-none">${parentPltName}</span><span class="text-xs font-bold text-amber-700 uppercase tracking-tight mt-1">${pltUnitName || unitName}</span>`;
+                            } else {
+                                unitHtml = `<span class="text-xs font-bold text-amber-700 uppercase tracking-tight">${pltUnitName || unitName}</span>`;
+                            }
+                        } else {
                             if (parentName) {
                                 unitHtml = `<span class="text-[10px] font-bold text-slate-700 uppercase leading-none">${parentName}</span><span class="text-xs font-bold text-slate-800 uppercase tracking-tight mt-1">${unitName}</span>`;
                             } else {
                                 unitHtml = `<span class="text-xs font-bold text-slate-800 uppercase tracking-tight">${unitName}</span>`;
                             }
-                            if (pltUnitName && pltUnitName !== unitName) {
+                            if (pltUnitName && pltUnitName !== unitName && isPltInSameUnit) {
                                 unitHtml += `<span class="text-xs font-bold text-amber-700 uppercase tracking-tight mt-1">${pltUnitName}</span>`;
                             }
-                            unitTarget.innerHTML = unitHtml;
-                            unitTarget.setAttribute('data-original', unitHtml);
-                        } else if (originalUnit) {
-                            unitTarget.innerHTML = originalUnit;
                         }
+                        unitTarget.innerHTML = unitHtml;
+                        unitTarget.setAttribute('data-original', unitHtml);
                     }
                     return 'success';
                 } else if (fetchResult.isRateLimited && !isRetry) {
