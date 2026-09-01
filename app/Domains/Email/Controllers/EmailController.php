@@ -248,6 +248,7 @@ class EmailController extends BaseController
     {
         try {
             $password = $this->request->getPost('password');
+            $cleanStorage = (bool)$this->request->getPost('clean_storage');
 
             if (empty($password)) {
                 throw new Exception('Password tidak boleh kosong.');
@@ -256,12 +257,21 @@ class EmailController extends BaseController
                 throw new Exception('Password minimal 8 karakter.');
             }
 
-            $this->emailService->updatePassword($username, $password);
+            $this->emailService->updatePassword($username, $password, $cleanStorage);
 
             helper('audit');
-            log_audit('CHANGE_PASSWORD', 'Email', null, 'Ubah password: ' . $username . '@sinjaikab.go.id');
+            $auditMsg = 'Ubah password: ' . $username . '@sinjaikab.go.id';
+            if ($cleanStorage) {
+                $auditMsg .= ' (Termasuk pembersihan total storage mailbox & spam queue)';
+            }
+            log_audit('CHANGE_PASSWORD', 'Email', null, $auditMsg);
 
-            return redirect()->to('email/detail/' . $username)->with('success', 'Password berhasil diperbarui.');
+            $successMsg = 'Password berhasil diperbarui.';
+            if ($cleanStorage) {
+                $successMsg = 'Password berhasil diperbarui dan seluruh storage mailbox telah dibersihkan.';
+            }
+
+            return redirect()->to('email/detail/' . $username)->with('success', $successMsg);
         } catch (\Throwable $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }

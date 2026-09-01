@@ -856,17 +856,57 @@ class EmailService
         return $this->emailModel->update($email['id'], $updateData);
     }
 
-    public function updatePassword($username, $newPassword)
+    public function updatePassword($username, $newPassword, bool $cleanStorage = false)
     {
         $cpanelApi = new \App\Shared\Libraries\CpanelApi();
         $email = $this->emailModel->where('user', $username)->first();
         if (!$email) throw new Exception('Akun email tidak ditemukan.');
 
-        // Update on cPanel first
+        // 1. Update on cPanel first (locks out attacker)
         $cpanelApi->change_password($email['email'], $newPassword);
 
-        // If successful, update locally
-        return $this->emailModel->update($email['id'], ['password' => $newPassword]);
+        // 2. Update password locally
+        $this->emailModel->update($email['id'], ['password' => $newPassword]);
+
+        $cleanupStats = null;
+
+        // 3. If cleanup requested (compromised account incident recovery)
+        if ($cleanStorage) {
+            // Delete outgoing held spam queue in cPanel
+            $cpanelApi->delete_held_messages($email['email']);
+
+            // Purge and expunge all mailboxes via IMAP
+            $imapCleaner = new \App\Shared\Libraries\ImapMailboxCleaner();
+            $cleanupStats = $imapCleaner->cleanAllMailboxes($email['email'], $newPassword);
+
+            // Update disk usage locally
+            $updateDisk = [
+                '_diskused' => 0,
+                'humandiskused' => '0 KB',
+                'diskusedpercent_float' => 0.0
+            ];
+
+            if (!$cpanelApi->isLocalEnvironment()) {
+                try {
+                    $detail = $cpanelApi->get_email_account_detail($email['email']);
+                    if ($detail) {
+                        $updateDisk['_diskused'] = $detail['_diskused'] ?? 0;
+                        $updateDisk['humandiskused'] = $detail['humandiskused'] ?? '0 KB';
+                        $updateDisk['diskusedpercent_float'] = (float)($detail['diskusedpercent_float'] ?? 0.0);
+                    }
+                } catch (\Throwable $e) {
+                    log_message('warning', "Could not refresh disk usage for {$email['email']}: " . $e->getMessage());
+                }
+            }
+
+            $this->emailModel->update($email['id'], $updateDisk);
+        }
+
+        return [
+            'success'       => true,
+            'clean_storage' => $cleanStorage,
+            'stats'         => $cleanupStats
+        ];
     }
 
     public function getEselonDetail($eselonId, $params)

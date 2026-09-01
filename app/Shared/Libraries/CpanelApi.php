@@ -289,4 +289,33 @@ class CpanelApi
             throw new Exception("Failed to unsuspend email login: " . $e->getMessage());
         }
     }
+
+    public function delete_held_messages($email)
+    {
+        try {
+            $parameters = ['email' => $email];
+            $response = $this->make_request('Email', 'delete_held_messages', 'POST', $parameters);
+            return $response;
+        } catch (\Throwable $e) {
+            log_message('error', "Failed to delete held messages for {$email}: " . $e->getMessage());
+            return ['status' => 0, 'errors' => [$e->getMessage()]];
+        }
+    }
+
+    public function edit_pop_quota($email, $quota = 1024)
+    {
+        try {
+            list($user, $domain) = explode('@', $email);
+            $parameters = [
+                'email'  => $user,
+                'domain' => $domain,
+                'quota'  => $quota,
+            ];
+            $response = $this->make_request('Email', 'edit_pop_quota', 'POST', $parameters);
+            return $response;
+        } catch (\Throwable $e) {
+            log_message('error', "Failed to edit quota for {$email}: " . $e->getMessage());
+            throw new Exception("Failed to edit email quota: " . $e->getMessage());
+        }
+    }
 }

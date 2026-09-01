@@ -21,6 +21,10 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Menambahkan dukungan pemetaan sub unit anak untuk formasi **Kelurahan**, **Desa**, serta normalisasi variasi penulisan garis miring (`BARANG/JASA` $\rightarrow$ `BARANG DAN JASA`) pada penugasan Plt di [`EmailService.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Domains/Email/Services/EmailService.php).
   - Menyesuaikan filter antrean sinkronisasi pada [`sync-helper.js`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/public/js/sync-helper.js) agar secara ketat hanya mengeksekusi akun ber-NIP (`nip !== ''`) dan bukan berstatus PPPK/Non-ASN.
   - Memperbarui skeleton loading placeholder pada field jabatan, eselon, pangkat, unit penugasan Plt, badge status TTE ([`unit_kerja_detail.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/unit_kerja_detail.php)), serta pratinjau tabel pada [`batch.js`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/public/js/batch.js).
+- **Fitur Pembersihan Mailbox & Penanganan Akun Disusupi**:
+  - Menambahkan opsi checkbox *Kosongkan storage email* pada formulir Edit Password ([`edit_password.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/edit_password.php)).
+  - Mengimplementasikan pustaka socket IMAP native ([`ImapMailboxCleaner.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Shared/Libraries/ImapMailboxCleaner.php)) untuk mengosongkan seluruh folder mailbox (`INBOX`, `Sent`, `Trash`, `Spam`, `Drafts`, dll.) dan mengeksekusi `EXPUNGE` saat akun mengalami insiden penyusupan spam.
+  - Mengintegrasikan pembersihan antrean email tertahan cPanel (`delete_held_messages`) serta pembaruan otomatis statistik kuota penyimpanan lokal pada [`EmailService.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Domains/Email/Services/EmailService.php) dan [`EmailController.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Domains/Email/Controllers/EmailController.php).
 - **Aset & Antarmuka**:
   - Membangun dan mengompilasi berkas CSS Tailwind (`npm run build`).
 

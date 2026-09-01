@@ -48,6 +48,17 @@
                             placeholder="Minimal 8 karakter...">
                     </div>
                 </div>
+
+                <!-- Opsi Pembersihan Storage -->
+                <div class="pt-1">
+                    <label class="flex items-center gap-2.5 cursor-pointer select-none">
+                        <input type="checkbox" name="clean_storage" value="1" id="clean_storage"
+                            class="w-4 h-4 text-red-600 rounded border-slate-300 focus:ring-red-500 transition-all cursor-pointer">
+                        <span class="text-xs font-semibold text-slate-700">
+                            Kosongkan storage email
+                        </span>
+                    </label>
+                </div>
             </div>
 
             <!-- Tombol Aksi -->
