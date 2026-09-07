@@ -206,7 +206,7 @@
                 </div>
 
                 <div class="pt-6 border-t border-slate-100 flex justify-end">
-                    <button type="submit" class="w-full sm:w-auto btn btn-solid !px-8 !py-2.5 rounded-lg flex items-center justify-center gap-2 hover:scale-[1.01] active:scale-[0.99] transition-all">
+                    <button type="submit" class="w-full sm:w-auto btn btn-solid !px-8 !py-2.5 rounded-lg flex items-center justify-center gap-2">
                         <i class="fas fa-paper-plane text-xs text-white/80"></i> Kirim Laporan
                     </button>
                 </div>

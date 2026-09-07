@@ -12,12 +12,12 @@
 
         <div class="flex items-center gap-2 w-full lg:w-auto">
             <div class="flex-1 lg:flex-none flex gap-2">
-                <button onclick="syncAllOnPage()" id="batchSyncBtn" class="flex-1 lg:flex-none btn btn-solid group">
-                    <i class="fas fa-fingerprint mr-2 group-hover:scale-110 transition-transform"></i>
+                <button onclick="syncAllOnPage()" id="batchSyncBtn" class="flex-1 lg:flex-none btn btn-solid">
+                    <i class="fas fa-fingerprint mr-2 text-white/80"></i>
                     <span>Sync TTE</span>
                 </button>
-                <button onclick="syncAllPegawai()" id="batchSyncPegawaiBtn" class="flex-1 lg:flex-none btn btn-outline group bg-white">
-                    <i class="fas fa-sync-alt mr-2 group-hover:rotate-180 transition-transform duration-500 text-slate-700"></i>
+                <button onclick="syncAllPegawai()" id="batchSyncPegawaiBtn" class="flex-1 lg:flex-none btn btn-outline bg-white">
+                    <i class="fas fa-sync-alt mr-2 text-slate-700"></i>
                     <span class="text-slate-700">Sync Pegawai</span>
                 </button>
             </div>

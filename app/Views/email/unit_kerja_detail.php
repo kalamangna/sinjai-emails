@@ -12,7 +12,7 @@
             <!-- Dropdown Export -->
             <div class="relative group">
                 <button class="btn btn-outline text-xs px-3 py-2">
-                    <i class="fas fa-download mr-1.5 text-slate-600"></i> Export <i class="fas fa-chevron-down ml-1 text-[8px] opacity-50 transition-transform duration-300 group-hover:rotate-180"></i>
+                    <i class="fas fa-download mr-1.5 text-slate-600"></i> Export <i class="fas fa-chevron-down ml-1 text-[8px] opacity-50"></i>
                 </button>
                 <div class="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 overflow-hidden">
                     <a href="<?= site_url('email/export_unit_kerja_csv/' . $unit_kerja['id']) . ($_SERVER['QUERY_STRING'] ? '?' . $_SERVER['QUERY_STRING'] : '') ?>" class="block px-4 py-3 text-left text-[10px] font-bold text-slate-700 uppercase tracking-widest hover:bg-slate-50 border-b border-slate-100 transition-colors no-underline">
@@ -34,7 +34,7 @@
                 <!-- Dropdown Batch PK -->
                 <div class="relative group">
                     <button class="btn btn-outline text-xs px-3 py-2">
-                        <i class="fas fa-file-contract mr-1.5 text-slate-600"></i> Batch PK <i class="fas fa-chevron-down ml-1 text-[8px] opacity-50 transition-transform duration-300 group-hover:rotate-180"></i>
+                        <i class="fas fa-file-contract mr-1.5 text-slate-600"></i> Batch PK <i class="fas fa-chevron-down ml-1 text-[8px] opacity-50"></i>
                     </button>
                     <div class="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 overflow-hidden">
                         <button onclick="openExportModal(<?= $unit_kerja['id'] ?>, 'pppk')" class="w-full px-4 py-3 text-left text-[10px] font-bold text-slate-700 uppercase tracking-widest hover:bg-slate-50 border-b border-slate-100 transition-colors focus:outline-none">
@@ -54,7 +54,7 @@
                 <!-- Dropdown Sinkronisasi -->
                 <div class="relative group">
                     <button id="mainSyncBtn" class="btn btn-solid text-xs px-3 py-2">
-                        <i class="fas fa-sync-alt mr-1.5 text-white/80"></i> Sync <i class="fas fa-chevron-down ml-1 text-[8px] opacity-50 transition-transform duration-300 group-hover:rotate-180"></i>
+                        <i class="fas fa-sync-alt mr-1.5 text-white/80"></i> Sync <i class="fas fa-chevron-down ml-1 text-[8px] opacity-50"></i>
                     </button>
                     <div class="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 overflow-hidden">
                         <button id="syncAllTteBtn" onclick="syncAllBsreStatus()" class="w-full px-4 py-3 text-left text-[10px] font-bold text-slate-700 uppercase tracking-widest hover:bg-slate-50 border-b border-slate-100 transition-colors focus:outline-none">
@@ -109,7 +109,7 @@
                 </div>
                 <div class="flex items-center gap-3">
                     <span class="text-[10px] font-bold text-slate-700 uppercase tracking-widest bg-slate-100 px-2 py-0.5 rounded"><?= count($child_units) ?> Unit</span>
-                    <i class="fas fa-chevron-down text-slate-700 text-[10px] transition-transform duration-300" id="childUnitsChevron"></i>
+                    <i class="fas fa-chevron-down text-slate-700 text-[10px]" id="childUnitsChevron"></i>
                 </div>
             </button>
             <div id="childUnitsList" class="hidden px-6 pb-6">

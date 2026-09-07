@@ -28,8 +28,8 @@
         </div>
         <div class="flex items-center gap-2 w-full lg:w-auto">
             <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
-                <button type="button" onclick="triggerSyncCpanel()" id="syncCpanelBtn" class="flex-1 lg:flex-none btn btn-outline bg-white group" title="Sinkronisasi Akun & Kuota Email dari cPanel">
-                    <i class="fas fa-sync-alt mr-2 text-slate-700 group-hover:rotate-180 transition-transform duration-500"></i>
+                <button type="button" onclick="triggerSyncCpanel()" id="syncCpanelBtn" class="flex-1 lg:flex-none btn btn-outline bg-white" title="Sinkronisasi Akun & Kuota Email dari cPanel">
+                    <i class="fas fa-sync-alt mr-2 text-slate-700"></i>
                     <span class="text-slate-700">Sync cPanel</span>
                 </button>
             <?php endif; ?>
@@ -540,7 +540,7 @@
         if (btn) {
             btn.disabled = true;
             btn.classList.add('opacity-75', 'cursor-not-allowed');
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i><span>Menyinkronkan...</span>';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i><span>Syncing...</span>';
         }
 
         try {

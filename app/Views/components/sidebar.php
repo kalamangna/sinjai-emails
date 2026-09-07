@@ -69,7 +69,7 @@
                     </div>
                     <span>Pegawai</span>
                 </div>
-                <i class="fas fa-chevron-down text-[10px] transition-transform duration-200"></i>
+                <i class="fas fa-chevron-down text-[10px]"></i>
             </button>
             <div id="submenu-pegawai" class="sidebar-submenu mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
                 <a href="<?= site_url('email/pns') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('email/pns') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
@@ -93,7 +93,7 @@
                     </div>
                     <span>Pejabat</span>
                 </div>
-                <i class="fas fa-chevron-down text-[10px] transition-transform duration-200"></i>
+                <i class="fas fa-chevron-down text-[10px]"></i>
             </button>
             <div id="submenu-pejabat" class="sidebar-submenu mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
                 <a href="<?= site_url('email/pimpinan') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('email/pimpinan') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
@@ -114,7 +114,7 @@
                     </div>
                     <span>Organisasi</span>
                 </div>
-                <i class="fas fa-chevron-down text-[10px] transition-transform duration-200"></i>
+                <i class="fas fa-chevron-down text-[10px]"></i>
             </button>
             <div id="submenu-organisasi" class="sidebar-submenu mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
                 <a href="<?= site_url('email/unit_kerja') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('email/unit_kerja') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
@@ -135,7 +135,7 @@
                     </div>
                     <span>Website</span>
                 </div>
-                <i class="fas fa-chevron-down text-[10px] transition-transform duration-200"></i>
+                <i class="fas fa-chevron-down text-[10px]"></i>
             </button>
             <div id="submenu-website" class="sidebar-submenu mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
                 <a href="<?= site_url('web_opd') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('web_opd') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
@@ -157,7 +157,7 @@
                         </div>
                         <span>Batch</span>
                     </div>
-                    <i class="fas fa-chevron-down text-[10px] transition-transform duration-200"></i>
+                    <i class="fas fa-chevron-down text-[10px]"></i>
                 </button>
                 <div id="submenu-batch" class="sidebar-submenu mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
                     <a href="<?= site_url('batch') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('batch') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
@@ -203,7 +203,7 @@
                         </div>
                         <span>Master Data</span>
                     </div>
-                    <i class="fas fa-chevron-down text-[10px] transition-transform duration-200"></i>
+                    <i class="fas fa-chevron-down text-[10px]"></i>
                 </button>
                 <div id="submenu-master" class="sidebar-submenu mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
                     <a href="<?= site_url('unit_kerja/manage') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('unit_kerja/manage') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">

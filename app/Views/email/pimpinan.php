@@ -43,7 +43,7 @@
                 <!-- Dropdown Sinkronisasi -->
                 <div class="relative group">
                     <button id="mainSyncBtn" class="btn btn-solid text-xs px-3 py-2">
-                        <i class="fas fa-sync-alt mr-1.5 text-white/80"></i> Sync <i class="fas fa-chevron-down ml-1 text-[8px] opacity-50 transition-transform duration-300 group-hover:rotate-180"></i>
+                        <i class="fas fa-sync-alt mr-1.5 text-white/80"></i> Sync <i class="fas fa-chevron-down ml-1 text-[8px] opacity-50"></i>
                     </button>
                     <div class="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 overflow-hidden">
                         <button id="syncAllTteBtn" onclick="handleSyncAllTte()" class="w-full px-4 py-3 text-left text-[10px] font-bold text-slate-700 uppercase tracking-widest hover:bg-slate-50 border-b border-slate-100 transition-colors focus:outline-none">

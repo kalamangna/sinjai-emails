@@ -45,7 +45,7 @@
                 <i class="fas fa-check-circle text-white text-[120px] absolute -right-6 -bottom-8 rotate-12"></i>
             </div>
             <div class="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center text-white mb-4 border border-white/20 shadow-inner relative z-10">
-                <i class="fas fa-check text-2xl animate-bounce"></i>
+                <i class="fas fa-check text-2xl"></i>
             </div>
             <h2 class="text-lg font-bold uppercase tracking-tight relative z-10">Laporan Terkirim!</h2>
             <p class="text-[9px] font-bold text-emerald-200 uppercase tracking-widest relative z-10">Tiket Bantuan Layanan Berhasil Dibuat</p>
@@ -83,7 +83,7 @@
             <p class="text-[11px] text-slate-550 leading-relaxed">Terima kasih. Tim Helpdesk Diskominfo-SP akan segera memproses laporan Anda. Kami akan menghubungi Anda melalui nomor WhatsApp yang terdaftar untuk koordinasi lebih lanjut.</p>
             
             <div class="pt-4">
-                <a href="<?= site_url('helpdesk') ?>" class="w-full btn btn-solid !bg-slate-850 hover:!bg-slate-900 !text-white !py-2.5 rounded-lg flex items-center justify-center gap-2 hover:scale-[1.01] active:scale-[0.99] transition-all no-underline text-xs font-bold uppercase tracking-wider">
+                <a href="<?= site_url('helpdesk') ?>" class="w-full btn btn-solid !bg-slate-850 hover:!bg-slate-900 !text-white !py-2.5 rounded-lg flex items-center justify-center gap-2 no-underline text-xs font-bold uppercase tracking-wider">
                     <i class="fas fa-plus text-xs text-white/80"></i> Buat Laporan Baru
                 </a>
             </div>

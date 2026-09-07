@@ -281,10 +281,10 @@
                                     <?= session()->get('role') == 'super_admin' ? 'Super Admin' : 'Admin' ?>
                                 </p>
                             </div>
-                            <div id="user-icon-wrapper" class="w-9 h-9 bg-slate-100 rounded-lg flex items-center justify-center text-slate-700 border border-slate-200 shadow-sm transition-transform duration-200">
+                            <div id="user-icon-wrapper" class="w-9 h-9 bg-slate-100 rounded-lg flex items-center justify-center text-slate-700 border border-slate-200 shadow-sm">
                                 <i class="fas fa-user-shield text-sm"></i>
                             </div>
-                            <i id="user-dropdown-chevron" class="fas fa-chevron-down text-[8px] text-slate-400 transition-transform duration-200 hidden sm:inline"></i>
+                            <i id="user-dropdown-chevron" class="fas fa-chevron-down text-[8px] text-slate-400 hidden sm:inline"></i>
                         </button>
 
                         <!-- Dropdown Menu -->

@@ -64,7 +64,7 @@
                 </div>
             </div>
             <div>
-                <a href="<?= site_url('login') ?>" id="nav-login-btn" class="btn btn-solid flex items-center gap-2 hover:scale-[1.02]">
+                <a href="<?= site_url('login') ?>" id="nav-login-btn" class="btn btn-solid flex items-center gap-2">
                     <i class="fas fa-sign-in-alt text-[10px]"></i> Masuk
                 </a>
             </div>
@@ -90,9 +90,9 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-5xl">
             
             <!-- Card 1: Verifikasi PDF -->
-            <div class="group bg-white border border-slate-200 hover:border-slate-400 rounded-2xl p-8 flex flex-col justify-between transition-all duration-300 hover:shadow-xl hover:shadow-slate-200/50 hover:-translate-y-1 relative overflow-hidden">
+            <div class="group bg-white border border-slate-200 hover:border-slate-400 rounded-2xl p-8 flex flex-col justify-between transition-all duration-300 hover:shadow-xl hover:shadow-slate-200/50 relative overflow-hidden">
                 <div class="space-y-4">
-                    <div class="w-12 h-12 bg-slate-100 border border-slate-200 rounded-xl flex items-center justify-center text-slate-700 text-lg group-hover:scale-110 transition-transform">
+                    <div class="w-12 h-12 bg-slate-100 border border-slate-200 rounded-xl flex items-center justify-center text-slate-700 text-lg">
                         <i class="fas fa-file-shield"></i>
                     </div>
                     <h3 class="text-sm font-bold text-slate-800 uppercase tracking-tight">Verifikasi PDF</h3>
@@ -102,15 +102,15 @@
                 </div>
                 <div class="pt-6">
                     <a href="<?= site_url('verifikasi-pdf') ?>" id="action-verify-pdf" class="btn btn-outline w-full flex items-center justify-center gap-2 group-hover:bg-slate-700 group-hover:text-white group-hover:border-slate-700">
-                        Mulai Verifikasi <i class="fas fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
+                        Mulai Verifikasi <i class="fas fa-arrow-right text-[10px]"></i>
                     </a>
                 </div>
             </div>
 
             <!-- Card 2: Helpdesk Layanan -->
-            <div class="group bg-white border border-slate-200 hover:border-slate-400 rounded-2xl p-8 flex flex-col justify-between transition-all duration-300 hover:shadow-xl hover:shadow-slate-200/50 hover:-translate-y-1 relative overflow-hidden">
+            <div class="group bg-white border border-slate-200 hover:border-slate-400 rounded-2xl p-8 flex flex-col justify-between transition-all duration-300 hover:shadow-xl hover:shadow-slate-200/50 relative overflow-hidden">
                 <div class="space-y-4">
-                    <div class="w-12 h-12 bg-slate-100 border border-slate-200 rounded-xl flex items-center justify-center text-slate-700 text-lg group-hover:scale-110 transition-transform">
+                    <div class="w-12 h-12 bg-slate-100 border border-slate-200 rounded-xl flex items-center justify-center text-slate-700 text-lg">
                         <i class="fas fa-headset"></i>
                     </div>
                     <h3 class="text-sm font-bold text-slate-800 uppercase tracking-tight">Helpdesk Layanan</h3>
@@ -120,15 +120,15 @@
                 </div>
                 <div class="pt-6">
                     <a href="<?= site_url('helpdesk') ?>" id="action-helpdesk" class="btn btn-outline w-full flex items-center justify-center gap-2 group-hover:bg-slate-700 group-hover:text-white group-hover:border-slate-700">
-                        Kirim Laporan <i class="fas fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
+                        Kirim Laporan <i class="fas fa-arrow-right text-[10px]"></i>
                     </a>
                 </div>
             </div>
 
             <!-- Card 3: Administrator Login -->
-            <div class="group bg-white border border-slate-200 hover:border-slate-400 rounded-2xl p-8 flex flex-col justify-between transition-all duration-300 hover:shadow-xl hover:shadow-slate-200/50 hover:-translate-y-1 relative overflow-hidden">
+            <div class="group bg-white border border-slate-200 hover:border-slate-400 rounded-2xl p-8 flex flex-col justify-between transition-all duration-300 hover:shadow-xl hover:shadow-slate-200/50 relative overflow-hidden">
                 <div class="space-y-4">
-                    <div class="w-12 h-12 bg-slate-100 border border-slate-200 rounded-xl flex items-center justify-center text-slate-700 text-lg group-hover:scale-110 transition-transform">
+                    <div class="w-12 h-12 bg-slate-100 border border-slate-200 rounded-xl flex items-center justify-center text-slate-700 text-lg">
                         <i class="fas fa-user-gear"></i>
                     </div>
                     <h3 class="text-sm font-bold text-slate-800 uppercase tracking-tight">Login Admin</h3>
@@ -138,7 +138,7 @@
                 </div>
                 <div class="pt-6">
                     <a href="<?= site_url('login') ?>" id="action-admin-login" class="btn btn-solid w-full flex items-center justify-center gap-2">
-                        Portal Admin <i class="fas fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
+                        Portal Admin <i class="fas fa-arrow-right text-[10px]"></i>
                     </a>
                 </div>
             </div>

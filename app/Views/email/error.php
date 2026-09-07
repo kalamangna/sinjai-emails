@@ -63,7 +63,7 @@
             <p class="text-[11px] text-slate-500 leading-relaxed max-w-xs mx-auto">Tautan verifikasi yang Anda buka mungkin sudah tidak aktif, salah ketik, atau telah dihapus oleh administrator sistem.</p>
             
             <div class="pt-4 border-t border-slate-100">
-                <a href="javascript:void(0);" onclick="history.back();" class="w-full btn btn-solid !bg-slate-850 hover:!bg-slate-900 !text-white !py-2.5 rounded-lg flex items-center justify-center gap-2 hover:scale-[1.01] active:scale-[0.99] transition-all no-underline text-xs font-bold uppercase tracking-wider">
+                <a href="javascript:void(0);" onclick="history.back();" class="w-full btn btn-solid !bg-slate-850 hover:!bg-slate-900 !text-white !py-2.5 rounded-lg flex items-center justify-center gap-2 no-underline text-xs font-bold uppercase tracking-wider">
                     <i class="fas fa-arrow-left text-xs text-white/80"></i> Kembali
                 </a>
             </div>

@@ -55,7 +55,7 @@
 
                 <!-- Icon Swap (Desktop & Mobile) -->
                 <div class="flex justify-center z-10 my-2 md:my-0">
-                    <div class="w-10 h-10 rounded-full bg-slate-800 text-white flex items-center justify-center shadow-lg transform hover:rotate-180 transition-transform duration-500">
+                    <div class="w-10 h-10 rounded-full bg-slate-800 text-white flex items-center justify-center shadow-lg">
                         <i class="fas fa-exchange-alt md:rotate-0 rotate-90"></i>
                     </div>
                 </div>

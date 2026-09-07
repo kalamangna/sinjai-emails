@@ -36,7 +36,7 @@
 
                 <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-[10px] font-bold text-slate-700 group-hover:text-slate-800 uppercase tracking-widest transition-colors">
                     <span>Lihat Detail</span>
-                    <i class="fas fa-chevron-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
+                    <i class="fas fa-chevron-right text-[10px]"></i>
                 </div>
             </a>
         <?php endforeach; ?>

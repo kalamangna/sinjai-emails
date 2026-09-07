@@ -12,8 +12,8 @@
         </div>
 
         <div class="flex items-center gap-2 w-full lg:w-auto">
-            <button onclick="syncAllOnPage()" id="batchSyncBtn" class="flex-1 lg:flex-none btn btn-solid group">
-                <i class="fas fa-fingerprint mr-2 group-hover:scale-110 transition-transform"></i>
+            <button onclick="syncAllOnPage()" id="batchSyncBtn" class="flex-1 lg:flex-none btn btn-solid">
+                <i class="fas fa-fingerprint mr-2 text-white/80"></i>
                 <span>Sync TTE</span>
             </button>
         </div>

@@ -5,6 +5,22 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [7 September 2026] — Penghapusan Efek Animasi Tombol & Penyelarasan UI Statis
+
+- **Penghapusan Animasi Hover & Transform Tombol**:
+  - Menghapus efek rotasi ikon, pembesaran skala, dan transisi transform (`group-hover:rotate-180`, `group-hover:scale-110`, `transition-transform duration-500`) pada seluruh tombol aksi di aplikasi, termasuk tombol **Sync cPanel** di dasbor ([`home/index.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/home/index.php)) serta tombol **Sync TTE** dan **Sync Pegawai** pada halaman ASN ([`pns_list.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/pns_list.php), [`pppk_list.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/pppk_list.php), dan [`pppk_pw_list.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/pppk_pw_list.php)).
+  - Menghapus animasi hover scale (`hover:scale-[1.02]`) dan pergeseran panah (`group-hover:translate-x-1`) pada tombol dan kartu di halaman depan ([`landing.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/home/landing.php)).
+  - Menghapus efek animasi skala tombol (`hover:scale-[1.01] active:scale-[0.99]`) pada formulir helpdesk ([`public_form.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/helpdesk/public_form.php)), konfirmasi laporan ([`public_success.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/helpdesk/public_success.php)), dan halaman verifikasi gagal ([`error.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/error.php)).
+  - Menghapus animasi putar (`hover:rotate-180 duration-500`) pada indikator tukar data akun ([`swap_data.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/swap_data.php)).
+  - Menghapus animasi putar panah chevron dropdown pada tombol **Export**, **Batch PK**, dan **Sync** di [`pimpinan.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/pimpinan.php) dan [`unit_kerja_detail.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/unit_kerja_detail.php).
+  - Menghapus animasi `transition-transform` pada panah navigasi submenu sidebar ([`sidebar.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/components/sidebar.php)), dropdown profil pengguna header ([`main.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/layouts/main.php)), serta kartu daftar unit kerja dan eselon ([`unit_kerja_list.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/unit_kerja_list.php), [`eselon_list.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/eselon_list.php)).
+- **Standardisasi Tampilan Tombol**:
+  - Menyelaraskan tombol aksi formulir Unit Kerja ([`unit_kerja/add.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/unit_kerja/add.php), [`unit_kerja/edit.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/unit_kerja/edit.php)) menggunakan kelas komponen baku `btn btn-solid` dan `btn btn-outline`.
+- **Aset & Antarmuka**:
+  - Mengompilasi ulang berkas CSS Tailwind (`npm run build`).
+
+---
+
 # [7 September 2026] — Fitur Tombol Sinkronisasi cPanel di Dasbor & Pembaruan Otomatis Cache
 
 - **Tombol Sinkronisasi cPanel di Dasbor**:

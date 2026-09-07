@@ -24,7 +24,7 @@
                             <h3 class="text-lg font-bold text-slate-800 uppercase tracking-tight">Eselon <?= esc($eselon['nama_eselon']) ?></h3>
                             <p class="text-xs text-slate-700 uppercase font-medium mt-0.5">Lihat Detail</p>
                         </div>
-                        <i class="fas fa-chevron-right text-[10px] text-slate-700 group-hover:text-slate-800 group-hover:translate-x-1 transition-all"></i>
+                        <i class="fas fa-chevron-right text-[10px] text-slate-700 group-hover:text-slate-800"></i>
                     </div>
                 </a>
             <?php endforeach; ?>
