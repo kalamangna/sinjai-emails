@@ -5,6 +5,23 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [7 September 2026] — Fitur Tombol Sinkronisasi cPanel di Dasbor & Pembaruan Otomatis Cache
+
+- **Tombol Sinkronisasi cPanel di Dasbor**:
+  - Menambahkan tombol aksi **Sync cPanel** (`btn btn-outline`) pada header halaman dasbor ([`index.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/home/index.php)) untuk mempermudah administrator (`admin` & `super_admin`) menyinkronkan data akun dan kuota email cPanel secara on-demand.
+  - Mengintegrasikan dialog konfirmasi, animasi proses sinkronisasi, dan penayangan modal hasil sinkronisasi (`global-sync-result-modal`) lengkap dengan statistik akun disinkronkan dan dihapus.
+- **Rute & Endpoint Sinkronisasi Dasbor**:
+  - Menambahkan method `syncCpanel()` pada [`HomeController.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Domains/Dashboard/Controllers/HomeController.php) dengan proteksi peran otorisasi, penyesuaian batas waktu eksekusi (`set_time_limit`), dan penanganan galat.
+  - Mendaftarkan rute `POST dashboard/sync_cpanel` dan `POST dashboard/sync-cpanel` pada [`Routes.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Config/Routes.php).
+- **Pembaruan Otomatis Cache & Pemanasan Cache (Cache Warm-Up)**:
+  - Menambahkan method `updateDashboardCache()` pada [`CacheService.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Shared/Services/CacheService.php) untuk menghapus cache lama dan segera melakukan kalkulasi ulang serta pemanasan (*warm-up*) data ringkasan dasbor.
+  - Memperbarui [`SyncService.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Shared/Services/SyncService.php) agar otomatis memperbarui timestamp `last_sync_cpanel` dan menjalankan pembaruan cache dasbor setiap kali sinkronisasi cPanel berhasil.
+  - Menyertakan [`TanggalHelper.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Shared/Helpers/TanggalHelper.php) pada [`DashboardService.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Domains/Dashboard/Services/DashboardService.php) untuk memastikan fungsi tanggal (`bulanSekarang`, `tahunSekarang`) dapat dieksekusi secara aman di berbagai konteks (web maupun CLI/worker).
+- **Aset & Antarmuka**:
+  - Membangun dan mengompilasi berkas CSS Tailwind (`npm run build`).
+
+---
+
 # [1 September 2026] — Penyelarasan Hierarki Unit PDF, Pengaman Dev cPanel & Perapian Sinkronisasi Pegawai
 
 - **Penyelarasan Kolom & Dokumen PDF**:

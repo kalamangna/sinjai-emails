@@ -27,6 +27,12 @@
             <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight">Dashboard</h1>
         </div>
         <div class="flex items-center gap-2 w-full lg:w-auto">
+            <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
+                <button type="button" onclick="triggerSyncCpanel()" id="syncCpanelBtn" class="flex-1 lg:flex-none btn btn-outline bg-white group" title="Sinkronisasi Akun & Kuota Email dari cPanel">
+                    <i class="fas fa-sync-alt mr-2 text-slate-700 group-hover:rotate-180 transition-transform duration-500"></i>
+                    <span class="text-slate-700">Sync cPanel</span>
+                </button>
+            <?php endif; ?>
             <a href="<?= site_url('email') ?>" class="flex-1 lg:flex-none btn btn-solid no-underline">
                 <i class="fas fa-envelope mr-2 text-white/80"></i> Email
             </a>
@@ -523,5 +529,93 @@
                 document.getElementById('healthCheckContent').innerHTML = '<div class="flex items-center justify-center h-full"><p class="text-[9px] text-red-500 font-bold uppercase">Gagal memuat status layanan</p></div>';
             });
     });
+
+    async function triggerSyncCpanel() {
+        if (!confirm('Apakah Anda yakin ingin menyinkronkan data akun dan kuota email dari cPanel sekarang?')) {
+            return;
+        }
+
+        const btn = document.getElementById('syncCpanelBtn');
+        const originalHtml = btn ? btn.innerHTML : '';
+        if (btn) {
+            btn.disabled = true;
+            btn.classList.add('opacity-75', 'cursor-not-allowed');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i><span>Menyinkronkan...</span>';
+        }
+
+        try {
+            const response = await fetch('<?= site_url('dashboard/sync_cpanel') ?>', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    '<?= config('Security')->headerName ?>': '<?= csrf_hash() ?>'
+                }
+            });
+
+            const data = await response.json();
+
+            if (response.ok && (data.status === 'success' || data.success)) {
+                const synced = data.data?.synced ?? 0;
+                const deleted = data.data?.deleted ?? 0;
+
+                const iconEl  = document.getElementById('sync-result-icon');
+                const msgEl   = document.getElementById('sync-result-message');
+                const statsEl = document.getElementById('sync-result-stats');
+
+                if (iconEl) {
+                    iconEl.className = 'w-14 h-14 rounded-full flex items-center justify-center text-2xl bg-emerald-100';
+                    iconEl.innerHTML = '<i class="fas fa-check text-emerald-600"></i>';
+                }
+                if (msgEl) {
+                    msgEl.textContent = data.message || 'Sinkronisasi cPanel berhasil diselesaikan.';
+                }
+                if (statsEl) {
+                    statsEl.innerHTML = `
+                        <div class="flex-1 rounded-lg p-3 text-center bg-slate-100 text-slate-700">
+                            <div class="text-xl font-bold">${synced}</div>
+                            <div class="text-[10px] font-bold uppercase tracking-widest mt-0.5">Disinkron</div>
+                        </div>
+                        <div class="flex-1 rounded-lg p-3 text-center bg-emerald-50 text-emerald-700">
+                            <div class="text-xl font-bold">${deleted}</div>
+                            <div class="text-[10px] font-bold uppercase tracking-widest mt-0.5">Dihapus</div>
+                        </div>
+                    `;
+                }
+
+                if (typeof syncResultShouldReload !== 'undefined') {
+                    syncResultShouldReload = true;
+                }
+
+                if (typeof openModal === 'function') {
+                    openModal('global-sync-result-modal');
+                } else {
+                    alert(data.message || 'Sinkronisasi cPanel berhasil!');
+                    window.location.reload();
+                }
+            } else {
+                const errorMsg = data.message || 'Terjadi kesalahan saat sinkronisasi data cPanel.';
+                if (typeof window.showGlobalError === 'function') {
+                    window.showGlobalError('Gagal Sinkronisasi cPanel', errorMsg);
+                } else {
+                    alert(errorMsg);
+                }
+            }
+        } catch (err) {
+            const errMsg = 'Gagal terhubung ke server: ' + (err.message || 'Kesalahan jaringan');
+            if (typeof window.showGlobalError === 'function') {
+                window.showGlobalError('Kesalahan Jaringan', errMsg);
+            } else {
+                alert(errMsg);
+            }
+        } finally {
+            if (btn) {
+                btn.disabled = false;
+                btn.classList.remove('opacity-75', 'cursor-not-allowed');
+                btn.innerHTML = originalHtml;
+            }
+        }
+    }
+    window.triggerSyncCpanel = triggerSyncCpanel;
 </script>
 <?= $this->endSection() ?>

@@ -44,6 +44,8 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
     
     // Portal Utama
     $routes->get('dashboard', '\App\Domains\Dashboard\Controllers\HomeController::dashboard');
+    $routes->post('dashboard/sync_cpanel', '\App\Domains\Dashboard\Controllers\HomeController::syncCpanel', ['filter' => 'role:admin,super_admin']);
+    $routes->post('dashboard/sync-cpanel', '\App\Domains\Dashboard\Controllers\HomeController::syncCpanel', ['filter' => 'role:admin,super_admin']);
 
         // API Documentation (Admin & Super Admin)
         $routes->group('api-gateway', ['filter' => 'role:admin,super_admin'], function ($routes) {

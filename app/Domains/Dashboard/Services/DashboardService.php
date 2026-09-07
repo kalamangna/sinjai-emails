@@ -13,6 +13,8 @@ class DashboardService
 {
     public function getSummaryData(bool $forceRefresh = false): array
     {
+        require_once APPPATH . 'Shared/Helpers/TanggalHelper.php';
+
         $cache = \Config\Services::cache();
         $cacheKey = \App\Shared\Services\CacheService::KEY_DASHBOARD_SUMMARY;
 

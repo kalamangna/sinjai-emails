@@ -26,9 +26,16 @@ class SyncService
 
         if ((defined('ENVIRONMENT') && ENVIRONMENT === 'development') || env('CI_ENVIRONMENT') === 'development') {
             log_message('info', 'SyncService: Sinkronisasi cPanel dilewati di environment lokal/development.');
+            $this->saveSyncTimestamp('last_sync_time', untukDatabase('now'));
+            $this->saveSyncTimestamp('last_sync_cpanel', untukDatabase('now'));
+            \App\Shared\Services\CacheService::updateDashboardCache();
+
             return [
                 'status'   => 'success',
+                'success'  => true,
                 'message'  => 'Sinkronisasi cPanel disimulasikan (Mode Lokal/Dev).',
+                'synced'   => 0,
+                'deleted'  => 0,
                 'raw_data' => []
             ];
         }
@@ -62,17 +69,28 @@ class SyncService
             log_message('info', 'SyncService: Soft-deleted ' . count($to_delete) . ' email(s) no longer found on cPanel: ' . implode(', ', array_slice($to_delete, 0, 20)));
         }
 
-        // 4. Update last sync timestamp
-        $this->appSettingModel->where('key', 'last_sync_time')->set(['value' => untukDatabase('now')])->update();
-        if ($this->appSettingModel->affectedRows() == 0) {
-            $this->appSettingModel->insert(['key' => 'last_sync_time', 'value' => untukDatabase('now')]);
-        }
+        // 4. Update last sync timestamps
+        $now = untukDatabase('now');
+        $this->saveSyncTimestamp('last_sync_time', $now);
+        $this->saveSyncTimestamp('last_sync_cpanel', $now);
+
+        // 5. Update and warm up dashboard cache
+        \App\Shared\Services\CacheService::updateDashboardCache();
 
         return [
+            'status'   => 'success',
             'success'  => true,
             'message'  => 'Email data synchronization from cPanel was successful.',
             'synced'   => count($all_emails),
             'deleted'  => count($to_delete),
         ];
+    }
+
+    private function saveSyncTimestamp(string $key, string $value): void
+    {
+        $this->appSettingModel->where('key', $key)->set(['value' => $value])->update();
+        if ($this->appSettingModel->affectedRows() == 0) {
+            $this->appSettingModel->insert(['key' => $key, 'value' => $value]);
+        }
     }
 }

@@ -34,4 +34,39 @@ class HomeController extends BaseController
 
         return view('home/index', $data);
     }
+
+    /**
+     * Trigger Sinkronisasi cPanel secara manual dari Dasbor
+     */
+    public function syncCpanel()
+    {
+        $role = session()->get('role');
+        if (!in_array($role, ['admin', 'super_admin'])) {
+            return $this->response->setStatusCode(403)->setJSON([
+                'status'  => 'error',
+                'message' => 'Anda tidak memiliki izin untuk melakukan sinkronisasi cPanel.'
+            ]);
+        }
+
+        if (function_exists('set_time_limit')) {
+            @set_time_limit(180);
+        }
+
+        try {
+            $syncService = new \App\Shared\Services\SyncService();
+            $result = $syncService->syncFromCpanel();
+
+            return $this->response->setJSON([
+                'status'  => 'success',
+                'message' => $result['message'] ?? 'Sinkronisasi cPanel berhasil.',
+                'data'    => $result,
+            ]);
+        } catch (\Throwable $e) {
+            log_message('error', 'Sync cPanel failed via Dashboard: ' . $e->getMessage());
+            return $this->response->setStatusCode(500)->setJSON([
+                'status'  => 'error',
+                'message' => 'Gagal sinkronisasi cPanel: ' . $e->getMessage(),
+            ]);
+        }
+    }
 }

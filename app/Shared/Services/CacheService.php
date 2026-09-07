@@ -40,4 +40,15 @@ class CacheService
         $cache = \Config\Services::cache();
         $cache->delete(self::KEY_SYSTEM_HEALTH);
     }
+
+    /**
+     * Perbarui langsung (refresh & warm up) cache ringkasan dasbor.
+     */
+    public static function updateDashboardCache(): array
+    {
+        self::invalidateDashboard();
+        self::invalidateHealth();
+        $dashboardService = new \App\Domains\Dashboard\Services\DashboardService();
+        return $dashboardService->getSummaryData(true);
+    }
 }
