@@ -208,12 +208,12 @@ class AlertService
             return;
         }
 
-        $builder->addSection("Masa Aktif Domain ($count Web)", "🌐");
+        $builder->addSection("Domain Expired &lt;30 Hari ($count Web)", "🌐");
 
         foreach (array_slice($expiring, 0, 5) as $web) {
             $domain = htmlspecialchars($web['domain'] ?? '', ENT_NOQUOTES, 'UTF-8');
             $sisa = (int)$web['sisa_hari'];
-            $sisaText = $sisa <= 0 ? 'Kadaluarsa' : "Sisa {$sisa} hari";
+            $sisaText = $sisa <= 0 ? 'Expired' : "Sisa {$sisa} hari";
 
             $lines = ["🌐 <b>{$domain}</b>"];
             $lines[] = "⏳ {$sisaText}";
