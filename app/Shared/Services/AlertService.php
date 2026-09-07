@@ -102,9 +102,6 @@ class AlertService
             $count = count($expired);
 
             if ($count === 0) {
-                if ($isSummary) {
-                    $builder->addKeyValue('Status TTE', 'Semua Aktif', '✅');
-                }
                 return;
             }
 
@@ -148,9 +145,6 @@ class AlertService
             // Mode Bulanan / Penuh: Tampilkan rekap per unit kerja
             $grouped = $this->getExpiredTtePegawaiGroupedByUnitKerja();
             if (empty($grouped)) {
-                if ($isSummary) {
-                    $builder->addKeyValue('TTE Pegawai', 'Semua Aktif', '✅');
-                }
                 return;
             }
 
@@ -180,9 +174,6 @@ class AlertService
         $count = count($highUsage);
 
         if ($count === 0) {
-            if ($isSummary) {
-                $builder->addKeyValue('Kuota Email', 'Semua Normal', '✅');
-            }
             return;
         }
 
@@ -214,20 +205,18 @@ class AlertService
         $count = count($expiring);
 
         if ($count === 0) {
-            if ($isSummary) {
-                $builder->addKeyValue('Domain Web', 'Semua Aktif', '✅');
-            }
             return;
         }
 
-        $builder->addSection("Domain Expired ($count Web)", "🌐");
+        $builder->addSection("Masa Aktif Domain ($count Web)", "🌐");
 
         foreach (array_slice($expiring, 0, 5) as $web) {
             $domain = htmlspecialchars($web['domain'] ?? '', ENT_NOQUOTES, 'UTF-8');
             $sisa = (int)$web['sisa_hari'];
+            $sisaText = $sisa <= 0 ? 'Kadaluarsa' : "Sisa {$sisa} hari";
 
             $lines = ["🌐 <b>{$domain}</b>"];
-            $lines[] = "⏳ Sisa {$sisa} hari";
+            $lines[] = "⏳ {$sisaText}";
 
             $builder->addText(implode("\n", $lines));
         }

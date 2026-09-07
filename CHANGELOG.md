@@ -13,6 +13,7 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Membatasi panjang teks per baris agar tidak bertumpuk atau terpotong pada layar ponsel Telegram, dengan memisahkan nama (`👤`), instansi/unit kerja (`🏛️`), dan email (`📧`) ke dalam baris masing-masing secara rapi.
   - Menggunakan ikon kontekstual spesifik (`🎯`, `📊`, `⚠️`, `👤`, `🏛️`, `📧`, `🌐`, `⏳`, `✅`) serta menghilangkan karakter ambigu seperti `/` dan alternatif teks yang berlebihan (`Semua Aktif`, `Semua Normal`).
   - Menyelaraskan label target/objek sinkronisasi (`🎯`) agar 100% konsisten antara notifikasi saat dimulai (`SyncAllCommand.php`) dan saat selesai (`QueueWorker.php`) menggunakan method terpusat `AlertService::getSyncObjectName()` (`TTE Pimpinan`, `Email & Website`, `Data & TTE Pegawai`, `Data Pegawai`, `TTE Pegawai`, `Semua Data`).
+  - Menghilangkan penayangan status normal pada notifikasi ringkasan (seperti "Semua Normal" atau "Semua Aktif") saat tidak ada akun/domain bermasalah agar pesan tetap ringkas, serta memperbarui judul seksi domain menjadi "Masa Aktif Domain" dengan pelabelan hari yang akurat (`Kadaluarsa` atau `Sisa X hari`).
 
 ---
 
