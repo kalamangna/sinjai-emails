@@ -193,27 +193,46 @@ class QueueWorker extends BaseCommand
 
         $stats = $data['stats'] ?? [];
 
+        // Ringkasan Objek & Target Sinkronisasi
+        if ($mode === 'HARIAN') {
+            $builder->addKeyValue('Objek', 'TTE Pimpinan & Kades', '🎯');
+            $totalTte = $stats['tte']['success'] ?? 0;
+            if ($totalTte > 0) {
+                $builder->addKeyValue('Diperiksa', number_format($totalTte, 0, ',', '.') . ' Akun', '📊');
+            }
+        } elseif ($mode === 'MINGGUAN') {
+            $builder->addKeyValue('Objek', 'cPanel & Domain Web', '🎯');
+        } elseif ($mode === 'BULANAN') {
+            $builder->addKeyValue('Objek', 'Data SIMPEG & TTE Pegawai', '🎯');
+        } elseif ($mode === 'DATA PEGAWAI') {
+            $builder->addKeyValue('Objek', 'Data Pegawai (SIMPEG)', '🎯');
+        } elseif ($mode === 'STATUS TTE') {
+            $builder->addKeyValue('Objek', 'Status TTE Pegawai', '🎯');
+        } else {
+            $builder->addKeyValue('Objek', 'Semua Modul', '🎯');
+        }
+
         // 1. TTE Section (Harian / Bulanan / Penuh)
         if (isset($stats['tte']['executed'])) {
-            $alertService->appendTteReport($builder, $mode);
+            $alertService->appendTteReport($builder, $mode, true);
         }
 
         // 2. cPanel / Quota Section (Mingguan / Penuh)
         if (isset($stats['cpanel']['executed'])) {
-            $alertService->appendQuotaReport($builder);
+            $alertService->appendQuotaReport($builder, true);
         }
 
         // 3. Pegawai Section (Bulanan / Penuh)
         if (isset($stats['pegawai']['executed'])) {
             $pegawaiTotal = $stats['pegawai']['success'] ?? 0;
             if ($pegawaiTotal > 0) {
-                $builder->addKeyValue('Sukses', number_format($pegawaiTotal, 0, ',', '.') . ' Data Pegawai', '👥');
+                $builder->addKeyValue('SIMPEG', number_format($pegawaiTotal, 0, ',', '.') . ' Pegawai', '👥');
             }
         }
 
         // 4. Website Section (Bulanan / Penuh)
         if (isset($stats['website']['executed'])) {
-            $alertService->appendWebExpirationReport($builder);
+            $alertService->appendWebExpirationReport($builder, true);
         }
 
         $msg = $builder->build();

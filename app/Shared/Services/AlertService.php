@@ -71,7 +71,7 @@ class AlertService
                             ->findAll();
     }
 
-    public function appendTteReport(\App\Shared\Libraries\TelegramMessageBuilder $builder, string $mode = 'HARIAN')
+    public function appendTteReport(\App\Shared\Libraries\TelegramMessageBuilder $builder, string $mode = 'HARIAN', bool $isSummary = false)
     {
         $isHarian = strtoupper($mode) === 'HARIAN';
 
@@ -80,88 +80,138 @@ class AlertService
             $count = count($expired);
 
             if ($count === 0) {
+                if ($isSummary) {
+                    $builder->addKeyValue('Status TTE', 'Semua Aktif', '✅');
+                }
                 return;
             }
 
+            $builder->addSection("TTE Expired ($count Akun)", "⚠️");
+
             foreach (array_slice($expired, 0, 5) as $acc) {
-                $builder->addUserProfile(
-                    $acc['name'] ?? $acc['email'],
-                    !empty($acc['nip']) ? 'NIP: ' . $acc['nip'] : '',
-                    $acc['jabatan'] ?? '',
-                    $acc['unit_name'] ?? '',
-                    $acc['email'] ?? ''
-                );
+                $name = htmlspecialchars(mb_strtoupper(trim($acc['name'] ?? $acc['email'])), ENT_NOQUOTES, 'UTF-8');
+                $unit = trim($acc['unit_name'] ?? '');
+                $jabatan = trim($acc['jabatan'] ?? '');
+
+                if (!empty($unit) && !empty($jabatan)) {
+                    if (mb_stripos($jabatan, $unit) !== false) {
+                        $instansi = $jabatan;
+                    } elseif (mb_stripos($unit, 'DESA') === 0 && mb_stripos($jabatan, 'KEPALA DESA') !== false) {
+                        $instansi = $unit;
+                    } else {
+                        $instansi = $unit;
+                    }
+                } else {
+                    $instansi = $unit ?: $jabatan;
+                }
+
+                $instansiText = !empty($instansi) ? htmlspecialchars(mb_strtoupper($instansi), ENT_NOQUOTES, 'UTF-8') : '';
+                $email = htmlspecialchars($acc['email'] ?? '', ENT_NOQUOTES, 'UTF-8');
+
+                $lines = ["👤 <b>{$name}</b>"];
+                if ($instansiText !== '') {
+                    $lines[] = "🏛️ {$instansiText}";
+                }
+                if ($email !== '') {
+                    $lines[] = "📧 {$email}";
+                }
+
+                $builder->addText(implode("\n", $lines));
             }
 
             if ($count > 5) {
-                $builder->addItalicText("...dan " . ($count - 5) . " lainnya.");
+                $builder->addText("<i>...dan " . ($count - 5) . " akun lainnya.</i>");
             }
         } else {
             // Mode Bulanan / Penuh: Tampilkan rekap per unit kerja
             $grouped = $this->getExpiredTtePegawaiGroupedByUnitKerja();
             if (empty($grouped)) {
+                if ($isSummary) {
+                    $builder->addKeyValue('TTE Pegawai', 'Semua Aktif', '✅');
+                }
                 return;
             }
 
             $totalExpired = array_sum(array_column($grouped, 'total'));
-            $builder->addText("⚠️ <b>$totalExpired TTE Pegawai Expired:</b>");
+            $totalUnits = count($grouped);
 
+            $builder->addSection("TTE Pegawai Expired ($totalExpired Akun)", "⚠️");
+
+            $unitLines = [];
             foreach (array_slice($grouped, 0, 6) as $row) {
                 $unitName = htmlspecialchars(mb_strtoupper(trim($row['unit_name'])), ENT_NOQUOTES, 'UTF-8');
                 $total = (int)$row['total'];
-                $builder->addBullet("<b>{$unitName}</b> ({$total} Akun)");
+                $unitLines[] = "🏛️ <b>{$unitName}</b>: {$total} Akun";
             }
 
-            $totalUnits = count($grouped);
+            $builder->addText(implode("\n", $unitLines));
+
             if ($totalUnits > 6) {
-                $builder->addItalicText("...dan " . ($totalUnits - 6) . " unit kerja lainnya.");
+                $builder->addText("<i>...dan " . ($totalUnits - 6) . " unit kerja lainnya.</i>");
             }
         }
     }
 
-    public function appendQuotaReport(\App\Shared\Libraries\TelegramMessageBuilder $builder)
+    public function appendQuotaReport(\App\Shared\Libraries\TelegramMessageBuilder $builder, bool $isSummary = false)
     {
         $highUsage = $this->getHighQuotaAccounts(90.0);
         $count = count($highUsage);
 
         if ($count === 0) {
+            if ($isSummary) {
+                $builder->addKeyValue('Kuota Email', 'Semua Normal', '✅');
+            }
             return;
         }
 
+        $builder->addSection("Kuota Kritis ($count Akun)", "⚠️");
+
         foreach (array_slice($highUsage, 0, 5) as $acc) {
-            $extra = "📊 " . round($acc['diskusedpercent_float'], 1) . "% (" . htmlspecialchars($acc['humandiskused'] ?? '', ENT_NOQUOTES, 'UTF-8') . ")";
-            $builder->addUserProfile(
-                $acc['name'] ?? $acc['email'],
-                !empty($acc['nip']) ? 'NIP: ' . $acc['nip'] : '',
-                $acc['jabatan'] ?? '',
-                $acc['unit_name'] ?? '',
-                $acc['email'] ?? '',
-                $extra
-            );
+            $name = htmlspecialchars(mb_strtoupper(trim($acc['name'] ?? $acc['email'])), ENT_NOQUOTES, 'UTF-8');
+            $percent = round($acc['diskusedpercent_float'], 1);
+            $used = htmlspecialchars($acc['humandiskused'] ?? '', ENT_NOQUOTES, 'UTF-8');
+            $email = htmlspecialchars($acc['email'] ?? '', ENT_NOQUOTES, 'UTF-8');
+
+            $lines = ["👤 <b>{$name}</b>"];
+            $lines[] = "📊 {$percent}% ({$used})";
+            if ($email !== '') {
+                $lines[] = "📧 {$email}";
+            }
+
+            $builder->addText(implode("\n", $lines));
         }
 
         if ($count > 5) {
-            $builder->addItalicText("...dan " . ($count - 5) . " lainnya.");
+            $builder->addText("<i>...dan " . ($count - 5) . " akun lainnya.</i>");
         }
     }
 
-    public function appendWebExpirationReport(\App\Shared\Libraries\TelegramMessageBuilder $builder)
+    public function appendWebExpirationReport(\App\Shared\Libraries\TelegramMessageBuilder $builder, bool $isSummary = false)
     {
         $expiring = $this->getExpiringWebsites(30);
         $count = count($expiring);
 
         if ($count === 0) {
+            if ($isSummary) {
+                $builder->addKeyValue('Domain Web', 'Semua Aktif', '✅');
+            }
             return;
         }
+
+        $builder->addSection("Domain Expired ($count Web)", "🌐");
 
         foreach (array_slice($expiring, 0, 5) as $web) {
             $domain = htmlspecialchars($web['domain'] ?? '', ENT_NOQUOTES, 'UTF-8');
             $sisa = (int)$web['sisa_hari'];
-            $builder->addBullet("<b>{$domain}</b> — Sisa {$sisa} hari");
+
+            $lines = ["🌐 <b>{$domain}</b>"];
+            $lines[] = "⏳ Sisa {$sisa} hari";
+
+            $builder->addText(implode("\n", $lines));
         }
 
         if ($count > 5) {
-            $builder->addItalicText("...dan " . ($count - 5) . " lainnya.");
+            $builder->addText("<i>...dan " . ($count - 5) . " website lainnya.</i>");
         }
     }
 

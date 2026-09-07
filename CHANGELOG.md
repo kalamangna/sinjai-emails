@@ -5,6 +5,16 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [7 September 2026] — Optimalisasi & Perapian Format Notifikasi Ringkasan Telegram
+
+- **Format Notifikasi Telegram Ringkas & Kontekstual**:
+  - Menyempurnakan format notifikasi ringkasan sinkronisasi (`sync:all`) pada [`QueueWorker.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Commands/QueueWorker.php) dengan menampilkan objek/target sinkronisasi (`🎯`) dan jumlah akun yang diperiksa (`📊`).
+  - Mengubah penyajian daftar akun bermasalah (TTE Expired, Kuota Kritis, dan Domain Expired) pada [`AlertService.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Shared/Services/AlertService.php) agar to-the-point dan memiliki konteks yang jelas, menggantikan kartu profil besar yang sebelumnya membingungkan.
+  - Membatasi panjang teks per baris agar tidak bertumpuk atau terpotong pada layar ponsel Telegram, dengan memisahkan nama (`👤`), instansi/unit kerja (`🏛️`), dan email (`📧`) ke dalam baris masing-masing secara rapi.
+  - Menggunakan ikon kontekstual spesifik (`🎯`, `📊`, `⚠️`, `👤`, `🏛️`, `📧`, `🌐`, `⏳`, `✅`) serta menghilangkan karakter ambigu seperti `/` dan alternatif teks yang berlebihan (`Semua Aktif`, `Semua Normal`).
+
+---
+
 # [7 September 2026] — Penghapusan Efek Animasi Tombol & Penyelarasan UI Statis
 
 - **Penghapusan Animasi Hover & Transform Tombol**:
