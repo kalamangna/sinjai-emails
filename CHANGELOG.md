@@ -12,6 +12,7 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Mengubah penyajian daftar akun bermasalah (TTE Expired, Kuota Kritis, dan Domain Expired) pada [`AlertService.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Shared/Services/AlertService.php) agar to-the-point dan memiliki konteks yang jelas, menggantikan kartu profil besar yang sebelumnya membingungkan.
   - Membatasi panjang teks per baris agar tidak bertumpuk atau terpotong pada layar ponsel Telegram, dengan memisahkan nama (`👤`), instansi/unit kerja (`🏛️`), dan email (`📧`) ke dalam baris masing-masing secara rapi.
   - Menggunakan ikon kontekstual spesifik (`🎯`, `📊`, `⚠️`, `👤`, `🏛️`, `📧`, `🌐`, `⏳`, `✅`) serta menghilangkan karakter ambigu seperti `/` dan alternatif teks yang berlebihan (`Semua Aktif`, `Semua Normal`).
+  - Menyelaraskan label target/objek sinkronisasi (`🎯`) agar 100% konsisten antara notifikasi saat dimulai (`SyncAllCommand.php`) dan saat selesai (`QueueWorker.php`) menggunakan method terpusat `AlertService::getSyncObjectName()` (`TTE Pimpinan`, `Email & Website`, `Data & TTE Pegawai`, `Data Pegawai`, `TTE Pegawai`, `Semua Data`).
 
 ---
 

@@ -95,19 +95,8 @@ class SyncAllCommand extends BaseCommand
         $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
         $builder->setTitle("SINKRONISASI $modeName DIMULAI", '🔄');
 
-        if ($isDaily) {
-            $builder->addKeyValue('Objek', 'TTE Pimpinan', '🎯');
-        } elseif ($isWeekly) {
-            $builder->addKeyValue('Objek', 'Email & Website', '🎯');
-        } elseif ($isMonthly) {
-            $builder->addKeyValue('Objek', 'Data & TTE Pegawai', '🎯');
-        } elseif ($isPegawai) {
-            $builder->addKeyValue('Objek', 'Data Pegawai (SIMPEG)', '🎯');
-        } elseif ($isTte) {
-            $builder->addKeyValue('Objek', 'Status TTE (BSrE)', '🎯');
-        } else {
-            $builder->addKeyValue('Objek', 'Semua Data', '🎯');
-        }
+        $objek = \App\Shared\Services\AlertService::getSyncObjectName($modeName);
+        $builder->addKeyValue('Objek', $objek, '🎯');
 
         $this->telegram->sendMessage($builder->build());
 

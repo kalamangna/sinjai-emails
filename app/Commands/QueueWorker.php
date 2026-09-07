@@ -194,22 +194,14 @@ class QueueWorker extends BaseCommand
         $stats = $data['stats'] ?? [];
 
         // Ringkasan Objek & Target Sinkronisasi
+        $objek = \App\Shared\Services\AlertService::getSyncObjectName($mode);
+        $builder->addKeyValue('Objek', $objek, '🎯');
+
         if ($mode === 'HARIAN') {
-            $builder->addKeyValue('Objek', 'TTE Pimpinan & Kades', '🎯');
             $totalTte = $stats['tte']['success'] ?? 0;
             if ($totalTte > 0) {
                 $builder->addKeyValue('Diperiksa', number_format($totalTte, 0, ',', '.') . ' Akun', '📊');
             }
-        } elseif ($mode === 'MINGGUAN') {
-            $builder->addKeyValue('Objek', 'cPanel & Domain Web', '🎯');
-        } elseif ($mode === 'BULANAN') {
-            $builder->addKeyValue('Objek', 'Data SIMPEG & TTE Pegawai', '🎯');
-        } elseif ($mode === 'DATA PEGAWAI') {
-            $builder->addKeyValue('Objek', 'Data Pegawai (SIMPEG)', '🎯');
-        } elseif ($mode === 'STATUS TTE') {
-            $builder->addKeyValue('Objek', 'Status TTE Pegawai', '🎯');
-        } else {
-            $builder->addKeyValue('Objek', 'Semua Modul', '🎯');
         }
 
         // 1. TTE Section (Harian / Bulanan / Penuh)

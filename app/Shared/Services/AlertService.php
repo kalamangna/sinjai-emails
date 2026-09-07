@@ -16,6 +16,28 @@ class AlertService
         $this->telegram = new TelegramLibrary();
     }
 
+    /**
+     * Nama objek sinkronisasi baku dan konsisten untuk semua mode
+     */
+    public static function getSyncObjectName(string $mode): string
+    {
+        switch (strtoupper(trim($mode))) {
+            case 'HARIAN':
+                return 'TTE Pimpinan';
+            case 'MINGGUAN':
+                return 'Email & Website';
+            case 'BULANAN':
+                return 'Data & TTE Pegawai';
+            case 'DATA PEGAWAI':
+                return 'Data Pegawai';
+            case 'STATUS TTE':
+                return 'TTE Pegawai';
+            case 'PENUH':
+            default:
+                return 'Semua Data';
+        }
+    }
+
     public function getHighQuotaAccounts(float $threshold = 90.0)
     {
         $emailModel = new EmailModel();
