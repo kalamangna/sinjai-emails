@@ -151,12 +151,30 @@ class BsreController extends BaseController
                     $pesan = is_string($statusUser) ? $statusUser : 'Status Tidak Dikenali';
             }
 
+            $emailModel = new \App\Domains\Email\Models\EmailModel();
+            $emailRecord = null;
+            if (!empty($email)) {
+                $emailRecord = $emailModel->where('email', $email)->first();
+            }
+            if (!$emailRecord && !empty($cleanNik)) {
+                $emailRecord = $emailModel->where('nik', $cleanNik)->first();
+            }
+
+            if ($emailRecord && $statusUser === 'ISSUE') {
+                $emailModel->update($emailRecord['id'], [
+                    'bsre_status' => 'ISSUE',
+                    'tte_source'  => 'nik',
+                ]);
+            }
+
             return $this->response->setJSON([
                 'status'           => 'success',
                 'bsre_status'      => $statusUser,
                 'registered_email' => $registeredEmail,
                 'keterangan'       => $pesan,
                 'is_issue'         => ($statusUser === 'ISSUE'),
+                'tte_source'       => ($statusUser === 'ISSUE') ? 'nik' : ($emailRecord['tte_source'] ?? 'email'),
+                'updated_db'       => ($statusUser === 'ISSUE' && $emailRecord !== null),
             ]);
         }
 
@@ -191,13 +209,29 @@ class BsreController extends BaseController
             $emailRecord = $emailModel->where('email', $emailAddress)->first();
 
             if ($emailRecord) {
+                // Jika status email belum ISSUE tetapi akun sebelumnya valid via NIK, pertahankan status ISSUE
+                if ($statusFromBsre !== 'ISSUE' && ($emailRecord['tte_source'] ?? '') === 'nik' && ($emailRecord['bsre_status'] ?? '') === 'ISSUE') {
+                    return $this->response->setJSON([
+                        'status'      => 'success',
+                        'message'     => "Email di BSrE berstatus {$statusFromBsre}, namun akun dipertahankan ISSUE (terverifikasi via NIK).",
+                        'bsre_status' => 'ISSUE',
+                        'tte_source'  => 'nik',
+                    ]);
+                }
+
+                $newTteSource = ($statusFromBsre === 'ISSUE') ? 'email' : ($emailRecord['tte_source'] ?? 'email');
+
                 // Update the bsre_status in the emails table
-                $emailModel->update($emailRecord['id'], ['bsre_status' => $statusFromBsre]);
+                $emailModel->update($emailRecord['id'], [
+                    'bsre_status' => $statusFromBsre,
+                    'tte_source'  => $newTteSource,
+                ]);
 
                 return $this->response->setJSON([
-                    'status' => 'success',
-                    'message' => 'Status synced successfully',
-                    'bsre_status' => $statusFromBsre
+                    'status'      => 'success',
+                    'message'     => 'Status synced successfully',
+                    'bsre_status' => $statusFromBsre,
+                    'tte_source'  => $newTteSource,
                 ]);
             } else {
                 return $this->response->setJSON([

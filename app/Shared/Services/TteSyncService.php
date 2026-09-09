@@ -24,8 +24,16 @@ class TteSyncService
                 // BSrE API terkadang membungkus datanya dalam 'data', kita amankan dengan fallback
                 $statusFromBsre = $responseBody['status'] ?? ($responseBody['data']['status'] ?? 'UNKNOWN');
                 
-                // Update ke database
-                $emailModel->update($email['id'], ['bsre_status' => $statusFromBsre]);
+                // Jika akun valid via NIK dan status email di BSrE belum ISSUE, pertahankan ISSUE
+                if ($statusFromBsre !== 'ISSUE' && ($email['tte_source'] ?? '') === 'nik' && ($email['bsre_status'] ?? '') === 'ISSUE') {
+                    // Biarkan status tetap ISSUE
+                } else {
+                    $newTteSource = ($statusFromBsre === 'ISSUE') ? 'email' : ($email['tte_source'] ?? 'email');
+                    $emailModel->update($email['id'], [
+                        'bsre_status' => $statusFromBsre,
+                        'tte_source'  => $newTteSource,
+                    ]);
+                }
             } elseif (isset($result['code']) && ($result['code'] === 429 || $result['code'] === 503)) {
                 // Backoff adaptif jika BSrE mengalami beban tinggi
                 sleep(2);

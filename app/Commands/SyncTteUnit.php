@@ -165,11 +165,16 @@ class SyncTteUnit extends BaseCommand
                 if ($result['success']) {
                     $responseBody = $result['data'];
                     // Logic based on BsreApi implementation
-                    $statusFromBsre = $responseBody['status'] ?? ($responseBody['data']['status'] ?? 'UNKNOWN');
-                    
-                    $emailModel->update($email['id'], ['bsre_status' => $statusFromBsre]);
-                    
-                    CLI::write($statusFromBsre, 'green');
+                    if ($statusFromBsre !== 'ISSUE' && ($email['tte_source'] ?? '') === 'nik' && ($email['bsre_status'] ?? '') === 'ISSUE') {
+                        CLI::write("ISSUE (via NIK)", 'yellow');
+                    } else {
+                        $newTteSource = ($statusFromBsre === 'ISSUE') ? 'email' : ($email['tte_source'] ?? 'email');
+                        $emailModel->update($email['id'], [
+                            'bsre_status' => $statusFromBsre,
+                            'tte_source'  => $newTteSource,
+                        ]);
+                        CLI::write($statusFromBsre, 'green');
+                    }
                     $successCount++;
                 } else {
                     CLI::write("FAILED (" . ($result['message'] ?? 'Unknown Error') . ")", 'red');

@@ -41,6 +41,7 @@ class EmailModel extends Model
         'status_asn_id',
         'eselon_id',
         'bsre_status',
+        'tte_source',
         'pimpinan',
         'pimpinan_desa',
         'pensiun_at',

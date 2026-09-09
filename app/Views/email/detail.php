@@ -60,6 +60,7 @@
                                 <div id="bsre-status-container" class="flex items-center">
                                     <span class="inline-block h-4 w-16 bg-slate-200 rounded animate-pulse align-middle"></span>
                                 </div>
+                                <span id="nik-verified-badge" class="<?= (($email['tte_source'] ?? '') === 'nik') ? '' : 'hidden' ?> px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-200" title="Terverifikasi aktif di BSrE berdasarkan NIK">via NIK</span>
                                 <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
                                     <button id="sync-bsre-btn" onclick="syncBsreStatus('<?= esc($email['email'], 'js') ?>')" class="btn btn-solid btn-xs ml-2" data-tooltip-target="tooltip-sync-bsre">
                                         <i class="fas fa-sync-alt"></i>
@@ -105,7 +106,17 @@
                             </span>
                         <?php endif; ?>
                     </div>
-                    <div id="nik-diagnostic-result" class="hidden mt-3 max-w-2xl"></div>
+                    <div id="nik-diagnostic-result" class="<?= (($email['tte_source'] ?? '') === 'nik') ? '' : 'hidden' ?> mt-3 max-w-2xl">
+                        <?php if (($email['tte_source'] ?? '') === 'nik'): ?>
+                            <div class="p-2.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-start gap-2">
+                                <i class="fas fa-id-card text-amber-500 mt-0.5 shrink-0"></i>
+                                <div>
+                                    <p class="font-bold text-[11px] uppercase tracking-wide text-amber-800">Status TTE: ISSUE (Dicek via NIK)</p>
+                                    <p class="text-[11px] text-amber-700 mt-0.5">Sertifikat aktif di BSrE berdasarkan NIK. Status akun lokal telah disinkronkan ke ISSUE.</p>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                    </div>
                 </div>
             </div>
 
@@ -525,13 +536,22 @@
                 }
 
                 const diagCard = document.getElementById('nik-diagnostic-result');
-                if (status === 'NO_CERTIFICATE') {
+                const nikBadge = document.getElementById('nik-verified-badge');
+                if (result && result.tte_source === 'nik') {
+                    if (nikBadge) nikBadge.classList.remove('hidden');
+                    if (diagCard) diagCard.classList.remove('hidden');
+                } else if (status === 'ISSUE') {
+                    if (nikBadge) nikBadge.classList.add('hidden');
+                    if (diagCard) diagCard.classList.add('hidden');
+                } else if (status === 'NO_CERTIFICATE') {
+                    if (nikBadge) nikBadge.classList.add('hidden');
                     const currentNik = document.getElementById('nik-text') ? document.getElementById('nik-text').textContent.trim() : '<?= esc($email['nik'] ?? '', 'js') ?>';
                     if (currentNik && currentNik !== '-') {
                         checkNikStatus(currentNik, email, true);
                     }
-                } else if (diagCard) {
-                    diagCard.classList.add('hidden');
+                } else {
+                    if (nikBadge) nikBadge.classList.add('hidden');
+                    if (diagCard) diagCard.classList.add('hidden');
                 }
             }
         });
@@ -598,13 +618,18 @@
             if (res.status === 'success') {
                 if (res.is_issue) {
                     const emailNote = res.registered_email ? ` (${res.registered_email})` : '';
+                    renderBsreStatus('ISSUE');
+
+                    const nikBadge = document.getElementById('nik-verified-badge');
+                    if (nikBadge) nikBadge.classList.remove('hidden');
+
                     resultContainer.classList.remove('hidden');
                     resultContainer.innerHTML = `
                         <div class="p-2.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-start gap-2">
-                            <i class="fas fa-exclamation-triangle text-amber-500 mt-0.5 shrink-0"></i>
+                            <i class="fas fa-id-card text-amber-500 mt-0.5 shrink-0"></i>
                             <div>
-                                <p class="font-bold text-[11px] uppercase tracking-wide text-amber-800">Diagnostik NIK: Sertifikat Aktif (ISSUE)</p>
-                                <p class="text-[11px] text-amber-700 mt-0.5">NIK terdaftar dengan email lain di BSrE${emailNote}. Perbarui email dinas di Portal Admin BSrE.</p>
+                                <p class="font-bold text-[11px] uppercase tracking-wide text-amber-800">Status TTE: ISSUE (Dicek via NIK)</p>
+                                <p class="text-[11px] text-amber-700 mt-0.5">Sertifikat aktif di BSrE berdasarkan NIK${emailNote}. Status TTE diperbarui ke ISSUE.</p>
                             </div>
                         </div>
                     `;

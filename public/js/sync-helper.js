@@ -51,7 +51,7 @@
 
             if (data.status === 'success') {
                 window.renderBsreStatus(data.bsre_status, containerId);
-                return { success: true, status: data.bsre_status };
+                return { success: true, status: data.bsre_status, tte_source: data.tte_source };
             } else {
                 const errorMsg = data.message || 'Gagal';
                 container.innerHTML = `<button onclick="if(typeof window.showGlobalError==='function') { window.showGlobalError('Gagal Sinkronisasi', '${errorMsg.replace(/'/g, "\\'")}'); }" class="px-2 py-0.5 rounded text-[9px] font-bold uppercase border bg-red-50 text-red-600 border-red-200 hover:bg-red-100 transition-colors">ERROR</button>`;
