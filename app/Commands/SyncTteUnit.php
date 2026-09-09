@@ -160,22 +160,29 @@ class SyncTteUnit extends BaseCommand
             CLI::print("[$curr/$total] Checking {$email['email']}... ");
 
             try {
-                $result = $bsreApi->checkStatus($email['email'], 'email');
+                $hasCustomEmailBsre = !empty($email['email_bsre']);
+                $targetEmail = $hasCustomEmailBsre ? $email['email_bsre'] : $email['email'];
+
+                $result = $bsreApi->checkStatus($targetEmail, 'email');
                 
                 if ($result['success']) {
                     $responseBody = $result['data'];
                     $statusFromBsre = $responseBody['status'] ?? ($responseBody['data']['status'] ?? 'UNKNOWN');
 
                     // Logic based on BsreApi implementation
-                    if (!in_array($statusFromBsre, ['ISSUE', 'EXPIRED']) && ($email['tte_source'] ?? '') === 'nik' && in_array($email['bsre_status'] ?? '', ['ISSUE', 'EXPIRED'])) {
+                    if (!$hasCustomEmailBsre && !in_array($statusFromBsre, ['ISSUE', 'EXPIRED']) && ($email['tte_source'] ?? '') === 'nik' && in_array($email['bsre_status'] ?? '', ['ISSUE', 'EXPIRED'])) {
                         CLI::write("{$email['bsre_status']} (via NIK)", 'yellow');
                     } else {
-                        $newTteSource = in_array($statusFromBsre, ['ISSUE', 'EXPIRED']) ? 'email' : ($email['tte_source'] ?? 'email');
+                        $newTteSource = in_array($statusFromBsre, ['ISSUE', 'EXPIRED'])
+                            ? ($hasCustomEmailBsre ? 'email_bsre' : 'email')
+                            : ($email['tte_source'] ?? 'email');
+
                         $emailModel->update($email['id'], [
                             'bsre_status' => $statusFromBsre,
                             'tte_source'  => $newTteSource,
                         ]);
-                        CLI::write($statusFromBsre, 'green');
+                        $suffix = $hasCustomEmailBsre ? ' (via Email BSrE)' : '';
+                        CLI::write($statusFromBsre . $suffix, 'green');
                     }
                     $successCount++;
                 } else {

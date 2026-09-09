@@ -29,6 +29,10 @@
                             </select>
                         </div>
                         <div class="md:col-span-2">
+                            <label for="email_bsre" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Email Terdaftar BSrE <span class="text-slate-400 font-normal normal-case">(Opsional, jika TTE terdaftar menggunakan email non-dinas / Gmail)</span></label>
+                            <input type="email" name="email_bsre" id="email_bsre" value="<?= esc($email['email_bsre'] ?? '') ?>" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all placeholder-slate-400" placeholder="nama@gmail.com">
+                        </div>
+                        <div class="md:col-span-2">
                             <label for="name" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Nama <span class="text-slate-700 font-normal">(Tanpa Gelar)</span></label>
                             <input type="text" name="name" id="name" value="<?= esc($email['name']) ?>" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 uppercase transition-all" required>
                         </div>

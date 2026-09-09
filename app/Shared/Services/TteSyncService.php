@@ -18,17 +18,23 @@ class TteSyncService
         $bsreApi = new BsreApi();
         
         foreach ($emailList as $email) {
-            $result = $bsreApi->checkStatus($email['email'], 'email');
+            $hasCustomEmailBsre = !empty($email['email_bsre']);
+            $targetEmail = $hasCustomEmailBsre ? $email['email_bsre'] : $email['email'];
+
+            $result = $bsreApi->checkStatus($targetEmail, 'email');
             if ($result['success']) {
                 $responseBody = $result['data'];
                 // BSrE API terkadang membungkus datanya dalam 'data', kita amankan dengan fallback
                 $statusFromBsre = $responseBody['status'] ?? ($responseBody['data']['status'] ?? 'UNKNOWN');
                 
                 // Jika akun valid via NIK dan status email di BSrE bukan ISSUE/EXPIRED, pertahankan status dari NIK
-                if (!in_array($statusFromBsre, ['ISSUE', 'EXPIRED']) && ($email['tte_source'] ?? '') === 'nik' && in_array($email['bsre_status'] ?? '', ['ISSUE', 'EXPIRED'])) {
+                if (!$hasCustomEmailBsre && !in_array($statusFromBsre, ['ISSUE', 'EXPIRED']) && ($email['tte_source'] ?? '') === 'nik' && in_array($email['bsre_status'] ?? '', ['ISSUE', 'EXPIRED'])) {
                     // Biarkan status tetap (ISSUE / EXPIRED via NIK)
                 } else {
-                    $newTteSource = in_array($statusFromBsre, ['ISSUE', 'EXPIRED']) ? 'email' : ($email['tte_source'] ?? 'email');
+                    $newTteSource = in_array($statusFromBsre, ['ISSUE', 'EXPIRED'])
+                        ? ($hasCustomEmailBsre ? 'email_bsre' : 'email')
+                        : ($email['tte_source'] ?? 'email');
+
                     $emailModel->update($email['id'], [
                         'bsre_status' => $statusFromBsre,
                         'tte_source'  => $newTteSource,

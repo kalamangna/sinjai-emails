@@ -197,6 +197,7 @@ class EmailController extends BaseController
             'gelar_belakang' => $this->request->getPost('gelar_belakang'),
             'nik'            => $this->request->getPost('nik') ?: null,
             'nip'            => $this->request->getPost('nip') ?: null,
+            'email_bsre'     => trim((string)$this->request->getPost('email_bsre')) ?: null,
             'tempat_lahir'   => $this->request->getPost('tempat_lahir'),
             'pendidikan'     => $this->request->getPost('pendidikan'),
             'jabatan'        => mb_strtoupper($this->request->getPost('jabatan'), 'UTF-8'),

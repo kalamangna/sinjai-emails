@@ -7,6 +7,11 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 # [9 September 2026] — Fitur Diagnostik & Pembaruan Status TTE via NIK pada Detail Akun
 
+- **Dukungan Email Terdaftar BSrE (Email Luar / Personal)**:
+  - Menambahkan migrasi [`AddEmailBsreToEmails.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Database/Migrations/2026-09-09-212400_AddEmailBsreToEmails.php) untuk menambahkan kolom `email_bsre` pada tabel `emails` serta mendaftarkannya pada [`EmailModel.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Domains/Email/Models/EmailModel.php).
+  - Menambahkan field input manual `"Email Terdaftar BSrE"` pada form edit profil ([`edit_profile.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/edit_profile.php)) dan penanganannya di [`EmailController.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Domains/Email/Controllers/EmailController.php).
+  - Memprioritaskan pengecekan TTE ke API BSrE menggunakan `email_bsre` jika tersedia pada [`BsreController.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Domains/Email/Controllers/BsreController.php), [`TteSyncService.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Shared/Services/TteSyncService.php), dan [`SyncTteUnit.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Commands/SyncTteUnit.php) dengan penanda sumber `email_bsre`.
+  - Menampilkan alamat `email_bsre` dan badge **`via Email BSrE`** pada halaman detail akun ([`detail.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/detail.php)).
 - **Diagnostik & Sinkronisasi Status TTE Berbasis NIK**:
   - Menambahkan migrasi [`AddTteSourceToEmails.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Database/Migrations/2026-09-09-080312_AddTteSourceToEmails.php) untuk menambahkan kolom `tte_source` (`email` / `nik`) pada tabel `emails`.
   - Memperbarui method `checkNikStatus()` pada [`BsreController.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Domains/Email/Controllers/BsreController.php) agar otomatis memperbarui database lokal (`bsre_status` dan `tte_source = 'nik'`) saat pengecekan NIK menghasilkan status `ISSUE` maupun `EXPIRED`.
