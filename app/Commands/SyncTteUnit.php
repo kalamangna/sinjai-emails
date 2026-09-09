@@ -160,30 +160,14 @@ class SyncTteUnit extends BaseCommand
             CLI::print("[$curr/$total] Checking {$email['email']}... ");
 
             try {
-                $hasCustomEmailBsre = !empty($email['email_bsre']);
-                $targetEmail = $hasCustomEmailBsre ? $email['email_bsre'] : $email['email'];
-
-                $result = $bsreApi->checkStatus($targetEmail, 'email');
+                $result = $bsreApi->checkStatus($email['email'], 'email');
                 
                 if ($result['success']) {
                     $responseBody = $result['data'];
                     $statusFromBsre = $responseBody['status'] ?? ($responseBody['data']['status'] ?? 'UNKNOWN');
 
-                    // Logic based on BsreApi implementation
-                    if (!$hasCustomEmailBsre && !in_array($statusFromBsre, ['ISSUE', 'EXPIRED']) && ($email['tte_source'] ?? '') === 'nik' && in_array($email['bsre_status'] ?? '', ['ISSUE', 'EXPIRED'])) {
-                        CLI::write("{$email['bsre_status']} (via NIK)", 'yellow');
-                    } else {
-                        $newTteSource = in_array($statusFromBsre, ['ISSUE', 'EXPIRED'])
-                            ? ($hasCustomEmailBsre ? 'email_bsre' : 'email')
-                            : ($email['tte_source'] ?? 'email');
-
-                        $emailModel->update($email['id'], [
-                            'bsre_status' => $statusFromBsre,
-                            'tte_source'  => $newTteSource,
-                        ]);
-                        $suffix = $hasCustomEmailBsre ? ' (via Email BSrE)' : '';
-                        CLI::write($statusFromBsre . $suffix, 'green');
-                    }
+                    $emailModel->update($email['id'], ['bsre_status' => $statusFromBsre]);
+                    CLI::write($statusFromBsre, 'green');
                     $successCount++;
                 } else {
                     CLI::write("FAILED (" . ($result['message'] ?? 'Unknown Error') . ")", 'red');

@@ -47,14 +47,7 @@
                             <i class="fas fa-copy"></i>
                         </button>
                     </div>
-                    <div class="flex items-center gap-2 flex-wrap">
-                        <p class="text-sm font-medium text-slate-700 uppercase tracking-tight"><?= esc($email['name']) ?></p>
-                        <?php if (!empty($email['email_bsre'])): ?>
-                            <span class="text-[10px] text-slate-600 font-mono bg-slate-100 px-2 py-0.5 rounded border border-slate-200" title="Email Terdaftar di BSrE">
-                                <i class="fas fa-fingerprint mr-1 text-slate-400"></i><?= esc($email['email_bsre']) ?>
-                            </span>
-                        <?php endif; ?>
-                    </div>
+                    <p class="text-sm font-medium text-slate-700 uppercase tracking-tight"><?= esc($email['name']) ?></p>
 
                     <div class="flex flex-wrap items-center justify-center md:justify-start gap-2 mt-4">
                         <?php 
@@ -75,8 +68,6 @@
                                     ?>
                                     <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase border <?= $badgeClr ?>"><?= esc($lbl) ?></span>
                                 </div>
-                                <span id="nik-verified-badge" class="<?= (($email['tte_source'] ?? '') === 'nik') ? '' : 'hidden' ?> px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-200" title="Terverifikasi via NIK">via NIK</span>
-                                <span id="external-email-badge" class="<?= (($email['tte_source'] ?? '') === 'email_bsre') ? '' : 'hidden' ?> px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-blue-50 text-blue-700 border border-blue-200" title="Terverifikasi via Email Terdaftar BSrE">via Email BSrE</span>
                                 <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
                                     <button id="sync-bsre-btn" onclick="syncBsreStatus('<?= esc($email['email'], 'js') ?>')" class="btn btn-solid btn-xs ml-2" data-tooltip-target="tooltip-sync-bsre">
                                         <i class="fas fa-sync-alt"></i>
@@ -507,40 +498,7 @@
     async function syncBsreStatus(email) {
         const result = await syncSingleBsreStatus(email, 'bsre-status-container');
         if (result && result.success) {
-            let status = result.status;
-            let tteSource = result.tte_source || 'email';
-
-            const nikBadge = document.getElementById('nik-verified-badge');
-
-            if (status === 'NO_CERTIFICATE') {
-                const currentNik = document.getElementById('nik-text') ? document.getElementById('nik-text').textContent.trim() : '<?= esc($email['nik'] ?? '', 'js') ?>';
-                if (currentNik && currentNik !== '-') {
-                    const nikRes = await checkNikStatus(currentNik, email);
-                    if (nikRes && (nikRes.is_issue || nikRes.is_expired)) {
-                        status = nikRes.bsre_status;
-                        tteSource = 'nik';
-                    }
-                }
-            }
-
-            if (nikBadge) {
-                if (tteSource === 'nik' && (status === 'ISSUE' || status === 'EXPIRED')) {
-                    nikBadge.classList.remove('hidden');
-                } else {
-                    nikBadge.classList.add('hidden');
-                }
-            }
-
-            const emailBsreBadge = document.getElementById('external-email-badge');
-            if (emailBsreBadge) {
-                if (tteSource === 'email_bsre' && (status === 'ISSUE' || status === 'EXPIRED')) {
-                    emailBsreBadge.classList.remove('hidden');
-                } else {
-                    emailBsreBadge.classList.add('hidden');
-                }
-            }
-
-            renderBsreStatus(status);
+            renderBsreStatus(result.status);
         }
     }
 
@@ -560,30 +518,6 @@
             unitPltText: document.getElementById('unit-kerja-plt-text')
         };
         syncSinglePegawai(nip, btn, elements, email);
-    }
-
-    async function checkNikStatus(nik, email) {
-        if (!nik) return null;
-        try {
-            const response = await fetch('<?= site_url('bsre/check-nik') ?>', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                body: 'nik=' + encodeURIComponent(nik) + '&email=' + encodeURIComponent(email)
-            });
-
-            const res = await response.json();
-            if (res.status === 'success' && (res.is_issue || res.is_expired)) {
-                renderBsreStatus(res.bsre_status);
-                const nikBadge = document.getElementById('nik-verified-badge');
-                if (nikBadge) nikBadge.classList.remove('hidden');
-            }
-            return res;
-        } catch (e) {
-            return null;
-        }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
