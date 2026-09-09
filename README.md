@@ -18,6 +18,7 @@ Aplikasi ini menerapkan standar estetika **"Slate Clean Government"**—antarmuk
 ### ✍️ Integrasi TTE BSrE
 - **Monitoring Status:** Pelacakan status Sertifikat Elektronik secara real-time (ISSUE, EXPIRED, NO_CERTIFICATE, dll).
 - **Sinkronisasi Massal:** Sinkronisasi status TTE berurutan dengan performa tinggi untuk seluruh kategori pegawai dengan indikator progres langsung.
+- **Diagnostik NIK:** Pengecekan status TTE berbasis NIK di halaman Detail Akun untuk mendeteksi akun dengan sertifikat aktif di BSrE yang terikat email eksternal.
 
 ### 📊 Pemantauan & Analitik
 - **Monitoring Website:** Pelacakan domain **OPD** dan **Desa/Kelurahan**, termasuk sinkronisasi otomatis masa berlaku SSL dan Domain.

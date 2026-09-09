@@ -92,6 +92,80 @@ class BsreController extends BaseController
         }
     }
 
+    public function checkNikStatus()
+    {
+        $nik = $this->request->getVar('nik');
+        $email = $this->request->getVar('email');
+
+        if (!$nik) {
+            return $this->response->setJSON([
+                'status'  => 'error',
+                'message' => 'NIK wajib diisi.'
+            ]);
+        }
+
+        $cleanNik = preg_replace('/[^0-9]/', '', (string)$nik);
+        if (strlen($cleanNik) < 16) {
+            return $this->response->setJSON([
+                'status'  => 'error',
+                'message' => 'Format NIK minimal 16 digit.'
+            ]);
+        }
+
+        $bsreApi = new BsreApi();
+        $result = $bsreApi->checkStatus($cleanNik, 'nik');
+
+        if ($result['success']) {
+            $responseBody = $result['data'] ?? [];
+            $statusUser = $responseBody['status'] ?? ($responseBody['data']['status'] ?? 'UNKNOWN');
+            $registeredEmail = $responseBody['email'] ?? ($responseBody['data']['email'] ?? null);
+
+            $pesan = '';
+            switch ($statusUser) {
+                case 'ISSUE':
+                    $pesan = 'Sertifikat Aktif';
+                    break;
+                case 'EXPIRED':
+                    $pesan = 'Masa Berlaku Habis';
+                    break;
+                case 'RENEW':
+                    $pesan = 'Proses Pembaruan';
+                    break;
+                case 'WAITING_FOR_VERIFICATION':
+                    $pesan = 'Menunggu Verifikasi';
+                    break;
+                case 'NEW':
+                case 'NO_CERTIFICATE':
+                    $pesan = 'Belum Aktivasi';
+                    break;
+                case 'NOT_REGISTERED':
+                    $pesan = 'Tidak Terdaftar';
+                    break;
+                case 'SUSPEND':
+                    $pesan = 'Akun Ditangguhkan';
+                    break;
+                case 'REVOKE':
+                    $pesan = 'Sertifikat Dicabut';
+                    break;
+                default:
+                    $pesan = is_string($statusUser) ? $statusUser : 'Status Tidak Dikenali';
+            }
+
+            return $this->response->setJSON([
+                'status'           => 'success',
+                'bsre_status'      => $statusUser,
+                'registered_email' => $registeredEmail,
+                'keterangan'       => $pesan,
+                'is_issue'         => ($statusUser === 'ISSUE'),
+            ]);
+        }
+
+        return $this->response->setJSON([
+            'status'  => 'error',
+            'message' => 'Gagal menghubungi server BSrE: ' . ($result['message'] ?? 'Koneksi terputus')
+        ]);
+    }
+
     public function syncStatus()
     {
         $emailAddress = $this->request->getVar('email');

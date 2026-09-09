@@ -5,6 +5,19 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [9 September 2026] — Fitur Diagnostik Status TTE via NIK pada Detail Akun
+
+- **Diagnostik Status TTE Berbasis NIK**:
+  - Menambahkan method `checkNikStatus()` pada [`BsreController.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Domains/Email/Controllers/BsreController.php) untuk memeriksa status sertifikat elektronik langsung ke API BSrE menggunakan parameter NIK.
+  - Mendaftarkan rute `POST bsre/check-nik` pada [`Routes.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Config/Routes.php) dengan proteksi otorisasi peran `admin` dan `super_admin`.
+  - Menambahkan tombol aksi **Cek NIK** (`#check-nik-btn`) pada bilah Status TTE dan tautan cepat di samping label NIK Data Pribadi pada [`detail.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/detail.php).
+  - Mengintegrasikan diagnostik otomatis saat halaman dibuka jika akun berstatus `NO_CERTIFICATE` dan memiliki data NIK, sehingga mendeteksi jika NIK telah aktif di BSrE dengan email lain/eksternal.
+  - Menampilkan panel diagnostik ringkas (`#nik-diagnostic-result`) yang menginformasikan status sertifikat di BSrE beserta arahan pembaruan email pengguna di Portal Admin BSrE jika terjadi benturan NIK.
+- **Aset & Antarmuka**:
+  - Mengompilasi ulang berkas CSS Tailwind (`npm run build`).
+
+---
+
 # [7 September 2026] — Optimalisasi & Perapian Format Notifikasi Ringkasan Telegram
 
 - **Format Notifikasi Telegram Ringkas & Kontekstual**:

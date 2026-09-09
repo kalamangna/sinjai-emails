@@ -68,6 +68,15 @@
                                         Sinkronkan Status
                                         <div class="tooltip-arrow" data-popper-arrow></div>
                                     </div>
+                                    <?php if (!empty($email['nik'])): ?>
+                                        <button id="check-nik-btn" type="button" onclick="checkNikStatus('<?= esc($email['nik'], 'js') ?>', '<?= esc($email['email'], 'js') ?>')" class="btn btn-outline btn-xs ml-1 text-slate-600 hover:text-slate-800" data-tooltip-target="tooltip-check-nik">
+                                            <i class="fas fa-id-card"></i>
+                                        </button>
+                                        <div id="tooltip-check-nik" role="tooltip" class="absolute z-10 invisible inline-block px-2.5 py-1 text-[10px] font-bold text-white bg-slate-900 rounded-lg shadow-sm opacity-0 tooltip" x-cloak>
+                                            Diagnostik NIK
+                                            <div class="tooltip-arrow" data-popper-arrow></div>
+                                        </div>
+                                    <?php endif; ?>
                                 <?php endif; ?>
                             </div>
                         <?php else: ?>
@@ -96,6 +105,7 @@
                             </span>
                         <?php endif; ?>
                     </div>
+                    <div id="nik-diagnostic-result" class="hidden mt-3 max-w-2xl"></div>
                 </div>
             </div>
 
@@ -139,7 +149,14 @@
                             <span class="block text-[10px] font-bold text-slate-700 uppercase tracking-widest mb-1.5">Data Pribadi</span>
                             <div class="space-y-4">
                                 <div>
-                                    <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">NIK</label>
+                                    <div class="flex items-center justify-between">
+                                        <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">NIK</label>
+                                        <?php if (!empty($email['nik']) && in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
+                                            <button type="button" onclick="checkNikStatus('<?= esc($email['nik'], 'js') ?>', '<?= esc($email['email'], 'js') ?>')" class="text-[10px] text-blue-600 hover:text-blue-800 font-semibold inline-flex items-center gap-1">
+                                                <i class="fas fa-search"></i> Cek NIK
+                                            </button>
+                                        <?php endif; ?>
+                                    </div>
                                     <p id="nik-text" class="text-sm font-semibold text-slate-800 font-mono"><?= esc($email['nik']) ?: '-' ?></p>
                                 </div>
                                 <div>
@@ -506,6 +523,16 @@
                 } else if (qrcodeCard) {
                     qrcodeCard.classList.add('hidden');
                 }
+
+                const diagCard = document.getElementById('nik-diagnostic-result');
+                if (status === 'NO_CERTIFICATE') {
+                    const currentNik = document.getElementById('nik-text') ? document.getElementById('nik-text').textContent.trim() : '<?= esc($email['nik'] ?? '', 'js') ?>';
+                    if (currentNik && currentNik !== '-') {
+                        checkNikStatus(currentNik, email, true);
+                    }
+                } else if (diagCard) {
+                    diagCard.classList.add('hidden');
+                }
             }
         });
     }
@@ -528,9 +555,114 @@
         syncSinglePegawai(nip, btn, elements, email);
     }
 
+    async function checkNikStatus(nik, email, isAuto = false) {
+        if (!nik) return;
+        const resultContainer = document.getElementById('nik-diagnostic-result');
+        const btn = document.getElementById('check-nik-btn');
+        const originalHtml = btn ? btn.innerHTML : '';
+
+        if (btn && !isAuto) {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        }
+
+        if (resultContainer && !isAuto) {
+            resultContainer.classList.remove('hidden');
+            resultContainer.innerHTML = `
+                <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-200 text-slate-600 text-xs flex items-center gap-2 animate-pulse">
+                    <i class="fas fa-spinner fa-spin text-slate-400"></i>
+                    <span>Memeriksa status NIK di server BSrE...</span>
+                </div>
+            `;
+        }
+
+        try {
+            const response = await fetch('<?= site_url('bsre/check-nik') ?>', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: 'nik=' + encodeURIComponent(nik) + '&email=' + encodeURIComponent(email)
+            });
+
+            const res = await response.json();
+
+            if (btn && !isAuto) {
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
+            }
+
+            if (!resultContainer) return;
+
+            if (res.status === 'success') {
+                if (res.is_issue) {
+                    const emailNote = res.registered_email ? ` (${res.registered_email})` : '';
+                    resultContainer.classList.remove('hidden');
+                    resultContainer.innerHTML = `
+                        <div class="p-2.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-start gap-2">
+                            <i class="fas fa-exclamation-triangle text-amber-500 mt-0.5 shrink-0"></i>
+                            <div>
+                                <p class="font-bold text-[11px] uppercase tracking-wide text-amber-800">Diagnostik NIK: Sertifikat Aktif (ISSUE)</p>
+                                <p class="text-[11px] text-amber-700 mt-0.5">NIK terdaftar dengan email lain di BSrE${emailNote}. Perbarui email dinas di Portal Admin BSrE.</p>
+                            </div>
+                        </div>
+                    `;
+                } else if (!isAuto) {
+                    resultContainer.classList.remove('hidden');
+                    const note = (res.bsre_status === 'NO_CERTIFICATE' || res.bsre_status === 'NEW')
+                        ? 'NIK belum memiliki sertifikat aktif di BSrE.'
+                        : (res.bsre_status === 'NOT_REGISTERED' ? 'NIK belum terdaftar di layanan BSrE.' : `Status NIK di BSrE: ${res.bsre_status}`);
+
+                    resultContainer.innerHTML = `
+                        <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-200 text-slate-700 text-xs flex items-start gap-2">
+                            <i class="fas fa-info-circle text-slate-400 mt-0.5 shrink-0"></i>
+                            <div>
+                                <p class="font-bold text-[11px] uppercase tracking-wide text-slate-700">Diagnostik NIK: ${res.keterangan || res.bsre_status}</p>
+                                <p class="text-[11px] text-slate-600 mt-0.5">${note}</p>
+                            </div>
+                        </div>
+                    `;
+                }
+            } else if (!isAuto) {
+                resultContainer.classList.remove('hidden');
+                resultContainer.innerHTML = `
+                    <div class="p-2.5 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs flex items-start gap-2">
+                        <i class="fas fa-times-circle text-red-500 mt-0.5 shrink-0"></i>
+                        <div>
+                            <p class="font-bold text-[11px] uppercase tracking-wide text-red-800">Diagnostik NIK: Gagal</p>
+                            <p class="text-[11px] text-red-600 mt-0.5">${res.message || 'Gagal menghubungi server BSrE'}</p>
+                        </div>
+                    </div>
+                `;
+            }
+        } catch (e) {
+            if (btn && !isAuto) {
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
+            }
+            if (resultContainer && !isAuto) {
+                resultContainer.classList.remove('hidden');
+                resultContainer.innerHTML = `
+                    <div class="p-2.5 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs flex items-start gap-2">
+                        <i class="fas fa-times-circle text-red-500 mt-0.5 shrink-0"></i>
+                        <div>
+                            <p class="font-bold text-[11px] uppercase tracking-wide text-red-800">Diagnostik NIK: Gagal</p>
+                            <p class="text-[11px] text-red-600 mt-0.5">Terjadi kesalahan koneksi.</p>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
         const initialStatus = '<?= esc($email['bsre_status'] ?? '', 'js') ?>';
         renderBsreStatus(initialStatus);
+
+        <?php if (!empty($email['nik']) && ($email['bsre_status'] ?? '') === 'NO_CERTIFICATE' && in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
+            checkNikStatus('<?= esc($email['nik'], 'js') ?>', '<?= esc($email['email'], 'js') ?>', true);
+        <?php endif; ?>
     });
 
 
