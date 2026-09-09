@@ -160,9 +160,11 @@ class BsreController extends BaseController
                 $emailRecord = $emailModel->where('nik', $cleanNik)->first();
             }
 
-            if ($emailRecord && $statusUser === 'ISSUE') {
+            $isTteValidOrExpired = in_array($statusUser, ['ISSUE', 'EXPIRED']);
+
+            if ($emailRecord && $isTteValidOrExpired) {
                 $emailModel->update($emailRecord['id'], [
-                    'bsre_status' => 'ISSUE',
+                    'bsre_status' => $statusUser,
                     'tte_source'  => 'nik',
                 ]);
             }
@@ -173,8 +175,9 @@ class BsreController extends BaseController
                 'registered_email' => $registeredEmail,
                 'keterangan'       => $pesan,
                 'is_issue'         => ($statusUser === 'ISSUE'),
-                'tte_source'       => ($statusUser === 'ISSUE') ? 'nik' : ($emailRecord['tte_source'] ?? 'email'),
-                'updated_db'       => ($statusUser === 'ISSUE' && $emailRecord !== null),
+                'is_expired'       => ($statusUser === 'EXPIRED'),
+                'tte_source'       => $isTteValidOrExpired ? 'nik' : ($emailRecord['tte_source'] ?? 'email'),
+                'updated_db'       => ($isTteValidOrExpired && $emailRecord !== null),
             ]);
         }
 
@@ -209,17 +212,17 @@ class BsreController extends BaseController
             $emailRecord = $emailModel->where('email', $emailAddress)->first();
 
             if ($emailRecord) {
-                // Jika status email belum ISSUE tetapi akun sebelumnya valid via NIK, pertahankan status ISSUE
-                if ($statusFromBsre !== 'ISSUE' && ($emailRecord['tte_source'] ?? '') === 'nik' && ($emailRecord['bsre_status'] ?? '') === 'ISSUE') {
+                // Jika status email belum ISSUE/EXPIRED tetapi akun sebelumnya valid via NIK, pertahankan status dari NIK
+                if (!in_array($statusFromBsre, ['ISSUE', 'EXPIRED']) && ($emailRecord['tte_source'] ?? '') === 'nik' && in_array($emailRecord['bsre_status'] ?? '', ['ISSUE', 'EXPIRED'])) {
                     return $this->response->setJSON([
                         'status'      => 'success',
-                        'message'     => "Email di BSrE berstatus {$statusFromBsre}, namun akun dipertahankan ISSUE (terverifikasi via NIK).",
-                        'bsre_status' => 'ISSUE',
+                        'message'     => "Email di BSrE berstatus {$statusFromBsre}, namun akun dipertahankan {$emailRecord['bsre_status']} (terverifikasi via NIK).",
+                        'bsre_status' => $emailRecord['bsre_status'],
                         'tte_source'  => 'nik',
                     ]);
                 }
 
-                $newTteSource = ($statusFromBsre === 'ISSUE') ? 'email' : ($emailRecord['tte_source'] ?? 'email');
+                $newTteSource = in_array($statusFromBsre, ['ISSUE', 'EXPIRED']) ? 'email' : ($emailRecord['tte_source'] ?? 'email');
 
                 // Update the bsre_status in the emails table
                 $emailModel->update($emailRecord['id'], [
@@ -262,7 +265,7 @@ class BsreController extends BaseController
         $search = $this->request->getGet('search');
         $bsre_status = $this->request->getGet('bsre_status');
 
-        $builder = $emailModel->select('id, email');
+        $builder = $emailModel->select('id, email, bsre_status, tte_source');
 
         if (!empty($search)) {
             $builder->groupStart()
@@ -291,7 +294,16 @@ class BsreController extends BaseController
             if ($result['success']) {
                 $responseBody = $result['data'];
                 $statusFromBsre = $responseBody['status'] ?? ($responseBody['data']['status'] ?? 'UNKNOWN');
-                $emailModel->update($email['id'], ['bsre_status' => $statusFromBsre]);
+
+                if (!in_array($statusFromBsre, ['ISSUE', 'EXPIRED']) && ($email['tte_source'] ?? '') === 'nik' && in_array($email['bsre_status'] ?? '', ['ISSUE', 'EXPIRED'])) {
+                    // Pertahankan status via NIK
+                } else {
+                    $newTteSource = in_array($statusFromBsre, ['ISSUE', 'EXPIRED']) ? 'email' : ($email['tte_source'] ?? 'email');
+                    $emailModel->update($email['id'], [
+                        'bsre_status' => $statusFromBsre,
+                        'tte_source'  => $newTteSource,
+                    ]);
+                }
                 $successCount++;
             } else {
                 $failCount++;

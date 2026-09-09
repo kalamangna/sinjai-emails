@@ -508,15 +508,15 @@
                 const currentNik = document.getElementById('nik-text') ? document.getElementById('nik-text').textContent.trim() : '<?= esc($email['nik'] ?? '', 'js') ?>';
                 if (currentNik && currentNik !== '-') {
                     const nikRes = await checkNikStatus(currentNik, email);
-                    if (nikRes && nikRes.is_issue) {
-                        status = 'ISSUE';
+                    if (nikRes && (nikRes.is_issue || nikRes.is_expired)) {
+                        status = nikRes.bsre_status;
                         tteSource = 'nik';
                     }
                 }
             }
 
             if (nikBadge) {
-                if (tteSource === 'nik' && status === 'ISSUE') {
+                if (tteSource === 'nik' && (status === 'ISSUE' || status === 'EXPIRED')) {
                     nikBadge.classList.remove('hidden');
                 } else {
                     nikBadge.classList.add('hidden');
@@ -558,8 +558,8 @@
             });
 
             const res = await response.json();
-            if (res.status === 'success' && res.is_issue) {
-                renderBsreStatus('ISSUE');
+            if (res.status === 'success' && (res.is_issue || res.is_expired)) {
+                renderBsreStatus(res.bsre_status);
                 const nikBadge = document.getElementById('nik-verified-badge');
                 if (nikBadge) nikBadge.classList.remove('hidden');
             }
