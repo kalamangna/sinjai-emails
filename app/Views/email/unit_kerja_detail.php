@@ -754,6 +754,7 @@ echo view('components/modal', [
 
         for (const container of containers) {
             const email = container.getAttribute('data-email');
+            const nik = container.getAttribute('data-nik');
             
             // Scroll ke container yang sedang diproses
             container.scrollIntoView({
@@ -778,8 +779,34 @@ echo view('components/modal', [
                 const data = await response.json();
 
                 if (data.status === 'success') {
-                    const colorClass = getJsStatusColor(data.bsre_status);
-                    container.innerHTML = `<span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase border ${colorClass}">${data.bsre_status}</span>`;
+                    let currentStatus = data.bsre_status;
+                    let tteSource = data.tte_source || 'email';
+
+                    // Fallback cek by NIK khusus jika status email NO_CERTIFICATE
+                    const cleanNik = (nik || '').replace(/[^0-9]/g, '');
+                    if (currentStatus === 'NO_CERTIFICATE' && cleanNik.length >= 16) {
+                        try {
+                            const nikResponse = await fetch('<?= site_url('bsre/check-nik') ?>', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                    'X-CSRF-TOKEN': '<?= csrf_hash() ?>'
+                                },
+                                body: 'nik=' + encodeURIComponent(cleanNik) + '&email=' + encodeURIComponent(email)
+                            });
+                            const nikData = await nikResponse.json();
+                            if (nikData.status === 'success' && (nikData.is_issue || nikData.is_expired)) {
+                                currentStatus = nikData.bsre_status;
+                                tteSource = 'nik';
+                            }
+                        } catch (nikErr) {
+                            console.error('NIK check failed for ' + email, nikErr);
+                        }
+                    }
+
+                    const colorClass = getJsStatusColor(currentStatus);
+                    container.innerHTML = `<span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase border ${colorClass}">${currentStatus}</span>`;
                     success++;
                 } else {
                     const errorMsg = data.message || 'Gagal';
@@ -792,6 +819,9 @@ echo view('components/modal', [
                 container.innerHTML = `<button onclick="showGlobalError('Kesalahan Jaringan', '${errorMsg}')" class="px-2 py-0.5 rounded text-[9px] font-bold uppercase border bg-red-50 text-red-600 border-red-200 hover:bg-red-100 transition-colors">ERROR</button>`;
                 failed++;
             }
+
+            // Jeda mikro 100ms untuk menjaga kestabilan request
+            await new Promise(resolve => setTimeout(resolve, 100));
 
             processed++;
             mainBtn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> TTE: ${processed}/${containers.length}`;

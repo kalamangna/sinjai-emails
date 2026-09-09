@@ -572,10 +572,6 @@
     document.addEventListener('DOMContentLoaded', () => {
         const initialStatus = '<?= esc($email['bsre_status'] ?? '', 'js') ?>';
         renderBsreStatus(initialStatus);
-
-        <?php if (!empty($email['nik']) && ($email['bsre_status'] ?? '') === 'NO_CERTIFICATE' && in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
-            checkNikStatus('<?= esc($email['nik'], 'js') ?>', '<?= esc($email['email'], 'js') ?>');
-        <?php endif; ?>
     });
 
 
