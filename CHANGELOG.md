@@ -11,8 +11,8 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Menambahkan migrasi [`AddTteSourceToEmails.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Database/Migrations/2026-09-09-080312_AddTteSourceToEmails.php) untuk menambahkan kolom `tte_source` (`email` / `nik`) pada tabel `emails`.
   - Memperbarui method `checkNikStatus()` pada [`BsreController.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Domains/Email/Controllers/BsreController.php) agar otomatis memperbarui database lokal (`bsre_status = 'ISSUE'` dan `tte_source = 'nik'`) saat pengecekan NIK menghasilkan status `ISSUE`.
   - Mendaftarkan rute `POST bsre/check-nik` pada [`Routes.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Config/Routes.php) dengan proteksi otorisasi peran `admin` dan `super_admin`.
-  - Menambahkan tombol aksi **Cek NIK** (`#check-nik-btn`) pada bilah Status TTE dan tautan cepat di samping label NIK Data Pribadi pada [`detail.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/detail.php).
-  - Mengintegrasikan diagnostik otomatis saat halaman dibuka jika akun berstatus `NO_CERTIFICATE` dan memiliki data NIK, serta menampilkan badge penanda **`via NIK`** dan keterangan ringkas bahwa akun terverifikasi via NIK.
+  - Mengintegrasikan fallback otomatis pengecekan NIK langsung ke tombol sinkronisasi TTE yang sudah ada dan saat halaman dibuka jika akun berstatus `NO_CERTIFICATE`.
+  - Menampilkan badge penanda ringkas **`via NIK`** di samping status TTE tanpa elemen tombol atau banner tambahan yang berlebihan.
   - Memproteksi status `ISSUE` pada sinkronisasi massal ([`TteSyncService.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Shared/Services/TteSyncService.php) dan [`SyncTteUnit.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Commands/SyncTteUnit.php)) agar akun yang telah terverifikasi via NIK tidak tertimpa kembali menjadi `NO_CERTIFICATE`.
 - **Aset & Antarmuka**:
   - Mengompilasi ulang berkas CSS Tailwind (`npm run build`).
