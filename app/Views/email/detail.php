@@ -58,7 +58,15 @@
                             <div class="flex items-center gap-2 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg">
                                 <span class="text-[10px] font-bold text-slate-700 uppercase tracking-widest">Status TTE:</span>
                                 <div id="bsre-status-container" class="flex items-center">
-                                    <span class="inline-block h-4 w-16 bg-slate-200 rounded animate-pulse align-middle"></span>
+                                    <?php 
+                                    $curStatus = $email['bsre_status'] ?? '';
+                                    $lbl = (!empty($curStatus) && strtolower($curStatus) !== 'not_synced') ? strtoupper($curStatus) : 'NOT_SYNCED';
+                                    $badgeClr = 'bg-slate-100 text-slate-700 border-slate-200';
+                                    if ($lbl === 'ISSUE') $badgeClr = 'bg-emerald-50 text-emerald-700 border-emerald-200';
+                                    elseif ($lbl === 'EXPIRED') $badgeClr = 'bg-rose-50 text-rose-700 border-rose-200';
+                                    elseif ($lbl === 'NO_CERTIFICATE' || $lbl === 'NEW') $badgeClr = 'bg-blue-50 text-blue-700 border-blue-200';
+                                    ?>
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase border <?= $badgeClr ?>"><?= esc($lbl) ?></span>
                                 </div>
                                 <span id="nik-verified-badge" class="<?= (($email['tte_source'] ?? '') === 'nik') ? '' : 'hidden' ?> px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-200" title="Terverifikasi via NIK">via NIK</span>
                                 <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
@@ -466,11 +474,10 @@
         const container = document.getElementById('bsre-status-container');
         if (!container) return;
 
-        const colorClass = getJsStatusColor(status);
+        const colorClass = (typeof getJsStatusColor === 'function') ? getJsStatusColor(status) : 'bg-slate-100 text-slate-700 border-slate-200';
         const label = (status && status.toLowerCase() !== 'not_synced') ? status : 'NOT_SYNCED';
 
         container.innerHTML = `<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${colorClass}">${label}</span>`;
-
 
         // Handle QR Code Visibility
         const qrcodeCard = document.getElementById('qrcode-card');
@@ -481,52 +488,43 @@
         if (status === 'ISSUE' && hash) {
             const profileUrl = `<?= site_url('verifikasi/') ?>${hash}`;
             const qrBaseUrl = '<?= env('QR_BASE_URL') ?: 'https://api.qrserver.com' ?>';
-            qrcodeImage.src = `${qrBaseUrl.replace(/\/$/, '')}/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(profileUrl)}`;
-            qrcodeLink.href = profileUrl;
-            qrcodeCard.classList.remove('hidden');
-        } else {
+            if (qrcodeImage) qrcodeImage.src = `${qrBaseUrl.replace(/\/$/, '')}/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(profileUrl)}`;
+            if (qrcodeLink) qrcodeLink.href = profileUrl;
+            if (qrcodeCard) qrcodeCard.classList.remove('hidden');
+        } else if (qrcodeCard) {
             qrcodeCard.classList.add('hidden');
         }
     }
 
-    function syncBsreStatus(email) {
-        syncSingleBsreStatus(email, 'bsre-status-container').then(result => {
-            if (result && result.success) {
-                const status = result.status;
+    async function syncBsreStatus(email) {
+        const result = await syncSingleBsreStatus(email, 'bsre-status-container');
+        if (result && result.success) {
+            let status = result.status;
+            let tteSource = result.tte_source || 'email';
 
-                const qrcodeCard = document.getElementById('qrcode-card');
-                const qrcodeImage = document.getElementById('qrcode-image');
-                const qrcodeLink = document.getElementById('qrcode-link');
-                const hash = '<?= $verification_hash ?>';
+            const nikBadge = document.getElementById('nik-verified-badge');
 
-                if (status === 'ISSUE' && hash) {
-                    const profileUrl = '<?= site_url('verifikasi/') ?>' + hash;
-                    if (qrcodeImage) qrcodeImage.src = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' + encodeURIComponent(profileUrl);
-                    if (qrcodeLink) qrcodeLink.href = profileUrl;
-                    if (qrcodeCard) qrcodeCard.classList.remove('hidden');
-                } else if (qrcodeCard) {
-                    qrcodeCard.classList.add('hidden');
-                }
-
-                const nikBadge = document.getElementById('nik-verified-badge');
-                if (result && result.tte_source === 'nik') {
-                    if (nikBadge) nikBadge.classList.remove('hidden');
-                } else if (status === 'ISSUE') {
-                    if (nikBadge) nikBadge.classList.add('hidden');
-                } else if (status === 'NO_CERTIFICATE') {
-                    const currentNik = document.getElementById('nik-text') ? document.getElementById('nik-text').textContent.trim() : '<?= esc($email['nik'] ?? '', 'js') ?>';
-                    if (currentNik && currentNik !== '-') {
-                        const nikRes = await checkNikStatus(currentNik, email);
-                        if (nikRes && nikRes.is_issue) {
-                            status = 'ISSUE';
-                            if (nikBadge) nikBadge.classList.remove('hidden');
-                        }
+            if (status === 'NO_CERTIFICATE') {
+                const currentNik = document.getElementById('nik-text') ? document.getElementById('nik-text').textContent.trim() : '<?= esc($email['nik'] ?? '', 'js') ?>';
+                if (currentNik && currentNik !== '-') {
+                    const nikRes = await checkNikStatus(currentNik, email);
+                    if (nikRes && nikRes.is_issue) {
+                        status = 'ISSUE';
+                        tteSource = 'nik';
                     }
-                } else {
-                    if (nikBadge) nikBadge.classList.add('hidden');
                 }
             }
-        });
+
+            if (nikBadge) {
+                if (tteSource === 'nik' && status === 'ISSUE') {
+                    nikBadge.classList.remove('hidden');
+                } else {
+                    nikBadge.classList.add('hidden');
+                }
+            }
+
+            renderBsreStatus(status);
+        }
     }
 
     function syncPegawai(nip, btn, email = '') {

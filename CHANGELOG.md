@@ -14,6 +14,9 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Mengintegrasikan fallback otomatis pengecekan NIK langsung ke tombol sinkronisasi TTE yang sudah ada dan saat halaman dibuka jika akun berstatus `NO_CERTIFICATE`.
   - Menampilkan badge penanda ringkas **`via NIK`** di samping status TTE tanpa elemen tombol atau banner tambahan yang berlebihan.
   - Memproteksi status `ISSUE` pada sinkronisasi massal ([`TteSyncService.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Shared/Services/TteSyncService.php) dan [`SyncTteUnit.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Commands/SyncTteUnit.php)) agar akun yang telah terverifikasi via NIK tidak tertimpa kembali menjadi `NO_CERTIFICATE`.
+- **Perbaikan Bug Render Status TTE Detail Akun**:
+  - Memperbaiki `SyntaxError` pemanggilan fungsi asinkron pada `syncBsreStatus()` di [`detail.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/detail.php).
+  - Merender badge Status TTE awal langsung dari sisi server (PHP) untuk menghilangkan kendala *loading/pulsing skeleton* saat halaman dimuat.
 - **Aset & Antarmuka**:
   - Mengompilasi ulang berkas CSS Tailwind (`npm run build`).
 
