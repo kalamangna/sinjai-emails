@@ -28,6 +28,10 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **Perbaikan Tampilan Badge Status Sinkronisasi Jabatan**:
   - Menambahkan kelas `items-start` pada container `.jabatan-sync-target` di [`unit_kerja_detail.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/unit_kerja_detail.php) dan [`pimpinan.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/pimpinan.php) untuk mencegah perilaku *default* CSS flex column (`align-items: stretch`) meregangkan elemen turunan secara penuh.
   - Memperbarui badge `NO DATA`, `NO DATA API`, `ANTREAN ULANG`, `RATE LIMIT`, `FAILED`, dan `ERROR` pada [`sync-helper.js`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/public/js/sync-helper.js) dan [`unit_kerja_detail.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/unit_kerja_detail.php) dengan kelas `inline-flex items-center w-fit self-start` agar selalu tampil kompak (*compact/fit-content*) dan tidak meregang memenuhi lebar kolom (*full width*).
+- **Normalisasi Singkatan Jabatan Bertitik & Preservasi UPTD**:
+  - Menyempurnakan pembersihan singkatan jabatan struktural berakhiran tanda titik (`Kasubag.`, `Kasubbag.`, `Kabid.`, `Kasi.`, `Sekdis.`, `Sekban.`) pada [`EmailService.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Domains/Email/Services/EmailService.php) agar tanda titik tidak tertinggal menjadi bagian nama jabatan hasil normalisasi.
+  - Memperbaiki ekspansi `Kasubag. TU` / `Kasubbag. TU` menjadi `KEPALA SUB BAGIAN TATA USAHA` pada instansi non-Puskesmas.
+  - Memperbaiki aturan pembersihan entitas lokasi agar nama UPTD definitif (seperti `UPTD PENGUJIAN KENDARAAN BERMOTOR`) tetap dipertahankan pada jabatan Kasubag TU / Seksi UPTD dan hanya dibersihkan jika didahului preposisi `PADA` atau `DI`.
 
 ---
 

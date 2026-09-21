@@ -2143,17 +2143,25 @@ class EmailService
         // Koreksi Kasubag Tata Usaha dan Kepegawaian di OPD/Sekretariat
         $jab = preg_replace('/^KEPALA\s+TATA\s+USAHA\s+DAN\s+KEPEGAWAIAN\b/i', 'KEPALA SUB BAGIAN TATA USAHA DAN KEPEGAWAIAN', $jab);
 
+        $isPuskesmas = (!empty($unitKerjaName) && stripos($unitKerjaName, 'PUSKESMAS') !== false) || stripos($jab, 'PUSKESMAS') !== false;
+
         // Standarisasi Singkatan Jabatan Struktural (KTU, Kepala TU, Kasubag, Kasubid, Kabid, Kasi, Kepala Tata Usaha)
-        if ($isHospital && preg_match('/\b(KTU|KEPALA\s+TU|KASUBAG\s+TU|KASUBAG\s+TATA\s+USAHA|KEPALA\s+TATA\s+USAHA|KEPALA\s+SUB\s*BAGIAN\s+TATA\s+USAHA|SUB\s*BAGIAN\s+TATA\s+USAHA)\b/i', $jab)) {
-            $jab = 'KEPALA SUB BAGIAN TATA USAHA';
+        if ($isPuskesmas) {
+            $jab = preg_replace('/\b(KTU|KEPALA\s+TU|(?:KASUBBAG|KASUBAG)(?:\.|\b)\s*(?:TU|TATA\s+USAHA)|KEPALA\s+TATA\s+USAHA|KEPALA\s+SUB\s*BAGIAN\s+TATA\s+USAHA|SUB\s*BAGIAN\s+TATA\s+USAHA)\b/i', 'KEPALA TATA USAHA', $jab);
         } else {
-            $jab = preg_replace('/\b(KTU|KEPALA\s+TU|KASUBAG\s+TU|KASUBAG\s+TATA\s+USAHA(?!\s+(DAN|PIMPINAN))|KEPALA\s+SUB\s*BAGIAN\s+TATA\s+USAHA(?!\s+(DAN|PIMPINAN))|SUB\s*BAGIAN\s+TATA\s+USAHA(?!\s+(DAN|PIMPINAN)))\b/i', 'KEPALA TATA USAHA', $jab);
+            $jab = preg_replace('/\b(?:KASUBBAG|KASUBAG)(?:\.|\b)\s*(?:TU|TATA\s+USAHA)\b/i', 'KEPALA SUB BAGIAN TATA USAHA', $jab);
+            $jab = preg_replace('/\b(KTU|KEPALA\s+TU)\b/i', $isHospital ? 'KEPALA SUB BAGIAN TATA USAHA' : 'KEPALA TATA USAHA', $jab);
         }
-        $jab = preg_replace('/\b(KEPALA\s+TATA\s+USAHA|KEPALA)\s+UPT\s+(?!D\b)/i', '$1 UPTD ', $jab);
-        $jab = preg_replace('/\bKASUBAG\b/i', 'KEPALA SUB BAGIAN', $jab);
-        $jab = preg_replace('/\bKASUBBID\b/i', 'KEPALA SUB BIDANG', $jab);
-        $jab = preg_replace('/\bKABID\b/i', 'KEPALA BIDANG', $jab);
-        $jab = preg_replace('/\bKASI\b/i', 'KEPALA SEKSI', $jab);
+        $jab = preg_replace('/\b(KEPALA\s+TATA\s+USAHA|KEPALA\s+SUB\s*BAGIAN\s+TATA\s+USAHA|KEPALA)\s+UPT\s+(?!D\b)/i', '$1 UPTD ', $jab);
+        $jab = preg_replace('/\b(?:KASUBBAG|KASUBAG)(?:\.|\b)/i', 'KEPALA SUB BAGIAN', $jab);
+        $jab = preg_replace('/\b(?:KASUBBID|KASUBID)(?:\.|\b)/i', 'KEPALA SUB BIDANG', $jab);
+        $jab = preg_replace('/\bKABID(?:\.|\b)/i', 'KEPALA BIDANG', $jab);
+        $jab = preg_replace('/\bKASI(?:\.|\b)/i', 'KEPALA SEKSI', $jab);
+        $jab = preg_replace('/\bSEKDIS(?:\.|\b)/i', 'SEKRETARIS DINAS', $jab);
+        $jab = preg_replace('/\bSEKBAN(?:\.|\b)/i', 'SEKRETARIS BADAN', $jab);
+
+        // Pastikan tidak ada spasi ganda
+        $jab = preg_replace('/\s+/', ' ', $jab);
 
         // Tambahkan prefix KEPALA jika di SIMPEG hanya tertulis "BIDANG ...", "SUB BAGIAN ...", "SEKSI ...", "SUB BIDANG ..."
         if (preg_match('/^(BIDANG|SUB BAGIAN|SUB\. BAGIAN|SUB BIDANG|SEKSI)\s+/i', $jab) && stripos($jab, 'KEPALA') === false) {
@@ -2169,7 +2177,10 @@ class EmailService
             $jab = preg_replace('/^(KEPALA\s+(?:SEKSI|SUB\s*BAGIAN|SUB\s*BIDANG)\s+.+?)\s+(?:(?:PADA|DI)\s+)?(?:BIDANG|BAGIAN|SEKRETARIAT)\b.*$/i', '$1', $jab);
         }
         if (preg_match('/^(KEPALA BIDANG|KEPALA SUB BAGIAN|KEPALA SEKSI|KEPALA SUB BIDANG|SEKRETARIS|KEPALA DINAS|KEPALA BADAN|INSPEKTUR)\b/i', $jab)) {
-            $jab = preg_replace('/\s+(?:(?:PADA|DI)\s+)?(DINAS|BADAN|INSPEKTORAT|SEKRETARIAT|KANTOR|KECAMATAN|KEC(?:\.|\b)|KELURAHAN|KEL(?:\.|\b)|UPTD|UPT|PUSKESMAS|RSUD|SATPOL\s*PP|SATUAN\s+POLISI|SATPOL|BPBD)\b.*$/i', '', $jab);
+            if (!$isHospital) {
+                $jab = preg_replace('/\s+(?:(?:PADA|DI)\s+)?(DINAS|BADAN|INSPEKTORAT|SEKRETARIAT|KANTOR|KECAMATAN|KEC(?:\.|\b)|KELURAHAN|KEL(?:\.|\b)|PUSKESMAS|SATPOL\s*PP|SATUAN\s+POLISI|SATPOL|BPBD)\b.*$/i', '', $jab);
+            }
+            $jab = preg_replace('/\s+(?:PADA|DI)\s+(UPTD|UPT|RSUD)\b.*$/i', '', $jab);
             $jab = preg_replace('/\s+(?:(?:PADA|DI)\s+)?(?:KABUPATEN|KAB\.)\s+SINJAI\s*.*$/i', '', $jab);
         }
 
