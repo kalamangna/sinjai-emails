@@ -1262,6 +1262,7 @@ class EmailService
                     'jabatan'          => $currentEmail['jabatan'] ?? '-',
                     'pangkat_nama'     => $currentEmail['pangkat_nama'] ?? '-',
                     'pangkat_golruang' => $currentEmail['pangkat_golruang'] ?? '-',
+                    'pimpinan'         => (int)($currentEmail['pimpinan'] ?? 0),
                 ]
             ];
         }
@@ -1798,6 +1799,7 @@ class EmailService
                 'parent_unit_kerja_plt_name'=> $parentUnitKerjaPltName,
                 'parent_unit_kerja_plt_id'  => $parentUnitKerjaPltId,
                 'eselon_name'               => $eselonName,
+                'pimpinan'                  => (int)($currentEmail['pimpinan'] ?? 0),
             ],
         ];
     }

@@ -92,11 +92,9 @@
                             </span>
                         <?php endif; ?>
 
-                        <?php if (($email['pimpinan'] ?? 0) == 1): ?>
-                            <span class="px-2.5 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-700 border border-slate-200">
-                                <i class="fas fa-user-tie mr-1"></i> Pimpinan OPD
-                            </span>
-                        <?php endif; ?>
+                        <span id="badge-pimpinan-opd" class="px-2.5 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-700 border border-slate-200 <?= (($email['pimpinan'] ?? 0) == 1) ? '' : 'hidden' ?>">
+                            <i class="fas fa-user-tie mr-1"></i> Pimpinan OPD
+                        </span>
 
                         <?php if (($email['pimpinan_desa'] ?? 0) == 1): ?>
                             <span class="px-2.5 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-700 border border-slate-200">
@@ -515,7 +513,8 @@
             jabatanPlt: document.getElementById('jabatan-plt-text'),
             unitPltWrapper: document.getElementById('unit-kerja-plt-container'),
             unitPltLink: document.getElementById('unit-kerja-plt-link'),
-            unitPltText: document.getElementById('unit-kerja-plt-text')
+            unitPltText: document.getElementById('unit-kerja-plt-text'),
+            badgePimpinan: document.getElementById('badge-pimpinan-opd')
         };
         syncSinglePegawai(nip, btn, elements, email);
     }

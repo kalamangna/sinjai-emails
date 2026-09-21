@@ -302,6 +302,7 @@ class EmailApiController extends BaseController
                     'parent_unit_kerja_id'  => $parentUnitKerjaId,
                     'parent_id'             => $parentUnitKerjaId,
                     'eselon_name'           => null,
+                    'pimpinan'              => (int)($record['pimpinan'] ?? 0),
                 ]
             ]);
         }

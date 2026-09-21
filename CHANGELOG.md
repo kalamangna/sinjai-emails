@@ -16,6 +16,10 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **Otomatisasi Sinkronisasi Status Pimpinan**:
   - Menambahkan method `isPimpinanJabatan()` pada [`EmailService.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Domains/Email/Services/EmailService.php) untuk memvalidasi secara presisi jabatan pimpinan definitif Pemkab Sinjai.
   - Memperbarui alur `syncPegawaiFromApi()` agar otomatis menyinkronkan kolom `pimpinan` (diturunkan ke `0` jika pejabat mengalami rotasi/mutasi ke jabatan fungsional/pelaksana, dan `1` jika menjabat posisi pimpinan resmi), serta mereset `pimpinan_desa` ke `0` untuk pegawai PNS.
+- **Pembaruan Dinamis Badge Pimpinan OPD di Detail Akun**:
+  - Menambahkan identifikasi atribut `id="badge-pimpinan-opd"` pada elemen badge Pimpinan OPD di [`detail.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/detail.php).
+  - Menyertakan nilai `pimpinan` pada seluruh skenario respon data sinkronisasi pegawai di [`EmailService.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Domains/Email/Services/EmailService.php) dan [`EmailApiController.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Domains/Email/Controllers/EmailApiController.php).
+  - Memperbarui `syncSinglePegawai` pada [`sync-helper.js`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/public/js/sync-helper.js) agar langsung menampilkan atau menyembunyikan badge **Pimpinan OPD** secara instan sesuai respon status pimpinan terbaru tanpa memuat ulang halaman.
 
 ---
 

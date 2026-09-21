@@ -352,6 +352,18 @@
                         elements.pltSection.classList.add('hidden');
                     }
                 }
+
+                // Update badge Pimpinan OPD secara dinamis
+                const badgePimpinan = elements.badgePimpinan || document.getElementById('badge-pimpinan-opd');
+                if (badgePimpinan && data.data && typeof data.data.pimpinan !== 'undefined') {
+                    const isPim = parseInt(data.data.pimpinan, 10) === 1;
+                    if (isPim) {
+                        badgePimpinan.classList.remove('hidden');
+                    } else {
+                        badgePimpinan.classList.add('hidden');
+                    }
+                }
+
                 return true;
             } else {
                 if (elements.jabatan) elements.jabatan.innerHTML = originalContents.jabatan;
