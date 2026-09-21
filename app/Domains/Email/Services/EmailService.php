@@ -1224,10 +1224,15 @@ class EmailService
         $result     = $pegawaiApi->getPegawaiData($nip);
 
         if (!$result['success']) {
+            $isRateLimit = ($result['code'] ?? 0) === 429 
+                || !empty($result['is_rate_limit'])
+                || stripos($result['message'] ?? '', 'Rate Limit') !== false
+                || stripos($result['message'] ?? '', 'Too Many Requests') !== false;
+
             return [
                 'success'       => false,
-                'code'          => $result['code'] ?? 500,
-                'is_rate_limit' => ($result['code'] ?? 0) === 429 || stripos($result['message'] ?? '', 'Rate Limit') !== false,
+                'code'          => $isRateLimit ? 429 : ($result['code'] ?? 500),
+                'is_rate_limit' => $isRateLimit,
                 'message'       => $result['message'] ?? 'Gagal menghubungi API pegawai'
             ];
         }
@@ -1253,6 +1258,16 @@ class EmailService
             if (is_array($data)) {
                 $apiMessage = $data['message'] ?? $data['error'] ?? $data['msg'] ?? $apiMessage;
             }
+
+            if (stripos($apiMessage, 'Too Many Requests') !== false || stripos($apiMessage, 'Rate Limit') !== false) {
+                return [
+                    'success'       => false,
+                    'code'          => 429,
+                    'is_rate_limit' => true,
+                    'message'       => 'Batas permintaan API SIMPEG terlampaui (Rate Limit: 60 req/menit). Harap tunggu beberapa saat.'
+                ];
+            }
+
             return [
                 'success' => true,
                 'no_data' => true,

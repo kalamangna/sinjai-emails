@@ -95,10 +95,29 @@ class PegawaiApi
     /**
      * Kirim HTTP request dengan penanganan otomatis Rate Limit (429/503/Timeout) & Exponential Backoff
      */
-    protected function requestWithRetry(string $url, array $options = [], string $method = 'GET', int $maxRetries = 4): array
+    protected function requestWithRetry(string $url, array $options = [], string $method = 'GET', int $maxRetries = 3): array
     {
+        // 1. Cek Circuit Breaker / Global Cooldown di cache
+        $cooldownUntil = cache('simpeg_rate_limit_cooldown');
+        if (!empty($cooldownUntil) && is_numeric($cooldownUntil)) {
+            $now = time();
+            if ($cooldownUntil > $now) {
+                $waitSec = $cooldownUntil - $now;
+                if (is_cli()) {
+                    log_message('warning', "SIMPEG API Cooldown Active. Menunggu {$waitSec}s sebelum request {$url}...");
+                    sleep($waitSec + 1);
+                } else {
+                    return [
+                        'success'    => false,
+                        'statusCode' => 429,
+                        'error'      => "Server SIMPEG sedang masa pendinginan rate limit ({$waitSec}s tersisa). Silakan coba sesaat lagi.",
+                    ];
+                }
+            }
+        }
+
         $attempts = 0;
-        $delayMs = 2500; // 2.5 detik initial delay
+        $delayMs = 3000; // 3 detik initial delay
 
         while ($attempts <= $maxRetries) {
             $attempts++;
@@ -106,25 +125,42 @@ class PegawaiApi
                 $options['http_errors'] = false;
                 $response = $this->client->request($method, $url, $options);
                 $statusCode = $response->getStatusCode();
+                $body = $response->getBody();
 
-                // Jika rate limit (429) atau server overload (503/504), lakukan backoff & retry
-                if (in_array($statusCode, [429, 503, 504]) && $attempts <= $maxRetries) {
-                    $jitter = rand(200, 800);
-                    $waitMs = $delayMs + $jitter;
-                    log_message('warning', "SIMPEG API Rate Limited ({$statusCode}) on {$url}. Retrying in " . round($waitMs / 1000, 2) . "s (Attempt {$attempts}/{$maxRetries})...");
-                    usleep($waitMs * 1000);
-                    $delayMs = min($delayMs * 2, 10000); // Exponential backoff (2.5s -> 5s -> 10s)
-                    continue;
+                // Deteksi Rate Limit dari status code ATAU teks body response (misal {"error":"Too Many Requests","limit":60})
+                $isRateLimited = in_array($statusCode, [429, 503, 504]) 
+                    || stripos($body, 'Too Many Requests') !== false 
+                    || stripos($body, 'Rate Limit') !== false;
+
+                if ($isRateLimited) {
+                    // Set cooldown 15 detik di cache terpusat
+                    cache()->save('simpeg_rate_limit_cooldown', time() + 15, 30);
+
+                    if ($attempts <= $maxRetries) {
+                        $jitter = rand(500, 1500);
+                        $waitMs = $delayMs + $jitter;
+                        log_message('warning', "SIMPEG API Rate Limited on {$url}. Retrying in " . round($waitMs / 1000, 2) . "s (Attempt {$attempts}/{$maxRetries})...");
+                        usleep($waitMs * 1000);
+                        $delayMs = min($delayMs * 2, 12000); // Exponential backoff (3s -> 6s -> 12s)
+                        continue;
+                    }
+
+                    return [
+                        'success'    => false,
+                        'statusCode' => 429,
+                        'error'      => 'Batas permintaan API SIMPEG terlampaui (Rate Limit: 60 req/menit). Harap tunggu beberapa saat.',
+                        'body'       => $body,
+                    ];
                 }
 
                 return [
                     'success'    => ($statusCode >= 200 && $statusCode < 300),
                     'statusCode' => $statusCode,
-                    'body'       => $response->getBody(),
+                    'body'       => $body,
                 ];
             } catch (\Throwable $e) {
                 if ($attempts <= $maxRetries) {
-                    $jitter = rand(100, 500);
+                    $jitter = rand(500, 1000);
                     $waitMs = $delayMs + $jitter;
                     log_message('warning', "SIMPEG API Connection Exception on {$url}: " . $e->getMessage() . ". Retrying in " . round($waitMs / 1000, 2) . "s (Attempt {$attempts}/{$maxRetries})...");
                     usleep($waitMs * 1000);
@@ -185,6 +221,16 @@ class PegawaiApi
             ];
         }
 
+        // Cek jika response JSON adalah error rate limit
+        if (is_array($data) && isset($data['error']) && (stripos($data['error'], 'Too Many Requests') !== false || stripos($data['error'], 'Rate Limit') !== false)) {
+            cache()->save('simpeg_rate_limit_cooldown', time() + 15, 30);
+            return [
+                'success' => false,
+                'code'    => 429,
+                'message' => 'Batas permintaan API SIMPEG terlampaui (Rate Limit: 60 req/menit). Harap tunggu beberapa saat.'
+            ];
+        }
+
         // Resolusi otomatis: Tangkap data Plt/Plh jika ada, dan cari Jabatan Definitif
         $jNama = $data['jabatan_nama'] ?? $data['jabatan'] ?? '';
         $statusId = (int)($data['jabatan_status_id'] ?? 1);
@@ -221,7 +267,7 @@ class PegawaiApi
     }
 
     /**
-     * Mengambil seluruh penugasan Plt aktif di SIMPEG lintas OPD (dicache 1 jam)
+     * Mengambil seluruh penugasan Plt aktif di SIMPEG lintas OPD (dicache 6 jam)
      */
     public function getAllPltAssignments(): array
     {
@@ -264,10 +310,16 @@ class PegawaiApi
                         }
                     }
                 }
+            } elseif (($res['statusCode'] ?? 0) === 429) {
+                log_message('warning', 'getAllPltAssignments dihentikan lebih awal karena rate limit.');
+                break;
             }
+
+            // Pacing mikro 150ms antar unit agar aman dari lonjakan burst
+            usleep(150000);
         }
 
-        cache()->save($cacheKey, $pltMap, 3600);
+        cache()->save($cacheKey, $pltMap, 21600);
         return $pltMap;
     }
 

@@ -883,10 +883,10 @@ echo view('components/modal', [
                     const is429 = response.status === 429;
                     lastData = await response.json().catch(() => null);
 
-                    isRateLimit = is429 || (lastData && (lastData.code === 429 || lastData.is_rate_limit || (lastData.message && /rate\s*limit|terlalu\s*banyak/i.test(lastData.message))));
+                    isRateLimit = is429 || (lastData && (lastData.code === 429 || lastData.is_rate_limit || (lastData.message && /rate\s*limit|terlalu\s*banyak|too\s*many\s*requests/i.test(lastData.message))));
 
                     if (isRateLimit && attempt < 2) {
-                        const waitSec = (attempt + 1) * 2;
+                        const waitSec = (attempt + 1) * 5; // 5s -> 10s cooldown
                         syncBtn.innerHTML = `<i class="fas fa-hourglass-half animate-spin mr-2"></i> Pedinginan Rate Limit (${waitSec}s)...`;
                         if (jabatanTarget) {
                             jabatanTarget.innerHTML = `<span class="text-amber-600 font-bold text-[10px] animate-pulse"><i class="fas fa-hourglass-half mr-1"></i> RATE LIMIT (${waitSec}s)</span>`;
@@ -1003,8 +1003,8 @@ echo view('components/modal', [
             mainBtn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> PEG: ${processed}/${validContainers.length}`;
             syncBtn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Sinkronisasi ${processed}/${validContainers.length}...`;
 
-            // Micro-pacing delay (200ms) untuk mencegah penumpukan request ke server
-            await new Promise(resolve => setTimeout(resolve, 200));
+            // Pacing aman 1.100ms agar rata-rata request (~54/menit) selalu di bawah kuota 60/menit SIMPEG
+            await new Promise(resolve => setTimeout(resolve, 1100));
         }
 
         mainBtn.disabled = false;

@@ -131,8 +131,8 @@
      */
     async function fetchWithRateLimitRetry(url, options, maxRetries = 2, onWait = null) {
         let attempts = 0;
-        let delay = 2000; // 2s initial cool-down
-
+        let delay = 5000; // 5s initial cool-down untuk pemulihan token bucket SIMPEG
+ 
         while (attempts <= maxRetries) {
             try {
                 const response = await fetch(url, options);
@@ -145,7 +145,7 @@
                     data = null;
                 }
 
-                const isRateLimited = is429 || (data && (data.code === 429 || data.is_rate_limit || (data.message && /rate\s*limit|terlalu\s*banyak/i.test(data.message))));
+                const isRateLimited = is429 || (data && (data.code === 429 || data.is_rate_limit || (data.message && /rate\s*limit|terlalu\s*banyak|too\s*many\s*requests/i.test(data.message))));
 
                 if (isRateLimited && attempts < maxRetries) {
                     attempts++;
@@ -153,7 +153,7 @@
                         onWait(attempts, maxRetries, delay);
                     }
                     await new Promise(resolve => setTimeout(resolve, delay));
-                    delay *= 2; // exponential backoff (2s -> 4s)
+                    delay *= 2; // exponential backoff (5s -> 10s)
                     continue;
                 }
 
@@ -638,18 +638,20 @@
                 success++;
             } else if (outcome === 'rate_limited') {
                 retryContainers.push(container);
+                btn.innerHTML = `<i class="fas fa-hourglass-half animate-spin mr-2"></i> Cooldown Rate Limit (10s)...`;
+                await new Promise(resolve => setTimeout(resolve, 10000));
             } else {
                 failed++;
             }
 
-            // Micro-pacing delay (200ms)
-            await new Promise(resolve => setTimeout(resolve, 200));
+            // Pacing aman 1.100ms agar rata-rata request (~54/menit) selalu di bawah kuota 60/menit SIMPEG
+            await new Promise(resolve => setTimeout(resolve, 1100));
         }
 
         // Pass 2: Jika ada baris yang terkena rate limit, kembali dan ulangi baris tersebut di akhir
         if (retryContainers.length > 0) {
-            btn.innerHTML = `<i class="fas fa-hourglass-half animate-spin mr-2"></i> Pedinginan (3s) & Mengulang ${retryContainers.length} baris...`;
-            await new Promise(resolve => setTimeout(resolve, 3000));
+            btn.innerHTML = `<i class="fas fa-hourglass-half animate-spin mr-2"></i> Pedinginan (15s) & Mengulang ${retryContainers.length} baris...`;
+            await new Promise(resolve => setTimeout(resolve, 15000));
 
             let retryIndex = 0;
             for (const container of retryContainers) {
@@ -663,7 +665,7 @@
                     failed++;
                 }
 
-                await new Promise(resolve => setTimeout(resolve, 500));
+                await new Promise(resolve => setTimeout(resolve, 1200));
             }
         }
 

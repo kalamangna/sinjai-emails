@@ -20,6 +20,11 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Menambahkan identifikasi atribut `id="badge-pimpinan-opd"` pada elemen badge Pimpinan OPD di [`detail.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/detail.php).
   - Menyertakan nilai `pimpinan` pada seluruh skenario respon data sinkronisasi pegawai di [`EmailService.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Domains/Email/Services/EmailService.php) dan [`EmailApiController.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Domains/Email/Controllers/EmailApiController.php).
   - Memperbarui `syncSinglePegawai` pada [`sync-helper.js`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/public/js/sync-helper.js) agar langsung menampilkan atau menyembunyikan badge **Pimpinan OPD** secara instan sesuai respon status pimpinan terbaru tanpa memuat ulang halaman.
+- **Penanganan Komprehensif Rate Limit API SIMPEG**:
+  - Menerapkan *safe pacing* 1,1 detik (`1100ms`) pada [`PegawaiSyncService.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Shared/Services/PegawaiSyncService.php), [`sync-helper.js`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/public/js/sync-helper.js), dan [`unit_kerja_detail.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/unit_kerja_detail.php) untuk menjaga lalu lintas pemanggilan konstan di angka ~54 req/menit (di bawah batas 60 req/menit SIMPEG).
+  - Menambahkan *circuit breaker* dan cooldown 15 detik berbasis cache pada [`PegawaiApi.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Shared/Libraries/PegawaiApi.php) saat terdeteksi HTTP 429 atau teks `Too Many Requests`.
+  - Memperbaiki deteksi respon rate limit pada [`EmailService.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Domains/Email/Services/EmailService.php) agar pesan error pembatasan tidak lagi disalahartikan sebagai "Data Tidak Ditemukan", serta mengembalikan status HTTP 429 pada [`EmailApiController.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Domains/Email/Controllers/EmailApiController.php).
+  - Mengoptimasi pemindaian Plt lintas OPD pada `getAllPltAssignments()` dengan memperpanjang cache menjadi 6 jam, menambahkan mikro-jeda 150ms antar unit, dan penghentian otomatis saat mendeteksi rate limit.
 
 ---
 

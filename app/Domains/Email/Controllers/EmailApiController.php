@@ -317,6 +317,10 @@ class EmailApiController extends BaseController
             return $this->response->setJSON($result);
         }
 
+        if (!empty($result['is_rate_limit']) || ($result['code'] ?? 0) === 429) {
+            return $this->response->setStatusCode(429)->setJSON($result);
+        }
+
         return $this->response->setJSON($result);
     }
 }

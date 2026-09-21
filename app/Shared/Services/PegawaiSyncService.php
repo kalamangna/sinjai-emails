@@ -31,13 +31,13 @@ class PegawaiSyncService
                     $statusMessage = $result['message'] ?? 'Sukses';
                 } else {
                     $statusMessage = $result['message'] ?? 'Gagal';
-                    if (strpos($statusMessage, '429') !== false || stripos($statusMessage, 'Rate Limit') !== false) {
+                    if (!empty($result['is_rate_limit']) || strpos($statusMessage, '429') !== false || stripos($statusMessage, 'Rate Limit') !== false || stripos($statusMessage, 'Too Many Requests') !== false) {
                         $isRateLimited = true;
                     }
                 }
             } catch (\Throwable $e) {
                 $statusMessage = 'Error: ' . $e->getMessage();
-                if (strpos($statusMessage, '429') !== false || stripos($statusMessage, 'Rate Limit') !== false) {
+                if (strpos($statusMessage, '429') !== false || stripos($statusMessage, 'Rate Limit') !== false || stripos($statusMessage, 'Too Many Requests') !== false) {
                     $isRateLimited = true;
                 }
             }
@@ -51,12 +51,12 @@ class PegawaiSyncService
                 $onProgress($index + 1, $total, $nip, $success, $statusMessage);
             }
 
-            // Jika terkena 429, berikan cooldown 5 detik agar bucket rate limiter pulih
+            // Jika terkena 429, berikan cooldown 15 detik agar kuota rate limiter pulih
             if ($isRateLimited) {
-                sleep(5);
+                sleep(15);
             } else {
-                // Pacing standar 350ms (~2.8 request/detik) agar stabil & tidak memicu burst rate limit
-                usleep(350000);
+                // Pacing aman 1.100ms (~54 request/menit) selalu berada di bawah kuota 60 req/menit SIMPEG
+                usleep(1100000);
             }
         }
 
@@ -69,8 +69,8 @@ class PegawaiSyncService
             $retryQueue = [];
             $retryTotal = count($currentRetries);
 
-            // Jeda 5 detik sebelum retry pass dimulai
-            sleep(5);
+            // Jeda pendinginan 15 detik sebelum retry pass dimulai
+            sleep(15);
 
             foreach ($currentRetries as $rIndex => $nip) {
                 $success = false;
@@ -84,13 +84,13 @@ class PegawaiSyncService
                         $statusMessage = $result['message'] ?? 'Sukses';
                     } else {
                         $statusMessage = $result['message'] ?? 'Gagal';
-                        if (strpos($statusMessage, '429') !== false || stripos($statusMessage, 'Rate Limit') !== false) {
+                        if (!empty($result['is_rate_limit']) || strpos($statusMessage, '429') !== false || stripos($statusMessage, 'Rate Limit') !== false || stripos($statusMessage, 'Too Many Requests') !== false) {
                             $isRateLimited = true;
                         }
                     }
                 } catch (\Throwable $e) {
                     $statusMessage = 'Error: ' . $e->getMessage();
-                    if (strpos($statusMessage, '429') !== false || stripos($statusMessage, 'Rate Limit') !== false) {
+                    if (strpos($statusMessage, '429') !== false || stripos($statusMessage, 'Rate Limit') !== false || stripos($statusMessage, 'Too Many Requests') !== false) {
                         $isRateLimited = true;
                     }
                 }
@@ -105,9 +105,9 @@ class PegawaiSyncService
                 }
 
                 if ($isRateLimited) {
-                    sleep(6);
+                    sleep(15);
                 } else {
-                    usleep(500000); // 500ms pacing saat retry pass
+                    usleep(1200000); // 1.2 detik pacing saat retry pass
                 }
             }
         }
