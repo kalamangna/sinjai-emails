@@ -288,7 +288,7 @@
                                         data-has-plt="<?= $hasPltRow ? '1' : '0' ?>"
                                         data-current-unit-id="<?= esc($unit_kerja['id']) ?>"
                                         data-target-unit-ids="<?= esc(implode(',', $target_unit_ids ?? [$unit_kerja['id']])) ?>">
-                                        <div class="jabatan-sync-target flex flex-col gap-0.5">
+                                        <div class="jabatan-sync-target flex flex-col items-start gap-0.5">
                                             <?php if (!empty($email['is_plt_in_this_unit'])): ?>
                                                 <span class="text-xs font-medium text-amber-700 uppercase tracking-tight leading-snug"><?= esc($displayJabatan) ?></span>
                                             <?php else: ?>
@@ -911,7 +911,7 @@ echo view('components/modal', [
             if (fetchSuccess && lastData) {
                 if (jabatanTarget) {
                     if (lastData.no_data) {
-                        jabatanTarget.innerHTML = `<span class="inline-flex items-center px-2 py-0.5 rounded text-[8px] font-bold uppercase border bg-amber-50 text-amber-600 border-amber-200" title="Data tidak ditemukan di API">NO DATA</span>`;
+                        jabatanTarget.innerHTML = `<span class="inline-flex items-center w-fit self-start px-2 py-0.5 rounded text-[8px] font-bold uppercase border bg-amber-50 text-amber-600 border-amber-200" title="Data tidak ditemukan di API">NO DATA</span>`;
                     } else if (lastData.data) {
                         const isPltInThisUnit = container.getAttribute('data-is-plt') === '1';
                         const currentUnitId = container.getAttribute('data-current-unit-id') || '';
@@ -988,9 +988,9 @@ echo view('components/modal', [
             } else {
                 if (jabatanTarget) {
                     if (isRateLimit) {
-                        jabatanTarget.innerHTML = `<span class="inline-flex items-center px-2 py-0.5 rounded text-[8px] font-bold uppercase border bg-amber-50 text-amber-700 border-amber-300" title="API Terkena Rate Limit (Silakan coba beberapa saat lagi)">RATE LIMIT</span>`;
+                        jabatanTarget.innerHTML = `<span class="inline-flex items-center w-fit self-start px-2 py-0.5 rounded text-[8px] font-bold uppercase border bg-amber-50 text-amber-700 border-amber-300" title="API Terkena Rate Limit (Silakan coba beberapa saat lagi)">RATE LIMIT</span>`;
                     } else {
-                        jabatanTarget.innerHTML = `<span class="inline-flex items-center px-2 py-0.5 rounded text-[8px] font-bold uppercase border bg-red-50 text-red-600 border-red-200" title="${((lastData && lastData.message) ? lastData.message : 'Sinkronisasi Gagal').replace(/"/g, '&quot;')}">FAILED</span>`;
+                        jabatanTarget.innerHTML = `<span class="inline-flex items-center w-fit self-start px-2 py-0.5 rounded text-[8px] font-bold uppercase border bg-red-50 text-red-600 border-red-200" title="${((lastData && lastData.message) ? lastData.message : 'Sinkronisasi Gagal').replace(/"/g, '&quot;')}">FAILED</span>`;
                     }
                 }
                 if (unitTarget && originalUnit) {

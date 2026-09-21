@@ -25,6 +25,9 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Menambahkan *circuit breaker* dan cooldown 15 detik berbasis cache pada [`PegawaiApi.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Shared/Libraries/PegawaiApi.php) saat terdeteksi HTTP 429 atau teks `Too Many Requests`.
   - Memperbaiki deteksi respon rate limit pada [`EmailService.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Domains/Email/Services/EmailService.php) agar pesan error pembatasan tidak lagi disalahartikan sebagai "Data Tidak Ditemukan", serta mengembalikan status HTTP 429 pada [`EmailApiController.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Domains/Email/Controllers/EmailApiController.php).
   - Mengoptimasi pemindaian Plt lintas OPD pada `getAllPltAssignments()` dengan memperpanjang cache menjadi 6 jam, menambahkan mikro-jeda 150ms antar unit, dan penghentian otomatis saat mendeteksi rate limit.
+- **Perbaikan Tampilan Badge Status Sinkronisasi Jabatan**:
+  - Menambahkan kelas `items-start` pada container `.jabatan-sync-target` di [`unit_kerja_detail.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/unit_kerja_detail.php) dan [`pimpinan.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/pimpinan.php) untuk mencegah perilaku *default* CSS flex column (`align-items: stretch`) meregangkan elemen turunan secara penuh.
+  - Memperbarui badge `NO DATA`, `NO DATA API`, `ANTREAN ULANG`, `RATE LIMIT`, `FAILED`, dan `ERROR` pada [`sync-helper.js`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/public/js/sync-helper.js) dan [`unit_kerja_detail.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/unit_kerja_detail.php) dengan kelas `inline-flex items-center w-fit self-start` agar selalu tampil kompak (*compact/fit-content*) dan tidak meregang memenuhi lebar kolom (*full width*).
 
 ---
 

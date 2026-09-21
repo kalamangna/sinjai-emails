@@ -511,7 +511,7 @@
                     (attempt, max, waitMs) => {
                         btn.innerHTML = `<i class="fas fa-hourglass-half animate-spin mr-2"></i> Pedinginan Rate Limit (${waitMs / 1000}s)...`;
                         if (jabatanTarget) {
-                            jabatanTarget.innerHTML = `<span class="text-amber-600 font-bold text-[10px] animate-pulse"><i class="fas fa-hourglass-half mr-1"></i> RATE LIMIT (${waitMs / 1000}s)</span>`;
+                            jabatanTarget.innerHTML = `<span class="inline-flex items-center w-fit self-start text-amber-600 font-bold text-[10px] animate-pulse"><i class="fas fa-hourglass-half mr-1"></i> RATE LIMIT (${waitMs / 1000}s)</span>`;
                         }
                     }
                 );
@@ -521,7 +521,7 @@
                 if (data.success && !fetchResult.isRateLimited) {
                     if (jabatanTarget) {
                         if (data.no_data) {
-                            jabatanTarget.innerHTML = `<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase border bg-amber-50 text-amber-600 border-amber-200" title="Data tidak ditemukan di API">NO DATA API</span>`;
+                            jabatanTarget.innerHTML = `<span class="inline-flex items-center w-fit self-start px-2 py-0.5 rounded text-[8px] font-bold uppercase border bg-amber-50 text-amber-600 border-amber-200" title="Data tidak ditemukan di API">NO DATA API</span>`;
                         } else {
                             const isPltInThisUnit = container.getAttribute('data-is-plt') === '1';
                             const currentUnitId = container.getAttribute('data-current-unit-id') || '';
@@ -598,7 +598,7 @@
                 } else if (fetchResult.isRateLimited && !isRetry) {
                     // Tandai sementara dan masukkan ke antrean ulang di akhir
                     if (jabatanTarget) {
-                        jabatanTarget.innerHTML = `${originalJabatan} <span class="ml-1 px-1.5 py-0.5 rounded text-[8px] font-bold uppercase border bg-amber-50 text-amber-700 border-amber-300 animate-pulse" title="Rate limit terdeteksi - Akan diulang otomatis di akhir">ANTREAN ULANG</span>`;
+                        jabatanTarget.innerHTML = `${originalJabatan} <span class="inline-flex items-center w-fit self-start mt-0.5 px-1.5 py-0.5 rounded text-[8px] font-bold uppercase border bg-amber-50 text-amber-700 border-amber-300 animate-pulse" title="Rate limit terdeteksi - Akan diulang otomatis di akhir">ANTREAN ULANG</span>`;
                     }
                     if (unitTarget && originalUnit) {
                         unitTarget.innerHTML = originalUnit;
@@ -607,9 +607,9 @@
                 } else {
                     if (jabatanTarget) {
                         if (fetchResult.isRateLimited) {
-                            jabatanTarget.innerHTML = `${originalJabatan} <span class="ml-1 px-1.5 py-0.5 rounded text-[8px] font-bold uppercase border bg-amber-50 text-amber-700 border-amber-300" title="API Terkena Rate Limit">RATE LIMIT</span>`;
+                            jabatanTarget.innerHTML = `${originalJabatan} <span class="inline-flex items-center w-fit self-start mt-0.5 px-1.5 py-0.5 rounded text-[8px] font-bold uppercase border bg-amber-50 text-amber-700 border-amber-300" title="API Terkena Rate Limit">RATE LIMIT</span>`;
                         } else {
-                            jabatanTarget.innerHTML = `${originalJabatan} <span class="ml-1 px-1.5 py-0.5 rounded text-[8px] font-bold uppercase border bg-red-50 text-red-600 border-red-200" title="${data.message || 'Sinkronisasi Gagal'}">FAILED</span>`;
+                            jabatanTarget.innerHTML = `${originalJabatan} <span class="inline-flex items-center w-fit self-start mt-0.5 px-1.5 py-0.5 rounded text-[8px] font-bold uppercase border bg-red-50 text-red-600 border-red-200" title="${data.message || 'Sinkronisasi Gagal'}">FAILED</span>`;
                         }
                     }
                     if (unitTarget && originalUnit) {
@@ -619,7 +619,7 @@
                 }
             } catch (error) {
                 if (jabatanTarget) {
-                    jabatanTarget.innerHTML = `${originalJabatan} <span class="ml-1 px-1.5 py-0.5 rounded text-[8px] font-bold uppercase border bg-red-50 text-red-600 border-red-200">ERROR</span>`;
+                    jabatanTarget.innerHTML = `${originalJabatan} <span class="inline-flex items-center w-fit self-start mt-0.5 px-1.5 py-0.5 rounded text-[8px] font-bold uppercase border bg-red-50 text-red-600 border-red-200">ERROR</span>`;
                 }
                 if (unitTarget && originalUnit) {
                     unitTarget.innerHTML = originalUnit;
