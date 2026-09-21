@@ -5,6 +5,16 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [22 September 2026] — Penambahan Filter Status ASN pada Penamaan Berkas Ekspor & Riwayat Laporan
+
+- **Penambahan Filter ASN pada Penamaan Berkas Laporan**:
+  - Menambahkan method pembantu `getAsnSuffix()` pada [`EmailExportService.php`](app/Domains/Email/Services/EmailExportService.php) untuk mendeteksi filter ASN aktif (`PNS`, `PPPK`, atau `PPPK PARUH WAKTU`).
+  - Memperbarui pembentukan nama berkas ekspor PDF Unit Kerja (`PDF_UNIT_KERJA`) dan PDF Detail Akun Pegawai (`PDF_DETAIL_AKUN`) agar menyertakan status ASN yang difilter ke dalam format nama berkas (`[unit]_[asn]_[bulan]_[tahun].pdf` dan `[unit]_detail_akun_[asn]_[bulan]_[tahun].pdf`).
+  - Menyesuaikan penamaan berkas pada ekspor Excel (`.xlsx`) dan CSV/ZIP agar konsisten mencantumkan status ASN yang dipilih.
+  - Memastikan berkas laporan dengan filter ASN berbeda dalam unit kerja yang sama tidak saling menimpa (*overwrite*) serta mempermudah identifikasi berkas pada menu **Riwayat Laporan** (`reports/history`).
+
+---
+
 # [21 September 2026] — Penyempurnaan Normalisasi Jabatan & Sinkronisasi Otomatis Status Pimpinan
 
 - **Penyempurnaan Normalisasi Jabatan Pasca Pelantikan & Mutasi**:

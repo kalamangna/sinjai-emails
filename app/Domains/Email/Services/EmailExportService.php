@@ -57,6 +57,22 @@ class EmailExportService
         return '';
     }
 
+    private function getAsnSuffix($statusAsn): string
+    {
+        if ($statusAsn === null || $statusAsn === '') {
+            return '';
+        }
+
+        if (is_numeric($statusAsn)) {
+            $asn = $this->statusAsnModel->find((int) $statusAsn);
+            $name = $asn['nama_status_asn'] ?? '';
+        } else {
+            $name = (string) $statusAsn;
+        }
+
+        return !empty($name) ? ' ' . trim($name) : '';
+    }
+
     public function generatePimpinanPdf($search = null, $bsre_status = null)
     {
         set_time_limit(0);
@@ -290,9 +306,11 @@ class EmailExportService
         $dompdf->setPaper('A4', 'portrait');
         $dompdf->render();
 
+        $asnSuffix = $this->getAsnSuffix($status_asn);
+
         return [
             'dompdf' => $dompdf,
-            'filename' => url_title($unitKerja['nama_unit_kerja'] . ' ' . formatBulanTahun('now'), '_', true) . '.pdf'
+            'filename' => url_title($unitKerja['nama_unit_kerja'] . $asnSuffix . ' ' . formatBulanTahun('now'), '_', true) . '.pdf'
         ];
     }
 
@@ -413,9 +431,11 @@ class EmailExportService
         $dompdf->setPaper('A4', 'portrait');
         $dompdf->render();
 
+        $asnSuffix = $this->getAsnSuffix($status_asn);
+
         return [
             'dompdf' => $dompdf,
-            'filename' => url_title($unitKerja['nama_unit_kerja'] . ' Detail Akun ' . formatBulanTahun('now'), '_', true) . '.pdf'
+            'filename' => url_title($unitKerja['nama_unit_kerja'] . ' Detail Akun' . $asnSuffix . ' ' . formatBulanTahun('now'), '_', true) . '.pdf'
         ];
     }
 
@@ -655,7 +675,8 @@ class EmailExportService
             $sheet->getColumnDimension($col)->setAutoSize(true);
         }
         
-        $filename = 'Detail Akun - ' . $unitKerja['nama_unit_kerja'] . '.xlsx';
+        $asnSuffix = $this->getAsnSuffix($params['status_asn'] ?? null);
+        $filename = 'Detail Akun - ' . $unitKerja['nama_unit_kerja'] . ($asnSuffix ? ' -' . $asnSuffix : '') . '.xlsx';
         $path = WRITEPATH . 'uploads/' . url_title($filename, '_', true);
         
         $writer = new XlsxWriter($spreadsheet);
@@ -708,9 +729,10 @@ class EmailExportService
         $totalEmails = count($emails);
         $limit = 50;
         $unitKerjaName = $unitKerja['nama_unit_kerja'];
+        $asnSuffix = $this->getAsnSuffix($params['status_asn'] ?? null);
 
         if ($totalEmails <= $limit) {
-            $filename = url_title($unitKerjaName, '_', true) . '.csv';
+            $filename = url_title($unitKerjaName . $asnSuffix, '_', true) . '.csv';
             $path = WRITEPATH . 'uploads/' . $filename;
             $output = fopen($path, 'w');
             fputcsv($output, ['nama', 'emailAddress'], ',');
@@ -721,7 +743,7 @@ class EmailExportService
             return ['path' => $path, 'filename' => $filename, 'type' => 'csv'];
         } else {
             $zip = new ZipArchive();
-            $zipFileName = url_title($unitKerjaName, '_', true) . '.zip';
+            $zipFileName = url_title($unitKerjaName . $asnSuffix, '_', true) . '.zip';
             $tempZipPath = WRITEPATH . 'uploads/' . $zipFileName;
             if ($zip->open($tempZipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== TRUE) {
                 throw new Exception('Cannot create ZIP archive.');
@@ -730,7 +752,7 @@ class EmailExportService
             $chunks = array_chunk($emails, $limit);
             $fileCount = 1;
             foreach ($chunks as $chunk) {
-                $csvFileName = url_title($unitKerjaName, '_', true) . '_part_' . $fileCount . '.csv';
+                $csvFileName = url_title($unitKerjaName . $asnSuffix, '_', true) . '_part_' . $fileCount . '.csv';
                 $stream = fopen('php://memory', 'w+');
                 fputcsv($stream, ['nama', 'emailAddress'], ',');
                 foreach ($chunk as $email) {
