@@ -1620,6 +1620,16 @@ class EmailService
                 } else {
                     $updateData['eselon_id'] = null;
                 }
+
+                // Otomatis sinkronkan status peran pimpinan berdasarkan jabatan hasil normalisasi
+                // (Menjaga integritas data saat terjadi mutasi / promosi / rotasi pelantikan)
+                $isLeader = $this->isPimpinanJabatan($cleanJab, $resolvedUnitName);
+                $updateData['pimpinan'] = $isLeader ? 1 : 0;
+                if ($cleanJab === 'KEPALA DESA') {
+                    $updateData['pimpinan_desa'] = 1;
+                } elseif (!empty($currentEmail['status_asn_id']) && (int)$currentEmail['status_asn_id'] === 1) {
+                    $updateData['pimpinan_desa'] = 0;
+                }
             }
         }
 
@@ -1844,6 +1854,52 @@ class EmailService
         \App\Shared\Services\CacheService::invalidateDashboard();
     }
 
+    /**
+     * Memeriksa apakah suatu nama jabatan tergolong sebagai Pimpinan (Eselon II, Pimpinan Wilayah/Unit Utama)
+     */
+    public function isPimpinanJabatan(?string $jabatan, ?string $unitKerjaName = null): bool
+    {
+        if (empty($jabatan)) {
+            return false;
+        }
+
+        $jab = strtoupper(trim($jabatan));
+
+        $topTitles = [
+            'BUPATI',
+            'WAKIL BUPATI',
+            'SEKRETARIS DAERAH',
+            'INSPEKTUR',
+            'KEPALA DINAS',
+            'KEPALA BADAN',
+            'KEPALA SATUAN',
+            'DIREKTUR',
+            'CAMAT',
+            'LURAH',
+        ];
+
+        if (in_array($jab, $topTitles, true)) {
+            return true;
+        }
+
+        if (stripos($jab, 'ASISTEN ') === 0 && stripos($jab, 'ASISTEN APOTEKER') === false) {
+            return true;
+        }
+
+        if (stripos($jab, 'STAF AHLI ') === 0) {
+            return true;
+        }
+
+        if (stripos($jab, 'KEPALA BAGIAN') === 0 && !empty($unitKerjaName)) {
+            $unitUpper = strtoupper($unitKerjaName);
+            if (stripos($unitUpper, 'BAGIAN ') === 0 || stripos($unitUpper, 'SEKRETARIAT DAERAH') !== false || stripos($unitUpper, 'SETDA') !== false) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function normalizeJabatanName(?string $jabatan, ?string $unitKerjaName = null, bool $isPimpinan = false): ?string
     {
         if (empty($jabatan)) {
@@ -1937,13 +1993,13 @@ class EmailService
             if (!empty($unitKerjaName) && strpos(strtoupper($unitKerjaName), 'BAGIAN ') === 0) {
                 return 'KEPALA BAGIAN';
             }
-            $jab = preg_replace('/\s+(?:(?:PADA|DI)\s+)?(SEKRETARIAT\s+DPRD|SETWAN|KABUPATEN\s+SINJAI)\b.*$/i', '', $jab);
+            $jab = preg_replace('/\s+(?:(?:PADA|DI)\s+)?(SEKRETARIAT\s+DAERAH|SEKRETARIAT\s+DPRD|SETDA|SETWAN|KABUPATEN\s+SINJAI)\b.*$/i', '', $jab);
             return trim($jab);
         }
         if (stripos($jab, 'KEPALA DINAS') === 0 || stripos($jab, 'KADIS') === 0) {
             return 'KEPALA DINAS';
         }
-        if (stripos($jab, 'KEPALA BADAN') === 0 || stripos($jab, 'KABAN') === 0) {
+        if (stripos($jab, 'KEPALA BADAN') === 0 || stripos($jab, 'KABAN') === 0 || stripos($jab, 'KEPALA BPBD') === 0) {
             return 'KEPALA BADAN';
         }
         if (stripos($jab, 'KEPALA SATUAN') === 0 || stripos($jab, 'KEPALA SATPOL') === 0 || stripos($jab, 'KASAT POL') === 0 || stripos($jab, 'KASATPOL') === 0) {
@@ -1976,28 +2032,58 @@ class EmailService
             return $jab;
         }
 
-        if (stripos($jab, 'SEKRETARIS DINAS') === 0 || stripos($jab, 'SEKDIS') === 0) {
-            return 'SEKRETARIS DINAS';
-        }
-        if (stripos($jab, 'SEKRETARIS BADAN') === 0 || stripos($jab, 'SEKBAN') === 0) {
-            return 'SEKRETARIS BADAN';
-        }
-        if (stripos($jab, 'SEKRETARIS INSPEKTORAT') === 0) {
-            return 'SEKRETARIS INSPEKTORAT';
-        }
-        if (stripos($jab, 'SEKRETARIS CAMAT') === 0 || stripos($jab, 'SEKCAM') === 0) {
-            return 'SEKRETARIS CAMAT';
-        }
-        if (stripos($jab, 'SEKRETARIS LURAH') === 0 || stripos($jab, 'SEKLUR') === 0) {
-            return 'SEKRETARIS LURAH';
+        // Format Ringkas Sekretaris OPD
+        if (stripos($jab, 'SEKRETARIS DAERAH') === 0) {
+            return 'SEKRETARIS DAERAH';
         }
         if (stripos($jab, 'SEKRETARIS DPRD') === 0 || stripos($jab, 'SEKWAN') === 0) {
             return 'SEKRETARIS DPRD';
         }
+        if (stripos($jab, 'SEKRETARIS INSPEKTORAT') === 0) {
+            return 'SEKRETARIS INSPEKTORAT';
+        }
+        if (stripos($jab, 'SEKRETARIS BADAN') === 0 || stripos($jab, 'SEKBAN') === 0 || stripos($jab, 'SEKRETARIS BPBD') === 0) {
+            return 'SEKRETARIS BADAN';
+        }
+        if (stripos($jab, 'SEKRETARIS SATUAN') === 0 || stripos($jab, 'SEKRETARIS SATPOL') === 0) {
+            return 'SEKRETARIS SATUAN';
+        }
+        if (stripos($jab, 'SEKRETARIS DINAS') === 0 || stripos($jab, 'SEKDIS') === 0) {
+            return 'SEKRETARIS DINAS';
+        }
+        if (stripos($jab, 'SEKRETARIS CAMAT') === 0 || stripos($jab, 'SEKCAM') === 0 || stripos($jab, 'SEKRETARIS KECAMATAN') === 0) {
+            return 'SEKRETARIS KECAMATAN';
+        }
+        if (stripos($jab, 'SEKRETARIS LURAH') === 0 || stripos($jab, 'SEKLUR') === 0 || stripos($jab, 'SEKRETARIS KELURAHAN') === 0) {
+            return 'SEKRETARIS KELURAHAN';
+        }
+        if ($jab === 'SEKRETARIS' && !empty($unitKerjaName)) {
+            $unitUpper = strtoupper($unitKerjaName);
+            if (strpos($unitUpper, 'INSPEKTORAT') !== false) {
+                return 'SEKRETARIS INSPEKTORAT';
+            } elseif (strpos($unitUpper, 'SATUAN POLISI') !== false || strpos($unitUpper, 'SATPOL') !== false) {
+                return 'SEKRETARIS SATUAN';
+            } elseif (strpos($unitUpper, 'DINAS') !== false) {
+                return 'SEKRETARIS DINAS';
+            } elseif (strpos($unitUpper, 'BADAN') !== false || strpos($unitUpper, 'BPBD') !== false) {
+                return 'SEKRETARIS BADAN';
+            } elseif (strpos($unitUpper, 'KECAMATAN') !== false) {
+                return 'SEKRETARIS KECAMATAN';
+            } elseif (strpos($unitUpper, 'KELURAHAN') !== false) {
+                return 'SEKRETARIS KELURAHAN';
+            }
+        }
 
-        // Inferensi dari unit HANYA jika akun berstatus pimpinan kepala dinas/badan/camat/lurah utama
-        $isSubordinateLeader = preg_match('/\b(SEKRETARIS|SEKRETARIAT|SEKDIS|SEKBAN|SEKCAM|SEKLUR|SEKWAN|SEKOLAH|PUSKESMAS|UPTD|UPT|BIDANG|SEKSI|SUB\s*BAGIAN|SUBBAG|SUB\s*BIDANG|SUBBID|RUANGAN|INSTALASI|LABORATORIUM)\b/i', $jab);
-        if ($isPimpinan && !$isSubordinateLeader) {
+        // Inferensi dari unit HANYA jika akun berstatus pimpinan generik (bukan jabatan spesifik non-pimpinan)
+        $isSpecificNonTopLeader = preg_match('/\b(AUDITOR|PENGAWAS|ANALIS|PENELAAH|PERENCANA|PRANATA|GURU|DOKTER|PERAWAT|BIDAN|APOTEKER|EPIDEMIOLOG|SANITARIAN|NUTRISIONIS|ARSIPARIS|PUSTAKAWAN|STATISTISI|PENELITI|INSTRUKTUR|PENYULUH|MEDIK|PARAMEDIK|FISIOTERAPIS|RADIOGRAFER|PENGADMINISTRASI|OPERATOR|PENGELOLA|PENGOLAH|BENDAHARA|PENGEMUDI|PRAMU|PETUGAS|STAF|TEKNISI|FASILITATOR|PEMERIKSA|POLISI PAMONG PRAJA|SEKRETARIS|SEKRETARIAT|SEKDIS|SEKBAN|SEKCAM|SEKLUR|SEKWAN|SEKOLAH|PUSKESMAS|UPTD|UPT|BIDANG|SEKSI|SUB\s*BAGIAN|SUBBAG|SUB\s*BIDANG|SUBBID|RUANGAN|INSTALASI|LABORATORIUM)\b/i', $jab)
+            || preg_match('/\b(AHLI\s+(PERTAMA|MUDA|MADYA|UTAMA)|TERAMPIL|MAHIR|PENYELIA|PEMULA)\b/i', $jab);
+
+        $isGenericPimpinan = empty($jab)
+            || preg_match('/^(KEPALA|PIMPINAN|KETUA)$/i', $jab)
+            || preg_match('/^(KEPALA|PIMPINAN)\s+(PERANGKAT\s*DAERAH|OPD|INSTANSI|UNIT(\s*KERJA)?)$/i', $jab)
+            || (!empty($unitKerjaName) && ($jab === strtoupper(trim($unitKerjaName))));
+
+        if ($isPimpinan && $isGenericPimpinan && !$isSpecificNonTopLeader) {
             if (!empty($unitKerjaName)) {
                 $unitUpper = strtoupper($unitKerjaName);
                 if (strpos($unitUpper, 'KELURAHAN') !== false) {
@@ -2012,7 +2098,7 @@ class EmailService
                     return 'KEPALA BAGIAN';
                 } elseif (strpos($unitUpper, 'DINAS') !== false) {
                     return 'KEPALA DINAS';
-                } elseif (strpos($unitUpper, 'BADAN') !== false) {
+                } elseif (strpos($unitUpper, 'BADAN') !== false || strpos($unitUpper, 'BPBD') !== false) {
                     return 'KEPALA BADAN';
                 } elseif (strpos($unitUpper, 'KECAMATAN') !== false) {
                     return 'CAMAT';
@@ -2026,40 +2112,6 @@ class EmailService
                     }
                     return 'KEPALA UPTD';
                 }
-            }
-        }
-
-        // Format Ringkas Sekretaris OPD
-        if (stripos($jab, 'SEKRETARIS DAERAH') === 0) {
-            return 'SEKRETARIS DAERAH';
-        } elseif (stripos($jab, 'SEKRETARIS DPRD') === 0) {
-            return 'SEKRETARIS DPRD';
-        } elseif (stripos($jab, 'SEKRETARIS INSPEKTORAT') === 0) {
-            return 'SEKRETARIS INSPEKTORAT';
-        } elseif (stripos($jab, 'SEKRETARIS BADAN') === 0 || stripos($jab, 'SEKRETARIS BPBD') === 0) {
-            return 'SEKRETARIS BADAN';
-        } elseif (stripos($jab, 'SEKRETARIS SATUAN') === 0 || stripos($jab, 'SEKRETARIS SATPOL') === 0) {
-            return 'SEKRETARIS SATUAN';
-        } elseif (stripos($jab, 'SEKRETARIS DINAS') === 0) {
-            return 'SEKRETARIS DINAS';
-        } elseif (stripos($jab, 'SEKRETARIS CAMAT') === 0 || stripos($jab, 'SEKRETARIS KECAMATAN') === 0) {
-            return 'SEKRETARIS KECAMATAN';
-        } elseif (stripos($jab, 'SEKRETARIS LURAH') === 0 || stripos($jab, 'SEKRETARIS KELURAHAN') === 0) {
-            return 'SEKRETARIS KELURAHAN';
-        } elseif ($jab === 'SEKRETARIS' && !empty($unitKerjaName)) {
-            $unitUpper = strtoupper($unitKerjaName);
-            if (strpos($unitUpper, 'INSPEKTORAT') !== false) {
-                return 'SEKRETARIS INSPEKTORAT';
-            } elseif (strpos($unitUpper, 'SATUAN POLISI') !== false || strpos($unitUpper, 'SATPOL') !== false) {
-                return 'SEKRETARIS SATUAN';
-            } elseif (strpos($unitUpper, 'DINAS') !== false) {
-                return 'SEKRETARIS DINAS';
-            } elseif (strpos($unitUpper, 'BADAN') !== false || strpos($unitUpper, 'BPBD') !== false) {
-                return 'SEKRETARIS BADAN';
-            } elseif (strpos($unitUpper, 'KECAMATAN') !== false) {
-                return 'SEKRETARIS KECAMATAN';
-            } elseif (strpos($unitUpper, 'KELURAHAN') !== false) {
-                return 'SEKRETARIS KELURAHAN';
             }
         }
 
@@ -2128,7 +2180,10 @@ class EmailService
         // Hapus penyisipan nama OPD di tengah jabatan fungsional sebelum jenjang (misal: MEDIK VETERINER DINAS PETERNAKAN... AHLI PERTAMA)
         $jab = preg_replace('/\s+(DINAS|BADAN|INSPEKTORAT|SEKRETARIAT)\s+[A-Z\s]+(?=\s+(AHLI\s+(PERTAMA|MUDA|MADYA|UTAMA)|TERAMPIL|MAHIR|PENYELIA|PEMULA))/i', '', $jab);
 
-        if (preg_match('/^(PENGADMINISTRASI|PENGELOLA|PENGOLAH|PENELAAH|OPERATOR|PRANATA|BENDAHARA|PENGEMUDI|PRAMU|PETUGAS|STAF|TEKNISI|FASILITATOR|PENYUSUN|PEMERIKSA|ANALIS|GURU|DOKTER|PERAWAT|BIDAN|APOTEKER|EPIDEMIOLOG|SANITARIAN|NUTRISIONIS|ARSIPARIS|PUSTAKAWAN|AUDITOR|PERENCANA|PENYULUH|INSTRUKTUR|STATISTISI|PENELITI|PENGUJI|POLISI PAMONG PRAJA|MEDIK VETERINER|PARAMEDIK VETERINER|PENGAWAS BIBIT|PENGAWAS MUTU)\b/i', $jab)) {
+        // Standarisasi Nomenklatur PPUPD (PermenPAN-RB No. 36/2020)
+        $jab = preg_replace('/\bPENGAWAS\s+PENYELENGGARAAN\s+URUSAN\s+PEMERINTAHAN\s+DI\s+DAERAH\b/i', 'PENGAWAS PENYELENGGARAAN URUSAN PEMERINTAHAN DAERAH', $jab);
+
+        if (preg_match('/^(PENGADMINISTRASI|PENGELOLA|PENGOLAH|PENELAAH|OPERATOR|PRANATA|BENDAHARA|PENGEMUDI|PRAMU|PETUGAS|STAF|TEKNISI|FASILITATOR|PENYUSUN|PEMERIKSA|ANALIS|GURU|DOKTER|PERAWAT|BIDAN|APOTEKER|EPIDEMIOLOG|SANITARIAN|NUTRISIONIS|ARSIPARIS|PUSTAKAWAN|AUDITOR|PERENCANA|PENYULUH|INSTRUKTUR|STATISTISI|PENELITI|PENGUJI|POLISI PAMONG PRAJA|MEDIK VETERINER|PARAMEDIK VETERINER|PENGAWAS BIBIT|PENGAWAS MUTU|PENGAWAS|PENILIK|PENATA KELOLA)\b/i', $jab)) {
             $jab = preg_replace('/\s+(?:(?:PADA|DI)\s+)?(?:SEKSI|SUB\s*BAGIAN|SUBAG|SUB\s*BIDANG|BIDANG|BAGIAN)\s+.*$/i', '', $jab);
             $jab = preg_replace('/\s+(PADA|DI)\s+(SEKRETARIAT|KEC\.|KECAMATAN|DINAS|BADAN|INSPEKTORAT|SATPOL|SATUAN POLISI|UPTD|RSUD|PUSKESMAS|KELURAHAN|KEL\.|BAGIAN|IFK|GFK|SKB|INSTALASI|LABKESDA|LABORATORIUM|SEKOLAH|SDN|SMPN|SMAN|TKN)\b.*$/i', '', $jab);
             $jab = preg_replace('/\s+(DINAS|BADAN|INSPEKTORAT|KECAMATAN|KELURAHAN)\s+[A-Z\s]+$/i', '', $jab);
@@ -2149,7 +2204,7 @@ class EmailService
         }
 
         // 2. Standarisasi [Profesi] [Pertama/Muda/Madya/Utama] -> [Profesi] AHLI [Jenjang]
-        $profesiKeahlian = 'GURU|PERAWAT|BIDAN|DOKTER|AUDITOR|APOTEKER|ASISTEN APOTEKER|EPIDEMIOLOG|SANITARIAN|NUTRISIONIS|ARSIPARIS|PUSTAKAWAN|PRANATA KOMPUTER|PENYULUH|PENGUJI|INSTRUKTUR|PERENCANA|STATISTISI|PENELITI|ANALIS KEBIJAKAN|ADMINISTRATOR KESEHATAN|MEDIK VETERINER|PARAMEDIK VETERINER|PENGAWAS BIBIT TERNAK|PENGAWAS MUTU PAKAN|FISIOTERAPIS|PRANATA LABORATORIUM KESEHATAN|PRANATA LABORATORIUM|TERAPIS GIGI DAN MULUT|RADIOGRAFER|REFRAKSIONIS OPTISIEN|TEKNISI ELEKTROMEDIS|PEREKAM MEDIS|OKUPASI TERAPIS|TERAPIS WICARA|ORTOTIS PROSTETIS|TEKNISI GIGI|FISIKAWAN MEDIS|PEMBIMBING KESEHATAN KERJA|ENTOMOLOG KESEHATAN';
+        $profesiKeahlian = 'GURU|PERAWAT|BIDAN|DOKTER|AUDITOR|PENGAWAS PENYELENGGARAAN URUSAN PEMERINTAHAN DAERAH|PENGAWAS SEKOLAH|PENILIK|APOTEKER|ASISTEN APOTEKER|EPIDEMIOLOG|SANITARIAN|NUTRISIONIS|ARSIPARIS|PUSTAKAWAN|PRANATA KOMPUTER|PENYULUH|PENGUJI|INSTRUKTUR|PERENCANA|STATISTISI|PENELITI|ANALIS KEBIJAKAN|ADMINISTRATOR KESEHATAN|MEDIK VETERINER|PARAMEDIK VETERINER|PENGAWAS BIBIT TERNAK|PENGAWAS MUTU PAKAN|FISIOTERAPIS|PRANATA LABORATORIUM KESEHATAN|PRANATA LABORATORIUM|TERAPIS GIGI DAN MULUT|RADIOGRAFER|REFRAKSIONIS OPTISIEN|TEKNISI ELEKTROMEDIS|PEREKAM MEDIS|OKUPASI TERAPIS|TERAPIS WICARA|ORTOTIS PROSTETIS|TEKNISI GIGI|FISIKAWAN MEDIS|PEMBIMBING KESEHATAN KERJA|ENTOMOLOG KESEHATAN|PENATA KELOLA|PENELAAH TEKNIS KEBIJAKAN';
         $jab = preg_replace("/\b({$profesiKeahlian})\s+PERTAMA\b/i", '$1 AHLI PERTAMA', $jab);
         $jab = preg_replace("/\b({$profesiKeahlian})\s+MUDA\b/i", '$1 AHLI MUDA', $jab);
         $jab = preg_replace("/\b({$profesiKeahlian})\s+MADYA\b/i", '$1 AHLI MADYA', $jab);

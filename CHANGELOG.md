@@ -5,6 +5,20 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+# [21 September 2026] — Penyempurnaan Normalisasi Jabatan & Sinkronisasi Otomatis Status Pimpinan
+
+- **Penyempurnaan Normalisasi Jabatan Pasca Pelantikan & Mutasi**:
+  - Memperbaiki logika inferensi pimpinan dari unit kerja pada [`EmailService.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Domains/Email/Services/EmailService.php) dengan menambahkan pengaman `$isGenericPimpinan` dan `$isSpecificNonTopLeader` agar jabatan fungsional maupun pelaksana (seperti `Auditor`, `Pengawas`, `PPUPD`, `Guru`, `Dokter`, `Perawat`, `Analis`, `Penelaah`, `Penata Kelola`, serta seluruh jenjang keahlian/keterampilan) tidak tertimpa menjadi jabatan pimpinan puncak OPD (`INSPEKTUR`, `KEPALA DINAS`, `KEPALA BADAN`, `CAMAT`, dll.).
+  - Menstandarisasi nomenklatur PPUPD (`PENGAWAS PENYELENGGARAAN URUSAN PEMERINTAHAN DAERAH`) sesuai PermenPAN-RB No. 36/2020.
+  - Menambahkan penanganan normalisasi khusus `KEPALA BPBD` $\rightarrow$ `KEPALA BADAN` dan `SEKRETARIS BPBD` $\rightarrow$ `SEKRETARIS BADAN`.
+  - Menambahkan dukungan penambahan kata `AHLI` pada profesi fungsional keahlian baru (PPUPD, Pengawas Sekolah, Penilik, Penata Kelola, Penelaah Teknis Kebijakan).
+  - Menyempurnakan pembersihan dan pemetaan Kepala Bagian di lingkungan Sekretariat Daerah.
+- **Otomatisasi Sinkronisasi Status Pimpinan**:
+  - Menambahkan method `isPimpinanJabatan()` pada [`EmailService.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Domains/Email/Services/EmailService.php) untuk memvalidasi secara presisi jabatan pimpinan definitif Pemkab Sinjai.
+  - Memperbarui alur `syncPegawaiFromApi()` agar otomatis menyinkronkan kolom `pimpinan` (diturunkan ke `0` jika pejabat mengalami rotasi/mutasi ke jabatan fungsional/pelaksana, dan `1` jika menjabat posisi pimpinan resmi), serta mereset `pimpinan_desa` ke `0` untuk pegawai PNS.
+
+---
+
 # [9 September 2026] — Pembersihan & Pengembalian Alur Standar Sinkronisasi TTE
 
 - **Penghapusan Fitur Sinkronisasi NIK & Email Terdaftar BSrE**:
