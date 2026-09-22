@@ -235,7 +235,7 @@
 
     <!-- PREAMBLE -->
     <div class="text-justify">
-        Pada hari ini <strong>JUMAT</strong> tanggal <strong>DUA</strong> bulan <strong>JANUARI</strong> tahun <strong>DUA RIBU DUA PULUH ENAM</strong> yang bertandatangan di bawah ini:
+        Pada hari ini <strong>JUMAT</strong> tanggal <strong>DUA PULUH LIMA</strong> bulan <strong>SEPTEMBER</strong> tahun <strong>DUA RIBU DUA PULUH ENAM</strong> yang bertandatangan di bawah ini:
     </div>
 
     <!-- PARTIES (PIHAK) -->
@@ -310,7 +310,7 @@
                             <td class="info-sep">:</td>
                             <td class="info-val">
                                 <strong><?= formatStrip($pk_data['tanggal_kontrak_awal'] ?? '0000-00-00') ?></strong>
-                                s/d
+                                s.d.
                                 <strong><?= formatStrip($pk_data['tanggal_kontrak_akhir'] ?? '0000-00-00') ?></strong>
                             </td>
                         </tr>
@@ -342,7 +342,7 @@
                         <tr>
                             <td class="info-label">Masa Kerja Sebelumnya</td>
                             <td class="info-sep">:</td>
-                            <td class="info-val">0 Tahun 0 Bulan</td>
+                            <td class="info-val">01 Tahun 00 Bulan</td>
                         </tr>
                     </table>
                 </td>
@@ -850,11 +850,11 @@
         </tr>
         <tr class="keep-together">
             <td class="num-col">(5)</td>
-            <td class="text-justify">Apabila Pihak Kedua melaksanakan tugas pada tanggal hari kerja pertama bulan berkenaan, gaji sebagaimana dimaksud pada ayat (2) dibayarkan mulai bulan berkenaan.</td>
+            <td class="text-justify">Apabila Pihak Kedua yang melaksanakan tugas pada tanggal hari kerja pertama bulan berkenaan, gaji dan jaminan sebagaimana dimaksud pada ayat (2) dibayarkan mulai bulan berkenaan.</td>
         </tr>
         <tr class="keep-together">
             <td class="num-col">(6)</td>
-            <td class="text-justify">Apabila Pihak Kedua melaksanakan tugas pada tanggal hari kerja kedua dan seterusnya pada bulan berkenaan, gaji sebagaimana dimaksud pada ayat (2) dibayarkan mulai bulan berikutnya.</td>
+            <td class="text-justify">Apabila Pihak Kedua yang melaksanakan tugas pada tanggal hari kerja kedua dan seterusnya pada bulan berkenaan, gaji dan tunjangan sebagaimana dimaksud pada ayat (2) dan dibayarkan mulai bulan berikutnya.</td>
         </tr>
         <tr class="keep-together">
             <td class="num-col">(7)</td>

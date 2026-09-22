@@ -3,6 +3,13 @@
 Semua perubahan penting pada proyek ini dicatat di berkas ini.
 Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+# [22 September 2026] — Pembaruan Template Perjanjian Kerja (PK) PPPK Paruh Waktu
+
+- **Pembaruan Klausul & Tanggal Template Perjanjian Kerja PPPK Paruh Waktu**:
+  - Menyesuaikan tanggal pembuatan perjanjian kerja pada preamble template [`perjanjian_kerja_template.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/exports/perjanjian_kerja_template.php) menjadi `JUMAT, DUA PULUH LIMA SEPTEMBER DUA RIBU DUA PULUH ENAM` (25 September 2026) sesuai format draf terbaru.
+  - Memperbarui masa kerja sebelumnya pada Pasal 1 menjadi `01 Tahun 00 Bulan` serta merapikan pemisah rentang tanggal kontrak menjadi `s.d.`.
+  - Menyelaraskan redaksional Pasal 6 ayat (5) dan (6) terkait jaminan dan tunjangan gaji sesuai dokumen draf resmi.
+
 ---
 
 # [22 September 2026] — Penambahan Filter Status ASN pada Penamaan Berkas Ekspor & Riwayat Laporan
