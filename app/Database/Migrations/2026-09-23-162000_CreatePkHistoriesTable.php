@@ -83,8 +83,8 @@ class CreatePkHistoriesTable extends Migration
 
         // 2. Samakan Collation dengan Tabel pk untuk Mencegah Illegal Mix of Collations
         $db = \Config\Database::connect();
-        $pkCollationRow = $db->query("SELECT table_collation FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = 'pk'")->getRowArray();
-        $pkCollation = !empty($pkCollationRow['table_collation']) ? $pkCollationRow['table_collation'] : 'utf8mb4_general_ci';
+        $pkCollationRow = $db->query("SELECT TABLE_COLLATION FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'pk'")->getRowArray();
+        $pkCollation = $pkCollationRow['TABLE_COLLATION'] ?? $pkCollationRow['table_collation'] ?? 'utf8mb4_0900_ai_ci';
         $db->query("ALTER TABLE pk_histories CONVERT TO CHARACTER SET utf8mb4 COLLATE {$pkCollation};");
 
         // 3. Buat Database Trigger untuk Mengarsipkan Otomatis Data Lama Sebelum UPDATE pada tabel pk
