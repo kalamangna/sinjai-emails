@@ -315,6 +315,7 @@
                                     <p class="text-[10px] font-medium text-slate-700 italic mt-0.5 leading-tight">"<?= esc($pk_data['gaji_terbilang']) ?> Rupiah"</p>
                                 </div>
                             </div>
+                        </div>
                     <?php else: ?>
                         <div class="p-12 text-center">
                             <p class="text-slate-700 italic text-sm">Data Perjanjian Kerja belum tersedia.</p>
