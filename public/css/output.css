@@ -4016,6 +4016,10 @@ input:checked + .toggle-bg {
   background-color: rgb(226 232 240 / 0.5);
 }
 
+.bg-slate-200\/70 {
+  background-color: rgb(226 232 240 / 0.7);
+}
+
 .bg-slate-300 {
   --tw-bg-opacity: 1;
   background-color: rgb(203 213 225 / var(--tw-bg-opacity, 1));
@@ -5788,6 +5792,10 @@ input:checked + .toggle-bg {
 .hover\:bg-white:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1));
+}
+
+.hover\:bg-white\/80:hover {
+  background-color: rgb(255 255 255 / 0.8);
 }
 
 .hover\:text-blue-800:hover {

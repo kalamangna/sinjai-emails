@@ -17,4 +17,31 @@ class PkModel extends Model
     protected $useTimestamps = true;
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
+
+    /**
+     * Menyimpan atau memperbarui data PK
+     */
+    public function savePk(array $data): bool
+    {
+        if (empty($data['email'])) {
+            return false;
+        }
+
+        $existing = $this->where('email', $data['email'])->first();
+        if ($existing) {
+            return (bool) $this->update($existing['id'], $data);
+        }
+
+        return (bool) $this->insert($data);
+    }
+
+    /**
+     * Mengambil daftar riwayat kontrak untuk pegawai berdasarkan email
+     */
+    public function getHistories(string $email): array
+    {
+        $historyModel = new PkHistoryModel();
+        return $historyModel->getHistoryByEmail($email);
+    }
 }
+

@@ -11,6 +11,7 @@ Aplikasi ini menerapkan standar estetika **"Slate Clean Government"**—antarmuk
 - **Sinkronisasi API Pegawai:** Pembaruan otomatis data **Jabatan**, **Pangkat**, dan **Golongan Ruang** melalui API Pegawai resmi.
 - **Rekonsiliasi NIP SIMPEG:** Command CLI `sync:match-nip` untuk pencocokan otomatis akun PNS tanpa NIP dengan database kepegawaian SIMPEG berdasarkan unit kerja dan normalisasi nama cerdas.
 - **Kategorisasi Data:** Tampilan khusus untuk **PNS**, **PPPK (Penuh Waktu)**, dan **PPPK (Paruh Waktu)** dengan filter canggih.
+- **Pengarsipan Riwayat Perjanjian Kerja (PK):** Pencatatan otomatis riwayat perpanjangan kontrak kerja PPPK ke tabel `pk_histories` melalui database trigger, lengkap dengan tampilan linimasa/riwayat pada halaman detail akun.
 - **Endpoint API Internal:** Penyediaan data terstruktur (JSON) untuk integrasi data PPPK lintas sistem secara aman.
 - **Identitas Digital:** Pembuatan QR Code otomatis untuk verifikasi identitas publik yang aman melalui rute terenkripsi (hash).
 - **Debug & Validasi Data:** Fitur deteksi otomatis untuk akun yang mengalami NIP ganda atau ambiguitas data profil.

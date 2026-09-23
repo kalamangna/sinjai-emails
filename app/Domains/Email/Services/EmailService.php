@@ -4,6 +4,7 @@ namespace App\Domains\Email\Services;
 
 use App\Domains\Email\Models\EmailModel;
 use App\Domains\Email\Models\PkModel;
+use App\Domains\Email\Models\PkHistoryModel;
 use App\Domains\UnitKerja\Models\UnitKerjaModel;
 use App\Shared\Models\StatusAsnModel;
 use App\Shared\Models\EselonModel;
@@ -16,6 +17,7 @@ class EmailService
     protected $statusAsnModel;
     protected $eselonModel;
     protected $pkModel;
+    protected $pkHistoryModel;
 
     public function __construct()
     {
@@ -24,6 +26,7 @@ class EmailService
         $this->statusAsnModel = new StatusAsnModel();
         $this->eselonModel = new EselonModel();
         $this->pkModel = new PkModel();
+        $this->pkHistoryModel = new PkHistoryModel();
     }
 
     public function getGlobalNavigationData()
@@ -380,6 +383,7 @@ class EmailService
         }
 
         $pk_data = $this->pkModel->where('email', $email_detail['email'])->first();
+        $pk_histories = $this->pkHistoryModel->getHistoryByEmail($email_detail['email']);
 
         return [
             'email' => $email_detail,
@@ -388,6 +392,7 @@ class EmailService
             'unit_kerja_plt' => $unit_kerja_plt,
             'parent_unit_kerja_plt' => $parent_unit_kerja_plt,
             'pk_data' => $pk_data,
+            'pk_histories' => $pk_histories,
             'unit_kerja_options' => $this->unitKerjaModel->orderBy('nama_unit_kerja', 'ASC')->asArray()->findAll(),
             'status_asn_options' => $this->statusAsnModel->orderBy('nama_status_asn', 'ASC')->asArray()->findAll(),
             'eselon_options' => $this->eselonModel->orderBy('nama_eselon', 'ASC')->asArray()->findAll(),

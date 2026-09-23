@@ -315,10 +315,56 @@
                                     <p class="text-[10px] font-medium text-slate-700 italic mt-0.5 leading-tight">"<?= esc($pk_data['gaji_terbilang']) ?> Rupiah"</p>
                                 </div>
                             </div>
-                        </div>
                     <?php else: ?>
                         <div class="p-12 text-center">
                             <p class="text-slate-700 italic text-sm">Data Perjanjian Kerja belum tersedia.</p>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php if (!empty($pk_histories)): ?>
+                        <div class="border-t border-slate-100 bg-slate-50/50 p-6 space-y-3">
+                            <div class="flex items-center justify-between">
+                                <h4 class="text-[10px] font-bold text-slate-700 uppercase tracking-widest flex items-center gap-1.5">
+                                    <i class="fas fa-history text-slate-400"></i> Riwayat Kontrak Sebelumnya
+                                </h4>
+                                <span class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-slate-200/70 text-slate-600">
+                                    <?= count($pk_histories) ?> Arsip
+                                </span>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse">
+                                    <thead>
+                                        <tr class="border-b border-slate-200 text-[9px] font-bold text-slate-500 uppercase tracking-wider">
+                                            <th class="py-2 pr-3">Nomor PK</th>
+                                            <th class="py-2 px-3">Masa Kontrak</th>
+                                            <th class="py-2 px-3">Gaji</th>
+                                            <th class="py-2 pl-3 text-right">Diarsipkan</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100 text-xs text-slate-700">
+                                        <?php foreach ($pk_histories as $history): ?>
+                                            <tr class="hover:bg-white/80 transition-colors">
+                                                <td class="py-2.5 pr-3 font-mono font-medium text-slate-800">
+                                                    <?= esc($history['nomor'] ?? '-') ?>
+                                                </td>
+                                                <td class="py-2.5 px-3">
+                                                    <span class="inline-flex items-center gap-1 font-medium">
+                                                        <?= formatSingkat($history['tanggal_kontrak_awal']) ?>
+                                                        <i class="fas fa-arrow-right text-[8px] text-slate-400"></i>
+                                                        <?= formatSingkat($history['tanggal_kontrak_akhir']) ?>
+                                                    </span>
+                                                </td>
+                                                <td class="py-2.5 px-3 font-medium">
+                                                    <?= !empty($history['gaji_nominal']) ? 'Rp ' . number_format((float)$history['gaji_nominal'], 0, ',', '.') : '-' ?>
+                                                </td>
+                                                <td class="py-2.5 pl-3 text-right text-[10px] text-slate-400">
+                                                    <?= !empty($history['archived_at']) ? date('d/m/Y H:i', strtotime($history['archived_at'])) : '-' ?>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     <?php endif; ?>
                 </div>

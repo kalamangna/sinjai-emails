@@ -294,11 +294,21 @@ class EmailController extends BaseController
     {
         try {
             $email = $this->emailModel->where('user', $username)->first();
+            if (!$email) {
+                throw new \Exception('Data email tidak ditemukan.');
+            }
+
+            $rawGaji = $this->request->getPost('gaji_nominal') ?? '';
+            $gajiNominal = preg_replace('/[^0-9]/', '', $rawGaji);
+
             $pkData = [
-                'email' => $email['email'],
-                'nomor' => $this->request->getPost('nomor'),
-                'tanggal_mulai' => $this->request->getPost('tanggal_mulai'),
-                'tanggal_selesai' => $this->request->getPost('tanggal_selesai'),
+                'email'                 => $email['email'],
+                'status_asn_id'         => $email['status_asn_id'] ?? null,
+                'nomor'                 => $this->request->getPost('nomor'),
+                'tanggal_kontrak_awal'  => $this->request->getPost('tanggal_kontrak_awal'),
+                'tanggal_kontrak_akhir' => $this->request->getPost('tanggal_kontrak_akhir'),
+                'gaji_nominal'          => $gajiNominal ?: null,
+                'gaji_terbilang'        => $this->request->getPost('gaji_terbilang'),
             ];
 
             $this->pkModel->savePk($pkData);

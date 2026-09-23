@@ -3,6 +3,21 @@
 Semua perubahan penting pada proyek ini dicatat di berkas ini.
 Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+# [23 September 2026] — Penambahan Fitur Arsip Riwayat Kontrak Perjanjian Kerja (PK)
+
+- **Tabel & Trigger Riwayat Kontrak (`pk_histories`)**:
+  - Menambahkan tabel `pk_histories` melalui migrasi [`CreatePkHistoriesTable.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Database/Migrations/2026-09-23-162000_CreatePkHistoriesTable.php) untuk mencatat arsip seluruh kontrak lama pegawai setiap kali terjadi pembaruan data Perjanjian Kerja (PK).
+  - Mengimplementasikan database trigger `trg_pk_before_update` di level MySQL pada tabel `pk` agar data kontrak lama otomatis terarsip saat nomor kontrak atau masa kontrak diperbarui (baik melalui Web UI maupun skrip query massal).
+- **Model & Service Riwayat PK**:
+  - Menambahkan [`PkHistoryModel.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Domains/Email/Models/PkHistoryModel.php) untuk mengelola data tabel `pk_histories`.
+  - Menambahkan method `savePk()` dan `getHistories()` pada [`PkModel.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Domains/Email/Models/PkModel.php).
+  - Memperbarui `getEmailDetail()` pada [`EmailService.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Domains/Email/Services/EmailService.php) agar otomatis mengikutsertakan data riwayat kontrak (`pk_histories`).
+  - Menyempurnakan penanganan pembaruan data PK pada `updatePk()` di [`EmailController.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Domains/Email/Controllers/EmailController.php).
+- **Tampilan Riwayat Kontrak pada Antarmuka Pengguna**:
+  - Menambahkan tabel *Riwayat Kontrak Sebelumnya* pada kartu Perjanjian Kerja di [`detail.php`](file:///Users/abedzul/Desktop/htdocs/sinjai-emails/app/Views/email/detail.php) untuk menampilkan nomor PK lama, masa kontrak (TMT awal s/d akhir), nominal gaji, dan waktu pengarsipan.
+
+---
+
 # [22 September 2026] — Pembaruan Template Perjanjian Kerja (PK) PPPK Paruh Waktu
 
 - **Pembaruan Klausul & Tanggal Template Perjanjian Kerja PPPK Paruh Waktu**:
