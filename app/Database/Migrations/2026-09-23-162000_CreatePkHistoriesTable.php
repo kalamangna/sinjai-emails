@@ -81,8 +81,13 @@ class CreatePkHistoriesTable extends Migration
         $this->forge->addKey('tanggal_kontrak_awal');
         $this->forge->createTable('pk_histories', true);
 
-        // 2. Buat Database Trigger untuk Mengarsipkan Otomatis Data Lama Sebelum UPDATE pada tabel pk
+        // 2. Samakan Collation dengan Tabel pk untuk Mencegah Illegal Mix of Collations
         $db = \Config\Database::connect();
+        $pkCollationRow = $db->query("SELECT table_collation FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = 'pk'")->getRowArray();
+        $pkCollation = !empty($pkCollationRow['table_collation']) ? $pkCollationRow['table_collation'] : 'utf8mb4_general_ci';
+        $db->query("ALTER TABLE pk_histories CONVERT TO CHARACTER SET utf8mb4 COLLATE {$pkCollation};");
+
+        // 3. Buat Database Trigger untuk Mengarsipkan Otomatis Data Lama Sebelum UPDATE pada tabel pk
         $db->query("DROP TRIGGER IF EXISTS trg_pk_before_update;");
         $triggerSql = "
         CREATE TRIGGER trg_pk_before_update
