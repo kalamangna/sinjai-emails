@@ -119,6 +119,13 @@ class PortalPkController extends BaseController
             return redirect()->to('portal-pk')->with('error', 'Sesi Anda telah kedaluwarsa. Silakan masuk kembali.');
         }
 
+        if (empty($email['unit_kerja']) && !empty($email['unit_kerja_name'])) {
+            $email['unit_kerja'] = $email['unit_kerja_name'];
+        }
+        if (empty($email['nama_status_asn']) && !empty($email['status_asn'])) {
+            $email['nama_status_asn'] = $email['status_asn'];
+        }
+
         $pk = $this->pkModel->where('email', $email['email'])->first();
 
         $data = [

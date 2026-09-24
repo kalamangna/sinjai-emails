@@ -11,6 +11,10 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Mempersingkat teks tautan navigasi di halaman masuk ([`login.php`](app/Views/auth/login.php)) menjadi "Portal TTE PPPK &rarr;".
   - Memperbaiki styling global placeholder input (`input::placeholder` / `textarea::placeholder`) pada [`input.css`](public/css/input.css) dengan warna slate halus (`text-slate-400`) dan bobot normal (`font-normal`), serta merapikan teks panduan placeholder pada form login utama dan portal.
   - Menyesuaikan meta title halaman portal di [`PortalPkController.php`](app/Domains/Email/Controllers/PortalPkController.php) dan [`portal_pk_login.php`](app/Views/auth/portal_pk_login.php) menjadi "Portal TTE PPPK | Sistem Identitas Digital", menyelaraskan title halaman login di [`AuthController.php`](app/Domains/Auth/Controllers/AuthController.php) menjadi "Masuk | Sistem Identitas Digital", serta melengkapi tag OpenGraph dan Twitter card.
+  - Menyelaraskan desain dashboard portal di [`portal_pk_dashboard.php`](app/Views/email/portal_pk_dashboard.php) dengan standar aplikasi (kartu `rounded-lg`, header slate, footer copyright resmi).
+  - Memperbarui teks tombol eksekusi tanda tangan menjadi "Tandatangani" (menggantikan "Bubuhkan TTE").
+  - Menstandarkan styling notifikasi flash message menjadi format toast solid (`bg-slate-700`, `bg-red-600`, `bg-amber-600`, `bg-slate-800`) lengkap dengan auto-dismiss 5 detik.
+  - Memperbaiki pemetaan kolom unit kerja dan status ASN pada [`PortalPkController.php`](app/Domains/Email/Controllers/PortalPkController.php) serta menampilkan unit kerja dan unit kerja induk secara presisi pada kartu data aparatur.
 - **Portal Publik Mandiri PPPK (`/portal-pk`)**:
   - Mengembangkan portal terpisah bagi aparatur PPPK dan PPPK Paruh Waktu untuk mengakses dan menandatangani dokumen Perjanjian Kerja secara digital melalui [`PortalPkController.php`](app/Domains/Email/Controllers/PortalPkController.php).
   - Menerapkan mekanisme masuk berbasis verifikasi identitas 3 faktor (NIP 18 digit, NIK 16 digit, dan Tanggal Lahir) dengan proteksi *rate limiting* maksimal 5 kali percobaan gagal per 15 menit.
