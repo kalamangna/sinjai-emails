@@ -23,6 +23,17 @@ $routes->get('helpdesk/success/(:any)', '\App\Domains\Helpdesk\Controllers\Helpd
 $routes->get('verifikasi-pdf', '\App\Domains\Email\Controllers\BsreController::publicVerify');
 $routes->post('verifikasi-pdf', '\App\Domains\Email\Controllers\BsreController::verifyPdf');
 
+// Portal PPPK - TTE Perjanjian Kerja (PK)
+$routes->group('portal-pk', function ($routes) {
+    $routes->get('/', '\App\Domains\Email\Controllers\PortalPkController::index');
+    $routes->post('auth', '\App\Domains\Email\Controllers\PortalPkController::auth');
+    $routes->get('dashboard', '\App\Domains\Email\Controllers\PortalPkController::dashboard');
+    $routes->get('preview', '\App\Domains\Email\Controllers\PortalPkController::previewPdf');
+    $routes->post('sign', '\App\Domains\Email\Controllers\PortalPkController::sign');
+    $routes->get('download', '\App\Domains\Email\Controllers\PortalPkController::download');
+    $routes->get('logout', '\App\Domains\Email\Controllers\PortalPkController::logout');
+});
+
 // API Gateway (v1) - External Integration
 $routes->group('api/v1', ['filter' => 'api_gateway'], function ($routes) {
     $routes->get('emails', '\App\Domains\Api\Controllers\GatewayController::listEmails');

@@ -17,30 +17,31 @@
             size: A4;
         }
 
+        <?php $fontBasePath = defined('FCPATH') ? FCPATH : (ROOTPATH . 'public' . DIRECTORY_SEPARATOR); ?>
         @font-face {
             font-family: 'Bookman Old Style';
-            src: url(data:font/truetype;charset=utf-8;base64,<?= base64_encode(file_get_contents(FCPATH . 'fonts/bookmanoldstyle.ttf')) ?>) format('truetype');
+            src: url(data:font/truetype;charset=utf-8;base64,<?= base64_encode(file_get_contents($fontBasePath . 'fonts/bookmanoldstyle.ttf')) ?>) format('truetype');
             font-weight: normal;
             font-style: normal;
         }
 
         @font-face {
             font-family: 'Bookman Old Style';
-            src: url(data:font/truetype;charset=utf-8;base64,<?= base64_encode(file_get_contents(FCPATH . 'fonts/bookmanoldstyle_bold.ttf')) ?>) format('truetype');
+            src: url(data:font/truetype;charset=utf-8;base64,<?= base64_encode(file_get_contents($fontBasePath . 'fonts/bookmanoldstyle_bold.ttf')) ?>) format('truetype');
             font-weight: bold;
             font-style: normal;
         }
 
         @font-face {
             font-family: 'Bookman Old Style';
-            src: url(data:font/truetype;charset=utf-8;base64,<?= base64_encode(file_get_contents(FCPATH . 'fonts/bookmanoldstyle_italic.ttf')) ?>) format('truetype');
+            src: url(data:font/truetype;charset=utf-8;base64,<?= base64_encode(file_get_contents($fontBasePath . 'fonts/bookmanoldstyle_italic.ttf')) ?>) format('truetype');
             font-weight: normal;
             font-style: italic;
         }
 
         @font-face {
             font-family: 'Bookman Old Style';
-            src: url(data:font/truetype;charset=utf-8;base64,<?= base64_encode(file_get_contents(FCPATH . 'fonts/bookmanoldstyle_bolditalic.ttf')) ?>) format('truetype');
+            src: url(data:font/truetype;charset=utf-8;base64,<?= base64_encode(file_get_contents($fontBasePath . 'fonts/bookmanoldstyle_bolditalic.ttf')) ?>) format('truetype');
             font-weight: bold;
             font-style: italic;
         }

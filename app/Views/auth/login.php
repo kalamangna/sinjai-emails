@@ -102,10 +102,18 @@
                 </div>
             </form>
 
-            <div class="mt-6 pt-4 border-t border-slate-100 text-center">
-                <a href="<?= site_url('/') ?>" class="inline-flex items-center gap-1.5 text-[10px] font-bold text-slate-500 hover:text-slate-800 transition-colors uppercase tracking-widest">
-                    <i class="fas fa-arrow-left"></i> Kembali ke Beranda
-                </a>
+            <div class="mt-5 pt-3.5 border-t border-slate-100 text-center space-y-2">
+                <div>
+                    <a href="<?= site_url('portal-pk') ?>" class="text-xs font-semibold text-slate-700 hover:text-slate-900 transition-colors inline-flex items-center gap-1.5">
+                        <i class="fas fa-file-signature text-slate-500"></i>
+                        <span>Portal TTE Perjanjian Kerja PPPK &rarr;</span>
+                    </a>
+                </div>
+                <div>
+                    <a href="<?= site_url('/') ?>" class="inline-flex items-center gap-1.5 text-[10px] font-bold text-slate-400 hover:text-slate-700 transition-colors uppercase tracking-widest">
+                        <i class="fas fa-arrow-left"></i> Kembali ke Beranda
+                    </a>
+                </div>
             </div>
         </div>
 

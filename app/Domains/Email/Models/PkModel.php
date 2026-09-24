@@ -10,9 +10,12 @@ class PkModel extends Model
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
-    protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['email', 'status_asn_id', 'nomor', 'gaji_nominal', 'gaji_terbilang', 'tanggal_kontrak_awal', 'tanggal_kontrak_akhir'];
+    protected $allowedFields    = [
+        'email', 'status_asn_id', 'nomor', 'gaji_nominal', 'gaji_terbilang', 
+        'tanggal_kontrak_awal', 'tanggal_kontrak_akhir',
+        'tte_status', 'tte_pegawai_at', 'tte_pegawai_file', 'tte_pegawai_ip'
+    ];
 
     protected $useTimestamps = true;
     protected $createdField  = 'created_at';

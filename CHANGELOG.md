@@ -3,6 +3,25 @@
 Semua perubahan penting pada proyek ini dicatat di berkas ini.
 Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+# [24 September 2026] — Peluncuran Portal TTE Perjanjian Kerja (PK) untuk PPPK
+
+- **Portal Publik Mandiri PPPK (`/portal-pk`)**:
+  - Mengembangkan portal terpisah bagi aparatur PPPK dan PPPK Paruh Waktu untuk mengakses dan menandatangani dokumen Perjanjian Kerja secara digital melalui [`PortalPkController.php`](app/Domains/Email/Controllers/PortalPkController.php).
+  - Menerapkan mekanisme masuk berbasis verifikasi identitas 3 faktor (NIP 18 digit, NIK 16 digit, dan Tanggal Lahir) dengan proteksi *rate limiting* maksimal 5 kali percobaan gagal per 15 menit.
+- **Integrasi Tanda Tangan Elektronik (TTE) BSrE**:
+  - Menambahkan method `signPdf()` pada [`BsreApi.php`](app/Shared/Libraries/BsreApi.php) yang terhubung ke endpoint resmi `POST /api/sign/pdf` pada BSrE E-Sign Client Service.
+  - Memanfaatkan penandaan tag koordinat `${ttd_pengirim1}` pada lembar PK untuk pembubuhan stempel visual QR Code verifikasi dokumen secara presisi.
+  - Passphrase BSrE diproses secara aman langsung ke API tanpa pernah disimpan di basis data lokal maupun di session.
+- **Skema & Manajemen Berkas PDF**:
+  - Menambahkan kolom `tte_status`, `tte_pegawai_at`, `tte_pegawai_file`, dan `tte_pegawai_ip` pada tabel `pk` melalui migrasi [`AddTteColumnsToPkTable.php`](app/Database/Migrations/2026-09-24-165500_AddTteColumnsToPkTable.php).
+  - Menyediakan *live embedded preview* dokumen PDF serta fitur unduh berkas PK bertandatangan secara instan.
+  - Menyempurnakan ketahanan deteksi path font Bookman Old Style dan logo Garuda pada [`EmailExportService.php`](app/Domains/Email/Services/EmailExportService.php), [`perjanjian_kerja_template.php`](app/Views/email/exports/perjanjian_kerja_template.php), dan [`perjanjian_kerja_pppk_template.php`](app/Views/email/exports/perjanjian_kerja_pppk_template.php).
+- **Antarmuka & Navigasi**:
+  - Menambahkan antarmuka login verifikasi di [`portal_pk_login.php`](app/Views/auth/portal_pk_login.php) dan dashboard interaktif di [`portal_pk_dashboard.php`](app/Views/email/portal_pk_dashboard.php).
+  - Menambahkan kartu layanan "TTE PPPK" pada grid halaman beranda [`landing.php`](app/Views/home/landing.php) dan tautan pintas di halaman [`login.php`](app/Views/auth/login.php).
+
+---
+
 # [24 September 2026] — Penghapusan Integrasi Autentikasi SSO Simpeg
 
 - **Autentikasi Lokal Mandiri**:

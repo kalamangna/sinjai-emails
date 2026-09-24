@@ -39,7 +39,8 @@ class EmailExportService
 
     private function getLogoSrc()
     {
-        $logoPath = FCPATH . 'logo.png';
+        $basePath = defined('FCPATH') ? FCPATH : (ROOTPATH . 'public' . DIRECTORY_SEPARATOR);
+        $logoPath = $basePath . 'logo.png';
         if (file_exists($logoPath)) {
             $logoData = base64_encode(file_get_contents($logoPath));
             return 'data:image/png;base64,' . $logoData;
@@ -49,7 +50,8 @@ class EmailExportService
 
     private function getGarudaLogoSrc()
     {
-        $logoPath = FCPATH . 'garuda.png';
+        $basePath = defined('FCPATH') ? FCPATH : (ROOTPATH . 'public' . DIRECTORY_SEPARATOR);
+        $logoPath = $basePath . 'garuda.png';
         if (file_exists($logoPath)) {
             $logoData = base64_encode(file_get_contents($logoPath));
             return 'data:image/png;base64,' . $logoData;

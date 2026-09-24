@@ -132,3 +132,7 @@ node_modules/
 # Diagnostic / temporary scripts
 public/iptest.php
 .npm_cache/
+vendor/dompdf/dompdf/lib/fonts/*.ttf
+vendor/dompdf/dompdf/lib/fonts/*.ufm
+vendor/dompdf/dompdf/lib/fonts/*.json
+

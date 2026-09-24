@@ -17,6 +17,7 @@ Aplikasi ini menerapkan standar estetika **"Slate Clean Government"**—antarmuk
 - **Debug & Validasi Data:** Fitur deteksi otomatis untuk akun yang mengalami NIP ganda atau ambiguitas data profil.
 
 ### ✍️ Integrasi TTE BSrE
+- **Portal TTE PPPK:** Akses publik mandiri bagi aparatur PPPK (`/portal-pk`) untuk verifikasi identitas (NIP, NIK, Tanggal Lahir), pratinjau dokumen Perjanjian Kerja secara langsung, dan pembubuhan TTE resmi via API BSrE menggunakan Passphrase pribadi.
 - **Monitoring Status:** Pelacakan status Sertifikat Elektronik secara real-time (ISSUE, EXPIRED, NO_CERTIFICATE, dll).
 - **Sinkronisasi Massal:** Sinkronisasi status TTE berurutan dengan performa tinggi untuk seluruh kategori pegawai dengan indikator progres langsung.
 - **Diagnostik NIK:** Pengecekan status TTE berbasis NIK di halaman Detail Akun untuk mendeteksi akun dengan sertifikat aktif di BSrE yang terikat email eksternal.

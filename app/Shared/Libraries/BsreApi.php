@@ -195,4 +195,89 @@ class BsreApi
             ];
         }
     }
+
+    /**
+     * Sign PDF (BSrE E-Sign Client Service)
+     * Endpoint: /api/sign/pdf
+     * 
+     * @param string $pdfFilePath Absolute path to PDF file to sign
+     * @param string $nik NIK of signer (16 digits)
+     * @param string $passphrase Passphrase of signer
+     * @param array $options Additional options (tag_koordinat, linkQR, width, height, etc.)
+     * @return array
+     */
+    public function signPdf(string $pdfFilePath, string $nik, string $passphrase, array $options = []): array
+    {
+        if (!file_exists($pdfFilePath)) {
+            return [
+                'success' => false,
+                'message' => 'Berkas PDF tidak ditemukan.',
+                'code'    => 404
+            ];
+        }
+
+        $tagKoordinat = $options['tag_koordinat'] ?? '${ttd_pengirim1}';
+        $linkQr       = $options['linkQR'] ?? base_url('verifikasi-pdf');
+        $width        = $options['width'] ?? 100;
+        $height       = $options['height'] ?? 100;
+
+        $multipart = [
+            'file'          => new \CURLFile($pdfFilePath, 'application/pdf', basename($pdfFilePath)),
+            'nik'           => $nik,
+            'passphrase'    => $passphrase,
+            'tampilan'      => 'visible',
+            'image'         => 'false',
+            'linkQR'        => $linkQr,
+            'tag_koordinat' => $tagKoordinat,
+            'width'         => (string) $width,
+            'height'        => (string) $height,
+        ];
+
+        try {
+            $fullUrl = rtrim($this->baseUrl, '/') . '/api/sign/pdf';
+
+            $response = $this->client->request('POST', $fullUrl, [
+                'auth'        => [$this->username, $this->password],
+                'multipart'   => $multipart,
+                'http_errors' => false,
+                'timeout'     => 60,
+            ]);
+
+            $statusCode = $response->getStatusCode();
+            $body = $response->getBody();
+            $contentType = $response->getHeaderLine('Content-Type');
+
+            // Cek apakah output adalah PDF bertandatangan (200 OK & MIME PDF / magic bytes %PDF)
+            if ($statusCode === 200 && (str_contains($contentType, 'application/pdf') || str_starts_with($body, '%PDF-'))) {
+                $idDokumen = $response->getHeaderLine('id_dokumen') ?: $response->getHeaderLine('id-dokumen');
+                return [
+                    'success'     => true,
+                    'pdf_content' => $body,
+                    'id_dokumen'  => $idDokumen ?: null,
+                    'code'        => 200,
+                ];
+            }
+
+            // Jika bukan PDF, parse error message dari JSON
+            $json = json_decode($body, true);
+            $msg = $json['message'] ?? $json['error'] ?? 'Gagal melakukan tanda tangan elektronik.';
+
+            log_message('error', "BSrE API Sign Error ({$statusCode}): {$msg}");
+
+            return [
+                'success' => false,
+                'message' => $msg,
+                'code'    => $statusCode,
+            ];
+        } catch (\Throwable $e) {
+            $errorMsg = 'Gagal menghubungi server BSrE: ' . $e->getMessage();
+            log_message('error', $errorMsg);
+
+            return [
+                'success' => false,
+                'message' => $errorMsg,
+                'code'    => 500,
+            ];
+        }
+    }
 }
