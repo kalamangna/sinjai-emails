@@ -3,6 +3,18 @@
 Semua perubahan penting pada proyek ini dicatat di berkas ini.
 Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+# [24 September 2026] — Penghapusan Integrasi Autentikasi SSO Simpeg
+
+- **Autentikasi Lokal Mandiri**:
+  - Menghapus integrasi Single Sign-On (SSO) Simpeg ASN dari [`AuthService.php`](app/Domains/Auth/Services/AuthService.php), sehingga autentikasi login kini sepenuhnya memvalidasi password lokal yang tersimpan di basis data secara aman.
+  - Menghapus metode `authenticate()` pada [`PegawaiApi.php`](app/Shared/Libraries/PegawaiApi.php) yang sebelumnya digunakan untuk memverifikasi kredensial ke API Simpeg.
+- **Penyederhanaan Manajemen User**:
+  - Menghapus ketergantungan pencarian NIP ke API Simpeg (`checkNip` / `auth/users/check_nip`) pada [`UserManagementController.php`](app/Domains/Auth/Controllers/UserManagementController.php) dan [`Routes.php`](app/Config/Routes.php).
+  - Memperbarui form penambahan user di [`user_add.php`](app/Views/auth/user_add.php) menjadi form pembuatan pengguna lokal standar dengan input username, nama lengkap, password (min. 6 karakter), dan role akses.
+  - Menambahkan kolom input nama lengkap pada form edit user di [`user_edit.php`](app/Views/auth/user_edit.php) dan memperbarui penanganan data pada method `update()`.
+
+---
+
 # [23 September 2026] — Penambahan Fitur Arsip Riwayat Kontrak Perjanjian Kerja (PK)
 
 - **Tabel & Trigger Riwayat Kontrak (`pk_histories`)**:

@@ -4,7 +4,6 @@ namespace App\Domains\Auth\Controllers;
 
 use App\Shared\BaseController;
 use App\Domains\Auth\Models\UserModel;
-use App\Shared\Libraries\PegawaiApi;
 use Exception;
 
 class UserManagementController extends BaseController
@@ -36,10 +35,11 @@ class UserManagementController extends BaseController
     public function store()
     {
         $username = trim($this->request->getPost('username') ?? '');
-        $name = $this->request->getPost('name');
+        $name = trim($this->request->getPost('name') ?? '');
         
         $rules = [
             'username'   => 'required|min_length[3]|max_length[20]|is_unique[users.username]',
+            'password'   => 'required|min_length[6]',
             'role'       => 'required|in_list[admin,super_admin]'
         ];
 
@@ -50,45 +50,11 @@ class UserManagementController extends BaseController
         $this->userModel->insert([
             'username'   => $username,
             'name'       => $name ?: null,
-            'password'   => null,
+            'password'   => $this->request->getPost('password'),
             'role'       => $this->request->getPost('role')
         ]);
 
         return redirect()->to('/auth/users')->with('success', 'Pengguna berhasil ditambahkan.');
-    }
-
-    public function checkNip()
-    {
-        if (strtolower($this->request->getMethod()) !== 'post') {
-            return $this->response->setJSON(['success' => false, 'message' => 'Invalid request method.']);
-        }
-
-        $nip = trim($this->request->getPost('nip') ?? '');
-        if (empty($nip)) {
-            return $this->response->setJSON(['success' => false, 'message' => 'NIP wajib diisi.']);
-        }
-
-        $pegawaiApi = new PegawaiApi();
-        $result = $pegawaiApi->getPegawaiData($nip);
-
-        if ($result['success'] && !empty($result['data'])) {
-            $source = (is_array($result['data']) && isset($result['data'][0])) ? $result['data'][0] : $result['data'];
-            
-            $hasActualData = isset($source['nama']) || isset($source['name']) || isset($source['jabatan_nama']);
-
-            if (!$hasActualData) {
-                return $this->response->setJSON(['success' => false, 'message' => 'Data pegawai tidak ditemukan di API.']);
-            }
-
-            return $this->response->setJSON([
-                'success' => true,
-                'data' => [
-                    'nama' => $source['nama'] ?? ($source['name'] ?? 'PEGAWAI')
-                ]
-            ]);
-        }
-
-        return $this->response->setJSON(['success' => false, 'message' => 'Gagal mengambil data dari API: ' . ($result['message'] ?? 'Unknown error')]);
     }
 
     public function edit($id)
@@ -125,8 +91,11 @@ class UserManagementController extends BaseController
             return redirect()->back()->withInput()->with('error', 'Validasi gagal: ' . implode(', ', $this->validator->getErrors()));
         }
 
+        $name = trim($this->request->getPost('name') ?? '');
+
         $data = [
             'username'   => $this->request->getPost('username'),
+            'name'       => $name ?: null,
             'role'       => $this->request->getPost('role')
         ];
 
@@ -149,3 +118,4 @@ class UserManagementController extends BaseController
         return redirect()->to('/auth/users')->with('success', 'Pengguna berhasil dihapus.');
     }
 }
+

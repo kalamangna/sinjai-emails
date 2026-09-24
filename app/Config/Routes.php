@@ -222,7 +222,6 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         $routes->get('/', '\App\Domains\Auth\Controllers\UserManagementController::index');
         $routes->get('add', '\App\Domains\Auth\Controllers\UserManagementController::add');
         $routes->post('store', '\App\Domains\Auth\Controllers\UserManagementController::store');
-        $routes->post('check_nip', '\App\Domains\Auth\Controllers\UserManagementController::checkNip');
         $routes->get('edit/(:num)', '\App\Domains\Auth\Controllers\UserManagementController::edit/$1');
         $routes->post('update/(:num)', '\App\Domains\Auth\Controllers\UserManagementController::update/$1');
         $routes->post('delete/(:num)', '\App\Domains\Auth\Controllers\UserManagementController::delete/$1');

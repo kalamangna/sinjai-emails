@@ -18,7 +18,12 @@
             
             <div>
                 <label for="username" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Username</label>
-                <input type="text" id="username" name="username" value="<?= old('username', $user['username']) ?>" required class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 uppercase transition-all placeholder-slate-400" placeholder="Masukkan username...">
+                <input type="text" id="username" name="username" value="<?= old('username', $user['username']) ?>" required class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all placeholder-slate-400" placeholder="Masukkan username...">
+            </div>
+
+            <div>
+                <label for="name" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Nama Lengkap <span class="text-slate-500 font-normal italic">(Opsional)</span></label>
+                <input type="text" id="name" name="name" value="<?= old('name', $user['name']) ?>" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all placeholder-slate-400" placeholder="Masukkan nama lengkap...">
             </div>
 
             <div>
