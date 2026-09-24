@@ -1057,6 +1057,19 @@ input:checked + .toggle-bg {
   border-color: var(--color-brand);
 }
 
+input::-moz-placeholder, textarea::-moz-placeholder {
+  font-weight: 400;
+  --tw-text-opacity: 1;
+  color: rgb(148 163 184 / var(--tw-text-opacity, 1));
+}
+
+input::placeholder,
+    textarea::placeholder {
+  font-weight: 400;
+  --tw-text-opacity: 1;
+  color: rgb(148 163 184 / var(--tw-text-opacity, 1));
+}
+
 .\!container {
   width: 100% !important;
 }

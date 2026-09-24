@@ -75,7 +75,7 @@
                         </span>
                         <input type="text" name="nip" id="nip" value="<?= old('nip') ?>" required autofocus
                             inputmode="numeric" maxlength="18" minlength="18"
-                            class="block w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all"
+                            class="block w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 placeholder-slate-400 placeholder:font-normal transition-all"
                             placeholder="18 Digit NIP">
                     </div>
                 </div>
@@ -88,7 +88,7 @@
                         </span>
                         <input type="text" name="nik" id="nik" value="<?= old('nik') ?>" required
                             inputmode="numeric" maxlength="16" minlength="16"
-                            class="block w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all"
+                            class="block w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 placeholder-slate-400 placeholder:font-normal transition-all"
                             placeholder="16 Digit NIK">
                     </div>
                 </div>

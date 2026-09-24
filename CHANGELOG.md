@@ -8,6 +8,8 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **Penyederhanaan & Konsistensi Antarmuka Portal PPPK (`/portal-pk`)**:
   - Menyederhanakan tampilan halaman autentikasi [`portal_pk_login.php`](app/Views/auth/portal_pk_login.php) agar selaras dengan desain minimalis *Slate Clean Government* pada [`login.php`](app/Views/auth/login.php).
   - Menghilangkan ornamen visual berlebih, merapikan struktur form input (NIP, NIK, Tanggal Lahir), serta mengintegrasikan auto-dismiss flash message.
+  - Mempersingkat teks tautan navigasi di halaman masuk ([`login.php`](app/Views/auth/login.php)) menjadi "Portal TTE PPPK &rarr;".
+  - Memperbaiki styling global placeholder input (`input::placeholder` / `textarea::placeholder`) pada [`input.css`](public/css/input.css) dengan warna slate halus (`text-slate-400`) dan bobot normal (`font-normal`), serta merapikan teks panduan placeholder pada form login utama dan portal.
 - **Portal Publik Mandiri PPPK (`/portal-pk`)**:
   - Mengembangkan portal terpisah bagi aparatur PPPK dan PPPK Paruh Waktu untuk mengakses dan menandatangani dokumen Perjanjian Kerja secara digital melalui [`PortalPkController.php`](app/Domains/Email/Controllers/PortalPkController.php).
   - Menerapkan mekanisme masuk berbasis verifikasi identitas 3 faktor (NIP 18 digit, NIK 16 digit, dan Tanggal Lahir) dengan proteksi *rate limiting* maksimal 5 kali percobaan gagal per 15 menit.

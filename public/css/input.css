@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+    input::placeholder,
+    textarea::placeholder {
+        @apply text-slate-400 font-normal;
+    }
+}
+
 @layer components {
     /* Base Button */
     .btn {

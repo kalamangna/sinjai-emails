@@ -78,8 +78,8 @@
                             <i class="fas fa-user text-xs"></i>
                         </span>
                         <input type="text" name="username" id="username" value="<?= old('username') ?>" required autofocus
-                            class="block w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all"
-                            placeholder="Username">
+                            class="block w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 placeholder-slate-400 placeholder:font-normal transition-all"
+                            placeholder="Masukkan username...">
                     </div>
                 </div>
 
@@ -90,8 +90,8 @@
                             <i class="fas fa-lock text-xs"></i>
                         </span>
                         <input type="password" name="password" id="password" required
-                            class="block w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all"
-                            placeholder="••••••••">
+                            class="block w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 placeholder-slate-400 placeholder:font-normal transition-all"
+                            placeholder="Masukkan password...">
                     </div>
                 </div>
 
@@ -106,7 +106,7 @@
                 <div>
                     <a href="<?= site_url('portal-pk') ?>" class="text-xs font-semibold text-slate-700 hover:text-slate-900 transition-colors inline-flex items-center gap-1.5">
                         <i class="fas fa-file-signature text-slate-500"></i>
-                        <span>Portal TTE Perjanjian Kerja PPPK &rarr;</span>
+                        <span>Portal TTE PPPK &rarr;</span>
                     </a>
                 </div>
                 <div>
