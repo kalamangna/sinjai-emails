@@ -3911,11 +3911,6 @@ input::placeholder,
   background-color: rgb(245 158 11 / var(--tw-bg-opacity, 1));
 }
 
-.bg-amber-600 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(217 119 6 / var(--tw-bg-opacity, 1));
-}
-
 .bg-blue-100 {
   --tw-bg-opacity: 1;
   background-color: rgb(219 234 254 / var(--tw-bg-opacity, 1));
@@ -4989,10 +4984,6 @@ input::placeholder,
   color: rgb(5 150 105 / var(--tw-text-opacity, 1));
 }
 
-.text-emerald-600\/50 {
-  color: rgb(5 150 105 / 0.5);
-}
-
 .text-emerald-700 {
   --tw-text-opacity: 1;
   color: rgb(4 120 87 / var(--tw-text-opacity, 1));
@@ -5061,10 +5052,6 @@ input::placeholder,
 .text-red-600 {
   --tw-text-opacity: 1;
   color: rgb(220 38 38 / var(--tw-text-opacity, 1));
-}
-
-.text-red-600\/50 {
-  color: rgb(220 38 38 / 0.5);
 }
 
 .text-red-700 {

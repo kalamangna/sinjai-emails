@@ -6,6 +6,11 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 # [24 September 2026] — Peluncuran Portal TTE Perjanjian Kerja (PK) untuk PPPK
 
 - **Penyederhanaan & Konsistensi Antarmuka Portal PPPK (`/portal-pk`)**:
+  - Memindahkan penempatan alert notifikasi error pada [`login.php`](app/Views/auth/login.php) dan [`portal_pk_login.php`](app/Views/auth/portal_pk_login.php) dari bagian atas kartu ke bagian bawah form tepat di atas tombol submit "Masuk", mencegah pergeseran elemen input form saat terjadi kesalahan validasi.
+  - Menghilangkan notifikasi non-error pada halaman login untuk menjaga antarmuka tetap bersih dan minimalis.
+  - Mengoptimalkan penanganan validasi login pada [`PortalPkController.php`](app/Domains/Email/Controllers/PortalPkController.php) dengan pesan error spesifik dan ringkas: membedakan NIP tidak terdaftar ("NIP tidak terdaftar."), NIP berstatus non-PPPK ("NIP yang diinput bukan PPPK."), dan ketidakcocokan kredensial ("NIK atau tanggal lahir tidak sesuai.").
+  - Menyesuaikan toleransi *rate limiter* autentikasi portal menjadi 10 kali per 10 menit dengan perhitungan waktu tunggu dinamis, serta otomatis membersihkan throttle key saat berhasil login.
+  - Menyelaraskan alert notifikasi pada [`portal_pk_dashboard.php`](app/Views/email/portal_pk_dashboard.php) di bagian atas konten utama (identik dengan layout dasbor email utama) lengkap dengan auto-dismiss 5 detik dan MutationObserver untuk membersihkan sisa ruang kontainer secara otomatis.
   - Menyederhanakan tampilan halaman autentikasi [`portal_pk_login.php`](app/Views/auth/portal_pk_login.php) agar selaras dengan desain minimalis *Slate Clean Government* pada [`login.php`](app/Views/auth/login.php).
   - Menghilangkan ornamen visual berlebih, merapikan struktur form input (NIP, NIK, Tanggal Lahir), serta mengintegrasikan auto-dismiss flash message.
   - Mempersingkat teks tautan navigasi di halaman masuk ([`login.php`](app/Views/auth/login.php)) menjadi "Portal TTE PPPK &rarr;".
@@ -13,7 +18,6 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Menyesuaikan meta title halaman portal di [`PortalPkController.php`](app/Domains/Email/Controllers/PortalPkController.php) dan [`portal_pk_login.php`](app/Views/auth/portal_pk_login.php) menjadi "Portal TTE PPPK | Sistem Identitas Digital", menyelaraskan title halaman login di [`AuthController.php`](app/Domains/Auth/Controllers/AuthController.php) menjadi "Masuk | Sistem Identitas Digital", serta melengkapi tag OpenGraph dan Twitter card.
   - Menyelaraskan desain dashboard portal di [`portal_pk_dashboard.php`](app/Views/email/portal_pk_dashboard.php) dengan standar aplikasi (kartu `rounded-lg`, header slate, footer copyright resmi).
   - Memperbarui teks tombol eksekusi tanda tangan menjadi "Tandatangani" (menggantikan "Bubuhkan TTE").
-  - Menstandarkan styling notifikasi flash message menjadi format toast solid (`bg-slate-700`, `bg-red-600`, `bg-amber-600`, `bg-slate-800`) lengkap dengan auto-dismiss 5 detik.
   - Memperbaiki pemetaan kolom unit kerja dan status ASN pada [`PortalPkController.php`](app/Domains/Email/Controllers/PortalPkController.php) serta menampilkan unit kerja dan unit kerja induk secara presisi pada kartu data aparatur.
 - **Portal Publik Mandiri PPPK (`/portal-pk`)**:
   - Mengembangkan portal terpisah bagi aparatur PPPK dan PPPK Paruh Waktu untuk mengakses dan menandatangani dokumen Perjanjian Kerja secara digital melalui [`PortalPkController.php`](app/Domains/Email/Controllers/PortalPkController.php).

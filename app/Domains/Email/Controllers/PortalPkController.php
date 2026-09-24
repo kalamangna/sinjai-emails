@@ -50,9 +50,10 @@ class PortalPkController extends BaseController
         $clientIp  = $this->request->getIPAddress();
         $throttleKey = 'portal_pk_throttle_' . md5($clientIp);
 
-        // Batasi 5 kali percobaan gagal per 15 menit
-        if ($throttler->check($throttleKey, 5, 900) === false) {
-            return redirect()->back()->withInput()->with('error', 'Terlalu banyak percobaan masuk yang gagal. Silakan tunggu 15 menit lagi.');
+        // Batasi 10 kali percobaan per 10 menit
+        if ($throttler->check($throttleKey, 10, 600) === false) {
+            $minutes = max(1, (int) ceil($throttler->getTokenTime() / 60));
+            return redirect()->back()->withInput()->with('error', "Terlalu banyak percobaan masuk. Silakan tunggu {$minutes} menit lagi.");
         }
 
         $rules = [
@@ -65,21 +66,28 @@ class PortalPkController extends BaseController
             return redirect()->back()->withInput()->with('error', 'Validasi gagal: ' . implode(', ', $this->validator->getErrors()));
         }
 
-        $nip          = trim($this->request->getPost('nip') ?? '');
-        $nik          = trim($this->request->getPost('nik') ?? '');
+        $nip          = preg_replace('/[^0-9]/', '', trim($this->request->getPost('nip') ?? ''));
+        $nik          = preg_replace('/[^0-9]/', '', trim($this->request->getPost('nik') ?? ''));
         $tanggalLahir = trim($this->request->getPost('tanggal_lahir') ?? '');
 
-        // Query data pegawai
-        $email = $this->emailModel->withDetails()
-            ->where('emails.nip', $nip)
-            ->where('emails.nik', $nik)
-            ->where('emails.tanggal_lahir', $tanggalLahir)
-            ->whereIn('emails.status_asn_id', [2, 3]) // PPPK (2) atau PPPK Paruh Waktu (3)
-            ->first();
+        // Query data pegawai berdasarkan NIP
+        $pegawai = $this->emailModel->where('nip', $nip)->first();
 
-        if (!$email) {
-            return redirect()->back()->withInput()->with('error', 'Identitas kepegawaian tidak ditemukan atau Anda bukan berstatus PPPK aktif di Kabupaten Sinjai.');
+        if (!$pegawai) {
+            return redirect()->back()->withInput()->with('error', 'NIP tidak terdaftar.');
         }
+
+        // Validasi status ASN (hanya untuk PPPK & PPPK Paruh Waktu)
+        if (!in_array((int)($pegawai['status_asn_id'] ?? 0), [2, 3])) {
+            return redirect()->back()->withInput()->with('error', 'NIP yang diinput bukan PPPK.');
+        }
+
+        // Validasi kecocokan NIK dan Tanggal Lahir
+        if ($pegawai['nik'] !== $nik || $pegawai['tanggal_lahir'] !== $tanggalLahir) {
+            return redirect()->back()->withInput()->with('error', 'NIK atau tanggal lahir tidak sesuai.');
+        }
+
+        $email = $this->emailModel->withDetails()->find($pegawai['id']);
 
         // Pastikan akun memiliki data Perjanjian Kerja (PK)
         $pk = $this->pkModel->where('email', $email['email'])->first();
@@ -100,6 +108,10 @@ class PortalPkController extends BaseController
         ]);
 
         log_audit('PORTAL_LOGIN', 'Email', $email['id'], 'Login Portal TTE PK oleh PPPK: ' . $email['name'] . ' (' . $email['nip'] . ')');
+
+        // Reset throttle key setelah login berhasil
+        cache()->delete($throttleKey);
+        cache()->delete($throttleKey . 'Time');
 
         return redirect()->to('portal-pk/dashboard')->with('success', 'Selamat datang, ' . $email['name']);
     }

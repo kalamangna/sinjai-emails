@@ -56,18 +56,6 @@
         <div class="bg-white border border-slate-200 rounded-lg p-8 shadow-sm">
             <h2 class="text-sm font-bold text-slate-800 uppercase tracking-widest mb-6 border-b border-slate-100 pb-2">Masuk ke Sistem</h2>
 
-            <?php if (session()->getFlashdata('error')): ?>
-                <div class="flash-message bg-white border border-slate-200 border-l-4 border-l-slate-700 text-red-600 px-4 py-2 rounded-lg flex items-center justify-between mb-6 text-xs font-bold uppercase transform transition-all duration-500 ease-in-out">
-                    <div class="flex items-center">
-                        <i class="fas fa-exclamation-circle mr-2"></i>
-                        <?= session()->getFlashdata('error') ?>
-                    </div>
-                    <button onclick="this.parentElement.remove()" class="text-red-600/50 hover:text-red-600 transition-colors focus:outline-none">
-                        <i class="fas fa-times text-[10px]"></i>
-                    </button>
-                </div>
-            <?php endif; ?>
-
             <form action="<?= site_url('auth/attemptLogin') ?>" method="POST" class="space-y-4">
                 <?= csrf_field() ?>
 
@@ -94,6 +82,18 @@
                             placeholder="Masukkan password...">
                     </div>
                 </div>
+
+                <?php if (session()->getFlashdata('error')): ?>
+                    <div class="flash-message bg-white border border-slate-200 border-l-4 border-l-red-600 px-4 py-2.5 rounded-lg flex items-center justify-between text-xs font-medium text-red-700 shadow-xs transition-opacity duration-300" role="alert">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-exclamation-circle text-red-600 shrink-0"></i>
+                            <span><?= session()->getFlashdata('error') ?></span>
+                        </div>
+                        <button onclick="this.parentElement.remove()" class="text-red-400 hover:text-red-700 transition-colors focus:outline-none cursor-pointer p-0.5" aria-label="Tutup">
+                            <i class="fas fa-times text-xs"></i>
+                        </button>
+                    </div>
+                <?php endif; ?>
 
                 <div class="pt-2">
                     <button type="submit" class="w-full btn btn-solid py-2.5">

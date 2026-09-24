@@ -73,56 +73,98 @@
 
     <!-- Main Container -->
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-        <!-- Flash Messages (Matching main layout alert standards) -->
-        <div id="toast-container" class="space-y-2">
-            <?php if ($msg = session()->getFlashdata('success') ?: session()->getFlashdata('message')): ?>
-                <div class="flash-message transition-opacity duration-300 bg-slate-700 text-white px-5 py-3 rounded-lg flex items-center justify-between shadow-sm" role="alert">
-                    <div class="flex items-center">
-                        <i class="fas fa-check-circle mr-3 text-emerald-400"></i>
-                        <span class="font-bold text-xs uppercase tracking-wider"><?= $msg === true ? 'Berhasil' : esc($msg) ?></span>
-                    </div>
-                    <button type="button" onclick="this.parentElement.remove()" class="text-white/50 hover:text-white transition-colors focus:outline-none cursor-pointer" aria-label="Tutup">
-                        <i class="fas fa-times text-xs"></i>
-                    </button>
-                </div>
-            <?php endif; ?>
 
-            <?php if ($err = session()->getFlashdata('error')): ?>
-                <div class="flash-message transition-opacity duration-300 bg-red-600 text-white px-5 py-3 rounded-lg flex items-center justify-between shadow-sm" role="alert">
-                    <div class="flex items-center">
-                        <i class="fas fa-exclamation-circle mr-3 text-white"></i>
-                        <span class="font-bold text-xs uppercase tracking-wider"><?= esc($err) ?></span>
+        <!-- Global Flash Messages (Same as Email Dashboard) -->
+        <?php if (session()->getFlashdata('success') || session()->getFlashdata('message') || session()->getFlashdata('error') || session()->getFlashdata('info')): ?>
+            <div id="toast-container" class="space-y-2">
+                <?php if ($msg = session()->getFlashdata('success') ?: session()->getFlashdata('message')): ?>
+                    <div id="toast-success" class="transition-opacity duration-300 bg-slate-700 text-white px-5 py-3 rounded-lg flex items-center justify-between shadow-sm" role="alert">
+                        <div class="flex items-center">
+                            <i class="fas fa-check-circle mr-3 text-white"></i>
+                            <span class="font-bold text-xs uppercase tracking-wider"><?= $msg === true ? 'Berhasil' : esc($msg) ?></span>
+                        </div>
+                        <button type="button" onclick="this.closest('[role=\'alert\']').remove()" class="text-white/50 hover:text-white transition-colors focus:outline-none cursor-pointer" aria-label="Tutup">
+                            <i class="fas fa-times text-xs"></i>
+                        </button>
                     </div>
-                    <button type="button" onclick="this.parentElement.remove()" class="text-white/50 hover:text-white transition-colors focus:outline-none cursor-pointer" aria-label="Tutup">
-                        <i class="fas fa-times text-xs"></i>
-                    </button>
-                </div>
-            <?php endif; ?>
+                    <script>
+                        setTimeout(() => {
+                            const toast = document.getElementById('toast-success');
+                            if (toast) {
+                                toast.classList.add('opacity-0');
+                                setTimeout(() => toast.remove(), 300);
+                            }
+                        }, 5000);
+                    </script>
+                <?php endif; ?>
 
-            <?php if ($warn = session()->getFlashdata('warning')): ?>
-                <div class="flash-message transition-opacity duration-300 bg-amber-600 text-white px-5 py-3 rounded-lg flex items-center justify-between shadow-sm" role="alert">
-                    <div class="flex items-center">
-                        <i class="fas fa-exclamation-triangle mr-3 text-white"></i>
-                        <span class="font-bold text-xs uppercase tracking-wider"><?= esc($warn) ?></span>
+                <?php if ($err = session()->getFlashdata('error')): ?>
+                    <div id="toast-error" class="transition-opacity duration-300 bg-red-600 text-white px-5 py-3 rounded-lg flex items-center justify-between shadow-sm" role="alert">
+                        <div class="flex items-center">
+                            <i class="fas fa-exclamation-circle mr-3 text-white"></i>
+                            <span class="font-bold text-xs uppercase tracking-wider"><?= esc($err) ?></span>
+                        </div>
+                        <button type="button" onclick="this.closest('[role=\'alert\']').remove()" class="text-white/50 hover:text-white transition-colors focus:outline-none cursor-pointer" aria-label="Tutup">
+                            <i class="fas fa-times text-xs"></i>
+                        </button>
                     </div>
-                    <button type="button" onclick="this.parentElement.remove()" class="text-white/50 hover:text-white transition-colors focus:outline-none cursor-pointer" aria-label="Tutup">
-                        <i class="fas fa-times text-xs"></i>
-                    </button>
-                </div>
-            <?php endif; ?>
+                    <script>
+                        setTimeout(() => {
+                            const toast = document.getElementById('toast-error');
+                            if (toast) {
+                                toast.classList.add('opacity-0');
+                                setTimeout(() => toast.remove(), 300);
+                            }
+                        }, 5000);
+                    </script>
+                <?php endif; ?>
 
-            <?php if ($info = session()->getFlashdata('info')): ?>
-                <div class="flash-message transition-opacity duration-300 bg-slate-800 text-white px-5 py-3 rounded-lg flex items-center justify-between shadow-sm" role="alert">
-                    <div class="flex items-center">
-                        <i class="fas fa-info-circle mr-3 text-white"></i>
-                        <span class="font-bold text-xs uppercase tracking-wider"><?= esc($info) ?></span>
+                <?php if ($info = session()->getFlashdata('info')): ?>
+                    <div id="toast-info" class="transition-opacity duration-300 bg-slate-800 text-white px-5 py-3 rounded-lg flex items-center justify-between shadow-sm" role="alert">
+                        <div class="flex items-center">
+                            <i class="fas fa-info-circle mr-3 text-white"></i>
+                            <span class="font-bold text-xs uppercase tracking-wider"><?= esc($info) ?></span>
+                        </div>
+                        <button type="button" onclick="this.closest('[role=\'alert\']').remove()" class="text-white/50 hover:text-white transition-colors focus:outline-none cursor-pointer" aria-label="Tutup">
+                            <i class="fas fa-times text-xs"></i>
+                        </button>
                     </div>
-                    <button type="button" onclick="this.parentElement.remove()" class="text-white/50 hover:text-white transition-colors focus:outline-none cursor-pointer" aria-label="Tutup">
-                        <i class="fas fa-times text-xs"></i>
-                    </button>
-                </div>
-            <?php endif; ?>
-        </div>
+                    <script>
+                        setTimeout(() => {
+                            const toast = document.getElementById('toast-info');
+                            if (toast) {
+                                toast.classList.add('opacity-0');
+                                setTimeout(() => toast.remove(), 300);
+                            }
+                        }, 5000);
+                    </script>
+                <?php endif; ?>
+            </div>
+            <script>
+                (function() {
+                    const container = document.getElementById('toast-container');
+                    if (container) {
+                        const checkToasts = () => {
+                            const activeToasts = Array.from(container.querySelectorAll('[role="alert"]')).filter(el => {
+                                return !el.classList.contains('hidden') && el.style.display !== 'none';
+                            });
+                            if (activeToasts.length === 0) {
+                                container.remove();
+                                if (typeof observer !== 'undefined') observer.disconnect();
+                            }
+                        };
+                        const observer = new MutationObserver(checkToasts);
+                        observer.observe(container, { 
+                            childList: true, 
+                            subtree: true, 
+                            attributes: true, 
+                            attributeFilter: ['class', 'style'] 
+                        });
+                        checkToasts();
+                    }
+                })();
+            </script>
+        <?php endif; ?>
 
         <?php 
             $unitKerja = $email['unit_kerja_name'] ?? ($email['unit_kerja'] ?? '-');
@@ -401,17 +443,6 @@
             const btn = document.getElementById('btn-submit-sign');
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1.5"></i> Menandatangani...';
-        });
-
-        // Flash Message Auto Close (Fade out in 5s)
-        document.addEventListener('DOMContentLoaded', () => {
-            const flashMessages = document.querySelectorAll('.flash-message');
-            flashMessages.forEach(msg => {
-                setTimeout(() => {
-                    msg.classList.add('opacity-0');
-                    setTimeout(() => msg.remove(), 300);
-                }, 5000);
-            });
         });
     </script>
 </body>
