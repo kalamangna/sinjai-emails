@@ -5,6 +5,9 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 # [24 September 2026] — Peluncuran Portal TTE Perjanjian Kerja (PK) untuk PPPK
 
+- **Penyederhanaan & Konsistensi Antarmuka Portal PPPK (`/portal-pk`)**:
+  - Menyederhanakan tampilan halaman autentikasi [`portal_pk_login.php`](app/Views/auth/portal_pk_login.php) agar selaras dengan desain minimalis *Slate Clean Government* pada [`login.php`](app/Views/auth/login.php).
+  - Menghilangkan ornamen visual berlebih, merapikan struktur form input (NIP, NIK, Tanggal Lahir), serta mengintegrasikan auto-dismiss flash message.
 - **Portal Publik Mandiri PPPK (`/portal-pk`)**:
   - Mengembangkan portal terpisah bagi aparatur PPPK dan PPPK Paruh Waktu untuk mengakses dan menandatangani dokumen Perjanjian Kerja secara digital melalui [`PortalPkController.php`](app/Domains/Email/Controllers/PortalPkController.php).
   - Menerapkan mekanisme masuk berbasis verifikasi identitas 3 faktor (NIP 18 digit, NIK 16 digit, dan Tanggal Lahir) dengan proteksi *rate limiting* maksimal 5 kali percobaan gagal per 15 menit.

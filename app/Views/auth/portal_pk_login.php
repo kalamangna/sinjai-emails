@@ -8,10 +8,13 @@
     <title><?= $title ?? 'Portal TTE PPPK' ?> | Sistem Identitas Digital</title>
 
     <link rel="icon" type="image/png" href="<?= base_url('logo.png') ?>">
+
     <!-- Tailwind CSS (Local Build) -->
     <link href="<?= base_url('css/output.css') ?>" rel="stylesheet">
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,42 +27,40 @@
     </style>
 </head>
 
-<body class="bg-slate-50 text-slate-700 antialiased min-h-screen flex items-center justify-center p-4 md:p-6">
-    <div class="w-full max-w-md">
+<body class="bg-slate-50 text-slate-700 antialiased min-h-screen flex items-center justify-center p-6">
+    <div class="w-full max-w-sm">
         <!-- Branding -->
-        <div class="text-center mb-6">
-            <img src="<?= base_url('logo.png') ?>" alt="Logo Kabupaten Sinjai" class="w-14 h-14 object-contain mx-auto mb-3">
-            <h1 class="text-xl font-bold text-slate-800 uppercase tracking-tight">Portal TTE Perjanjian Kerja</h1>
-            <p class="text-[11px] font-bold text-slate-500 uppercase tracking-widest mt-1">Pemerintah Kabupaten Sinjai</p>
+        <div class="text-center mb-8">
+            <img src="<?= base_url('logo.png') ?>" alt="Logo" class="w-12 h-12 object-contain mx-auto mb-4">
+            <h1 class="text-xl font-bold text-slate-800 uppercase tracking-tight">sinjai<span class="text-slate-700">emails</span></h1>
+            <p class="text-[10px] font-bold text-slate-700 uppercase tracking-widest mt-1">Portal TTE PPPK</p>
         </div>
 
         <!-- Verification Card -->
-        <div class="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 shadow-sm">
-            <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-6">
-                <div>
-                    <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wider">Verifikasi Identitas</h2>
-                    <p class="text-[11px] text-slate-500 mt-0.5">Khusus Pegawai PPPK & PPPK Paruh Waktu</p>
-                </div>
-                <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600">
-                    <i class="fas fa-file-signature text-sm"></i>
-                </div>
-            </div>
+        <div class="bg-white border border-slate-200 rounded-lg p-8 shadow-sm">
+            <h2 class="text-sm font-bold text-slate-800 uppercase tracking-widest mb-6 border-b border-slate-100 pb-2">Verifikasi PPPK</h2>
 
             <?php if (session()->getFlashdata('error')): ?>
-                <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl flex items-start gap-3 mb-5 text-xs font-medium">
-                    <i class="fas fa-exclamation-circle text-red-500 mt-0.5 shrink-0"></i>
-                    <div class="flex-1">
+                <div class="flash-message bg-white border border-slate-200 border-l-4 border-l-slate-700 text-red-600 px-4 py-2 rounded-lg flex items-center justify-between mb-6 text-xs font-bold uppercase transform transition-all duration-500 ease-in-out">
+                    <div class="flex items-center">
+                        <i class="fas fa-exclamation-circle mr-2"></i>
                         <?= session()->getFlashdata('error') ?>
                     </div>
+                    <button onclick="this.parentElement.remove()" class="text-red-600/50 hover:text-red-600 transition-colors focus:outline-none">
+                        <i class="fas fa-times text-[10px]"></i>
+                    </button>
                 </div>
             <?php endif; ?>
 
             <?php if (session()->getFlashdata('success')): ?>
-                <div class="bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-xl flex items-start gap-3 mb-5 text-xs font-medium">
-                    <i class="fas fa-check-circle text-emerald-500 mt-0.5 shrink-0"></i>
-                    <div class="flex-1">
+                <div class="flash-message bg-white border border-slate-200 border-l-4 border-l-emerald-600 text-emerald-700 px-4 py-2 rounded-lg flex items-center justify-between mb-6 text-xs font-bold uppercase transform transition-all duration-500 ease-in-out">
+                    <div class="flex items-center">
+                        <i class="fas fa-check-circle mr-2"></i>
                         <?= session()->getFlashdata('success') ?>
                     </div>
+                    <button onclick="this.parentElement.remove()" class="text-emerald-600/50 hover:text-emerald-700 transition-colors focus:outline-none">
+                        <i class="fas fa-times text-[10px]"></i>
+                    </button>
                 </div>
             <?php endif; ?>
 
@@ -67,70 +68,74 @@
                 <?= csrf_field() ?>
 
                 <div>
-                    <label for="nip" class="block text-xs font-semibold text-slate-700 mb-1.5 uppercase tracking-wider">
-                        NIP Pegawai <span class="text-red-500">*</span>
-                    </label>
+                    <label for="nip" class="block text-xs font-medium text-slate-700 mb-1 uppercase tracking-wider">NIP</label>
                     <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-700">
                             <i class="fas fa-id-badge text-xs"></i>
                         </span>
                         <input type="text" name="nip" id="nip" value="<?= old('nip') ?>" required autofocus
                             inputmode="numeric" maxlength="18" minlength="18"
-                            class="block w-full pl-10 pr-3 py-2.5 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all placeholder-slate-400"
-                            placeholder="18 Digit NIP (Contoh: 1990...)">
+                            class="block w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all"
+                            placeholder="18 Digit NIP">
                     </div>
                 </div>
 
                 <div>
-                    <label for="nik" class="block text-xs font-semibold text-slate-700 mb-1.5 uppercase tracking-wider">
-                        NIK (KTP) <span class="text-red-500">*</span>
-                    </label>
+                    <label for="nik" class="block text-xs font-medium text-slate-700 mb-1 uppercase tracking-wider">NIK</label>
                     <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-700">
                             <i class="fas fa-address-card text-xs"></i>
                         </span>
                         <input type="text" name="nik" id="nik" value="<?= old('nik') ?>" required
                             inputmode="numeric" maxlength="16" minlength="16"
-                            class="block w-full pl-10 pr-3 py-2.5 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all placeholder-slate-400"
-                            placeholder="16 Digit NIK KTP">
+                            class="block w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all"
+                            placeholder="16 Digit NIK">
                     </div>
                 </div>
 
                 <div>
-                    <label for="tanggal_lahir" class="block text-xs font-semibold text-slate-700 mb-1.5 uppercase tracking-wider">
-                        Tanggal Lahir <span class="text-red-500">*</span>
-                    </label>
+                    <label for="tanggal_lahir" class="block text-xs font-medium text-slate-700 mb-1 uppercase tracking-wider">Tanggal Lahir</label>
                     <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-700">
                             <i class="fas fa-calendar-alt text-xs"></i>
                         </span>
                         <input type="date" name="tanggal_lahir" id="tanggal_lahir" value="<?= old('tanggal_lahir') ?>" required
-                            class="block w-full pl-10 pr-3 py-2.5 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all">
+                            class="block w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all">
                     </div>
                 </div>
 
-                <div class="pt-3">
-                    <button type="submit" class="w-full btn btn-solid py-3 text-sm font-semibold rounded-xl flex items-center justify-center gap-2 shadow-sm">
-                        <span>Verifikasi & Masuk</span>
-                        <i class="fas fa-arrow-right text-xs"></i>
+                <div class="pt-2">
+                    <button type="submit" class="w-full btn btn-solid py-2.5">
+                        Masuk <i class="fas fa-arrow-right ml-2 text-white/80"></i>
                     </button>
                 </div>
             </form>
 
-            <div class="mt-6 pt-5 border-t border-slate-100 text-center">
-                <a href="<?= site_url('/') ?>" class="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-800 font-medium transition-colors">
-                    <i class="fas fa-home text-[10px]"></i>
-                    <span>Kembali ke Halaman Utama</span>
+            <div class="mt-6 pt-4 border-t border-slate-100 text-center">
+                <a href="<?= site_url('/') ?>" class="inline-flex items-center gap-1.5 text-[10px] font-bold text-slate-500 hover:text-slate-800 transition-colors uppercase tracking-widest">
+                    <i class="fas fa-arrow-left"></i> Kembali ke Beranda
                 </a>
             </div>
         </div>
 
-        <!-- Security Notice Footer -->
-        <div class="mt-6 text-center text-[10px] text-slate-400 font-medium space-y-1">
-            <p><i class="fas fa-shield-alt mr-1"></i> Dilindungi enkripsi resmi Balai Sertifikasi Elektronik (BSrE) - BSSN</p>
-            <p>© <?= date('Y') ?> Pemerintah Kabupaten Sinjai</p>
-        </div>
+        <p class="text-center text-[10px] font-bold text-slate-700 uppercase tracking-widest mt-8">
+            &copy; <?= tahunSekarang() ?> DISKOMINFO-SP SINJAI
+        </p>
     </div>
+
+    <script>
+        // Flash Message Auto Close
+        document.addEventListener('DOMContentLoaded', () => {
+            const flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach(msg => {
+                setTimeout(() => {
+                    msg.style.opacity = '0';
+                    msg.style.transform = 'translateY(-10px)';
+                    setTimeout(() => msg.remove(), 500);
+                }, 5000);
+            });
+        });
+    </script>
 </body>
 
 </html>
