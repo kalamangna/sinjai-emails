@@ -35,7 +35,7 @@ class PortalPkController extends BaseController
         }
 
         $data = [
-            'title' => 'Portal TTE Perjanjian Kerja PPPK'
+            'title' => 'Portal TTE PPPK'
         ];
 
         return view('auth/portal_pk_login', $data);
@@ -122,7 +122,7 @@ class PortalPkController extends BaseController
         $pk = $this->pkModel->where('email', $email['email'])->first();
 
         $data = [
-            'title' => 'Tanda Tangan Elektronik Perjanjian Kerja',
+            'title' => 'Portal TTE PPPK',
             'email' => $email,
             'pk'    => $pk,
         ];
