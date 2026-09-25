@@ -38,20 +38,20 @@
                     </div>
                 </div>
                 <div class="md:col-span-3">
-                    <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-widest">Filter BUP</label>
-                    <select name="bup_status" class="block w-full px-3 py-2 bg-white border <?= !empty($bup_status) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm appearance-none cursor-pointer transition-all">
-                        <option value="">Semua BUP</option>
-                        <?php foreach ($bup_status_options as $key => $label): ?>
-                            <option value="<?= esc($key) ?>" <?= (($bup_status ?? '') === $key) ? 'selected' : '' ?>><?= esc($label) ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                <div class="md:col-span-3">
                     <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-widest">Status TTE</label>
                     <select name="bsre_status" class="block w-full px-3 py-2 bg-white border <?= !empty($bsre_status) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm appearance-none cursor-pointer transition-all">
                         <option value="">Semua Status</option>
                         <?php foreach ($bsre_status_options as $key => $label): ?>
                             <option value="<?= esc($key) ?>" <?= (($bsre_status ?? '') === $key) ? 'selected' : '' ?>><?= esc($label) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="md:col-span-3">
+                    <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-widest">TTE PK</label>
+                    <select name="tte_status" class="block w-full px-3 py-2 bg-white border <?= !empty($tte_status) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm appearance-none cursor-pointer transition-all">
+                        <option value="">Semua PK</option>
+                        <?php foreach ($tte_status_options as $key => $label): ?>
+                            <option value="<?= esc($key) ?>" <?= (($tte_status ?? '') === $key) ? 'selected' : '' ?>><?= esc($label) ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -70,21 +70,41 @@
             <table class="w-full text-left text-sm">
                 <thead class="bg-slate-50 text-slate-400 uppercase text-[10px] font-bold tracking-widest">
                     <tr>
-                        <th class="px-6 py-3 border-b border-slate-200">No. PK</th>
-                        <th class="px-6 py-3 border-b border-slate-200">Nama / NIP</th>
-                        <th class="px-6 py-3 border-b border-slate-200">Jabatan / Unit Kerja</th>
-                        <th class="px-6 py-3 border-b border-slate-200">Status TTE</th>
-                        <th class="px-6 py-3 border-b border-slate-200 text-center">Aksi</th>
+                        <th class="px-6 py-3 border-b border-slate-200 w-44 whitespace-nowrap">No. PK</th>
+                        <th class="px-6 py-3 border-b border-slate-200 min-w-[200px]">Nama / NIP</th>
+                        <th class="px-6 py-3 border-b border-slate-200 min-w-[240px]">Jabatan / Unit Kerja</th>
+                        <th class="px-6 py-3 border-b border-slate-200 w-36 whitespace-nowrap">Status TTE</th>
+                        <th class="px-6 py-3 border-b border-slate-200 w-24 text-center whitespace-nowrap">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
                     <?php if (!empty($emails)): ?>
                         <?php foreach ($emails as $email): ?>
                             <tr class="hover:bg-slate-50 transition-colors">
-                                <td class="px-6 py-4">
-                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
-                                        <?php echo esc($email['nomor_pk'] ?: '-'); ?>
-                                    </span>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex flex-col items-start gap-1">
+                                        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
+                                            <?php echo esc($email['nomor_pk'] ?: '-'); ?>
+                                        </span>
+                                        <?php if (!empty($email['nomor_pk'])): ?>
+                                            <?php
+                                            $pkSt = $email['pk_tte_status'] ?? 'unsigned';
+                                            if ($pkSt === 'completed'):
+                                            ?>
+                                                <span class="px-1.5 py-0.5 rounded text-[8px] font-bold uppercase bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                                    Lengkap
+                                                </span>
+                                            <?php elseif ($pkSt === 'signed_pppk'): ?>
+                                                <span class="px-1.5 py-0.5 rounded text-[8px] font-bold uppercase bg-blue-50 text-blue-700 border border-blue-200">
+                                                    Menunggu TTE Bupati
+                                                </span>
+                                            <?php else: ?>
+                                                <span class="px-1.5 py-0.5 rounded text-[8px] font-bold uppercase bg-slate-100 text-slate-500 border border-slate-200">
+                                                    Belum TTE
+                                                </span>
+                                            <?php endif; ?>
+                                        <?php endif; ?>
+                                    </div>
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="flex flex-col" id="pegawai-container-<?php echo $email['id']; ?>" data-nip="<?php echo esc($email['nip']); ?>">

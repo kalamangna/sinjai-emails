@@ -1074,14 +1074,48 @@ class EmailService
             if ($bsreStatus === 'not_synced') {
                 $builder->groupStart()->where('emails.bsre_status', null)->orWhere('emails.bsre_status', '')->groupEnd();
                 $countModel->groupStart()->where('emails.bsre_status', null)->orWhere('emails.bsre_status', '')->groupEnd();
+            } elseif ($bsreStatus === 'non_tte') {
+                $builder->groupStart()
+                            ->where('emails.nip IS NULL')
+                            ->orWhere('emails.nip', '')
+                        ->groupEnd()
+                        ->where('emails.pimpinan', 0)
+                        ->where('emails.pimpinan_desa', 0)
+                        ->groupStart()
+                            ->where('emails.unit_kerja_id IS NULL')
+                            ->orWhere('emails.unit_kerja_id', 0)
+                        ->groupEnd();
+                $countModel->groupStart()
+                            ->where('emails.nip IS NULL')
+                            ->orWhere('emails.nip', '')
+                        ->groupEnd()
+                        ->where('emails.pimpinan', 0)
+                        ->where('emails.pimpinan_desa', 0)
+                        ->groupStart()
+                            ->where('emails.unit_kerja_id IS NULL')
+                            ->orWhere('emails.unit_kerja_id', 0)
+                        ->groupEnd();
             } else {
                 $builder->where('emails.bsre_status', $bsreStatus);
                 $countModel->where('emails.bsre_status', $bsreStatus);
             }
         }
 
+        $tteStatus = $params['tte_status'] ?? null;
+        if (!empty($tteStatus) && $usePkJoin) {
+            if ($tteStatus === 'unsigned') {
+                $builder->groupStart()->where('pk.tte_status', 'unsigned')->orWhere('pk.tte_status', null)->orWhere('pk.tte_status', '')->groupEnd();
+                $countModel->join('pk', 'pk.email = emails.email', 'left');
+                $countModel->groupStart()->where('pk.tte_status', 'unsigned')->orWhere('pk.tte_status', null)->orWhere('pk.tte_status', '')->groupEnd();
+            } else {
+                $builder->where('pk.tte_status', $tteStatus);
+                $countModel->join('pk', 'pk.email = emails.email', 'left');
+                $countModel->where('pk.tte_status', $tteStatus);
+            }
+        }
+
         if ($usePkJoin) {
-            $builder->select('MIN(pk.nomor) as nomor_pk')
+            $builder->select('MIN(pk.nomor) as nomor_pk, MIN(pk.tte_status) as pk_tte_status')
                     ->join('pk', 'pk.email = emails.email', 'left')
                     ->groupBy('emails.id, emails.name, emails.nip, emails.jabatan, emails.user, emails.email, emails.bsre_status, unit_kerja.nama_unit_kerja, parent_unit_kerja.nama_unit_kerja, status_asn.nama_status_asn, eselon.nama_eselon')
                     ->orderBy('CAST(MIN(pk.nomor) AS UNSIGNED)', 'ASC');

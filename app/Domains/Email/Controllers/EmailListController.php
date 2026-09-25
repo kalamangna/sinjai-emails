@@ -164,15 +164,12 @@ class EmailListController extends BaseController
             $data['bsre_status'] = $params['bsre_status'];
             $data['bup_status'] = $params['bup_status'];
             $data['bsre_status_options'] = [
-                'ISSUE' => 'ISSUE',
-                'EXPIRED' => 'EXPIRED',
-                'REVOKE' => 'REVOKE',
-                'SUSPEND' => 'SUSPEND',
-                'WAITING_FOR_VERIFICATION' => 'WAITING_FOR_VERIFICATION',
-                'RENEW' => 'RENEW',
+                'ISSUE'          => 'ISSUE',
+                'EXPIRED'        => 'EXPIRED',
                 'NO_CERTIFICATE' => 'NO_CERTIFICATE',
-                'NEW' => 'NEW',
-                'not_synced' => 'NOT_SYNCED',
+                'NOT_REGISTERED' => 'NOT_REGISTERED',
+                'not_synced'     => 'NOT_SYNCED',
+                'non_tte'        => 'NON_TTE',
             ];
             $data['bup_status_options'] = [
                 'approaching' => 'BUP < 1 Tahun',
@@ -196,7 +193,7 @@ class EmailListController extends BaseController
                 'per_page'    => $this->request->getGet('per_page') ?? 100,
                 'search'      => $this->request->getGet('search'),
                 'bsre_status' => $this->request->getGet('bsre_status'),
-                'bup_status'  => $this->request->getGet('bup_status'),
+                'tte_status'  => $this->request->getGet('tte_status'),
             ];
 
             $data = $this->emailService->getAsnList('PPPK', $params);
@@ -204,21 +201,19 @@ class EmailListController extends BaseController
             $data['title'] = 'PPPK';
             $data['search'] = $params['search'];
             $data['bsre_status'] = $params['bsre_status'];
-            $data['bup_status'] = $params['bup_status'];
-            $data['bsre_status_options'] = [
-                'ISSUE' => 'ISSUE',
-                'EXPIRED' => 'EXPIRED',
-                'REVOKE' => 'REVOKE',
-                'SUSPEND' => 'SUSPEND',
-                'WAITING_FOR_VERIFICATION' => 'WAITING_FOR_VERIFICATION',
-                'RENEW' => 'RENEW',
-                'NO_CERTIFICATE' => 'NO_CERTIFICATE',
-                'NEW' => 'NEW',
-                'not_synced' => 'NOT_SYNCED',
+            $data['tte_status'] = $params['tte_status'];
+            $data['tte_status_options'] = [
+                'unsigned'    => 'Belum TTE',
+                'signed_pppk' => 'Menunggu TTE Bupati',
+                'completed'   => 'Lengkap',
             ];
-            $data['bup_status_options'] = [
-                'approaching' => 'BUP < 1 Tahun',
-                'pensiun'     => 'Mencapai BUP',
+            $data['bsre_status_options'] = [
+                'ISSUE'          => 'ISSUE',
+                'EXPIRED'        => 'EXPIRED',
+                'NO_CERTIFICATE' => 'NO_CERTIFICATE',
+                'NOT_REGISTERED' => 'NOT_REGISTERED',
+                'not_synced'     => 'NOT_SYNCED',
+                'non_tte'        => 'NON_TTE',
             ];
             $data['back_url'] = site_url('email');
 
@@ -238,7 +233,7 @@ class EmailListController extends BaseController
                 'per_page'    => $this->request->getGet('per_page') ?? 100,
                 'search'      => $this->request->getGet('search'),
                 'bsre_status' => $this->request->getGet('bsre_status'),
-                'bup_status'  => $this->request->getGet('bup_status'),
+                'tte_status'  => $this->request->getGet('tte_status'),
             ];
 
             $data = $this->emailService->getAsnList('PPPK PARUH WAKTU', $params);
@@ -246,21 +241,19 @@ class EmailListController extends BaseController
             $data['title'] = 'PPPK PW';
             $data['search'] = $params['search'];
             $data['bsre_status'] = $params['bsre_status'];
-            $data['bup_status'] = $params['bup_status'];
-            $data['bsre_status_options'] = [
-                'ISSUE' => 'ISSUE',
-                'EXPIRED' => 'EXPIRED',
-                'REVOKE' => 'REVOKE',
-                'SUSPEND' => 'SUSPEND',
-                'WAITING_FOR_VERIFICATION' => 'WAITING_FOR_VERIFICATION',
-                'RENEW' => 'RENEW',
-                'NO_CERTIFICATE' => 'NO_CERTIFICATE',
-                'NEW' => 'NEW',
-                'not_synced' => 'NOT_SYNCED',
+            $data['tte_status'] = $params['tte_status'];
+            $data['tte_status_options'] = [
+                'unsigned'    => 'Belum TTE',
+                'signed_pppk' => 'Menunggu TTE Bupati',
+                'completed'   => 'Lengkap',
             ];
-            $data['bup_status_options'] = [
-                'approaching' => 'BUP < 1 Tahun',
-                'pensiun'     => 'Mencapai BUP',
+            $data['bsre_status_options'] = [
+                'ISSUE'          => 'ISSUE',
+                'EXPIRED'        => 'EXPIRED',
+                'NO_CERTIFICATE' => 'NO_CERTIFICATE',
+                'NOT_REGISTERED' => 'NOT_REGISTERED',
+                'not_synced'     => 'NOT_SYNCED',
+                'non_tte'        => 'NON_TTE',
             ];
             $data['back_url'] = site_url('email');
 

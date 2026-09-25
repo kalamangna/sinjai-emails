@@ -146,9 +146,11 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
             $routes->post('api_batch_update_password', '\App\Domains\Email\Controllers\EmailListController::apiBatchUpdatePassword');
         });
 
-        // Destructive Routes (Super Admin Only)
+        // Destructive & Sensitive Routes (Super Admin Only)
         $routes->group('', ['filter' => 'role:super_admin'], function ($routes) {
             $routes->post('delete/(:num)', '\App\Domains\Email\Controllers\EmailController::delete/$1');
+            $routes->post('sign_pk_bupati/(:any)', '\App\Domains\Email\Controllers\EmailController::signPkBupati/$1');
+            $routes->post('sign-pk-bupati/(:any)', '\App\Domains\Email\Controllers\EmailController::signPkBupati/$1');
         });
     });
 
@@ -171,6 +173,28 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         $routes->get('pk', '\App\Domains\Batch\Controllers\BatchController::pk');
         $routes->match(['GET', 'POST'], 'execute_update', '\App\Domains\Batch\Controllers\BatchController::saveBatchUpdate');
         $routes->match(['GET', 'POST'], 'execute_create', '\App\Domains\Batch\Controllers\BatchController::saveBatchCreate');
+    });
+
+    // TTE PK (Super Admin Only)
+    $routes->group('tte-pk', ['filter' => 'role:super_admin'], function ($routes) {
+        $routes->get('/', '\App\Domains\Email\Controllers\TteBupatiController::pppk');
+        $routes->get('pppk', '\App\Domains\Email\Controllers\TteBupatiController::pppk');
+        $routes->get('pppk-pw', '\App\Domains\Email\Controllers\TteBupatiController::pppkPw');
+        $routes->post('sign-single/(:num)', '\App\Domains\Email\Controllers\TteBupatiController::signSingle/$1');
+        $routes->post('sign_single/(:num)', '\App\Domains\Email\Controllers\TteBupatiController::signSingle/$1');
+        $routes->post('sign-batch', '\App\Domains\Email\Controllers\TteBupatiController::signBatch');
+        $routes->post('sign_batch', '\App\Domains\Email\Controllers\TteBupatiController::signBatch');
+    });
+
+    // TTE Bupati Queue & Batch (Alias & Super Admin Only)
+    $routes->group('tte-bupati', ['filter' => 'role:super_admin'], function ($routes) {
+        $routes->get('/', '\App\Domains\Email\Controllers\TteBupatiController::index');
+        $routes->get('pppk', '\App\Domains\Email\Controllers\TteBupatiController::pppk');
+        $routes->get('pppk-pw', '\App\Domains\Email\Controllers\TteBupatiController::pppkPw');
+        $routes->post('sign-single/(:num)', '\App\Domains\Email\Controllers\TteBupatiController::signSingle/$1');
+        $routes->post('sign_single/(:num)', '\App\Domains\Email\Controllers\TteBupatiController::signSingle/$1');
+        $routes->post('sign-batch', '\App\Domains\Email\Controllers\TteBupatiController::signBatch');
+        $routes->post('sign_batch', '\App\Domains\Email\Controllers\TteBupatiController::signBatch');
     });
 
     // Manajemen Data Induk (Unit Kerja - Super Admin Only)

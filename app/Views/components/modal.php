@@ -72,33 +72,46 @@ $isFullscreen = ($size ?? '') === 'full';
             const modalElement = document.getElementById(id);
             if (!modalElement) return;
             
-            if (!window.flowbiteModals[id]) {
-                const options = {
-                    placement: 'center',
-                    backdrop: 'dynamic',
-                    backdropClasses: 'bg-slate-900/60 backdrop-blur-sm fixed inset-0 z-[990]',
-                    closable: true,
-                    onHide: () => {
-                        modalElement.classList.add('hidden');
-                        modalElement.classList.remove('flex');
-                    },
-                    onShow: () => {
-                        modalElement.classList.remove('hidden');
-                        modalElement.classList.add('flex');
-                        
-                        // Focus first input if exists
-                        const firstInput = modalElement.querySelector('input, select, textarea, button:not([aria-label="Tutup"])');
-                        if (firstInput) setTimeout(() => firstInput.focus(), 100);
-                    }
-                };
-                window.flowbiteModals[id] = new Modal(modalElement, options);
+            if (typeof Modal !== 'undefined') {
+                if (!window.flowbiteModals[id]) {
+                    const options = {
+                        placement: 'center',
+                        backdrop: 'dynamic',
+                        backdropClasses: 'bg-slate-900/60 backdrop-blur-sm fixed inset-0 z-[990]',
+                        closable: true,
+                        onHide: () => {
+                            modalElement.classList.add('hidden');
+                            modalElement.classList.remove('flex');
+                        },
+                        onShow: () => {
+                            modalElement.classList.remove('hidden');
+                            modalElement.classList.add('flex');
+                            
+                            // Focus first input if exists
+                            const firstInput = modalElement.querySelector('input, select, textarea, button:not([aria-label="Tutup"])');
+                            if (firstInput) setTimeout(() => firstInput.focus(), 100);
+                        }
+                    };
+                    window.flowbiteModals[id] = new Modal(modalElement, options);
+                }
+                window.flowbiteModals[id].show();
+            } else {
+                modalElement.classList.remove('hidden');
+                modalElement.classList.add('flex');
+                const firstInput = modalElement.querySelector('input, select, textarea, button:not([aria-label="Tutup"])');
+                if (firstInput) setTimeout(() => firstInput.focus(), 100);
             }
-            window.flowbiteModals[id].show();
         };
 
         window.closeModal = function(id) {
-            if (window.flowbiteModals[id]) {
+            if (window.flowbiteModals && window.flowbiteModals[id]) {
                 window.flowbiteModals[id].hide();
+            } else {
+                const modalElement = document.getElementById(id);
+                if (modalElement) {
+                    modalElement.classList.add('hidden');
+                    modalElement.classList.remove('flex');
+                }
             }
         };
     }

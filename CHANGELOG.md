@@ -3,6 +3,27 @@
 Semua perubahan penting pada proyek ini dicatat di berkas ini.
 Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+# [25 September 2026] — Peluncuran Fitur Tanda Tangan Elektronik (TTE) Bupati untuk Perjanjian Kerja (TTE PK)
+
+- **Modul Antrean & Manajemen TTE PK (`/tte-pk`)**:
+  - Mengembangkan modul baru antrean TTE Bupati melalui [`TteBupatiController.php`](app/Domains/Email/Controllers/TteBupatiController.php) dan antarmuka [`tte_bupati.php`](app/Views/email/tte_bupati.php) dengan pembagian menu **PK PPPK** (`/tte-pk/pppk`) dan **PK PPPK PW** (`/tte-pk/pppk-pw`).
+  - Menyediakan tab filter **Menunggu TTE** dan **Lengkap** dengan indikator counter dinamis serta pagination 20 data per halaman.
+  - Mengintegrasikan filter Unit Kerja Induk (Parent) dengan fitur pencarian interaktif Choices.js, yang secara otomatis memfilter dokumen pegawai pada unit induk beserta seluruh unit kerja anak di bawahnya.
+  - Mendukung eksekusi **TTE Tunggal** dan **TTE Massal (Batch Sign)** via API BSrE menggunakan tag koordinat `${ttd_pengirim2}` dan QR Code verifikasi publik.
+  - Menerapkan pengaman otomatis pada proses Batch Sign: menghentikan eksekusi seketika jika terjadi kegagalan otentikasi (401/unauthorized/passphrase salah/terblokir) untuk melindungi akun BSrE dari pemblokiran.
+- **Menu Navigasi Sidebar Baru (`TTE PK`)**:
+  - Menambahkan menu accordion **TTE PK** pada [`sidebar.php`](app/Views/components/sidebar.php) khusus untuk role `super_admin` dengan badge counter dokumen yang menunggu tanda tangan bupati.
+  - Menyediakan sub-menu **PK PPPK** dan **PK PPPK PW** dengan penanganan *active state* presisi (mencocokkan *path URL* bersih guna mencegah benturan substring atau hilangnya status aktif akibat query parameter pencarian/filter).
+- **TTE Bupati di Halaman Detail Pegawai & Alur Ekspor Berkas**:
+  - Menambahkan aksi modal TTE Bupati langsung pada seksi Perjanjian Kerja di [`detail.php`](app/Views/email/detail.php) untuk akun PPPK yang telah bertandatangan mandiri (`signed_pppk`).
+  - Memperbarui [`EmailExportController.php`](app/Domains/Email/Controllers/EmailExportController.php) dan [`PortalPkController.php`](app/Domains/Email/Controllers/PortalPkController.php) agar otomatis memprioritaskan penyajian dan unduhan berkas PDF final lengkap bertandatangan Bupati (`signed_final_...`).
+- **Skema Basis Data & Konfigurasi**:
+  - Menambahkan migrasi [`2026-09-25-142500_AddTteBupatiColumnsToPkTable.php`](app/Database/Migrations/2026-09-25-142500_AddTteBupatiColumnsToPkTable.php) untuk menambahkan kolom `tte_bupati_at`, `tte_bupati_file`, dan `tte_bupati_ip` pada tabel `pk`.
+  - Memperbarui [`PkModel.php`](app/Domains/Email/Models/PkModel.php) dengan penambahan `allowedFields` baru dan helper method `withPegawaiDetails()` yang memuat relasi data pegawai, unit kerja hierarki, dan status ASN.
+  - Mendukung konfigurasi environment `BSRE_BUPATI_NIK` pada `.env` untuk kemudahan pengisian otomatis NIK penandatangan pada seluruh modal TTE.
+
+---
+
 # [24 September 2026] — Peluncuran Portal TTE Perjanjian Kerja (PK) untuk PPPK
 
 - **Penyederhanaan & Konsistensi Antarmuka Portal PPPK (`/portal-pk`)**:

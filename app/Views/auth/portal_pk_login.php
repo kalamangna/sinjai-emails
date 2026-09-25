@@ -110,15 +110,23 @@
 
                 <div class="pt-2">
                     <button type="submit" class="w-full btn btn-solid py-2.5">
-                        Masuk <i class="fas fa-arrow-right ml-2 text-white/80"></i>
+                        Masuk <i class="fas fa-sign-in-alt ml-2 text-white/80"></i>
                     </button>
                 </div>
             </form>
 
-            <div class="mt-6 pt-4 border-t border-slate-100 text-center">
-                <a href="<?= site_url('/') ?>" class="inline-flex items-center gap-1.5 text-[10px] font-bold text-slate-500 hover:text-slate-800 transition-colors uppercase tracking-widest">
-                    <i class="fas fa-arrow-left"></i> Kembali ke Beranda
-                </a>
+            <div class="mt-5 pt-3.5 border-t border-slate-100 text-center space-y-2">
+                <div>
+                    <a href="<?= site_url('login') ?>" class="text-xs font-semibold text-slate-700 hover:text-slate-900 transition-colors inline-flex items-center gap-1.5">
+                        <i class="fas fa-sign-in-alt text-slate-500"></i>
+                        <span>Masuk ke Sistem &rarr;</span>
+                    </a>
+                </div>
+                <div>
+                    <a href="<?= site_url('/') ?>" class="inline-flex items-center gap-1.5 text-[10px] font-bold text-slate-400 hover:text-slate-700 transition-colors uppercase tracking-widest">
+                        <i class="fas fa-arrow-left"></i> Kembali ke Beranda
+                    </a>
+                </div>
             </div>
         </div>
 

@@ -17,6 +17,7 @@ Aplikasi ini menerapkan standar estetika **"Slate Clean Government"**—antarmuk
 - **Debug & Validasi Data:** Fitur deteksi otomatis untuk akun yang mengalami NIP ganda atau ambiguitas data profil.
 
 ### ✍️ Integrasi TTE BSrE
+- **TTE PK (Tanda Tangan Elektronik Bupati):** Modul antrean khusus Super Admin (`/tte-pk`) untuk penandatanganan digital Perjanjian Kerja oleh Bupati Sinjai (Pihak Kesatu) pada tag `${ttd_pengirim2}`. Mendukung pemilahan dokumen **PK PPPK** dan **PK PPPK PW**, filter unit kerja induk hierarkis, eksekusi TTE tunggal maupun massal (*batch sign*) berkecepatan tinggi dengan pengaman otomatis terhadap kesalahan otentikasi BSrE, serta dukungan konfigurasi NIK otomatis via `BSRE_BUPATI_NIK`.
 - **Portal TTE PPPK:** Akses publik mandiri bagi aparatur PPPK (`/portal-pk`) untuk verifikasi identitas (NIP, NIK, Tanggal Lahir), pratinjau dokumen Perjanjian Kerja secara langsung, dan pembubuhan TTE resmi via API BSrE menggunakan Passphrase pribadi.
 - **Monitoring Status:** Pelacakan status Sertifikat Elektronik secara real-time (ISSUE, EXPIRED, NO_CERTIFICATE, dll).
 - **Sinkronisasi Massal:** Sinkronisasi status TTE berurutan dengan performa tinggi untuk seluruh kategori pegawai dengan indikator progres langsung.

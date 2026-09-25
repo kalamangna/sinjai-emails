@@ -16,10 +16,12 @@
     if (!empty($_SERVER['QUERY_STRING'])) {
         $full_url .= '?' . $_SERVER['QUERY_STRING'];
     }
+    $current_clean_url = current_url(); // Base URL without query params
 
-    // Helper to check if a URL is active (strict match)
-    $isActive = function($url) use ($full_url) {
-        return $full_url === site_url($url);
+    // Helper to check if a URL is active (matches full URL or clean base path)
+    $isActive = function($url) use ($full_url, $current_clean_url) {
+        $target = site_url($url);
+        return $full_url === $target || $current_clean_url === $target;
     };
 
     // Determine default active group based on child matches
@@ -28,15 +30,17 @@
         $default_active = 'pegawai';
     } elseif ($isActive('email/pimpinan') || $isActive('email/pimpinan_desa')) {
         $default_active = 'pejabat';
-    } elseif (strpos($full_url, site_url('email/unit_kerja')) !== false && strpos($full_url, 'manage') === false) {
+    } elseif (strpos($current_clean_url, site_url('email/unit_kerja')) !== false && strpos($current_clean_url, 'manage') === false) {
         $default_active = 'organisasi';
-    } elseif ($isActive('email/eselon') || strpos($full_url, site_url('email/eselon_detail')) !== false) {
+    } elseif ($isActive('email/eselon') || strpos($current_clean_url, site_url('email/eselon_detail')) !== false) {
         $default_active = 'organisasi';
     } elseif ($isActive('web_opd') || $isActive('web_desa_kelurahan')) {
         $default_active = 'website';
     } elseif ($isActive('batch') || $isActive('batch/update') || $isActive('batch/pk')) {
         $default_active = 'batch';
-    } elseif ($isActive('unit_kerja/manage') || strpos($full_url, site_url('auth/users')) !== false || $isActive('audit-trail')) {
+    } elseif ($isActive('tte-pk/pppk') || $isActive('tte-pk/pppk-pw') || $isActive('tte-pk') || $isActive('tte-bupati') || strpos($current_clean_url, site_url('tte-pk')) !== false || strpos($current_clean_url, site_url('tte-bupati')) !== false) {
+        $default_active = 'tte_pk';
+    } elseif ($isActive('unit_kerja/manage') || strpos($current_clean_url, site_url('auth/users')) !== false || $isActive('audit-trail')) {
         $default_active = 'master';
     }
     ?>
@@ -168,6 +172,46 @@
                     </a>
                     <a href="<?= site_url('batch/pk') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('batch/pk') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
                         Edit PK Massal
+                    </a>
+                </div>
+            </div>
+        <?php endif; ?>
+
+        <!-- TTE PK Submenu -->
+        <?php if (session()->get('role') === 'super_admin'): ?>
+            <?php
+            $totalPendingTtePk = (new \App\Domains\Email\Models\PkModel())
+                ->where('tte_status', 'signed_pppk')
+                ->where('tte_pegawai_file IS NOT NULL')
+                ->where('tte_pegawai_file !=', '')
+                ->countAllResults();
+
+            $isPppkActive = ($current_clean_url === site_url('tte-pk/pppk') || $current_clean_url === site_url('tte-bupati/pppk') || $current_clean_url === site_url('tte-pk') || $current_clean_url === site_url('tte-bupati'));
+            $isPppkPwActive = ($current_clean_url === site_url('tte-pk/pppk-pw') || $current_clean_url === site_url('tte-bupati/pppk-pw'));
+            ?>
+            <div>
+                <button data-sidebar-toggle="tte_pk" aria-expanded="<?= $default_active === 'tte_pk' ? 'true' : 'false' ?>" class="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-slate-100 rounded-lg hover:bg-slate-700/80 hover:text-white transition-all focus:outline-none">
+                    <div class="flex items-center">
+                        <div class="w-5 h-5 flex items-center justify-center mr-3 shrink-0">
+                            <i class="fas fa-file-signature text-slate-300"></i>
+                        </div>
+                        <span>TTE PK</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <?php if ($totalPendingTtePk > 0): ?>
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500 text-slate-900 leading-none">
+                                <?= $totalPendingTtePk ?>
+                            </span>
+                        <?php endif; ?>
+                        <i class="fas fa-chevron-down text-[10px]"></i>
+                    </div>
+                </button>
+                <div id="submenu-tte_pk" class="sidebar-submenu mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
+                    <a href="<?= site_url('tte-pk/pppk') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isPppkActive ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
+                        PK PPPK
+                    </a>
+                    <a href="<?= site_url('tte-pk/pppk-pw') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isPppkPwActive ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
+                        PK PPPK PW
                     </a>
                 </div>
             </div>

@@ -279,12 +279,34 @@
             <?php if (!empty($pk_data) || in_array($email['status_asn_id'] ?? 0, [2, 3])): ?>
                 <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
                     <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
-                        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Perjanjian Kerja (PK)</h3>
-                        <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
-                            <a href="<?= site_url('email/edit_pk/' . $email['user']) ?>" class="btn btn-outline btn-xs no-underline">
-                                <i class="fas fa-<?= !empty($pk_data) ? 'edit' : 'plus' ?> mr-1.5"></i> <?= !empty($pk_data) ? 'Edit PK' : 'Tambah PK' ?>
-                            </a>
-                        <?php endif; ?>
+                        <div class="flex items-center gap-2.5">
+                            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Perjanjian Kerja (PK)</h3>
+                            <?php if (!empty($pk_data)): ?>
+                                <?php
+                                $tteSt = $pk_data['tte_status'] ?? 'unsigned';
+                                if ($tteSt === 'completed'):
+                                ?>
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                        <i class="fas fa-check-double text-[9px] mr-1"></i> Lengkap
+                                    </span>
+                                <?php elseif ($tteSt === 'signed_pppk'): ?>
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-blue-50 text-blue-700 border border-blue-200">
+                                        <i class="fas fa-user-check text-[9px] mr-1"></i> Menunggu TTE Bupati
+                                    </span>
+                                <?php else: ?>
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-amber-50 text-amber-700 border border-amber-200">
+                                        <i class="fas fa-clock text-[9px] mr-1"></i> Belum TTE
+                                    </span>
+                                <?php endif; ?>
+                            <?php endif; ?>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
+                                <a href="<?= site_url('email/edit_pk/' . $email['user']) ?>" class="btn btn-outline btn-xs no-underline">
+                                    <i class="fas fa-<?= !empty($pk_data) ? 'edit' : 'plus' ?> mr-1.5"></i> <?= !empty($pk_data) ? 'Edit PK' : 'Tambah PK' ?>
+                                </a>
+                            <?php endif; ?>
+                        </div>
                     </div>
                     <?php if (!empty($pk_data)): ?>
                         <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -313,6 +335,28 @@
                                     <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">Gaji</label>
                                     <p class="text-sm font-bold text-slate-800">Rp <?= number_format($pk_data['gaji_nominal'], 0, ',', '.') ?></p>
                                     <p class="text-[10px] font-medium text-slate-700 italic mt-0.5 leading-tight">"<?= esc($pk_data['gaji_terbilang']) ?> Rupiah"</p>
+                                </div>
+                                <div>
+                                    <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">Status & Berkas TTE</label>
+                                    <div class="mt-1 flex flex-wrap items-center gap-2">
+                                        <?php if (($pk_data['tte_status'] ?? '') === 'completed'): ?>
+                                            <a href="<?= site_url('email/export_single_perjanjian_kerja_pdf/' . $email['user']) ?>" target="_blank" class="btn btn-outline btn-xs no-underline text-emerald-700 border-emerald-200 hover:bg-emerald-50">
+                                                <i class="fas fa-file-pdf mr-1 text-emerald-600"></i> Berkas Lengkap TTE
+                                            </a>
+                                            <span class="text-[10px] text-slate-500 font-medium">Bupati: <?= !empty($pk_data['tte_bupati_at']) ? date('d/m/Y H:i', strtotime($pk_data['tte_bupati_at'])) : '-' ?></span>
+                                        <?php elseif (($pk_data['tte_status'] ?? '') === 'signed_pppk'): ?>
+                                            <a href="<?= site_url('email/export_single_perjanjian_kerja_pdf/' . $email['user']) ?>" target="_blank" class="btn btn-outline btn-xs no-underline text-blue-700 border-blue-200 hover:bg-blue-50">
+                                                <i class="fas fa-file-pdf mr-1 text-blue-600"></i> Berkas TTE PPPK
+                                            </a>
+                                            <?php if (session()->get('role') === 'super_admin'): ?>
+                                                <button type="button" onclick="openModal('modal-tte-bupati')" class="btn btn-solid btn-xs bg-slate-900 hover:bg-slate-800 text-white">
+                                                    <i class="fas fa-signature mr-1.5"></i> TTE Bupati
+                                                </button>
+                                            <?php endif; ?>
+                                        <?php else: ?>
+                                            <span class="text-[11px] text-slate-500 italic">Menunggu TTE mandiri oleh PPPK di Portal PK.</span>
+                                        <?php endif; ?>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -570,7 +614,73 @@
         const initialStatus = '<?= esc($email['bsre_status'] ?? '', 'js') ?>';
         renderBsreStatus(initialStatus);
     });
-
-
 </script>
+
+<?php if (session()->get('role') === 'super_admin' && !empty($pk_data) && ($pk_data['tte_status'] ?? '') === 'signed_pppk'): ?>
+    <?php
+    $modalContent = '
+    <form id="form-tte-bupati" action="' . site_url('email/sign_pk_bupati/' . $email['user']) . '" method="POST" class="space-y-4">
+        ' . csrf_field() . '
+        <div class="p-3.5 bg-blue-50 border border-blue-200 rounded-xl text-xs text-blue-900 leading-relaxed">
+            <p class="font-bold mb-1"><i class="fas fa-info-circle mr-1 text-blue-600"></i> Penandatanganan Pihak Kesatu (Bupati Sinjai)</p>
+            <p>Dokumen PK telah ditandatangani oleh PPPK pada tanggal <strong>' . (!empty($pk_data['tte_pegawai_at']) ? date('d/m/Y H:i', strtotime($pk_data['tte_pegawai_at'])) : '-') . '</strong>. Masukkan NIK dan Passphrase BSrE Bupati Sinjai untuk membubuhkan tanda tangan elektronik pada tag <code>${ttd_pengirim2}</code>.</p>
+        </div>
+
+        <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-tight mb-1.5">NIK Penandatangan (Bupati Sinjai)</label>
+            <input type="text" name="nik" value="' . esc(env('BSRE_BUPATI_NIK', '')) . '" placeholder="Masukkan 16 digit NIK..." required maxlength="16" autocomplete="off" class="w-full text-xs font-mono font-semibold rounded-lg border-slate-200 bg-slate-50 focus:bg-white focus:border-slate-800 focus:ring-0 transition-all p-2.5">
+        </div>
+
+        <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-tight mb-1.5">Passphrase BSrE</label>
+            <div class="relative">
+                <input type="password" id="input-bupati-passphrase" name="passphrase" required placeholder="Masukkan passphrase sertifikat elektronik BSrE..." autocomplete="new-password" class="w-full text-xs rounded-lg border-slate-200 bg-slate-50 focus:bg-white focus:border-slate-800 focus:ring-0 transition-all p-2.5 pr-10">
+                <button type="button" onclick="toggleBupatiPassword()" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none">
+                    <i class="fas fa-eye text-xs" id="icon-bupati-eye"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="pt-2 flex justify-end gap-2">
+            <button type="button" onclick="closeModal(\'modal-tte-bupati\')" class="btn btn-outline btn-sm">Batal</button>
+            <button type="submit" id="btn-submit-tte-bupati" class="btn btn-solid btn-sm bg-slate-900 hover:bg-slate-800 text-white">
+                <i class="fas fa-signature mr-1.5"></i> Proses TTE Sekarang
+            </button>
+        </div>
+    </form>';
+
+    echo view('components/modal', [
+        'id'        => 'modal-tte-bupati',
+        'title'     => 'Tanda Tangan Elektronik — Bupati Sinjai',
+        'content'   => $modalContent,
+        'size'      => 'md',
+        'showClose' => true,
+    ], ['saveData' => false]);
+    ?>
+    <script>
+    function toggleBupatiPassword() {
+        const input = document.getElementById('input-bupati-passphrase');
+        const icon = document.getElementById('icon-bupati-eye');
+        if (input && icon) {
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+    }
+    document.getElementById('form-tte-bupati')?.addEventListener('submit', function() {
+        const btn = document.getElementById('btn-submit-tte-bupati');
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1.5"></i> Menghubungi BSrE...';
+        }
+    });
+    </script>
+<?php endif; ?>
+
 <?= $this->endSection() ?>

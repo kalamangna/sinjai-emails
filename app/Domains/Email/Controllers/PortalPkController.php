@@ -160,8 +160,19 @@ class PortalPkController extends BaseController
         $email   = $this->emailModel->withDetails()->find($emailId);
         $pk      = $this->pkModel->where('email', $email['email'])->first();
 
-        // 1. Jika sudah bertandatangan dan filenya ada, tampilkan berkas signed
-        if ($pk && $pk['tte_status'] === 'signed_pppk' && !empty($pk['tte_pegawai_file'])) {
+        // 1. Jika sudah selesai TTE Bupati (completed), tampilkan berkas final
+        if ($pk && $pk['tte_status'] === 'completed' && !empty($pk['tte_bupati_file'])) {
+            $signedPath = WRITEPATH . 'uploads/signed_pk/' . $pk['tte_bupati_file'];
+            if (file_exists($signedPath)) {
+                return $this->response
+                    ->setHeader('Content-Type', 'application/pdf')
+                    ->setHeader('Content-Disposition', 'inline; filename="' . $pk['tte_bupati_file'] . '"')
+                    ->setBody(file_get_contents($signedPath));
+            }
+        }
+
+        // 2. Jika sudah bertandatangan pegawai (signed_pppk), tampilkan berkas signed pegawai
+        if ($pk && !empty($pk['tte_pegawai_file'])) {
             $signedPath = WRITEPATH . 'uploads/signed_pk/' . $pk['tte_pegawai_file'];
             if (file_exists($signedPath)) {
                 return $this->response
@@ -171,7 +182,7 @@ class PortalPkController extends BaseController
             }
         }
 
-        // 2. Jika belum bertandatangan, buat draf PDF secara instan
+        // 3. Jika belum bertandatangan, buat draf PDF secara instan
         try {
             $pdfResult = $this->exportService->generatePerjanjianKerjaPdf($email['user']);
             $pdfOutput = $pdfResult['dompdf']->output();
@@ -206,8 +217,8 @@ class PortalPkController extends BaseController
         }
 
         // Cek jika sudah pernah ditandatangani
-        if ($pk['tte_status'] === 'signed_pppk' && !empty($pk['tte_pegawai_file'])) {
-            return redirect()->back()->with('error', 'Dokumen Perjanjian Kerja ini sudah ditandatangani sebelumnya.');
+        if (in_array($pk['tte_status'] ?? '', ['signed_pppk', 'completed']) && !empty($pk['tte_pegawai_file'])) {
+            return redirect()->back()->with('error', 'Dokumen Perjanjian Kerja ini sudah Anda tanda tangani sebelumnya.');
         }
 
         // 1. Generate draf PDF ke temporary file
@@ -273,10 +284,20 @@ class PortalPkController extends BaseController
         $email   = $this->emailModel->withDetails()->find($emailId);
         $pk      = $this->pkModel->where('email', $email['email'])->first();
 
-        if ($pk && $pk['tte_status'] === 'signed_pppk' && !empty($pk['tte_pegawai_file'])) {
+        // 1. Berkas lengkap ditandatangani Bupati & PPPK
+        if ($pk && $pk['tte_status'] === 'completed' && !empty($pk['tte_bupati_file'])) {
+            $signedPath = WRITEPATH . 'uploads/signed_pk/' . $pk['tte_bupati_file'];
+            if (file_exists($signedPath)) {
+                $downloadName = 'Perjanjian_Kerja_' . url_title($email['name'], '_', true) . '_' . $email['nip'] . '_FINAL.pdf';
+                return $this->response->download($signedPath, null)->setFileName($downloadName);
+            }
+        }
+
+        // 2. Berkas ditandatangani PPPK saja
+        if ($pk && !empty($pk['tte_pegawai_file'])) {
             $signedPath = WRITEPATH . 'uploads/signed_pk/' . $pk['tte_pegawai_file'];
             if (file_exists($signedPath)) {
-                $downloadName = 'Perjanjian_Kerja_' . url_title($email['name'], '_', true) . '_' . $email['nip'] . '_SIGNED.pdf';
+                $downloadName = 'Perjanjian_Kerja_' . url_title($email['name'], '_', true) . '_' . $email['nip'] . '_SIGNED_PPPK.pdf';
                 return $this->response->download($signedPath, null)->setFileName($downloadName);
             }
         }

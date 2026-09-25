@@ -64,6 +64,39 @@ class EmailExportController extends BaseController
     public function exportSinglePerjanjianKerjaPdf($username)
     {
         try {
+            $forceDraft = $this->request->getGet('draft') === '1';
+
+            if (!$forceDraft) {
+                $email = (new \App\Domains\Email\Models\EmailModel())->where('user', $username)->first();
+                if ($email) {
+                    $pk = (new \App\Domains\Email\Models\PkModel())->where('email', $email['email'])->first();
+                    if ($pk) {
+                        // 1. Jika sudah lengkap TTE Bupati
+                        if ($pk['tte_status'] === 'completed' && !empty($pk['tte_bupati_file'])) {
+                            $path = WRITEPATH . 'uploads/signed_pk/' . $pk['tte_bupati_file'];
+                            if (file_exists($path)) {
+                                log_audit('EXPORT', 'Email', null, 'Lihat PDF Perjanjian Kerja Final: ' . $username);
+                                return $this->response
+                                    ->setContentType('application/pdf')
+                                    ->setHeader('Content-Disposition', 'inline; filename="' . $pk['tte_bupati_file'] . '"')
+                                    ->setBody(file_get_contents($path));
+                            }
+                        }
+                        // 2. Jika sudah TTE Pegawai
+                        if (!empty($pk['tte_pegawai_file'])) {
+                            $path = WRITEPATH . 'uploads/signed_pk/' . $pk['tte_pegawai_file'];
+                            if (file_exists($path)) {
+                                log_audit('EXPORT', 'Email', null, 'Lihat PDF Perjanjian Kerja TTE PPPK: ' . $username);
+                                return $this->response
+                                    ->setContentType('application/pdf')
+                                    ->setHeader('Content-Disposition', 'inline; filename="' . $pk['tte_pegawai_file'] . '"')
+                                    ->setBody(file_get_contents($path));
+                            }
+                        }
+                    }
+                }
+            }
+
             $result = $this->emailExportService->generatePerjanjianKerjaPdf($username);
             log_audit('EXPORT', 'Email', null, 'Ekspor PDF Perjanjian Kerja user: ' . $username);
             $pdfContent = $result['dompdf']->output();

@@ -174,130 +174,116 @@
 
         <!-- Info & Status Grid -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-            <!-- Card 1: Data Pegawai -->
+            <!-- Card 1: Pegawai -->
             <div class="bg-white border border-slate-200 rounded-lg p-5 shadow-sm flex flex-col justify-between">
                 <div>
-                    <h3 class="text-xs font-bold text-slate-800 uppercase tracking-widest mb-3 border-b border-slate-100 pb-2">Identitas Pegawai</h3>
-                    <h4 class="text-sm font-bold text-slate-800 uppercase"><?= esc($email['name']) ?></h4>
-                    <p class="text-xs text-slate-500 font-medium mt-0.5"><?= esc($email['jabatan'] ?? 'PPPK') ?></p>
-                </div>
-                <div class="mt-4 pt-3 border-t border-slate-100 space-y-2 text-xs">
-                    <div class="flex justify-between items-center">
-                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">NIP</span>
-                        <span class="font-mono font-medium text-slate-700"><?= esc($email['nip']) ?></span>
-                    </div>
-                    <div class="flex justify-between items-start gap-2">
-                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider shrink-0 mt-0.5">Unit Kerja</span>
-                        <div class="text-right max-w-[200px]">
-                            <p class="font-medium text-slate-700 leading-tight" title="<?= esc($unitKerja) ?>">
-                                <?= esc($unitKerja) ?>
-                            </p>
-                            <?php if (!empty($parentUnit)): ?>
-                                <p class="text-[10px] text-slate-400 font-medium mt-0.5" title="<?= esc($parentUnit) ?>">
-                                    <?= esc($parentUnit) ?>
-                                </p>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Status</span>
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-2 mb-3">
+                        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-widest">Pegawai</h3>
                         <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase border bg-slate-100 text-slate-700 border-slate-200">
                             <?= esc($statusAsn) ?>
                         </span>
                     </div>
+                    <h4 class="text-sm font-bold text-slate-800 uppercase leading-snug" title="<?= esc($email['name']) ?>">
+                        <?= esc($email['name']) ?>
+                    </h4>
+                    <p class="text-xs text-slate-500 font-medium leading-snug mt-1" title="<?= esc($unitKerja) ?>">
+                        <?= esc($unitKerja) ?>
+                    </p>
+                </div>
+                <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">NIP</span>
+                    <span class="font-mono font-medium text-slate-700"><?= esc($email['nip']) ?></span>
                 </div>
             </div>
 
-            <!-- Card 2: Informasi Kontrak PK -->
+            <!-- Card 2: Perjanjian Kerja -->
             <div class="bg-white border border-slate-200 rounded-lg p-5 shadow-sm flex flex-col justify-between">
                 <div>
-                    <h3 class="text-xs font-bold text-slate-800 uppercase tracking-widest mb-3 border-b border-slate-100 pb-2">Perjanjian Kerja</h3>
-                    <div class="flex items-center gap-2">
-                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Nomor PK:</span>
-                        <span class="text-xs font-mono font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
-                            <?= esc($pk['nomor'] ?? 'Draf Belum Bernomor') ?>
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-2 mb-3">
+                        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-widest">Perjanjian Kerja</h3>
+                        <span class="text-xs font-mono font-bold text-slate-700">
+                            <?= esc($pk['nomor'] ?? '-') ?>
                         </span>
+                    </div>
+                    <div class="space-y-1.5 text-xs">
+                        <div class="flex justify-between items-center">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Masa Kontrak</span>
+                            <span class="font-medium text-slate-700">
+                                <?= !empty($pk['tanggal_kontrak_awal']) ? date('d/m/Y', strtotime($pk['tanggal_kontrak_awal'])) : '-' ?> – 
+                                <?= !empty($pk['tanggal_kontrak_akhir']) ? date('d/m/Y', strtotime($pk['tanggal_kontrak_akhir'])) : '-' ?>
+                            </span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Gaji</span>
+                            <span class="font-bold text-slate-800">
+                                <?= !empty($pk['gaji_nominal']) ? 'Rp ' . number_format((float)str_replace(['Rp', '.', ' '], '', $pk['gaji_nominal']), 0, ',', '.') : '-' ?>
+                            </span>
+                        </div>
                     </div>
                 </div>
-                <div class="mt-4 pt-3 border-t border-slate-100 space-y-2 text-xs">
-                    <div class="flex justify-between items-center">
-                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Masa Kontrak</span>
-                        <span class="font-medium text-slate-700">
-                            <?= !empty($pk['tanggal_kontrak_awal']) ? date('d/m/Y', strtotime($pk['tanggal_kontrak_awal'])) : '-' ?> s.d. 
-                            <?= !empty($pk['tanggal_kontrak_akhir']) ? date('d/m/Y', strtotime($pk['tanggal_kontrak_akhir'])) : '-' ?>
-                        </span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Gaji Pokok</span>
-                        <span class="font-bold text-slate-800">
-                            <?= !empty($pk['gaji_nominal']) ? 'Rp ' . number_format((float)str_replace(['Rp', '.', ' '], '', $pk['gaji_nominal']), 0, ',', '.') : '-' ?>
-                        </span>
-                    </div>
+                <div class="mt-4 pt-3 border-t border-slate-100 flex items-start justify-between gap-3 text-xs">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider shrink-0 mt-0.5">Jabatan</span>
+                    <span class="font-medium text-slate-700 text-right leading-snug"><?= esc($email['jabatan'] ?? 'PPPK') ?></span>
                 </div>
             </div>
 
             <!-- Card 3: Status TTE & Aksi -->
             <?php 
-                $isSigned = ($pk['tte_status'] ?? '') === 'signed_pppk';
-                $bsreActive = strtoupper($email['bsre_status'] ?? '') === 'ISSUE';
+                $isSignedPppk   = in_array($pk['tte_status'] ?? '', ['signed_pppk', 'completed']);
+                $isSignedBupati = ($pk['tte_status'] ?? '') === 'completed';
+                $bsreActive     = strtoupper($email['bsre_status'] ?? '') === 'ISSUE';
             ?>
             <div class="bg-white border border-slate-200 rounded-lg p-5 shadow-sm flex flex-col justify-between">
                 <div>
                     <div class="flex items-center justify-between border-b border-slate-100 pb-2 mb-3">
-                        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-widest">Status TTE BSrE</h3>
-                        <?php if ($bsreActive): ?>
+                        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-widest">Status TTE</h3>
+                        <?php if ($isSignedBupati): ?>
                             <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase border bg-emerald-50 text-emerald-700 border-emerald-200">
-                                Sertifikat Aktif
+                                Lengkap
+                            </span>
+                        <?php elseif ($isSignedPppk): ?>
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase border bg-blue-50 text-blue-700 border-blue-200">
+                                Menunggu TTE Bupati
                             </span>
                         <?php else: ?>
                             <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase border bg-amber-50 text-amber-700 border-amber-200">
-                                Belum Siap
+                                Belum TTE
                             </span>
                         <?php endif; ?>
                     </div>
 
-                    <div>
-                        <?php if ($isSigned): ?>
-                            <div class="flex items-center gap-2.5">
-                                <div class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-700 border border-emerald-200 shrink-0">
-                                    <i class="fas fa-check-double text-xs"></i>
-                                </div>
-                                <div>
-                                    <p class="text-xs font-bold text-slate-800 uppercase">Sudah Ditandatangani</p>
-                                    <p class="text-[10px] font-medium text-slate-500">
-                                        <?= !empty($pk['tte_pegawai_at']) ? date('d M Y, H:i', strtotime($pk['tte_pegawai_at'])) . ' WITA' : '-' ?>
-                                    </p>
-                                </div>
-                            </div>
+                    <div class="py-1">
+                        <?php if ($isSignedBupati): ?>
+                            <p class="text-xs font-medium text-slate-600">
+                                Dokumen telah ditandatangani lengkap oleh kedua pihak.
+                            </p>
+                        <?php elseif ($isSignedPppk): ?>
+                            <p class="text-xs font-medium text-slate-600">
+                                Ditandatangani pada <span class="font-bold text-slate-800"><?= !empty($pk['tte_pegawai_at']) ? date('d/m/Y H:i', strtotime($pk['tte_pegawai_at'])) : '-' ?></span>. Menunggu TTE Bupati Sinjai.
+                            </p>
                         <?php else: ?>
-                            <div class="flex items-center gap-2.5">
-                                <div class="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center text-amber-700 border border-amber-200 shrink-0">
-                                    <i class="fas fa-hourglass-half text-xs"></i>
-                                </div>
-                                <div>
-                                    <p class="text-xs font-bold text-slate-800 uppercase">Menunggu Tanda Tangan</p>
-                                    <p class="text-[10px] font-medium text-slate-500">Silakan tandatangani dokumen di bawah ini</p>
-                                </div>
-                            </div>
+                            <p class="text-xs font-medium text-slate-600">
+                                Dokumen siap ditandatangani.
+                            </p>
                         <?php endif; ?>
                     </div>
                 </div>
 
                 <div class="mt-4 pt-3 border-t border-slate-100">
-                    <?php if ($isSigned): ?>
-                        <a href="<?= site_url('portal-pk/download') ?>" class="btn btn-solid w-full py-2.5 flex items-center justify-center gap-2">
+                    <?php if ($isSignedPppk): ?>
+                        <a href="<?= site_url('portal-pk/download') ?>" class="btn btn-solid w-full py-2 flex items-center justify-center gap-2 text-xs">
                             <i class="fas fa-download"></i>
-                            <span>Unduh Dokumen (PDF)</span>
+                            <span>Unduh PDF</span>
                         </a>
                     <?php else: ?>
                         <?php if ($bsreActive): ?>
-                            <button type="button" onclick="openSignModal()" class="btn btn-solid w-full py-2.5 flex items-center justify-center gap-2">
+                            <button type="button" onclick="openModal('modal-tte')" class="btn btn-solid w-full py-2 flex items-center justify-center gap-2 text-xs">
                                 <i class="fas fa-pen-nib"></i>
                                 <span>Tandatangani</span>
                             </button>
                         <?php else: ?>
-                            <button type="button" disabled class="btn btn-outline w-full py-2.5 opacity-60 cursor-not-allowed">
-                                <i class="fas fa-lock mr-1"></i> Sertifikat Belum Aktif
+                            <button type="button" disabled class="btn btn-outline w-full py-2 opacity-60 cursor-not-allowed text-xs">
+                                <i class="fas fa-lock mr-1"></i> Sertifikat Tidak Aktif
                             </button>
                         <?php endif; ?>
                     <?php endif; ?>
@@ -307,22 +293,22 @@
 
         <!-- Document Preview Section -->
         <div class="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm">
-            <div class="px-4 sm:px-6 py-3 border-b border-slate-200 bg-slate-50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div class="px-4 sm:px-5 py-2.5 border-b border-slate-200 bg-slate-50 flex items-center justify-between gap-3">
                 <div class="flex items-center gap-2">
-                    <i class="fas fa-file-pdf text-red-500 text-sm"></i>
+                    <i class="fas fa-file-pdf text-red-600 text-sm"></i>
                     <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider">
-                        Pratinjau Dokumen Perjanjian Kerja <?= $isSigned ? '(Versi TTE)' : '(Draf)' ?>
+                        Dokumen Perjanjian Kerja
                     </h3>
                 </div>
 
                 <div class="flex items-center gap-2">
-                    <a href="<?= site_url('portal-pk/preview') ?>" target="_blank" class="btn btn-outline btn-sm flex items-center gap-1.5" title="Buka di Tab Baru">
+                    <a href="<?= site_url('portal-pk/preview') ?>" target="_blank" class="btn btn-outline btn-sm text-xs flex items-center gap-1.5" title="Buka di Tab Baru">
                         <i class="fas fa-external-link-alt text-[10px]"></i>
-                        <span>Buka Layar Penuh</span>
+                        <span class="hidden sm:inline">Layar Penuh</span>
                     </a>
-                    <a href="<?= site_url('portal-pk/download') ?>" class="btn btn-outline btn-sm flex items-center gap-1.5">
+                    <a href="<?= site_url('portal-pk/download') ?>" class="btn btn-outline btn-sm text-xs flex items-center gap-1.5">
                         <i class="fas fa-download text-[10px]"></i>
-                        <span>Unduh Dokumen</span>
+                        <span>Unduh</span>
                     </a>
                 </div>
             </div>
@@ -343,87 +329,53 @@
         </div>
     </footer>
 
-    <!-- Modal TTE Passphrase -->
-    <div id="modal-tte" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-lg max-w-md w-full shadow-2xl border border-slate-200 transform transition-all overflow-hidden">
-            <!-- Header -->
-            <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
-                <div>
-                    <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Tanda Tangan Elektronik</h3>
-                    <p class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mt-0.5">Otentikasi BSrE - BSSN</p>
-                </div>
-                <button type="button" onclick="closeSignModal()" class="text-slate-400 hover:text-slate-600 transition-colors p-1" aria-label="Tutup">
-                    <i class="fas fa-times text-sm"></i>
-                </button>
+    <!-- Modal TTE Passphrase (Standard Component) -->
+    <?php
+    $modalContent = '
+        <form action="' . site_url('portal-pk/sign') . '" method="POST" id="form-tte" class="space-y-4">
+            ' . csrf_field() . '
+            <div class="bg-slate-50 rounded-lg p-3 border border-slate-200 text-xs">
+                <p class="font-bold text-slate-800 uppercase truncate">' . esc($email['name']) . '</p>
+                <p class="font-mono text-slate-500 text-[11px] mt-0.5">NIK: ' . esc($email['nik']) . '</p>
             </div>
 
-            <!-- Body -->
-            <form action="<?= site_url('portal-pk/sign') ?>" method="POST" id="form-tte">
-                <?= csrf_field() ?>
-                <div class="p-6 space-y-4">
-                    <div class="bg-slate-50 rounded-lg p-3 border border-slate-200 text-xs space-y-1.5">
-                        <div class="flex justify-between">
-                            <span class="text-slate-400 font-medium">Penandatangan:</span>
-                            <span class="font-bold text-slate-800 uppercase"><?= esc($email['name']) ?></span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-slate-400 font-medium">NIK:</span>
-                            <span class="font-mono font-medium text-slate-700"><?= esc($email['nik']) ?></span>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label for="passphrase" class="block text-xs font-medium text-slate-700 mb-1 uppercase tracking-wider">
-                            Passphrase BSrE <span class="text-red-500">*</span>
-                        </label>
-                        <div class="relative">
-                            <input type="password" id="passphrase" name="passphrase" required autofocus
-                                class="block w-full pl-3 pr-10 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 placeholder-slate-400 placeholder:font-normal transition-all"
-                                placeholder="Masukkan passphrase pribadi...">
-                            <button type="button" onclick="togglePassphraseVisibility()" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-700">
-                                <i id="eye-icon" class="fas fa-eye text-xs"></i>
-                            </button>
-                        </div>
-                        <p class="text-[10px] text-slate-500 mt-1">
-                            <i class="fas fa-info-circle mr-1"></i> Passphrase tidak disimpan di sistem dan diteruskan secara terenkripsi langsung ke server BSrE.
-                        </p>
-                    </div>
-
-                    <div class="p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-800 flex gap-2.5">
-                        <i class="fas fa-exclamation-triangle text-amber-600 mt-0.5 shrink-0"></i>
-                        <div class="text-[11px] leading-relaxed">
-                            Dengan menandatangani dokumen ini, Anda menyatakan telah membaca, memahami, dan menyetujui seluruh klausul dalam Perjanjian Kerja secara sadar.
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Footer -->
-                <div class="bg-slate-50 px-6 py-3 border-t border-slate-100 flex justify-end gap-2">
-                    <button type="button" onclick="closeSignModal()" class="btn btn-outline btn-sm">
-                        Batal
-                    </button>
-                    <button type="submit" id="btn-submit-sign" class="btn btn-solid btn-sm flex items-center gap-1.5">
-                        <i class="fas fa-pen-nib"></i>
-                        <span>Tandatangani</span>
+            <div>
+                <label for="passphrase" class="block text-xs font-medium text-slate-700 mb-1 uppercase tracking-wider">
+                    Passphrase BSrE
+                </label>
+                <div class="relative">
+                    <input type="password" id="passphrase" name="passphrase" required autofocus
+                        class="block w-full pl-3 pr-9 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 placeholder-slate-400 placeholder:font-normal transition-all"
+                        placeholder="Masukkan passphrase...">
+                    <button type="button" onclick="togglePassphraseVisibility()" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-700" tabindex="-1">
+                        <i id="eye-icon" class="fas fa-eye text-xs"></i>
                     </button>
                 </div>
-            </form>
-        </div>
-    </div>
+            </div>
+        </form>
+    ';
+
+    $modalFooter = '
+        <button type="button" onclick="closeModal(\'modal-tte\')" class="btn btn-outline btn-sm">
+            Batal
+        </button>
+        <button type="submit" form="form-tte" id="btn-submit-sign" class="btn btn-solid btn-sm flex items-center gap-1.5">
+            <i class="fas fa-pen-nib"></i>
+            <span>Tandatangani</span>
+        </button>
+    ';
+
+    echo view('components/modal', [
+        'id'      => 'modal-tte',
+        'title'   => 'Tanda Tangan Elektronik',
+        'size'    => 'sm',
+        'content' => $modalContent,
+        'footer'  => $modalFooter
+    ]);
+    ?>
 
     <!-- Script Modal & UI Handling -->
     <script>
-        function openSignModal() {
-            document.getElementById('modal-tte').classList.remove('hidden');
-            setTimeout(() => {
-                const input = document.getElementById('passphrase');
-                if (input) input.focus();
-            }, 100);
-        }
-
-        function closeSignModal() {
-            document.getElementById('modal-tte').classList.add('hidden');
-        }
 
         function togglePassphraseVisibility() {
             const input = document.getElementById('passphrase');
@@ -445,6 +397,9 @@
             btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1.5"></i> Menandatangani...';
         });
     </script>
+
+    <!-- Flowbite JS (for Modal & interactive UI) -->
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
 </body>
 
 </html>

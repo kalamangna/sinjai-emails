@@ -318,6 +318,94 @@ class EmailController extends BaseController
         }
     }
 
+    /**
+     * Proses TTE Dokumen PK oleh Pihak Kesatu (Bupati Sinjai)
+     */
+    public function signPkBupati($username)
+    {
+        try {
+            $passphrase = $this->request->getPost('passphrase');
+            $nik = trim($this->request->getPost('nik') ?? '');
+
+            if (empty($passphrase)) {
+                return redirect()->back()->with('error', 'Passphrase BSrE Bupati wajib diisi.');
+            }
+
+            if (empty($nik)) {
+                $nik = env('BSRE_BUPATI_NIK', '');
+            }
+
+            if (empty($nik)) {
+                return redirect()->back()->with('error', 'NIK Bupati wajib diisi.');
+            }
+
+            $email = $this->emailModel->withDetails()->where('emails.user', $username)->first();
+            if (!$email) {
+                return redirect()->back()->with('error', 'Data pegawai tidak ditemukan.');
+            }
+
+            $pk = $this->pkModel->where('email', $email['email'])->first();
+            if (!$pk) {
+                return redirect()->back()->with('error', 'Data Perjanjian Kerja tidak ditemukan.');
+            }
+
+            if ($pk['tte_status'] === 'completed' && !empty($pk['tte_bupati_file'])) {
+                return redirect()->back()->with('error', 'Dokumen PK ini sudah ditandatangani oleh Bupati Sinjai sebelumnya.');
+            }
+
+            if (empty($pk['tte_pegawai_file'])) {
+                return redirect()->back()->with('error', 'PPPK yang bersangkutan belum menandatangani dokumen ini.');
+            }
+
+            $sourcePdfPath = WRITEPATH . 'uploads/signed_pk/' . $pk['tte_pegawai_file'];
+            if (!file_exists($sourcePdfPath)) {
+                return redirect()->back()->with('error', 'Berkas PDF yang ditandatangani PPPK tidak ditemukan di server.');
+            }
+
+            // Panggil API BSrE untuk TTE Bupati pada tag ${ttd_pengirim2}
+            $bsreApi = new \App\Shared\Libraries\BsreApi();
+            $verifyUrl = site_url('verifikasi/' . $email['user']);
+
+            $signResult = $bsreApi->signPdf($sourcePdfPath, $nik, $passphrase, [
+                'tag_koordinat' => '${ttd_pengirim2}',
+                'linkQR'        => $verifyUrl,
+                'width'         => 110,
+                'height'        => 110,
+            ]);
+
+            if (!$signResult['success']) {
+                $errorMsg = $signResult['message'] ?? 'Tanda tangan elektronik Bupati gagal diproses.';
+                helper('audit');
+                log_audit('TTE_BUPATI_FAILED', 'Pk', $pk['id'], 'TTE Bupati Gagal: ' . $errorMsg . ' (' . ($email['nip'] ?? $email['user']) . ')');
+                return redirect()->back()->with('error', 'Gagal TTE Bupati: ' . $errorMsg);
+            }
+
+            // Simpan signed final PDF
+            $signedDir = WRITEPATH . 'uploads/signed_pk/';
+            if (!is_dir($signedDir)) {
+                mkdir($signedDir, 0775, true);
+            }
+
+            $finalFilename = 'signed_final_' . ($email['nip'] ?: $email['user']) . '_' . date('Ymd_His') . '.pdf';
+            file_put_contents($signedDir . $finalFilename, $signResult['pdf_content']);
+
+            // Update database pk
+            $this->pkModel->update($pk['id'], [
+                'tte_status'      => 'completed',
+                'tte_bupati_at'   => date('Y-m-d H:i:s'),
+                'tte_bupati_file' => $finalFilename,
+                'tte_bupati_ip'   => $this->request->getIPAddress(),
+            ]);
+
+            helper('audit');
+            log_audit('TTE_BUPATI_SUCCESS', 'Pk', $pk['id'], 'TTE Bupati Sukses untuk PPPK: ' . $email['name'] . ' (' . ($email['nip'] ?? $email['user']) . ')');
+
+            return redirect()->to('email/detail/' . $username)->with('success', 'Dokumen Perjanjian Kerja berhasil ditandatangani oleh Bupati Sinjai (Status Lengkap)!');
+        } catch (\Throwable $e) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
     public function profile($hash)
     {
         try {

@@ -71,11 +71,11 @@
             <table class="w-full text-left text-sm">
                 <thead class="bg-slate-50 text-slate-400 uppercase text-[10px] font-bold tracking-widest">
                     <tr>
-                        <th class="px-6 py-3 border-b border-slate-200">No.</th>
-                        <th class="px-6 py-3 border-b border-slate-200">Nama / NIP</th>
-                        <th class="px-6 py-3 border-b border-slate-200">Jabatan / Unit Kerja</th>
-                        <th class="px-6 py-3 border-b border-slate-200">Status TTE</th>
-                        <th class="px-6 py-3 border-b border-slate-200 text-center">Aksi</th>
+                        <th class="px-6 py-3 border-b border-slate-200 w-16 whitespace-nowrap">No.</th>
+                        <th class="px-6 py-3 border-b border-slate-200 min-w-[200px]">Nama / NIP</th>
+                        <th class="px-6 py-3 border-b border-slate-200 min-w-[240px]">Jabatan / Unit Kerja</th>
+                        <th class="px-6 py-3 border-b border-slate-200 w-36 whitespace-nowrap">Status TTE</th>
+                        <th class="px-6 py-3 border-b border-slate-200 w-24 text-center whitespace-nowrap">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">

@@ -76,6 +76,7 @@
         html[data-sidebar-menu="organisasi"] #submenu-organisasi,
         html[data-sidebar-menu="website"] #submenu-website,
         html[data-sidebar-menu="batch"] #submenu-batch,
+        html[data-sidebar-menu="tte_pk"] #submenu-tte_pk,
         html[data-sidebar-menu="master"] #submenu-master {
             display: block;
         }
@@ -108,6 +109,14 @@
         }
 
         /* Choices.js Slate Theme Overrides */
+        .choices {
+            margin-bottom: 0 !important;
+        }
+
+        .choices.is-open {
+            z-index: 50 !important;
+        }
+
         .choices__inner {
             @apply bg-white border-slate-200 rounded-lg text-sm font-medium text-slate-700 !important;
             min-height: 38px !important;
@@ -116,6 +125,12 @@
 
         .choices__list--dropdown {
             @apply bg-white border-slate-200 rounded-lg shadow-xl !important;
+            z-index: 50 !important;
+        }
+
+        .choices__list--dropdown .choices__item {
+            white-space: normal !important;
+            word-break: normal !important;
         }
 
         .choices__list--dropdown .choices__item--selectable.is-highlighted {
@@ -461,7 +476,8 @@
             const html = document.documentElement;
             const allLinks = sidebar.querySelectorAll('a');
             const submenus = sidebar.querySelectorAll('.sidebar-submenu');
-            const currentUrl = window.location.href.split('#')[0]; // Strict match including query params
+            const currentUrl = window.location.href.split('#')[0]; // Full URL with query params
+            const currentPathUrl = (window.location.origin + window.location.pathname).replace(/\/$/, '');
 
             // --- 1. ACTIVE STATE & AUTO-EXPAND ---
             let activeGroupId = null;
@@ -469,9 +485,13 @@
 
             allLinks.forEach(link => {
                 const linkUrl = link.href.split('#')[0];
+                const linkPathUrl = (link.origin + link.pathname).replace(/\/$/, '');
                 
-                // Strict match
-                if (linkUrl === currentUrl) {
+                // Match exact URL or base path
+                const isMatch = (linkUrl === currentUrl) || 
+                                (linkPathUrl === currentPathUrl && linkPathUrl !== window.location.origin);
+
+                if (isMatch) {
                     link.setAttribute('aria-current', 'page');
                     foundActive = true;
                     
