@@ -25,6 +25,8 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Menyesuaikan label tab "Belum TTE" agar dinamis sesuai konteks halaman: **Belum TTE PPPK** di `/tte-pk/pppk`, **Belum TTE PPPK PW** di `/tte-pk/pppk-pw`, dan **Belum TTE** di halaman umum.
   - Memperbaiki `base_route` pada halaman umum TTE PK dari `tte-bupati` ke `tte-pk` agar URL navigasi tab konsisten.
   - Mempersingkat seksi **Berkas TTE** pada halaman detail pegawai ([`detail.php`](app/Views/email/detail.php)): label diubah dari "Status & Berkas TTE" menjadi "Berkas TTE", teks tombol dipersingkat ("Unduh Lengkap", "Unduh TTE PPPK"), prefix "Bupati:" dihapus dari tampilan tanggal, dan fallback text dipersingkat menjadi "Belum ada berkas."
+  - Menyederhanakan card **Perjanjian Kerja (PK)** di halaman detail: masa kontrak ditampilkan satu baris inline (tanpa dua box terpisah), teks gaji terbilang dihapus, label field diperhalus, padding empty state dikurangi.
+  - Menghapus tombol duplikat **"Export PK"** dari header halaman detail — akses unduh dipusatkan di dalam card PK dengan tiga varian: "Unduh Lengkap" (completed), "Unduh TTE PPPK" (signed_pppk), dan "Draft PK" (unsigned/draft).
 - **Skema Basis Data & Konfigurasi**:
   - Menambahkan migrasi [`2026-09-25-142500_AddTteBupatiColumnsToPkTable.php`](app/Database/Migrations/2026-09-25-142500_AddTteBupatiColumnsToPkTable.php) untuk menambahkan kolom `tte_bupati_at`, `tte_bupati_file`, dan `tte_bupati_ip` pada tabel `pk`.
   - Memperbarui [`PkModel.php`](app/Domains/Email/Models/PkModel.php) dengan penambahan `allowedFields` baru dan helper method `withPegawaiDetails()` yang memuat relasi data pegawai, unit kerja hierarki, dan status ASN.

@@ -21,12 +21,7 @@
             </div>
         </div>
         <div class="grid grid-cols-2 gap-2 w-full sm:flex sm:w-auto">
-            <?php if ($showPk = in_array($email['status_asn_id'] ?? 0, [2, 3])): ?>
-                <a href="<?= site_url('email/export_single_perjanjian_kerja_pdf/' . $email['user']) ?>" target="_blank" class="btn btn-outline no-underline justify-center flex-1 sm:flex-none">
-                    <i class="fas fa-file-contract mr-2 text-slate-700"></i> Export PK
-                </a>
-            <?php endif; ?>
-            <a href="https://<?= config('Cpanel')->cpanel_host ?>:2096" target="_blank" class="btn btn-solid no-underline justify-center <?= !$showPk ? 'col-span-2' : 'flex-1 sm:flex-none' ?>">
+            <a href="https://<?= config('Cpanel')->cpanel_host ?>:2096" target="_blank" class="btn btn-solid no-underline justify-center col-span-2 sm:flex-none">
                 <i class="fas fa-external-link-alt mr-2 text-white/80"></i> Webmail
             </a>
         </div>
@@ -309,41 +304,34 @@
                         </div>
                     </div>
                     <?php if (!empty($pk_data)): ?>
-                        <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="space-y-4">
                                 <div>
-                                    <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">Nomor PK</label>
+                                    <label class="block text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1">Nomor PK</label>
                                     <p class="text-sm font-semibold text-slate-800 font-mono"><?= esc($pk_data['nomor']) ?></p>
                                 </div>
                                 <div>
-                                    <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">Masa Kontrak</label>
-                                    <div class="flex items-center gap-3 mt-1">
-                                        <div class="flex-1 p-2 bg-slate-50 border border-slate-200 rounded text-center">
-                                            <span class="block text-[8px] font-bold text-slate-700 uppercase">Mulai</span>
-                                            <span class="text-[10px] font-bold text-slate-800"><?= formatSingkat($pk_data['tanggal_kontrak_awal']) ?></span>
-                                        </div>
-                                        <i class="fas fa-arrow-right text-slate-700 text-[10px]"></i>
-                                        <div class="flex-1 p-2 bg-slate-50 border border-slate-200 rounded text-center">
-                                            <span class="block text-[8px] font-bold text-slate-700 uppercase">Selesai</span>
-                                            <span class="text-[10px] font-bold text-slate-800"><?= formatSingkat($pk_data['tanggal_kontrak_akhir']) ?></span>
-                                        </div>
-                                    </div>
+                                    <label class="block text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1">Masa Kontrak</label>
+                                    <p class="text-sm font-medium text-slate-800">
+                                        <?= formatSingkat($pk_data['tanggal_kontrak_awal']) ?>
+                                        <span class="text-slate-400 mx-1">→</span>
+                                        <?= formatSingkat($pk_data['tanggal_kontrak_akhir']) ?>
+                                    </p>
                                 </div>
                             </div>
                             <div class="space-y-4">
                                 <div>
-                                    <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">Gaji</label>
+                                    <label class="block text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1">Gaji</label>
                                     <p class="text-sm font-bold text-slate-800">Rp <?= number_format($pk_data['gaji_nominal'], 0, ',', '.') ?></p>
-                                    <p class="text-[10px] font-medium text-slate-700 italic mt-0.5 leading-tight">"<?= esc($pk_data['gaji_terbilang']) ?> Rupiah"</p>
                                 </div>
                                 <div>
-                                    <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">Berkas TTE</label>
-                                    <div class="mt-1 flex flex-wrap items-center gap-2">
+                                    <label class="block text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1">Berkas TTE</label>
+                                    <div class="flex flex-wrap items-center gap-2">
                                         <?php if (($pk_data['tte_status'] ?? '') === 'completed'): ?>
                                             <a href="<?= site_url('email/export_single_perjanjian_kerja_pdf/' . $email['user']) ?>" target="_blank" class="btn btn-outline btn-xs no-underline text-emerald-700 border-emerald-200 hover:bg-emerald-50">
                                                 <i class="fas fa-file-pdf mr-1 text-emerald-600"></i> Unduh Lengkap
                                             </a>
-                                            <span class="text-[10px] text-slate-500 font-medium"><?= !empty($pk_data['tte_bupati_at']) ? date('d/m/Y H:i', strtotime($pk_data['tte_bupati_at'])) : '-' ?></span>
+                                            <span class="text-[10px] text-slate-400"><?= !empty($pk_data['tte_bupati_at']) ? date('d/m/Y H:i', strtotime($pk_data['tte_bupati_at'])) : '-' ?></span>
                                         <?php elseif (($pk_data['tte_status'] ?? '') === 'signed_pppk'): ?>
                                             <a href="<?= site_url('email/export_single_perjanjian_kerja_pdf/' . $email['user']) ?>" target="_blank" class="btn btn-outline btn-xs no-underline text-blue-700 border-blue-200 hover:bg-blue-50">
                                                 <i class="fas fa-file-pdf mr-1 text-blue-600"></i> Unduh TTE PPPK
@@ -354,15 +342,17 @@
                                                 </button>
                                             <?php endif; ?>
                                         <?php else: ?>
-                                            <span class="text-[10px] text-slate-400 italic">Belum ada berkas.</span>
+                                            <a href="<?= site_url('email/export_single_perjanjian_kerja_pdf/' . $email['user'] . '?draft=1') ?>" target="_blank" class="btn btn-outline btn-xs no-underline text-slate-600 border-slate-200 hover:bg-slate-50">
+                                                <i class="fas fa-file-pdf mr-1 text-slate-400"></i> Draft PK
+                                            </a>
                                         <?php endif; ?>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     <?php else: ?>
-                        <div class="p-12 text-center">
-                            <p class="text-slate-700 italic text-sm">Data Perjanjian Kerja belum tersedia.</p>
+                        <div class="p-6 text-center">
+                            <p class="text-slate-400 italic text-sm">Belum ada data PK.</p>
                         </div>
                     <?php endif; ?>
 
