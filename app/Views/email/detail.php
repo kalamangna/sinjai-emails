@@ -337,16 +337,16 @@
                                     <p class="text-[10px] font-medium text-slate-700 italic mt-0.5 leading-tight">"<?= esc($pk_data['gaji_terbilang']) ?> Rupiah"</p>
                                 </div>
                                 <div>
-                                    <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">Status & Berkas TTE</label>
+                                    <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">Berkas TTE</label>
                                     <div class="mt-1 flex flex-wrap items-center gap-2">
                                         <?php if (($pk_data['tte_status'] ?? '') === 'completed'): ?>
                                             <a href="<?= site_url('email/export_single_perjanjian_kerja_pdf/' . $email['user']) ?>" target="_blank" class="btn btn-outline btn-xs no-underline text-emerald-700 border-emerald-200 hover:bg-emerald-50">
-                                                <i class="fas fa-file-pdf mr-1 text-emerald-600"></i> Berkas Lengkap TTE
+                                                <i class="fas fa-file-pdf mr-1 text-emerald-600"></i> Unduh Lengkap
                                             </a>
-                                            <span class="text-[10px] text-slate-500 font-medium">Bupati: <?= !empty($pk_data['tte_bupati_at']) ? date('d/m/Y H:i', strtotime($pk_data['tte_bupati_at'])) : '-' ?></span>
+                                            <span class="text-[10px] text-slate-500 font-medium"><?= !empty($pk_data['tte_bupati_at']) ? date('d/m/Y H:i', strtotime($pk_data['tte_bupati_at'])) : '-' ?></span>
                                         <?php elseif (($pk_data['tte_status'] ?? '') === 'signed_pppk'): ?>
                                             <a href="<?= site_url('email/export_single_perjanjian_kerja_pdf/' . $email['user']) ?>" target="_blank" class="btn btn-outline btn-xs no-underline text-blue-700 border-blue-200 hover:bg-blue-50">
-                                                <i class="fas fa-file-pdf mr-1 text-blue-600"></i> Berkas TTE PPPK
+                                                <i class="fas fa-file-pdf mr-1 text-blue-600"></i> Unduh TTE PPPK
                                             </a>
                                             <?php if (session()->get('role') === 'super_admin'): ?>
                                                 <button type="button" onclick="openModal('modal-tte-bupati')" class="btn btn-solid btn-xs bg-slate-900 hover:bg-slate-800 text-white">
@@ -354,7 +354,7 @@
                                                 </button>
                                             <?php endif; ?>
                                         <?php else: ?>
-                                            <span class="text-[11px] text-slate-500 italic">Menunggu TTE mandiri oleh PPPK di Portal PK.</span>
+                                            <span class="text-[10px] text-slate-400 italic">Belum ada berkas.</span>
                                         <?php endif; ?>
                                     </div>
                                 </div>

@@ -62,7 +62,14 @@
     </div>
 
     <!-- Tabs Navigasi (Menunggu TTE Bupati / Belum TTE PPPK / Selesai) -->
-    <?php $route = $base_route ?? 'tte-bupati'; ?>
+    <?php
+        $route = $base_route ?? 'tte-pk';
+        $labelBelumTte = match((int)($status_asn_id ?? 0)) {
+            2 => 'Belum TTE PPPK',
+            3 => 'Belum TTE PPPK PW',
+            default => 'Belum TTE',
+        };
+    ?>
     <div class="flex border-b border-slate-200 text-sm font-medium">
         <a href="<?= site_url($route . '?tab=pending' . (!empty($search) ? '&search=' . urlencode($search) : '') . (!empty($unit_kerja_id) ? '&unit_kerja_id=' . $unit_kerja_id : '')) ?>" 
            class="py-3 px-6 border-b-2 font-bold text-xs uppercase tracking-wider transition-all <?= ($tab === 'pending') ? 'border-slate-800 text-slate-900 bg-slate-50/50' : 'border-transparent text-slate-400 hover:text-slate-600' ?>">
@@ -70,7 +77,7 @@
         </a>
         <a href="<?= site_url($route . '?tab=unsigned' . (!empty($search) ? '&search=' . urlencode($search) : '') . (!empty($unit_kerja_id) ? '&unit_kerja_id=' . $unit_kerja_id : '')) ?>" 
            class="py-3 px-6 border-b-2 font-bold text-xs uppercase tracking-wider transition-all <?= ($tab === 'unsigned') ? 'border-slate-800 text-slate-900 bg-slate-50/50' : 'border-transparent text-slate-400 hover:text-slate-600' ?>">
-            <i class="fas fa-hourglass-start mr-1.5 text-amber-500"></i> Belum TTE PPPK (<?= number_format($belum_tte_count ?? 0, 0, ',', '.') ?>)
+            <i class="fas fa-hourglass-start mr-1.5 text-amber-500"></i> <?= $labelBelumTte ?> (<?= number_format($belum_tte_count ?? 0, 0, ',', '.') ?>)
         </a>
         <a href="<?= site_url($route . '?tab=completed' . (!empty($search) ? '&search=' . urlencode($search) : '') . (!empty($unit_kerja_id) ? '&unit_kerja_id=' . $unit_kerja_id : '')) ?>" 
            class="py-3 px-6 border-b-2 font-bold text-xs uppercase tracking-wider transition-all <?= ($tab === 'completed') ? 'border-slate-800 text-slate-900 bg-slate-50/50' : 'border-transparent text-slate-400 hover:text-slate-600' ?>">

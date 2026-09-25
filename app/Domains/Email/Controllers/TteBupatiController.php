@@ -42,7 +42,7 @@ class TteBupatiController extends BaseController
      */
     public function index()
     {
-        return $this->renderTtePk(null, 'TTE PK', 'tte-bupati');
+        return $this->renderTtePk(null, 'TTE PK', 'tte-pk');
     }
 
     /**
