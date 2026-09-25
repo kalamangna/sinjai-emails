@@ -11,16 +11,30 @@
     }
     .choices__inner {
         min-height: 38px !important;
-        padding: 4px 8px !important;
+        max-height: 38px !important;
+        height: 38px !important;
+        padding: 0 8px !important;
         border-radius: 0.5rem !important;
         display: flex;
         align-items: center;
+        overflow: hidden !important;
     }
     .choices__list--single {
         padding: 0 !important;
         font-size: 0.875rem !important;
         font-weight: 500 !important;
         color: #1e293b !important;
+        width: 100% !important;
+        overflow: hidden !important;
+        white-space: nowrap !important;
+    }
+    .choices__list--single .choices__item {
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        display: block !important;
+        width: calc(100% - 20px) !important;
+        line-height: 36px !important;
     }
     .choices__list--dropdown {
         z-index: 50 !important;
@@ -40,34 +54,27 @@
 <?= $this->section('content') ?>
 <div class="space-y-6">
     <!-- Header Halaman -->
-    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-        <div>
-            <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight"><?= $title; ?></h1>
-            <p class="text-[10px] font-bold text-slate-700 uppercase tracking-widest mt-1">
-                Total: <span class="text-slate-800"><?= number_format($total_count, 0, ',', '.'); ?></span> Dokumen
-            </p>
-        </div>
-
-        <div class="flex items-center gap-2">
-            <span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold uppercase bg-blue-50 text-blue-700 border border-blue-200">
-                <i class="fas fa-clock mr-1.5"></i> <?= number_format($pending_count, 0, ',', '.') ?> Menunggu TTE
-            </span>
-            <span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold uppercase bg-emerald-50 text-emerald-700 border border-emerald-200">
-                <i class="fas fa-check-double mr-1.5"></i> <?= number_format($completed_total_count, 0, ',', '.') ?> Lengkap
-            </span>
-        </div>
+    <div>
+        <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight"><?= $title; ?></h1>
+        <p class="text-[10px] font-bold text-slate-700 uppercase tracking-widest mt-1">
+            Total: <span class="text-slate-800"><?= number_format($total_pk_count ?? $total_count, 0, ',', '.'); ?></span> Dokumen PK
+        </p>
     </div>
 
-    <!-- Tabs Navigasi (Pending / Selesai) -->
+    <!-- Tabs Navigasi (Menunggu TTE Bupati / Belum TTE PPPK / Selesai) -->
     <?php $route = $base_route ?? 'tte-bupati'; ?>
     <div class="flex border-b border-slate-200 text-sm font-medium">
         <a href="<?= site_url($route . '?tab=pending' . (!empty($search) ? '&search=' . urlencode($search) : '') . (!empty($unit_kerja_id) ? '&unit_kerja_id=' . $unit_kerja_id : '')) ?>" 
-           class="py-3 px-6 border-b-2 font-bold text-xs uppercase tracking-wider transition-all <?= ($tab !== 'completed') ? 'border-slate-800 text-slate-900 bg-slate-50/50' : 'border-transparent text-slate-400 hover:text-slate-600' ?>">
-            <i class="fas fa-clock mr-1.5"></i> Menunggu TTE (<?= number_format($pending_count, 0, ',', '.') ?>)
+           class="py-3 px-6 border-b-2 font-bold text-xs uppercase tracking-wider transition-all <?= ($tab === 'pending') ? 'border-slate-800 text-slate-900 bg-slate-50/50' : 'border-transparent text-slate-400 hover:text-slate-600' ?>">
+            <i class="fas fa-file-signature mr-1.5 text-blue-600"></i> Menunggu TTE Bupati (<?= number_format($pending_count, 0, ',', '.') ?>)
+        </a>
+        <a href="<?= site_url($route . '?tab=unsigned' . (!empty($search) ? '&search=' . urlencode($search) : '') . (!empty($unit_kerja_id) ? '&unit_kerja_id=' . $unit_kerja_id : '')) ?>" 
+           class="py-3 px-6 border-b-2 font-bold text-xs uppercase tracking-wider transition-all <?= ($tab === 'unsigned') ? 'border-slate-800 text-slate-900 bg-slate-50/50' : 'border-transparent text-slate-400 hover:text-slate-600' ?>">
+            <i class="fas fa-hourglass-start mr-1.5 text-amber-500"></i> Belum TTE PPPK (<?= number_format($belum_tte_count ?? 0, 0, ',', '.') ?>)
         </a>
         <a href="<?= site_url($route . '?tab=completed' . (!empty($search) ? '&search=' . urlencode($search) : '') . (!empty($unit_kerja_id) ? '&unit_kerja_id=' . $unit_kerja_id : '')) ?>" 
            class="py-3 px-6 border-b-2 font-bold text-xs uppercase tracking-wider transition-all <?= ($tab === 'completed') ? 'border-slate-800 text-slate-900 bg-slate-50/50' : 'border-transparent text-slate-400 hover:text-slate-600' ?>">
-            <i class="fas fa-check-double mr-1.5"></i> Lengkap (<?= number_format($completed_total_count, 0, ',', '.') ?>)
+            <i class="fas fa-check-double mr-1.5 text-emerald-600"></i> Selesai (<?= number_format($completed_total_count, 0, ',', '.') ?>)
         </a>
     </div>
 
@@ -108,7 +115,7 @@
             </form>
         </div>
 
-        <?php if ($tab !== 'completed'): ?>
+        <?php if ($tab === 'pending'): ?>
             <!-- Batch Action Bar -->
             <div class="px-6 py-3 bg-slate-100/70 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
                 <div class="flex items-center gap-3">
@@ -132,7 +139,7 @@
             <table class="w-full text-left text-sm">
                 <thead class="bg-slate-50 text-slate-400 uppercase text-[10px] font-bold tracking-widest">
                     <tr>
-                        <?php if ($tab !== 'completed'): ?>
+                        <?php if ($tab === 'pending'): ?>
                             <th class="px-4 py-3 border-b border-slate-200 w-10 text-center">#</th>
                         <?php endif; ?>
                         <th class="px-6 py-3 border-b border-slate-200 w-44 whitespace-nowrap">No. PK</th>
@@ -146,7 +153,7 @@
                     <?php if (!empty($items)): ?>
                         <?php foreach ($items as $item): ?>
                             <tr class="hover:bg-slate-50 transition-colors">
-                                <?php if ($tab !== 'completed'): ?>
+                                <?php if ($tab === 'pending'): ?>
                                     <td class="px-4 py-4 text-center">
                                         <input type="checkbox" name="selected_pk[]" value="<?= $item['id'] ?>" class="pk-checkbox rounded border-slate-300 text-slate-800 focus:ring-slate-700 w-4 h-4">
                                     </td>
@@ -180,39 +187,41 @@
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <?php if ($item['tte_status'] === 'completed'): ?>
                                         <span class="px-1.5 py-0.5 rounded text-[8px] font-bold uppercase bg-emerald-50 text-emerald-700 border border-emerald-200 block w-max">
-                                            Lengkap
+                                            Selesai
                                         </span>
-                                    <?php else: ?>
+                                    <?php elseif ($item['tte_status'] === 'signed_pppk'): ?>
                                         <span class="px-1.5 py-0.5 rounded text-[8px] font-bold uppercase bg-blue-50 text-blue-700 border border-blue-200 block w-max">
                                             Menunggu TTE Bupati
+                                        </span>
+                                    <?php else: ?>
+                                        <span class="px-1.5 py-0.5 rounded text-[8px] font-bold uppercase bg-amber-50 text-amber-700 border border-amber-200 block w-max">
+                                            Belum TTE PPPK
                                         </span>
                                     <?php endif; ?>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center">
                                     <div class="flex justify-center items-center gap-2">
-                                        <a href="<?= site_url('email/export_single_perjanjian_kerja_pdf/' . $item['user']) ?>" target="_blank" class="btn btn-table" title="Pratinjau PDF">
+                                        <a href="<?= site_url('email/export_single_perjanjian_kerja_pdf/' . $item['user'] . ($item['tte_status'] !== 'completed' && $item['tte_status'] !== 'signed_pppk' ? '?draft=1' : '')) ?>" target="_blank" class="btn btn-table" title="Pratinjau PDF">
                                             <i class="fas fa-file-pdf text-xs text-rose-600"></i>
                                         </a>
 
-                                        <?php if ($tab !== 'completed'): ?>
+                                        <?php if ($tab === 'pending'): ?>
                                             <button type="button" onclick="openSingleSignModal(<?= $item['id'] ?>, '<?= esc($item['name'], 'js') ?>', '<?= esc($item['nomor'] ?: '-', 'js') ?>')" class="btn btn-table" title="TTE Dokumen">
                                                 <i class="fas fa-signature text-xs text-slate-700"></i>
                                             </button>
-                                        <?php else: ?>
-                                            <a href="<?= site_url('email/detail/' . $item['user']) ?>" class="btn btn-table" title="Detail Akun">
-                                                <i class="fas fa-eye text-xs text-slate-700"></i>
-                                            </a>
                                         <?php endif; ?>
+
+                                        <a href="<?= site_url('email/detail/' . $item['user']) ?>" class="btn btn-table" title="Detail Pegawai">
+                                            <i class="fas fa-eye text-xs text-slate-700"></i>
+                                        </a>
                                     </div>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="<?= ($tab !== 'completed') ? '6' : '5' ?>" class="px-6 py-20 text-center">
-                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest italic">
-                                    <?= ($tab === 'completed') ? 'Belum ada dokumen yang selesai ditandatangani' : 'Tidak ada dokumen dalam antrean TTE Bupati' ?>
-                                </span>
+                            <td colspan="<?= ($tab === 'pending') ? 6 : 5 ?>" class="px-6 py-12 text-center">
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest italic">Tidak ada dokumen</span>
                             </td>
                         </tr>
                     <?php endif; ?>

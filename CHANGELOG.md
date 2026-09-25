@@ -17,6 +17,11 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **TTE Bupati di Halaman Detail Pegawai & Alur Ekspor Berkas**:
   - Menambahkan aksi modal TTE Bupati langsung pada seksi Perjanjian Kerja di [`detail.php`](app/Views/email/detail.php) untuk akun PPPK yang telah bertandatangan mandiri (`signed_pppk`).
   - Memperbarui [`EmailExportController.php`](app/Domains/Email/Controllers/EmailExportController.php) dan [`PortalPkController.php`](app/Domains/Email/Controllers/PortalPkController.php) agar otomatis memprioritaskan penyajian dan unduhan berkas PDF final lengkap bertandatangan Bupati (`signed_final_...`).
+- **Perbaikan Bug & Peningkatan UI Antrean TTE Bupati**:
+  - Memperbaiki bug kritis pada [`TteBupatiController.php`](app/Domains/Email/Controllers/TteBupatiController.php) di mana filter `unit_kerja_id`, `search`, dan `status_asn_id` tidak diterapkan ke query builder utama akibat refactoring sebelumnya, menyebabkan filter Unit Kerja dan pencarian tidak berfungsi.
+  - Menyederhanakan navigasi tab menjadi 3 tab: **Menunggu TTE Bupati**, **Belum TTE PPPK**, dan **Selesai**, dengan label dan counter yang lebih jelas dan tidak duplikat.
+  - Memperbarui *empty state* menjadi singkat ("Tidak ada dokumen") untuk mengurangi kepadatan tampilan.
+  - Memperbaiki tampilan dropdown Choices.js agar item yang dipilih ditampilkan dalam satu baris dengan elipsis, mencegah teks melebar ke bawah.
 - **Skema Basis Data & Konfigurasi**:
   - Menambahkan migrasi [`2026-09-25-142500_AddTteBupatiColumnsToPkTable.php`](app/Database/Migrations/2026-09-25-142500_AddTteBupatiColumnsToPkTable.php) untuk menambahkan kolom `tte_bupati_at`, `tte_bupati_file`, dan `tte_bupati_ip` pada tabel `pk`.
   - Memperbarui [`PkModel.php`](app/Domains/Email/Models/PkModel.php) dengan penambahan `allowedFields` baru dan helper method `withPegawaiDetails()` yang memuat relasi data pegawai, unit kerja hierarki, dan status ASN.

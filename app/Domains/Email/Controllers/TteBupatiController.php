@@ -52,7 +52,7 @@ class TteBupatiController extends BaseController
     {
         $search = trim($this->request->getGet('search') ?? '');
         $unitKerjaId = $this->request->getGet('unit_kerja_id');
-        $tab = $this->request->getGet('tab') ?? 'pending'; // 'pending' atau 'completed'
+        $tab = $this->request->getGet('tab') ?? 'pending'; // 'pending', 'unsigned', atau 'completed'
 
         $builder = $this->pkModel->withPegawaiDetails();
 
@@ -60,11 +60,22 @@ class TteBupatiController extends BaseController
             $builder->where('pk.tte_status', 'completed')
                     ->where('pk.tte_bupati_file IS NOT NULL')
                     ->where('pk.tte_bupati_file !=', '');
+            $builder->orderBy('pk.tte_bupati_at', 'DESC');
+        } elseif ($tab === 'unsigned') {
+            $builder->groupStart()
+                        ->where('pk.tte_status', 'unsigned')
+                        ->orWhere('pk.tte_status', 'draft')
+                        ->orWhere('pk.tte_status IS NULL')
+                        ->orWhere('pk.tte_status', '')
+                    ->groupEnd();
+            $builder->orderBy('CAST(pk.nomor AS UNSIGNED)', 'ASC');
         } else {
-            // Default pending: signed_pppk
+            // Default pending: signed_pppk (Siap TTE Bupati)
+            $tab = 'pending';
             $builder->where('pk.tte_status', 'signed_pppk')
                     ->where('pk.tte_pegawai_file IS NOT NULL')
                     ->where('pk.tte_pegawai_file !=', '');
+            $builder->orderBy('pk.tte_pegawai_at', 'ASC');
         }
 
         if ($statusAsnId !== null) {
@@ -80,6 +91,7 @@ class TteBupatiController extends BaseController
             ->groupEnd();
         }
 
+        $targetUnitIds = null;
         if (!empty($unitKerjaId)) {
             // Ambil ID unit induk dan semua unit anak di bawahnya
             $childIds = $this->unitKerjaModel->where('parent_id', $unitKerjaId)->findColumn('id') ?: [];
@@ -87,17 +99,35 @@ class TteBupatiController extends BaseController
             $builder->whereIn('emails.unit_kerja_id', $targetUnitIds);
         }
 
-        if ($tab === 'completed') {
-            $builder->orderBy('pk.tte_bupati_at', 'DESC');
-        } else {
-            $builder->orderBy('pk.tte_pegawai_at', 'ASC');
-        }
-
         $perPage = 20;
         $items = $builder->paginate($perPage, 'default');
         $pager = $this->pkModel->pager;
 
-        // Hitung statistik (spesifik per status ASN jika ditentukan)
+        // Hitung statistik keseluruhan PK (spesifik per status ASN dan Unit Kerja jika dipilih)
+        $totalPkQuery = $this->pkModel->withPegawaiDetails();
+        if ($statusAsnId !== null) {
+            $totalPkQuery->where('emails.status_asn_id', $statusAsnId);
+        }
+        if (!empty($targetUnitIds)) {
+            $totalPkQuery->whereIn('emails.unit_kerja_id', $targetUnitIds);
+        }
+        $totalPkCount = $totalPkQuery->countAllResults();
+
+        $belumTteQuery = $this->pkModel->withPegawaiDetails()
+            ->groupStart()
+                ->where('pk.tte_status', 'unsigned')
+                ->orWhere('pk.tte_status', 'draft')
+                ->orWhere('pk.tte_status IS NULL')
+                ->orWhere('pk.tte_status', '')
+            ->groupEnd();
+        if ($statusAsnId !== null) {
+            $belumTteQuery->where('emails.status_asn_id', $statusAsnId);
+        }
+        if (!empty($targetUnitIds)) {
+            $belumTteQuery->whereIn('emails.unit_kerja_id', $targetUnitIds);
+        }
+        $belumTteCount = $belumTteQuery->countAllResults();
+
         $pendingQuery = $this->pkModel->withPegawaiDetails()
             ->where('pk.tte_status', 'signed_pppk')
             ->where('pk.tte_pegawai_file IS NOT NULL')
@@ -105,15 +135,10 @@ class TteBupatiController extends BaseController
         if ($statusAsnId !== null) {
             $pendingQuery->where('emails.status_asn_id', $statusAsnId);
         }
-        $pendingCount = $pendingQuery->countAllResults();
-
-        $completedTodayQuery = $this->pkModel->withPegawaiDetails()
-            ->where('pk.tte_status', 'completed')
-            ->where('pk.tte_bupati_at >=', date('Y-m-d 00:00:00'));
-        if ($statusAsnId !== null) {
-            $completedTodayQuery->where('emails.status_asn_id', $statusAsnId);
+        if (!empty($targetUnitIds)) {
+            $pendingQuery->whereIn('emails.unit_kerja_id', $targetUnitIds);
         }
-        $completedTodayCount = $completedTodayQuery->countAllResults();
+        $pendingCount = $pendingQuery->countAllResults();
 
         $completedTotalQuery = $this->pkModel->withPegawaiDetails()
             ->where('pk.tte_status', 'completed')
@@ -121,6 +146,9 @@ class TteBupatiController extends BaseController
             ->where('pk.tte_bupati_file !=', '');
         if ($statusAsnId !== null) {
             $completedTotalQuery->where('emails.status_asn_id', $statusAsnId);
+        }
+        if (!empty($targetUnitIds)) {
+            $completedTotalQuery->whereIn('emails.unit_kerja_id', $targetUnitIds);
         }
         $completedTotalCount = $completedTotalQuery->countAllResults();
 
@@ -141,6 +169,8 @@ class TteBupatiController extends BaseController
             'items'                 => $items,
             'pager'                 => $pager,
             'total_count'           => $totalCount,
+            'total_pk_count'        => $totalPkCount,
+            'belum_tte_count'       => $belumTteCount,
             'search'                => $search,
             'unit_kerja_id'         => $unitKerjaId,
             'status_asn_id'         => $statusAsnId,
@@ -148,7 +178,6 @@ class TteBupatiController extends BaseController
             'base_route'            => $baseRoute,
             'unit_kerja_list'       => $unitKerjaList,
             'pending_count'         => $pendingCount,
-            'completed_today_count' => $completedTodayCount,
             'completed_total_count' => $completedTotalCount,
         ];
 
