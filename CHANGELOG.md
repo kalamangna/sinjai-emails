@@ -16,6 +16,8 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Memperbaiki pembentukan URL QR Code menggunakan `site_url('verifikasi/' . $email['user'])` yang dinamis sesuai domain/host aplikasi aktif.
   - Mengoptimalkan metode `profile()` pada [`EmailController.php`](app/Domains/Email/Controllers/EmailController.php) agar mendukung pencarian fleksibel melalui **Username/User**, **NIK**, maupun **NIP**, serta memvalidasi kepemilikan status Perjanjian Kerja sah.
   - Memperbarui judul kartu identitas pada halaman verifikasi ([`verify.php`](app/Views/email/verify.php)) menjadi **Verifikasi Akun**.
+- **Penyederhanaan Perilaku Alert**:
+  - Menghapus animasi transisi, sliding, dan fade-out pada toast notifikasi dan flash message ([`main.php`](app/Views/layouts/main.php), [`portal_pk_dashboard.php`](app/Views/email/portal_pk_dashboard.php), [`login.php`](app/Views/auth/login.php), [`portal_pk_login.php`](app/Views/auth/portal_pk_login.php)), sehingga proses penutupan pesan alert berjalan instan tanpa jeda gerakan visual.
 
 ---
 

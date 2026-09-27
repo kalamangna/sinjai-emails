@@ -115,30 +115,12 @@
             </div>
             <script>
                 function dismissToast(toastEl) {
-                    if (!toastEl || toastEl.dataset.dismissing === 'true') return;
-                    toastEl.dataset.dismissing = 'true';
-                    toastEl.style.maxHeight = toastEl.scrollHeight + 'px';
-                    toastEl.style.opacity = '1';
-                    toastEl.style.transition = 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)';
-                    toastEl.style.overflow = 'hidden';
-
-                    // Force reflow
-                    toastEl.offsetHeight;
-
-                    toastEl.style.maxHeight = '0px';
-                    toastEl.style.opacity = '0';
-                    toastEl.style.paddingTop = '0px';
-                    toastEl.style.paddingBottom = '0px';
-                    toastEl.style.marginTop = '0px';
-                    toastEl.style.marginBottom = '0px';
-
-                    setTimeout(() => {
-                        toastEl.remove();
-                        const container = document.getElementById('toast-container');
-                        if (container && container.querySelectorAll('[role="alert"]').length === 0) {
-                            container.remove();
-                        }
-                    }, 350);
+                    if (!toastEl) return;
+                    toastEl.remove();
+                    const container = document.getElementById('toast-container');
+                    if (container && container.querySelectorAll('[role="alert"]').length === 0) {
+                        container.remove();
+                    }
                 }
 
                 document.addEventListener('DOMContentLoaded', () => {

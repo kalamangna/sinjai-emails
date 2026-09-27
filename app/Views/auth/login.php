@@ -84,7 +84,7 @@
                 </div>
 
                 <?php if (session()->getFlashdata('error')): ?>
-                    <div class="flash-message bg-white border border-slate-200 border-l-4 border-l-red-600 px-4 py-2.5 rounded-lg flex items-center justify-between text-xs font-medium text-red-700 shadow-xs transition-opacity duration-300" role="alert">
+                    <div class="flash-message bg-white border border-slate-200 border-l-4 border-l-red-600 px-4 py-2.5 rounded-lg flex items-center justify-between text-xs font-medium text-red-700 shadow-xs" role="alert">
                         <div class="flex items-center gap-2">
                             <i class="fas fa-exclamation-circle text-red-600 shrink-0"></i>
                             <span><?= session()->getFlashdata('error') ?></span>
@@ -127,11 +127,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             const flashMessages = document.querySelectorAll('.flash-message');
             flashMessages.forEach(msg => {
-                setTimeout(() => {
-                    msg.style.opacity = '0';
-                    msg.style.transform = 'translateY(-10px)';
-                    setTimeout(() => msg.remove(), 500);
-                }, 5000);
+                setTimeout(() => msg.remove(), 5000);
             });
         });
     </script>
