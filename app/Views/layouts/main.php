@@ -355,96 +355,79 @@
 
         <!-- Content Area -->
         <main class="flex-grow p-4 sm:p-6">
-            <!-- Global Flash Messages (Flowbite Dismiss) -->
+            <!-- Global Flash Messages (Smooth Auto-Hide & Dismiss) -->
             <?php if (session()->getFlashdata('success') || session()->getFlashdata('message') || session()->getFlashdata('error') || session()->getFlashdata('info')): ?>
                 <div id="toast-container" class="mb-6 space-y-2">
                     <?php if ($msg = session()->getFlashdata('success') ?: session()->getFlashdata('message')): ?>
-                        <div id="toast-success" class="transition-opacity duration-300 bg-slate-700 text-white px-5 py-3 rounded-lg flex items-center justify-between shadow-sm" role="alert">
+                        <div id="toast-success" class="bg-slate-700 text-white px-5 py-3 rounded-lg flex items-center justify-between shadow-sm overflow-hidden" role="alert">
                             <div class="flex items-center">
                                 <i class="fas fa-check-circle mr-3 text-white"></i>
                                 <span class="font-bold text-xs uppercase tracking-wider"><?= $msg === true ? 'Berhasil' : $msg ?></span>
                             </div>
-                            <button type="button" data-dismiss-target="#toast-success" class="text-white/50 hover:text-white transition-colors focus:outline-none" aria-label="Close">
+                            <button type="button" onclick="dismissToast(this.closest('[role=\'alert\']'))" class="text-white/50 hover:text-white transition-colors focus:outline-none cursor-pointer" aria-label="Close">
                                 <i class="fas fa-times text-xs"></i>
                             </button>
                         </div>
-                        <script>
-                            setTimeout(() => {
-                                const toast = document.getElementById('toast-success');
-                                if (toast) {
-                                    toast.classList.add('opacity-0');
-                                    setTimeout(() => toast.remove(), 300);
-                                }
-                            }, 5000);
-                        </script>
                     <?php endif; ?>
 
                     <?php if ($err = session()->getFlashdata('error')): ?>
-                        <div id="toast-error" class="transition-opacity duration-300 bg-red-600 text-white px-5 py-3 rounded-lg flex items-center justify-between shadow-sm" role="alert">
+                        <div id="toast-error" class="bg-red-600 text-white px-5 py-3 rounded-lg flex items-center justify-between shadow-sm overflow-hidden" role="alert">
                             <div class="flex items-center">
                                 <i class="fas fa-exclamation-circle mr-3 text-white"></i>
                                 <span class="font-bold text-xs uppercase tracking-wider"><?= $err ?></span>
                             </div>
-                            <button type="button" data-dismiss-target="#toast-error" class="text-white/50 hover:text-white transition-colors focus:outline-none" aria-label="Close">
+                            <button type="button" onclick="dismissToast(this.closest('[role=\'alert\']'))" class="text-white/50 hover:text-white transition-colors focus:outline-none cursor-pointer" aria-label="Close">
                                 <i class="fas fa-times text-xs"></i>
                             </button>
                         </div>
-                        <script>
-                            setTimeout(() => {
-                                const toast = document.getElementById('toast-error');
-                                if (toast) {
-                                    toast.classList.add('opacity-0');
-                                    setTimeout(() => toast.remove(), 300);
-                                }
-                            }, 5000);
-                        </script>
                     <?php endif; ?>
 
                     <?php if ($info = session()->getFlashdata('info')): ?>
-                        <div id="toast-info" class="transition-opacity duration-300 bg-slate-800 text-white px-5 py-3 rounded-lg flex items-center justify-between shadow-sm" role="alert">
+                        <div id="toast-info" class="bg-slate-800 text-white px-5 py-3 rounded-lg flex items-center justify-between shadow-sm overflow-hidden" role="alert">
                             <div class="flex items-center">
                                 <i class="fas fa-info-circle mr-3 text-white"></i>
                                 <span class="font-bold text-xs uppercase tracking-wider"><?= $info ?></span>
                             </div>
-                            <button type="button" data-dismiss-target="#toast-info" class="text-white/50 hover:text-white transition-colors focus:outline-none" aria-label="Close">
+                            <button type="button" onclick="dismissToast(this.closest('[role=\'alert\']'))" class="text-white/50 hover:text-white transition-colors focus:outline-none cursor-pointer" aria-label="Close">
                                 <i class="fas fa-times text-xs"></i>
                             </button>
                         </div>
-                        <script>
-                            setTimeout(() => {
-                                const toast = document.getElementById('toast-info');
-                                if (toast) {
-                                    toast.classList.add('opacity-0');
-                                    setTimeout(() => toast.remove(), 300);
-                                }
-                            }, 5000);
-                        </script>
                     <?php endif; ?>
                 </div>
                 <script>
-                    (function() {
-                        const container = document.getElementById('toast-container');
-                        if (container) {
-                            const checkToasts = () => {
-                                const activeToasts = Array.from(container.querySelectorAll('[role="alert"]')).filter(el => {
-                                    return !el.classList.contains('hidden') && el.style.display !== 'none';
-                                });
-                                if (activeToasts.length === 0) {
-                                    container.remove();
-                                    observer.disconnect();
-                                }
-                            };
-                            const observer = new MutationObserver(checkToasts);
-                            observer.observe(container, { 
-                                childList: true, 
-                                subtree: true, 
-                                attributes: true, 
-                                attributeFilter: ['class', 'style'] 
-                            });
-                            // Jalankan pengecekan awal
-                            checkToasts();
-                        }
-                    })();
+                    function dismissToast(toastEl) {
+                        if (!toastEl || toastEl.dataset.dismissing === 'true') return;
+                        toastEl.dataset.dismissing = 'true';
+                        toastEl.style.maxHeight = toastEl.scrollHeight + 'px';
+                        toastEl.style.opacity = '1';
+                        toastEl.style.transition = 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)';
+                        toastEl.style.overflow = 'hidden';
+
+                        // Force reflow
+                        toastEl.offsetHeight;
+
+                        toastEl.style.maxHeight = '0px';
+                        toastEl.style.opacity = '0';
+                        toastEl.style.paddingTop = '0px';
+                        toastEl.style.paddingBottom = '0px';
+                        toastEl.style.marginTop = '0px';
+                        toastEl.style.marginBottom = '0px';
+
+                        setTimeout(() => {
+                            toastEl.remove();
+                            const container = document.getElementById('toast-container');
+                            if (container && container.querySelectorAll('[role="alert"]').length === 0) {
+                                container.remove();
+                            }
+                        }, 350);
+                    }
+
+                    document.addEventListener('DOMContentLoaded', () => {
+                        const toasts = document.querySelectorAll('#toast-container [role="alert"]');
+                        toasts.forEach(toast => {
+                            setTimeout(() => dismissToast(toast), 5000);
+                        });
+                    });
                 </script>
             <?php endif; ?>
 

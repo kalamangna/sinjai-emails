@@ -48,7 +48,7 @@ $isFullscreen = ($size ?? '') === 'full';
         </div>
         
         <!-- Body -->
-        <div class="p-6 overflow-y-auto custom-scrollbar flex-grow">
+        <div class="<?= $bodyClass ?? 'p-6' ?> overflow-y-auto custom-scrollbar flex-grow">
             <?= $content ?? '' ?>
         </div>
 

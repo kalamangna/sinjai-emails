@@ -47,14 +47,14 @@
             <div class="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center text-white mb-4 border border-white/20 shadow-inner relative z-10">
                 <i class="fas fa-check text-2xl"></i>
             </div>
-            <h2 class="text-lg font-bold uppercase tracking-tight relative z-10">Laporan Terkirim!</h2>
-            <p class="text-[9px] font-bold text-emerald-200 uppercase tracking-widest relative z-10">Tiket Bantuan Layanan Berhasil Dibuat</p>
+            <h2 class="text-lg font-bold uppercase tracking-tight relative z-10">Laporan Terkirim</h2>
+            <p class="text-[9px] font-bold text-emerald-200 uppercase tracking-widest relative z-10">Tiket Berhasil Dibuat</p>
         </div>
         
         <!-- Content Success -->
         <div class="p-6 sm:p-8 space-y-6">
             <div>
-                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1 block">Nomor Tiket Anda</span>
+                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1 block">Nomor Tiket</span>
                 <span class="text-2xl font-bold text-slate-800 font-mono tracking-wider bg-slate-50 border border-slate-200 px-4 py-2 rounded-lg inline-block shadow-sm">
                     <?= esc($ticket['tiket_id']) ?>
                 </span>
@@ -80,7 +80,7 @@
                 </div>
             </div>
 
-            <p class="text-[11px] text-slate-550 leading-relaxed">Terima kasih. Tim Helpdesk Diskominfo-SP akan segera memproses laporan Anda. Kami akan menghubungi Anda melalui nomor WhatsApp yang terdaftar untuk koordinasi lebih lanjut.</p>
+            <p class="text-[11px] text-slate-550 leading-relaxed">Laporan Anda sedang diproses. Tim kami akan menghubungi Anda melalui WhatsApp yang terdaftar untuk penanganan lebih lanjut.</p>
             
             <div class="pt-4">
                 <a href="<?= site_url('helpdesk') ?>" class="w-full btn btn-solid !bg-slate-850 hover:!bg-slate-900 !text-white !py-2.5 rounded-lg flex items-center justify-center gap-2 no-underline text-xs font-bold uppercase tracking-wider">

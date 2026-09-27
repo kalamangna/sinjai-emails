@@ -64,6 +64,17 @@ class EmailExportController extends BaseController
     public function exportSinglePerjanjianKerjaPdf($username)
     {
         try {
+            $historyId = $this->request->getGet('history_id');
+            if (!empty($historyId)) {
+                $result = $this->emailExportService->generatePerjanjianKerjaPdf($username, (int) $historyId);
+                log_audit('EXPORT', 'Email', null, 'Lihat PDF Riwayat PK user: ' . $username . ' (ID: ' . $historyId . ')');
+                $pdfContent = $result['dompdf']->output();
+                return $this->response
+                    ->setContentType('application/pdf')
+                    ->setHeader('Content-Disposition', 'inline; filename="' . $result['filename'] . '"')
+                    ->setBody($pdfContent);
+            }
+
             $forceDraft = $this->request->getGet('draft') === '1';
 
             if (!$forceDraft) {

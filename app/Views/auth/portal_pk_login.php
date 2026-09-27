@@ -3,23 +3,23 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="robots" content="noindex, nofollow">
-    <title><?= $title ?? 'Portal TTE PPPK' ?> | Sistem Identitas Digital</title>
+    <title><?= $title ?? 'Portal TTE PK' ?> | Sistem Identitas Digital</title>
 
     <meta name="description" content="<?= $meta_description ?? 'Portal Tanda Tangan Elektronik (TTE) Perjanjian Kerja PPPK Pemerintah Kabupaten Sinjai' ?>">
     <link rel="canonical" href="<?= current_url() ?>">
 
     <!-- Meta Tags -->
     <meta property="og:site_name" content="Sistem Identitas Digital Sinjai">
-    <meta property="og:title" content="<?= $title ?? 'Portal TTE PPPK' ?> | Sistem Identitas Digital">
+    <meta property="og:title" content="<?= $title ?? 'Portal TTE PK' ?> | Sistem Identitas Digital">
     <meta property="og:description" content="<?= $meta_description ?? 'Portal Tanda Tangan Elektronik (TTE) Perjanjian Kerja PPPK Pemerintah Kabupaten Sinjai' ?>">
     <meta property="og:url" content="<?= current_url() ?>">
     <meta property="og:image" content="<?= $meta_image ?? base_url('meta.png') ?>">
     <meta property="og:type" content="website">
 
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="<?= $title ?? 'Portal TTE PPPK' ?> | Sistem Identitas Digital">
+    <meta name="twitter:title" content="<?= $title ?? 'Portal TTE PK' ?> | Sistem Identitas Digital">
     <meta name="twitter:description" content="<?= $meta_description ?? 'Portal Tanda Tangan Elektronik (TTE) Perjanjian Kerja PPPK Pemerintah Kabupaten Sinjai' ?>">
     <meta name="twitter:image" content="<?= $meta_image ?? base_url('meta.png') ?>">
 
@@ -43,17 +43,17 @@
     </style>
 </head>
 
-<body class="bg-slate-50 text-slate-700 antialiased min-h-screen flex items-center justify-center p-6">
-    <div class="w-full max-w-sm">
+<body class="bg-slate-50 text-slate-700 antialiased min-h-screen flex items-center justify-center p-4 sm:p-6">
+    <div class="w-full max-w-sm my-auto">
         <!-- Branding -->
-        <div class="text-center mb-8">
-            <img src="<?= base_url('logo.png') ?>" alt="Logo" class="w-12 h-12 object-contain mx-auto mb-4">
+        <div class="text-center mb-6 sm:mb-8">
+            <img src="<?= base_url('logo.png') ?>" alt="Logo" class="w-12 h-12 object-contain mx-auto mb-3">
             <h1 class="text-xl font-bold text-slate-800 uppercase tracking-tight">sinjai<span class="text-slate-700">emails</span></h1>
-            <p class="text-[10px] font-bold text-slate-700 uppercase tracking-widest mt-1">Portal TTE PPPK</p>
+            <p class="text-[10px] font-bold text-slate-700 uppercase tracking-widest mt-1">Portal TTE PK</p>
         </div>
 
         <!-- Verification Card -->
-        <div class="bg-white border border-slate-200 rounded-lg p-8 shadow-sm">
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-xl shadow-slate-200/50">
             <h2 class="text-sm font-bold text-slate-800 uppercase tracking-widest mb-6 border-b border-slate-100 pb-2">Verifikasi PPPK</h2>
 
             <form action="<?= site_url('portal-pk/auth') ?>" method="POST" class="space-y-4">
@@ -92,7 +92,7 @@
                             <i class="fas fa-calendar-alt text-xs"></i>
                         </span>
                         <input type="date" name="tanggal_lahir" id="tanggal_lahir" value="<?= old('tanggal_lahir') ?>" required
-                            class="block w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all">
+                            class="block w-full pl-9 pr-3 py-2 h-[38px] bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 transition-all">
                     </div>
                 </div>
 
@@ -114,20 +114,6 @@
                     </button>
                 </div>
             </form>
-
-            <div class="mt-5 pt-3.5 border-t border-slate-100 text-center space-y-2">
-                <div>
-                    <a href="<?= site_url('login') ?>" class="text-xs font-semibold text-slate-700 hover:text-slate-900 transition-colors inline-flex items-center gap-1.5">
-                        <i class="fas fa-sign-in-alt text-slate-500"></i>
-                        <span>Masuk ke Sistem &rarr;</span>
-                    </a>
-                </div>
-                <div>
-                    <a href="<?= site_url('/') ?>" class="inline-flex items-center gap-1.5 text-[10px] font-bold text-slate-400 hover:text-slate-700 transition-colors uppercase tracking-widest">
-                        <i class="fas fa-arrow-left"></i> Kembali ke Beranda
-                    </a>
-                </div>
-            </div>
         </div>
 
         <p class="text-center text-[10px] font-bold text-slate-700 uppercase tracking-widest mt-8">

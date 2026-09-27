@@ -152,7 +152,7 @@
                         <th class="px-6 py-3 border-b border-slate-200 w-44 whitespace-nowrap">No. PK</th>
                         <th class="px-6 py-3 border-b border-slate-200 min-w-[200px]">Pegawai PPPK</th>
                         <th class="px-6 py-3 border-b border-slate-200 min-w-[220px]">Jabatan / Unit Kerja</th>
-                        <th class="px-6 py-3 border-b border-slate-200 w-36 whitespace-nowrap">Status Dokumen</th>
+                        <th class="px-6 py-3 border-b border-slate-200 w-36 whitespace-nowrap">Status PK</th>
                         <th class="px-6 py-3 border-b border-slate-200 w-32 text-center whitespace-nowrap">Aksi</th>
                     </tr>
                 </thead>
@@ -194,7 +194,7 @@
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <?php if ($item['tte_status'] === 'completed'): ?>
                                         <span class="px-1.5 py-0.5 rounded text-[8px] font-bold uppercase bg-emerald-50 text-emerald-700 border border-emerald-200 block w-max">
-                                            Selesai
+                                            TTE Lengkap
                                         </span>
                                     <?php elseif ($item['tte_status'] === 'signed_pppk'): ?>
                                         <span class="px-1.5 py-0.5 rounded text-[8px] font-bold uppercase bg-blue-50 text-blue-700 border border-blue-200 block w-max">
@@ -243,41 +243,40 @@
 <!-- Modal Single TTE Bupati -->
 <?php
 $singleModalContent = '
-<form id="form-single-tte-bupati" method="POST" action="" class="space-y-4">
+<form id="form-single-tte-bupati" method="POST" action="">
     ' . csrf_field() . '
-    <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg">
-        <p class="text-xs font-bold text-slate-800 uppercase tracking-tight" id="single-pegawai-name">-</p>
-        <p class="text-[10px] font-mono text-slate-500 mt-0.5" id="single-pk-nomor">-</p>
-    </div>
+    <div class="space-y-4">
+        <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg">
+            <p class="text-xs font-bold text-slate-800 uppercase tracking-tight" id="single-pegawai-name">-</p>
+            <p class="text-[10px] font-mono text-slate-500 mt-0.5" id="single-pk-nomor">-</p>
+        </div>
 
-    <div>
-        <label class="block text-xs font-bold text-slate-700 uppercase tracking-tight mb-1.5">NIK Penandatangan</label>
-        <input type="text" name="nik" value="' . esc(env('BSRE_BUPATI_NIK', '')) . '" placeholder="16 digit NIK..." required maxlength="16" autocomplete="off" class="w-full text-xs font-mono font-semibold rounded-lg border-slate-200 bg-slate-50 focus:bg-white focus:border-slate-800 focus:ring-0 transition-all p-2.5">
-    </div>
-
-    <div>
-        <label class="block text-xs font-bold text-slate-700 uppercase tracking-tight mb-1.5">Passphrase BSrE</label>
-        <div class="relative">
-            <input type="password" id="single-passphrase" name="passphrase" required placeholder="Masukkan passphrase sertifikat elektronik..." autocomplete="new-password" class="w-full text-xs rounded-lg border-slate-200 bg-slate-50 focus:bg-white focus:border-slate-800 focus:ring-0 transition-all p-2.5 pr-10">
-            <button type="button" onclick="togglePasswordVisibility(\'single-passphrase\', this)" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none">
-                <i class="fas fa-eye text-xs"></i>
-            </button>
+        <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-tight mb-1.5">Passphrase TTE</label>
+            <div class="relative">
+                <input type="password" id="single-passphrase" name="passphrase" required placeholder="Masukkan passphrase..." autocomplete="new-password" class="w-full text-xs rounded-lg border-slate-200 bg-slate-50 focus:bg-white focus:border-slate-800 focus:ring-0 transition-all p-2.5 pr-10">
+                <button type="button" onclick="togglePasswordVisibility(\'single-passphrase\', this)" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none">
+                    <i class="fas fa-eye text-xs"></i>
+                </button>
+            </div>
         </div>
     </div>
-
-    <div class="pt-2 flex justify-end gap-2">
-        <button type="button" onclick="closeModal(\'modal-single-tte\')" class="btn btn-outline btn-sm">Batal</button>
-        <button type="submit" id="btn-submit-single-tte" class="btn btn-solid btn-sm">
-            <i class="fas fa-signature mr-1.5"></i> Proses TTE
-        </button>
-    </div>
 </form>';
+
+$singleModalFooter = '
+    <button type="button" onclick="closeModal(\'modal-single-tte\')" class="btn btn-outline btn-sm">Batal</button>
+    <button type="submit" form="form-single-tte-bupati" id="btn-submit-single-tte" class="btn btn-solid btn-sm flex items-center gap-1.5">
+        <i class="fas fa-signature"></i>
+        <span>Tandatangani</span>
+    </button>';
 
 echo view('components/modal', [
     'id'        => 'modal-single-tte',
     'title'     => 'Tanda Tangan Elektronik',
     'content'   => $singleModalContent,
+    'footer'    => $singleModalFooter,
     'size'      => 'sm',
+    'bodyClass' => 'p-5 sm:p-6',
     'showClose' => true,
 ], ['saveData' => false]);
 ?>
@@ -291,14 +290,9 @@ $batchModalContent = '
     </div>
 
     <div>
-        <label class="block text-xs font-bold text-slate-700 uppercase tracking-tight mb-1.5">NIK Penandatangan</label>
-        <input type="text" id="batch-nik" value="' . esc(env('BSRE_BUPATI_NIK', '')) . '" placeholder="16 digit NIK..." required maxlength="16" autocomplete="off" class="w-full text-xs font-mono font-semibold rounded-lg border-slate-200 bg-slate-50 focus:bg-white focus:border-slate-800 focus:ring-0 transition-all p-2.5">
-    </div>
-
-    <div>
-        <label class="block text-xs font-bold text-slate-700 uppercase tracking-tight mb-1.5">Passphrase BSrE</label>
+        <label class="block text-xs font-bold text-slate-700 uppercase tracking-tight mb-1.5">Passphrase TTE</label>
         <div class="relative">
-            <input type="password" id="batch-passphrase" required placeholder="Masukkan passphrase sertifikat elektronik..." autocomplete="new-password" class="w-full text-xs rounded-lg border-slate-200 bg-slate-50 focus:bg-white focus:border-slate-800 focus:ring-0 transition-all p-2.5 pr-10">
+            <input type="password" id="batch-passphrase" required placeholder="Masukkan passphrase..." autocomplete="new-password" class="w-full text-xs rounded-lg border-slate-200 bg-slate-50 focus:bg-white focus:border-slate-800 focus:ring-0 transition-all p-2.5 pr-10">
             <button type="button" onclick="togglePasswordVisibility(\'batch-passphrase\', this)" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none">
                 <i class="fas fa-eye text-xs"></i>
             </button>
@@ -316,20 +310,22 @@ $batchModalContent = '
         </div>
         <p id="batch-progress-detail" class="text-[10px] text-slate-500 italic"></p>
     </div>
-
-    <div class="pt-2 flex justify-end gap-2" id="batch-modal-buttons">
-        <button type="button" onclick="closeModal(\'modal-batch-tte\')" class="btn btn-outline btn-sm">Batal</button>
-        <button type="button" id="btn-submit-batch-tte" onclick="executeBatchTte()" class="btn btn-solid btn-sm">
-            <i class="fas fa-signature mr-1.5"></i> Mulai TTE Massal
-        </button>
-    </div>
 </div>';
+
+$batchModalFooter = '
+    <button type="button" onclick="closeModal(\'modal-batch-tte\')" class="btn btn-outline btn-sm">Batal</button>
+    <button type="button" id="btn-submit-batch-tte" onclick="executeBatchTte()" class="btn btn-solid btn-sm flex items-center gap-1.5">
+        <i class="fas fa-signature"></i>
+        <span>Tandatangani</span>
+    </button>';
 
 echo view('components/modal', [
     'id'        => 'modal-batch-tte',
     'title'     => 'TTE Massal',
     'content'   => $batchModalContent,
+    'footer'    => $batchModalFooter,
     'size'      => 'sm',
+    'bodyClass' => 'p-5 sm:p-6',
     'showClose' => true,
 ], ['saveData' => false]);
 ?>
@@ -356,6 +352,16 @@ function openSingleSignModal(pkId, pegawaiName, pkNomor) {
     document.getElementById('single-pk-nomor').textContent = pkNomor;
     document.getElementById('form-single-tte-bupati').action = '<?= site_url('tte-pk/sign-single') ?>/' + pkId;
     document.getElementById('single-passphrase').value = '';
+    
+    // Reset state tombol jika sebelumnya pernah submit
+    const btn = document.getElementById('btn-submit-single-tte');
+    if (btn) {
+        btn.disabled = false;
+        const icon = btn.querySelector('i');
+        if (icon) {
+            icon.className = 'fas fa-signature';
+        }
+    }
     openModal('modal-single-tte');
 }
 
@@ -363,7 +369,10 @@ document.getElementById('form-single-tte-bupati')?.addEventListener('submit', fu
     const btn = document.getElementById('btn-submit-single-tte');
     if (btn) {
         btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1.5"></i> Menghubungi BSrE...';
+        const icon = btn.querySelector('i');
+        if (icon) {
+            icon.className = 'fas fa-spinner fa-spin';
+        }
     }
 });
 
@@ -416,19 +425,24 @@ function openBatchModal() {
     document.getElementById('batch-selected-count-label').textContent = checked.length;
     document.getElementById('batch-passphrase').value = '';
     document.getElementById('batch-progress-container').classList.add('hidden');
-    document.getElementById('btn-submit-batch-tte').disabled = false;
-    document.getElementById('btn-submit-batch-tte').innerHTML = '<i class="fas fa-signature mr-1.5"></i> Mulai TTE Massal';
+    const submitBtn = document.getElementById('btn-submit-batch-tte');
+    if (submitBtn) {
+        submitBtn.disabled = false;
+        const icon = submitBtn.querySelector('i');
+        if (icon) icon.className = 'fas fa-signature';
+        const label = submitBtn.querySelector('span');
+        if (label) label.textContent = 'Tandatangani';
+    }
     openModal('modal-batch-tte');
 }
 
 async function executeBatchTte() {
-    const nik = document.getElementById('batch-nik').value.trim();
     const passphrase = document.getElementById('batch-passphrase').value;
     const checked = Array.from(itemCheckboxes).filter(cb => cb.checked);
     const pkIds = checked.map(cb => parseInt(cb.value));
 
-    if (!nik || !passphrase) {
-        alert('NIK dan Passphrase BSrE wajib diisi.');
+    if (!passphrase) {
+        alert('Passphrase TTE wajib diisi.');
         return;
     }
 
@@ -445,8 +459,11 @@ async function executeBatchTte() {
     const submitBtn = document.getElementById('btn-submit-batch-tte');
 
     progressContainer.classList.remove('hidden');
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1.5"></i> Memproses TTE Massal...';
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        const icon = submitBtn.querySelector('i');
+        if (icon) icon.className = 'fas fa-spinner fa-spin';
+    }
     progressBar.style.width = '30%';
     progressText.textContent = '30%';
     progressDetail.textContent = 'Mengirim ' + pkIds.length + ' dokumen ke BSrE Client Service...';
@@ -456,10 +473,10 @@ async function executeBatchTte() {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
+                'X-Requested-With': 'XMLHttpRequest',
+                '<?= csrf_header() ?>': '<?= csrf_hash() ?>'
             },
             body: JSON.stringify({
-                nik: nik,
                 passphrase: passphrase,
                 pk_ids: pkIds
             })
@@ -478,15 +495,25 @@ async function executeBatchTte() {
         } else {
             progressStatus.innerHTML = '<i class="fas fa-exclamation-triangle text-rose-600 mr-1"></i> ' + (res.auth_aborted ? 'Autentikasi Gagal' : 'Gagal');
             progressDetail.textContent = res.message;
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = '<i class="fas fa-redo mr-1.5"></i> Coba Lagi';
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                const icon = submitBtn.querySelector('i');
+                if (icon) icon.className = 'fas fa-redo';
+                const label = submitBtn.querySelector('span');
+                if (label) label.textContent = 'Coba Lagi';
+            }
         }
     } catch (err) {
         progressBar.style.width = '100%';
         progressStatus.innerHTML = '<i class="fas fa-times-circle text-rose-600 mr-1"></i> Terjadi Kesalahan';
         progressDetail.textContent = err.message || 'Gagal menghubungi server.';
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = '<i class="fas fa-redo mr-1.5"></i> Coba Lagi';
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            const icon = submitBtn.querySelector('i');
+            if (icon) icon.className = 'fas fa-redo';
+            const label = submitBtn.querySelector('span');
+            if (label) label.textContent = 'Coba Lagi';
+        }
     }
 }
 

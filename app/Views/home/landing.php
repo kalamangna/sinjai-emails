@@ -72,91 +72,58 @@
     </header>
 
     <!-- Main Content -->
-    <main class="w-full max-w-5xl mx-auto px-6 py-16 flex-grow flex flex-col items-center justify-center z-10 relative">
+    <main class="w-full max-w-5xl mx-auto px-6 py-12 flex-grow flex flex-col items-center justify-center z-10 relative">
         
         <!-- Hero Section -->
-        <div class="text-center max-w-3xl space-y-6 mb-16">
+        <div class="text-center max-w-3xl space-y-4 mb-10">
             <h1 class="text-3xl md:text-5xl font-black tracking-tight text-slate-800 leading-tight uppercase">
-                Sistem Identitas Digital <br>
-                <span class="text-slate-500 font-extrabold">Pemerintah Kabupaten Sinjai</span>
+                Sistem Identitas Digital
             </h1>
             
             <p class="text-slate-500 text-xs md:text-sm max-w-2xl mx-auto leading-relaxed font-medium">
-                Pusat integrasi data akun aparatur, verifikasi dokumen elektronik tersertifikasi (TTE BSrE), serta layanan bantuan TIK terpadu dalam lingkup Pemerintah Kabupaten Sinjai.
+                Identitas digital aparatur, TTE BSrE, dan helpdesk TIK Pemkab Sinjai.
             </p>
         </div>
 
         <!-- Service Cards Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full max-w-6xl">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full max-w-2xl">
 
-            <!-- Card 1: Portal TTE PPPK -->
-            <div class="group bg-white border border-slate-200 hover:border-slate-800 rounded-2xl p-6 flex flex-col justify-between transition-all duration-300 hover:shadow-xl hover:shadow-slate-200/50 relative overflow-hidden">
-                <div class="space-y-3">
-                    <div class="w-11 h-11 bg-slate-100 border border-slate-200 rounded-xl flex items-center justify-center text-slate-800 text-base">
-                        <i class="fas fa-file-signature"></i>
-                    </div>
-                    <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">TTE PPPK</h3>
-                    <p class="text-xs text-slate-500 leading-relaxed font-medium">
-                        Layanan penandatanganan elektronik dokumen Perjanjian Kerja (PK) bagi aparatur PPPK Kabupaten Sinjai.
-                    </p>
-                </div>
-                <div class="pt-5">
-                    <a href="<?= site_url('portal-pk') ?>" id="action-portal-pk" class="btn btn-solid w-full flex items-center justify-center gap-2 text-xs py-2.5">
-                        Portal PPPK <i class="fas fa-arrow-right text-[10px]"></i>
-                    </a>
-                </div>
-            </div>
-            
-            <!-- Card 2: Verifikasi PDF -->
-            <div class="group bg-white border border-slate-200 hover:border-slate-400 rounded-2xl p-6 flex flex-col justify-between transition-all duration-300 hover:shadow-xl hover:shadow-slate-200/50 relative overflow-hidden">
-                <div class="space-y-3">
-                    <div class="w-11 h-11 bg-slate-100 border border-slate-200 rounded-xl flex items-center justify-center text-slate-700 text-base">
+            <!-- Card 1: Verifikasi PDF -->
+            <div class="group bg-white border border-slate-200 hover:border-slate-400 rounded-2xl p-7 flex flex-col justify-between transition-all duration-300 hover:shadow-xl hover:shadow-slate-200/50 relative overflow-hidden">
+                <div class="space-y-4">
+                    <div class="w-12 h-12 bg-slate-100 border border-slate-200 rounded-xl flex items-center justify-center text-slate-700 text-lg">
                         <i class="fas fa-file-shield"></i>
                     </div>
-                    <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Verifikasi PDF</h3>
-                    <p class="text-xs text-slate-500 leading-relaxed font-medium">
-                        Periksa keaslian dokumen dinas elektronik Anda dan status sertifikat tanda tangan digital (TTE) BSrE secara instan.
-                    </p>
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-800 uppercase tracking-tight mb-1">Verifikasi PDF</h3>
+                        <p class="text-xs text-slate-500 leading-relaxed font-medium">
+                            Cek keaslian & status TTE dokumen dinas.
+                        </p>
+                    </div>
                 </div>
-                <div class="pt-5">
-                    <a href="<?= site_url('verifikasi-pdf') ?>" id="action-verify-pdf" class="btn btn-outline w-full flex items-center justify-center gap-2 text-xs py-2.5 group-hover:bg-slate-700 group-hover:text-white group-hover:border-slate-700">
-                        Verifikasi <i class="fas fa-arrow-right text-[10px]"></i>
+                <div class="pt-6">
+                    <a href="<?= site_url('verifikasi-pdf') ?>" id="action-verify-pdf" class="btn btn-outline w-full flex items-center justify-center gap-2 text-xs py-3 group-hover:bg-slate-700 group-hover:text-white group-hover:border-slate-700">
+                        Verifikasi PDF <i class="fas fa-arrow-right text-[10px]"></i>
                     </a>
                 </div>
             </div>
 
-            <!-- Card 3: Helpdesk Layanan -->
-            <div class="group bg-white border border-slate-200 hover:border-slate-400 rounded-2xl p-6 flex flex-col justify-between transition-all duration-300 hover:shadow-xl hover:shadow-slate-200/50 relative overflow-hidden">
-                <div class="space-y-3">
-                    <div class="w-11 h-11 bg-slate-100 border border-slate-200 rounded-xl flex items-center justify-center text-slate-700 text-base">
+            <!-- Card 2: Helpdesk Layanan -->
+            <div class="group bg-white border border-slate-200 hover:border-slate-400 rounded-2xl p-7 flex flex-col justify-between transition-all duration-300 hover:shadow-xl hover:shadow-slate-200/50 relative overflow-hidden">
+                <div class="space-y-4">
+                    <div class="w-12 h-12 bg-slate-100 border border-slate-200 rounded-xl flex items-center justify-center text-slate-700 text-lg">
                         <i class="fas fa-headset"></i>
                     </div>
-                    <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Helpdesk</h3>
-                    <p class="text-xs text-slate-500 leading-relaxed font-medium">
-                        Laporkan kendala akun email dinas, pemulihan akses, atau isu teknis terkait sertifikat tanda tangan elektronik.
-                    </p>
-                </div>
-                <div class="pt-5">
-                    <a href="<?= site_url('helpdesk') ?>" id="action-helpdesk" class="btn btn-outline w-full flex items-center justify-center gap-2 text-xs py-2.5 group-hover:bg-slate-700 group-hover:text-white group-hover:border-slate-700">
-                        Bantuan <i class="fas fa-arrow-right text-[10px]"></i>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Card 4: Administrator Login -->
-            <div class="group bg-white border border-slate-200 hover:border-slate-400 rounded-2xl p-6 flex flex-col justify-between transition-all duration-300 hover:shadow-xl hover:shadow-slate-200/50 relative overflow-hidden">
-                <div class="space-y-3">
-                    <div class="w-11 h-11 bg-slate-100 border border-slate-200 rounded-xl flex items-center justify-center text-slate-700 text-base">
-                        <i class="fas fa-user-gear"></i>
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-800 uppercase tracking-tight mb-1">Helpdesk</h3>
+                        <p class="text-xs text-slate-500 leading-relaxed font-medium">
+                            Kendala email dinas atau isu teknis TTE.
+                        </p>
                     </div>
-                    <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Admin</h3>
-                    <p class="text-xs text-slate-500 leading-relaxed font-medium">
-                        Akses dashboard internal bagi administrator untuk pengelolaan data email aparatur, website pemda, dan audit.
-                    </p>
                 </div>
-                <div class="pt-5">
-                    <a href="<?= site_url('login') ?>" id="action-admin-login" class="btn btn-outline w-full flex items-center justify-center gap-2 text-xs py-2.5 group-hover:bg-slate-700 group-hover:text-white group-hover:border-slate-700">
-                        Portal Admin <i class="fas fa-arrow-right text-[10px]"></i>
+                <div class="pt-6">
+                    <a href="<?= site_url('helpdesk') ?>" id="action-helpdesk" class="btn btn-outline w-full flex items-center justify-center gap-2 text-xs py-3 group-hover:bg-slate-700 group-hover:text-white group-hover:border-slate-700">
+                        Helpdesk <i class="fas fa-arrow-right text-[10px]"></i>
                     </a>
                 </div>
             </div>
@@ -164,6 +131,7 @@
         </div>
 
     </main>
+
 
     <!-- Footer -->
     <footer class="w-full border-t border-slate-200 bg-white py-6 z-10 shrink-0">

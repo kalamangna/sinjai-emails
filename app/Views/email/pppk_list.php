@@ -92,7 +92,7 @@
                                             if ($pkSt === 'completed'):
                                             ?>
                                                 <span class="px-1.5 py-0.5 rounded text-[8px] font-bold uppercase bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                                    Lengkap
+                                                    TTE Lengkap
                                                 </span>
                                             <?php elseif ($pkSt === 'signed_pppk'): ?>
                                                 <span class="px-1.5 py-0.5 rounded text-[8px] font-bold uppercase bg-blue-50 text-blue-700 border border-blue-200">

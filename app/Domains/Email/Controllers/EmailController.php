@@ -369,8 +369,9 @@ class EmailController extends BaseController
             $signResult = $bsreApi->signPdf($sourcePdfPath, $nik, $passphrase, [
                 'tag_koordinat' => '${ttd_pengirim2}',
                 'linkQR'        => $verifyUrl,
-                'width'         => 110,
-                'height'        => 110,
+                'width'         => 80,
+                'height'        => 80,
+                'user'          => $email['user'],
             ]);
 
             if (!$signResult['success']) {
@@ -409,17 +410,31 @@ class EmailController extends BaseController
     public function profile($hash)
     {
         try {
-            // Optimization: Directly query by nik (blind index)
-            $email = $this->emailModel->where('nik', $hash)
-                                      ->where('bsre_status', 'ISSUE')
-                                      ->first();
+            // Mendukung pencarian fleksibel via NIK, User/Username, atau NIP
+            $email = $this->emailModel
+                ->groupStart()
+                    ->where('nik', $hash)
+                    ->orWhere('user', $hash)
+                    ->orWhere('nip', $hash)
+                ->groupEnd()
+                ->first();
 
             if (!$email) {
                 throw new \Exception('Data identitas tidak ditemukan atau tidak valid.');
             }
 
+            // Pastikan akun memiliki status BSrE ISSUE atau memiliki data Perjanjian Kerja TTE sah
+            $isBsreIssue = !empty($email['bsre_status']) && strtoupper($email['bsre_status']) === 'ISSUE';
+            $pk = (new \App\Domains\Email\Models\PkModel())->where('email', $email['email'])->first();
+            $hasSignedPk = $pk && in_array($pk['tte_status'] ?? '', ['signed_pppk', 'completed']);
+
+            if (!$isBsreIssue && !$hasSignedPk && ENVIRONMENT === 'production') {
+                throw new \Exception('Status sertifikat elektronik pegawai belum aktif.');
+            }
+
             $data = $this->emailService->getEmailDetail($email['user']);
             $data['title'] = 'Verifikasi Akun';
+            $data['pk']    = $pk;
             
             // SEO for Public Profile
             $data['meta_robots'] = 'noindex, follow'; 

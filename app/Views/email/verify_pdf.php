@@ -40,15 +40,15 @@
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex items-center justify-center p-4">
     <div class="w-full max-w-2xl bg-white border border-slate-200 rounded-2xl shadow-xl shadow-slate-200/50 overflow-hidden flex flex-col my-auto">
         <!-- Header Identity -->
-        <div class="bg-slate-800 p-8 text-center relative overflow-hidden shrink-0">
+        <div class="bg-slate-800 p-6 sm:p-7 text-center relative overflow-hidden shrink-0">
             <div class="absolute inset-0 opacity-10 pointer-events-none">
                 <i class="fas fa-shield-alt text-white text-[120px] absolute -right-8 -bottom-8 rotate-12"></i>
             </div>
             
             <div class="relative z-10 text-white">
-                <img src="<?= base_url('logo.png') ?>" alt="Logo" class="w-16 h-16 object-contain mx-auto mb-4 drop-shadow-md">
-                <p class="text-[10px] font-bold text-slate-300 uppercase tracking-widest mb-1">Sistem Identitas Digital</p>
-                <h1 class="text-lg font-bold uppercase tracking-tight leading-tight">Verifikasi Dokumen Elektronik</h1>
+                <img src="<?= base_url('logo.png') ?>" alt="Logo" class="w-14 h-14 object-contain mx-auto mb-3 drop-shadow-md">
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Sistem Identitas Digital</p>
+                <h1 class="text-base sm:text-lg font-bold uppercase tracking-tight leading-tight">Verifikasi PDF</h1>
             </div>
         </div>
 
@@ -57,11 +57,11 @@
             <form id="form-verify" class="space-y-4">
                 <?= csrf_field() ?>
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-widest mb-2">Pilih File PDF</label>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-widest mb-2">Berkas PDF</label>
                     <div id="dropzone" class="border-2 border-dashed border-slate-200 hover:border-slate-400 rounded-xl py-6 px-4 flex flex-col items-center justify-center cursor-pointer transition-all bg-slate-50/50">
                         <i class="fas fa-file-pdf text-3xl text-slate-400 mb-2"></i>
-                        <span class="text-xs font-semibold text-slate-700 text-center">Tarik & lepas file PDF di sini atau klik untuk memilih</span>
-                        <span class="text-[9px] text-slate-500 mt-0.5">Hanya mendukung format PDF (Maks. 10MB)</span>
+                        <span class="text-xs font-semibold text-slate-700 text-center">Pilih atau seret berkas PDF ke sini</span>
+                        <span class="text-[9px] text-slate-500 mt-0.5">Format PDF (Maks. 10MB)</span>
                         <input type="file" id="pdf-file" name="file" accept="application/pdf" class="hidden">
                     </div>
                     <div id="selected-file-info" class="hidden mt-3 p-3 bg-slate-50 border border-slate-200 rounded-lg flex items-center justify-between">
@@ -78,11 +78,11 @@
                 
                 <div class="flex flex-col sm:flex-row gap-4 items-end">
                     <div class="flex-grow w-full">
-                        <label for="password" class="block text-xs font-bold text-slate-700 uppercase tracking-widest mb-2">Sandi Dokumen (Opsional)</label>
-                        <input type="password" id="password" name="password" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm transition-all placeholder-slate-400" placeholder="Masukkan sandi jika PDF terenkripsi...">
+                        <label for="password" class="block text-xs font-bold text-slate-700 uppercase tracking-widest mb-2">Sandi (Opsional)</label>
+                        <input type="password" id="password" name="password" class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm transition-all placeholder-slate-400" placeholder="Sandi PDF jika terenkripsi">
                     </div>
                     <button type="submit" class="w-full sm:w-auto btn btn-solid flex items-center justify-center gap-2 h-[38px] shrink-0">
-                        <i class="fas fa-shield-alt text-xs"></i> Uji Keaslian Dokumen
+                        <i class="fas fa-shield-alt text-xs"></i> Verifikasi PDF
                     </button>
                 </div>
             </form>
@@ -217,7 +217,7 @@
 
         function handleFileSelection(file) {
             if (file.type !== 'application/pdf') {
-                showGlobalError('Format File Salah', 'Hanya diperbolehkan mengunggah file berekstensi PDF.');
+                showGlobalError('Format Tidak Sesuai', 'Hanya berkas format PDF.');
                 return;
             }
             fileNameEl.innerText = file.name;
@@ -267,7 +267,7 @@
             resultContainer.innerHTML = '';
 
             if (!fileInput.files.length) {
-                showGlobalError('File Kosong', 'Harap pilih file PDF terlebih dahulu.');
+                showGlobalError('Pilih Berkas', 'Pilih berkas PDF terlebih dahulu.');
                 return;
             }
 
@@ -304,7 +304,7 @@
                                 </div>
                                 <div>
                                     <span class="text-[9px] font-bold text-amber-450 uppercase tracking-widest block">Hasil Verifikasi</span>
-                                    <span class="text-xs font-bold text-amber-900 block">Tidak ditemukan tanda tangan elektronik pada dokumen ini.</span>
+                                    <span class="text-xs font-bold text-amber-900 block">Tidak ditemukan tanda tangan elektronik.</span>
                                 </div>
                             </div>
                         `;
@@ -412,11 +412,11 @@
                     // Scroll to result smoothly
                     resultContainer.scrollIntoView({ behavior: 'smooth' });
                 } else {
-                    showGlobalError('Gagal Verifikasi', result.message || 'Terjadi kesalahan sistem saat memproses berkas PDF.');
+                    showGlobalError('Gagal Verifikasi', result.message || 'Gagal memproses berkas PDF.');
                 }
             } catch (err) {
                 showGlobalLoading(false);
-                showGlobalError('Error Jaringan', 'Gagal menghubungi server aplikasi.');
+                showGlobalError('Koneksi Gagal', 'Gagal terhubung ke server.');
             }
         });
     </script>

@@ -441,7 +441,7 @@ class EmailExportService
         ];
     }
 
-    public function generatePerjanjianKerjaPdf($username)
+    public function generatePerjanjianKerjaPdf($username, ?int $historyId = null, array $options = [])
     {
         $email = $this->emailModel->withDetails()->where('emails.user', $username)->asArray()->first();
         if (!$email) throw new Exception('Email account not found.');
@@ -470,12 +470,21 @@ class EmailExportService
             $unitKerja['nama_unit_kerja'] = $unitKerja['nama_unit_kerja'] . ' - ' . $email['parent_unit_kerja_name'];
         }
 
-        $pk_data = $this->pkModel->where('email', $email['email'])->first();
+        if ($historyId) {
+            $pkHistoryModel = new \App\Domains\Email\Models\PkHistoryModel();
+            $pk_data = $pkHistoryModel->find($historyId);
+        } else {
+            $pk_data = $this->pkModel->where('email', $email['email'])->first();
+        }
+
         $data = [
             'email' => $email,
             'unit_kerja' => $unitKerja,
             'logoSrc' => $this->getGarudaLogoSrc(),
             'pk_data' => $pk_data,
+            'qr_pppk' => $options['qr_pppk'] ?? null,
+            'qr_bupati' => $options['qr_bupati'] ?? null,
+            'verify_url' => $options['verify_url'] ?? site_url('verifikasi/' . ($email['user'] ?? '')),
         ];
 
         $html = view($template, $data);

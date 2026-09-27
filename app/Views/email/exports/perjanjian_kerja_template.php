@@ -204,12 +204,30 @@
         }
 
         .sig-space {
-            height: 150px;
+            height: 95px;
             vertical-align: middle;
         }
 
         .page-break {
             page-break-before: always;
+        }
+
+        /* STICKY FOOTER TTE */
+        .footer {
+            position: fixed;
+            bottom: -1.8cm;
+            left: 0;
+            right: 0;
+            height: 0.8cm;
+            font-size: 7.5pt;
+            color: #334155;
+            border-top: 0.5pt solid #94a3b8;
+            padding-top: 3px;
+            line-height: 1.35;
+        }
+
+        .srikandi-footer {
+            text-align: left;
         }
     </style>
     <?php
@@ -225,6 +243,15 @@
 </head>
 
 <body>
+
+    <!-- STICKY FOOTER TTE (Hanya tampil jika sudah ditandatangani secara elektronik) -->
+    <?php if (!empty($qr_pppk) || !empty($qr_bupati)): ?>
+    <div class="footer">
+        <div class="srikandi-footer">
+            Dokumen ini telah ditandatangani secara elektronik menggunakan sertifikat elektronik yang diterbitkan oleh <strong>Balai Sertifikasi Elektronik (BSrE), BSSN</strong>.
+        </div>
+    </div>
+    <?php endif; ?>
 
     <!-- HEADER / KOP -->
     <div class="kop-container">
@@ -1339,10 +1366,22 @@
         </tr>
         <tr>
             <td class="sig-cell sig-space">
-                ${ttd_pengirim2}
+                <?php if (!empty($qr_bupati)): ?>
+                    <a href="<?= esc($verify_url ?? site_url('verifikasi/' . ($email['user'] ?? ''))) ?>" target="_blank" style="text-decoration: none; display: inline-block;">
+                        <img src="<?= $qr_bupati ?>" style="width: 80px; height: 80px; display: block; margin: 0 auto; border: 0;">
+                    </a>
+                <?php else: ?>
+                    ${ttd_pengirim2}
+                <?php endif; ?>
             </td>
             <td class="sig-cell sig-space">
-                ${ttd_pengirim1}
+                <?php if (!empty($qr_pppk)): ?>
+                    <a href="<?= esc($verify_url ?? site_url('verifikasi/' . ($email['user'] ?? ''))) ?>" target="_blank" style="text-decoration: none; display: inline-block;">
+                        <img src="<?= $qr_pppk ?>" style="width: 80px; height: 80px; display: block; margin: 0 auto; border: 0;">
+                    </a>
+                <?php else: ?>
+                    ${ttd_pengirim1}
+                <?php endif; ?>
             </td>
         </tr>
         <tr>

@@ -205,7 +205,7 @@ class EmailListController extends BaseController
             $data['tte_status_options'] = [
                 'unsigned'    => 'Belum TTE',
                 'signed_pppk' => 'Menunggu TTE Bupati',
-                'completed'   => 'Lengkap',
+                'completed'   => 'TTE Lengkap',
             ];
             $data['bsre_status_options'] = [
                 'ISSUE'          => 'ISSUE',
@@ -245,7 +245,7 @@ class EmailListController extends BaseController
             $data['tte_status_options'] = [
                 'unsigned'    => 'Belum TTE',
                 'signed_pppk' => 'Menunggu TTE Bupati',
-                'completed'   => 'Lengkap',
+                'completed'   => 'TTE Lengkap',
             ];
             $data['bsre_status_options'] = [
                 'ISSUE'          => 'ISSUE',

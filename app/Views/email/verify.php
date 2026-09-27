@@ -48,7 +48,7 @@
             <div class="relative z-10 text-white">
                 <img src="<?= base_url('logo.png') ?>" alt="Logo" class="w-16 h-16 object-contain mx-auto mb-4 drop-shadow-md">
                 <p class="text-[10px] font-bold text-slate-300 uppercase tracking-widest mb-1">Sistem Identitas Digital</p>
-                <h1 class="text-lg font-bold uppercase tracking-tight leading-tight">Verifikasi Akun Pegawai</h1>
+                <h1 class="text-lg font-bold uppercase tracking-tight leading-tight">Verifikasi Akun</h1>
             </div>
         </div>
 

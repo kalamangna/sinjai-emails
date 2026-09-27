@@ -35,7 +35,7 @@ class PortalPkController extends BaseController
         }
 
         $data = [
-            'title' => 'Portal TTE PPPK'
+            'title' => 'Portal TTE PK'
         ];
 
         return view('auth/portal_pk_login', $data);
@@ -141,7 +141,7 @@ class PortalPkController extends BaseController
         $pk = $this->pkModel->where('email', $email['email'])->first();
 
         $data = [
-            'title' => 'Portal TTE PPPK',
+            'title' => 'Portal TTE PK',
             'email' => $email,
             'pk'    => $pk,
         ];
@@ -205,7 +205,7 @@ class PortalPkController extends BaseController
 
         $passphrase = $this->request->getPost('passphrase');
         if (empty($passphrase)) {
-            return redirect()->back()->with('error', 'Passphrase BSrE wajib diisi.');
+            return redirect()->back()->with('error', 'Passphrase TTE wajib diisi.');
         }
 
         $emailId = session()->get('pppk_email_id');
@@ -236,8 +236,9 @@ class PortalPkController extends BaseController
         $signResult = $this->bsreApi->signPdf($tempPdfPath, $email['nik'], $passphrase, [
             'tag_koordinat' => '${ttd_pengirim1}',
             'linkQR'        => $verifyUrl,
-            'width'         => 110,
-            'height'        => 110,
+            'width'         => 80,
+            'height'        => 80,
+            'user'          => $email['user'],
         ]);
 
         // Hapus draf temporary
@@ -270,7 +271,7 @@ class PortalPkController extends BaseController
 
         log_audit('TTE_PK_SUCCESS', 'Pk', $pk['id'], 'TTE PK Sukses oleh PPPK: ' . $email['name'] . ' (' . $email['nip'] . ')');
 
-        return redirect()->to('portal-pk/dashboard')->with('success', 'Dokumen Perjanjian Kerja berhasil ditandatangani secara elektronik (TTE)!');
+        return redirect()->to('portal-pk/dashboard')->with('success', 'Dokumen berhasil ditandatangani.');
     }
 
     /**
@@ -284,7 +285,7 @@ class PortalPkController extends BaseController
         $email   = $this->emailModel->withDetails()->find($emailId);
         $pk      = $this->pkModel->where('email', $email['email'])->first();
 
-        // 1. Berkas lengkap ditandatangani Bupati & PPPK
+        // Berkas hanya dapat diunduh jika telah selesai ditandatangani oleh kedua pihak (Bupati & PPPK)
         if ($pk && $pk['tte_status'] === 'completed' && !empty($pk['tte_bupati_file'])) {
             $signedPath = WRITEPATH . 'uploads/signed_pk/' . $pk['tte_bupati_file'];
             if (file_exists($signedPath)) {
@@ -293,21 +294,7 @@ class PortalPkController extends BaseController
             }
         }
 
-        // 2. Berkas ditandatangani PPPK saja
-        if ($pk && !empty($pk['tte_pegawai_file'])) {
-            $signedPath = WRITEPATH . 'uploads/signed_pk/' . $pk['tte_pegawai_file'];
-            if (file_exists($signedPath)) {
-                $downloadName = 'Perjanjian_Kerja_' . url_title($email['name'], '_', true) . '_' . $email['nip'] . '_SIGNED_PPPK.pdf';
-                return $this->response->download($signedPath, null)->setFileName($downloadName);
-            }
-        }
-
-        // Fallback jika belum bertandatangan, unduh draft
-        $pdfResult = $this->exportService->generatePerjanjianKerjaPdf($email['user']);
-        return $this->response
-            ->setHeader('Content-Type', 'application/pdf')
-            ->setHeader('Content-Disposition', 'attachment; filename="' . $pdfResult['filename'] . '"')
-            ->setBody($pdfResult['dompdf']->output());
+        return redirect()->to('portal-pk/dashboard')->with('error', 'Dokumen belum selesai ditandatangani oleh kedua pihak.');
     }
 
     /**

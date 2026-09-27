@@ -196,8 +196,12 @@ class TteBupatiController extends BaseController
             $nik = env('BSRE_BUPATI_NIK', '');
         }
 
-        if (empty($nik) || empty($passphrase)) {
-            return redirect()->back()->with('error', 'NIK dan Passphrase BSrE Bupati wajib diisi.');
+        if (empty($passphrase)) {
+            return redirect()->back()->with('error', 'Passphrase TTE wajib diisi.');
+        }
+
+        if (empty($nik)) {
+            return redirect()->back()->with('error', 'NIK Penandatangan belum dikonfigurasi (BSRE_BUPATI_NIK).');
         }
 
         $pk = $this->pkModel->withPegawaiDetails()->where('pk.id', $id)->first();
@@ -224,8 +228,9 @@ class TteBupatiController extends BaseController
         $signResult = $bsreApi->signPdf($sourcePdfPath, $nik, $passphrase, [
             'tag_koordinat' => '${ttd_pengirim2}',
             'linkQR'        => $verifyUrl,
-            'width'         => 110,
-            'height'        => 110,
+            'width'         => 80,
+            'height'        => 80,
+            'user'          => $pk['user'],
         ]);
 
         if (!$signResult['success']) {
@@ -278,10 +283,17 @@ class TteBupatiController extends BaseController
             $nik = env('BSRE_BUPATI_NIK', '');
         }
 
-        if (empty($nik) || empty($passphrase)) {
+        if (empty($passphrase)) {
             return $this->response->setJSON([
                 'success' => false,
-                'message' => 'NIK dan Passphrase BSrE Bupati wajib diisi.'
+                'message' => 'Passphrase TTE wajib diisi.'
+            ]);
+        }
+
+        if (empty($nik)) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'NIK Penandatangan belum dikonfigurasi (BSRE_BUPATI_NIK).'
             ]);
         }
 
@@ -330,8 +342,9 @@ class TteBupatiController extends BaseController
             $signResult = $bsreApi->signPdf($sourcePdfPath, $nik, $passphrase, [
                 'tag_koordinat' => '${ttd_pengirim2}',
                 'linkQR'        => $verifyUrl,
-                'width'         => 110,
-                'height'        => 110,
+                'width'         => 80,
+                'height'        => 80,
+                'user'          => $pk['user'],
             ]);
 
             if (!$signResult['success']) {

@@ -78,25 +78,25 @@
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex items-center justify-center p-4">
     <div class="w-full max-w-3xl bg-white border border-slate-200 rounded-2xl shadow-xl shadow-slate-200/50 flex flex-col my-auto">
         <!-- Header Identity -->
-        <div class="bg-slate-800 p-8 text-center relative overflow-hidden shrink-0 rounded-t-2xl">
+        <div class="bg-slate-800 p-6 sm:p-7 text-center relative overflow-hidden shrink-0 rounded-t-2xl">
             <div class="absolute inset-0 opacity-10 pointer-events-none">
                 <i class="fas fa-headset text-white text-[120px] absolute -right-8 -bottom-8 rotate-12"></i>
             </div>
             
             <div class="relative z-10 text-white">
-                <img src="<?= base_url('logo.png') ?>" alt="Logo" class="w-16 h-16 object-contain mx-auto mb-4 drop-shadow-md">
-                <p class="text-[10px] font-bold text-slate-300 uppercase tracking-widest mb-1">Sistem Identitas Digital</p>
-                <h1 class="text-lg font-bold uppercase tracking-tight leading-tight">Helpdesk Layanan</h1>
+                <img src="<?= base_url('logo.png') ?>" alt="Logo" class="w-14 h-14 object-contain mx-auto mb-3 drop-shadow-md">
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Sistem Identitas Digital</p>
+                <h1 class="text-base sm:text-lg font-bold uppercase tracking-tight leading-tight">Helpdesk</h1>
             </div>
         </div>
 
         <!-- Form Body -->
         <div class="p-6 sm:p-8 space-y-6">
             <div class="flex items-start gap-3 p-4 bg-indigo-50 border border-indigo-100 rounded-lg text-left">
-                <i class="fas fa-info-circle text-indigo-600 text-lg shrink-0 mt-0.5"></i>
+                <i class="fas fa-info-circle text-indigo-600 text-sm shrink-0 mt-0.5"></i>
                 <div>
-                    <h2 class="text-xs font-bold text-indigo-800 uppercase tracking-wider">Pusat Bantuan & Laporan</h2>
-                    <p class="text-[10px] text-indigo-700 leading-normal mt-0.5">Silakan isi formulir di bawah ini untuk melaporkan kendala teknis atau pengajuan layanan TIK (Email, TTE/E-Sign, dll.). Tim kami akan segera menindaklanjuti laporan Anda.</p>
+                    <h2 class="text-xs font-bold text-indigo-800 uppercase tracking-wider">Layanan Bantuan</h2>
+                    <p class="text-[10px] text-indigo-700 leading-normal mt-0.5">Sampaikan kendala akun email dinas atau isu teknis TTE Anda melalui formulir berikut.</p>
                 </div>
             </div>
 
@@ -115,10 +115,10 @@
                 <?= csrf_field() ?>
 
                 <div class="space-y-6">
-                    <!-- Sesi 1: Informasi Pemohon -->
+                    <!-- Sesi 1: Data Pemohon -->
                     <div class="space-y-4">
                         <h3 class="text-xs font-bold text-slate-800 uppercase tracking-widest border-b border-slate-100 pb-2 flex items-center gap-2">
-                            <i class="fas fa-user-circle text-slate-500 text-sm"></i> Informasi Pemohon
+                            <i class="fas fa-user-circle text-slate-500 text-sm"></i> Data Pemohon
                         </h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
@@ -143,7 +143,7 @@
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label for="kontak_whatsapp" class="block text-xs font-medium text-slate-700 mb-1 uppercase tracking-wider">Nomor WhatsApp Aktif</label>
+                                <label for="kontak_whatsapp" class="block text-xs font-medium text-slate-700 mb-1 uppercase tracking-wider">Nomor WhatsApp</label>
                                 <div class="relative">
                                     <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-700">
                                         <i class="fab fa-whatsapp text-xs"></i>
@@ -152,10 +152,10 @@
                                 </div>
                             </div>
                             <div>
-                                <label class="block text-xs font-medium text-slate-700 mb-1 uppercase tracking-wider">Unit Kerja / Instansi</label>
+                                <label class="block text-xs font-medium text-slate-700 mb-1 uppercase tracking-wider">Unit Kerja</label>
                                 <div class="relative">
                                     <select id="agency_info" name="agency_info" required>
-                                        <option value="">Pilih Unit Kerja Anda...</option>
+                                        <option value="">Pilih Unit Kerja...</option>
                                         <?php
                                         $groups = [];
                                         foreach ($agencies as $agency) {
@@ -174,10 +174,10 @@
                         </div>
                     </div>
 
-                    <!-- Sesi 2: Layanan & Kendala -->
+                    <!-- Sesi 2: Detail Kendala -->
                     <div class="space-y-4 pt-4 border-t border-slate-100">
                         <h3 class="text-xs font-bold text-slate-800 uppercase tracking-widest border-b border-slate-100 pb-2 flex items-center gap-2">
-                            <i class="fas fa-exclamation-circle text-slate-500 text-sm"></i> Detail Kendala & Layanan
+                            <i class="fas fa-exclamation-circle text-slate-500 text-sm"></i> Detail Kendala
                         </h3>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
@@ -190,13 +190,13 @@
                                 </select>
                             </div>
                             <div>
-                                <label for="service" class="block text-xs font-medium text-slate-700 mb-1 uppercase tracking-wider">Layanan Spesifik</label>
+                                <label for="service" class="block text-xs font-medium text-slate-700 mb-1 uppercase tracking-wider">Layanan</label>
                                 <select class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 cursor-pointer transition-all animate-none" id="service" name="service" onchange="updateKeteranganOptions()" required>
                                     <option value="">Pilih Layanan...</option>
                                 </select>
                             </div>
                             <div>
-                                <label for="kategori_layanan" class="block text-xs font-medium text-slate-700 mb-1 uppercase tracking-wider">Jenis Masalah</label>
+                                <label for="kategori_layanan" class="block text-xs font-medium text-slate-700 mb-1 uppercase tracking-wider">Kendala</label>
                                 <select class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 cursor-pointer transition-all animate-none" id="kategori_layanan" name="kategori_layanan" required>
                                     <option value="">Pilih Kendala...</option>
                                 </select>

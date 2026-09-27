@@ -106,7 +106,7 @@
                 <div>
                     <a href="<?= site_url('portal-pk') ?>" class="text-xs font-semibold text-slate-700 hover:text-slate-900 transition-colors inline-flex items-center gap-1.5">
                         <i class="fas fa-file-signature text-slate-500"></i>
-                        <span>Portal TTE PPPK &rarr;</span>
+                        <span>Portal TTE PK &rarr;</span>
                     </a>
                 </div>
                 <div>

@@ -3,6 +3,22 @@
 Semua perubahan penting pada proyek ini dicatat di berkas ini.
 Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+# [27 September 2026] — Penyempurnaan TTE PK, Desain QR Code Berlogo, Footer Srikandi Kondisional, dan Halaman Verifikasi
+
+- **Penyempurnaan Visual & Interaktivitas QR Code TTE**:
+  - Mengimplementasikan tata letak tanda tangan vertikal simetris (Model 1) dengan ukuran proporsional 80x80 px pada template dokumen Perjanjian Kerja ([`perjanjian_kerja_pppk_template.php`](app/Views/email/exports/perjanjian_kerja_pppk_template.php) dan [`perjanjian_kerja_template.php`](app/Views/email/exports/perjanjian_kerja_template.php)).
+  - Menyematkan Logo Resmi Pemerintah Kabupaten Sinjai di tengah QR Code dengan resolusi warna asli (TrueColor GD) dan tingkat koreksi kesalahan tinggi (*High Error Correction* / `ecc=H`), memastikan QR Code tetap terbaca sempurna saat dipindai.
+  - Menjadikan QR Code di dalam berkas PDF interaktif (*clickable hyperlink*) yang langsung mengarahkan ke URL verifikasi keabsahan dokumen saat diklik pada aplikasi pembaca PDF.
+- **Footer Srikandi Kondisional**:
+  - Menyederhanakan footer dokumen PDF menjadi pernyataan resmi BSrE: *"Dokumen ini telah ditandatangani secara elektronik menggunakan sertifikat elektronik yang diterbitkan oleh Balai Sertifikasi Elektronik (BSrE), BSSN."*
+  - Mengatur visibilitas footer agar **hanya tampil jika dokumen telah ditandatangani secara elektronik (TTE)**, menjaga kebersihan halaman pada draf perjanjian kerja yang belum ditandatangani.
+- **Perbaikan Resolusi URL & Endpoint Verifikasi Publik**:
+  - Memperbaiki pembentukan URL QR Code menggunakan `site_url('verifikasi/' . $email['user'])` yang dinamis sesuai domain/host aplikasi aktif.
+  - Mengoptimalkan metode `profile()` pada [`EmailController.php`](app/Domains/Email/Controllers/EmailController.php) agar mendukung pencarian fleksibel melalui **Username/User**, **NIK**, maupun **NIP**, serta memvalidasi kepemilikan status Perjanjian Kerja sah.
+  - Memperbarui judul kartu identitas pada halaman verifikasi ([`verify.php`](app/Views/email/verify.php)) menjadi **Verifikasi Akun**.
+
+---
+
 # [25 September 2026] — Peluncuran Fitur Tanda Tangan Elektronik (TTE) Bupati untuk Perjanjian Kerja (TTE PK)
 
 - **Modul Antrean & Manajemen TTE PK (`/tte-pk`)**:
