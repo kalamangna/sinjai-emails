@@ -570,7 +570,6 @@ class EmailExportService
             
             $isPppk = $statusPppk && $email['status_asn_id'] == $statusPppk['id'];
             $template = $isPppk ? 'email/exports/perjanjian_kerja_pppk_template' : 'email/exports/perjanjian_kerja_template';
-            $folderName = $isPppk ? 'PPPK' : 'PPPK_PARUH_WAKTU';
             $filePrefix = $isPppk ? 'pppk_' : 'pppk_paruh_waktu_';
 
             $name = $email['unit_kerja_name'] ?? $email['unit_kerja'] ?? 'N/A';
@@ -596,7 +595,7 @@ class EmailExportService
             $dompdf->render();
             
             $pdfOutput = $dompdf->output();
-            $pdfFileName = $folderName . '/pk_' . $filePrefix . url_title($email['name'], '_', true) . '_' . ($email['nip'] ?? 'NIP_NONE') . '.pdf';
+            $pdfFileName = 'pk_' . $filePrefix . url_title($email['name'], '_', true) . '_' . ($email['nip'] ?? 'NIP_NONE') . '.pdf';
             $zip->addFromString($pdfFileName, $pdfOutput);
             $addedFiles[] = $uniqueKey;
         }
@@ -788,8 +787,6 @@ class EmailExportService
         $statusPppk = $this->statusAsnModel->where('nama_status_asn', 'PPPK')->first();
         $isPppk = $statusPppk && $email['status_asn_id'] == $statusPppk['id'];
         $template = $isPppk ? 'email/exports/perjanjian_kerja_pppk_template' : 'email/exports/perjanjian_kerja_template';
-        $subFolder = $isPppk ? 'PPPK' : 'PPPK_PARUH_WAKTU';
-
         $name = $email['unit_kerja_name'] ?? $email['unit_kerja'] ?? 'N/A';
         $unitKerja = [
             'nama_unit_kerja' => $name
@@ -816,14 +813,13 @@ class EmailExportService
 
         $output = $dompdf->output();
         $baseTempDir = WRITEPATH . 'uploads/temp_export_' . $unitId;
-        $fullTempDir = $baseTempDir . '/' . $subFolder;
-        if (!is_dir($fullTempDir)) {
-            mkdir($fullTempDir, 0775, true);
+        if (!is_dir($baseTempDir)) {
+            mkdir($baseTempDir, 0775, true);
         }
 
         $filePrefix = $isPppk ? 'pppk_' : 'pppk_paruh_waktu_';
         $filename = 'pk_' . $filePrefix . url_title($email['name'], '_', true) . '_' . ($email['nip'] ?? 'NIP_NONE') . '.pdf';
-        file_put_contents($fullTempDir . '/' . $filename, $output);
+        file_put_contents($baseTempDir . '/' . $filename, $output);
         
         return true;
     }

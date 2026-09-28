@@ -143,6 +143,17 @@ class EmailApiController extends BaseController
         $typeLabel = '';
         if (is_dir($tempDir . '/PPPK')) $typeLabel = 'pppk_';
         if (is_dir($tempDir . '/PPPK_PARUH_WAKTU')) $typeLabel = 'pppk_paruh_waktu_';
+        if (empty($typeLabel) && !empty($pdfFiles)) {
+            foreach ($pdfFiles as $pf) {
+                if (str_contains($pf, 'pppk_paruh_waktu_')) {
+                    $typeLabel = 'pppk_paruh_waktu_';
+                    break;
+                } elseif (str_contains($pf, 'pppk_')) {
+                    $typeLabel = 'pppk_';
+                    break;
+                }
+            }
+        }
 
         foreach ($chunks as $index => $chunk) {
             $zip = new \ZipArchive();
@@ -156,7 +167,7 @@ class EmailApiController extends BaseController
             }
 
             foreach ($chunk as $file) {
-                $zip->addFile($tempDir . '/' . $file, $file);
+                $zip->addFile($tempDir . '/' . $file, basename($file));
             }
             $zip->close();
             $generatedZips[] = $zipFileName;

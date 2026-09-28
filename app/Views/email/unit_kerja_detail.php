@@ -444,10 +444,10 @@ $batchPasswordContent = '
                 </div>
                 <span id="batchPwProgressPct" class="text-xs font-mono font-bold text-slate-700">0%</span>
             </div>
-            <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden p-0.5 border border-slate-200">
-                <div id="batchPwProgressBar" class="bg-slate-800 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+            <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
+                <div id="batchPwProgressBar" class="bg-slate-900 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
             </div>
-            <p id="batchPwCurrentAccount" class="text-[10px] font-mono text-slate-500 truncate text-center"></p>
+            <p id="batchPwCurrentAccount" class="text-[10px] text-slate-500 italic truncate text-center"></p>
         </div>
 
         <!-- Hasil -->
@@ -476,23 +476,28 @@ echo view('components/modal', [
 ], ['saveData' => false]);
 ?>
 
-<!-- Modal Progress Batch -->
+<!-- Modal Progress Batch Ekspor PK -->
 <?php
-$modalContent = '
-    <div class="space-y-4">
-        <div class="w-full bg-slate-100 rounded-full h-2">
-            <div id="exportProgressBar" class="bg-slate-700 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+$exportProgressContent = '
+    <div class="space-y-3">
+        <div class="flex justify-between items-center text-xs font-bold text-slate-700">
+            <span id="exportStatusText"><i class="fas fa-spinner fa-spin mr-1.5 text-slate-700"></i> Memulai...</span>
+            <span id="exportProgressPct" class="font-mono text-slate-800">0%</span>
         </div>
-        <p id="exportStatusText" class="text-center text-[10px] font-bold text-slate-700 uppercase tracking-widest">Memulai...</p>
+        <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
+            <div id="exportProgressBar" class="bg-slate-900 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+        <p id="exportProgressDetail" class="text-[10px] text-slate-500 italic truncate"></p>
     </div>
 ';
 
 echo view('components/modal', [
-    'id' => 'exportProgressModal',
-    'title' => 'Pemrosesan Dokumen PK Massal',
-    'size' => 'sm',
+    'id'        => 'exportProgressModal',
+    'title'     => 'Ekspor Dokumen PK Massal',
+    'size'      => 'sm',
+    'bodyClass' => 'p-5 sm:p-6',
     'showClose' => false,
-    'content' => $modalContent
+    'content'   => $exportProgressContent,
 ], ['saveData' => false]);
 ?>
 
@@ -667,10 +672,18 @@ echo view('components/modal', [
     });
 
     function openExportModal(unitId, statusType = 'pppk') {
-        const modal = document.getElementById('exportProgressModal');
         const bar = document.getElementById('exportProgressBar');
         const status = document.getElementById('exportStatusText');
-        modal.classList.remove('hidden');
+        const pctEl = document.getElementById('exportProgressPct');
+        const detail = document.getElementById('exportProgressDetail');
+
+        // Reset state
+        if (bar) bar.style.width = '0%';
+        if (pctEl) pctEl.innerText = '0%';
+        if (status) status.innerHTML = '<i class="fas fa-spinner fa-spin mr-1.5 text-slate-700"></i> Memulai...';
+        if (detail) detail.innerText = 'Menghubungkan ke server...';
+
+        openModal('exportProgressModal');
 
         let queryParams = `pk_type=${statusType}`;
         const currentQuery = '<?= $_SERVER['QUERY_STRING'] ?>';
@@ -681,12 +694,12 @@ echo view('components/modal', [
         fetch(`<?= site_url('email/api_unit_emails/') ?>${unitId}?${queryParams}`)
             .then(r => r.json()).then(data => {
                 if (!data.success) {
-                    modal.classList.add('hidden');
+                    closeModal('exportProgressModal');
                     return showGlobalError('Gagal Mengambil Data', data.message || 'Gagal mengambil data email.');
                 }
 
                 if (!data.emails || !data.emails.length) {
-                    modal.classList.add('hidden');
+                    closeModal('exportProgressModal');
                     return showGlobalAlert('Informasi', 'Tidak ada data PPPK di unit ini.', 'info');
                 }
 
@@ -694,13 +707,27 @@ echo view('components/modal', [
                 let processed = 0;
                 const process = () => {
                     if (processed >= emails.length) {
-                        status.innerText = 'MEMBUAT FILE ZIP...';
+                        if (bar) bar.style.width = '100%';
+                        if (pctEl) pctEl.innerText = '100%';
+                        if (status) status.innerHTML = '<i class="fas fa-file-archive mr-1.5 text-slate-700"></i> Mengompres Berkas ZIP...';
+                        if (detail) detail.innerText = 'Menyiapkan berkas unduhan...';
+
                         return fetch(`<?= site_url('email/api_download_zip/') ?>${unitId}`).then(r => r.json()).then(d => {
-                            d.files.forEach((f, i) => setTimeout(() => window.location = `<?= site_url('email/download_zip_file/') ?>${f}`, i * 2000));
-                            setTimeout(() => modal.classList.add('hidden'), d.files.length * 2000 + 1000);
+                            if (status) status.innerHTML = '<i class="fas fa-check-circle mr-1.5 text-emerald-600"></i> Berhasil Dibuat!';
+                            if (detail) detail.innerText = `Mengunduh ${d.files ? d.files.length : 1} berkas ZIP...`;
+                            if (d.files && d.files.length) {
+                                d.files.forEach((f, i) => setTimeout(() => window.location = `<?= site_url('email/download_zip_file/') ?>${f}`, i * 2000));
+                            }
+                            setTimeout(() => closeModal('exportProgressModal'), (d.files ? d.files.length : 1) * 2000 + 1000);
+                        }).catch(err => {
+                            closeModal('exportProgressModal');
+                            showGlobalError('Gagal Mengunduh ZIP', 'Terjadi kesalahan saat mengompres berkas.');
                         });
                     }
                     const email = emails[processed];
+                    const accountName = email.name || email.user || 'Pegawai';
+                    if (detail) detail.innerText = accountName;
+
                     fetch(`<?= site_url('email/api_generate_pdf') ?>`, {
                         method: 'POST',
                         headers: {
@@ -710,12 +737,19 @@ echo view('components/modal', [
                     }).then(() => {
                         processed++;
                         const p = Math.round((processed / emails.length) * 100);
-                        bar.style.width = p + '%';
-                        status.innerText = `PROSES: ${processed}/${emails.length}`;
+                        if (bar) bar.style.width = p + '%';
+                        if (pctEl) pctEl.innerText = p + '%';
+                        if (status) status.innerHTML = `<i class="fas fa-spinner fa-spin mr-1.5 text-slate-700"></i> Memproses Dokumen (${processed}/${emails.length})`;
+                        setTimeout(process, 100);
+                    }).catch(err => {
+                        processed++;
                         setTimeout(process, 100);
                     });
                 };
                 process();
+            }).catch(err => {
+                closeModal('exportProgressModal');
+                showGlobalError('Koneksi Gagal', 'Gagal memproses data unit kerja.');
             });
     }
 
