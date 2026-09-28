@@ -3,6 +3,19 @@
 Semua perubahan penting pada proyek ini dicatat di berkas ini.
 Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+# [28 September 2026] — Penyempurnaan Tata Letak Dokumen PK, Penyelarasan Tag SRIKANDI, dan Standarisasi Penamaan Berkas
+
+- **Penyempurnaan Format & Tata Letak Dokumen Perjanjian Kerja (PK)**:
+  - Memperbaiki pemutus halaman (*page break*) pada template dokumen PK ([`perjanjian_kerja_template.php`](app/Views/email/exports/perjanjian_kerja_template.php) dan [`perjanjian_kerja_pppk_template.php`](app/Views/email/exports/perjanjian_kerja_pppk_template.php)) dengan menempatkannya sebelum Pasal 12, memastikan Pasal 12, Pasal 13, dan tabel tanda tangan tersaji rapi dan utuh pada halaman penutup (10 halaman untuk PPPK Paruh Waktu dan 8 halaman untuk PPPK Penuh Waktu).
+  - Menghapus penekanan cetak tebal (*bold*) pada angka dan kalimat terbilang nominal gaji di Pasal 6 agar selaras dengan draf resmi.
+  - Menyesuaikan posisi koordinat tag tanda tangan `${ttd_pengirim2}` dan `${ttd_pengirim1}` menggunakan kelas `.sig-tag` (`padding-left: 65px`), memastikan posisi stempel QR barcode hasil unggah di aplikasi SRIKANDI terpusat presisi di atas nama penandatangan.
+- **Standarisasi Penamaan Berkas Ekspor**:
+  - Mengubah prefix penamaan berkas ekspor PDF dan arsip ZIP dari `perjanjian_kerja_` menjadi `pk_` pada [`EmailExportService.php`](app/Domains/Email/Services/EmailExportService.php) dan [`EmailApiController.php`](app/Domains/Email/Controllers/EmailApiController.php):
+    - Format PDF: `pk_pppk_{nama}_{nip}.pdf` dan `pk_pppk_paruh_waktu_{nama}_{nip}.pdf`.
+    - Format ZIP: `pk_pppk_{unit_kerja}.zip` dan `pk_pppk_paruh_waktu_{unit_kerja}.zip`.
+
+---
+
 # [27 September 2026] — Penyempurnaan TTE PK, Desain QR Code Berlogo, Footer Srikandi Kondisional, dan Halaman Verifikasi
 
 - **Penyempurnaan Visual & Interaktivitas QR Code TTE**:

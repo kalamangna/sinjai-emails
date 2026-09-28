@@ -457,7 +457,7 @@ class EmailExportService
         }
 
         $template = $isPppk ? 'email/exports/perjanjian_kerja_pppk_template' : 'email/exports/perjanjian_kerja_template';
-        $prefix = $isPppk ? 'pppk_' : 'paruh_waktu_';
+        $prefix = $isPppk ? 'pppk_' : 'pppk_paruh_waktu_';
 
         // Fallback to raw unit_kerja column if joined name is missing
         $name = $email['unit_kerja_name'] ?? $email['unit_kerja'] ?? 'N/A';
@@ -495,7 +495,7 @@ class EmailExportService
 
         return [
             'dompdf' => $dompdf,
-            'filename' => 'perjanjian_kerja_' . $prefix . url_title($email['name'], '_', true) . '_' . ($email['nip'] ?? 'NIP_NONE') . '.pdf'
+            'filename' => 'pk_' . $prefix . url_title($email['name'], '_', true) . '_' . ($email['nip'] ?? 'NIP_NONE') . '.pdf'
         ];
     }
 
@@ -551,10 +551,10 @@ class EmailExportService
 
         $typeLabel = '';
         if ($pkType === 'pppk') $typeLabel = 'pppk_';
-        elseif ($pkType === 'pppk_pw') $typeLabel = 'paruh_waktu_';
+        elseif ($pkType === 'pppk_pw') $typeLabel = 'pppk_paruh_waktu_';
 
         $zip = new ZipArchive();
-        $zipFileName = 'perjanjian_kerja_' . $typeLabel . url_title($unitKerja['nama_unit_kerja'], '_', true) . '.zip';
+        $zipFileName = 'pk_' . $typeLabel . url_title($unitKerja['nama_unit_kerja'], '_', true) . '.zip';
         $tempZipPath = WRITEPATH . 'uploads/' . $zipFileName;
         
         if ($zip->open($tempZipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== TRUE) {
@@ -571,7 +571,7 @@ class EmailExportService
             $isPppk = $statusPppk && $email['status_asn_id'] == $statusPppk['id'];
             $template = $isPppk ? 'email/exports/perjanjian_kerja_pppk_template' : 'email/exports/perjanjian_kerja_template';
             $folderName = $isPppk ? 'PPPK' : 'PPPK_PARUH_WAKTU';
-            $filePrefix = $isPppk ? 'pppk_' : 'paruh_waktu_';
+            $filePrefix = $isPppk ? 'pppk_' : 'pppk_paruh_waktu_';
 
             $name = $email['unit_kerja_name'] ?? $email['unit_kerja'] ?? 'N/A';
             $itemUnitKerja = [
@@ -596,7 +596,7 @@ class EmailExportService
             $dompdf->render();
             
             $pdfOutput = $dompdf->output();
-            $pdfFileName = $folderName . '/perjanjian_kerja_' . $filePrefix . url_title($email['name'], '_', true) . '_' . ($email['nip'] ?? 'NIP_NONE') . '.pdf';
+            $pdfFileName = $folderName . '/pk_' . $filePrefix . url_title($email['name'], '_', true) . '_' . ($email['nip'] ?? 'NIP_NONE') . '.pdf';
             $zip->addFromString($pdfFileName, $pdfOutput);
             $addedFiles[] = $uniqueKey;
         }
@@ -821,8 +821,8 @@ class EmailExportService
             mkdir($fullTempDir, 0775, true);
         }
 
-        $filePrefix = $isPppk ? 'pppk_' : 'paruh_waktu_';
-        $filename = 'perjanjian_kerja_' . $filePrefix . url_title($email['name'], '_', true) . '_' . ($email['nip'] ?? 'NIP_NONE') . '.pdf';
+        $filePrefix = $isPppk ? 'pppk_' : 'pppk_paruh_waktu_';
+        $filename = 'pk_' . $filePrefix . url_title($email['name'], '_', true) . '_' . ($email['nip'] ?? 'NIP_NONE') . '.pdf';
         file_put_contents($fullTempDir . '/' . $filename, $output);
         
         return true;

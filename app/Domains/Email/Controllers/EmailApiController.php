@@ -142,12 +142,12 @@ class EmailApiController extends BaseController
         // Detect type for filename
         $typeLabel = '';
         if (is_dir($tempDir . '/PPPK')) $typeLabel = 'pppk_';
-        if (is_dir($tempDir . '/PPPK_PARUH_WAKTU')) $typeLabel = 'paruh_waktu_';
+        if (is_dir($tempDir . '/PPPK_PARUH_WAKTU')) $typeLabel = 'pppk_paruh_waktu_';
 
         foreach ($chunks as $index => $chunk) {
             $zip = new \ZipArchive();
             $partSuffix = (count($chunks) > 1) ? '_part_' . ($index + 1) : '';
-            $zipFileName = 'perjanjian_kerja_' . $typeLabel . $baseName . $partSuffix . '.zip';
+            $zipFileName = 'pk_' . $typeLabel . $baseName . $partSuffix . '.zip';
             $zipFilePath = WRITEPATH . 'uploads/' . $zipFileName;
 
             if ($zip->open($zipFilePath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== TRUE) {

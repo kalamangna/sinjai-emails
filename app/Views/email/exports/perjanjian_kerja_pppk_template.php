@@ -182,7 +182,7 @@
 
         /* SIGNATURES */
         .signature-table {
-            margin-top: 100px;
+            margin-top: 40px;
             width: 100%;
             page-break-inside: avoid;
         }
@@ -194,8 +194,13 @@
         }
 
         .sig-space {
-            height: 95px;
+            height: 105px;
             vertical-align: middle;
+        }
+
+        .sig-tag {
+            display: inline-block;
+            padding-left: 65px;
         }
 
         .page-break {
@@ -692,7 +697,7 @@
         <tr class="keep-together">
             <td class="num-col">(2)</td>
             <td class="text-justify">
-                Pihak Kedua berhak menerima gaji dalam golongan <strong><?= esc($email['golongan'] ?? '-') ?></strong> sebesar <strong>Rp. <?= number_format($pk_data['gaji_nominal'] ?? 3203600, 0, ',', '.') ?></strong> (<?= esc($pk_data['gaji_terbilang'] ?? '-') ?> Rupiah).
+                Pihak Kedua berhak menerima gaji dalam golongan <strong><?= esc($email['golongan'] ?? '-') ?></strong> sebesar Rp. <?= number_format($pk_data['gaji_nominal'] ?? 3203600, 0, ',', '.') ?> (<?= esc($pk_data['gaji_terbilang'] ?? '-') ?> Rupiah).
             </td>
         </tr>
         <tr class="keep-together">
@@ -944,6 +949,8 @@
         </tr>
     </table>
 
+    <div class="page-break"></div>
+
     <!-- PASAL 12 -->
     <div class="pasal-header">
         Pasal 12 <br>
@@ -990,7 +997,7 @@
                         <img src="<?= $qr_bupati ?>" style="width: 80px; height: 80px; display: block; margin: 0 auto; border: 0;">
                     </a>
                 <?php else: ?>
-                    ${ttd_pengirim2}
+                    <span class="sig-tag">${ttd_pengirim2}</span>
                 <?php endif; ?>
             </td>
             <td class="sig-cell sig-space">
@@ -999,7 +1006,7 @@
                         <img src="<?= $qr_pppk ?>" style="width: 80px; height: 80px; display: block; margin: 0 auto; border: 0;">
                     </a>
                 <?php else: ?>
-                    ${ttd_pengirim1}
+                    <span class="sig-tag">${ttd_pengirim1}</span>
                 <?php endif; ?>
             </td>
         </tr>
