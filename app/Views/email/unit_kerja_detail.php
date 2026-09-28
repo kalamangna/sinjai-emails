@@ -440,14 +440,14 @@ $batchPasswordContent = '
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
                     <i class="fas fa-spinner fa-spin text-slate-700 text-xs"></i>
-                    <span id="batchPwStatusText" class="text-xs font-bold text-slate-800 uppercase tracking-tight">Memulai...</span>
+                    <span id="batchPwStatusText" class="text-xs font-bold text-slate-800 uppercase tracking-tight">Memproses...</span>
                 </div>
                 <span id="batchPwProgressPct" class="text-xs font-mono font-bold text-slate-700">0%</span>
             </div>
             <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
                 <div id="batchPwProgressBar" class="bg-slate-900 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
             </div>
-            <p id="batchPwCurrentAccount" class="text-[10px] text-slate-500 italic truncate text-center"></p>
+            <p id="batchPwCurrentName" class="text-[10px] font-semibold text-slate-600 truncate text-center"></p>
         </div>
 
         <!-- Hasil -->
@@ -481,19 +481,19 @@ echo view('components/modal', [
 $exportProgressContent = '
     <div class="space-y-3">
         <div class="flex justify-between items-center text-xs font-bold text-slate-700">
-            <span id="exportStatusText"><i class="fas fa-spinner fa-spin mr-1.5 text-slate-700"></i> Memulai...</span>
+            <span id="exportStatusText"><i class="fas fa-spinner fa-spin mr-1.5 text-slate-700"></i> Memproses...</span>
             <span id="exportProgressPct" class="font-mono text-slate-800">0%</span>
         </div>
         <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
             <div id="exportProgressBar" class="bg-slate-900 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
         </div>
-        <p id="exportProgressDetail" class="text-[10px] text-slate-500 italic truncate"></p>
+        <p id="exportProgressName" class="text-[10px] font-semibold text-slate-600 truncate text-center"></p>
     </div>
 ';
 
 echo view('components/modal', [
     'id'        => 'exportProgressModal',
-    'title'     => 'Ekspor Dokumen PK Massal',
+    'title'     => 'Ekspor PK',
     'size'      => 'sm',
     'bodyClass' => 'p-5 sm:p-6',
     'showClose' => false,
@@ -675,13 +675,13 @@ echo view('components/modal', [
         const bar = document.getElementById('exportProgressBar');
         const status = document.getElementById('exportStatusText');
         const pctEl = document.getElementById('exportProgressPct');
-        const detail = document.getElementById('exportProgressDetail');
+        const nameEl = document.getElementById('exportProgressName');
 
         // Reset state
         if (bar) bar.style.width = '0%';
         if (pctEl) pctEl.innerText = '0%';
-        if (status) status.innerHTML = '<i class="fas fa-spinner fa-spin mr-1.5 text-slate-700"></i> Memulai...';
-        if (detail) detail.innerText = 'Menghubungkan ke server...';
+        if (status) status.innerHTML = '<i class="fas fa-spinner fa-spin mr-1.5 text-slate-700"></i> Memproses...';
+        if (nameEl) nameEl.innerText = '';
 
         openModal('exportProgressModal');
 
@@ -709,12 +709,11 @@ echo view('components/modal', [
                     if (processed >= emails.length) {
                         if (bar) bar.style.width = '100%';
                         if (pctEl) pctEl.innerText = '100%';
-                        if (status) status.innerHTML = '<i class="fas fa-file-archive mr-1.5 text-slate-700"></i> Mengompres Berkas ZIP...';
-                        if (detail) detail.innerText = 'Menyiapkan berkas unduhan...';
+                        if (status) status.innerHTML = '<i class="fas fa-file-archive mr-1.5 text-slate-700"></i> Mengompres...';
+                        if (nameEl) nameEl.innerText = '';
 
                         return fetch(`<?= site_url('email/api_download_zip/') ?>${unitId}`).then(r => r.json()).then(d => {
-                            if (status) status.innerHTML = '<i class="fas fa-check-circle mr-1.5 text-emerald-600"></i> Berhasil Dibuat!';
-                            if (detail) detail.innerText = `Mengunduh ${d.files ? d.files.length : 1} berkas ZIP...`;
+                            if (status) status.innerHTML = '<i class="fas fa-check-circle mr-1.5 text-emerald-600"></i> Selesai';
                             if (d.files && d.files.length) {
                                 d.files.forEach((f, i) => setTimeout(() => window.location = `<?= site_url('email/download_zip_file/') ?>${f}`, i * 2000));
                             }
@@ -725,8 +724,7 @@ echo view('components/modal', [
                         });
                     }
                     const email = emails[processed];
-                    const accountName = email.name || email.user || 'Pegawai';
-                    if (detail) detail.innerText = accountName;
+                    if (nameEl) nameEl.innerText = email.name || email.user || '';
 
                     fetch(`<?= site_url('email/api_generate_pdf') ?>`, {
                         method: 'POST',
@@ -739,7 +737,7 @@ echo view('components/modal', [
                         const p = Math.round((processed / emails.length) * 100);
                         if (bar) bar.style.width = p + '%';
                         if (pctEl) pctEl.innerText = p + '%';
-                        if (status) status.innerHTML = `<i class="fas fa-spinner fa-spin mr-1.5 text-slate-700"></i> Memproses Dokumen (${processed}/${emails.length})`;
+                        if (status) status.innerHTML = `<i class="fas fa-spinner fa-spin mr-1.5 text-slate-700"></i> Memproses (${processed}/${emails.length})`;
                         setTimeout(process, 100);
                     }).catch(err => {
                         processed++;
@@ -1186,7 +1184,7 @@ echo view('components/modal', [
         const progressBar = document.getElementById('batchPwProgressBar');
         const statusText  = document.getElementById('batchPwStatusText');
         const pctText     = document.getElementById('batchPwProgressPct');
-        const curAccount  = document.getElementById('batchPwCurrentAccount');
+        const curName     = document.getElementById('batchPwCurrentName');
 
         let processed = 0, success = 0, failed = 0;
         const failedAccounts = [];
@@ -1197,7 +1195,7 @@ echo view('components/modal', [
                 : manualPassword;
 
             if (statusText) statusText.textContent = `Memproses (${processed + 1}/${accounts.length})`;
-            if (curAccount) curAccount.textContent = account.email;
+            if (curName) curName.textContent = account.name || account.email;
 
             try {
                 const response = await fetch('<?= site_url('email/api_batch_update_password') ?>', {

@@ -15,7 +15,8 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
     - Format ZIP: `pk_pppk_{unit_kerja}.zip` dan `pk_pppk_paruh_waktu_{unit_kerja}.zip`.
   - Menghapus pembuatan subfolder di dalam arsip ZIP, sehingga seluruh berkas PDF langsung tersimpan di *root* arsip ZIP (*flat*) karena tombol aksi ekspor antar jenis pegawai telah dipisahkan.
 - **Standarisasi Desain Modal Proses (UI/UX)**:
-  - Menyelaraskan struktur dan komponen visual modal progress ekspor massal (`exportProgressModal`) pada [`unit_kerja_detail.php`](app/Views/email/unit_kerja_detail.php) agar seragam dengan `modal-batch-tte` (status ikon spinner, persentase monospaced, progress bar `h-2 bg-slate-900`, dan teks detail file).
+  - Menyelaraskan struktur dan komponen visual modal progress ekspor massal (`exportProgressModal`) pada [`unit_kerja_detail.php`](app/Views/email/unit_kerja_detail.php) agar seragam dengan `modal-batch-tte` (status ikon spinner, persentase monospaced, dan progress bar `h-2 bg-slate-900`).
+  - Menyederhanakan redaksi status agar ringkas dan lugas tanpa teks deskriptif yang berlebihan, dengan tetap menampilkan nama pegawai yang sedang diproses.
   - Memperbaiki pemanggilan modal menggunakan helper Flowbite (`openModal()` / `closeModal()`) untuk mengaktifkan efek backdrop blur gelap secara konsisten.
   - Menyelaraskan dimensi dan gaya progress bar pada modal Batch Password.
 
