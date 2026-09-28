@@ -607,6 +607,177 @@ class EmailExportService
         ];
     }
 
+    public function generatePerjanjianKerjaZipQueue($unitKerjaId, $pkType = null, $chunkLimit = 250)
+    {
+        set_time_limit(0);
+        ini_set('memory_limit', '-1');
+
+        $unitKerja = $this->unitKerjaModel->find($unitKerjaId);
+        if (!$unitKerja) {
+            throw new Exception('Unit Kerja tidak ditemukan.');
+        }
+
+        $children = $this->unitKerjaModel->where('parent_id', $unitKerjaId)->findAll();
+        $childrenIds = array_column($children, 'id');
+        
+        $statusPppk = $this->statusAsnModel->where('nama_status_asn', 'PPPK')->first();
+        $statusPppkPw = $this->statusAsnModel->where('nama_status_asn', 'PPPK PARUH WAKTU')->first();
+        
+        if (!$statusPppk && !$statusPppkPw) {
+            throw new Exception('Status PPPK belum dikonfigurasi.');
+        }
+
+        $allowedStatusIds = [];
+        if ($pkType === 'pppk') {
+            if ($statusPppk) $allowedStatusIds[] = $statusPppk['id'];
+        } elseif ($pkType === 'pppk_pw') {
+            if ($statusPppkPw) $allowedStatusIds[] = $statusPppkPw['id'];
+        } else {
+            if ($statusPppk) $allowedStatusIds[] = $statusPppk['id'];
+            if ($statusPppkPw) $allowedStatusIds[] = $statusPppkPw['id'];
+        }
+
+        if (empty($allowedStatusIds)) {
+            throw new Exception('Tidak ada status PPPK yang sesuai.');
+        }
+
+        $allUnitIds = array_merge([$unitKerjaId], $childrenIds);
+        $emails = $this->emailModel->withDetails()
+            ->whereIn('unit_kerja_id', $allUnitIds)
+            ->whereIn('emails.status_asn_id', $allowedStatusIds)
+            ->where('emails.deleted_at', null)
+            ->orderBy('emails.name', 'ASC')
+            ->asArray()
+            ->findAll();
+
+        if (empty($emails)) {
+            throw new Exception('Tidak ada data PPPK pada unit kerja ini.');
+        }
+
+        // Pre-fetch all PK data to avoid N+1 queries
+        $emailList = array_column($emails, 'email');
+        $pkRaw = $this->pkModel->whereIn('email', $emailList)->asArray()->findAll();
+        $pkMap = [];
+        foreach ($pkRaw as $pk) {
+            $pkMap[$pk['email']] = $pk;
+        }
+
+        $saveDir = WRITEPATH . 'uploads/exports/';
+        if (!is_dir($saveDir)) {
+            mkdir($saveDir, 0755, true);
+        }
+
+        $typeLabel = '';
+        if ($pkType === 'pppk') $typeLabel = 'pppk_';
+        elseif ($pkType === 'pppk_pw') $typeLabel = 'pppk_paruh_waktu_';
+
+        $baseName = url_title($unitKerja['nama_unit_kerja'], '_', true);
+
+        // Deduplicate emails by user account to prevent duplicate files
+        $uniqueEmails = [];
+        $seenUsers = [];
+        foreach ($emails as $email) {
+            $key = $email['user'] ?? $email['email'];
+            if (isset($seenUsers[$key])) continue;
+            $seenUsers[$key] = true;
+            $uniqueEmails[] = $email;
+        }
+
+        $chunks = array_chunk($uniqueEmails, $chunkLimit);
+        $totalParts = count($chunks);
+        $results = [];
+        $logoSrc = $this->getGarudaLogoSrc();
+
+        foreach ($chunks as $chunkIdx => $chunkEmails) {
+            $partNumber = $chunkIdx + 1;
+            $partSuffix = ($totalParts > 1) ? '_part_' . $partNumber : '';
+            $zipFileName = 'pk_' . $typeLabel . $baseName . $partSuffix . '.zip';
+            $zipFilePath = $saveDir . $zipFileName;
+
+            $zip = new \ZipArchive();
+            if ($zip->open($zipFilePath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== TRUE) {
+                throw new Exception("Gagal membuat arsip ZIP: $zipFileName");
+            }
+
+            $addedInZip = [];
+            $counter = 0;
+
+            foreach ($chunkEmails as $email) {
+                $counter++;
+                $isPppk = $statusPppk && $email['status_asn_id'] == $statusPppk['id'];
+                $template = $isPppk ? 'email/exports/perjanjian_kerja_pppk_template' : 'email/exports/perjanjian_kerja_template';
+                $filePrefix = $isPppk ? 'pppk_' : 'pppk_paruh_waktu_';
+
+                $cleanName = url_title($email['name'], '_', true);
+                $nip = $email['nip'] ?? 'NIP_NONE';
+                $pdfFileName = 'pk_' . $filePrefix . $cleanName . '_' . $nip . '.pdf';
+
+                if (isset($addedInZip[$pdfFileName])) {
+                    $pdfFileName = 'pk_' . $filePrefix . $cleanName . '_' . ($email['user'] ?? uniqid()) . '.pdf';
+                }
+                $addedInZip[$pdfFileName] = true;
+
+                $pk_data = $pkMap[$email['email']] ?? null;
+
+                // Priority: physically signed TTE files if present
+                $signedBupati = (!empty($pk_data['tte_bupati_file'])) ? WRITEPATH . 'uploads/signed_pk/' . $pk_data['tte_bupati_file'] : null;
+                $signedPegawai = (!empty($pk_data['tte_pegawai_file'])) ? WRITEPATH . 'uploads/signed_pk/' . $pk_data['tte_pegawai_file'] : null;
+
+                $pdfOutput = null;
+                if ($signedBupati && file_exists($signedBupati)) {
+                    $pdfOutput = file_get_contents($signedBupati);
+                } elseif ($signedPegawai && file_exists($signedPegawai)) {
+                    $pdfOutput = file_get_contents($signedPegawai);
+                } else {
+                    $name = $email['unit_kerja_name'] ?? $email['unit_kerja'] ?? 'N/A';
+                    $itemUnitKerja = ['nama_unit_kerja' => $name];
+                    if (!empty($email['parent_unit_kerja_name'])) {
+                        $itemUnitKerja['nama_unit_kerja'] .= ' - ' . $email['parent_unit_kerja_name'];
+                    }
+
+                    $dompdf = $this->getDompdf();
+                    $data = [
+                        'email' => $email,
+                        'unit_kerja' => $itemUnitKerja,
+                        'logoSrc' => $logoSrc,
+                        'pk_data' => $pk_data,
+                    ];
+
+                    $html = view($template, $data);
+                    $dompdf->loadHtml($html);
+                    $dompdf->setPaper('A4', 'portrait');
+                    $dompdf->render();
+                    $pdfOutput = $dompdf->output();
+
+                    unset($dompdf);
+                    unset($html);
+                }
+
+                if ($pdfOutput !== null) {
+                    $zip->addFromString($pdfFileName, $pdfOutput);
+                    unset($pdfOutput);
+                }
+
+                if ($counter % 50 === 0) {
+                    gc_collect_cycles();
+                }
+            }
+
+            $zip->close();
+
+            $results[] = [
+                'filename' => $zipFileName,
+                'file_path' => 'uploads/exports/' . $zipFileName,
+                'part' => $partNumber,
+                'total_parts' => $totalParts,
+                'count' => count($chunkEmails),
+            ];
+        }
+
+        return $results;
+    }
+
+
     public function generateUnitKerjaExcel($unitKerjaId, $params = [])
     {
         set_time_limit(0);

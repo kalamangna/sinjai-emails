@@ -39,11 +39,12 @@
                         </tr>
                     <?php else : ?>
                         <?php foreach ($histories as $h) : ?>
+                            <?php $isZip = str_ends_with(strtolower($h['file_name'] ?? ''), '.zip') || str_starts_with($h['type'], 'ZIP'); ?>
                             <tr class="hover:bg-slate-50 transition-colors">
                                 <td class="px-6 py-4">
                                     <div class="flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center flex-shrink-0">
-                                            <i class="fas fa-file-pdf text-slate-600"></i>
+                                        <div class="w-8 h-8 rounded-lg <?= $isZip ? 'bg-amber-50 border-amber-200' : 'bg-slate-100 border-slate-200' ?> border flex items-center justify-center flex-shrink-0">
+                                            <i class="fas <?= $isZip ? 'fa-file-archive text-amber-600' : 'fa-file-pdf text-slate-600' ?>"></i>
                                         </div>
                                         <div>
                                             <p class="font-medium text-slate-800 leading-tight"><?= esc($h['type']) ?></p>
@@ -85,7 +86,7 @@
                                     <div class="flex items-center justify-end gap-1.5 flex-nowrap">
                                         <?php if ($h['status'] === 'COMPLETED' && $h['file_path']) : ?>
                                             <a href="<?= site_url('reports/download/' . $h['id']) ?>" target="_blank" id="download-btn-<?= $h['id'] ?>" class="btn btn-outline whitespace-nowrap shrink-0 !py-1.5 !px-3 !text-[10px] !font-bold uppercase tracking-wider text-slate-700 hover:text-slate-900 no-underline shadow-xs">
-                                                <i class="fas fa-file-pdf mr-1.5 text-red-600"></i> Lihat PDF
+                                                <i class="fas <?= $isZip ? 'fa-file-archive text-amber-600' : 'fa-file-pdf text-red-600' ?> mr-1.5"></i> <?= $isZip ? 'Unduh ZIP' : 'Lihat PDF' ?>
                                             </a>
                                         <?php elseif ($h['status'] === 'FAILED') : ?>
                                             <button onclick="showGlobalError('Detail Kesalahan Export', '<?= addslashes($h['error_message'] ?? 'Terjadi kesalahan saat memproses laporan.') ?>')" class="btn btn-outline whitespace-nowrap shrink-0 !py-1.5 !px-3 !text-[10px] !font-bold uppercase tracking-wider text-rose-600 hover:bg-rose-50 border-rose-200">
@@ -97,7 +98,7 @@
                                             </button>
                                         <?php endif; ?>
                                         
-                                        <form action="<?= site_url('reports/delete/' . $h['id']) ?>" method="post" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus riwayat ini? File PDF juga akan terhapus.')">
+                                        <form action="<?= site_url('reports/delete/' . $h['id']) ?>" method="post" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus riwayat ini? Berkas terkait juga akan terhapus.')">
                                             <button type="submit" class="btn btn-outline shrink-0 !w-8 !h-8 !p-0 text-slate-400 hover:text-rose-600 hover:bg-rose-50 hover:border-rose-200 justify-center" title="Hapus Riwayat">
                                                 <i class="fas fa-trash-alt text-xs"></i>
                                             </button>
@@ -113,7 +114,7 @@
         
         <?php if (!empty($histories)) : ?>
             <div class="px-6 py-4 bg-slate-50 border-t border-slate-200 text-xs text-slate-500">
-                <i class="fas fa-info-circle mr-1 text-slate-400"></i> Menampilkan 100 riwayat terbaru. File PDF akan dihapus otomatis dari server setelah 3 hari untuk menghemat ruang penyimpanan.
+                <i class="fas fa-info-circle mr-1 text-slate-400"></i> Menampilkan 100 riwayat terbaru. Berkas laporan akan dihapus otomatis dari server setelah 3 hari untuk menghemat ruang penyimpanan.
             </div>
         <?php endif; ?>
     </div>

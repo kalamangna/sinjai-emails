@@ -107,6 +107,8 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
 
         $routes->get('exportPerjanjianKerjaPdf/(:num)', '\App\Domains\Email\Controllers\EmailExportController::exportPerjanjianKerjaPdf/$1');
         $routes->get('export_perjanjian_kerja_pdf/(:num)', '\App\Domains\Email\Controllers\EmailExportController::exportPerjanjianKerjaPdf/$1');
+        $routes->get('exportPerjanjianKerjaZip/(:num)', '\App\Domains\Email\Controllers\EmailExportController::exportPerjanjianKerjaZipQueue/$1');
+        $routes->get('export_perjanjian_kerja_zip/(:num)', '\App\Domains\Email\Controllers\EmailExportController::exportPerjanjianKerjaZipQueue/$1');
 
         $routes->get('exportSinglePerjanjianKerjaPdf/(:any)', '\App\Domains\Email\Controllers\EmailExportController::exportSinglePerjanjianKerjaPdf/$1');
         $routes->get('export_single_perjanjian_kerja_pdf/(:any)', '\App\Domains\Email\Controllers\EmailExportController::exportSinglePerjanjianKerjaPdf/$1');

@@ -58,6 +58,7 @@ Penyediaan data internal yang aman untuk integrasi lintas sektoral di Pemkab Sin
 ### 📄 Sistem Ekspor
 - **Mesin PDF:** Pelaporan profesional menggunakan `Dompdf`, dioptimalkan untuk standar visual "Slate Clean".
 - **Berbagai Format:** Mendukung ekspor PDF, CSV, dan ZIP untuk monitoring akun, ringkasan organisasi, dan log tanda tangan digital.
+- **Ekspor Berkas Berbasis Antrean (Queue):** Ekspor PDF Unit Kerja dan arsip ZIP Perjanjian Kerja (PK) diproses di latar belakang menggunakan worker antrean server-side dengan manajemen pemecahan arsip (*chunking*) otomatis dan retensi penyimpanan 3 hari.
 
 ## 🛠 Teknologi
 

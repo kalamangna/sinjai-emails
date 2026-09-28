@@ -147,6 +147,73 @@ class QueueWorker extends BaseCommand
                         throw $e;
                     }
                     break;
+                case 'export_zip':
+                case 'exportZip':
+                    $historyModel = new \App\Shared\Models\ExportHistoryModel();
+                    $historyId = $payload['history_id'];
+                    $task = $payload['task'];
+                    $filters = $payload['filters'] ?? [];
+
+                    $historyModel->update($historyId, ['status' => 'PROCESSING']);
+
+                    try {
+                        $exportService = new \App\Domains\Email\Services\EmailExportService();
+                        $parts = [];
+
+                        if ($task === 'export_perjanjian_kerja_zip' || $task === 'exportPerjanjianKerjaZip') {
+                            $parts = $exportService->generatePerjanjianKerjaZipQueue(
+                                $filters['unitKerjaId'],
+                                $filters['pk_type'] ?? null
+                            );
+                        }
+
+                        if (!empty($parts)) {
+                            $initialHistory = $historyModel->find($historyId);
+                            $totalParts = count($parts);
+
+                            // Update part 1 on existing historyId
+                            $part1 = $parts[0];
+                            $part1Filters = $filters;
+                            if ($totalParts > 1) {
+                                $part1Filters['part'] = "Part 1 dari {$totalParts} ({$part1['count']} berkas)";
+                            } else {
+                                $part1Filters['count'] = "{$part1['count']} berkas";
+                            }
+
+                            $historyModel->update($historyId, [
+                                'status' => 'COMPLETED',
+                                'file_name' => $part1['filename'],
+                                'file_path' => $part1['file_path'],
+                                'filters' => json_encode($part1Filters)
+                            ]);
+
+                            // Insert additional parts into export_histories if > 1
+                            for ($i = 1; $i < $totalParts; $i++) {
+                                $partN = $parts[$i];
+                                $partNFilters = $filters;
+                                $partNFilters['part'] = "Part " . ($i + 1) . " dari {$totalParts} ({$partN['count']} berkas)";
+
+                                $historyModel->insert([
+                                    'user_id' => $initialHistory['user_id'] ?? null,
+                                    'type' => $initialHistory['type'] ?? 'ZIP_PK',
+                                    'status' => 'COMPLETED',
+                                    'file_name' => $partN['filename'],
+                                    'file_path' => $partN['file_path'],
+                                    'filters' => json_encode($partNFilters)
+                                ]);
+                            }
+                        } else {
+                            throw new \Exception("Export task '$task' tidak menghasilkan berkas ZIP.");
+                        }
+
+                    } catch (\Throwable $e) {
+                        $historyModel->update($historyId, [
+                            'status' => 'FAILED',
+                            'error_message' => $e->getMessage()
+                        ]);
+                        throw $e;
+                    }
+                    break;
                 default:
                     CLI::error("Unknown job type: $type");
             }

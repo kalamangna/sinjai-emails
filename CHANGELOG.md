@@ -3,6 +3,20 @@
 Semua perubahan penting pada proyek ini dicatat di berkas ini.
 Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+# [28 September 2026] — Migrasi Ekspor ZIP Perjanjian Kerja ke Sistem Antrean Server-Side (QueueWorker)
+
+- **Migrasi Ekspor Batch ZIP ke Background Queue**:
+  - Mengalihkan mekanisme ekspor batch Perjanjian Kerja (PPPK dan PPPK PW) dari loop AJAX sisi peramban (*client-side*) ke sistem antrean latar belakang (*server-side queue worker*) pada [`EmailExportController.php`](app/Domains/Email/Controllers/EmailExportController.php) dan [`QueueWorker.php`](app/Commands/QueueWorker.php).
+  - Mengembangkan metode [`generatePerjanjianKerjaZipQueue()`](app/Domains/Email/Services/EmailExportService.php) pada [`EmailExportService.php`](app/Domains/Email/Services/EmailExportService.php) yang memproses seluruh PDF PK pegawai secara efisien dengan manajemen memori DOMPDF berkala (`gc_collect_cycles()`).
+  - Menerapkan pembagian berkas otomatis (*auto-chunking*) per 250 berkas PDF per arsip ZIP untuk unit kerja berskala besar (seperti Dinas Kesehatan), di mana setiap part tercatat otomatis sebagai baris riwayat tersendiri di tabel `export_histories`.
+  - Berkas ZIP disimpan terpusat di direktori `uploads/exports/` dan dibersihkan secara otomatis setelah 3 hari oleh perintah `queue:clean-exports`.
+- **Penyempurnaan Halaman Riwayat Laporan & Detail Unit Kerja**:
+  - Memperbarui halaman [`history.php`](app/Views/email/exports/history.php) dengan identifikasi visual tipe ZIP (ikon arsip `fa-file-archive` amber) dan tombol **[Unduh ZIP]** langsung yang disajikan secara streaming melalui `response->download()`.
+  - Mengubah aksi tombol dropdown **Batch PK** pada [`unit_kerja_detail.php`](app/Views/email/unit_kerja_detail.php) menjadi tautan langsung yang mendaftarkan job antrean dan mengarahkan pengguna ke halaman riwayat laporan, serta membersihkan modal dan script proses AJAX yang sudah usang.
+  - Mendaftarkan rute antrean baru `email/export_perjanjian_kerja_zip/(:num)` pada [`Routes.php`](app/Config/Routes.php).
+
+---
+
 # [28 September 2026] — Penyempurnaan Tata Letak Dokumen PK, Penyelarasan Tag SRIKANDI, Standarisasi Modal Proses, dan Struktur Ekspor ZIP
 
 - **Penyempurnaan Format & Tata Letak Dokumen Perjanjian Kerja (PK)**:

@@ -121,21 +121,54 @@ class EmailExportController extends BaseController
         }
     }
 
-    public function exportPerjanjianKerjaPdf($unitKerjaId)
+    public function exportPerjanjianKerjaZipQueue($unitKerjaId)
     {
         try {
-            $pkType = $this->request->getGet('pk_type');
-            $result = $this->emailExportService->generatePerjanjianKerjaZip($unitKerjaId, $pkType);
+            $pkType = $this->request->getGet('pk_type'); // 'pppk' or 'pppk_pw'
+            
+            $historyModel = new \App\Shared\Models\ExportHistoryModel();
+            $jobModel = new \App\Shared\Models\JobModel();
 
-            log_audit('EXPORT', 'Email', $unitKerjaId, 'Ekspor ZIP Perjanjian Kerja Unit Kerja');
+            $filters = [
+                'unitKerjaId' => $unitKerjaId,
+                'pk_type'     => $pkType,
+            ];
 
-            $response = $this->response->download($result['path'], null)->setFileName($result['filename']);
-            unlink($result['path']);
-            return $response;
+            $type = 'ZIP_PK';
+            if ($pkType === 'pppk') {
+                $type = 'ZIP_PK_PPPK';
+            } elseif ($pkType === 'pppk_pw') {
+                $type = 'ZIP_PK_PPPK_PW';
+            }
+
+            $historyId = $historyModel->insert([
+                'user_id' => session()->get('user_id'),
+                'type'    => $type,
+                'status'  => 'PENDING',
+                'filters' => json_encode($filters),
+            ]);
+
+            $jobModel->push('default', [
+                'type'       => 'export_zip',
+                'task'       => 'export_perjanjian_kerja_zip',
+                'history_id' => $historyId,
+                'filters'    => $filters,
+            ]);
+
+            log_audit('EXPORT', 'Email', $unitKerjaId, 'Antrean Ekspor ZIP Perjanjian Kerja (' . $type . ')');
+
+            session()->setFlashdata('trigger_worker', true);
+            session()->setFlashdata('success', 'Ekspor ZIP Perjanjian Kerja berhasil ditambahkan ke antrean.');
+            return redirect()->to('reports/history');
         } catch (\Throwable $e) {
             $data['error'] = $e->getMessage();
             return view('email/error', $data);
         }
+    }
+
+    public function exportPerjanjianKerjaPdf($unitKerjaId)
+    {
+        return $this->exportPerjanjianKerjaZipQueue($unitKerjaId);
     }
 
     public function exportUnitKerjaPdf($unitKerjaId)
@@ -275,6 +308,15 @@ class EmailExportController extends BaseController
                     $unit = $unitKerjaModel->find($filters['unitKerjaId']);
                     if ($unit) $readable[] = "Unit: " . $unit['nama_unit_kerja'];
                 }
+                if (!empty($filters['pk_type'])) {
+                    $pkLabel = ($filters['pk_type'] === 'pppk_pw') ? 'PPPK Paruh Waktu' : 'PPPK';
+                    $readable[] = "Tipe: " . $pkLabel;
+                }
+                if (!empty($filters['part'])) {
+                    $readable[] = $filters['part'];
+                } elseif (!empty($filters['count'])) {
+                    $readable[] = $filters['count'];
+                }
                 if (!empty($filters['search'])) $readable[] = "Cari: " . $filters['search'];
                 if (!empty($filters['status_asn'])) {
                     $asnName = $asnMap[$filters['status_asn']] ?? $filters['status_asn'];
@@ -301,6 +343,9 @@ class EmailExportController extends BaseController
 
         $path = WRITEPATH . $history['file_path'];
         if (file_exists($path)) {
+            if (str_ends_with(strtolower($history['file_name']), '.zip') || str_starts_with($history['type'], 'ZIP')) {
+                return $this->response->download($path, null)->setFileName($history['file_name']);
+            }
             $mime = mime_content_type($path) ?: 'application/pdf';
             return $this->response
                 ->setContentType($mime)

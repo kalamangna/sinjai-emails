@@ -37,12 +37,12 @@
                         <i class="fas fa-file-contract mr-1.5 text-slate-600"></i> Batch PK <i class="fas fa-chevron-down ml-1 text-[8px] opacity-50"></i>
                     </button>
                     <div class="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 overflow-hidden">
-                        <button onclick="openExportModal(<?= $unit_kerja['id'] ?>, 'pppk')" class="w-full px-4 py-3 text-left text-[10px] font-bold text-slate-700 uppercase tracking-widest hover:bg-slate-50 border-b border-slate-100 transition-colors focus:outline-none">
+                        <a href="<?= site_url('email/export_perjanjian_kerja_zip/' . $unit_kerja['id'] . '?pk_type=pppk') ?>" class="block px-4 py-3 text-left text-[10px] font-bold text-slate-700 uppercase tracking-widest hover:bg-slate-50 border-b border-slate-100 transition-colors no-underline">
                             <i class="fas fa-fw fa-user-tie mr-2 text-slate-500"></i> PPPK
-                        </button>
-                        <button onclick="openExportModal(<?= $unit_kerja['id'] ?>, 'pppk_pw')" class="w-full px-4 py-3 text-left text-[10px] font-bold text-slate-700 uppercase tracking-widest hover:bg-slate-50 transition-colors focus:outline-none">
+                        </a>
+                        <a href="<?= site_url('email/export_perjanjian_kerja_zip/' . $unit_kerja['id'] . '?pk_type=pppk_pw') ?>" class="block px-4 py-3 text-left text-[10px] font-bold text-slate-700 uppercase tracking-widest hover:bg-slate-50 transition-colors no-underline">
                             <i class="fas fa-fw fa-user-clock mr-2 text-slate-500"></i> PPPK PW
-                        </button>
+                        </a>
                     </div>
                 </div>
 
@@ -476,30 +476,6 @@ echo view('components/modal', [
 ], ['saveData' => false]);
 ?>
 
-<!-- Modal Progress Batch Ekspor PK -->
-<?php
-$exportProgressContent = '
-    <div class="space-y-3">
-        <div class="flex justify-between items-center text-xs font-bold text-slate-700">
-            <span id="exportStatusText"><i class="fas fa-spinner fa-spin mr-1.5 text-slate-700"></i> Memproses...</span>
-            <span id="exportProgressPct" class="font-mono text-slate-800">0%</span>
-        </div>
-        <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
-            <div id="exportProgressBar" class="bg-slate-900 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
-        </div>
-        <p id="exportProgressName" class="text-[10px] font-semibold text-slate-600 truncate text-center"></p>
-    </div>
-';
-
-echo view('components/modal', [
-    'id'        => 'exportProgressModal',
-    'title'     => 'Ekspor PK',
-    'size'      => 'sm',
-    'bodyClass' => 'p-5 sm:p-6',
-    'showClose' => false,
-    'content'   => $exportProgressContent,
-], ['saveData' => false]);
-?>
 
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
@@ -670,86 +646,6 @@ echo view('components/modal', [
             }).render();
         <?php endif; ?>
     });
-
-    function openExportModal(unitId, statusType = 'pppk') {
-        const bar = document.getElementById('exportProgressBar');
-        const status = document.getElementById('exportStatusText');
-        const pctEl = document.getElementById('exportProgressPct');
-        const nameEl = document.getElementById('exportProgressName');
-
-        // Reset state
-        if (bar) bar.style.width = '0%';
-        if (pctEl) pctEl.innerText = '0%';
-        if (status) status.innerHTML = '<i class="fas fa-spinner fa-spin mr-1.5 text-slate-700"></i> Memproses...';
-        if (nameEl) nameEl.innerText = '';
-
-        openModal('exportProgressModal');
-
-        let queryParams = `pk_type=${statusType}`;
-        const currentQuery = '<?= $_SERVER['QUERY_STRING'] ?>';
-        if (currentQuery) {
-            queryParams += `&${currentQuery}`;
-        }
-
-        fetch(`<?= site_url('email/api_unit_emails/') ?>${unitId}?${queryParams}`)
-            .then(r => r.json()).then(data => {
-                if (!data.success) {
-                    closeModal('exportProgressModal');
-                    return showGlobalError('Gagal Mengambil Data', data.message || 'Gagal mengambil data email.');
-                }
-
-                if (!data.emails || !data.emails.length) {
-                    closeModal('exportProgressModal');
-                    return showGlobalAlert('Informasi', 'Tidak ada data PPPK di unit ini.', 'info');
-                }
-
-                const emails = data.emails;
-                let processed = 0;
-                const process = () => {
-                    if (processed >= emails.length) {
-                        if (bar) bar.style.width = '100%';
-                        if (pctEl) pctEl.innerText = '100%';
-                        if (status) status.innerHTML = '<i class="fas fa-file-archive mr-1.5 text-slate-700"></i> Mengompres...';
-                        if (nameEl) nameEl.innerText = '';
-
-                        return fetch(`<?= site_url('email/api_download_zip/') ?>${unitId}`).then(r => r.json()).then(d => {
-                            if (status) status.innerHTML = '<i class="fas fa-check-circle mr-1.5 text-emerald-600"></i> Selesai';
-                            if (d.files && d.files.length) {
-                                d.files.forEach((f, i) => setTimeout(() => window.location = `<?= site_url('email/download_zip_file/') ?>${f}`, i * 2000));
-                            }
-                            setTimeout(() => closeModal('exportProgressModal'), (d.files ? d.files.length : 1) * 2000 + 1000);
-                        }).catch(err => {
-                            closeModal('exportProgressModal');
-                            showGlobalError('Gagal Mengunduh ZIP', 'Terjadi kesalahan saat mengompres berkas.');
-                        });
-                    }
-                    const email = emails[processed];
-                    if (nameEl) nameEl.innerText = email.name || email.user || '';
-
-                    fetch(`<?= site_url('email/api_generate_pdf') ?>`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded'
-                        },
-                        body: `unit_id=${unitId}&email_id=${email.id}`
-                    }).then(() => {
-                        processed++;
-                        const p = Math.round((processed / emails.length) * 100);
-                        if (bar) bar.style.width = p + '%';
-                        if (pctEl) pctEl.innerText = p + '%';
-                        if (status) status.innerHTML = `<i class="fas fa-spinner fa-spin mr-1.5 text-slate-700"></i> Memproses (${processed}/${emails.length})`;
-                        setTimeout(process, 100);
-                    }).catch(err => {
-                        processed++;
-                        setTimeout(process, 100);
-                    });
-                };
-                process();
-            }).catch(err => {
-                closeModal('exportProgressModal');
-                showGlobalError('Koneksi Gagal', 'Gagal memproses data unit kerja.');
-            });
-    }
 
     async function syncAllBsreStatus() {
         const containers = document.querySelectorAll('[id^="bsre-status-"]');
