@@ -3,8 +3,11 @@
 Semua perubahan penting pada proyek ini dicatat di berkas ini.
 Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-# [29 September 2026] — Optimalisasi Unduhan Simultan Laporan & Pelepasan Session Lock
+# [29 September 2026] — Optimalisasi Unduhan Simultan Laporan & Perbaikan Pemetaan Nomenklatur Satuan Pendidikan
 
+- **Perbaikan Pemetaan Unit Kerja Satuan Pendidikan (SMPN 3 Sinjai Tengah)**:
+  - Memperbaiki kamus konversi penomoran sekolah lama di [`EmailService.php`](app/Domains/Email/Services/EmailService.php) untuk kata kunci `SINJAI TENGAH` nomor `3` dari sebelumnya `UPTD SMP NEGERI 25 SINJAI` menjadi `UPTD SMP NEGERI 34 SINJAI` sesuai penataan Dapodik dan Perbup Sinjai.
+  - Memindahkan data 9 guru PNS penempatan SMPN 3 Sinjai Tengah ke UPTD SMP Negeri 34 Sinjai disertai pencatatan riwayat *audit log*.
 - **Dukungan Unduhan Simultan / Multi-Download**:
   - Menambahkan pelepasan kunci sesi (`session_write_close()`) pada metode `downloadHistory()` dan `downloadZipFile()` di [`EmailExportController.php`](app/Domains/Email/Controllers/EmailExportController.php) sebelum berkas disajikan ke peramban.
   - Mengatasi kendala antrean unduhan (*blocking session lock*) pada PHP bawaan, memungkinkan pengguna mengunduh banyak berkas ZIP atau PDF secara bersamaan (*concurrent/parallel*) dari halaman Riwayat Laporan tanpa harus menunggu proses unduhan sebelumnya selesai.

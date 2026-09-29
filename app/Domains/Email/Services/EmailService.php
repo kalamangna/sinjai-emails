@@ -1563,7 +1563,7 @@ class EmailService
                                 'SINJAI TENGAH'  => [
                                     '1' => 'UPTD SMP NEGERI 5 SINJAI',
                                     '2' => 'UPTD SMP NEGERI 16 SINJAI',
-                                    '3' => 'UPTD SMP NEGERI 25 SINJAI',
+                                    '3' => 'UPTD SMP NEGERI 34 SINJAI',
                                 ],
                                 'SINJAI TIMUR'   => [
                                     '1' => 'UPTD SMP NEGERI 4 SINJAI',
