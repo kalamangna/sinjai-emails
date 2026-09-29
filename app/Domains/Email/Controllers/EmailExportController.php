@@ -272,6 +272,9 @@ class EmailExportController extends BaseController
 
         $path = WRITEPATH . 'uploads/' . $filename;
         if (file_exists($path)) {
+            if (session_status() === PHP_SESSION_ACTIVE) {
+                session_write_close();
+            }
             return $this->response->download($path, null);
         } else {
             throw new \CodeIgniter\Exceptions\PageNotFoundException($filename . ' not found');
@@ -343,6 +346,11 @@ class EmailExportController extends BaseController
 
         $path = WRITEPATH . $history['file_path'];
         if (file_exists($path)) {
+            // Lepaskan session lock agar request download berikutnya tidak tertahan (blocking)
+            if (session_status() === PHP_SESSION_ACTIVE) {
+                session_write_close();
+            }
+
             if (str_ends_with(strtolower($history['file_name']), '.zip') || str_starts_with($history['type'], 'ZIP')) {
                 return $this->response->download($path, null)->setFileName($history['file_name']);
             }

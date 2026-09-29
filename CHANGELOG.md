@@ -3,6 +3,14 @@
 Semua perubahan penting pada proyek ini dicatat di berkas ini.
 Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+# [29 September 2026] — Optimalisasi Unduhan Simultan Laporan & Pelepasan Session Lock
+
+- **Dukungan Unduhan Simultan / Multi-Download**:
+  - Menambahkan pelepasan kunci sesi (`session_write_close()`) pada metode `downloadHistory()` dan `downloadZipFile()` di [`EmailExportController.php`](app/Domains/Email/Controllers/EmailExportController.php) sebelum berkas disajikan ke peramban.
+  - Mengatasi kendala antrean unduhan (*blocking session lock*) pada PHP bawaan, memungkinkan pengguna mengunduh banyak berkas ZIP atau PDF secara bersamaan (*concurrent/parallel*) dari halaman Riwayat Laporan tanpa harus menunggu proses unduhan sebelumnya selesai.
+
+---
+
 # [28 September 2026] — Migrasi Ekspor ZIP Perjanjian Kerja ke Sistem Antrean Server-Side (QueueWorker)
 
 - **Migrasi Ekspor Batch ZIP ke Background Queue**:
