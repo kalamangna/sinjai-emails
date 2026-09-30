@@ -560,6 +560,8 @@
                     const status = d.web_status.toUpperCase();
                     const colorClass = (status === 'AKTIF') ? 'bg-emerald-100 text-emerald-800 border-transparent' : 'bg-red-100 text-red-700 border-transparent';
                     statusCell.innerHTML = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold border ${colorClass}">${status}</span>`;
+                    const row = statusCell.closest('tr');
+                    if (row) row.setAttribute('data-status', status);
                 }
                 return true;
             }

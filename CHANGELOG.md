@@ -3,6 +3,19 @@
 Semua perubahan penting pada proyek ini dicatat di berkas ini.
 Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+# [30 September 2026] — Otomatisasi Status Kedaluwarsa Domain Website Desa/Kelurahan & Standarisasi Dropdown Keterangan
+
+- **Otomatisasi Status Kedaluwarsa Website (Auto-Nonaktif)**:
+  - Mengembangkan metode `determineStatus()` dan `syncExpiredStatuses()` pada [`WebsiteService.php`](app/Domains/Website/Services/WebsiteService.php) untuk secara otomatis menetapkan status website menjadi `NONAKTIF` apabila `tanggal_berakhir` telah kedaluwarsa (`sisa_hari <= 0`).
+  - Menghubungkan pemeriksaan status kedaluwarsa otomatis pada [`WebDesaKelurahanController.php`](app/Domains/Website/Controllers/WebDesaKelurahanController.php) di tampilan indeks, proses pembaruan data, sinkronisasi individual, dan ekspor PDF.
+  - Memperbarui tahap sinkronisasi mingguan pada [`SyncAllCommand.php`](app/Commands/SyncAllCommand.php) agar otomatis menyesuaikan status website berdasarkan tanggal kedaluwarsa terbaru.
+  - Mengunci pilihan status pada formulir edit ([`form.php`](app/Views/web_desa_kelurahan/form.php)) ke `NONAKTIF` jika domain telah lewat masa berlakunya disertai notifikasi peringatan.
+- **Standarisasi Dropdown Keterangan**:
+  - Mengganti textarea bebas pada formulir edit website ([`form.php`](app/Views/web_desa_kelurahan/form.php)) menjadi dropdown pilihan ringkas standar: `Belum registrasi domain`, `Hosting expired`, `Disusupi judi online / deface`, dan `Bukan domain resmi (desa.id)`.
+  - Melakukan normalisasi dan penyeragaman seluruh data teks keterangan lama di database ke format standar baru.
+
+---
+
 # [30 September 2026] — Implementasi Auto-Logout Berbasis Idle Timer & Pengelolaan Sesi Kedaluwarsa
 
 - **Auto-Logout Sisi Peramban (Client-Side Idle Timer)**:

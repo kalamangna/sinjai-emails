@@ -71,10 +71,58 @@ class WebsiteService
     {
         if (!$date) return null;
         
-        $end = new \DateTime($date);
-        $now = new \DateTime();
+        $end = new \DateTime(date('Y-m-d', strtotime($date)));
+        $now = new \DateTime(date('Y-m-d'));
         $diff = $now->diff($end);
         return (int)$diff->format('%r%a');
+    }
+
+    /**
+     * Tentukan status website berdasarkan tanggal berakhir dan status saat ini.
+     * Jika tanggal berakhir telah lewat (sisa hari <= 0), status otomatis NONAKTIF.
+     * Jika masih aktif, pertahankan status pengguna (default: AKTIF).
+     */
+    public function determineStatus(?string $expirationDate, ?string $currentStatus = 'AKTIF'): string
+    {
+        if (!empty($expirationDate)) {
+            $daysRemaining = $this->calculateDaysRemaining($expirationDate);
+            if ($daysRemaining !== null && $daysRemaining <= 0) {
+                return 'NONAKTIF';
+            }
+        }
+
+        return $currentStatus ?: 'AKTIF';
+    }
+
+    /**
+     * Sinkronisasi sisa hari dan status kedaluwarsa secara otomatis di database.
+     * Semua domain yang tanggal berakhirnya telah lewat (sisa hari <= 0) akan dialihkan ke NONAKTIF.
+     *
+     * @return int Jumlah data yang diperbarui
+     */
+    public function syncExpiredStatuses(): int
+    {
+        $websites = $this->webDesaModel->where('tanggal_berakhir IS NOT NULL')->findAll();
+        $updatedCount = 0;
+
+        foreach ($websites as $web) {
+            $daysRemaining = $this->calculateDaysRemaining($web['tanggal_berakhir']);
+            $newStatus = $web['status'];
+
+            if ($daysRemaining !== null && $daysRemaining <= 0) {
+                $newStatus = 'NONAKTIF';
+            }
+
+            if ($daysRemaining !== (int)$web['sisa_hari'] || $newStatus !== $web['status']) {
+                $this->webDesaModel->update($web['id'], [
+                    'sisa_hari' => $daysRemaining,
+                    'status'    => $newStatus,
+                ]);
+                $updatedCount++;
+            }
+        }
+
+        return $updatedCount;
     }
 
     public function getDesaKelurahanStats()

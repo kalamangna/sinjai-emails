@@ -24,7 +24,7 @@ Aplikasi ini menerapkan standar estetika **"Slate Clean Government"**—antarmuk
 - **Diagnostik NIK:** Pengecekan status TTE berbasis NIK di halaman Detail Akun untuk mendeteksi akun dengan sertifikat aktif di BSrE yang terikat email eksternal.
 
 ### 📊 Pemantauan & Analitik
-- **Monitoring Website:** Pelacakan domain **OPD** dan **Desa/Kelurahan**, termasuk sinkronisasi otomatis masa berlaku SSL dan Domain.
+- **Monitoring Website:** Pelacakan domain **OPD** dan **Desa/Kelurahan**, termasuk sinkronisasi otomatis masa berlaku SSL dan Domain, otomasi status nonaktif pada domain yang telah kedaluwarsa, serta standarisasi opsi keterangan kendala teknis.
 - **Helpdesk Layanan:** Portal bantuan publik terpadu untuk seluruh layanan TIK (Email, Website, TTE, Srikandi) dengan sistem *ticketing* dan integrasi log otomatis.
 - **Dashboard Dinamis:** Analitik dengan kartu metrik yang menampilkan persentase performa data secara real-time.
 - **Log Pendampingan:** Pencatatan terpusat untuk bantuan teknis dan log layanan (khusus Super Admin).
