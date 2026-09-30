@@ -30,9 +30,6 @@ class WebDesaKelurahanController extends BaseController
         $filterPlatform = trim($this->request->getGet('filter_platform') ?? '');
         $filterType = trim($this->request->getGet('type') ?? '');
 
-        // Auto-sync status kedaluwarsa untuk data yang tanggal berakhirnya telah lewat
-        $this->websiteService->syncExpiredStatuses();
-
         // Use service for stats and platform distribution
         $stats = $this->websiteService->getDesaKelurahanStats();
         $platform_stats = $this->websiteService->getDesaKelurahanPlatformStats();
@@ -113,9 +110,6 @@ class WebDesaKelurahanController extends BaseController
         $filterStatus = trim($this->request->getGet('status') ?? '');
         $filterType = trim($this->request->getGet('type') ?? '');
 
-        // Pastikan status website sinkron sebelum ekspor
-        $this->websiteService->syncExpiredStatuses();
-
         $result = $this->exportService->generateWebDesaPdf(
             $search,
             $filterPlatform,
@@ -160,12 +154,9 @@ class WebDesaKelurahanController extends BaseController
         $expirationDate = $this->websiteService->determineExpirationDate($website['desa_kelurahan'], $domain, null);
         $hostingInfo = $this->websiteService->getHostingInfo($domain, $website['ip_address'] ?? null, $website['hosting_provider'] ?? null);
 
-        $postedStatus = $this->request->getPost('status');
-        $status = $this->websiteService->determineStatus($expirationDate, $postedStatus);
-
         $data = [
             'domain'           => $domain,
-            'status'           => $status,
+            'status'           => $this->request->getPost('status'),
             'tanggal_berakhir' => $expirationDate,
             'platform_id'      => $this->request->getPost('platform_id') ?: null,
             'dikelola_kominfo' => $this->request->getPost('dikelola_kominfo'),
@@ -205,7 +196,6 @@ class WebDesaKelurahanController extends BaseController
         if ($newDate) {
             $updateData['tanggal_berakhir'] = $newDate;
             $updateData['sisa_hari'] = $this->websiteService->calculateDaysRemaining($newDate);
-            $updateData['status'] = $this->websiteService->determineStatus($newDate, $website['status']);
         }
         
         if ($hostingInfo) {

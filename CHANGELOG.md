@@ -3,13 +3,11 @@
 Semua perubahan penting pada proyek ini dicatat di berkas ini.
 Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-# [30 September 2026] — Otomatisasi Status Kedaluwarsa Domain Website Desa/Kelurahan & Standarisasi Dropdown Keterangan
+# [30 September 2026] — Pembatalan Auto Status Kedaluwarsa Domain & Standarisasi Dropdown Keterangan
 
-- **Otomatisasi Status Kedaluwarsa Website (Auto-Nonaktif)**:
-  - Mengembangkan metode `determineStatus()` dan `syncExpiredStatuses()` pada [`WebsiteService.php`](app/Domains/Website/Services/WebsiteService.php) untuk secara otomatis menetapkan status website menjadi `NONAKTIF` apabila `tanggal_berakhir` telah kedaluwarsa (`sisa_hari <= 0`).
-  - Menghubungkan pemeriksaan status kedaluwarsa otomatis pada [`WebDesaKelurahanController.php`](app/Domains/Website/Controllers/WebDesaKelurahanController.php) di tampilan indeks, proses pembaruan data, sinkronisasi individual, dan ekspor PDF.
-  - Memperbarui tahap sinkronisasi mingguan pada [`SyncAllCommand.php`](app/Commands/SyncAllCommand.php) agar otomatis menyesuaikan status website berdasarkan tanggal kedaluwarsa terbaru.
-  - Mengunci pilihan status pada formulir edit ([`form.php`](app/Views/web_desa_kelurahan/form.php)) ke `NONAKTIF` jika domain telah lewat masa berlakunya disertai notifikasi peringatan.
+- **Pembatalan Penentuan Status Otomatis dari Tanggal Kedaluwarsa**:
+  - Menghapus logika auto-status kedaluwarsa yang sebelumnya mengunci atau mengalihkan status website menjadi `NONAKTIF` secara otomatis saat tanggal berakhir telah lewat.
+  - Mengembalikan kebebasan penentuan status (`AKTIF` / `NONAKTIF`) secara manual pada formulir edit website ([`form.php`](app/Views/web_desa_kelurahan/form.php)), proses penyimpanan data ([`WebDesaKelurahanController.php`](app/Domains/Website/Controllers/WebDesaKelurahanController.php)), serta perintah sinkronisasi ([`SyncAllCommand.php`](app/Commands/SyncAllCommand.php)).
 - **Standarisasi Dropdown Keterangan**:
   - Mengganti textarea bebas pada formulir edit website ([`form.php`](app/Views/web_desa_kelurahan/form.php)) menjadi dropdown pilihan ringkas standar: `Belum registrasi domain`, `Domain / hosting expired`, dan `Bukan domain resmi (desa.id)`.
   - Melakukan normalisasi dan penyeragaman seluruh data teks keterangan lama di database ke format standar baru (termasuk mengalihkan website yang sebelumnya terindikasi deface/judi online ke status `Domain / hosting expired`).

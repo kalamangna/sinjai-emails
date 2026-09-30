@@ -23,30 +23,13 @@
                 </div>
 
                 <!-- Status & Pengelolaan -->
-                <?php
-                $isExpired = false;
-                if (!empty($website['tanggal_berakhir'])) {
-                    $daysRemaining = (new \App\Domains\Website\Services\WebsiteService())->calculateDaysRemaining($website['tanggal_berakhir']);
-                    $isExpired = ($daysRemaining !== null && $daysRemaining <= 0);
-                }
-                ?>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label for="status" class="block text-sm font-medium text-slate-700 mb-1">Status</label>
-                        <?php if ($isExpired): ?>
-                            <input type="hidden" name="status" value="NONAKTIF">
-                            <select class="block w-full px-3 py-2 bg-slate-100 border border-slate-200 rounded-lg text-sm text-slate-500 cursor-not-allowed" id="status" disabled>
-                                <option value="NONAKTIF" selected>NONAKTIF (Kedaluwarsa)</option>
-                            </select>
-                            <p class="text-[10px] text-red-600 font-medium mt-1">
-                                <i class="fas fa-exclamation-triangle mr-1"></i> Domain telah kedaluwarsa pada <?= formatTanggal($website['tanggal_berakhir']) ?>. Status otomatis dikunci ke NONAKTIF.
-                            </p>
-                        <?php else: ?>
-                            <select class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm appearance-none cursor-pointer" id="status" name="status">
-                                <option value="AKTIF" <?= strtoupper($website['status']) === 'AKTIF' ? 'selected' : '' ?>>AKTIF</option>
-                                <option value="NONAKTIF" <?= (strtoupper($website['status']) === 'NONAKTIF' || strtoupper($website['status']) === 'NON AKTIF' || strtoupper($website['status']) === 'TIDAK AKTIF') ? 'selected' : '' ?>>NONAKTIF</option>
-                            </select>
-                        <?php endif; ?>
+                        <select class="block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm appearance-none cursor-pointer" id="status" name="status">
+                            <option value="AKTIF" <?= strtoupper($website['status']) === 'AKTIF' ? 'selected' : '' ?>>AKTIF</option>
+                            <option value="NONAKTIF" <?= (strtoupper($website['status']) === 'NONAKTIF' || strtoupper($website['status']) === 'NON AKTIF' || strtoupper($website['status']) === 'TIDAK AKTIF') ? 'selected' : '' ?>>NONAKTIF</option>
+                        </select>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-3">Dikelola Kominfo</label>

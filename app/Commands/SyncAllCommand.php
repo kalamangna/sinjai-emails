@@ -289,7 +289,6 @@ class SyncAllCommand extends BaseCommand
                 if ($newDate) {
                     $updateData['tanggal_berakhir'] = $newDate;
                     $updateData['sisa_hari'] = $websiteService->calculateDaysRemaining($newDate);
-                    $updateData['status'] = $websiteService->determineStatus($newDate, $website['status']);
                 }
                 if ($hostingInfo) {
                     $updateData['ip_address'] = $hostingInfo['ip'];
