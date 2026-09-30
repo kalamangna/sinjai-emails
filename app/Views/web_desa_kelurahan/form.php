@@ -87,7 +87,7 @@
                 $currentKeterangan = trim($website['keterangan'] ?? '');
                 $keteranganOptions = [
                     'Belum registrasi domain',
-                    'Hosting expired',
+                    'Domain / hosting expired',
                     'Disusupi judi online / deface',
                     'Bukan domain resmi (desa.id)',
                 ];

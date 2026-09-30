@@ -11,7 +11,7 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Memperbarui tahap sinkronisasi mingguan pada [`SyncAllCommand.php`](app/Commands/SyncAllCommand.php) agar otomatis menyesuaikan status website berdasarkan tanggal kedaluwarsa terbaru.
   - Mengunci pilihan status pada formulir edit ([`form.php`](app/Views/web_desa_kelurahan/form.php)) ke `NONAKTIF` jika domain telah lewat masa berlakunya disertai notifikasi peringatan.
 - **Standarisasi Dropdown Keterangan**:
-  - Mengganti textarea bebas pada formulir edit website ([`form.php`](app/Views/web_desa_kelurahan/form.php)) menjadi dropdown pilihan ringkas standar: `Belum registrasi domain`, `Hosting expired`, `Disusupi judi online / deface`, dan `Bukan domain resmi (desa.id)`.
+  - Mengganti textarea bebas pada formulir edit website ([`form.php`](app/Views/web_desa_kelurahan/form.php)) menjadi dropdown pilihan ringkas standar: `Belum registrasi domain`, `Domain / hosting expired`, `Disusupi judi online / deface`, dan `Bukan domain resmi (desa.id)`.
   - Melakukan normalisasi dan penyeragaman seluruh data teks keterangan lama di database ke format standar baru.
 
 ---
