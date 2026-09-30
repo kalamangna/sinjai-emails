@@ -88,7 +88,6 @@
                 $keteranganOptions = [
                     'Belum registrasi domain',
                     'Domain / hosting expired',
-                    'Disusupi judi online / deface',
                     'Bukan domain resmi (desa.id)',
                 ];
                 ?>
