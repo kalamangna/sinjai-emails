@@ -52,6 +52,8 @@ $routes->get('/', '\App\Domains\Dashboard\Controllers\HomeController::index');
 
 // Protected Routes
 $routes->group('', ['filter' => 'auth'], function ($routes) {
+    // Session Keep-Alive
+    $routes->match(['get', 'post'], 'auth/keep-alive', '\App\Domains\Auth\Controllers\AuthController::keepAlive');
     
     // Portal Utama
     $routes->get('dashboard', '\App\Domains\Dashboard\Controllers\HomeController::dashboard');

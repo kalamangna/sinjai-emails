@@ -17,7 +17,7 @@ class AuthFilter implements FilterInterface
                     'message' => 'Sesi Anda telah berakhir. Silakan login kembali.'
                 ])->setStatusCode(401);
             }
-            return redirect()->to('/login');
+            return redirect()->to('/login')->with('error', 'Sesi Anda telah berakhir. Silakan login kembali.');
         }
     }
 

@@ -3,6 +3,19 @@
 Semua perubahan penting pada proyek ini dicatat di berkas ini.
 Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+# [30 September 2026] — Implementasi Auto-Logout Berbasis Idle Timer & Pengelolaan Sesi Kedaluwarsa
+
+- **Auto-Logout Sisi Peramban (Client-Side Idle Timer)**:
+  - Mengembangkan skrip pemantauan aktivitas [`session-timeout.js`](public/js/session-timeout.js) yang memantau interaksi pengguna (`mousemove`, `mousedown`, `keydown`, `scroll`, `touchstart`) secara efisien (*throttled*).
+  - Menerapkan sinkronisasi status aktif antar tab peramban (*multi-tab synchronization*) melalui `localStorage` (`sinjai_last_active`) sehingga interaksi di satu tab tidak menyebabkan tab lain terputus.
+  - Menambahkan modal dialog peringatan sesi berakhir ([`session-timeout-modal`](app/Views/layouts/main.php)) pada layout utama yang aktif 60 detik sebelum masa kedaluwarsa dengan hitungan mundur langsung (*live countdown*), tombol **[Tetap Masuk]**, dan opsi **[Keluar Sekarang]**.
+- **Penyempurnaan Penanganan Sesi di Sisi Server**:
+  - Menambahkan endpoint rute aman [`auth/keep-alive`](app/Config/Routes.php) dan metode [`keepAlive()`](app/Domains/Auth/Controllers/AuthController.php) untuk memperpanjang sesi aktif pengguna via AJAX tanpa perlu memuat ulang (*reload*) halaman.
+  - Memperbarui metode [`logout()`](app/Domains/Auth/Controllers/AuthController.php) dengan penanganan parameter `expired=1` untuk mencatat audit log khusus (*Logout otomatis: Sesi berakhir karena tidak aktif*) dan menyajikan pesan peringatan kedaluwarsa sesi pada formulir login.
+  - Memperbarui filter otentikasi [`AuthFilter.php`](app/Filters/AuthFilter.php) agar menyertakan pesan flash saat mengarahkan kembali pengguna yang mencoba mengakses halaman terproteksi dengan sesi yang telah habis.
+
+---
+
 # [29 September 2026] — Optimalisasi Unduhan Simultan Laporan & Perbaikan Pemetaan Nomenklatur Satuan Pendidikan
 
 - **Perbaikan Pemetaan Unit Kerja Satuan Pendidikan (SMPN 3 Sinjai Tengah)**:

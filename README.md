@@ -87,6 +87,7 @@ Proyek ini menggunakan pendekatan **Domain-Driven Design (DDD)** di dalam direkt
 - **Super Admin:** Akses sistem penuh, Master Data (Unit Kerja), Log Layanan, dan operasi destruktif.
 - **Admin:** Manajemen operasional, Mutasi Akun, Operasi Batch, dan Monitoring Website.
 - **Privasi Data:** Penegakan meta tag `noindex, nofollow` global dan hash verifikasi publik yang aman.
+- **Auto-Logout & Manajemen Sesi:** Deteksi otomatis ketidakaktifan pengguna (idle timer) dengan dialog peringatan hitungan mundur di sisi peramban, sinkronisasi status aktif lintas tab (*multi-tab sync*), serta mekanisme *keep-alive* dan pemutusan sesi otomatis saat kedaluwarsa.
 - **Resiliensi Error:** Penanganan `\Throwable` global memastikan stabilitas dan tampilan error yang profesional di seluruh domain.
 
 ## ⚙️ Persyaratan & Instalasi

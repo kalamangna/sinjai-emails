@@ -48,8 +48,39 @@ class AuthController extends BaseController
 
     public function logout()
     {
-        log_audit('LOGOUT', 'User', session()->get('id'), 'Logout: ' . session()->get('username'));
+        $isExpired = $this->request->getGet('expired') == '1';
+        $userId = session()->get('id');
+        $username = session()->get('username');
+
+        if ($userId) {
+            $reason = $isExpired ? 'Logout otomatis: Sesi berakhir karena tidak aktif' : 'Logout: ' . $username;
+            log_audit('LOGOUT', 'User', $userId, $reason);
+        }
+
         session()->destroy();
+
+        if ($isExpired) {
+            return redirect()->to('/login')->with('error', 'Sesi Anda telah berakhir karena tidak ada aktivitas. Silakan login kembali.');
+        }
+
         return redirect()->to('/login');
+    }
+
+    public function keepAlive()
+    {
+        if (! session()->get('isLoggedIn')) {
+            return $this->response->setStatusCode(401)->setJSON([
+                'success' => false,
+                'message' => 'Sesi telah kedaluwarsa.'
+            ]);
+        }
+
+        session()->set('last_active_time', time());
+
+        return $this->response->setJSON([
+            'success' => true,
+            'message' => 'Sesi berhasil diperpanjang.',
+            'timestamp' => time()
+        ]);
     }
 }
