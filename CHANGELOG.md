@@ -21,7 +21,9 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Memperbaiki resolusi `unit_kerja_plt_id` agar penugasan Plt divisi internal (Sub Bagian, Bidang, Seksi, Sekretariat) tidak keliru terpetakan ke sub-unit desa/kelurahan anak.
 - **Penyeragaman Bahasa Pesan Alert**:
   - Menyeragamkan seluruh teks dialog notifikasi/peringatan pada antarmuka web ([`tte_bupati.php`](app/Views/email/tte_bupati.php), [`unit_kerja_detail.php`](app/Views/email/unit_kerja_detail.php), [`create.php`](app/Views/email/create.php), [`batch/pk.php`](app/Views/batch/pk.php), [`batch/update.php`](app/Views/batch/update.php), [`home/index.php`](app/Views/home/index.php)) agar singkat, lugas, padat (*to the point*), dan kontekstual.
-  - Memperbaiki penanganan *character escaping* entitas HTML pada notifikasi Telegram di [`TelegramMessageBuilder.php`](app/Shared/Libraries/TelegramMessageBuilder.php) dan [`AlertService.php`](app/Shared/Services/AlertService.php).
+- **Pembersihan Berkas & Repositori (*Housekeeping*)**:
+  - Menghapus berkas petunjuk teknis usang (`pdf-petunjuk-teknis-api-esign-client-service-v221-sign-2_compress.pdf`) dan skrip duplikat `sync` (skrip resmi dipertahankan pada `sync.sh`).
+  - Menambahkan direktori `raw/` ke berkas [`.gitignore`](.gitignore) untuk mencegah unggahan berkas mentah spreadsheet dan draf dokumen ke repositori Git.
 
 ---
 

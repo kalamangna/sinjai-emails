@@ -136,3 +136,6 @@ vendor/dompdf/dompdf/lib/fonts/*.ttf
 vendor/dompdf/dompdf/lib/fonts/*.ufm
 vendor/dompdf/dompdf/lib/fonts/*.json
 
+# Raw import/export files
+raw/
+
