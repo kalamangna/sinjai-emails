@@ -418,7 +418,11 @@ itemCheckboxes.forEach(cb => {
 function openBatchModal() {
     const checked = Array.from(itemCheckboxes).filter(cb => cb.checked);
     if (checked.length === 0) {
-        alert('Silakan pilih minimal 1 dokumen untuk ditandatangani.');
+        if (typeof showGlobalAlert === 'function') {
+            showGlobalAlert('Perhatian', 'Pilih minimal 1 dokumen.', 'warning');
+        } else {
+            alert('Pilih minimal 1 dokumen.');
+        }
         return;
     }
 
@@ -442,12 +446,20 @@ async function executeBatchTte() {
     const pkIds = checked.map(cb => parseInt(cb.value));
 
     if (!passphrase) {
-        alert('Passphrase TTE wajib diisi.');
+        if (typeof showGlobalAlert === 'function') {
+            showGlobalAlert('Perhatian', 'Passphrase wajib diisi.', 'warning');
+        } else {
+            alert('Passphrase wajib diisi.');
+        }
         return;
     }
 
     if (pkIds.length === 0) {
-        alert('Tidak ada dokumen yang dipilih.');
+        if (typeof showGlobalAlert === 'function') {
+            showGlobalAlert('Perhatian', 'Pilih minimal 1 dokumen.', 'warning');
+        } else {
+            alert('Pilih minimal 1 dokumen.');
+        }
         return;
     }
 

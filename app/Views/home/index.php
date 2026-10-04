@@ -589,6 +589,8 @@
 
                 if (typeof openModal === 'function') {
                     openModal('global-sync-result-modal');
+                } else if (typeof showGlobalAlert === 'function') {
+                    showGlobalAlert('Sinkronisasi cPanel', data.message || 'Sinkronisasi cPanel berhasil!', 'success', () => window.location.reload());
                 } else {
                     alert(data.message || 'Sinkronisasi cPanel berhasil!');
                     window.location.reload();
@@ -597,6 +599,8 @@
                 const errorMsg = data.message || 'Terjadi kesalahan saat sinkronisasi data cPanel.';
                 if (typeof window.showGlobalError === 'function') {
                     window.showGlobalError('Gagal Sinkronisasi cPanel', errorMsg);
+                } else if (typeof showGlobalAlert === 'function') {
+                    showGlobalAlert('Gagal Sinkronisasi cPanel', errorMsg, 'error');
                 } else {
                     alert(errorMsg);
                 }
@@ -605,6 +609,8 @@
             const errMsg = 'Gagal terhubung ke server: ' + (err.message || 'Kesalahan jaringan');
             if (typeof window.showGlobalError === 'function') {
                 window.showGlobalError('Kesalahan Jaringan', errMsg);
+            } else if (typeof showGlobalAlert === 'function') {
+                showGlobalAlert('Kesalahan Jaringan', errMsg, 'error');
             } else {
                 alert(errMsg);
             }

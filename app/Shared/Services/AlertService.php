@@ -236,7 +236,7 @@ class AlertService
                 if (is_cli()) CLI::write("Found $count accounts with high usage (>90%)", 'red');
                 
                 $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
-                $builder->setTitle('KUOTA EMAIL (>90%)', '⚠️')
+                $builder->setTitle('KUOTA EMAIL (&gt;90%)', '⚠️')
                         ->addDivider();
                 $this->appendQuotaReport($builder);
                 $this->telegram->sendMessage($builder->build());
@@ -289,7 +289,7 @@ class AlertService
                 if (is_cli()) CLI::write("Found $count website domains expiring soon", 'red');
                 
                 $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
-                $builder->setTitle('DOMAIN EXPIRED (<30 HARI)', '🌐')
+                $builder->setTitle('DOMAIN EXPIRED (&lt;30 HARI)', '🌐')
                         ->addDivider();
                 $this->appendWebExpirationReport($builder);
                 $this->telegram->sendMessage($builder->build());

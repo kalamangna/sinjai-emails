@@ -3,6 +3,38 @@
 Semua perubahan penting pada proyek ini dicatat di berkas ini.
 Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+# [04 Oktober 2026] — Optimasi Indeks Database, Penguatan Proteksi CSRF, Refaktorisasi Logika BUP, & Peningkatan Sinkronisasi Pegawai
+
+- **Optimasi Indeks Database (*Performance Indexes*)**:
+  - Menambahkan migrasi database [`2026-10-04-092212_AddPerformanceIndexesPhase2.php`](app/Database/Migrations/2026-10-04-092212_AddPerformanceIndexesPhase2.php) untuk menambahkan indeks kritis pada tabel:
+    - `emails`: `nip`, `user`, `unit_kerja_id`, `status_asn_id`, dan `pensiun_at`.
+    - `pk`: `tte_status`, `status_asn_id`, dan `nomor`.
+    - `audit_logs`: `created_at` dan komposit `(entity, entity_id)`.
+  - Berhasil diterapkan dan diverifikasi di database lokal serta database server produksi (`server1` - `tte_db`).
+- **Penguatan Keamanan (*CSRF Protection*)**:
+  - Mengaktifkan filter `csrf` secara global pada `$globals['before']` di [`Filters.php`](app/Config/Filters.php) dengan pengecualian untuk rute publik API Gateway (`api/*`, `api_trigger_queue`, `apiTriggerQueue`).
+- **Refaktorisasi & Eliminasi Duplikasi Logika Bisnis**:
+  - Mengarahkan [`EmailService::calculateBupInfo()`](app/Domains/Email/Services/EmailService.php) ke fungsi tunggal [`hitungBupInfo()`](app/Shared/Helpers/TanggalHelper.php) untuk memastikan konsistensi aturan Batas Usia Pensiun antara CLI cron dan antarmuka web.
+  - Menyederhanakan tindakan penangguhan pensiun manual di [`EmailController::markPensiun()`](app/Domains/Email/Controllers/EmailController.php) agar memanfaatkan [`EmailService::processAutoPensiun()`](app/Domains/Email/Services/EmailService.php).
+- **Peningkatan Sinkronisasi SIMPEG Lintas OPD**:
+  - Memperluas [`PegawaiApi::findDefinitifPosition()`](app/Shared/Libraries/PegawaiApi.php) agar memindai seluruh unit kerja OPD terdaftar saat pegawai berstatus penugasan Plt/Plh di OPD atau RSUD lain guna memperoleh data jabatan definitif yang akurat.
+  - Menyelaraskan sinkronisasi `name`, `nik`, `nip`, dan ekstraksi otomatis `tanggal_lahir` dari format baku NIP pada [`EmailService::syncPegawaiFromApi()`](app/Domains/Email/Services/EmailService.php).
+- **Penyeragaman Bahasa Pesan Alert**:
+  - Menyeragamkan seluruh teks dialog notifikasi/peringatan pada antarmuka web ([`tte_bupati.php`](app/Views/email/tte_bupati.php), [`unit_kerja_detail.php`](app/Views/email/unit_kerja_detail.php), [`create.php`](app/Views/email/create.php), [`batch/pk.php`](app/Views/batch/pk.php), [`batch/update.php`](app/Views/batch/update.php), [`home/index.php`](app/Views/home/index.php)) agar singkat, lugas, padat (*to the point*), dan kontekstual.
+  - Memperbaiki penanganan *character escaping* entitas HTML pada notifikasi Telegram di [`TelegramMessageBuilder.php`](app/Shared/Libraries/TelegramMessageBuilder.php) dan [`AlertService.php`](app/Shared/Services/AlertService.php).
+
+---
+
+# [01 Oktober 2026] — Koreksi Data PPPK Paruh Waktu Dinas Kesehatan & Pengamanan Filter TTE PK
+
+- **Koreksi Data PPPK Paruh Waktu Dinas Kesehatan (Susi Susanti)**:
+  - Memulihkan dan mengaktifkan akun PPPK Paruh Waktu NIP `199301132025212124` (`susisusanti@sinjaikab.go.id`, Perawat Ahli Pertama) dengan mempertahankan nama bersambung `SUSISUSANTI`, mengarsipkan kontrak lama ke `pk_histories`, serta menerbitkan kontrak perpanjangan 2026–2027 nomor `0389` (gaji Rp 600.000).
+  - Menangguhkan akun NIP `198908052025212104` (`susisusanti89@sinjaikab.go.id`, Perawat Terampil) yang sebenarnya mengundurkan diri / tidak diusulkan perpanjangan, membatalkan kontrak 2026–2027, serta memperbarui target NIP pada [`ProcessNonUsulanCommand.php`](app/Commands/ProcessNonUsulanCommand.php).
+- **Pengamanan Filter Antrean TTE PK Bupati**:
+  - Menambahkan klausul filter `emails.deleted_at IS NULL` pada relasi `withPegawaiDetails()` di [`PkModel.php`](app/Domains/Email/Models/PkModel.php) untuk mencegah akun pegawai yang telah pensiun atau mengundurkan diri (soft-deleted) muncul di antrean TTE Bupati.
+
+---
+
 # [30 September 2026] — Pembatalan Auto Status Kedaluwarsa Domain & Standarisasi Dropdown Keterangan
 
 - **Pembatalan Penentuan Status Otomatis dari Tanggal Kedaluwarsa**:

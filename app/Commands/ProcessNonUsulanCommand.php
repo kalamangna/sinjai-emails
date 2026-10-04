@@ -49,7 +49,7 @@ class ProcessNonUsulanCommand extends BaseCommand
             ['nip' => '199612312025211145', 'nama' => 'M.RIDWAN', 'alasan' => 'meninggal'],
             ['nip' => '198910272025212070', 'nama' => 'ANDI INDRA ASTUTI', 'alasan' => 'mengundurkan diri (proses)'],
             ['nip' => '199003152025211119', 'nama' => 'MUZAKKIR', 'alasan' => 'mengundurkan diri (proses)'],
-            ['nip' => '199301132025212124', 'nama' => 'SUSISUSANTI', 'alasan' => 'mengundurkan diri (proses)'],
+            ['nip' => '198908052025212104', 'nama' => 'SUSI SUSANTI', 'alasan' => 'mengundurkan diri (proses)'],
             ['nip' => '199504072025212142', 'nama' => 'RAHMI', 'alasan' => 'mengundurkan diri (proses)'],
             ['nip' => '199609032025212118', 'nama' => 'NURMILA', 'alasan' => 'mengundurkan diri (proses)'],
             ['nip' => '199502032025212097', 'nama' => 'RUKMANA', 'alasan' => 'mengundurkan diri'],

@@ -18,7 +18,10 @@ class TelegramMessageBuilder
     public function setTitle(?string $title = '', string $emoji = '🔔')
     {
         if ($title !== null && trim($title) !== '') {
-            $this->header = "$emoji <b>" . mb_strtoupper(trim($title)) . "</b>";
+            $cleanTitle = htmlspecialchars(trim($title), ENT_NOQUOTES, 'UTF-8', false);
+            $upperTitle = mb_strtoupper($cleanTitle, 'UTF-8');
+            $normalized = str_ireplace(['&LT;', '&GT;', '&AMP;', '&QUOT;'], ['&lt;', '&gt;', '&amp;', '&quot;'], $upperTitle);
+            $this->header = "$emoji <b>{$normalized}</b>";
         }
         return $this;
     }
@@ -38,7 +41,8 @@ class TelegramMessageBuilder
     {
         $this->flushCurrentBlock();
         if ($title !== null && trim($title) !== '') {
-            $this->bodyBlocks[] = "$emoji <b>" . trim($title) . "</b>";
+            $cleanTitle = htmlspecialchars(trim($title), ENT_NOQUOTES, 'UTF-8', false);
+            $this->bodyBlocks[] = "$emoji <b>" . $cleanTitle . "</b>";
         }
         return $this;
     }

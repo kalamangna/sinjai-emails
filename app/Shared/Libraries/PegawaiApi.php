@@ -320,26 +320,65 @@ class PegawaiApi
                 }
             }
 
-            // 2. Jika mutasi Plt lintas OPD (contoh: Staf Ahli Setda yang Plt di BPBD/Dinas), cari di Sekretariat Daerah (730701)
-            $resSetda = $this->requestWithRetry($this->baseUrl . 'get_pegawai', [
-                'query'   => ['unit_id' => '730701'],
-                'headers' => ['Accept' => 'application/json'],
-                'timeout' => 12,
-            ], 'GET');
+            // 2. Jika mutasi Plt lintas OPD (contoh: Staf Ahli Setda yang Plt di BPBD/Dinas), cek Sekretariat Daerah (730701) terlebih dahulu
+            if ($unitId !== '730701') {
+                $resSetda = $this->requestWithRetry($this->baseUrl . 'get_pegawai', [
+                    'query'   => ['unit_id' => '730701'],
+                    'headers' => ['Accept' => 'application/json'],
+                    'timeout' => 8,
+                ], 'GET');
 
-            if ($resSetda['success']) {
-                $listSetda = json_decode($resSetda['body'] ?? '', true);
-                if (is_array($listSetda)) {
-                    foreach ($listSetda as $p) {
-                        if (($p['nip'] ?? '') === $nip) {
-                            $pStatusId = (int)($p['jabatan_status_id'] ?? 1);
-                            $pJNama = trim($p['jabatan_nama'] ?? $p['jabatan'] ?? '');
-                            if ($pStatusId === 1 && stripos($pJNama, 'Plt') !== 0 && stripos($pJNama, 'Plh') !== 0) {
-                                return array_merge($p, ['unit_id' => '730701']);
+                if ($resSetda['success']) {
+                    $listSetda = json_decode($resSetda['body'] ?? '', true);
+                    if (is_array($listSetda)) {
+                        foreach ($listSetda as $p) {
+                            if (($p['nip'] ?? '') === $nip) {
+                                $pStatusId = (int)($p['jabatan_status_id'] ?? 1);
+                                $pJNama = trim($p['jabatan_nama'] ?? $p['jabatan'] ?? '');
+                                if ($pStatusId === 1 && stripos($pJNama, 'Plt') !== 0 && stripos($pJNama, 'Plh') !== 0) {
+                                    return array_merge($p, ['unit_id' => '730701']);
+                                }
                             }
                         }
                     }
                 }
+            }
+
+            // 3. Jika belum ditemukan (misal: Kepala Dinas di satu OPD yang menjadi Plt di OPD/RSUD lain), cari di seluruh unit OPD
+            $db = \Config\Database::connect();
+            $units = $db->table('unit_kerja')
+                ->select('api_unit_id')
+                ->where('api_unit_id IS NOT NULL')
+                ->where('api_unit_id !=', '')
+                ->whereNotIn('api_unit_id', array_filter([$unitId, '730701']))
+                ->get()
+                ->getResultArray();
+
+            foreach ($units as $u) {
+                $targetApiUnitId = $u['api_unit_id'];
+                $resUnit = $this->requestWithRetry($this->baseUrl . 'get_pegawai', [
+                    'query'   => ['unit_id' => $targetApiUnitId],
+                    'headers' => ['Accept' => 'application/json'],
+                    'timeout' => 6,
+                ], 'GET');
+
+                if ($resUnit['success']) {
+                    $listUnit = json_decode($resUnit['body'] ?? '', true);
+                    if (is_array($listUnit)) {
+                        foreach ($listUnit as $p) {
+                            if (($p['nip'] ?? '') === $nip) {
+                                $pStatusId = (int)($p['jabatan_status_id'] ?? 1);
+                                $pJNama = trim($p['jabatan_nama'] ?? $p['jabatan'] ?? '');
+                                if ($pStatusId === 1 && stripos($pJNama, 'Plt') !== 0 && stripos($pJNama, 'Plh') !== 0) {
+                                    return array_merge($p, ['unit_id' => $targetApiUnitId]);
+                                }
+                            }
+                        }
+                    }
+                } elseif (($resUnit['statusCode'] ?? 0) === 429) {
+                    break;
+                }
+                usleep(80000);
             }
         } catch (\Throwable $e) {
             log_message('error', 'Gagal mencari jabatan definitif: ' . $e->getMessage());

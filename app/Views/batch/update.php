@@ -244,7 +244,7 @@
 
             const identifiers = mapInput('identifier_input');
             if (!identifiers.some(s => s)) {
-                showGlobalAlert('Perhatian', 'Masukkan minimal satu identitas.', 'warning');
+                showGlobalAlert('Perhatian', 'Masukkan minimal 1 identitas.', 'warning');
                 return;
             }
 

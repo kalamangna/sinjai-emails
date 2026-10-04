@@ -135,45 +135,12 @@ class EmailController extends BaseController
                 throw new \Exception("Akun email tidak ditemukan.");
             }
 
-            // 1. Mandatory cPanel API Suspend (Will throw Exception if fails)
-            $cpanelApi = new \App\Shared\Libraries\CpanelApi();
-            $cpanelApi->suspend_email_login($email['email']);
-
-            // 2. Update DB & Trigger Soft Delete (Move to Trash)
-            $model = new EmailModel();
-            $model->update($email['id'], [
-                'suspended_login' => 1,
-                'pensiun_at'      => date('Y-m-d H:i:s'),
-                'pimpinan'        => 0,
-                'pimpinan_desa'   => 0,
-            ]);
-
-            // Move to Kotak Sampah (Soft Delete)
-            $model->delete($email['id']);
+            $success = $this->emailService->processAutoPensiun($email, 'Penetapan Manual');
+            if (!$success) {
+                throw new \Exception("Gagal memproses penangguhan akun.");
+            }
 
             $this->clearEmailCaches();
-
-            // 3. Audit Log
-            helper('audit');
-            log_audit('PENSIUN', 'Email', $email['id'], 'Pensiun: ' . $email['email']);
-
-            // 4. Send Telegram Notification
-            try {
-                $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
-                $builder->setTitle('AKUN PENSIUN', '🚫')
-                        ->addUserProfile(
-                            $email['name'] ?? '',
-                            !empty($email['nip']) ? 'NIP: ' . $email['nip'] : '',
-                            $email['jabatan'] ?? '',
-                            $email['unit_kerja_name'] ?? '',
-                            $email['email']
-                        );
-
-                $telegram = new TelegramLibrary();
-                $telegram->sendMessage($builder->build());
-            } catch (\Throwable $te) {
-                log_message('error', 'Failed to send Telegram notification for retirement: ' . $te->getMessage());
-            }
 
             return redirect()->to('email')->with('success', 'Akun berhasil ditangguhkan.');
             

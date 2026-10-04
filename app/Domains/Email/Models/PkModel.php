@@ -57,7 +57,8 @@ class PkModel extends Model
             ->join('emails', 'emails.email = pk.email', 'inner')
             ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left')
             ->join('unit_kerja as parent_uk', 'parent_uk.id = unit_kerja.parent_id', 'left')
-            ->join('status_asn', 'status_asn.id = emails.status_asn_id', 'left');
+            ->join('status_asn', 'status_asn.id = emails.status_asn_id', 'left')
+            ->where('emails.deleted_at', null);
     }
 }
 

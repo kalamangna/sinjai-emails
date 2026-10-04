@@ -745,9 +745,9 @@ echo view('components/modal', [
         
         if (!validContainers.length) {
             if (typeof window.showGlobalAlert === 'function') {
-                window.showGlobalAlert('Info Sinkronisasi', 'Tidak ada data akun yang dapat disinkronkan.', 'info');
+                window.showGlobalAlert('Sinkronisasi', 'Tidak ada data akun untuk disinkronkan.', 'info');
             } else if (typeof window.showGlobalError === 'function') {
-                window.showGlobalError('Info Sinkronisasi', 'Tidak ada data akun yang dapat disinkronkan.');
+                window.showGlobalError('Sinkronisasi', 'Tidak ada data akun untuk disinkronkan.');
             }
             return;
         }
@@ -1049,7 +1049,7 @@ echo view('components/modal', [
         })).filter(a => Boolean(a.email));
 
         if (!accounts.length) {
-            showGlobalAlert('Informasi', 'Tidak ada akun yang dapat diperbarui.', 'info');
+            showGlobalAlert('Perhatian', 'Tidak ada akun untuk diperbarui.', 'info');
             return;
         }
 
@@ -1058,7 +1058,7 @@ echo view('components/modal', [
         if (_batchPwMode === 'manual') {
             manualPassword = (document.getElementById('batchPasswordInput').value || '').trim();
             if (!manualPassword) {
-                showGlobalAlert('Perhatian', 'Password tidak boleh kosong.', 'warning');
+                showGlobalAlert('Perhatian', 'Password wajib diisi.', 'warning');
                 return;
             }
             if (manualPassword.length < 8) {

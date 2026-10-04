@@ -1327,13 +1327,19 @@ class EmailService
         // 1. Sync Pangkat & Golongan
         if (isset($source['pangkat_nama']))    $updateData['pangkat_nama']    = trim($source['pangkat_nama']);
         if (isset($source['pangkat_golruang'])) $updateData['pangkat_golruang'] = trim($source['pangkat_golruang']);
-        if (empty($currentEmail['nip']) && !empty($source['nip'])) {
+        if (!empty($source['nip'])) {
             $updateData['nip'] = trim($source['nip']);
+            // Otomatis sinkronkan tanggal_lahir dari 8 digit awal NIP jika tanggal_lahir masih kosong
+            if (empty($currentEmail['tanggal_lahir']) && preg_match('/^(\d{4})(\d{2})(\d{2})/', $updateData['nip'], $m)) {
+                if (checkdate((int)$m[2], (int)$m[3], (int)$m[1])) {
+                    $updateData['tanggal_lahir'] = sprintf('%04d-%02d-%02d', (int)$m[1], (int)$m[2], (int)$m[3]);
+                }
+            }
         }
-        if (empty($currentEmail['nik']) && !empty($source['nik'])) {
+        if (!empty($source['nik']) && empty($currentEmail['nik'])) {
             $updateData['nik'] = trim($source['nik']);
         }
-        if (empty($currentEmail['name']) && !empty($source['nama'])) {
+        if (!empty($source['nama'])) {
             $updateData['name'] = trim($source['nama']);
         }
         if (empty($currentEmail['status_asn_id'])) {
@@ -2328,13 +2334,10 @@ class EmailService
      */
     public function calculateBupInfo(array $account): array
     {
-        $nip = trim((string)($account['nip'] ?? ''));
-        $birthDateStr = trim((string)($account['tanggal_lahir'] ?? ''));
-        $jabatan = strtoupper(trim((string)($account['jabatan'] ?? '')));
-        $eselonId = (int)($account['eselon_id'] ?? 0);
+        helper('tanggal');
+        $info = hitungBupInfo($account);
 
-        $statusAsnId = isset($account['status_asn_id']) ? (int)$account['status_asn_id'] : 1;
-        if ($statusAsnId !== 1) {
+        if (!$info) {
             return [
                 'bup_age'     => 58,
                 'birth_date'  => null,
@@ -2343,80 +2346,7 @@ class EmailService
             ];
         }
 
-        // 1. Dapatkan Tanggal Lahir (dari NIP format YYYYMMDD... atau field tanggal_lahir)
-        $birthDate = null;
-        if (preg_match('/^(\d{4})(\d{2})(\d{2})/', $nip, $m)) {
-            $year = (int)$m[1];
-            $month = (int)$m[2];
-            $day = (int)$m[3];
-            if (checkdate($month, $day, $year) && $year >= 1940 && $year <= 2020) {
-                $birthDate = sprintf('%04d-%02d-%02d', $year, $month, $day);
-            }
-        }
-        if (!$birthDate && !empty($birthDateStr)) {
-            $ts = strtotime($birthDateStr);
-            if ($ts !== false) {
-                $birthDate = date('Y-m-d', $ts);
-            }
-        }
-
-        if (!$birthDate) {
-            return [
-                'bup_age'     => 58,
-                'birth_date'  => null,
-                'tmt_pensiun' => null,
-                'is_pensiun'  => false,
-            ];
-        }
-
-        // 2. Tentukan Usia BUP
-        $bupAge = 58; // Default: Pelaksana, Pengawas (Eselon IV), Administrator (Eselon III), JF Terampil/Mahir/Penyelia, JF Ahli Pertama & Muda
-
-        if (
-            stripos($jabatan, 'AHLI UTAMA') !== false ||
-            (stripos($jabatan, 'UTAMA') !== false && stripos($jabatan, 'AHLI') !== false)
-        ) {
-            $bupAge = 65;
-        } elseif (
-            stripos($jabatan, 'AHLI MADYA') !== false ||
-            stripos($jabatan, 'GURU') !== false ||
-            stripos($jabatan, 'KEPALA SEKOLAH') !== false ||
-            stripos($jabatan, 'PENGAWAS SEKOLAH') !== false ||
-            stripos($jabatan, 'PENILIK') !== false ||
-            stripos($jabatan, 'DOKTER') !== false ||
-            stripos($jabatan, 'KEPALA DINAS') === 0 ||
-            stripos($jabatan, 'KEPALA BADAN') === 0 ||
-            stripos($jabatan, 'INSPEKTUR') === 0 ||
-            stripos($jabatan, 'SEKRETARIS DAERAH') === 0 ||
-            stripos($jabatan, 'SEKRETARIS DPRD') === 0 ||
-            stripos($jabatan, 'STAF AHLI') === 0 ||
-            stripos($jabatan, 'ASISTEN') === 0 ||
-            $eselonId === 2
-        ) {
-            $bupAge = 60;
-        }
-
-        // 3. Hitung TMT Pensiun: Tanggal 1 bulan berikutnya setelah tanggal ulang tahun ke-BUP
-        $birthDateTime = new \DateTime($birthDate);
-        $bupYear = (int)$birthDateTime->format('Y') + $bupAge;
-        $birthMonth = (int)$birthDateTime->format('m');
-
-        $tmtYear = $bupYear;
-        $tmtMonth = $birthMonth + 1;
-        if ($tmtMonth > 12) {
-            $tmtMonth = 1;
-            $tmtYear++;
-        }
-        $tmtPensiun = sprintf('%04d-%02d-01', $tmtYear, $tmtMonth);
-        $today = date('Y-m-d');
-        $isPensiun = ($today >= $tmtPensiun);
-
-        return [
-            'bup_age'     => $bupAge,
-            'birth_date'  => $birthDate,
-            'tmt_pensiun' => $tmtPensiun,
-            'is_pensiun'  => $isPensiun,
-        ];
+        return $info;
     }
 
     /**
