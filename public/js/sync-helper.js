@@ -33,6 +33,7 @@
         
         container.innerHTML = '<span class="inline-block h-4 w-16 bg-slate-200 rounded animate-pulse align-middle"></span>';
 
+        try {
             const csrfToken = (typeof window.getCsrfToken === 'function') ? window.getCsrfToken() : (window.CSRF_TOKEN || '');
             const csrfHeader = window.CSRF_HEADER || 'X-CSRF-TOKEN';
 
