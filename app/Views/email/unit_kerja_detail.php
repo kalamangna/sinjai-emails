@@ -698,7 +698,7 @@ echo view('components/modal', [
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
                         'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRF-TOKEN': '<?= csrf_hash() ?>'
+                        'X-CSRF-TOKEN': (typeof window.getCsrfToken === 'function') ? window.getCsrfToken() : '<?= csrf_hash() ?>'
                     },
                     body: 'email=' + encodeURIComponent(email)
                 });
@@ -803,7 +803,7 @@ echo view('components/modal', [
                         headers: {
                             'Content-Type': 'application/x-www-form-urlencoded',
                             'X-Requested-With': 'XMLHttpRequest',
-                            'X-CSRF-TOKEN': '<?= csrf_hash() ?>'
+                            'X-CSRF-TOKEN': (typeof window.getCsrfToken === 'function') ? window.getCsrfToken() : '<?= csrf_hash() ?>'
                         },
                         body: 'nip=' + encodeURIComponent(nip) + '&email=' + encodeURIComponent(email)
                     });

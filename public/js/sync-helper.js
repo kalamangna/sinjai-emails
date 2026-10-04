@@ -33,13 +33,20 @@
         
         container.innerHTML = '<span class="inline-block h-4 w-16 bg-slate-200 rounded animate-pulse align-middle"></span>';
 
-        try {
+            const csrfToken = (typeof window.getCsrfToken === 'function') ? window.getCsrfToken() : (window.CSRF_TOKEN || '');
+            const csrfHeader = window.CSRF_HEADER || 'X-CSRF-TOKEN';
+
+            const headers = {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-Requested-With': 'XMLHttpRequest'
+            };
+            if (csrfToken) {
+                headers[csrfHeader] = csrfToken;
+            }
+
             const response = await fetch(window.BASE_URL + '/bsre/sync-status', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
+                headers: headers,
                 body: 'email=' + encodeURIComponent(email)
             });
 
@@ -232,14 +239,22 @@
         }
 
         try {
+            const csrfToken = (typeof window.getCsrfToken === 'function') ? window.getCsrfToken() : (window.CSRF_TOKEN || '');
+            const csrfHeader = window.CSRF_HEADER || 'X-CSRF-TOKEN';
+
+            const headers = {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-Requested-With': 'XMLHttpRequest'
+            };
+            if (csrfToken) {
+                headers[csrfHeader] = csrfToken;
+            }
+
             const fetchResult = await fetchWithRateLimitRetry(
                 window.BASE_URL + '/email/sync_pegawai',
                 {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    },
+                    headers: headers,
                     body: 'nip=' + encodeURIComponent(nip || '') + '&email=' + encodeURIComponent(email || '')
                 },
                 2,
@@ -497,14 +512,22 @@
             }
 
             try {
+                const csrfToken = (typeof window.getCsrfToken === 'function') ? window.getCsrfToken() : (window.CSRF_TOKEN || '');
+                const csrfHeader = window.CSRF_HEADER || 'X-CSRF-TOKEN';
+
+                const headers = {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-Requested-With': 'XMLHttpRequest'
+                };
+                if (csrfToken) {
+                    headers[csrfHeader] = csrfToken;
+                }
+
                 const fetchResult = await fetchWithRateLimitRetry(
                     window.BASE_URL + '/email/sync_pegawai',
                     {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                            'X-Requested-With': 'XMLHttpRequest'
-                        },
+                        headers: headers,
                         body: 'nip=' + encodeURIComponent(nip || '') + '&email=' + encodeURIComponent(emailAttr || '')
                     },
                     isRetry ? 3 : 1,

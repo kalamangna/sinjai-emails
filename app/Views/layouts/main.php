@@ -58,7 +58,21 @@
             }
             
             window.BASE_URL = '<?= rtrim(base_url(), '/') ?>';
+            window.CSRF_HEADER = '<?= csrf_header() ?>';
+            window.CSRF_TOKEN = '<?= csrf_hash() ?>';
+            window.CSRF_COOKIE = '<?= config('Security')->cookieName ?>';
         })();
+
+        // Global helper to retrieve active CSRF token (from cookie or initial hash)
+        window.getCsrfToken = function() {
+            if (window.CSRF_COOKIE) {
+                const match = document.cookie.match(new RegExp('(^|;\\s*)(' + window.CSRF_COOKIE + ')=([^;]*)'));
+                if (match && match[3]) {
+                    return decodeURIComponent(match[3]);
+                }
+            }
+            return window.CSRF_TOKEN || '';
+        };
     </script>
 
     <style>

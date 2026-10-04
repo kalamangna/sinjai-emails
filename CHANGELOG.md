@@ -11,8 +11,9 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
     - `pk`: `tte_status`, `status_asn_id`, dan `nomor`.
     - `audit_logs`: `created_at` dan komposit `(entity, entity_id)`.
   - Berhasil diterapkan dan diverifikasi di database lokal serta database server produksi (`server1` - `tte_db`).
-- **Penguatan Keamanan (*CSRF Protection*)**:
-  - Mengaktifkan filter `csrf` secara global pada `$globals['before']` di [`Filters.php`](app/Config/Filters.php) dengan pengecualian untuk rute publik API Gateway (`api/*`, `api_trigger_queue`, `apiTriggerQueue`).
+- **Penguatan Keamanan (*CSRF Protection*) & Kompatibilitas AJAX Sinkronisasi**:
+  - Mengaktifkan filter `csrf` secara global pada `$globals['before']` di [`Filters.php`](app/Config/Filters.php) dengan pengecualian rute API publik serta endpoint AJAX internal berotentikasi sesi (`email/sync_pegawai`, `bsre/sync-status`).
+  - Menambahkan penyematan CSRF header dinamis melalui `window.getCsrfToken()` pada [`main.php`](app/Views/layouts/main.php), [`sync-helper.js`](public/js/sync-helper.js), dan [`unit_kerja_detail.php`](app/Views/email/unit_kerja_detail.php) guna mencegah kegagalan token (*CSRF mismatch*) saat sinkronisasi data berlangsung.
 - **Refaktorisasi & Eliminasi Duplikasi Logika Bisnis**:
   - Mengarahkan [`EmailService::calculateBupInfo()`](app/Domains/Email/Services/EmailService.php) ke fungsi tunggal [`hitungBupInfo()`](app/Shared/Helpers/TanggalHelper.php) untuk memastikan konsistensi aturan Batas Usia Pensiun antara CLI cron dan antarmuka web.
   - Menyederhanakan tindakan penangguhan pensiun manual di [`EmailController::markPensiun()`](app/Domains/Email/Controllers/EmailController.php) agar memanfaatkan [`EmailService::processAutoPensiun()`](app/Domains/Email/Services/EmailService.php).
