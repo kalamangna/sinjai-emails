@@ -1329,18 +1329,9 @@ class EmailService
         if (isset($source['pangkat_golruang'])) $updateData['pangkat_golruang'] = trim($source['pangkat_golruang']);
         if (!empty($source['nip'])) {
             $updateData['nip'] = trim($source['nip']);
-            // Otomatis sinkronkan tanggal_lahir dari 8 digit awal NIP jika tanggal_lahir masih kosong
-            if (empty($currentEmail['tanggal_lahir']) && preg_match('/^(\d{4})(\d{2})(\d{2})/', $updateData['nip'], $m)) {
-                if (checkdate((int)$m[2], (int)$m[3], (int)$m[1])) {
-                    $updateData['tanggal_lahir'] = sprintf('%04d-%02d-%02d', (int)$m[1], (int)$m[2], (int)$m[3]);
-                }
-            }
         }
         if (!empty($source['nik']) && empty($currentEmail['nik'])) {
             $updateData['nik'] = trim($source['nik']);
-        }
-        if (!empty($source['nama'])) {
-            $updateData['name'] = trim($source['nama']);
         }
         if (empty($currentEmail['status_asn_id'])) {
             $updateData['status_asn_id'] = 1;
