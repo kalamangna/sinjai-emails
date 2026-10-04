@@ -1694,7 +1694,9 @@ class EmailService
                 $targetPltUnitName = $targetPltUnit['nama_unit_kerja'] ?? null;
 
                 // Check if jabatan_plt matches a specific sub-unit (child of targetPltUnit)
-                if ($targetPltUnit) {
+                // Hanya cari sub-unit anak jika jabatan Plt BUKAN divisi internal OPD/Kecamatan (misal bukan Sub Bagian, Bidang, Seksi, Sekretariat)
+                $isOpdInternalPlt = preg_match('/\b(SUB\s*BAGIAN|BIDANG|SEKSI|SEKRETARIAT|KASUBAG|KABID|KASI|SEKRETARIS|BENDAHARA)\b/i', $source['jabatan_plt']);
+                if ($targetPltUnit && !$isOpdInternalPlt) {
                     $pltChildren = $this->unitKerjaModel->where('parent_id', $targetPltUnit['id'])->findAll();
                     $cleanSearchPlt = strtoupper($source['jabatan_plt']);
                     $cleanSearchPlt = preg_replace('/\bBARANG\s*\/\s*JASA\b/i', 'BARANG DAN JASA', $cleanSearchPlt);

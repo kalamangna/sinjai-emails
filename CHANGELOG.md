@@ -17,8 +17,8 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **Refaktorisasi & Eliminasi Duplikasi Logika Bisnis**:
   - Mengarahkan [`EmailService::calculateBupInfo()`](app/Domains/Email/Services/EmailService.php) ke fungsi tunggal [`hitungBupInfo()`](app/Shared/Helpers/TanggalHelper.php) untuk memastikan konsistensi aturan Batas Usia Pensiun antara CLI cron dan antarmuka web.
   - Menyederhanakan tindakan penangguhan pensiun manual di [`EmailController::markPensiun()`](app/Domains/Email/Controllers/EmailController.php) agar memanfaatkan [`EmailService::processAutoPensiun()`](app/Domains/Email/Services/EmailService.php).
-- **Peningkatan Sinkronisasi SIMPEG Lintas OPD**:
   - Menyelaraskan sinkronisasi data kepangkatan, jabatan definitif/Plt, dan unit kerja pada [`EmailService::syncPegawaiFromApi()`](app/Domains/Email/Services/EmailService.php) dengan mempertahankan data `name` serta `tanggal_lahir` akun yang telah ada.
+  - Memperbaiki resolusi `unit_kerja_plt_id` agar penugasan Plt divisi internal (Sub Bagian, Bidang, Seksi, Sekretariat) tidak keliru terpetakan ke sub-unit desa/kelurahan anak.
 - **Penyeragaman Bahasa Pesan Alert**:
   - Menyeragamkan seluruh teks dialog notifikasi/peringatan pada antarmuka web ([`tte_bupati.php`](app/Views/email/tte_bupati.php), [`unit_kerja_detail.php`](app/Views/email/unit_kerja_detail.php), [`create.php`](app/Views/email/create.php), [`batch/pk.php`](app/Views/batch/pk.php), [`batch/update.php`](app/Views/batch/update.php), [`home/index.php`](app/Views/home/index.php)) agar singkat, lugas, padat (*to the point*), dan kontekstual.
   - Memperbaiki penanganan *character escaping* entitas HTML pada notifikasi Telegram di [`TelegramMessageBuilder.php`](app/Shared/Libraries/TelegramMessageBuilder.php) dan [`AlertService.php`](app/Shared/Services/AlertService.php).
