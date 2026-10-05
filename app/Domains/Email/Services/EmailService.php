@@ -1928,12 +1928,22 @@ class EmailService
             'KEPALA DINAS',
             'KEPALA BADAN',
             'KEPALA SATUAN',
-            'DIREKTUR',
             'CAMAT',
             'LURAH',
         ];
 
         if (in_array($jab, $topTitles, true)) {
+            return true;
+        }
+
+        // Direktur RSUD (Kecualikan RSUD Pratama Bulupancing)
+        if ($jab === 'DIREKTUR') {
+            if (!empty($unitKerjaName)) {
+                $unitUpper = strtoupper($unitKerjaName);
+                if (stripos($unitUpper, 'PRATAMA') !== false || stripos($unitUpper, 'BULUPANCING') !== false || stripos($unitUpper, 'BULUPACCING') !== false) {
+                    return false;
+                }
+            }
             return true;
         }
 

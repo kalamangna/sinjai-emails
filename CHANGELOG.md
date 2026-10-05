@@ -3,6 +3,13 @@
 Semua perubahan penting pada proyek ini dicatat di berkas ini.
 Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+# [05 Oktober 2026] — Pengecualian RSUD Pratama Bulupancing dari Status Pimpinan
+
+- **Penyesuaian Kriteria Pimpinan Daerah/OPD**:
+  - Mengecualikan Direktur UPT RSU Daerah Kelas D Pratama (Bulupancing) dari penandaan status pimpinan (`pimpinan = 1`) pada [`EmailService::isPimpinanJabatan()`](app/Domains/Email/Services/EmailService.php) agar daftar pimpinan OPD tetap fokus pada Kepala SKPD/OPD utama dan Direktur RSUD Kabupaten.
+
+---
+
 # [04 Oktober 2026] — Optimasi Indeks Database, Penguatan Proteksi CSRF, Refaktorisasi Logika BUP, & Peningkatan Sinkronisasi Pegawai
 
 - **Optimasi Indeks Database (*Performance Indexes*)**:
