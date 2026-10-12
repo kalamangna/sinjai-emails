@@ -3,6 +3,15 @@
 Semua perubahan penting pada proyek ini dicatat di berkas ini.
 Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+# [12 Oktober 2026] — Penghapusan Fitur Batch Update Password
+
+- **Penghapusan Fitur Batch Update Password Akun Email**:
+  - Menghapus endpoint API `POST email/api_batch_update_password` pada [`Routes.php`](app/Config/Routes.php).
+  - Menghapus method controller `apiBatchUpdatePassword()` pada [`EmailListController.php`](app/Domains/Email/Controllers/EmailListController.php).
+  - Menghapus tombol antarmuka, modal formulir, dan fungsi JavaScript eksekusi batch update password pada [`unit_kerja_detail.php`](app/Views/email/unit_kerja_detail.php).
+
+---
+
 # [05 Oktober 2026] — Pengecualian RSUD Pratama Bulupancing dari Status Pimpinan
 
 - **Penyesuaian Kriteria Pimpinan Daerah/OPD**:

@@ -80,38 +80,6 @@ class EmailListController extends BaseController
         }
     }
 
-    public function apiBatchUpdatePassword()
-    {
-        if (strtolower($this->request->getMethod()) !== 'post') {
-            return $this->response->setStatusCode(405)->setJSON(['success' => false, 'message' => 'Invalid request method.']);
-        }
-
-        $payload  = $this->request->getJSON(true);
-        $email    = $payload['email'] ?? '';
-        $password = $payload['password'] ?? '';
-
-        if (empty($email) || empty($password)) {
-            return $this->response->setStatusCode(400)->setJSON(['success' => false, 'message' => 'Email dan password harus diisi.']);
-        }
-
-        if (strlen($password) < 8) {
-            return $this->response->setStatusCode(400)->setJSON(['success' => false, 'message' => 'Password minimal 8 karakter.']);
-        }
-
-        try {
-            $username = strstr($email, '@', true);
-            $emailService = new \App\Domains\Email\Services\EmailService();
-            $emailService->updatePassword($username, $password);
-
-            helper('audit');
-            log_audit('CHANGE_PASSWORD', 'Email', null, 'Ubah password: ' . $email);
-
-            return $this->response->setJSON(['success' => true, 'message' => 'Password berhasil diperbarui.']);
-        } catch (\Throwable $e) {
-            return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => $e->getMessage()]);
-        }
-    }
-
     public function eselonDetail($eselonId)
     {
         try {
