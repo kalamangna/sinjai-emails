@@ -5,6 +5,8 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 # [21 Oktober 2026] — Perbaikan Impor Spreadsheet Batch & Penguatan Keamanan CSRF
 
+- **Standarisasi Ejaan Baku Normalisasi Jabatan Teknis**:
+  - Menambahkan aturan pembersihan typo variasi ejaan tidak baku `TEHNIK` dan `TEKHNIK` menjadi kata baku **`TEKNIK`** pada [`EmailService::normalizeJabatanName()`](app/Domains/Email/Services/EmailService.php) agar penyeragaman nomenklatur jabatan fungsional (seperti Teknik Pengairan, Teknik Penyehatan Lingkungan, Teknik Jalan dan Jembatan) konsisten sesuai standar KBBI dan PermenPAN-RB.
 - **Penyederhanaan Logika Auto-Logout Tanpa Modal Konfirmasi**:
   - Menghapus modal peringatan sesi kedaluwarsa ([`session-timeout-modal`](app/Views/layouts/main.php)) beserta tombol konfirmasi **Tetap Masuk** dan **Keluar Sekarang** dari layout utama aplikasi.
   - Memperbarui skrip pemantauan inaktivitas ([`session-timeout.js`](public/js/session-timeout.js)) agar langsung mengeksekusi pengalihan logout otomatis (`/logout?expired=1`) tanpa meminta konfirmasi pengguna ketika masa tenggang inaktivitas tercapai.

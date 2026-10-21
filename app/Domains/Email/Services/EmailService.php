@@ -2295,6 +2295,7 @@ class EmailService
         $jab = preg_replace('/\bPKN\b/i', 'PPKN', $jab);
         $jab = preg_replace('/\bPENJASKES\b/i', 'PENJASORKES', $jab);
         $jab = preg_replace('/\b(TEHNIS|TEKHNIS)\b/i', 'TEKNIS', $jab);
+        $jab = preg_replace('/\b(TEHNIK|TEKHNIK)\b/i', 'TEKNIK', $jab);
         $jab = preg_replace('/\bPENELAH\b/i', 'PENELAAH', $jab);
         $jab = preg_replace('/\bPENGOLA\b/i', 'PENGOLAH', $jab);
         $jab = preg_replace('/\bPENGADMINISTRASIAN\b/i', 'PENGADMINISTRASI', $jab);
@@ -2316,8 +2317,8 @@ class EmailService
 
         // Koreksi typo umum di master data SIMPEG
         $jab = str_replace(
-            ['TEHNOLOGI', 'KOMSUMSI', 'HOLTIKULTURA'],
-            ['TEKNOLOGI', 'KONSUMSI', 'HORTIKULTURA'],
+            ['TEHNOLOGI', 'KOMSUMSI', 'HOLTIKULTURA', 'TEHNIK'],
+            ['TEKNOLOGI', 'KONSUMSI', 'HORTIKULTURA', 'TEKNIK'],
             $jab
         );
 
