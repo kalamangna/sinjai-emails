@@ -5,6 +5,10 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 # [21 Oktober 2026] — Perbaikan Impor Spreadsheet Batch & Penguatan Keamanan CSRF
 
+- **Penyederhanaan Logika Auto-Logout Tanpa Modal Konfirmasi**:
+  - Menghapus modal peringatan sesi kedaluwarsa ([`session-timeout-modal`](app/Views/layouts/main.php)) beserta tombol konfirmasi **Tetap Masuk** dan **Keluar Sekarang** dari layout utama aplikasi.
+  - Memperbarui skrip pemantauan inaktivitas ([`session-timeout.js`](public/js/session-timeout.js)) agar langsung mengeksekusi pengalihan logout otomatis (`/logout?expired=1`) tanpa meminta konfirmasi pengguna ketika masa tenggang inaktivitas tercapai.
+  - Menambahkan pengiriman sinyal penyegaran sesi (*silent keep-alive*) berkala di latar belakang pada [`session-timeout.js`](public/js/session-timeout.js) selama pengguna aktif berinteraksi, menjaga sesi di server tetap aktif tanpa mengganggu pengguna.
 - **Perbaikan Impor Spreadsheet Formulir Massal & Eksekusi Akun**:
   - Menyertakan token CSRF dinamis (`csrf_test_name` dan header `X-CSRF-TOKEN`) pada fungsi unggah berkas spreadsheet, validasi ketersediaan data massal (`batchCheckAvailability`), serta eksekusi pembuatan akun tunggal (`create_single`) di [`batch.js`](public/js/batch.js), [`batch-update.js`](public/js/batch-update.js), [`batch-pk.js`](public/js/batch-pk.js), dan [`unit-kerja-batch.js`](public/js/unit-kerja-batch.js) guna mencegah kendala "An unknown error occurred" akibat penolakan permintaan oleh filter CSRF CodeIgniter 4.
   - Memperbarui pembaca berkas pada [`BatchController::importGenericSpreadsheet()`](app/Domains/Batch/Controllers/BatchController.php) menggunakan `\PhpOffice\PhpSpreadsheet\IOFactory::load()` untuk membaca format spreadsheet (`.xlsx` dan `.xls`) secara otomatis tanpa terpengaruh variasi MIME type dari peramban klien.

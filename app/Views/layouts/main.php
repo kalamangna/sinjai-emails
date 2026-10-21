@@ -261,42 +261,6 @@
     ], ['saveData' => false]);
     ?>
 
-    <!-- Global Session Timeout Modal -->
-    <?php if (session()->get('isLoggedIn')): ?>
-        <?php
-        $sessionTimeoutContent = '
-            <div class="flex flex-col items-center gap-3 py-3 text-center">
-                <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl bg-amber-100 text-amber-600 mb-1 animate-pulse">
-                    <i class="fas fa-hourglass-half"></i>
-                </div>
-                <h4 class="text-sm font-bold text-slate-800 uppercase tracking-tight">Sesi Anda Akan Segera Berakhir</h4>
-                <p class="text-xs font-medium text-slate-600 leading-relaxed px-2">
-                    Tidak ada aktivitas yang terdeteksi. Sesi Anda akan otomatis ditutup dalam 
-                    <span id="session-timeout-countdown" class="font-bold text-red-600 font-mono text-sm px-1">60</span> detik.
-                </p>
-            </div>
-        ';
-        $sessionTimeoutFooter = '
-            <div class="flex items-center justify-between w-full gap-2">
-                <a href="' . site_url('logout?expired=1') . '" class="px-4 py-2 bg-slate-100 text-slate-700 text-[10px] font-bold uppercase tracking-widest rounded-lg hover:bg-slate-200 transition-colors">
-                    Keluar Sekarang
-                </a>
-                <button id="btn-extend-session" type="button" class="px-5 py-2 bg-slate-800 text-white text-[10px] font-bold uppercase tracking-widest rounded-lg hover:bg-slate-700 transition-colors focus:outline-none">
-                    Tetap Masuk
-                </button>
-            </div>
-        ';
-        echo view('components/modal', [
-            'id'        => 'session-timeout-modal',
-            'title'     => 'Peringatan Keamanan',
-            'size'      => 'sm',
-            'showClose' => false,
-            'content'   => $sessionTimeoutContent,
-            'footer'    => $sessionTimeoutFooter
-        ], ['saveData' => false]);
-        ?>
-    <?php endif; ?>
-
     <?php $isPublic = $isPublic ?? false; ?>
     <!-- Sidebar -->
     <?php if (!$isPublic): ?>
@@ -855,7 +819,6 @@
         <script>
             window.SESSION_CONFIG = {
                 lifetime: <?= (int) (config('Session')->expiration > 0 ? config('Session')->expiration : 7200) ?>,
-                warningTime: 60,
                 keepAliveUrl: '<?= site_url('auth/keep-alive') ?>',
                 logoutUrl: '<?= site_url('logout?expired=1') ?>'
             };
