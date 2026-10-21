@@ -223,10 +223,18 @@ class UserController extends BaseController
                 }
             }
 
-            return $this->response->setJSON(['success' => true, 'results' => $results]);
+            return $this->response->setJSON([
+                'success' => true, 
+                'results' => $results,
+                'csrf_token' => csrf_hash()
+            ]);
         } catch (\Throwable $e) {
             log_message('error', '[User Controller] Batch check failed: ' . $e->getMessage());
-            return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => $e->getMessage()]);
+            return $this->response->setStatusCode(500)->setJSON([
+                'success' => false, 
+                'message' => $e->getMessage(),
+                'csrf_token' => csrf_hash()
+            ]);
         }
     }
 }

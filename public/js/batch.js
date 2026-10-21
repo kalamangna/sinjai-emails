@@ -38,6 +38,27 @@ document.addEventListener("DOMContentLoaded", function () {
     unitKerjaOptions.map((option) => option.nama_unit_kerja.toLowerCase()),
   );
 
+  function getCsrfToken() {
+    if (typeof window.getCsrfToken === 'function') {
+      const token = window.getCsrfToken();
+      if (token) return token;
+    }
+    return window.CSRF_TOKEN || '';
+  }
+
+  function getCsrfHeader() {
+    return window.CSRF_HEADER || 'X-CSRF-TOKEN';
+  }
+
+  function updateCsrf(result) {
+    if (result && result.csrf_token) {
+      window.CSRF_TOKEN = result.csrf_token;
+    } else if (typeof window.getCsrfToken === 'function') {
+      const token = window.getCsrfToken();
+      if (token) window.CSRF_TOKEN = token;
+    }
+  }
+
   spreadsheetFileInput.addEventListener('change', handleSpreadsheetUpload);
 
   async function handleSpreadsheetUpload(event) {
@@ -49,8 +70,8 @@ document.addEventListener("DOMContentLoaded", function () {
     formData.set('spreadsheet_file', file);
     formData.set('expected_headers', 'nama,nip,nik');
 
-    const csrfToken = (typeof window.getCsrfToken === 'function') ? window.getCsrfToken() : (window.CSRF_TOKEN || '');
-    const csrfHeader = window.CSRF_HEADER || 'X-CSRF-TOKEN';
+    const csrfToken = getCsrfToken();
+    const csrfHeader = getCsrfHeader();
     if (csrfToken) {
       formData.set('csrf_test_name', csrfToken);
     }
@@ -79,9 +100,7 @@ document.addEventListener("DOMContentLoaded", function () {
         throw new Error('Respon server tidak valid atau sesi telah berakhir.');
       }
 
-      if (result && result.csrf_token) {
-        window.CSRF_TOKEN = result.csrf_token;
-      }
+      updateCsrf(result);
 
       if (!response.ok || !result.success) {
         throw new Error(result.message || 'Gagal mengimpor file spreadsheet.');
@@ -227,15 +246,28 @@ document.addEventListener("DOMContentLoaded", function () {
         formData.append('payload_file', new Blob([JSON.stringify(payloadData)], { type: 'application/json' }), 'payload.json');
         formData.append('dummy_file', new Blob(['dummy'], { type: 'text/plain' }), 'dummy.txt');
 
+        const csrfToken = getCsrfToken();
+        const csrfHeader = getCsrfHeader();
+        if (csrfToken) {
+            formData.append(window.CSRF_TOKEN_NAME || 'csrf_test_name', csrfToken);
+        }
+
+        const checkHeaders = {
+            "X-Requested-With": "XMLHttpRequest",
+        };
+        if (csrfToken) {
+            checkHeaders[csrfHeader] = csrfToken;
+        }
+
         // 1. Batch check NIK, NIP, and ALL potential Email candidates
         const checkUrl = window.BATCH_CHECK_URL || (window.BASE_URL + "/user/batch_check_availability");
         const batchCheckResult = await fetch(checkUrl, {
             method: "POST",
-            headers: {
-                "X-Requested-With": "XMLHttpRequest",
-            },
+            headers: checkHeaders,
             body: formData
-        }).then(res => res.json());
+        }).then(res => res.json()).catch(() => ({}));
+
+        updateCsrf(batchCheckResult);
 
         const serverResults = batchCheckResult.results || { emails: {}, niks: {}, nips: {} };
 
@@ -391,16 +423,34 @@ document.addEventListener("DOMContentLoaded", function () {
           formData.append('payload_file', new Blob([JSON.stringify(user)], { type: 'application/json' }), 'payload.json');
           formData.append('dummy_file', new Blob(['dummy'], { type: 'text/plain' }), 'dummy.txt');
           
+          const csrfToken = getCsrfToken();
+          const csrfHeader = getCsrfHeader();
+          if (csrfToken) {
+            formData.append(window.CSRF_TOKEN_NAME || 'csrf_test_name', csrfToken);
+          }
+
+          const requestHeaders = {
+            "X-Requested-With": "XMLHttpRequest",
+          };
+          if (csrfToken) {
+            requestHeaders[csrfHeader] = csrfToken;
+          }
+
           const createUrl = window.EMAIL_CREATE_URL || (window.BASE_URL + "/email/create_single");
           const response = await fetch(createUrl, {
             method: "POST",
-            headers: {
-              "X-Requested-With": "XMLHttpRequest",
-            },
+            headers: requestHeaders,
             body: formData,
           });
 
-          const result = await response.json();
+          let result;
+          try {
+            result = await response.json();
+          } catch (jsonErr) {
+            result = { success: false, message: response.status === 403 ? "Sesi atau token keamanan (CSRF) kadaluarsa. Silakan refresh halaman." : "Respon server tidak valid." };
+          }
+          updateCsrf(result);
+
           const userInBatch = userBatch.find((u) => u.email === user.email);
 
           if (response.ok && result.success) {
@@ -408,7 +458,7 @@ document.addEventListener("DOMContentLoaded", function () {
             logResult(user.email, "SUCCESS", "Account created successfully.");
             if (userInBatch) userInBatch.status = "created";
           } else {
-            const errorMsg = result.message || "An unknown error occurred.";
+            const errorMsg = result.message || (response.status === 403 ? "Sesi atau token keamanan (CSRF) kadaluarsa. Silakan refresh halaman." : "Gagal membuat akun.");
             failureCount++;
             
             if (userInBatch) {
@@ -527,18 +577,25 @@ document.addEventListener("DOMContentLoaded", function () {
   async function checkNikOnServer(nik) {
     if (!nik) return { exists: false };
     try {
+      const csrfToken = getCsrfToken();
+      const headers = {
+        "Content-Type": "application/json",
+        "X-Requested-With": "XMLHttpRequest",
+      };
+      if (csrfToken) {
+        headers[getCsrfHeader()] = csrfToken;
+      }
       const response = await fetch(window.BASE_URL + "/user/check_niknip", {
         // Updated endpoint
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Requested-With": "XMLHttpRequest",
-        },
+        headers: headers,
         body: JSON.stringify({ nik: nik }),
       });
       if (!response.ok)
         return { exists: true, message: "Server error during check." };
-      return await response.json();
+      const res = await response.json();
+      updateCsrf(res);
+      return res;
     } catch (error) {
       console.error("Error checking NIK on server:", error);
       return { exists: true, message: "Network error." };
@@ -549,18 +606,25 @@ document.addEventListener("DOMContentLoaded", function () {
     // New function for NIP check
     if (!nip) return { exists: false };
     try {
+      const csrfToken = getCsrfToken();
+      const headers = {
+        "Content-Type": "application/json",
+        "X-Requested-With": "XMLHttpRequest",
+      };
+      if (csrfToken) {
+        headers[getCsrfHeader()] = csrfToken;
+      }
       const response = await fetch(window.BASE_URL + "/user/check_niknip", {
         // Using the same endpoint, backend needs to handle both
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Requested-With": "XMLHttpRequest",
-        },
+        headers: headers,
         body: JSON.stringify({ nip: nip }),
       });
       if (!response.ok)
         return { exists: true, message: "Server error during check." };
-      return await response.json();
+      const res = await response.json();
+      updateCsrf(res);
+      return res;
     } catch (error) {
       console.error("Error checking NIP on server:", error);
       return { exists: true, message: "Network error." };
@@ -569,17 +633,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
   async function checkEmailAvailability(email) {
     try {
+      const csrfToken = getCsrfToken();
+      const headers = {
+        "Content-Type": "application/json",
+        "X-Requested-With": "XMLHttpRequest",
+      };
+      if (csrfToken) {
+        headers[getCsrfHeader()] = csrfToken;
+      }
       const response = await fetch(window.BASE_URL + "/user/check_email", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Requested-With": "XMLHttpRequest",
-        },
+        headers: headers,
         body: JSON.stringify({ email: email }),
       });
       if (!response.ok)
         return { available: false, message: "Server error during check." };
-      return await response.json();
+      const res = await response.json();
+      updateCsrf(res);
+      return res;
     } catch (error) {
       console.error("Error checking email availability:", error);
       return { available: false, message: "Network error." };

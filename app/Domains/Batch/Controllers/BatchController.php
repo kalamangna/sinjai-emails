@@ -240,10 +240,18 @@ class BatchController extends BaseController
             // Clear Dashboard Cache
             \App\Shared\Services\CacheService::invalidateDashboard();
 
-            return $this->response->setJSON(['success' => true, 'results' => $results]);
+            return $this->response->setJSON([
+                'success' => true, 
+                'results' => $results,
+                'csrf_token' => csrf_hash()
+            ]);
         } catch (\Throwable $e) {
             log_message('error', 'Batch Update Failed: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
-            return $this->response->setJSON(['success' => false, 'message' => $e->getMessage() ?: 'Internal Server Error (Batch Update)']);
+            return $this->response->setJSON([
+                'success' => false, 
+                'message' => $e->getMessage() ?: 'Internal Server Error (Batch Update)',
+                'csrf_token' => csrf_hash()
+            ]);
         }
     }
 
@@ -278,9 +286,17 @@ class BatchController extends BaseController
             // Clear Dashboard Cache
             \App\Shared\Services\CacheService::invalidateDashboard();
 
-            return $this->response->setJSON(['success' => true, 'results' => $results]);
+            return $this->response->setJSON([
+                'success' => true, 
+                'results' => $results,
+                'csrf_token' => csrf_hash()
+            ]);
         } catch (\Throwable $e) {
-            return $this->response->setJSON(['success' => false, 'message' => $e->getMessage()]);
+            return $this->response->setJSON([
+                'success' => false, 
+                'message' => $e->getMessage(),
+                'csrf_token' => csrf_hash()
+            ]);
         }
     }
 

@@ -240,9 +240,17 @@ class EmailApiController extends BaseController
             // Clear Dashboard Cache
             \App\Shared\Services\CacheService::invalidateDashboard();
 
-            return $this->response->setJSON(['success' => true, 'email' => $data['email']]);
+            return $this->response->setJSON([
+                'success' => true, 
+                'email' => $data['email'],
+                'csrf_token' => csrf_hash()
+            ]);
         } catch (\Throwable $e) {
-            return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => $e->getMessage()]);
+            return $this->response->setStatusCode(500)->setJSON([
+                'success' => false, 
+                'message' => $e->getMessage(),
+                'csrf_token' => csrf_hash()
+            ]);
         }
     }
 

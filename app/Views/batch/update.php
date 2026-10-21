@@ -289,15 +289,21 @@
                 // Add a dummy file just in case WAF requires multipart/form-data to have a 'real' file extension
                 formData.append('dummy_file', new Blob(['dummy'], { type: 'text/plain' }), 'dummy.txt');
 
+                const csrfToken = (typeof window.getCsrfToken === 'function' ? window.getCsrfToken() : '<?= csrf_hash() ?>');
+                formData.append('csrf_test_name', csrfToken);
+
                 const response = await fetch('<?= site_url('batch/execute_update') ?>', {
                     method: 'POST',
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest',
-                        '<?= config('Security')->headerName ?>': '<?= csrf_hash() ?>'
+                        '<?= config('Security')->headerName ?>': csrfToken
                     },
                     body: formData
                 });
                 const result = await response.json();
+                if (result && result.csrf_token) {
+                    window.CSRF_TOKEN = result.csrf_token;
+                }
                 
                 if (!result.success) {
                     throw new Error(result.message || 'Gagal memproses data.');
