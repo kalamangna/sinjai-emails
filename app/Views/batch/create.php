@@ -142,6 +142,7 @@
     window.BATCH_CHECK_URL = '<?= site_url('user/batch_check_availability') ?>';
     window.EMAIL_CREATE_URL = '<?= site_url('email/create_single') ?>';
     window.EMAIL_REDIRECT_URL = '<?= site_url('email') ?>';
+    window.EMAIL_UNIT_KERJA_BASE_URL = '<?= site_url('email/unit_kerja') ?>';
 </script>
 <script src="<?= base_url('js/utils.js?v=' . time()) ?>"></script>
 <script src="<?= base_url('js/batch.js?v=' . time()) ?>"></script>

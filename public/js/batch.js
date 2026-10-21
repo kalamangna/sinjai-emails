@@ -509,14 +509,13 @@ document.addEventListener("DOMContentLoaded", function () {
         progressSection.style.display = "none";
       } else {
         renderResults(userBatch);
+        const redirectUrl = getSelectedUnitKerjaRedirectUrl();
         if (typeof window.showGlobalAlert === 'function') {
             window.showGlobalAlert('Berhasil', `${successCount} akun email berhasil dibuat.`, 'success', () => {
-                const redirectUrl = window.EMAIL_REDIRECT_URL || (window.BASE_URL + "/email");
                 window.location.href = redirectUrl;
             });
         } else {
             setTimeout(() => {
-                const redirectUrl = window.EMAIL_REDIRECT_URL || (window.BASE_URL + "/email");
                 window.location.href = redirectUrl;
             }, 1000);
         }
@@ -528,6 +527,33 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
   });
+
+  function getSelectedUnitKerjaRedirectUrl() {
+    const selectedUnitName = unitKerjaInputSingle ? unitKerjaInputSingle.value.trim() : "";
+    if (selectedUnitName && typeof unitKerjaOptions !== 'undefined' && Array.isArray(unitKerjaOptions)) {
+      const found = unitKerjaOptions.find(
+        (u) => u.nama_unit_kerja.toLowerCase() === selectedUnitName.toLowerCase()
+      );
+      if (found && found.id) {
+        const baseUrl = window.EMAIL_UNIT_KERJA_BASE_URL || (window.BASE_URL + "/email/unit_kerja");
+        return `${baseUrl}/${found.id}`;
+      }
+    }
+    // Fallback: periksa unit kerja dari daftar pengguna batch
+    if (Array.isArray(userBatch) && userBatch.length > 0 && typeof unitKerjaOptions !== 'undefined' && Array.isArray(unitKerjaOptions)) {
+      const firstUserUnit = (userBatch[0].unitKerja || "").trim();
+      if (firstUserUnit) {
+        const found = unitKerjaOptions.find(
+          (u) => u.nama_unit_kerja.toLowerCase() === firstUserUnit.toLowerCase()
+        );
+        if (found && found.id) {
+          const baseUrl = window.EMAIL_UNIT_KERJA_BASE_URL || (window.BASE_URL + "/email/unit_kerja");
+          return `${baseUrl}/${found.id}`;
+        }
+      }
+    }
+    return window.EMAIL_REDIRECT_URL || (window.BASE_URL + "/email");
+  }
 
   function logResult(email, status, message) {
     const statusColor = status === "SUCCESS" ? "text-emerald-500" : (status === "WEAK PW" ? "text-amber-500" : "text-red-500");

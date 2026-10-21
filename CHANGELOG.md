@@ -11,6 +11,7 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Menstandarkan pencocokan nama kolom header secara *case-insensitive* serta mengabaikan kolom kosong berlebih di akhir baris spreadsheet.
   - Menambahkan kolom tersembunyi `<?= csrf_field() ?>` dan atribut `data-import-url` pada formulir impor berkas di [`batch/create.php`](app/Views/batch/create.php), [`batch/update.php`](app/Views/batch/update.php), [`batch/pk.php`](app/Views/batch/pk.php), dan [`unit_kerja/batch_create.php`](app/Views/unit_kerja/batch_create.php).
   - Mengembalikan pembaruan token CSRF baru pada respons JSON berhasil di [`BatchController.php`](app/Domains/Batch/Controllers/BatchController.php), [`EmailApiController.php`](app/Domains/Email/Controllers/EmailApiController.php), dan [`UserController.php`](app/Domains/Auth/Controllers/UserController.php) agar formulir dan proses berulang dapat terus berjalan tanpa terputus masa kedaluwarsa token.
+  - Mengarahkan pengalihan otomatis (*redirect*) setelah eksekusi pembuatan akun massal langsung ke halaman detail unit kerja terkait pada [`batch.js`](public/js/batch.js) dan [`create.php`](app/Views/batch/create.php) berdasarkan unit kerja yang dipilih pada formulir.
 
 ---
 
