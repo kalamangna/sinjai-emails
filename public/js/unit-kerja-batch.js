@@ -9,25 +9,47 @@ document.addEventListener('DOMContentLoaded', function() {
             const file = event.target.files[0];
             if (!file) return;
 
-            const formData = new FormData();
-            formData.append('spreadsheet_file', file);
+            const form = document.getElementById('spreadsheet_import_form');
+            const formData = new FormData(form || undefined);
+            formData.set('spreadsheet_file', file);
             
             // Define the expected headers for Unit Kerja
             const expectedHeaders = 'nama_unit_kerja,parent_id';
-            formData.append('expected_headers', expectedHeaders);
+            formData.set('expected_headers', expectedHeaders);
+
+            const csrfToken = (typeof window.getCsrfToken === 'function') ? window.getCsrfToken() : (window.CSRF_TOKEN || '');
+            const csrfHeader = window.CSRF_HEADER || 'X-CSRF-TOKEN';
+            if (csrfToken) {
+                formData.set('csrf_test_name', csrfToken);
+            }
+
+            const headers = {
+                "X-Requested-With": "XMLHttpRequest",
+            };
+            if (csrfToken) {
+                headers[csrfHeader] = csrfToken;
+            }
 
             showGlobalLoading(true);
 
             try {
-                const response = await fetch('/batch/import_generic_spreadsheet', {
+                const targetUrl = (form && form.getAttribute('data-import-url')) ? form.getAttribute('data-import-url') : (window.BASE_URL + '/batch/import_generic_spreadsheet');
+                const response = await fetch(targetUrl, {
                     method: 'POST',
                     body: formData,
-                    headers: {
-                        "X-Requested-With": "XMLHttpRequest",
-                    }
+                    headers: headers
                 });
 
-                const result = await response.json();
+                let result;
+                try {
+                    result = await response.json();
+                } catch (jsonErr) {
+                    throw new Error('Respon server tidak valid atau sesi telah berakhir.');
+                }
+
+                if (result && result.csrf_token) {
+                    window.CSRF_TOKEN = result.csrf_token;
+                }
 
                 if (!response.ok || !result.success) {
                     throw new Error(result.message || 'Gagal mengimpor file.');

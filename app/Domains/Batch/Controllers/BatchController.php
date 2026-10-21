@@ -6,6 +6,7 @@ use App\Shared\BaseController;
 use App\Domains\UnitKerja\Models\UnitKerjaModel;
 use App\Shared\Models\StatusAsnModel;
 use App\Domains\Batch\Services\EmailBatchService;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx as XlsxWriter;
@@ -70,39 +71,65 @@ class BatchController extends BaseController
         $file = $this->request->getFile('spreadsheet_file');
         $expectedHeaderString = $this->request->getPost('expected_headers');
 
-        if (!$file || !$file->isValid() || $file->getClientMimeType() !== 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
-            return $this->response->setStatusCode(400)->setJSON(['success' => false, 'message' => 'File tidak valid. Harap unggah file XLSX.']);
+        if (!$file || !$file->isValid()) {
+            return $this->response->setStatusCode(400)->setJSON([
+                'success' => false, 
+                'message' => 'File tidak valid atau gagal diunggah: ' . ($file ? $file->getErrorString() : 'File kosong')
+            ]);
+        }
+
+        $extension = strtolower($file->getClientExtension());
+        $allowedExtensions = ['xlsx', 'xls'];
+        if (!in_array($extension, $allowedExtensions)) {
+            return $this->response->setStatusCode(400)->setJSON([
+                'success' => false, 
+                'message' => 'Format file tidak didukung. Harap unggah file Excel (.xlsx atau .xls).'
+            ]);
         }
 
         if (empty($expectedHeaderString)) {
             return $this->response->setStatusCode(400)->setJSON(['success' => false, 'message' => 'Tipe template tidak dispesifikasikan.']);
         }
         
-        $expectedHeader = explode(',', $expectedHeaderString);
+        $expectedHeader = array_values(array_filter(array_map('trim', explode(',', $expectedHeaderString)), fn($v) => $v !== ''));
+        $expectedHeaderLower = array_map('strtolower', $expectedHeader);
+        $expectedCount = count($expectedHeader);
 
         try {
-            $reader = new Xlsx();
-            $spreadsheet = $reader->load($file->getTempName());
+            $spreadsheet = IOFactory::load($file->getTempName());
             $sheetData = $spreadsheet->getActiveSheet()->toArray(null, true, true, true);
             
-            $sheetData = array_filter($sheetData, fn($row) => !empty(implode('', array_map('trim', $row))));
+            $sheetData = array_filter($sheetData, fn($row) => !empty(implode('', array_map(fn($v) => trim((string)$v), $row))));
             
-            $header = array_values(array_shift($sheetData));
+            if (empty($sheetData)) {
+                return $this->response->setStatusCode(400)->setJSON(['success' => false, 'message' => 'File spreadsheet kosong atau tidak berisi data.']);
+            }
 
-            // Trim headers from file
-            $header = array_map('trim', $header);
+            $rawHeader = array_values(array_shift($sheetData));
+            $header = array_map(fn($v) => strtolower(trim((string)$v)), $rawHeader);
+            $headerSlice = array_slice($header, 0, $expectedCount);
 
-            if ($header !== $expectedHeader) {
-                return $this->response->setStatusCode(400)->setJSON(['success' => false, 'message' => 'Header file tidak cocok. Harap gunakan template yang sesuai.']);
+            if ($headerSlice !== $expectedHeaderLower) {
+                return $this->response->setStatusCode(400)->setJSON([
+                    'success' => false, 
+                    'message' => 'Header kolom tidak sesuai dengan template. Diharapkan: ' . implode(', ', $expectedHeader)
+                ]);
             }
 
             $records = [];
             foreach ($sheetData as $row) {
-                $rowData = array_values($row);
+                $rowData = array_slice(array_values($row), 0, $expectedCount);
+                if (count($rowData) < $expectedCount) {
+                    $rowData = array_pad($rowData, $expectedCount, '');
+                }
                 $records[] = array_combine($expectedHeader, $rowData);
             }
 
-            return $this->response->setJSON(['success' => true, 'data' => $records]);
+            return $this->response->setJSON([
+                'success' => true, 
+                'data' => $records,
+                'csrf_token' => csrf_hash()
+            ]);
         } catch (\Throwable $e) {
             return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => 'Gagal memproses file: ' . $e->getMessage()]);
         }

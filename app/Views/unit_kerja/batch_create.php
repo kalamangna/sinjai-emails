@@ -26,7 +26,8 @@
                     <li>Kolom kedua: <strong class="text-slate-800">parent_id</strong> (Kosongkan untuk root)</li>
                 </ul>
             </div>
-            <form id="spreadsheet_import_form" method="post" enctype="multipart/form-data">
+            <form id="spreadsheet_import_form" data-import-url="<?= site_url('batch/import_generic_spreadsheet') ?>" method="post" enctype="multipart/form-data">
+                <?= csrf_field() ?>
                 <div>
                     <label for="spreadsheet_file" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight flex items-center gap-1.5">
                         <i class="fas fa-upload text-slate-500"></i> File Excel

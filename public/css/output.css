@@ -2387,10 +2387,6 @@ input::placeholder,
   height: 100vh;
 }
 
-.max-h-40 {
-  max-height: 10rem;
-}
-
 .max-h-48 {
   max-height: 12rem;
 }
@@ -4016,10 +4012,6 @@ input::placeholder,
   background-color: rgb(254 242 242 / var(--tw-bg-opacity, 1));
 }
 
-.bg-red-50\/70 {
-  background-color: rgb(254 242 242 / 0.7);
-}
-
 .bg-red-500 {
   --tw-bg-opacity: 1;
   background-color: rgb(239 68 68 / var(--tw-bg-opacity, 1));
@@ -4446,6 +4438,11 @@ input::placeholder,
 .\!py-2\.5 {
   padding-top: 0.625rem !important;
   padding-bottom: 0.625rem !important;
+}
+
+.px-1 {
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
 }
 
 .px-1\.5 {
@@ -4921,10 +4918,6 @@ input::placeholder,
 
 .tracking-tighter {
   letter-spacing: -0.05em;
-}
-
-.tracking-wide {
-  letter-spacing: 0.025em;
 }
 
 .tracking-wider {
@@ -5836,6 +5829,11 @@ input::placeholder,
 
 .hover\:bg-slate-100\/50:hover {
   background-color: rgb(241 245 249 / 0.5);
+}
+
+.hover\:bg-slate-200:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(226 232 240 / var(--tw-bg-opacity, 1));
 }
 
 .hover\:bg-slate-50:hover {

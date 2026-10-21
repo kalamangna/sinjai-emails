@@ -3,6 +3,17 @@
 Semua perubahan penting pada proyek ini dicatat di berkas ini.
 Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+# [21 Oktober 2026] — Perbaikan Impor Spreadsheet Batch & Penguatan Keamanan CSRF
+
+- **Perbaikan Impor Spreadsheet Formulir Massal**:
+  - Menyertakan token CSRF dinamis (`csrf_test_name` dan header `X-CSRF-TOKEN`) pada fungsi unggah berkas spreadsheet di [`batch.js`](public/js/batch.js), [`batch-update.js`](public/js/batch-update.js), [`batch-pk.js`](public/js/batch-pk.js), dan [`unit-kerja-batch.js`](public/js/unit-kerja-batch.js) guna mencegah penolakan permintaan oleh filter CSRF CodeIgniter 4.
+  - Memperbarui pembaca berkas pada [`BatchController::importGenericSpreadsheet()`](app/Domains/Batch/Controllers/BatchController.php) menggunakan `\PhpOffice\PhpSpreadsheet\IOFactory::load()` untuk membaca format spreadsheet (`.xlsx` dan `.xls`) secara otomatis tanpa terpengaruh variasi MIME type dari peramban klien.
+  - Menstandarkan pencocokan nama kolom header secara *case-insensitive* serta mengabaikan kolom kosong berlebih di akhir baris spreadsheet.
+  - Menambahkan kolom tersembunyi `<?= csrf_field() ?>` dan atribut `data-import-url` pada formulir impor berkas di [`batch/create.php`](app/Views/batch/create.php), [`batch/update.php`](app/Views/batch/update.php), [`batch/pk.php`](app/Views/batch/pk.php), dan [`unit_kerja/batch_create.php`](app/Views/unit_kerja/batch_create.php).
+  - Mengembalikan pembaruan token CSRF baru pada respons JSON berhasil agar formulir dapat terus digunakan tanpa *reload*.
+
+---
+
 # [12 Oktober 2026] — Penghapusan Fitur Batch Update Password
 
 - **Penghapusan Fitur Batch Update Password Akun Email**:

@@ -20,6 +20,7 @@
         </div>
         <div class="p-6 space-y-4">
             <form id="spreadsheet_import_form" data-import-url="<?= site_url('batch/import_generic_spreadsheet') ?>" method="post" enctype="multipart/form-data">
+                <?= csrf_field() ?>
                 <div>
                     <label for="spreadsheet_file" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight flex items-center gap-1.5">
                         <i class="fas fa-upload text-slate-500"></i> File Excel
