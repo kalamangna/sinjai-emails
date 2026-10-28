@@ -120,6 +120,9 @@
 <?= $this->section('scripts') ?>
 <script src="<?= base_url('js/utils.js') ?>"></script>
 <script>
+(function() {
+    'use strict';
+
     const nameInput = document.getElementById('name_input');
     const nikInput = document.getElementById('nik_input');
     const nipInput = document.getElementById('nip_input');
@@ -138,10 +141,15 @@
 
     let userBatch = []; // Wrap single user in an array to match batch logic
 
-    function getCsrfToken() {
+    function fetchCsrfToken() {
         if (typeof window.getCsrfToken === 'function') {
-            const token = window.getCsrfToken();
-            if (token) return token;
+            return window.getCsrfToken();
+        }
+        if (window.CSRF_COOKIE) {
+            const match = document.cookie.match(new RegExp('(^|;\\s*)(' + window.CSRF_COOKIE + ')=([^;]*)'));
+            if (match && match[3]) {
+                return decodeURIComponent(match[3]);
+            }
         }
         return window.CSRF_TOKEN || '';
     }
@@ -153,9 +161,6 @@
     function updateCsrf(result) {
         if (result && result.csrf_token) {
             window.CSRF_TOKEN = result.csrf_token;
-        } else if (typeof window.getCsrfToken === 'function') {
-            const token = window.getCsrfToken();
-            if (token) window.CSRF_TOKEN = token;
         }
     }
 
@@ -206,7 +211,7 @@
         formData.append('payload_file', new Blob([JSON.stringify(payloadData)], { type: 'application/json' }), 'payload.json');
         formData.append('dummy_file', new Blob(['dummy'], { type: 'text/plain' }), 'dummy.txt');
 
-        const csrfToken = getCsrfToken();
+        const csrfToken = fetchCsrfToken();
         const csrfHeader = getCsrfHeader();
         if (csrfToken) {
             formData.append(window.CSRF_TOKEN_NAME || 'csrf_test_name', csrfToken);
@@ -423,7 +428,7 @@
             formData.append('payload_file', new Blob([JSON.stringify({ ...user, quota: 1024 })], { type: 'application/json' }), 'payload.json');
             formData.append('dummy_file', new Blob(['dummy'], { type: 'text/plain' }), 'dummy.txt');
 
-            const csrfToken = getCsrfToken();
+            const csrfToken = fetchCsrfToken();
             const csrfHeader = getCsrfHeader();
             if (csrfToken) {
                 formData.append(window.CSRF_TOKEN_NAME || 'csrf_test_name', csrfToken);
@@ -501,7 +506,7 @@
     async function checkNikOnServer(nik) {
         if (!nik) return { exists: false };
         try {
-            const csrfToken = getCsrfToken();
+            const csrfToken = fetchCsrfToken();
             const headers = {
                 "Content-Type": "application/json",
                 "X-Requested-With": "XMLHttpRequest",
@@ -529,7 +534,7 @@
     async function checkNipOnServer(nip) {
         if (!nip) return { exists: false };
         try {
-            const csrfToken = getCsrfToken();
+            const csrfToken = fetchCsrfToken();
             const headers = {
                 "Content-Type": "application/json",
                 "X-Requested-With": "XMLHttpRequest",
@@ -556,7 +561,7 @@
 
     async function checkEmailAvailability(email) {
         try {
-            const csrfToken = getCsrfToken();
+            const csrfToken = fetchCsrfToken();
             const headers = {
                 "Content-Type": "application/json",
                 "X-Requested-With": "XMLHttpRequest",
@@ -595,5 +600,6 @@
 
     function updateDraft() {
         /* Handled by preview logic now */ }
+})();
 </script>
 <?= $this->endSection() ?>

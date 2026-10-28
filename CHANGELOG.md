@@ -7,6 +7,7 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - **Perbaikan Validasi CSRF dan Pemeriksaan Ketersediaan Akun Tunggal**:
   - Menambahkan mekanisme penanganan token keamanan CSRF (`getCsrfToken`, `getCsrfHeader`, dan `updateCsrf`) serta menyematkan header `X-CSRF-TOKEN` dan payload aman pada panggilan AJAX pemeriksaan NIK, NIP, ketersediaan email, dan eksekusi pembuatan akun tunggal di [`create.php`](app/Views/email/create.php) guna mengatasi kendala status akun yang selalu tertahan menjadi `Unavailable`.
+  - Mengisolasi lingkup skrip formulir akun tunggal dalam *closure* IIFE dan mengubah nama fungsi lokal pembaca token CSRF menjadi `fetchCsrfToken()` pada [`create.php`](app/Views/email/create.php) guna mencegah konflik penimpaan fungsi global yang memicu rekursi tak terbatas (*call stack exceeded*).
   - Mengoptimalkan proses tombol Preview pada [`create.php`](app/Views/email/create.php) agar memanfaatkan endpoint `batch_check_availability` dalam satu kali panggilan jaringan untuk memeriksa NIK, NIP, serta seluruh variasi kandidat username sekaligus.
   - Memperbarui method [`UserController::checkEmailAvailability()`](app/Domains/Auth/Controllers/UserController.php) dan [`UserController::checkNiknip()`](app/Domains/Auth/Controllers/UserController.php) agar selalu mengembalikan token CSRF terbaru (`csrf_token`), mendukung pembacaan input JSON maupun POST, serta memeriksa status akun terhapus (`withDeleted`) secara konsisten.
 - **Penyempurnaan Penanganan Kesalahan & Sesi Keamanan**:
