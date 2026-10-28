@@ -6375,8 +6375,17 @@ input::placeholder,
     justify-content: flex-start;
   }
 
+  .md\:p-12 {
+    padding: 3rem;
+  }
+
   .md\:text-left {
     text-align: left;
+  }
+
+  .md\:text-2xl {
+    font-size: 1.5rem;
+    line-height: 2rem;
   }
 
   .md\:text-5xl {

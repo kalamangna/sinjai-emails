@@ -47,13 +47,13 @@ class UserController extends BaseController
     public function checkEmailAvailability()
     {
         if (strtolower($this->request->getMethod()) !== 'post') {
-            return $this->response->setStatusCode(405)->setJSON(['available' => false, 'message' => 'Method not allowed.']);
+            return $this->response->setStatusCode(405)->setJSON(['available' => false, 'message' => 'Method not allowed.', 'csrf_token' => csrf_hash()]);
         }
 
-        $email = $this->request->getJSON()->email ?? null;
+        $email = $this->request->getJSON()->email ?? $this->request->getPost('email');
 
         if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            return $this->response->setStatusCode(400)->setJSON(['available' => false, 'message' => 'A valid email is required.']);
+            return $this->response->setStatusCode(400)->setJSON(['available' => false, 'message' => 'A valid email is required.', 'csrf_token' => csrf_hash()]);
         }
 
         try {
@@ -63,7 +63,7 @@ class UserController extends BaseController
                 if ($userModel->db->tableExists($userModel->getTable())) {
                     $existingUser = $userModel->where('user_email', $email)->first();
                     if ($existingUser) {
-                        return $this->response->setJSON(['available' => false, 'message' => 'Email is already registered to a local user.']);
+                        return $this->response->setJSON(['available' => false, 'message' => 'Email is already registered to a local user.', 'csrf_token' => csrf_hash()]);
                     }
                 }
             } catch (\Throwable $e) {
@@ -73,32 +73,35 @@ class UserController extends BaseController
 
             // Check in cPanel-synced emails table
             $emailModel = new EmailModel();
-            $existingCpanelEmail = $emailModel->where('email', $email)->first();
+            $existingCpanelEmail = $emailModel->withDeleted()->where('email', $email)->first();
 
             if ($existingCpanelEmail) {
-                return $this->response->setJSON(['available' => false, 'message' => 'Email already exists in the cPanel list.']);
+                return $this->response->setJSON(['available' => false, 'message' => 'Email already exists in the cPanel list.', 'csrf_token' => csrf_hash()]);
             }
 
-            return $this->response->setJSON(['available' => true, 'message' => 'Email is available.']);
+            return $this->response->setJSON(['available' => true, 'message' => 'Email is available.', 'csrf_token' => csrf_hash()]);
 
         } catch (\Throwable $e) {
             log_message('error', '[User Controller] Check email availability failed: ' . $e->getMessage());
-            return $this->response->setStatusCode(500)->setJSON(['available' => false, 'message' => 'An unexpected error occurred while checking email availability.']);
+            return $this->response->setStatusCode(500)->setJSON(['available' => false, 'message' => 'An unexpected error occurred while checking email availability.', 'csrf_token' => csrf_hash()]);
         }
     }
 
     public function checkNiknip()
     {
         if (strtolower($this->request->getMethod()) !== 'post') {
-            return $this->response->setStatusCode(405)->setJSON(['exists' => false, 'message' => 'Method not allowed.']);
+            return $this->response->setStatusCode(405)->setJSON(['exists' => false, 'message' => 'Method not allowed.', 'csrf_token' => csrf_hash()]);
         }
 
         $input = $this->request->getJSON();
-        $nik = isset($input->nik) ? str_replace([' ', '.', '-', '\''], '', $input->nik) : null;
-        $nip = isset($input->nip) ? str_replace([' ', '.', '-', '\''], '', $input->nip) : null;
+        $nikRaw = isset($input->nik) ? $input->nik : $this->request->getPost('nik');
+        $nipRaw = isset($input->nip) ? $input->nip : $this->request->getPost('nip');
+
+        $nik = !empty($nikRaw) ? str_replace([' ', '.', '-', '\''], '', $nikRaw) : null;
+        $nip = !empty($nipRaw) ? str_replace([' ', '.', '-', '\''], '', $nipRaw) : null;
 
         if (empty($nik) && empty($nip)) {
-            return $this->response->setStatusCode(400)->setJSON(['exists' => false, 'message' => 'A NIK or NIP is required.']);
+            return $this->response->setStatusCode(400)->setJSON(['exists' => false, 'message' => 'A NIK or NIP is required.', 'csrf_token' => csrf_hash()]);
         }
 
         try {
@@ -107,7 +110,7 @@ class UserController extends BaseController
             $message = '';
 
             if (!empty($nik)) {
-                $existingNik = $emailModel->where('nik', $nik)->first();
+                $existingNik = $emailModel->withDeleted()->where('nik', $nik)->first();
                 if ($existingNik) {
                     $exists = true;
                     $message = 'NIK already exists in the database.';
@@ -115,7 +118,7 @@ class UserController extends BaseController
                     $message = 'NIK is available.';
                 }
             } elseif (!empty($nip)) {
-                $existingNip = $emailModel->where('nip', $nip)->first();
+                $existingNip = $emailModel->withDeleted()->where('nip', $nip)->first();
                 if ($existingNip) {
                     $exists = true;
                     $message = 'NIP already exists in the database.';
@@ -124,11 +127,11 @@ class UserController extends BaseController
                 }
             }
 
-            return $this->response->setJSON(['exists' => $exists, 'message' => $message]);
+            return $this->response->setJSON(['exists' => $exists, 'message' => $message, 'csrf_token' => csrf_hash()]);
 
         } catch (\Throwable $e) {
             log_message('error', '[User Controller] Check NIK/NIP availability failed: ' . $e->getMessage());
-            return $this->response->setStatusCode(500)->setJSON(['exists' => false, 'message' => 'An unexpected error occurred while checking NIK/NIP availability.']);
+            return $this->response->setStatusCode(500)->setJSON(['exists' => false, 'message' => 'An unexpected error occurred while checking NIK/NIP availability.', 'csrf_token' => csrf_hash()]);
         }
     }
 

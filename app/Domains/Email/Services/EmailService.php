@@ -2338,7 +2338,7 @@ class EmailService
      */
     public function calculateBupInfo(array $account): array
     {
-        helper('tanggal');
+        require_once APPPATH . 'Shared/Helpers/TanggalHelper.php';
         $info = hitungBupInfo($account);
 
         if (!$info) {

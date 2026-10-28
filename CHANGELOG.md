@@ -3,6 +3,19 @@
 Semua perubahan penting pada proyek ini dicatat di berkas ini.
 Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+# [28 Oktober 2026] — Perbaikan Validasi CSRF dan Pemeriksaan Ketersediaan Akun Tunggal
+
+- **Perbaikan Validasi CSRF dan Pemeriksaan Ketersediaan Akun Tunggal**:
+  - Menambahkan mekanisme penanganan token keamanan CSRF (`getCsrfToken`, `getCsrfHeader`, dan `updateCsrf`) serta menyematkan header `X-CSRF-TOKEN` dan payload aman pada panggilan AJAX pemeriksaan NIK, NIP, ketersediaan email, dan eksekusi pembuatan akun tunggal di [`create.php`](app/Views/email/create.php) guna mengatasi kendala status akun yang selalu tertahan menjadi `Unavailable`.
+  - Mengoptimalkan proses tombol Preview pada [`create.php`](app/Views/email/create.php) agar memanfaatkan endpoint `batch_check_availability` dalam satu kali panggilan jaringan untuk memeriksa NIK, NIP, serta seluruh variasi kandidat username sekaligus.
+  - Memperbarui method [`UserController::checkEmailAvailability()`](app/Domains/Auth/Controllers/UserController.php) dan [`UserController::checkNiknip()`](app/Domains/Auth/Controllers/UserController.php) agar selalu mengembalikan token CSRF terbaru (`csrf_token`), mendukung pembacaan input JSON maupun POST, serta memeriksa status akun terhapus (`withDeleted`) secara konsisten.
+- **Penyempurnaan Penanganan Kesalahan & Sesi Keamanan**:
+  - Menambahkan halaman penanganan kesalahan akses ditolak 403 terstandar di [`error_403.php`](app/Views/errors/html/error_403.php) dengan panduan informatif saat sesi kedaluwarsa.
+  - Menyesuaikan konfigurasi rute filter `auth/keep-alive` pada [`Filters.php`](app/Config/Filters.php) dan pengalihan kegagalan validasi keamanan di [`Security.php`](app/Config/Security.php).
+  - Memastikan pemuatan helper tanggal terisolasi langsung di [`EmailService::calculateBupInfo()`](app/Domains/Email/Services/EmailService.php).
+
+---
+
 # [21 Oktober 2026] — Perbaikan Impor Spreadsheet Batch & Penguatan Keamanan CSRF
 
 - **Standarisasi Ejaan Baku Normalisasi Jabatan Teknis**:

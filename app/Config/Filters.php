@@ -79,7 +79,8 @@ class Filters extends BaseFilters
                 'api_trigger_queue',
                 'apiTriggerQueue',
                 'email/sync_pegawai',
-                'bsre/sync-status'
+                'bsre/sync-status',
+                'auth/keep-alive'
             ]],
         ],
         'after' => [

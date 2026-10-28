@@ -138,6 +138,27 @@
 
     let userBatch = []; // Wrap single user in an array to match batch logic
 
+    function getCsrfToken() {
+        if (typeof window.getCsrfToken === 'function') {
+            const token = window.getCsrfToken();
+            if (token) return token;
+        }
+        return window.CSRF_TOKEN || '';
+    }
+
+    function getCsrfHeader() {
+        return window.CSRF_HEADER || 'X-CSRF-TOKEN';
+    }
+
+    function updateCsrf(result) {
+        if (result && result.csrf_token) {
+            window.CSRF_TOKEN = result.csrf_token;
+        } else if (typeof window.getCsrfToken === 'function') {
+            const token = window.getCsrfToken();
+            if (token) window.CSRF_TOKEN = token;
+        }
+    }
+
     previewBtn.addEventListener('click', async function() {
         const name = nameInput.value.trim();
         const nip = nipInput.value.trim();
@@ -160,40 +181,99 @@
         const originalUsername = cleanedName.toLowerCase().replace(/\s+/g, "").substring(0, 30 - domain.length);
         const password = generatePassword(name, nip);
 
-        // Check NIK/NIP availability in DB
-        const nikCheckResult = nik ? await checkNikOnServer(nik) : {
-            exists: false
-        };
-        const nipCheckResult = nip ? await checkNipOnServer(nip) : {
-            exists: false
-        };
+        // Build candidate emails list
+        const candidateEmails = [`${originalUsername}${domain}`];
+        const nipPart = getNipPart(nip);
+        if (nipPart) candidateEmails.push(`${originalUsername}${nipPart}${domain}`);
+        const secondNipPart = getSecondNipPart(nip);
+        if (secondNipPart) candidateEmails.push(`${originalUsername}${secondNipPart}${domain}`);
+        const nikPart = getNikPart(nik);
+        if (nikPart) candidateEmails.push(`${originalUsername}${nikPart}${domain}`);
 
-        // Email Fallback Loop
-        let currentUsername = originalUsername;
-        let currentEmail = currentUsername + domain;
+        for (let r = 0; r < 5; r++) {
+            const rand = String(Math.floor(Math.random() * 90) + 10);
+            candidateEmails.push(`${originalUsername}${rand}${domain}`);
+        }
+        const uniqueCandidates = [...new Set(candidateEmails)];
+
+        // Batch check NIK, NIP, and email candidates in a single call
+        const payloadData = {
+            emails: uniqueCandidates,
+            niks: nik ? [nik] : [],
+            nips: nip ? [nip] : []
+        };
+        const formData = new FormData();
+        formData.append('payload_file', new Blob([JSON.stringify(payloadData)], { type: 'application/json' }), 'payload.json');
+        formData.append('dummy_file', new Blob(['dummy'], { type: 'text/plain' }), 'dummy.txt');
+
+        const csrfToken = getCsrfToken();
+        const csrfHeader = getCsrfHeader();
+        if (csrfToken) {
+            formData.append(window.CSRF_TOKEN_NAME || 'csrf_test_name', csrfToken);
+        }
+
+        const checkHeaders = {
+            "X-Requested-With": "XMLHttpRequest",
+        };
+        if (csrfToken) {
+            checkHeaders[csrfHeader] = csrfToken;
+        }
+
+        const checkUrl = '<?= site_url('user/batch_check_availability') ?>';
+        let serverResults = { emails: {}, niks: {}, nips: {} };
+        try {
+            const response = await fetch(checkUrl, {
+                method: "POST",
+                headers: checkHeaders,
+                body: formData
+            });
+            const res = await response.json();
+            updateCsrf(res);
+            if (res.results) {
+                serverResults = res.results;
+            }
+        } catch (e) {
+            console.error('Pemeriksaan ketersediaan data gagal:', e);
+        }
+
+        const isNikInDb = Boolean(nik && serverResults.niks && serverResults.niks[nik]);
+        const isNipInDb = Boolean(nip && serverResults.nips && serverResults.nips[nip]);
+
+        // Select the first available candidate email
+        let chosenEmail = "";
         let isAvailable = false;
-        let attempts = 0;
-        const maxAttempts = 10;
-
-        while (attempts < maxAttempts) {
-            attempts++;
-            const check = await checkEmailAvailability(currentEmail);
-            if (check.available) {
+        for (const cand of uniqueCandidates) {
+            if (!serverResults.emails || !serverResults.emails[cand]) {
+                chosenEmail = cand;
                 isAvailable = true;
                 break;
             }
-            let suffix = "";
-            if (attempts === 1) suffix = getNipPart(nip);
-            else if (attempts === 2) suffix = getSecondNipPart(nip);
-            else if (attempts === 3) suffix = getNikPart(nik);
-            else {
-                let base = getNipPart(nip) || getNikPart(nik);
-                suffix = (base || "") + attempts;
-            }
-            if (!suffix) suffix = attempts;
-            currentUsername = `${originalUsername}${suffix}`;
-            currentEmail = `${currentUsername}${domain}`;
         }
+
+        // If all candidates in batch were taken, run fallback single check
+        if (!isAvailable) {
+            for (let tries = 0; tries < 10; tries++) {
+                const rand = String(Math.floor(Math.random() * 90) + 10);
+                const randEmail = `${originalUsername}${rand}${domain}`;
+                const check = await checkEmailAvailability(randEmail);
+                if (check.available) {
+                    chosenEmail = randEmail;
+                    isAvailable = true;
+                    break;
+                }
+            }
+        }
+
+        if (!chosenEmail) {
+            chosenEmail = `${originalUsername}${domain}`;
+            isAvailable = false;
+        }
+
+        if (isNikInDb || isNipInDb) {
+            isAvailable = false;
+        }
+
+        const chosenUsername = chosenEmail.substring(0, chosenEmail.indexOf(domain));
 
         userBatch = [{
             name: cleanedName,
@@ -201,12 +281,12 @@
             nip: nip,
             jenisFormasi: statusAsn,
             unitKerja: unitKerja,
-            generatedUsername: currentUsername,
-            email: currentEmail,
+            generatedUsername: chosenUsername,
+            email: chosenEmail,
             password: password,
             isAvailable: isAvailable,
-            isNikInDb: nikCheckResult.exists,
-            isNipInDb: nipCheckResult.exists,
+            isNikInDb: isNikInDb,
+            isNipInDb: isNipInDb,
             status: "pending"
         }];
 
@@ -240,9 +320,9 @@
                 statusBadge = `<span class="${badgeBase} bg-red-100 text-red-700" title="${user.errorMessage || 'Failed'}"><i class="fas fa-times-circle"></i>Failed</span>`;
             } else if (user.isNikInDb || user.isNipInDb) {
                 const hints = [];
-                if (user.isNikInDb) hints.push('NIK already in database');
-                if (user.isNipInDb) hints.push('NIP already in database');
-                statusBadge = `<span class="${badgeBase} bg-orange-100 text-orange-700" title="${hints.join(' | ')}"><i class="fas fa-exclamation-triangle"></i>Existing</span>`;
+                if (user.isNikInDb) hints.push('NIK sudah terdaftar di database');
+                if (user.isNipInDb) hints.push('NIP sudah terdaftar di database');
+                statusBadge = `<span class="${badgeBase} bg-orange-100 text-orange-700" title="${hints.join(' dan ')}"><i class="fas fa-exclamation-triangle"></i>Existing</span>`;
             } else if (!user.isAvailable) {
                 statusBadge = `<span class="${badgeBase} bg-red-100 text-red-700"><i class="fas fa-times"></i>Unavailable</span>`;
             } else {
@@ -308,13 +388,14 @@
             const domain = "@sinjaikab.go.id";
             if (newContent + domain === user.email) return;
             user.email = newContent + domain;
+            user.generatedUsername = newContent;
         } else if (cell.classList.contains("editable-password")) {
             if (newContent === user.password) return;
             user.password = newContent;
         }
 
         const check = await checkEmailAvailability(user.email);
-        user.isAvailable = check.available;
+        user.isAvailable = Boolean(check.available) && !user.isNikInDb && !user.isNipInDb;
         renderResults(userBatch);
         updateSubmitButtonState();
     }
@@ -332,24 +413,42 @@
         resultsLog.innerHTML = '';
 
         const user = userBatch[0];
-        progressText.textContent = "100% (Processing 1 / 1)";
+        progressText.textContent = "100% Memproses 1 dari 1";
         progressBar.style.width = '100%';
 
         try {
             logResult(user.email, 'INFO', 'Mengirim data ke server...');
+
+            const formData = new FormData();
+            formData.append('payload_file', new Blob([JSON.stringify({ ...user, quota: 1024 })], { type: 'application/json' }), 'payload.json');
+            formData.append('dummy_file', new Blob(['dummy'], { type: 'text/plain' }), 'dummy.txt');
+
+            const csrfToken = getCsrfToken();
+            const csrfHeader = getCsrfHeader();
+            if (csrfToken) {
+                formData.append(window.CSRF_TOKEN_NAME || 'csrf_test_name', csrfToken);
+            }
+
+            const requestHeaders = {
+                "X-Requested-With": "XMLHttpRequest",
+            };
+            if (csrfToken) {
+                requestHeaders[csrfHeader] = csrfToken;
+            }
+
             const response = await fetch('<?= site_url('email/create_single') ?>', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                body: JSON.stringify({
-                    ...user,
-                    quota: 1024
-                })
+                headers: requestHeaders,
+                body: formData
             });
 
-            const result = await response.json();
+            let result;
+            try {
+                result = await response.json();
+            } catch (jsonErr) {
+                result = { success: false, message: response.status === 403 ? "Sesi atau token keamanan kadaluarsa. Silakan muat ulang halaman." : "Respon server tidak valid." };
+            }
+            updateCsrf(result);
 
             if (response.ok && result.success) {
                 user.status = "created";
@@ -400,45 +499,86 @@
     }
 
     async function checkNikOnServer(nik) {
-        const r = await fetch('<?= site_url('user/check_niknip') ?>', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-            },
-            body: JSON.stringify({
-                nik
-            })
-        });
-        return await r.json();
+        if (!nik) return { exists: false };
+        try {
+            const csrfToken = getCsrfToken();
+            const headers = {
+                "Content-Type": "application/json",
+                "X-Requested-With": "XMLHttpRequest",
+            };
+            if (csrfToken) {
+                headers[getCsrfHeader()] = csrfToken;
+            }
+            const response = await fetch('<?= site_url('user/check_niknip') ?>', {
+                method: "POST",
+                headers: headers,
+                body: JSON.stringify({ nik: nik }),
+            });
+            if (!response.ok) {
+                return { exists: false, message: "Kendala server saat pemeriksaan NIK." };
+            }
+            const res = await response.json();
+            updateCsrf(res);
+            return res;
+        } catch (error) {
+            console.error("Kendala jaringan saat memeriksa NIK:", error);
+            return { exists: false, message: "Kendala jaringan." };
+        }
     }
 
     async function checkNipOnServer(nip) {
-        const r = await fetch('<?= site_url('user/check_niknip') ?>', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-            },
-            body: JSON.stringify({
-                nip
-            })
-        });
-        return await r.json();
+        if (!nip) return { exists: false };
+        try {
+            const csrfToken = getCsrfToken();
+            const headers = {
+                "Content-Type": "application/json",
+                "X-Requested-With": "XMLHttpRequest",
+            };
+            if (csrfToken) {
+                headers[getCsrfHeader()] = csrfToken;
+            }
+            const response = await fetch('<?= site_url('user/check_niknip') ?>', {
+                method: "POST",
+                headers: headers,
+                body: JSON.stringify({ nip: nip }),
+            });
+            if (!response.ok) {
+                return { exists: false, message: "Kendala server saat pemeriksaan NIP." };
+            }
+            const res = await response.json();
+            updateCsrf(res);
+            return res;
+        } catch (error) {
+            console.error("Kendala jaringan saat memeriksa NIP:", error);
+            return { exists: false, message: "Kendala jaringan." };
+        }
     }
 
     async function checkEmailAvailability(email) {
-        const r = await fetch('<?= site_url('user/check_email') ?>', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-            },
-            body: JSON.stringify({
-                email
-            })
-        });
-        return await r.json();
+        try {
+            const csrfToken = getCsrfToken();
+            const headers = {
+                "Content-Type": "application/json",
+                "X-Requested-With": "XMLHttpRequest",
+            };
+            if (csrfToken) {
+                headers[getCsrfHeader()] = csrfToken;
+            }
+            const response = await fetch('<?= site_url('user/check_email') ?>', {
+                method: "POST",
+                headers: headers,
+                body: JSON.stringify({ email: email }),
+            });
+            if (!response.ok) {
+                return { available: false, message: "Kendala server saat pemeriksaan ketersediaan email." };
+            }
+            const res = await response.json();
+            updateCsrf(res);
+            return res;
+        } catch (error) {
+            console.error("Kendala jaringan saat memeriksa ketersediaan email:", error);
+            return { available: false, message: "Kendala jaringan." };
+        }
     }
 
     function getNipPart(nip) {
