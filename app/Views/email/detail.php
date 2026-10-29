@@ -1,5 +1,15 @@
 <?= $this->extend('layouts/main') ?>
 
+<?php
+$isDisdikSatuanPendidikan = false;
+$parentId = $parent_unit_kerja['id'] ?? ($unit_kerja['parent_id'] ?? null);
+if ((int)$parentId === 348) {
+    $isDisdikSatuanPendidikan = true;
+} elseif (!empty($parent_unit_kerja['nama_unit_kerja']) && stripos($parent_unit_kerja['nama_unit_kerja'], 'DINAS PENDIDIKAN') !== false) {
+    $isDisdikSatuanPendidikan = true;
+}
+?>
+
 <?= $this->section('content') ?>
 <div class="space-y-6">
     <!-- Navigasi dan Aksi -->

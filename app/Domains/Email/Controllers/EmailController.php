@@ -155,7 +155,10 @@ class EmailController extends BaseController
             return redirect()->to('email/detail/' . $username)->with('error', 'Metode permintaan tidak valid.');
         }
 
-        $newEmail = $this->request->getPost('email');
+        $newEmail = trim((string)$this->request->getPost('email'));
+        if ($newEmail === '') {
+            $newEmail = $username . '@sinjaikab.go.id';
+        }
         $newUser  = explode('@', $newEmail)[0];
 
         $profileData = [

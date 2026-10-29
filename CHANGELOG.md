@@ -3,6 +3,18 @@
 Semua perubahan penting pada proyek ini dicatat di berkas ini.
 Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+# [29 Oktober 2026] — Penanganan Pengubahan Nama Akun Email cPanel dan Pengamanan Formulir Edit Profil
+
+- **Implementasi Penanganan Rename Akun Email cPanel**:
+  - Menambahkan method [`rename_email_account()`](app/Shared/Libraries/CpanelApi.php) dan alias [`renameEmailAccount()`](app/Shared/Libraries/CpanelApi.php) pada [`CpanelApi`](app/Shared/Libraries/CpanelApi.php) untuk menangani pemanggilan pengubahan username akun email secara aman tanpa menyebabkan galat *undefined method*.
+  - Menambahkan bypass simulasi pada mode pengembangan/lokal serta respons validasi informatif pada mode server *live* bahwa cPanel tidak mendukung pengubahan langsung alamat mailbox.
+- **Pengamanan Validasi Profil & Alamat Email**:
+  - Memperbarui [`EmailService::updateProfileDetails()`](app/Domains/Email/Services/EmailService.php) dan [`EmailController::updateDetails()`](app/Domains/Email/Controllers/EmailController.php) agar secara otomatis mempertahankan email awal akun jika formulir mengirimkan nilai kosong, serta menambahkan verifikasi keunikan email sebelum pembaruan data utama.
+  - Menyesuaikan tampilan formulir [`edit_profile.php`](app/Views/email/edit_profile.php) dengan menjadikan kolom email bertipe *read-only* guna mencegah pengubahan tidak sengaja pada alamat akun email cPanel saat memperbarui identitas profil pegawai, serta menghapus inisialisasi Choices.js email AJAX yang redundan.
+  - Mempertahankan integritas unit kerja dan jabatan bagi pegawai PNS di lingkungan Satuan Pendidikan Dinas Pendidikan (TK, SD, SMP) pada sinkronisasi SIMPEG di [`EmailService.php`](app/Domains/Email/Services/EmailService.php) dan [`detail.php`](app/Views/email/detail.php).
+
+---
+
 # [28 Oktober 2026] — Perbaikan Validasi CSRF dan Pemeriksaan Ketersediaan Akun Tunggal
 
 - **Perbaikan Validasi CSRF dan Pemeriksaan Ketersediaan Akun Tunggal**:

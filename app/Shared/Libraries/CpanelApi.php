@@ -228,6 +228,37 @@ class CpanelApi
         }
     }
 
+    public function rename_email_account($oldEmail, $newUser)
+    {
+        try {
+            if ($this->isLocalEnvironment()) {
+                log_message('info', "CpanelApi [Lokal/Dev Bypass]: Email rename {$oldEmail} to {$newUser}");
+                return [
+                    'success' => true,
+                    'message' => 'Username berhasil diubah di cPanel dalam mode simulasi.'
+                ];
+            }
+
+            // cPanel UAPI tidak memiliki API langsung untuk rename mailbox karena terkait struktur direktori maildir
+            log_message('warning', "CpanelApi: Percobaan rename email {$oldEmail} menjadi {$newUser} gagal karena cPanel tidak mendukung operasi rename akun email secara langsung.");
+            return [
+                'success' => false,
+                'message' => 'cPanel tidak mendukung pengubahan username secara langsung. Silakan buat akun email baru dan hapus akun lama jika diperlukan.'
+            ];
+        } catch (\Throwable $e) {
+            log_message('error', "CpanelApi: Gagal mengubah username email {$oldEmail}: " . $e->getMessage());
+            return [
+                'success' => false,
+                'message' => $e->getMessage()
+            ];
+        }
+    }
+
+    public function renameEmailAccount($oldEmail, $newUser)
+    {
+        return $this->rename_email_account($oldEmail, $newUser);
+    }
+
     public function delete_email_account($email)
     {
         try {

@@ -784,13 +784,20 @@ class EmailService
 
     public function updateProfileDetails(string $username, array $profileData)
     {
-        $newUser = explode('@', $profileData['email'])[0];
-
         $db = \Config\Database::connect();
         $db->transStart();
 
         $sourceRecord = $this->emailModel->where('user', $username)->first();
         if (!$sourceRecord) throw new Exception('Akun asal tidak ditemukan.');
+
+        if (empty($profileData['email'])) {
+            $profileData['email'] = $sourceRecord['email'];
+            $profileData['user']  = $sourceRecord['user'];
+            $newUser = $sourceRecord['user'];
+        } else {
+            $newUser = explode('@', $profileData['email'])[0];
+            $profileData['user'] = $newUser;
+        }
 
         if (!empty($profileData['nik'])) {
             $cleanNik = str_replace([' ', '.', '-', '\''], '', $profileData['nik']);
@@ -816,10 +823,16 @@ class EmailService
 
         // 1. Handle username change in cPanel if needed
         if ($newUser !== $username) {
+            $existingEmail = $this->emailModel->where('email', $profileData['email'])->where('id !=', $sourceRecord['id'])->first();
+            if ($existingEmail) {
+                throw new Exception('Alamat email sudah digunakan oleh akun lain (' . ($existingEmail['name'] ?: $existingEmail['email']) . ').');
+            }
+
             $cpanelApi = new \App\Shared\Libraries\CpanelApi();
-            $result = $cpanelApi->rename_email_account($username . '@sinjaikab.go.id', $newUser);
-            if (!$result['success']) {
-                throw new Exception('Gagal mengubah username di cPanel: ' . $result['message']);
+            $oldEmail = $sourceRecord['email'] ?? ($username . '@sinjaikab.go.id');
+            $result = $cpanelApi->rename_email_account($oldEmail, $newUser);
+            if (empty($result['success'])) {
+                throw new Exception('Gagal mengubah username di cPanel: ' . ($result['message'] ?? 'Operasi tidak didukung.'));
             }
         }
 
@@ -1219,7 +1232,7 @@ class EmailService
     public function syncPegawaiFromApi(string $nip, ?string $fallbackEmail = null): array
     {
         $builder = $this->emailModel
-            ->select('emails.*, unit_kerja.nama_unit_kerja')
+            ->select('emails.*, unit_kerja.nama_unit_kerja, unit_kerja.parent_id as unit_kerja_parent_id')
             ->join('unit_kerja', 'unit_kerja.id = emails.unit_kerja_id', 'left');
 
         if (!empty($nip) && !empty($fallbackEmail)) {
@@ -1257,6 +1270,26 @@ class EmailService
                     'eselon_name'      => null,
                 ]
             ];
+        }
+
+        // Identifikasi pegawai PNS di Satuan Pendidikan Dinas Pendidikan (TK, SD, SMP)
+        // Unit kerja dan jabatan tidak disinkronkan dari SIMPEG karena data di SIMPEG belum terbarui
+        $isDisdikSatuanPendidikan = false;
+        $currentUnitId = (int)($currentEmail['unit_kerja_id'] ?? 0);
+        if ($currentUnitId > 0 && $currentUnitId !== 348) {
+            $currentParentId = isset($currentEmail['unit_kerja_parent_id']) ? (int)$currentEmail['unit_kerja_parent_id'] : null;
+            if ($currentParentId === null) {
+                $uCheck = $this->unitKerjaModel->find($currentUnitId);
+                $currentParentId = isset($uCheck['parent_id']) ? (int)$uCheck['parent_id'] : null;
+            }
+            if ($currentParentId === 348) {
+                $isDisdikSatuanPendidikan = true;
+            } elseif ($currentParentId !== null && $currentParentId > 0) {
+                $parentUnit = $this->unitKerjaModel->find($currentParentId);
+                if ($parentUnit && stripos($parentUnit['nama_unit_kerja'], 'DINAS PENDIDIKAN') !== false) {
+                    $isDisdikSatuanPendidikan = true;
+                }
+            }
         }
 
         $pegawaiApi = new \App\Shared\Libraries\PegawaiApi();
@@ -1338,10 +1371,11 @@ class EmailService
         }
 
         // 2. Sync Unit Kerja jika terjadi mutasi / pindah tugas di SIMPEG
+        // Dilewati untuk PNS di Satuan Pendidikan Dinas Pendidikan karena data mutasi sekolah di SIMPEG belum terbarui
         $rawJabatan = $source['jabatan_nama'] ?? $source['jabatan'] ?? ($currentEmail['jabatan'] ?? null);
         $resolvedUnitName = $currentEmail['nama_unit_kerja'] ?? '';
 
-        if (!empty($source['unit_id'])) {
+        if (!$isDisdikSatuanPendidikan && !empty($source['unit_id'])) {
             $targetUnit = $this->unitKerjaModel->where('api_unit_id', $source['unit_id'])->first();
             if ($targetUnit) {
                 $resolvedUnitId = $targetUnit['id'];
@@ -1686,41 +1720,44 @@ class EmailService
         }
 
         // 4. Sync Jabatan Plt & Unit Kerja Plt jika ada
-        if (!empty($source['jabatan_plt'])) {
-            $targetPltUnitName = null;
-            if (!empty($source['unit_id_plt'])) {
-                $targetPltUnit = $this->unitKerjaModel->where('api_unit_id', $source['unit_id_plt'])->first();
-                $resolvedPltUnitId = $targetPltUnit ? $targetPltUnit['id'] : null;
-                $targetPltUnitName = $targetPltUnit['nama_unit_kerja'] ?? null;
+        // Dilewati untuk PNS di Satuan Pendidikan Dinas Pendidikan agar penugasan kepala sekolah / plt lokal tidak tertimpa
+        if (!$isDisdikSatuanPendidikan) {
+            if (!empty($source['jabatan_plt'])) {
+                $targetPltUnitName = null;
+                if (!empty($source['unit_id_plt'])) {
+                    $targetPltUnit = $this->unitKerjaModel->where('api_unit_id', $source['unit_id_plt'])->first();
+                    $resolvedPltUnitId = $targetPltUnit ? $targetPltUnit['id'] : null;
+                    $targetPltUnitName = $targetPltUnit['nama_unit_kerja'] ?? null;
 
-                // Check if jabatan_plt matches a specific sub-unit (child of targetPltUnit)
-                // Hanya cari sub-unit anak jika jabatan Plt BUKAN divisi internal OPD/Kecamatan (misal bukan Sub Bagian, Bidang, Seksi, Sekretariat)
-                $isOpdInternalPlt = preg_match('/\b(SUB\s*BAGIAN|BIDANG|SEKSI|SEKRETARIAT|KASUBAG|KABID|KASI|SEKRETARIS|BENDAHARA)\b/i', $source['jabatan_plt']);
-                if ($targetPltUnit && !$isOpdInternalPlt) {
-                    $pltChildren = $this->unitKerjaModel->where('parent_id', $targetPltUnit['id'])->findAll();
-                    $cleanSearchPlt = strtoupper($source['jabatan_plt']);
-                    $cleanSearchPlt = preg_replace('/\bBARANG\s*\/\s*JASA\b/i', 'BARANG DAN JASA', $cleanSearchPlt);
-                    $cleanSearchPlt = preg_replace('/\s*\/\s*/', ' ', $cleanSearchPlt);
-                    foreach ($pltChildren as $pChild) {
-                        $pChildName = strtoupper($pChild['nama_unit_kerja']);
-                        $strippedChild = trim(preg_replace('/^(BAGIAN|BIDANG|SEKRETARIAT|UPTD|KANTOR|KELURAHAN|DESA)\s+/i', '', $pChildName));
-                        if (strpos($cleanSearchPlt, $pChildName) !== false || (!empty($strippedChild) && strpos($cleanSearchPlt, $strippedChild) !== false)) {
-                            $resolvedPltUnitId = $pChild['id'];
-                            $targetPltUnitName = $pChild['nama_unit_kerja'];
-                            break;
+                    // Check if jabatan_plt matches a specific sub-unit (child of targetPltUnit)
+                    // Hanya cari sub-unit anak jika jabatan Plt BUKAN divisi internal OPD/Kecamatan (misal bukan Sub Bagian, Bidang, Seksi, Sekretariat)
+                    $isOpdInternalPlt = preg_match('/\b(SUB\s*BAGIAN|BIDANG|SEKSI|SEKRETARIAT|KASUBAG|KABID|KASI|SEKRETARIS|BENDAHARA)\b/i', $source['jabatan_plt']);
+                    if ($targetPltUnit && !$isOpdInternalPlt) {
+                        $pltChildren = $this->unitKerjaModel->where('parent_id', $targetPltUnit['id'])->findAll();
+                        $cleanSearchPlt = strtoupper($source['jabatan_plt']);
+                        $cleanSearchPlt = preg_replace('/\bBARANG\s*\/\s*JASA\b/i', 'BARANG DAN JASA', $cleanSearchPlt);
+                        $cleanSearchPlt = preg_replace('/\s*\/\s*/', ' ', $cleanSearchPlt);
+                        foreach ($pltChildren as $pChild) {
+                            $pChildName = strtoupper($pChild['nama_unit_kerja']);
+                            $strippedChild = trim(preg_replace('/^(BAGIAN|BIDANG|SEKRETARIAT|UPTD|KANTOR|KELURAHAN|DESA)\s+/i', '', $pChildName));
+                            if (strpos($cleanSearchPlt, $pChildName) !== false || (!empty($strippedChild) && strpos($cleanSearchPlt, $strippedChild) !== false)) {
+                                $resolvedPltUnitId = $pChild['id'];
+                                $targetPltUnitName = $pChild['nama_unit_kerja'];
+                                break;
+                            }
                         }
                     }
+                    $updateData['unit_kerja_plt_id'] = $resolvedPltUnitId;
+                } else {
+                    $updateData['unit_kerja_plt_id'] = null;
                 }
-                $updateData['unit_kerja_plt_id'] = $resolvedPltUnitId;
+
+                $cleanPlt = $this->normalizeJabatanName($source['jabatan_plt'], $targetPltUnitName, true);
+                $updateData['jabatan_plt'] = 'PLT. ' . preg_replace('/^(PLT|PLH|PJ|PJS)\.?\s+/i', '', (string)$cleanPlt);
             } else {
+                $updateData['jabatan_plt'] = null;
                 $updateData['unit_kerja_plt_id'] = null;
             }
-
-            $cleanPlt = $this->normalizeJabatanName($source['jabatan_plt'], $targetPltUnitName, true);
-            $updateData['jabatan_plt'] = 'PLT. ' . preg_replace('/^(PLT|PLH|PJ|PJS)\.?\s+/i', '', (string)$cleanPlt);
-        } else {
-            $updateData['jabatan_plt'] = null;
-            $updateData['unit_kerja_plt_id'] = null;
         }
 
         if (!empty($updateData)) {
@@ -1783,10 +1820,15 @@ class EmailService
 
             $responseData = array_merge($currentEmail ?: [], $updateData);
 
+            $syncMsg = 'Data pegawai dan jabatan berhasil disinkronkan & dinormalkan';
+            if ($isDisdikSatuanPendidikan) {
+                $syncMsg = 'Data pegawai & jabatan berhasil disinkronkan (unit kerja dilewati: satuan pendidikan Disdik)';
+            }
+
             return [
                 'success' => true,
                 'updated' => true,
-                'message' => 'Data pegawai dan jabatan berhasil disinkronkan & dinormalkan',
+                'message' => $syncMsg,
                 'data'    => $responseData,
             ];
         }
@@ -1833,10 +1875,17 @@ class EmailService
             $eselonName = $es ? $es['nama_eselon'] : null;
         }
 
+        $noUpdateMsg = 'Data sudah terbaru';
+        if ($isDisdikSatuanPendidikan) {
+            $noUpdateMsg = 'Data sudah terbaru (unit kerja dilewati: satuan pendidikan Disdik)';
+        } elseif ($isPimpinan) {
+            $noUpdateMsg = 'Akun Pimpinan - Data jabatan tetap dipertahankan';
+        }
+
         return [
             'success' => true,
             'updated' => false,
-            'message' => $isPimpinan ? 'Akun Pimpinan - Data jabatan tetap dipertahankan' : 'Data sudah terbaru',
+            'message' => $noUpdateMsg,
             'data'    => [
                 'jabatan'                   => $currentEmail['jabatan'] ?? '-',
                 'jabatan_plt'               => $currentEmail['jabatan_plt'] ?? null,
