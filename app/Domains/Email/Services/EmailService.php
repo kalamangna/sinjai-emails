@@ -790,54 +790,91 @@ class EmailService
         $sourceRecord = $this->emailModel->where('user', $username)->first();
         if (!$sourceRecord) throw new Exception('Akun asal tidak ditemukan.');
 
-        if (empty($profileData['email'])) {
-            $profileData['email'] = $sourceRecord['email'];
-            $profileData['user']  = $sourceRecord['user'];
-            $newUser = $sourceRecord['user'];
-        } else {
-            $newUser = explode('@', $profileData['email'])[0];
-            $profileData['user'] = $newUser;
+        $newEmail = trim($profileData['email'] ?? '');
+        if (empty($newEmail)) {
+            $newEmail = $sourceRecord['email'];
+            $profileData['email'] = $newEmail;
         }
 
+        $newUser = explode('@', $newEmail)[0];
+        $profileData['user'] = $newUser;
+
+        // Bersihkan NIK & NIP
         if (!empty($profileData['nik'])) {
             $cleanNik = str_replace([' ', '.', '-', '\''], '', $profileData['nik']);
             $profileData['nik'] = $cleanNik;
-            if ($cleanNik !== $sourceRecord['nik']) {
-                $existingNik = $this->emailModel->where('nik', $cleanNik)->where('id !=', $sourceRecord['id'])->first();
-                if ($existingNik) {
-                    throw new Exception('NIK sudah digunakan oleh akun lain (' . $existingNik['email'] . ').');
-                }
-            }
         }
-
         if (!empty($profileData['nip'])) {
             $cleanNip = str_replace([' ', '.', '-', '\''], '', $profileData['nip']);
             $profileData['nip'] = $cleanNip;
-            if ($cleanNip !== $sourceRecord['nip']) {
-                $existingNip = $this->emailModel->where('nip', $cleanNip)->where('id !=', $sourceRecord['id'])->first();
-                if ($existingNip) {
-                    throw new Exception('NIP sudah digunakan oleh akun lain (' . $existingNip['email'] . ').');
+        }
+
+        $isChangingEmail = ($newEmail !== $sourceRecord['email']);
+        $targetRecordId = $sourceRecord['id'];
+
+        if ($isChangingEmail) {
+            // Cari akun email tujuan yang dipilih dari daftar
+            $targetRecord = $this->emailModel->where('email', $newEmail)->first();
+            if (!$targetRecord) {
+                throw new Exception('Alamat email ' . $newEmail . ' tidak ditemukan di database. Silakan pilih dari daftar email yang tersedia.');
+            }
+            $targetRecordId = $targetRecord['id'];
+
+            // Kosongkan data profil pada akun lama agar data terlepas dan tidak bentrok NIK/NIP
+            $clearData = [
+                'name'              => null,
+                'gelar_depan'       => null,
+                'gelar_belakang'    => null,
+                'nik'               => null,
+                'nip'               => null,
+                'tempat_lahir'      => null,
+                'tanggal_lahir'     => null,
+                'pendidikan'        => null,
+                'jabatan'           => null,
+                'jabatan_plt'       => null,
+                'golongan'          => null,
+                'pangkat_golruang'  => null,
+                'pangkat_nama'      => null,
+                'status_asn_id'     => null,
+                'eselon_id'         => null,
+                'unit_kerja_id'     => null,
+                'unit_kerja_plt_id' => null,
+                'pimpinan'          => 0,
+                'pimpinan_desa'     => 0,
+                'bsre_status'       => null,
+            ];
+            $this->emailModel->update($sourceRecord['id'], $clearData);
+
+            // Perbarui referensi email pada tabel pk dan pk_histories jika ada
+            $targetPk = $db->table('pk')->where('email', $newEmail)->get()->getRowArray();
+            $sourcePk = $db->table('pk')->where('email', $sourceRecord['email'])->get()->getRowArray();
+            if ($sourcePk) {
+                if ($targetPk) {
+                    $db->table('pk')->where('id', $targetPk['id'])->delete();
                 }
+                $db->table('pk')->where('id', $sourcePk['id'])->update(['email' => $newEmail]);
+            }
+            $db->table('pk_histories')->where('email', $sourceRecord['email'])->update(['email' => $newEmail]);
+        }
+
+        // Validasi keunikan NIK terhadap akun lain di luar target
+        if (!empty($profileData['nik'])) {
+            $existingNik = $this->emailModel->where('nik', $profileData['nik'])->where('id !=', $targetRecordId)->first();
+            if ($existingNik) {
+                throw new Exception('NIK sudah digunakan oleh akun lain (' . $existingNik['email'] . ').');
             }
         }
 
-        // 1. Handle username change in cPanel if needed
-        if ($newUser !== $username) {
-            $existingEmail = $this->emailModel->where('email', $profileData['email'])->where('id !=', $sourceRecord['id'])->first();
-            if ($existingEmail) {
-                throw new Exception('Alamat email sudah digunakan oleh akun lain (' . ($existingEmail['name'] ?: $existingEmail['email']) . ').');
-            }
-
-            $cpanelApi = new \App\Shared\Libraries\CpanelApi();
-            $oldEmail = $sourceRecord['email'] ?? ($username . '@sinjaikab.go.id');
-            $result = $cpanelApi->rename_email_account($oldEmail, $newUser);
-            if (empty($result['success'])) {
-                throw new Exception('Gagal mengubah username di cPanel: ' . ($result['message'] ?? 'Operasi tidak didukung.'));
+        // Validasi keunikan NIP terhadap akun lain di luar target
+        if (!empty($profileData['nip'])) {
+            $existingNip = $this->emailModel->where('nip', $profileData['nip'])->where('id !=', $targetRecordId)->first();
+            if ($existingNip) {
+                throw new Exception('NIP sudah digunakan oleh akun lain (' . $existingNip['email'] . ').');
             }
         }
 
-        // 2. Update primary record
-        if ($this->emailModel->update($sourceRecord['id'], $profileData) === false) {
+        // 2. Perbarui data utama pada akun target
+        if ($this->emailModel->update($targetRecordId, $profileData) === false) {
             $errors = $this->emailModel->errors();
             throw new Exception('Gagal menyimpan data utama. ' . implode(', ', $errors));
         }

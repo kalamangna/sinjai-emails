@@ -24,7 +24,9 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="md:col-span-2">
                             <label for="email" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Email</label>
-                            <input type="email" id="email" name="email" value="<?= esc($email['email']) ?>" class="block w-full px-3 py-2 bg-slate-100 border border-slate-200 rounded-lg text-sm font-medium text-slate-500 cursor-not-allowed select-none transition-all" readonly>
+                            <select id="email" name="email" class="email-ajax-search block w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 appearance-none cursor-pointer transition-all">
+                                <option value="<?= esc($email['email']) ?>" selected><?= esc($email['email']) ?></option>
+                            </select>
                         </div>
                         <div class="md:col-span-2">
                             <label for="name" class="block text-sm font-medium text-slate-700 mb-1 uppercase tracking-tight">Nama <span class="text-slate-700 font-normal">(Tanpa Gelar)</span></label>
@@ -151,6 +153,38 @@
 <?= $this->section('scripts') ?>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        const emailSelect = document.getElementById('email');
+        if (emailSelect) {
+            const choices = new Choices(emailSelect, {
+                searchEnabled: true,
+                itemSelectText: '',
+                placeholder: true,
+                searchPlaceholderValue: 'Cari Email...',
+                shouldSort: false,
+                loadingText: 'Memuat...',
+                noResultsText: 'Tidak ditemukan',
+                noChoicesText: 'Mulai mengetik untuk mencari...',
+                searchResultLimit: 20,
+            });
+
+            emailSelect.addEventListener('search', function(event) {
+                const query = event.detail.value;
+                if (query.length >= 2) {
+                    fetch(`<?= site_url('email/search') ?>?q=${encodeURIComponent(query)}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            const items = data.map(item => ({
+                                value: item.email,
+                                label: item.name ? `${item.email} • ${item.name}` : item.email,
+                                selected: item.email === '<?= esc($email['email'], 'js') ?>'
+                            }));
+                            choices.setChoices(items, 'value', 'label', true);
+                        })
+                        .catch(err => console.error('Error fetching emails:', err));
+                }
+            });
+        }
+
         // Toggle visibility for Eselon and Golongan
         const statusAsnSelect = document.getElementById('status_asn');
         const eselonContainer = document.getElementById('eselon_container');
