@@ -3,6 +3,20 @@
 Semua perubahan penting pada proyek ini dicatat di berkas ini.
 Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+# [30 Oktober 2026] — Pembaruan Unit Kerja & Standardisasi Sinkronisasi Jabatan Plt
+
+- **Pembaruan Nomenklatur Master Unit Kerja**:
+  - Menambahkan berkas migrasi [`2026-10-30-154000_RenameBagianKeuanganDanPerencanaan.php`](app/Database/Migrations/2026-10-30-154000_RenameBagianKeuanganDanPerencanaan.php) untuk memperbarui nama unit kerja ID 673 di bawah Sekretariat Daerah dari `BAGIAN KEUANGAN DAN PERENCANAAN` menjadi `BAGIAN PERENCANAAN DAN KEUANGAN` sesuai tata naskah dan susunan organisasi resmi.
+- **Penyempurnaan Resolusi Sub-Unit Kerja & Jabatan Plt**:
+  - Memperbarui pencocokan sub-unit Plt di [`EmailService::syncPegawaiFromApi()`](app/Domains/Email/Services/EmailService.php) dengan dukungan normalisasi permutasi urutan kata (`Perencanaan dan Keuangan` $\leftrightarrow$ `Keuangan dan Perencanaan`).
+  - Menstandarkan penyederhanaan jabatan kepala bagian pada penugasan Plt menjadi format baku `PLT. KEPALA BAGIAN` saat terpetakan ke sub-unit bagian yang definitif.
+  - Memperluas kueri [`EmailModel::withDetails()`](app/Domains/Email/Models/EmailModel.php) agar turut menyertakan kolom `parent_unit_kerja_id` dan `parent_unit_kerja_plt_id`.
+- **Penyelarasan Tampilan & Sinkronisasi JavaScript**:
+  - Memperbarui logika deteksi `isPltInSameUnit` pada [`sync-helper.js`](public/js/sync-helper.js), [`unit_kerja_detail.php`](app/Views/email/unit_kerja_detail.php), [`unit_kerja_pdf.php`](app/Views/email/exports/unit_kerja_pdf.php), dan [`account_detail_pdf.php`](app/Views/email/exports/account_detail_pdf.php) agar mengenali kesamaan OPD induk (`parent_unit_kerja_id` setara `parent_unit_kerja_plt_id`).
+  - Memperbarui perenderan dinamis hierarki unit kerja Plt (`parent_unit_kerja_plt_name` dan `unit_kerja_plt_name`) pada halaman detail profil pegawai di [`detail.php`](app/Views/email/detail.php) dan [`sync-helper.js`](public/js/sync-helper.js).
+
+---
+
 # [29 Oktober 2026] — Pemilihan Akun Email Profil & Penanganan Rename Akun Email cPanel
 
 - **Dukungan Pemilihan Akun Email pada Edit Profil**:

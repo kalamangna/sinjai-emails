@@ -355,10 +355,23 @@
                         if (elements.jabatanPlt) {
                             elements.jabatanPlt.textContent = data.data.jabatan_plt;
                         }
-                        if (elements.unitPltWrapper && elements.unitPltText && elements.unitPltLink) {
+                        if (elements.unitPltWrapper) {
                             if (data.data.unit_kerja_plt_name) {
-                                elements.unitPltText.textContent = data.data.unit_kerja_plt_name;
-                                elements.unitPltLink.href = `${window.BASE_URL}/email/unit_kerja/${data.data.unit_kerja_plt_id}`;
+                                const parentPltName = data.data.parent_unit_kerja_plt_name || '';
+                                const parentPltId = data.data.parent_unit_kerja_plt_id || '';
+                                const pltName = data.data.unit_kerja_plt_name;
+                                const pltId = data.data.unit_kerja_plt_id;
+
+                                let pltHtml = '';
+                                if (parentPltName) {
+                                    pltHtml += `<a href="${window.BASE_URL}/email/unit_kerja/${parentPltId || pltId}" class="block no-underline group/parent">
+                                        <p class="text-[10px] font-bold text-slate-700 uppercase group-hover/parent:text-slate-800 transition-colors leading-none">${parentPltName}</p>
+                                    </a>`;
+                                }
+                                pltHtml += `<a id="unit-kerja-plt-link" href="${window.BASE_URL}/email/unit_kerja/${pltId}" class="block no-underline group/child">
+                                    <p id="unit-kerja-plt-text" class="text-xs font-bold text-slate-800 uppercase leading-tight group-hover/child:text-black transition-colors">${pltName}</p>
+                                </a>`;
+                                elements.unitPltWrapper.innerHTML = pltHtml;
                                 elements.unitPltWrapper.classList.remove('hidden');
                             } else {
                                 elements.unitPltWrapper.classList.add('hidden');
@@ -555,11 +568,15 @@
                             const newJabatanPlt = data.data?.jabatan_plt || '';
                             const newUnitPltId = data.data?.unit_kerja_plt_id ? String(data.data.unit_kerja_plt_id) : '';
                             const newUnitId = data.data?.unit_kerja_id ? String(data.data.unit_kerja_id) : '';
+                            const newParentId = data.data?.parent_unit_kerja_id ? String(data.data.parent_unit_kerja_id) : '';
+                            const newParentPltId = data.data?.parent_unit_kerja_plt_id ? String(data.data.parent_unit_kerja_plt_id) : '';
                             
                             const isPltInSameUnit = newUnitPltId && (
                                 newUnitPltId === currentUnitId ||
                                 newUnitPltId === newUnitId ||
-                                targetUnitIds.includes(newUnitPltId)
+                                targetUnitIds.includes(newUnitPltId) ||
+                                (newParentPltId && (newParentPltId === currentUnitId || targetUnitIds.includes(newParentPltId))) ||
+                                (newParentId && newParentPltId && newParentId === newParentPltId)
                             );
 
                             let jabatanHtml = '';

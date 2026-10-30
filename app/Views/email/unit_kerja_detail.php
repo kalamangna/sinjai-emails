@@ -271,7 +271,12 @@
                                     $isPltInSameUnit = !empty($email['unit_kerja_plt_id']) && (
                                         $email['unit_kerja_plt_id'] == $unit_kerja['id'] || 
                                         $email['unit_kerja_plt_id'] == ($email['unit_kerja_id'] ?? null) ||
-                                        (!empty($target_unit_ids) && in_array($email['unit_kerja_plt_id'], $target_unit_ids))
+                                        (!empty($target_unit_ids) && in_array($email['unit_kerja_plt_id'], $target_unit_ids)) ||
+                                        (!empty($email['parent_unit_kerja_plt_id']) && (
+                                            $email['parent_unit_kerja_plt_id'] == $unit_kerja['id'] || 
+                                            (!empty($target_unit_ids) && in_array($email['parent_unit_kerja_plt_id'], $target_unit_ids)) ||
+                                            (!empty($email['parent_unit_kerja_id']) && $email['parent_unit_kerja_plt_id'] == $email['parent_unit_kerja_id'])
+                                        ))
                                     );
                                     $hasPltRow = (!empty($email['is_plt_in_this_unit']) || (!empty($email['jabatan_plt']) && $isPltInSameUnit));
                                     ?>
@@ -756,11 +761,15 @@
                         const newJabatanPlt = lastData.data.jabatan_plt || '';
                         const newUnitPltId = lastData.data.unit_kerja_plt_id ? String(lastData.data.unit_kerja_plt_id) : '';
                         const newUnitId = lastData.data.unit_kerja_id ? String(lastData.data.unit_kerja_id) : '';
+                        const newParentId = lastData.data.parent_unit_kerja_id ? String(lastData.data.parent_unit_kerja_id) : '';
+                        const newParentPltId = lastData.data.parent_unit_kerja_plt_id ? String(lastData.data.parent_unit_kerja_plt_id) : '';
                         
                         const isPltInSameUnit = newUnitPltId && (
                             newUnitPltId === currentUnitId ||
                             newUnitPltId === newUnitId ||
-                            targetUnitIds.includes(newUnitPltId)
+                            targetUnitIds.includes(newUnitPltId) ||
+                            (newParentPltId && (newParentPltId === currentUnitId || targetUnitIds.includes(newParentPltId))) ||
+                            (newParentId && newParentPltId && newParentId === newParentPltId)
                         );
 
                         let jabatanHtml = '';

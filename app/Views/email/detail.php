@@ -267,10 +267,17 @@ if ((int)$parentId === 348) {
                                                 <?= esc($email['jabatan_plt'] ?? '') ?>
                                             </span>
                                         </div>
-                                        <div id="unit-kerja-plt-container" class="pt-1.5 border-t border-amber-200/60 <?= !empty($unit_kerja_plt) ? '' : 'hidden' ?>">
-                                            <a id="unit-kerja-plt-link" href="<?= !empty($unit_kerja_plt) ? site_url('email/unit_kerja/' . $unit_kerja_plt['id']) : '#' ?>" class="block no-underline group/child">
-                                                <p id="unit-kerja-plt-text" class="text-xs font-bold text-slate-800 uppercase leading-tight group-hover/child:text-black transition-colors"><?= esc($unit_kerja_plt['nama_unit_kerja'] ?? '') ?></p>
-                                            </a>
+                                        <div id="unit-kerja-plt-container" class="pt-1.5 border-t border-amber-200/60 space-y-0.5 <?= !empty($unit_kerja_plt) ? '' : 'hidden' ?>">
+                                            <?php if (!empty($parent_unit_kerja_plt)): ?>
+                                                <a href="<?= site_url('email/unit_kerja/' . $parent_unit_kerja_plt['id']) ?>" class="block no-underline group/parent">
+                                                    <p class="text-[10px] font-bold text-slate-700 uppercase group-hover/parent:text-slate-800 transition-colors leading-none"><?= esc($parent_unit_kerja_plt['nama_unit_kerja']) ?></p>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if (!empty($unit_kerja_plt)): ?>
+                                                <a id="unit-kerja-plt-link" href="<?= site_url('email/unit_kerja/' . $unit_kerja_plt['id']) ?>" class="block no-underline group/child">
+                                                    <p id="unit-kerja-plt-text" class="text-xs font-bold text-slate-800 uppercase leading-tight group-hover/child:text-black transition-colors"><?= esc($unit_kerja_plt['nama_unit_kerja']) ?></p>
+                                                </a>
+                                            <?php endif; ?>
                                         </div>
                                     </div>
                                 </div>

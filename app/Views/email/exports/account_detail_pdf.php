@@ -229,7 +229,12 @@
                 $isPltInSameUnit = !empty($email['unit_kerja_plt_id']) && (
                     $email['unit_kerja_plt_id'] == ($unit_kerja['id'] ?? null) || 
                     $email['unit_kerja_plt_id'] == ($email['unit_kerja_id'] ?? null) ||
-                    (!empty($target_unit_ids) && in_array($email['unit_kerja_plt_id'], $target_unit_ids))
+                    (!empty($target_unit_ids) && in_array($email['unit_kerja_plt_id'], $target_unit_ids)) ||
+                    (!empty($email['parent_unit_kerja_plt_id']) && (
+                        $email['parent_unit_kerja_plt_id'] == ($unit_kerja['id'] ?? null) ||
+                        (!empty($target_unit_ids) && in_array($email['parent_unit_kerja_plt_id'], $target_unit_ids)) ||
+                        (!empty($email['parent_unit_kerja_id']) && $email['parent_unit_kerja_plt_id'] == $email['parent_unit_kerja_id'])
+                    ))
                 );
 
                 $unitKerjaContent = '';

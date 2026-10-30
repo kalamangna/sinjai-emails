@@ -1774,10 +1774,16 @@ class EmailService
                         $cleanSearchPlt = strtoupper($source['jabatan_plt']);
                         $cleanSearchPlt = preg_replace('/\bBARANG\s*\/\s*JASA\b/i', 'BARANG DAN JASA', $cleanSearchPlt);
                         $cleanSearchPlt = preg_replace('/\s*\/\s*/', ' ', $cleanSearchPlt);
+                        $cleanSearchPltNorm = preg_replace('/\bKEUANGAN\s+DAN\s+PERENCANAAN\b/i', 'PERENCANAAN DAN KEUANGAN', $cleanSearchPlt);
                         foreach ($pltChildren as $pChild) {
                             $pChildName = strtoupper($pChild['nama_unit_kerja']);
+                            $pChildNameNorm = preg_replace('/\bKEUANGAN\s+DAN\s+PERENCANAAN\b/i', 'PERENCANAAN DAN KEUANGAN', $pChildName);
                             $strippedChild = trim(preg_replace('/^(BAGIAN|BIDANG|SEKRETARIAT|UPTD|KANTOR|KELURAHAN|DESA)\s+/i', '', $pChildName));
-                            if (strpos($cleanSearchPlt, $pChildName) !== false || (!empty($strippedChild) && strpos($cleanSearchPlt, $strippedChild) !== false)) {
+                            $strippedChildNorm = preg_replace('/\bKEUANGAN\s+DAN\s+PERENCANAAN\b/i', 'PERENCANAAN DAN KEUANGAN', $strippedChild);
+                            if (strpos($cleanSearchPlt, $pChildName) !== false || 
+                                strpos($cleanSearchPltNorm, $pChildNameNorm) !== false || 
+                                (!empty($strippedChild) && strpos($cleanSearchPlt, $strippedChild) !== false) || 
+                                (!empty($strippedChildNorm) && strpos($cleanSearchPltNorm, $strippedChildNorm) !== false)) {
                                 $resolvedPltUnitId = $pChild['id'];
                                 $targetPltUnitName = $pChild['nama_unit_kerja'];
                                 break;
