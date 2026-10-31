@@ -123,6 +123,11 @@
     </div>
 
     <script>
+        // Bersihkan data inaktivitas dari sesi sebelumnya agar tidak memicu auto-logout palsu saat login kembali
+        try {
+            localStorage.removeItem('sinjai_last_active');
+        } catch (e) {}
+
         // Flash Message Auto Close
         document.addEventListener('DOMContentLoaded', () => {
             const flashMessages = document.querySelectorAll('.flash-message');

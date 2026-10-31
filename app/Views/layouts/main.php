@@ -351,7 +351,7 @@
 
                             <div class="h-px bg-slate-100 my-1 mx-2"></div>
 
-                            <a href="<?= site_url('logout') ?>" class="flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-red-600 hover:bg-red-50 transition-all uppercase tracking-tight">
+                            <a href="<?= site_url('logout') ?>" onclick="try{localStorage.removeItem('sinjai_last_active');}catch(e){}" class="flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-red-600 hover:bg-red-50 transition-all uppercase tracking-tight">
                                 <div class="w-8 h-8 rounded-lg bg-red-50 text-red-600 flex items-center justify-center border border-red-100/50">
                                     <i class="fas fa-power-off text-[10px]"></i>
                                 </div>

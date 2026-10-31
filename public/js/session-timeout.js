@@ -24,9 +24,18 @@
     let lastRecordedActivity = Date.now();
     let lastKeepAlivePing = Date.now();
 
-    // Inisialisasi waktu aktivitas jika belum ada di localStorage
-    if (!localStorage.getItem(STORAGE_KEY)) {
-        localStorage.setItem(STORAGE_KEY, Date.now().toString());
+    // Inisialisasi waktu aktivitas: selalu validasi timestamp di localStorage
+    const now = Date.now();
+    const storedActiveStr = localStorage.getItem(STORAGE_KEY);
+    const storedActive = storedActiveStr ? parseInt(storedActiveStr, 10) : 0;
+
+    // Jika belum ada, tidak valid, bernilai masa depan, atau telah kedaluwarsa dari sesi sebelumnya,
+    // reset ke waktu saat ini karena halaman ini baru berhasil diverifikasi & dimuat oleh server
+    if (!storedActive || isNaN(storedActive) || storedActive > now || (now - storedActive) / 1000 >= lifetime) {
+        localStorage.setItem(STORAGE_KEY, now.toString());
+        lastRecordedActivity = now;
+    } else {
+        lastRecordedActivity = storedActive;
     }
 
     /**
@@ -77,6 +86,9 @@
     function getRemainingSeconds() {
         const lastActiveStr = localStorage.getItem(STORAGE_KEY);
         const lastActive = lastActiveStr ? parseInt(lastActiveStr, 10) : Date.now();
+        if (isNaN(lastActive) || lastActive > Date.now()) {
+            return lifetime;
+        }
         const elapsed = Math.floor((Date.now() - lastActive) / 1000);
         return lifetime - elapsed;
     }

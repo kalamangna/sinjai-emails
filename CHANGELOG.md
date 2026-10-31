@@ -3,6 +3,18 @@
 Semua perubahan penting pada proyek ini dicatat di berkas ini.
 Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+# [31 Oktober 2026] — Perbaikan Logika Auto-Logout Sesi dan Alur Pembaruan Server
+
+- **Perbaikan Penanganan Auto-Logout Prematur Sesi Pengguna**:
+  - Memperbarui mekanisme pelacakan inaktivitas pada [`public/js/session-timeout.js`](public/js/session-timeout.js) agar selalu memvalidasi dan mereset nilai `sinjai_last_active` saat halaman berautentikasi baru dimuat dari server, mencegah terjadinya auto-logout 1 detik setelah pengguna berhasil masuk akibat *timestamp* kedaluwarsa dari sesi lampau di penyimpanan lokal (`localStorage`).
+  - Menambahkan pengamanan nilai *fallback* pada perhitungan sisa waktu inaktivitas jika data di `localStorage` bernilai anomali (NaN atau masa depan).
+  - Menambahkan pembersihan kunci `sinjai_last_active` saat halaman masuk dibuka di [`app/Views/auth/login.php`](app/Views/auth/login.php) serta saat tautan tombol keluar diklik di [`app/Views/layouts/main.php`](app/Views/layouts/main.php).
+  - Menstandarkan penulisan metode HTTP pada rute `auth/keep-alive` di [`app/Config/Routes.php`](app/Config/Routes.php) menjadi huruf kapital `['GET', 'POST']` guna mencegah pesan peringatan *deprecation* pada CodeIgniter 4.7.2.
+- **Standarisasi Alur Pembaruan Server**:
+  - Menambahkan instruksi baku pada [`GEMINI.md`](GEMINI.md) yang melarang transfer berkas langsung menggunakan `rsync`, `scp`, atau `sftp`, serta mewajibkan alur pembaruan server melalui `git push` dari repositori lokal dan dilanjutkan `git pull` di server.
+
+---
+
 # [30 Oktober 2026] — Pembaruan Unit Kerja & Standardisasi Sinkronisasi Jabatan Plt
 
 - **Pembaruan Nomenklatur Master Unit Kerja**:
