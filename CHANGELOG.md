@@ -3,6 +3,14 @@
 Semua perubahan penting pada proyek ini dicatat di berkas ini.
 Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+# [02 November 2026] — Tampilan Tanggal Pembuatan Akun pada Halaman Detail
+
+- **Penambahan Informasi Tanggal Pembuatan Akun**:
+  - Menampilkan metadata tanggal dan waktu pembuatan akun pada header halaman detail akun di [`app/Views/email/detail.php`](app/Views/email/detail.php) berdampingan dengan informasi waktu sinkronisasi pegawai.
+  - Menerapkan fallback cerdas dari kolom `created_at` basis data lokal ke timestamp `mtime` (waktu pembuatan atau modifikasi cPanel) untuk akun lawas yang belum memiliki catatan `created_at`.
+
+---
+
 # [31 Oktober 2026] — Perbaikan Logika Auto-Logout Sesi dan Alur Pembaruan Server
 
 - **Perbaikan Penanganan Auto-Logout Prematur Sesi Pengguna**:
