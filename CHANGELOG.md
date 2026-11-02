@@ -3,6 +3,14 @@
 Semua perubahan penting pada proyek ini dicatat di berkas ini.
 Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+# [02 November 2026] — Standardisasi Jalur Tunggal Bridge dan Penyederhanaan Halaman Status
+
+- **Standardisasi Rute Bridge TTE**:
+  - Menstandarkan jalur pemanggilan API bridge secara eksklusif hanya melalui prefix rute tunggal `/bridge/` pada [`bridge/index.php`](bridge/index.php) dan tautan publik [`public/bridge`](public/bridge).
+  - Menyederhanakan tampilan antarmuka status layanan menjadi kartu minimalis proporsional serta menambahkan dukungan respons JSON otomatis saat permintaan menyertakan header `Accept: application/json`.
+
+---
+
 # [02 November 2026] — Pembersihan Berkas Panduan Integrasi TTE BSrE
 
 - **Pembersihan Berkas Panduan**:

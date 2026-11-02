@@ -1,7 +1,7 @@
 <?php
 /**
  * Konfigurasi API Bridge TTE BSrE - Pemkab Sinjai
- * Lokasi path: /tte/
+ * Lokasi path: /bridge/
  */
 
 return [

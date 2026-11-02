@@ -1,7 +1,7 @@
 <?php
 /**
  * TTE BSrE Bridge Router - Pemkab Sinjai
- * Endpoint: /tte/
+ * Endpoint: /bridge/
  * Menjembatani seluruh pemanggilan API TTE agar server TTE (10.91.162.6)
  * melihat request murni berasal dari IP internal (10.91.162.3).
  */
@@ -47,12 +47,12 @@ function get_custom_header($name) {
 // 1. Tentukan Path Target API Terlebih Dahulu
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
-// Hapus prefix direktori (seperti /bridge atau /tte) secara dinamis
+// Hapus prefix direktori /bridge secara dinamis
 $scriptDir = isset($_SERVER['SCRIPT_NAME']) ? rtrim(dirname($_SERVER['SCRIPT_NAME']), '/') : '';
 if (!empty($scriptDir) && strpos($uri, $scriptDir) === 0) {
     $relativePath = substr($uri, strlen($scriptDir));
 } else {
-    $relativePath = preg_replace('#^/(tte|bridge)/?#', '', $uri);
+    $relativePath = preg_replace('#^/bridge/?#', '', $uri);
 }
 $relativePath = ltrim($relativePath, '/');
 
@@ -61,34 +61,35 @@ $timeout = isset($config['tte']['timeout']) ? $config['tte']['timeout'] : 120;
 
 // Jika diakses root direktori tanpa path API dan tanpa parameter action
 if (empty($relativePath) && !isset($_GET['action'])) {
+    $acceptHeader = get_custom_header('Accept');
+    if ($acceptHeader && stripos($acceptHeader, 'application/json') !== false) {
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode([
+            'status'  => true,
+            'message' => 'Layanan Bridge TTE BSrE Sinjai aktif'
+        ]);
+        exit;
+    }
     ?>
     <!DOCTYPE html>
     <html lang="id">
     <head>
         <meta charset="UTF-8">
-        <title>TTE Bridge Service - Pemkab Sinjai</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Bridge TTE BSrE Sinjai</title>
         <style>
-            body { font-family: sans-serif; background: #f4f6f9; color: #333; padding: 40px; text-align: center; }
-            .card { background: #fff; max-width: 600px; margin: 0 auto; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-            h2 { color: #0d6efd; margin-top: 0; }
-            .status { display: inline-block; padding: 6px 12px; background: #d1e7dd; color: #0f5132; border-radius: 4px; font-weight: bold; }
-            code { background: #eee; padding: 3px 6px; border-radius: 3px; }
+            body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f8fafc; color: #1e293b; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+            .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 24px 28px; max-width: 400px; width: 100%; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+            h1 { font-size: 15px; font-weight: 700; margin: 0 0 12px; color: #0f172a; text-transform: uppercase; letter-spacing: 0.05em; }
+            .badge { display: inline-block; font-size: 12px; font-weight: 600; padding: 4px 10px; background: #dcfce7; color: #15803d; border-radius: 4px; margin-bottom: 12px; }
+            p { font-size: 13px; line-height: 1.5; color: #475569; margin: 0; }
         </style>
     </head>
     <body>
         <div class="card">
-            <h2>TTE BSrE Bridge Active</h2>
-            <p><span class="status">✓ Berjalan Normal</span></p>
-            <p>Layanan API Bridge Tanda Tangan Elektronik (BSrE BSSN) Pemkab Sinjai siap digunakan.</p>
-            <hr>
-            <p style="font-size:13px; text-align:left;">
-                <strong>Endpoint Siap Pakai:</strong><br>
-                • <code>/tte/api/user/status/{nik}</code> (Cek status sertifikat NIK)<br>
-                • <code>/tte/api/v2/user/check/status</code> (Cek status sertifikat JSON V2)<br>
-                • <code>/tte/api/sign/pdf</code> (Tanda tangan dokumen PDF)<br>
-                • <code>/tte/api/v2/verify/pdf</code> (Verifikasi dokumen PDF JSON V2)<br>
-                • <code>/tte/api/sign/verify</code> (Verifikasi dokumen PDF Multipart)
-            </p>
+            <h1>Bridge TTE BSrE Sinjai</h1>
+            <div class="badge">Layanan Aktif</div>
+            <p>Gerbang API Tanda Tangan Elektronik BSrE Pemerintah Kabupaten Sinjai beroperasi normal.</p>
         </div>
     </body>
     </html>
