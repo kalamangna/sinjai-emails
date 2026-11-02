@@ -21,13 +21,10 @@ if ((int)$parentId === 348) {
             <div>
                 <h1 class="text-xl sm:text-2xl font-bold text-slate-800 uppercase tracking-tight truncate">Detail Akun</h1>
                 <div class="flex flex-wrap gap-x-4 gap-y-1 mt-1">
-                    <?php 
-                    $accountCreatedAt = !empty($email['created_at']) ? $email['created_at'] : (!empty($email['mtime']) ? $email['mtime'] : null);
-                    ?>
-                    <?php if (!empty($accountCreatedAt)): ?>
+                    <?php if (!empty($email['created_at']) && $email['created_at'] !== '0000-00-00 00:00:00'): ?>
                         <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">
                             <i class="fas fa-calendar-alt mr-1"></i> Akun Dibuat:
-                            <span class="text-slate-700"><?= formatTanggalWaktu($accountCreatedAt) ?></span>
+                            <span class="text-slate-700"><?= formatTanggalWaktu($email['created_at']) ?></span>
                         </p>
                     <?php endif; ?>
                     <?php if (!empty($last_sync_pegawai) && empty($email['pensiun_at'])): ?>

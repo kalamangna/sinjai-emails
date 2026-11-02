@@ -5,9 +5,9 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 # [02 November 2026] — Tampilan Tanggal Pembuatan Akun pada Halaman Detail
 
-- **Penambahan Informasi Tanggal Pembuatan Akun**:
-  - Menampilkan metadata tanggal dan waktu pembuatan akun pada header halaman detail akun di [`app/Views/email/detail.php`](app/Views/email/detail.php) berdampingan dengan informasi waktu sinkronisasi pegawai.
-  - Menerapkan fallback cerdas dari kolom `created_at` basis data lokal ke timestamp `mtime` (waktu pembuatan atau modifikasi cPanel) untuk akun lawas yang belum memiliki catatan `created_at`.
+- **Penyesuaian Informasi Tanggal Pembuatan Akun**:
+  - Menampilkan metadata tanggal dan waktu pembuatan akun pada header halaman detail akun di [`app/Views/email/detail.php`](app/Views/email/detail.php) secara eksklusif hanya jika kolom `created_at` basis data lokal tersedia dan valid.
+  - Menghapus penggunaan atribut `mtime` cPanel karena merefleksikan waktu modifikasi sistem berkas Maildir, bukan waktu pembuatan awal akun.
 
 ---
 
