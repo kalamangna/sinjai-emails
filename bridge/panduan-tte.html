@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panduan Integrasi API TTE BSrE - Pemkab Sinjai</title>
+    <style>
+        :root {
+            --primary: #0d6efd;
+            --primary-dark: #0a58ca;
+            --success: #198754;
+            --dark: #212529;
+            --light: #f8f9fa;
+            --border: #dee2e6;
+            --code-bg: #1e1e1e;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        .header {
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: var(--primary-dark);
+            margin: 0 0 10px 0;
+            font-size: 28px;
+        }
+        .header p {
+            color: #6c757d;
+            margin: 0;
+        }
+        .btn-print {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            float: right;
+        }
+        .btn-print:hover {
+            background: var(--primary-dark);
+        }
+        h2 {
+            color: #2c3e50;
+            border-left: 5px solid var(--primary);
+            padding-left: 12px;
+            margin-top: 35px;
+            font-size: 22px;
+        }
+        h3 {
+            color: #34495e;
+            margin-top: 25px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        table, th, td {
+            border: 1px solid var(--border);
+        }
+        th {
+            background: #e9ecef;
+            padding: 10px 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        td {
+            padding: 10px 12px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+        }
+        .badge-post { background: #198754; }
+        .badge-get { background: #0d6efd; }
+        pre {
+            background: var(--code-bg);
+            color: #f8f8f2;
+            padding: 16px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 13.5px;
+            line-height: 1.5;
+        }
+        code {
+            font-family: Consolas, Monaco, "Courier New", monospace;
+        }
+        .note {
+            background: #e7f1ff;
+            border-left: 4px solid var(--primary);
+            padding: 14px 18px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 14px 18px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        @media print {
+            body { background: #fff; padding: 0; }
+            .container { box-shadow: none; padding: 0; }
+            .btn-print { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <button class="btn-print" onclick="window.print()">🖨️ Cetak / Simpan PDF</button>
+    <div class="header">
+        <h1>Panduan Integrasi API TTE BSrE</h1>
+        <p>Akses Server Tanda Tangan Elektronik via Reverse Proxy Publik Pemkab Sinjai</p>
+    </div>
+
+    <div class="note">
+        <strong>Informasi Koneksi:</strong><br>
+        • <strong>Base URL Akses Publik:</strong> <code>http://apl.sinjaikab.go.id/tte/</code><br>
+        • <strong>Server Backend Lokal:</strong> <code>http://10.91.162.6/</code><br>
+        • <strong>Metode Autentikasi:</strong> HTTP Basic Authentication (Username & Password Client Service)
+    </div>
+
+    <h2>1. Mekanisme Autentikasi</h2>
+    <p>Setiap request ke endpoint API TTE wajib menyertakan header <code>Authorization: Basic &lt;credentials&gt;</code>, di mana <code>credentials</code> adalah hasil enkripsi Base64 dari <code>username:password</code> sistem eSign instansi.</p>
+    <pre><code>Authorization: Basic dXNlcm5hbWU6cGFzc3dvcmQ=</code></pre>
+
+    <h2>2. Daftar Endpoint Utama</h2>
+
+    <h3>A. Cek Status Layanan</h3>
+    <p><span class="badge badge-get">GET</span> <code>/api/status</code></p>
+    <p>Digunakan untuk memeriksa apakah modul eSign Client Service aktif dan dapat berkomunikasi dengan server BSrE BSSN.</p>
+
+    <h3>B. Cek Status Sertifikat User</h3>
+    <p><span class="badge badge-get">GET</span> <code>/api/user/status/{nik}</code></p>
+    <p>Memeriksa apakah pemilik NIK memiliki sertifikat elektronik yang aktif.</p>
+
+    <h3>C. Penandatanganan Dokumen PDF</h3>
+    <p><span class="badge badge-post">POST</span> <code>/api/sign/pdf</code></p>
+    <p><strong>Content-Type:</strong> <code>multipart/form-data</code></p>
+    <table>
+        <tr>
+            <th>Field</th>
+            <th>Tipe</th>
+            <th>Deskripsi</th>
+        </tr>
+        <tr>
+            <td><code>file</code></td>
+            <td>File (Binary)</td>
+            <td>File PDF yang akan ditandatangani.</td>
+        </tr>
+        <tr>
+            <td><code>nik</code></td>
+            <td>String</td>
+            <td>16 digit NIK penandatangan.</td>
+        </tr>
+        <tr>
+            <td><code>passphrase</code></td>
+            <td>String</td>
+            <td>Kata sandi / passphrase sertifikat BSrE penandatangan.</td>
+        </tr>
+        <tr>
+            <td><code>tampilan</code></td>
+            <td>String</td>
+            <td><code>visible</code> (ada visualisasi QR) atau <code>invisible</code>.</td>
+        </tr>
+        <tr>
+            <td><code>halaman</code></td>
+            <td>String / Integer</td>
+            <td>Nomor halaman tempat tanda tangan ditempatkan (misal: <code>1</code> atau <code>terakhir</code>).</td>
+        </tr>
+        <tr>
+            <td><code>xAxis</code></td>
+            <td>Float</td>
+            <td>Koordinat horizontal (X) posisi tanda tangan.</td>
+        </tr>
+        <tr>
+            <td><code>yAxis</code></td>
+            <td>Float</td>
+            <td>Koordinat vertikal (Y) posisi tanda tangan.</td>
+        </tr>
+        <tr>
+            <td><code>width</code></td>
+            <td>Float</td>
+            <td>Lebar visual QR code / spesimen (standar: 100 - 150).</td>
+        </tr>
+        <tr>
+            <td><code>height</code></td>
+            <td>Float</td>
+            <td>Tinggi visual QR code / spesimen (standar: 100 - 150).</td>
+        </tr>
+    </table>
+    <p><strong>Response Sukses:</strong> HTTP 200 dengan Content-Type <code>application/pdf</code> (file PDF hasil tanda tangan).</p>
+
+    <h3>D. Verifikasi Dokumen PDF</h3>
+    <p><span class="badge badge-post">POST</span> <code>/api/sign/verify</code></p>
+    <p><strong>Content-Type:</strong> <code>multipart/form-data</code></p>
+    <table>
+        <tr>
+            <th>Field</th>
+            <th>Tipe</th>
+            <th>Deskripsi</th>
+        </tr>
+        <tr>
+            <td><code>file</code></td>
+            <td>File (Binary)</td>
+            <td>File PDF yang ingin diverifikasi keasliannya.</td>
+        </tr>
+    </table>
+
+    <h2>3. Contoh Kode Implementasi</h2>
+
+    <h3>Contoh 1: Menggunakan cURL (Bash)</h3>
+    <pre><code># 1. Cek Status Service
+curl -X GET "http://apl.sinjaikab.go.id/tte/api/status" \
+     -u "username:password"
+
+# 2. Tanda Tangani Dokumen PDF
+curl -X POST "http://apl.sinjaikab.go.id/tte/api/sign/pdf" \
+     -u "username:password" \
+     -F "file=@/path/to/dokumen.pdf" \
+     -F "nik=730XXXXXXXXXXXXX" \
+     -F "passphrase=Rahasia123!" \
+     -F "tampilan=visible" \
+     -F "halaman=1" \
+     -F "xAxis=100" \
+     -F "yAxis=100" \
+     -F "width=120" \
+     -F "height=120" \
+     --output "dokumen_signed.pdf"</code></pre>
+
+    <h3>Contoh 2: Menggunakan PHP (cURL Native)</h3>
+    <pre><code>&lt;?php
+$url = 'http://apl.sinjaikab.go.id/tte/api/sign/pdf';
+$username = 'username_tte';
+$password = 'password_tte';
+
+$postData = [
+    'file'       =&gt; new CURLFile('/path/ke/surat.pdf', 'application/pdf', 'surat.pdf'),
+    'nik'        =&gt; '730XXXXXXXXXXXXX',
+    'passphrase' =&gt; 'PasswordTTE123',
+    'tampilan'   =&gt; 'visible',
+    'halaman'    =&gt; '1',
+    'xAxis'      =&gt; '100',
+    'yAxis'      =&gt; '150',
+    'width'      =&gt; '120',
+    'height'     =&gt; '120',
+];
+
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, $url);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
+curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+curl_setopt($ch, CURLOPT_USERPWD, "$username:$password");
+curl_setopt($ch, CURLOPT_TIMEOUT, 120); // Beri timeout cukup lama
+
+$response = curl_exec($ch);
+$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+curl_close($ch);
+
+if ($httpCode === 200) {
+    file_put_contents('/path/ke/surat_signed.pdf', $response);
+    echo "Dokumen berhasil ditandatangani!";
+} else {
+    echo "Gagal menandatangani. Error response: " . $response;
+}
+?&gt;</code></pre>
+
+    <h3>Contoh 3: Menggunakan Python (Requests)</h3>
+    <pre><code>import requests
+from requests.auth import HTTPBasicAuth
+
+url = "http://apl.sinjaikab.go.id/tte/api/sign/pdf"
+auth = HTTPBasicAuth("username_tte", "password_tte")
+
+files = {
+    'file': ('surat.pdf', open('/path/ke/surat.pdf', 'rb'), 'application/pdf')
+}
+
+data = {
+    'nik': '730XXXXXXXXXXXXX',
+    'passphrase': 'PasswordTTE123',
+    'tampilan': 'visible',
+    'halaman': '1',
+    'xAxis': '100',
+    'yAxis': '100',
+    'width': '120',
+    'height': '120'
+}
+
+response = requests.post(url, auth=auth, files=files, data=data, timeout=120)
+
+if response.status_code == 200:
+    with open('/path/ke/surat_signed.pdf', 'wb') as f:
+        f.write(response.content)
+    print("PDF Berhasil ditandatangani!")
+else:
+    print(f"Gagal ({response.status_code}): {response.text}")</code></pre>
+
+    <h2>4. Catatan Penting & Troubleshooting</h2>
+    <div class="warning">
+        <strong>Perhatikan Saat Deploy Production:</strong><br>
+        1. <strong>Timeout:</strong> Komunikasi antara server lokal ke BSSN pusat membutuhkan waktu beberapa detik. Pastikan script pemanggil mengaktifkan timeout minimal 60 - 120 detik.<br>
+        2. <strong>Error 401 Unauthorized:</strong> Periksa kembali username dan password Basic Auth yang didaftarkan pada eSign Client Service.<br>
+        3. <strong>Ukuran Berkas:</strong> Pastikan ukuran PDF tidak melebihi batasan sistem lokal maupun BSSN (disarankan di bawah 20MB).
+    </div>
+
+    <p style="text-align:center; color:#999; margin-top:40px; font-size:13px;">
+        Dokumen panduan ini digenerate untuk Diskominfo / Pemkab Sinjai.
+    </p>
+</div>
+
+</body>
+</html>

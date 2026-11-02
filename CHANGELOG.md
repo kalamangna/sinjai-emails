@@ -3,6 +3,16 @@
 Semua perubahan penting pada proyek ini dicatat di berkas ini.
 Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+# [02 November 2026] — Implementasi Bridge Layanan API TTE BSrE
+
+- **Modul Bridge Layanan API TTE BSrE**:
+  - Menambahkan modul *bridge* mandiri pada direktori [`bridge/`](bridge/) yang mencakup router pemanggil [`index.php`](bridge/index.php), konfigurasi [`config.php`](bridge/config.php), aturan penulisan ulang Apache [`bridge/.htaccess`](bridge/.htaccess), serta dokumentasi teknis [`PANDUAN_TTE_BSRE.md`](bridge/PANDUAN_TTE_BSRE.md) dan [`panduan-tte.html`](bridge/panduan-tte.html).
+  - Mengimplementasikan pengamanan autentikasi HTTP Basic Auth wajib guna mencegah akses tanpa hak ke server lokal e-Sign BSrE (`http://10.91.162.6`).
+  - Menambahkan penanganan otomatis dan penerusan muatan berformat JSON (`application/json`) untuk endpoint API V2 serta berkas PDF berformat *multipart/form-data*.
+  - Menambahkan deteksi dinamis jalur *sub-path* (*relative path*) dan dukungan penerusan header otorisasi pada lingkungan Apache FastCGI/PHP-FPM (`REDIRECT_HTTP_AUTHORIZATION`).
+
+---
+
 # [02 November 2026] — Tampilan Tanggal Pembuatan Akun pada Halaman Detail
 
 - **Penyesuaian Informasi Tanggal Pembuatan Akun**:

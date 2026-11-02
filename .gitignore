@@ -64,6 +64,7 @@ writable/debugbar/*
 !writable/debugbar/index.html
 
 php_errors.log
+bridge/*.log
 
 #-------------------------
 # User Guide Temp Files
