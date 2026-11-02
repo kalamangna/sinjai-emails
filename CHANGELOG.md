@@ -3,6 +3,13 @@
 Semua perubahan penting pada proyek ini dicatat di berkas ini.
 Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+# [02 November 2026] — Pembersihan Berkas Panduan Integrasi TTE BSrE
+
+- **Pembersihan Berkas Panduan**:
+  - Menghapus berkas dokumentasi integrasi API TTE BSrE lokal (`bridge/PANDUAN_TTE_BSRE.md` dan `bridge/panduan-tte.html`) dari modul *bridge* guna menjaga kerapian dan keamanan struktur berkas repositori.
+
+---
+
 # [02 November 2026] — Implementasi Bridge Layanan API TTE BSrE
 
 - **Modul Bridge Layanan API TTE BSrE**:
