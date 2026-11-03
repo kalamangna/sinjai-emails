@@ -17,7 +17,7 @@ Aplikasi ini menerapkan standar estetika **"Slate Clean Government"**—antarmuk
 - **Debug & Validasi Data:** Fitur deteksi otomatis untuk akun yang mengalami NIP ganda atau ambiguitas data profil.
 
 ### ✍️ Integrasi TTE BSrE
-- **TTE Bridge Service:** Modul perantara mandiri pada direktori `/bridge` untuk menjembatani integrasi penandatanganan elektronik (OpenSID desa dan aplikasi eksternal) ke server e-Sign BSrE lokal secara aman melalui HTTP Basic Authentication.
+- **TTE Bridge Service:** Modul perantara arsitektur MVC pada rute `/bridge` dan dokumentasi teknis `/bridge/panduan` untuk menjembatani integrasi penandatanganan elektronik sistem eksternal ke server e-Sign BSrE lokal secara aman melalui HTTP Basic Auth, proteksi SSRF, validasi berkas PDF, serta pembatasan laju permintaan.
 - **TTE PK (Tanda Tangan Elektronik Bupati):** Modul antrean khusus Super Admin (`/tte-pk`) untuk penandatanganan digital Perjanjian Kerja oleh Bupati Sinjai (Pihak Kesatu) pada tag `${ttd_pengirim2}`. Mendukung pemilahan dokumen **PK PPPK** dan **PK PPPK PW**, filter unit kerja induk hierarkis, eksekusi TTE tunggal maupun massal (*batch sign*) berkecepatan tinggi dengan pengaman otomatis terhadap kesalahan otentikasi BSrE, serta dukungan konfigurasi NIK otomatis via `BSRE_BUPATI_NIK`.
 - **Portal TTE PPPK:** Akses publik mandiri bagi aparatur PPPK (`/portal-pk`) untuk verifikasi identitas (NIP, NIK, Tanggal Lahir), pratinjau dokumen Perjanjian Kerja secara langsung, dan pembubuhan TTE resmi via API BSrE menggunakan Passphrase pribadi.
 - **Monitoring Status:** Pelacakan status Sertifikat Elektronik secara real-time (ISSUE, EXPIRED, NO_CERTIFICATE, dll).
@@ -76,6 +76,7 @@ Proyek ini menggunakan pendekatan **Domain-Driven Design (DDD)** di dalam direkt
 - **Assistance:** Log bantuan teknis.
 - **Auth:** RBAC (Super Admin/Admin) dan manajemen sesi aman.
 - **Batch:** Logika pemrosesan data massal.
+- **Bridge:** Layanan perantara TTE dan panduan integrasi teknis.
 - **Dashboard:** Portal analitik utama.
 - **Email:** Mutasi akun inti dan logika identitas.
 - **UnitKerja:** Manajemen struktur organisasi hierarkis.
@@ -108,6 +109,9 @@ npm run build
 
 # Jalankan Migrasi
 php spark migrate
+
+# Jalankan Server Pengembangan (Server CodeIgniter & Tailwind Watcher)
+composer dev
 ```
 
 ## 🤖 Otomatisasi (Cron Job)

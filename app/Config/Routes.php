@@ -50,6 +50,12 @@ $routes->get('api_trigger_queue', '\App\Domains\Email\Controllers\EmailApiContro
 // Public Route - Landing Page
 $routes->get('/', '\App\Domains\Dashboard\Controllers\HomeController::index');
 
+// Bridge TTE Router
+$routes->get('bridge/panduan', '\App\Domains\Bridge\Controllers\BridgeController::panduan');
+$routes->get('bridge/docs', '\App\Domains\Bridge\Controllers\BridgeController::panduan');
+$routes->match(['get', 'post'], 'bridge/(:any)', '\App\Domains\Bridge\Controllers\BridgeController::proxy/$1', ['filter' => 'throttle']);
+$routes->match(['get', 'post'], 'bridge', '\App\Domains\Bridge\Controllers\BridgeController::index', ['filter' => 'throttle']);
+
 // Protected Routes
 $routes->group('', ['filter' => 'auth'], function ($routes) {
     // Session Keep-Alive

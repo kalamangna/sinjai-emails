@@ -42,6 +42,10 @@
         "sort-packages": true
     },
     "scripts": {
+        "dev": [
+            "Composer\\Config::disableProcessTimeout",
+            "npm run dev"
+        ],
         "test": "phpunit"
     }
 }

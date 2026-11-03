@@ -18,7 +18,7 @@ class Throttle implements FilterInterface
         if ($throttler->check(md5($request->getIPAddress()), 120, MINUTE) === false) {
             return Services::response()->setStatusCode(429)->setJSON([
                 'success' => false,
-                'message' => 'Terlalu banyak permintaan (Rate limit exceeded). Harap tunggu beberapa saat.'
+                'message' => 'Terlalu banyak permintaan. Silakan tunggu beberapa saat.'
             ]);
         }
     }

@@ -93,135 +93,135 @@ class ComposerStaticInitc5636546f89824c269aa17c25035b788
     );
 
     public static $prefixLengthsPsr4 = array (
-        'Z' => 
+        'Z' =>
         array (
             'ZipStream\\' => 10,
         ),
-        'S' => 
+        'S' =>
         array (
             'Symfony\\Polyfill\\Mbstring\\' => 26,
             'Svg\\' => 4,
             'Sabberworm\\CSS\\' => 15,
         ),
-        'P' => 
+        'P' =>
         array (
             'Psr\\SimpleCache\\' => 16,
             'Psr\\Log\\' => 8,
             'PhpOffice\\PhpSpreadsheet\\' => 25,
         ),
-        'M' => 
+        'M' =>
         array (
             'Matrix\\' => 7,
             'Masterminds\\' => 12,
         ),
-        'L' => 
+        'L' =>
         array (
             'Laminas\\Escaper\\' => 16,
         ),
-        'I' => 
+        'I' =>
         array (
             'Ifsnop\\' => 7,
         ),
-        'F' => 
+        'F' =>
         array (
             'FontLib\\' => 8,
         ),
-        'D' => 
+        'D' =>
         array (
             'Dompdf\\' => 7,
         ),
-        'C' => 
+        'C' =>
         array (
             'Config\\' => 7,
             'Composer\\Pcre\\' => 14,
             'Complex\\' => 8,
             'CodeIgniter\\' => 12,
         ),
-        'A' => 
+        'A' =>
         array (
             'App\\' => 4,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'ZipStream\\' => 
+        'ZipStream\\' =>
         array (
             0 => __DIR__ . '/..' . '/maennchen/zipstream-php/src',
         ),
-        'Symfony\\Polyfill\\Mbstring\\' => 
+        'Symfony\\Polyfill\\Mbstring\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
         ),
-        'Svg\\' => 
+        'Svg\\' =>
         array (
             0 => __DIR__ . '/..' . '/dompdf/php-svg-lib/src/Svg',
         ),
-        'Sabberworm\\CSS\\' => 
+        'Sabberworm\\CSS\\' =>
         array (
             0 => __DIR__ . '/..' . '/sabberworm/php-css-parser/src',
         ),
-        'Psr\\SimpleCache\\' => 
+        'Psr\\SimpleCache\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/simple-cache/src',
         ),
-        'Psr\\Log\\' => 
+        'Psr\\Log\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/log/src',
         ),
-        'PhpOffice\\PhpSpreadsheet\\' => 
+        'PhpOffice\\PhpSpreadsheet\\' =>
         array (
             0 => __DIR__ . '/..' . '/phpoffice/phpspreadsheet/src/PhpSpreadsheet',
         ),
-        'Matrix\\' => 
+        'Matrix\\' =>
         array (
             0 => __DIR__ . '/..' . '/markbaker/matrix/classes/src',
         ),
-        'Masterminds\\' => 
+        'Masterminds\\' =>
         array (
             0 => __DIR__ . '/..' . '/masterminds/html5/src',
         ),
-        'Laminas\\Escaper\\' => 
+        'Laminas\\Escaper\\' =>
         array (
             0 => __DIR__ . '/..' . '/laminas/laminas-escaper/src',
         ),
-        'Ifsnop\\' => 
+        'Ifsnop\\' =>
         array (
             0 => __DIR__ . '/..' . '/ifsnop/mysqldump-php/src/Ifsnop',
         ),
-        'FontLib\\' => 
+        'FontLib\\' =>
         array (
             0 => __DIR__ . '/..' . '/dompdf/php-font-lib/src/FontLib',
         ),
-        'Dompdf\\' => 
+        'Dompdf\\' =>
         array (
             0 => __DIR__ . '/..' . '/dompdf/dompdf/src',
         ),
-        'Config\\' => 
+        'Config\\' =>
         array (
             0 => __DIR__ . '/../..' . '/app/Config',
         ),
-        'Composer\\Pcre\\' => 
+        'Composer\\Pcre\\' =>
         array (
             0 => __DIR__ . '/..' . '/composer/pcre/src',
         ),
-        'Complex\\' => 
+        'Complex\\' =>
         array (
             0 => __DIR__ . '/..' . '/markbaker/complex/classes/src',
         ),
-        'CodeIgniter\\' => 
+        'CodeIgniter\\' =>
         array (
             0 => __DIR__ . '/..' . '/codeigniter4/framework/system',
         ),
-        'App\\' => 
+        'App\\' =>
         array (
             0 => __DIR__ . '/../..' . '/app',
         ),
     );
 
     public static $prefixesPsr0 = array (
-        'S' => 
+        'S' =>
         array (
-            'Smalot\\PdfParser\\' => 
+            'Smalot\\PdfParser\\' =>
             array (
                 0 => __DIR__ . '/..' . '/smalot/pdfparser/src',
             ),
@@ -229,49 +229,62 @@ class ComposerStaticInitc5636546f89824c269aa17c25035b788
     );
 
     public static $classMap = array (
+        'App\\Commands\\AuditCleanCommand' => __DIR__ . '/../..' . '/app/Commands/AuditCleanCommand.php',
+        'App\\Commands\\AutoPensiunCommand' => __DIR__ . '/../..' . '/app/Commands/AutoPensiunCommand.php',
         'App\\Commands\\BackupCommand' => __DIR__ . '/../..' . '/app/Commands/BackupCommand.php',
         'App\\Commands\\CleanExportHistories' => __DIR__ . '/../..' . '/app/Commands/CleanExportHistories.php',
+        'App\\Commands\\HealthCheckCacheCommand' => __DIR__ . '/../..' . '/app/Commands/HealthCheckCacheCommand.php',
+        'App\\Commands\\ProcessNonUsulanCommand' => __DIR__ . '/../..' . '/app/Commands/ProcessNonUsulanCommand.php',
+        'App\\Commands\\QueueFlush' => __DIR__ . '/../..' . '/app/Commands/QueueFlush.php',
         'App\\Commands\\QueueWorker' => __DIR__ . '/../..' . '/app/Commands/QueueWorker.php',
         'App\\Commands\\SyncAllCommand' => __DIR__ . '/../..' . '/app/Commands/SyncAllCommand.php',
         'App\\Commands\\SyncPegawaiUnit' => __DIR__ . '/../..' . '/app/Commands/SyncPegawaiUnit.php',
         'App\\Commands\\SyncTteUnit' => __DIR__ . '/../..' . '/app/Commands/SyncTteUnit.php',
         'App\\Commands\\SyncUnitApi' => __DIR__ . '/../..' . '/app/Commands/SyncUnitApi.php',
+        'App\\Commands\\TestPkHistory' => __DIR__ . '/../..' . '/app/Commands/TestPkHistory.php',
         'App\\Database\\Seeds\\EmailSeeder' => __DIR__ . '/../..' . '/app/Database/Seeds/EmailSeeder.php',
         'App\\Database\\Seeds\\EselonSeeder' => __DIR__ . '/../..' . '/app/Database/Seeds/EselonSeeder.php',
         'App\\Database\\Seeds\\UserSeeder' => __DIR__ . '/../..' . '/app/Database/Seeds/UserSeeder.php',
         'App\\Database\\Seeds\\WebDesaKelurahanSeeder' => __DIR__ . '/../..' . '/app/Database/Seeds/WebDesaKelurahanSeeder.php',
         'App\\Database\\Seeds\\WebOpdSeeder' => __DIR__ . '/../..' . '/app/Database/Seeds/WebOpdSeeder.php',
         'App\\Domains\\Api\\Controllers\\GatewayController' => __DIR__ . '/../..' . '/app/Domains/Api/Controllers/GatewayController.php',
-        'App\\Domains\\Assistance\\Controllers\\Assistance' => __DIR__ . '/../..' . '/app/Domains/Assistance/Controllers/Assistance.php',
+        'App\\Domains\\Assistance\\Controllers\\AssistanceController' => __DIR__ . '/../..' . '/app/Domains/Assistance/Controllers/AssistanceController.php',
         'App\\Domains\\Assistance\\Models\\AssistanceModel' => __DIR__ . '/../..' . '/app/Domains/Assistance/Models/AssistanceModel.php',
         'App\\Domains\\Assistance\\Services\\AssistanceExportService' => __DIR__ . '/../..' . '/app/Domains/Assistance/Services/AssistanceExportService.php',
         'App\\Domains\\Auth\\Controllers\\AuditLogController' => __DIR__ . '/../..' . '/app/Domains/Auth/Controllers/AuditLogController.php',
-        'App\\Domains\\Auth\\Controllers\\Auth' => __DIR__ . '/../..' . '/app/Domains/Auth/Controllers/Auth.php',
-        'App\\Domains\\Auth\\Controllers\\User' => __DIR__ . '/../..' . '/app/Domains/Auth/Controllers/User.php',
-        'App\\Domains\\Auth\\Controllers\\UserManagement' => __DIR__ . '/../..' . '/app/Domains/Auth/Controllers/UserManagement.php',
+        'App\\Domains\\Auth\\Controllers\\AuthController' => __DIR__ . '/../..' . '/app/Domains/Auth/Controllers/AuthController.php',
+        'App\\Domains\\Auth\\Controllers\\UserController' => __DIR__ . '/../..' . '/app/Domains/Auth/Controllers/UserController.php',
+        'App\\Domains\\Auth\\Controllers\\UserManagementController' => __DIR__ . '/../..' . '/app/Domains/Auth/Controllers/UserManagementController.php',
         'App\\Domains\\Auth\\Models\\UserModel' => __DIR__ . '/../..' . '/app/Domains/Auth/Models/UserModel.php',
+        'App\\Domains\\Auth\\Services\\AuthService' => __DIR__ . '/../..' . '/app/Domains/Auth/Services/AuthService.php',
         'App\\Domains\\Batch\\Controllers\\BatchController' => __DIR__ . '/../..' . '/app/Domains/Batch/Controllers/BatchController.php',
         'App\\Domains\\Batch\\Services\\EmailBatchService' => __DIR__ . '/../..' . '/app/Domains/Batch/Services/EmailBatchService.php',
-        'App\\Domains\\Dashboard\\Controllers\\Home' => __DIR__ . '/../..' . '/app/Domains/Dashboard/Controllers/Home.php',
+        'App\\Domains\\Bridge\\Controllers\\BridgeController' => __DIR__ . '/../..' . '/app/Domains/Bridge/Controllers/BridgeController.php',
+        'App\\Domains\\Dashboard\\Controllers\\HomeController' => __DIR__ . '/../..' . '/app/Domains/Dashboard/Controllers/HomeController.php',
         'App\\Domains\\Dashboard\\Services\\DashboardService' => __DIR__ . '/../..' . '/app/Domains/Dashboard/Services/DashboardService.php',
-        'App\\Domains\\Email\\Controllers\\Bsre' => __DIR__ . '/../..' . '/app/Domains/Email/Controllers/Bsre.php',
-        'App\\Domains\\Email\\Controllers\\Email' => __DIR__ . '/../..' . '/app/Domains/Email/Controllers/Email.php',
-        'App\\Domains\\Email\\Controllers\\EmailApi' => __DIR__ . '/../..' . '/app/Domains/Email/Controllers/EmailApi.php',
-        'App\\Domains\\Email\\Controllers\\EmailExport' => __DIR__ . '/../..' . '/app/Domains/Email/Controllers/EmailExport.php',
-        'App\\Domains\\Email\\Controllers\\EmailList' => __DIR__ . '/../..' . '/app/Domains/Email/Controllers/EmailList.php',
+        'App\\Domains\\Email\\Controllers\\BsreController' => __DIR__ . '/../..' . '/app/Domains/Email/Controllers/BsreController.php',
+        'App\\Domains\\Email\\Controllers\\EmailApiController' => __DIR__ . '/../..' . '/app/Domains/Email/Controllers/EmailApiController.php',
+        'App\\Domains\\Email\\Controllers\\EmailController' => __DIR__ . '/../..' . '/app/Domains/Email/Controllers/EmailController.php',
+        'App\\Domains\\Email\\Controllers\\EmailExportController' => __DIR__ . '/../..' . '/app/Domains/Email/Controllers/EmailExportController.php',
+        'App\\Domains\\Email\\Controllers\\EmailListController' => __DIR__ . '/../..' . '/app/Domains/Email/Controllers/EmailListController.php',
+        'App\\Domains\\Email\\Controllers\\PortalPkController' => __DIR__ . '/../..' . '/app/Domains/Email/Controllers/PortalPkController.php',
         'App\\Domains\\Email\\Controllers\\TrashController' => __DIR__ . '/../..' . '/app/Domains/Email/Controllers/TrashController.php',
+        'App\\Domains\\Email\\Controllers\\TteBupatiController' => __DIR__ . '/../..' . '/app/Domains/Email/Controllers/TteBupatiController.php',
         'App\\Domains\\Email\\Models\\EmailModel' => __DIR__ . '/../..' . '/app/Domains/Email/Models/EmailModel.php',
+        'App\\Domains\\Email\\Models\\PkHistoryModel' => __DIR__ . '/../..' . '/app/Domains/Email/Models/PkHistoryModel.php',
         'App\\Domains\\Email\\Models\\PkModel' => __DIR__ . '/../..' . '/app/Domains/Email/Models/PkModel.php',
         'App\\Domains\\Email\\Services\\EmailExportService' => __DIR__ . '/../..' . '/app/Domains/Email/Services/EmailExportService.php',
         'App\\Domains\\Email\\Services\\EmailService' => __DIR__ . '/../..' . '/app/Domains/Email/Services/EmailService.php',
         'App\\Domains\\Helpdesk\\Controllers\\HelpdeskAdminController' => __DIR__ . '/../..' . '/app/Domains/Helpdesk/Controllers/HelpdeskAdminController.php',
         'App\\Domains\\Helpdesk\\Controllers\\HelpdeskPublicController' => __DIR__ . '/../..' . '/app/Domains/Helpdesk/Controllers/HelpdeskPublicController.php',
         'App\\Domains\\Helpdesk\\Models\\HelpdeskModel' => __DIR__ . '/../..' . '/app/Domains/Helpdesk/Models/HelpdeskModel.php',
+        'App\\Domains\\Helpdesk\\Services\\HelpdeskService' => __DIR__ . '/../..' . '/app/Domains/Helpdesk/Services/HelpdeskService.php',
         'App\\Domains\\Pimpinan\\Controllers\\PimpinanController' => __DIR__ . '/../..' . '/app/Domains/Pimpinan/Controllers/PimpinanController.php',
-        'App\\Domains\\UnitKerja\\Controllers\\UnitKerja' => __DIR__ . '/../..' . '/app/Domains/UnitKerja/Controllers/UnitKerja.php',
+        'App\\Domains\\UnitKerja\\Controllers\\UnitKerjaController' => __DIR__ . '/../..' . '/app/Domains/UnitKerja/Controllers/UnitKerjaController.php',
         'App\\Domains\\UnitKerja\\Models\\UnitKerjaModel' => __DIR__ . '/../..' . '/app/Domains/UnitKerja/Models/UnitKerjaModel.php',
-        'App\\Domains\\Website\\Controllers\\WebDesaKelurahan' => __DIR__ . '/../..' . '/app/Domains/Website/Controllers/WebDesaKelurahan.php',
-        'App\\Domains\\Website\\Controllers\\WebOpd' => __DIR__ . '/../..' . '/app/Domains/Website/Controllers/WebOpd.php',
+        'App\\Domains\\UnitKerja\\Services\\UnitKerjaService' => __DIR__ . '/../..' . '/app/Domains/UnitKerja/Services/UnitKerjaService.php',
+        'App\\Domains\\Website\\Controllers\\WebDesaKelurahanController' => __DIR__ . '/../..' . '/app/Domains/Website/Controllers/WebDesaKelurahanController.php',
+        'App\\Domains\\Website\\Controllers\\WebOpdController' => __DIR__ . '/../..' . '/app/Domains/Website/Controllers/WebOpdController.php',
         'App\\Domains\\Website\\Models\\WebDesaKelurahanModel' => __DIR__ . '/../..' . '/app/Domains/Website/Models/WebDesaKelurahanModel.php',
         'App\\Domains\\Website\\Models\\WebOpdModel' => __DIR__ . '/../..' . '/app/Domains/Website/Models/WebOpdModel.php',
         'App\\Domains\\Website\\Services\\WebMonitoringExportService' => __DIR__ . '/../..' . '/app/Domains/Website/Services/WebMonitoringExportService.php',
@@ -283,6 +296,7 @@ class ComposerStaticInitc5636546f89824c269aa17c25035b788
         'App\\Shared\\BaseController' => __DIR__ . '/../..' . '/app/Shared/BaseController.php',
         'App\\Shared\\Libraries\\BsreApi' => __DIR__ . '/../..' . '/app/Shared/Libraries/BsreApi.php',
         'App\\Shared\\Libraries\\CpanelApi' => __DIR__ . '/../..' . '/app/Shared/Libraries/CpanelApi.php',
+        'App\\Shared\\Libraries\\ImapMailboxCleaner' => __DIR__ . '/../..' . '/app/Shared/Libraries/ImapMailboxCleaner.php',
         'App\\Shared\\Libraries\\PegawaiApi' => __DIR__ . '/../..' . '/app/Shared/Libraries/PegawaiApi.php',
         'App\\Shared\\Libraries\\TelegramLibrary' => __DIR__ . '/../..' . '/app/Shared/Libraries/TelegramLibrary.php',
         'App\\Shared\\Libraries\\TelegramMessageBuilder' => __DIR__ . '/../..' . '/app/Shared/Libraries/TelegramMessageBuilder.php',
@@ -294,6 +308,7 @@ class ComposerStaticInitc5636546f89824c269aa17c25035b788
         'App\\Shared\\Models\\PlatformModel' => __DIR__ . '/../..' . '/app/Shared/Models/PlatformModel.php',
         'App\\Shared\\Models\\StatusAsnModel' => __DIR__ . '/../..' . '/app/Shared/Models/StatusAsnModel.php',
         'App\\Shared\\Services\\AlertService' => __DIR__ . '/../..' . '/app/Shared/Services/AlertService.php',
+        'App\\Shared\\Services\\CacheService' => __DIR__ . '/../..' . '/app/Shared/Services/CacheService.php',
         'App\\Shared\\Services\\PegawaiSyncService' => __DIR__ . '/../..' . '/app/Shared/Services/PegawaiSyncService.php',
         'App\\Shared\\Services\\SyncService' => __DIR__ . '/../..' . '/app/Shared/Services/SyncService.php',
         'App\\Shared\\Services\\SystemHealthService' => __DIR__ . '/../..' . '/app/Shared/Services/SystemHealthService.php',

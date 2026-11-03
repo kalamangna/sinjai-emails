@@ -3,6 +3,27 @@
 Semua perubahan penting pada proyek ini dicatat di berkas ini.
 Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+# [03 November 2026] — Migrasi MVC dan Pengerasan Keamanan Layanan Bridge TTE
+
+- **Migrasi Modul Bridge ke Arsitektur MVC**:
+  - Memindahkan seluruh logika perantara layanan Bridge TTE ke dalam arsitektur CodeIgniter MVC melalui controller [`BridgeController.php`](app/Domains/Bridge/Controllers/BridgeController.php) pada domain `App\Domains\Bridge`.
+  - Mendaftarkan rute CodeIgniter resmi untuk `bridge`, `bridge/panduan`, `bridge/docs`, dan `bridge/(:any)` pada [`app/Config/Routes.php`](app/Config/Routes.php).
+  - Menghapus direktori terisolasi `bridge/` dan berkas symlink `public/bridge`.
+  - Mengonfigurasi pengecualian proteksi CSRF untuk rute API `bridge` dan `bridge/*` pada [`app/Config/Filters.php`](app/Config/Filters.php).
+- **Pengerasan Keamanan Layanan Bridge TTE**:
+  - Menerapkan proteksi SSRF dan Path Traversal dengan memblokir karakter traversal `..`, `\`, dan null byte serta memvalidasi endpoint hanya untuk rute berawalan `api/` resmi dengan respon HTTP 403 Forbidden.
+  - Menerapkan pembatasan laju permintaan (*rate limiting*) menggunakan filter *throttle* maksimal 120 permintaan per menit per alamat IP guna mencegah serangan *brute force* dan DoS.
+  - Menerapkan validasi ketat berkas unggahan: membatasi ukuran berkas maksimal 25 MB (HTTP 413 Payload Too Large) dan membatasi format berkas hanya berekstensi PDF (HTTP 400 Bad Request) sebelum koneksi cURL backend diinisialisasi.
+  - Mengamankan komunikasi cURL dengan mengunci protokol hanya pada HTTP dan HTTPS, menonaktifkan pengalihan lokasi (`CURLOPT_FOLLOWLOCATION = false`), dan menetapkan batas waktu koneksi `CURLOPT_CONNECTTIMEOUT` 10 detik.
+  - Menerapkan pembersihan karakter CRLF pada pencatatan transaksi log untuk mencegah manipulasi catatan log (*Log Injection*) dan menambahkan rotasi berkas log otomatis saat ukuran melampaui 10 MB.
+- **Penyempurnaan Halaman Panduan Teknis & Antarmuka Status**:
+  - Membuat halaman dokumentasi integrasi teknis interaktif pada [`app/Views/bridge/panduan.php`](app/Views/bridge/panduan.php) dengan format akordeon per endpoint, tabel parameter lengkap, dan contoh pemanggilan cURL.
+  - Memperbarui tampilan kartu status layanan pada [`app/Views/bridge/index.php`](app/Views/bridge/index.php).
+- **Peningkatan Lingkungan Pengembangan**:
+  - Menambahkan perintah `composer dev` dan `npm run dev` untuk menjalankan server lokal CodeIgniter bersamaan dengan *watcher* kompilasi Tailwind CSS.
+
+---
+
 # [02 November 2026] — Standardisasi Jalur Tunggal Bridge dan Penyederhanaan Halaman Status
 
 - **Standardisasi Rute Bridge TTE**:

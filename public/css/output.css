@@ -2955,6 +2955,10 @@ input::placeholder,
   list-style-type: disc;
 }
 
+.list-none {
+  list-style-type: none;
+}
+
 .appearance-none {
   -webkit-appearance: none;
      -moz-appearance: none;
@@ -4395,6 +4399,10 @@ input::placeholder,
   padding: 0.75rem;
 }
 
+.p-3\.5 {
+  padding: 0.875rem;
+}
+
 .p-4 {
   padding: 1rem;
 }
@@ -4438,6 +4446,11 @@ input::placeholder,
 .\!py-2\.5 {
   padding-top: 0.625rem !important;
   padding-bottom: 0.625rem !important;
+}
+
+.px-1 {
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
 }
 
 .px-1\.5 {
@@ -4560,6 +4573,10 @@ input::placeholder,
 
 .pb-2 {
   padding-bottom: 0.5rem;
+}
+
+.pb-3 {
+  padding-bottom: 0.75rem;
 }
 
 .pb-6 {
@@ -6254,6 +6271,10 @@ input::placeholder,
     gap: 2rem;
   }
 
+  .sm\:p-5 {
+    padding: 1.25rem;
+  }
+
   .sm\:p-6 {
     padding: 1.5rem;
   }
@@ -6293,6 +6314,11 @@ input::placeholder,
   .sm\:text-lg {
     font-size: 1.125rem;
     line-height: 1.75rem;
+  }
+
+  .sm\:text-sm {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
   }
 }
 
