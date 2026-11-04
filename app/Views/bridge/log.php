@@ -57,7 +57,7 @@
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
                             <i class="fas fa-search text-xs"></i>
                         </span>
-                        <input type="text" name="search" value="<?= esc($search) ?>" class="block w-full pl-9 pr-3 py-2 bg-white border <?= !empty($search) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm text-slate-800 placeholder-slate-400 font-medium transition-all" placeholder="192.168.1.1 atau open_sid">
+                        <input type="text" name="search" value="<?= esc($search) ?>" class="block w-full pl-9 pr-3 py-2 bg-white border <?= !empty($search) ? 'border-slate-800 ring-1 ring-slate-800' : 'border-slate-200' ?> rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm text-slate-800 placeholder-slate-400 font-medium transition-all" placeholder="192.168.1.1 atau Tongketongke">
                     </div>
                 </div>
 
@@ -101,23 +101,20 @@
 
         <!-- Tabel Data -->
         <div class="overflow-x-auto">
-            <table class="w-full text-left text-sm min-w-[700px]">
+            <table class="w-full text-left text-sm min-w-[650px]">
                 <thead class="bg-slate-50 text-slate-400 uppercase text-[10px] font-bold tracking-widest">
                     <tr>
                         <th class="px-6 py-3 border-b border-slate-200 whitespace-nowrap">Waktu</th>
+                        <th class="px-6 py-3 border-b border-slate-200 whitespace-nowrap">Instansi</th>
                         <th class="px-6 py-3 border-b border-slate-200 whitespace-nowrap">Alamat IP</th>
-                        <th class="px-6 py-3 border-b border-slate-200 whitespace-nowrap">Pengguna</th>
-                        <th class="px-6 py-3 border-b border-slate-200 whitespace-nowrap">Metode</th>
                         <th class="px-6 py-3 border-b border-slate-200">Endpoint</th>
                         <th class="px-6 py-3 border-b border-slate-200 whitespace-nowrap text-center">Status</th>
-                        <th class="px-6 py-3 border-b border-slate-200 whitespace-nowrap">Durasi</th>
-                        <th class="px-6 py-3 border-b border-slate-200">Aplikasi Klien</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 text-xs text-slate-700">
                     <?php if (empty($logs)): ?>
                         <tr>
-                            <td colspan="8" class="px-6 py-20 text-center">
+                            <td colspan="5" class="px-6 py-20 text-center">
                                 <div class="flex flex-col items-center justify-center">
                                     <div class="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center mb-3">
                                         <i class="fas fa-search text-slate-300 text-lg"></i>
@@ -142,36 +139,32 @@
                                 <td class="px-6 py-4 font-mono text-[11px] text-slate-500 whitespace-nowrap">
                                     <?= esc($row['timestamp']) ?>
                                 </td>
-                                <td class="px-6 py-4 font-mono text-[11px] font-bold text-slate-800 whitespace-nowrap">
-                                    <?= esc($row['ip']) ?>
-                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <?php if ($row['user'] !== '-'): ?>
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-800">
-                                            <?= esc($row['user']) ?>
+                                    <?php if (!empty($row['agency'])): ?>
+                                        <span class="font-bold text-slate-800 uppercase tracking-tight">
+                                            <?= esc($row['agency']) ?>
                                         </span>
                                     <?php else: ?>
                                         <span class="text-slate-400 font-mono">-</span>
                                     <?php endif; ?>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase font-mono <?= $row['method'] === 'POST' ? 'bg-indigo-100 text-indigo-700' : 'bg-slate-100 text-slate-700' ?>">
-                                        <?= esc($row['method']) ?>
-                                    </span>
+                                <td class="px-6 py-4 font-mono text-[11px] font-bold text-slate-800 whitespace-nowrap">
+                                    <?= esc($row['ip']) ?>
                                 </td>
-                                <td class="px-6 py-4 font-mono text-[11px] font-semibold text-slate-800 whitespace-nowrap">
-                                    <?= esc($row['endpoint']) ?>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center gap-2">
+                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold font-mono <?= $row['method'] === 'POST' ? 'bg-indigo-100 text-indigo-700' : 'bg-slate-100 text-slate-700' ?>">
+                                            <?= esc($row['method']) ?>
+                                        </span>
+                                        <span class="font-mono text-[11px] font-semibold text-slate-800">
+                                            <?= esc($row['endpoint']) ?>
+                                        </span>
+                                    </div>
                                 </td>
                                 <td class="px-6 py-4 text-center whitespace-nowrap">
                                     <span class="px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-widest <?= $badgeClass ?>">
                                         <?= esc((string)$row['status']) ?>
                                     </span>
-                                </td>
-                                <td class="px-6 py-4 font-mono text-[11px] text-slate-500 whitespace-nowrap">
-                                    <?= esc($row['duration']) ?>
-                                </td>
-                                <td class="px-6 py-4 font-mono text-[11px] text-slate-500 max-w-xs truncate" title="<?= esc($row['user_agent']) ?>">
-                                    <?= esc($row['user_agent']) ?>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

@@ -5,6 +5,10 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 # [04 November 2026] — Implementasi Whitelist IP dan Pemantauan Log Koneksi Bridge TTE
 
+- **Penyederhanaan dan Pemetaan Instansi pada Log Bridge**:
+  - Menghubungkan alamat IP pada riwayat log koneksi bridge dengan entitas whitelist (`bridge_whitelists`) melalui metode `getIpToAgencyMap()` di [`BridgeLogController.php`](app/Domains/Bridge/Controllers/BridgeLogController.php) sehingga nama instansi pemanggil dapat ditampilkan secara otomatis.
+  - Memperluas fitur filter pencarian log agar dapat mencari data berdasarkan nama instansi di samping alamat IP, endpoint, dan pengguna.
+  - Menyederhanakan struktur tabel data pada [`app/Views/bridge/log.php`](app/Views/bridge/log.php) menjadi 5 kolom esensial (Waktu, Instansi, Alamat IP, Endpoint dengan badge metode HTTP, dan Status respons) serta mengeliminasi kolom yang tidak esensial (Pengguna, Durasi, dan Aplikasi Klien) agar tabel lebih ringkas dan proporsional.
 - **Implementasi Fitur Whitelist IP Bridge TTE**:
   - Membuat tabel basis data `bridge_whitelists` melalui berkas migrasi [`app/Database/Migrations/2026-11-04-093000_CreateBridgeWhitelistsTable.php`](app/Database/Migrations/2026-11-04-093000_CreateBridgeWhitelistsTable.php).
   - Mengembangkan model [`BridgeWhitelistModel.php`](app/Domains/Bridge/Models/BridgeWhitelistModel.php) dengan pembersihan host murni (`cleanHost`), mekanisme resolusi otomatis DNS A record ke alamat IP (`resolveHostToIps`), dan verifikasi IP klien (`isIpAllowed`) dengan sistem *fail-open* terbuka terproteksi Basic Auth jika belum ada entri aktif.

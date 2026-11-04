@@ -2,6 +2,7 @@
 
 namespace App\Domains\Bridge\Controllers;
 
+use App\Domains\Bridge\Models\BridgeWhitelistModel;
 use App\Shared\BaseController;
 
 class BridgeLogController extends BaseController
@@ -23,7 +24,8 @@ class BridgeLogController extends BaseController
         $filterStatus = trim($this->request->getGet('status') ?? '');
         $filterMethod = strtoupper(trim($this->request->getGet('method') ?? ''));
 
-        $rawEntries = $this->readLogLines();
+        $ipAgencyMap = $this->getIpToAgencyMap();
+        $rawEntries  = $this->readLogLines($ipAgencyMap);
 
         // 1. Hitung Ringkasan Metrik Keseluruhan
         $totalRequests = count($rawEntries);
@@ -47,6 +49,7 @@ class BridgeLogController extends BaseController
             if (!empty($search)) {
                 $q = strtolower($search);
                 $matchSearch = str_contains(strtolower($row['ip']), $q)
+                    || (!empty($row['agency']) && str_contains(strtolower($row['agency']), $q))
                     || str_contains(strtolower($row['user']), $q)
                     || str_contains(strtolower($row['endpoint']), $q)
                     || str_contains(strtolower($row['user_agent']), $q);
@@ -139,11 +142,52 @@ class BridgeLogController extends BaseController
     }
 
     /**
+     * Dapatkan pemetaan alamat IP ke nama instansi dari tabel whitelist
+     *
+     * @return array<string, string>
+     */
+    protected function getIpToAgencyMap(): array
+    {
+        try {
+            $whitelistModel = new BridgeWhitelistModel();
+            $records = $whitelistModel->select('domain, ip_address, label')->findAll();
+        } catch (\Throwable $e) {
+            return [];
+        }
+
+        $map = [];
+        foreach ($records as $row) {
+            $label = trim((string)($row['label'] ?? ''));
+            if ($label === '') {
+                $label = trim((string)($row['domain'] ?? ''));
+            }
+
+            if (!empty($row['ip_address'])) {
+                $ips = explode(',', (string)$row['ip_address']);
+                foreach ($ips as $ip) {
+                    $cleanIp = trim($ip);
+                    if ($cleanIp !== '') {
+                        $map[$cleanIp] = $label;
+                    }
+                }
+            }
+
+            $domain = trim((string)($row['domain'] ?? ''));
+            if ($domain !== '' && filter_var($domain, FILTER_VALIDATE_IP)) {
+                $map[$domain] = $label;
+            }
+        }
+
+        return $map;
+    }
+
+    /**
      * Baca baris berkas log dan balik urutan agar data terbaru berada di posisi teratas
      *
+     * @param array<string, string> $ipAgencyMap Pemetaan alamat IP ke nama instansi
      * @return array<int, array<string, mixed>>
      */
-    protected function readLogLines(): array
+    protected function readLogLines(array $ipAgencyMap = []): array
     {
         if (!file_exists($this->logFile)) {
             return [];
@@ -161,9 +205,11 @@ class BridgeLogController extends BaseController
         foreach ($lines as $line) {
             $parts = explode(' | ', trim($line), 8);
             if (count($parts) >= 8) {
+                $ip = $parts[1];
                 $parsed[] = [
                     'timestamp'  => $parts[0],
-                    'ip'         => $parts[1],
+                    'ip'         => $ip,
+                    'agency'     => $ipAgencyMap[$ip] ?? null,
                     'user'       => $parts[2],
                     'method'     => $parts[3],
                     'endpoint'   => $parts[4],
