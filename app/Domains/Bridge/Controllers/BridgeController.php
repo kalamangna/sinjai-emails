@@ -90,7 +90,7 @@ class BridgeController extends BaseController
         $subpath = !empty($params) ? implode('/', $params) : '';
 
         // 1. Validasi Whitelist IP / Domain Server Pemanggil
-        $clientIp = $this->request->getIPAddress();
+        $clientIp = $this->getRealClientIp();
         $whitelistModel = new \App\Domains\Bridge\Models\BridgeWhitelistModel();
 
         if (!$whitelistModel->isIpAllowed($clientIp)) {
@@ -327,12 +327,25 @@ class BridgeController extends BaseController
     }
 
     /**
+     * Dapatkan alamat IP koneksi riil klien (kebal pemalsuan header HTTP)
+     */
+    protected function getRealClientIp(): string
+    {
+        $remoteAddr = $this->request ? $this->request->getServer('REMOTE_ADDR') : ($_SERVER['REMOTE_ADDR'] ?? null);
+        if (!empty($remoteAddr) && filter_var($remoteAddr, FILTER_VALIDATE_IP)) {
+            return $remoteAddr;
+        }
+
+        return $this->request ? $this->request->getIPAddress() : ($_SERVER['REMOTE_ADDR'] ?? '0.0.0.0');
+    }
+
+    /**
      * Catat log transaksi bridge dengan sanitasi anti-injeksi log dan rotasi berkas
      */
     protected function logTte(string $message): void
     {
         $timestamp = date('Y-m-d H:i:s');
-        $ip = $this->request->getIPAddress();
+        $ip = $this->getRealClientIp();
 
         // Sanitasi karakter baris baru untuk mencegah Log Injection (CRLF)
         $sanitizedMessage = str_replace(["\r", "\n"], ' ', $message);
@@ -352,7 +365,7 @@ class BridgeController extends BaseController
     protected function logAccess(int $statusCode, float $durationMs, ?string $username = null): void
     {
         $timestamp = date('Y-m-d H:i:s');
-        $ip = $this->request->getIPAddress();
+        $ip = $this->getRealClientIp();
         $user = $username ?: '-';
         $method = strtoupper($this->request->getMethod());
         $uri = '/' . ltrim($this->request->getUri()->getPath(), '/');

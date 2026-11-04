@@ -5,6 +5,10 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 # [04 November 2026] — Implementasi Whitelist IP dan Pemantauan Log Koneksi Bridge TTE
 
+- **Pengerasan Keamanan Verifikasi IP dan Mitigasi Header Spoofing**:
+  - Mengimplementasikan metode `getRealClientIp()` pada [`BridgeController.php`](app/Domains/Bridge/Controllers/BridgeController.php) untuk mengunci pembacaan IP pemanggil langsung ke variabel koneksi TCP `REMOTE_ADDR`, mencegah manipulasi pemalsuan IP (*header spoofing*) melalui `X-Forwarded-For`.
+  - Memperbarui filter pembatas laju [`Throttle.php`](app/Filters/Throttle.php) agar menggunakan alamat IP riil koneksi jaringan guna mencegah *bypass* pembatasan laju permintaan (*rate limiting*) melalui rotasi header HTTP.
+  - Mengosongkan daftar properti `$proxyIPs` pada konfigurasi [`app/Config/App.php`](app/Config/App.php) untuk menonaktifkan kepercayaan terhadap sembarang proksi eksternal yang tidak sah.
 - **Penyederhanaan dan Pemetaan Instansi pada Log Bridge**:
   - Menghubungkan alamat IP pada riwayat log koneksi bridge dengan entitas whitelist (`bridge_whitelists`) melalui metode `getIpToAgencyMap()` di [`BridgeLogController.php`](app/Domains/Bridge/Controllers/BridgeLogController.php) sehingga nama instansi pemanggil dapat ditampilkan secara otomatis.
   - Memperluas fitur filter pencarian log agar dapat mencari data berdasarkan nama instansi di samping alamat IP, endpoint, dan pengguna.
