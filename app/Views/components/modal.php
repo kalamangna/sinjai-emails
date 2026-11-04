@@ -35,7 +35,7 @@ $isFullscreen = ($size ?? '') === 'full';
         <!-- Header -->
         <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center shrink-0">
             <h3 id="<?= $id ?>-title" class="text-xs font-bold text-slate-800 uppercase tracking-tight">
-                <?= $title ?? '' ?>
+                <?= $modalTitle ?? $title ?? '' ?>
             </h3>
             <?php if ($showClose ?? true): ?>
                 <button type="button" 

@@ -42,6 +42,10 @@
         $default_active = 'tte_pk';
     } elseif ($isActive('unit_kerja/manage') || strpos($current_clean_url, site_url('auth/users')) !== false || $isActive('audit-trail')) {
         $default_active = 'master';
+    } elseif ($isActive('assistance') || strpos($current_clean_url, site_url('assistance')) !== false || strpos($full_url, site_url('admin/helpdesk')) !== false) {
+        $default_active = 'layanan';
+    } elseif ($isActive('api-gateway') || strpos($current_clean_url, site_url('admin/bridge-log')) !== false || strpos($current_clean_url, site_url('admin/bridge-whitelist')) !== false) {
+        $default_active = 'integrasi';
     }
     ?>
 
@@ -130,27 +134,6 @@
             </div>
         </div>
 
-        <!-- Website Submenu -->
-        <div>
-            <button data-sidebar-toggle="website" aria-expanded="<?= $default_active === 'website' ? 'true' : 'false' ?>" class="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-slate-100 rounded-lg hover:bg-slate-700/80 hover:text-white transition-all focus:outline-none">
-                <div class="flex items-center">
-                    <div class="w-5 h-5 flex items-center justify-center mr-3 shrink-0">
-                        <i class="fas fa-globe text-slate-300"></i>
-                    </div>
-                    <span>Website</span>
-                </div>
-                <i class="fas fa-chevron-down text-[10px]"></i>
-            </button>
-            <div id="submenu-website" class="sidebar-submenu mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
-                <a href="<?= site_url('web_opd') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('web_opd') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
-                    Website OPD
-                </a>
-                <a href="<?= site_url('web_desa_kelurahan') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('web_desa_kelurahan') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
-                    Website Desa dan Kelurahan
-                </a>
-            </div>
-        </div>
-
         <!-- Batch Submenu -->
         <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
             <div>
@@ -217,24 +200,76 @@
             </div>
         <?php endif; ?>
 
-        <!-- Log Layanan -->
-        <?php if (session()->get('role') === 'super_admin'): ?>
-            <a href="<?= site_url('assistance') ?>" data-sidebar-clear class="flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('assistance') ? 'bg-slate-700 text-white shadow-lg shadow-slate-900/20' : 'text-slate-100 hover:bg-slate-700/80 hover:text-white' ?>">
-                <div class="w-5 h-5 flex items-center justify-center mr-3 shrink-0">
-                    <i class="fas fa-clipboard-list <?= $isActive('assistance') ? 'text-white' : 'text-slate-300' ?>"></i>
+        <!-- Layanan Submenu -->
+        <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
+            <div>
+                <button data-sidebar-toggle="layanan" aria-expanded="<?= $default_active === 'layanan' ? 'true' : 'false' ?>" class="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-slate-100 rounded-lg hover:bg-slate-700/80 hover:text-white transition-all focus:outline-none">
+                    <div class="flex items-center">
+                        <div class="w-5 h-5 flex items-center justify-center mr-3 shrink-0">
+                            <i class="fas fa-headset text-slate-300"></i>
+                        </div>
+                        <span>Layanan</span>
+                    </div>
+                    <i class="fas fa-chevron-down text-[10px]"></i>
+                </button>
+                <div id="submenu-layanan" class="sidebar-submenu mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
+                    <a href="<?= site_url('admin/helpdesk') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= strpos($full_url, site_url('admin/helpdesk')) !== false ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
+                        Helpdesk
+                    </a>
+                    <?php if (session()->get('role') === 'super_admin'): ?>
+                        <a href="<?= site_url('assistance') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('assistance') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
+                            Log Layanan
+                        </a>
+                    <?php endif; ?>
                 </div>
-                Log Layanan
-            </a>
+            </div>
         <?php endif; ?>
 
-        <!-- Helpdesk Layanan -->
-        <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
-            <a href="<?= site_url('admin/helpdesk') ?>" data-sidebar-clear class="flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all <?= strpos($full_url, site_url('admin/helpdesk')) !== false ? 'bg-slate-700 text-white shadow-lg shadow-slate-900/20' : 'text-slate-100 hover:bg-slate-700/80 hover:text-white' ?>">
-                <div class="w-5 h-5 flex items-center justify-center mr-3 shrink-0">
-                    <i class="fas fa-headset <?= strpos($full_url, site_url('admin/helpdesk')) !== false ? 'text-white' : 'text-slate-300' ?>"></i>
+        <!-- Website Submenu -->
+        <div>
+            <button data-sidebar-toggle="website" aria-expanded="<?= $default_active === 'website' ? 'true' : 'false' ?>" class="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-slate-100 rounded-lg hover:bg-slate-700/80 hover:text-white transition-all focus:outline-none">
+                <div class="flex items-center">
+                    <div class="w-5 h-5 flex items-center justify-center mr-3 shrink-0">
+                        <i class="fas fa-globe text-slate-300"></i>
+                    </div>
+                    <span>Website</span>
                 </div>
-                Helpdesk Layanan
-            </a>
+                <i class="fas fa-chevron-down text-[10px]"></i>
+            </button>
+            <div id="submenu-website" class="sidebar-submenu mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
+                <a href="<?= site_url('web_opd') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('web_opd') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
+                    Website OPD
+                </a>
+                <a href="<?= site_url('web_desa_kelurahan') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('web_desa_kelurahan') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
+                    Website Desa dan Kelurahan
+                </a>
+            </div>
+        </div>
+
+        <!-- Integrasi Submenu -->
+        <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
+            <div>
+                <button data-sidebar-toggle="integrasi" aria-expanded="<?= $default_active === 'integrasi' ? 'true' : 'false' ?>" class="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-slate-100 rounded-lg hover:bg-slate-700/80 hover:text-white transition-all focus:outline-none">
+                    <div class="flex items-center">
+                        <div class="w-5 h-5 flex items-center justify-center mr-3 shrink-0">
+                            <i class="fas fa-network-wired text-slate-300"></i>
+                        </div>
+                        <span>Integrasi</span>
+                    </div>
+                    <i class="fas fa-chevron-down text-[10px]"></i>
+                </button>
+                <div id="submenu-integrasi" class="sidebar-submenu mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
+                    <a href="<?= site_url('api-gateway') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('api-gateway') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
+                        API Gateway
+                    </a>
+                    <a href="<?= site_url('admin/bridge-whitelist') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= strpos($full_url, site_url('admin/bridge-whitelist')) !== false ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
+                        Whitelist Bridge
+                    </a>
+                    <a href="<?= site_url('admin/bridge-log') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= strpos($full_url, site_url('admin/bridge-log')) !== false ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
+                        Log Bridge
+                    </a>
+                </div>
+            </div>
         <?php endif; ?>
 
         <!-- Master Data Submenu -->
@@ -271,12 +306,5 @@
             </div>
             Kotak Sampah
         </a>
-
-        <!-- API Gateway -->
-        <a href="<?= site_url('api-gateway') ?>" data-sidebar-clear class="flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('api-gateway') ? 'bg-slate-700 text-white shadow-lg shadow-slate-900/20' : 'text-slate-100 hover:bg-slate-700/80 hover:text-white' ?>">
-            <div class="w-5 h-5 flex items-center justify-center mr-3 shrink-0">
-                <i class="fas fa-plug <?= $isActive('api-gateway') ? 'text-white' : 'text-slate-300' ?>"></i>
-            </div>
-            API Gateway
-        </a>    </nav>
+    </nav>
 </aside>

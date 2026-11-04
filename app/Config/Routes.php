@@ -283,6 +283,24 @@ $routes->group('', ['filter' => 'auth'], function ($routes) {
         $routes->get('detail/(:num)', '\App\Domains\Helpdesk\Controllers\HelpdeskAdminController::detail/$1');
         $routes->post('update_status/(:num)', '\App\Domains\Helpdesk\Controllers\HelpdeskAdminController::updateStatus/$1');
         $routes->post('delete/(:num)', '\App\Domains\Helpdesk\Controllers\HelpdeskAdminController::delete/$1');
+    });
+
+    // Bridge Log (Admin & Super Admin)
+    $routes->group('admin/bridge-log', ['filter' => 'role:admin,super_admin'], function ($routes) {
+        $routes->get('/', '\App\Domains\Bridge\Controllers\BridgeLogController::index');
+        $routes->get('download', '\App\Domains\Bridge\Controllers\BridgeLogController::download');
+        $routes->post('clear', '\App\Domains\Bridge\Controllers\BridgeLogController::clear');
+    });
+
+    // Bridge Whitelist (Admin & Super Admin)
+    $routes->group('admin/bridge-whitelist', ['filter' => 'role:admin,super_admin'], function ($routes) {
+        $routes->get('/', '\App\Domains\Bridge\Controllers\BridgeWhitelistController::index');
+        $routes->post('store', '\App\Domains\Bridge\Controllers\BridgeWhitelistController::store');
+        $routes->post('update/(:num)', '\App\Domains\Bridge\Controllers\BridgeWhitelistController::update/$1');
+        $routes->post('toggle/(:num)', '\App\Domains\Bridge\Controllers\BridgeWhitelistController::toggle/$1');
+        $routes->post('sync/(:num)', '\App\Domains\Bridge\Controllers\BridgeWhitelistController::sync/$1');
+        $routes->post('sync-all', '\App\Domains\Bridge\Controllers\BridgeWhitelistController::syncAll');
+        $routes->post('delete/(:num)', '\App\Domains\Bridge\Controllers\BridgeWhitelistController::delete/$1');
     });    
     $routes->group('bsre', ['filter' => 'role:admin,super_admin'], function ($routes) {
         $routes->get('check-status', '\App\Domains\Email\Controllers\BsreController::checkStatus');

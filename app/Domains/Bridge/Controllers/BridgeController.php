@@ -10,6 +10,7 @@ class BridgeController extends BaseController
     protected string $backendUrl;
     protected int $timeout;
     protected string $logFile;
+    protected string $accessLogFile;
     protected int $maxFileSizeBytes;
 
     public function __construct()
@@ -17,6 +18,7 @@ class BridgeController extends BaseController
         $this->backendUrl = rtrim(env('BSRE_BASE_URL') ?: 'http://10.91.162.6', '/');
         $this->timeout = 120;
         $this->logFile = WRITEPATH . 'logs/tte.log';
+        $this->accessLogFile = WRITEPATH . 'logs/bridge_access.log';
         $this->maxFileSizeBytes = 25 * 1024 * 1024; // Maksimal 25 MB
     }
 
@@ -26,6 +28,7 @@ class BridgeController extends BaseController
      */
     public function index()
     {
+        $startTime = microtime(true);
         $action = $this->request->getGet('action');
 
         // Jika parameter action adalah panduan/docs
@@ -41,11 +44,15 @@ class BridgeController extends BaseController
         // Cek jika pemanggil meminta format JSON
         $accept = $this->request->getHeaderLine('Accept');
         if ($accept && stripos($accept, 'application/json') !== false) {
+            $this->logAccess(200, (microtime(true) - $startTime) * 1000, null);
+
             return $this->response->setJSON([
                 'status'  => true,
                 'message' => 'Layanan Bridge TTE Sinjai aktif'
             ]);
         }
+
+        $this->logAccess(200, (microtime(true) - $startTime) * 1000, null);
 
         return view('bridge/index', [
             'title'    => 'Bridge TTE',
@@ -61,6 +68,9 @@ class BridgeController extends BaseController
      */
     public function panduan()
     {
+        $startTime = microtime(true);
+        $this->logAccess(200, (microtime(true) - $startTime) * 1000, null);
+
         return view('bridge/panduan', [
             'title'          => 'Panduan Integrasi Bridge TTE',
             'bridgeUrl'      => site_url('bridge'),
@@ -76,12 +86,33 @@ class BridgeController extends BaseController
      */
     public function proxy(...$params)
     {
+        $startTime = microtime(true);
         $subpath = !empty($params) ? implode('/', $params) : '';
-        // 1. Ekstraksi Autentikasi HTTP Basic Auth
+
+        // 1. Validasi Whitelist IP / Domain Server Pemanggil
+        $clientIp = $this->request->getIPAddress();
+        $whitelistModel = new \App\Domains\Bridge\Models\BridgeWhitelistModel();
+
+        if (!$whitelistModel->isIpAllowed($clientIp)) {
+            $this->logTte("AKSES DITOLAK: IP [{$clientIp}] tidak terdaftar pada whitelist domain bridge.");
+            $this->logAccess(403, (microtime(true) - $startTime) * 1000, null);
+
+            return $this->response
+                ->setStatusCode(403)
+                ->setJSON([
+                    'status'  => false,
+                    'error'   => 'Forbidden',
+                    'message' => 'Akses ditolak: Alamat IP server tidak terdaftar dalam whitelist bridge.'
+                ]);
+        }
+
+        // 2. Ekstraksi Autentikasi HTTP Basic Auth
         $authToSend = $this->extractBasicAuth();
+        $username = $authToSend ? explode(':', $authToSend, 2)[0] : null;
 
         if (!$authToSend) {
             $this->logTte('AKSES DITOLAK: Header Authorization Basic Auth tidak disertakan.');
+            $this->logAccess(401, (microtime(true) - $startTime) * 1000, null);
 
             return $this->response
                 ->setStatusCode(401)
@@ -98,6 +129,7 @@ class BridgeController extends BaseController
 
         if (!$targetEndpoint) {
             $this->logTte("AKSES DITOLAK: Percobaan akses endpoint tidak sah [{$subpath}].");
+            $this->logAccess(403, (microtime(true) - $startTime) * 1000, $username);
 
             return $this->response
                 ->setStatusCode(403)
@@ -115,6 +147,7 @@ class BridgeController extends BaseController
                     // Validasi batas ukuran berkas dari form atau konfigurasi sistem
                     if ($file['error'] === UPLOAD_ERR_INI_SIZE || $file['error'] === UPLOAD_ERR_FORM_SIZE || ($file['size'] ?? 0) > $this->maxFileSizeBytes) {
                         $this->logTte("AKSES DITOLAK: Ukuran berkas melebihi 25 MB.");
+                        $this->logAccess(413, (microtime(true) - $startTime) * 1000, $username);
 
                         return $this->response
                             ->setStatusCode(413)
@@ -130,6 +163,7 @@ class BridgeController extends BaseController
                         $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
                         if ($ext !== 'pdf' && !empty($file['name'])) {
                             $this->logTte("AKSES DITOLAK: Format berkas tidak diizinkan [{$file['name']}].");
+                            $this->logAccess(400, (microtime(true) - $startTime) * 1000, $username);
 
                             return $this->response
                                 ->setStatusCode(400)
@@ -200,6 +234,7 @@ class BridgeController extends BaseController
 
         if ($curlError) {
             $this->logTte("ERROR cURL: {$curlError}");
+            $this->logAccess(502, (microtime(true) - $startTime) * 1000, $username);
 
             return $this->response
                 ->setStatusCode(502)
@@ -210,6 +245,7 @@ class BridgeController extends BaseController
         }
 
         $this->logTte("RESPONSE: HTTP {$httpCode}");
+        $this->logAccess($httpCode, (microtime(true) - $startTime) * 1000, $username);
 
         $response = $this->response->setStatusCode($httpCode);
 
@@ -308,5 +344,33 @@ class BridgeController extends BaseController
         }
 
         @file_put_contents($this->logFile, $line, FILE_APPEND);
+    }
+
+    /**
+     * Catat log koneksi masuk dari luar ke berkas bridge_access.log
+     */
+    protected function logAccess(int $statusCode, float $durationMs, ?string $username = null): void
+    {
+        $timestamp = date('Y-m-d H:i:s');
+        $ip = $this->request->getIPAddress();
+        $user = $username ?: '-';
+        $method = strtoupper($this->request->getMethod());
+        $uri = '/' . ltrim($this->request->getUri()->getPath(), '/');
+        $duration = number_format($durationMs, 1, '.', '');
+        $rawAgent = $this->request->getUserAgent()->getAgentString() ?: '-';
+
+        // Sanitasi pemisah dan karakter baris baru
+        $cleanUser = str_replace(['|', "\r", "\n"], ' ', $user);
+        $cleanUri = str_replace(['|', "\r", "\n"], ' ', $uri);
+        $cleanAgent = str_replace(['|', "\r", "\n"], ' ', $rawAgent);
+
+        $line = "{$timestamp} | {$ip} | {$cleanUser} | {$method} | {$cleanUri} | {$statusCode} | {$duration}ms | {$cleanAgent}" . PHP_EOL;
+
+        // Rotasi log jika berkas melebihi 10 MB
+        if (file_exists($this->accessLogFile) && filesize($this->accessLogFile) > 10 * 1024 * 1024) {
+            @rename($this->accessLogFile, $this->accessLogFile . '.' . date('Ymd_His') . '.bak');
+        }
+
+        @file_put_contents($this->accessLogFile, $line, FILE_APPEND);
     }
 }
