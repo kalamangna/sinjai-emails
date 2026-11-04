@@ -50,6 +50,26 @@ class BridgeWhitelistModel extends Model
     }
 
     /**
+     * Bersihkan dan validasi daftar alamat IP yang dipisahkan tanda koma
+     */
+    public static function cleanIpList(string $input): ?string
+    {
+        $parts = explode(',', $input);
+        $validIps = [];
+
+        foreach ($parts as $part) {
+            $ip = trim($part);
+            if (!empty($ip) && filter_var($ip, FILTER_VALIDATE_IP)) {
+                $validIps[] = $ip;
+            }
+        }
+
+        $validIps = array_values(array_unique($validIps));
+
+        return !empty($validIps) ? implode(', ', $validIps) : null;
+    }
+
+    /**
      * Resolusi nama host menjadi daftar alamat IP IPv4
      */
     public static function resolveHostToIps(string $host): ?string

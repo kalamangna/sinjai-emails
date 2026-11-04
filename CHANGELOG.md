@@ -11,6 +11,11 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Membangun controller [`BridgeWhitelistController.php`](app/Domains/Bridge/Controllers/BridgeWhitelistController.php) untuk manajemen domain whitelist (CRUD), pengubahan status aktif atau nonaktif, serta sinkronisasi DNS IP mandiri maupun massal.
   - Menerapkan antarmuka web [`app/Views/bridge/whitelist.php`](app/Views/bridge/whitelist.php) bertema Slate Clean dengan kartu metrik aksen garis tepi, pencarian dan filter status, modal tambah/ubah data, serta paginasi standar.
   - Mengintegrasikan validasi whitelist IP pada [`BridgeController.php`](app/Domains/Bridge/Controllers/BridgeController.php) di mana permintaan dari IP tidak terdaftar ditolak dengan kode status HTTP 403 Forbidden.
+- **Penyesuaian Formulir dan Tabel Whitelist**:
+  - Menambahkan input manual alamat IP server pada modal tambah dan ubah data domain whitelist guna memfasilitasi server dengan CDN/Cloudflare atau IP publik khusus (*origin IP*).
+  - Menambahkan fungsi sanitasi dan validasi multi-IP `cleanIpList()` pada [`BridgeWhitelistModel.php`](app/Domains/Bridge/Models/BridgeWhitelistModel.php) untuk mendukung pendaftaran beberapa IP dipisahkan tanda koma.
+  - Memperbarui mekanisme sinkronisasi IP agar menggabungkan (*merge*) IP hasil resolusi DNS dengan IP manual yang sudah ada tanpa menghapus konfigurasi sebelumnya.
+  - Memperbarui tabel data dengan menampilkan masing-masing alamat IP dalam bentuk lencana individual yang rapi.
 - **Implementasi Fitur Log Koneksi Bridge TTE**:
   - Mengembangkan controller [`BridgeLogController.php`](app/Domains/Bridge/Controllers/BridgeLogController.php) dan antarmuka [`app/Views/bridge/log.php`](app/Views/bridge/log.php) untuk pemantauan riwayat koneksi masuk ke bridge API dengan filter status HTTP, metode, pencarian entri, serta opsi unduh berkas log dan pengosongan riwayat.
   - Menambahkan pencatatan riwayat koneksi masuk ke dalam berkas `writable/logs/bridge_access.log` pada [`BridgeController.php`](app/Domains/Bridge/Controllers/BridgeController.php).

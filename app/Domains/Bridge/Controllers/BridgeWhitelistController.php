@@ -70,24 +70,34 @@ class BridgeWhitelistController extends BaseController
     public function store()
     {
         $rules = [
-            'label'  => 'required|min_length[3]|max_length[255]',
-            'domain' => 'required|min_length[3]|max_length[255]',
+            'label'      => 'required|min_length[3]|max_length[255]',
+            'domain'     => 'permit_empty|max_length[255]',
+            'ip_address' => 'permit_empty|max_length[255]',
         ];
 
         if (!$this->validate($rules)) {
             return redirect()->back()
                 ->withInput()
-                ->with('error', 'Validasi gagal. Pastikan nama instansi dan nama domain telah diisi dengan benar.');
+                ->with('error', 'Validasi gagal. Pastikan data instansi telah diisi dengan benar.');
         }
 
-        $rawDomain = $this->request->getPost('domain');
         $label     = trim($this->request->getPost('label'));
-        $cleanHost = BridgeWhitelistModel::cleanHost($rawDomain);
+        $rawDomain = trim($this->request->getPost('domain') ?? '');
+        $rawIp     = trim($this->request->getPost('ip_address') ?? '');
 
-        if (empty($cleanHost)) {
+        if (empty($rawDomain) && empty($rawIp)) {
             return redirect()->back()
                 ->withInput()
-                ->with('error', 'Format nama domain atau alamat IP tidak valid.');
+                ->with('error', 'Nama domain atau alamat IP server wajib diisi minimal salah satu.');
+        }
+
+        $cleanHost = !empty($rawDomain) ? BridgeWhitelistModel::cleanHost($rawDomain) : '';
+        $cleanIps  = !empty($rawIp) ? BridgeWhitelistModel::cleanIpList($rawIp) : null;
+
+        // Jika domain tidak diisi tetapi IP diisi, gunakan IP sebagai domain identitas
+        if (empty($cleanHost) && !empty($cleanIps)) {
+            $firstIp = explode(',', $cleanIps)[0];
+            $cleanHost = trim($firstIp);
         }
 
         // Cek duplikasi domain
@@ -98,22 +108,26 @@ class BridgeWhitelistController extends BaseController
                 ->with('error', "Domain {$cleanHost} sudah terdaftar pada whitelist.");
         }
 
-        // Resolusi DNS ke IP
-        $resolvedIps = BridgeWhitelistModel::resolveHostToIps($cleanHost);
+        // Jika alamat IP tidak diisi manual dan domain bukan IP, lakukan resolusi DNS otomatis
+        if (empty($cleanIps) && !filter_var($cleanHost, FILTER_VALIDATE_IP)) {
+            $cleanIps = BridgeWhitelistModel::resolveHostToIps($cleanHost);
+        } elseif (empty($cleanIps) && filter_var($cleanHost, FILTER_VALIDATE_IP)) {
+            $cleanIps = $cleanHost;
+        }
 
         $data = [
             'label'            => $label,
             'domain'           => $cleanHost,
-            'ip_address'       => $resolvedIps,
+            'ip_address'       => $cleanIps,
             'is_active'        => 1,
-            'last_resolved_at' => $resolvedIps ? date('Y-m-d H:i:s') : null,
+            'last_resolved_at' => $cleanIps ? date('Y-m-d H:i:s') : null,
         ];
 
         $this->whitelistModel->insert($data);
 
-        if ($resolvedIps) {
+        if ($cleanIps) {
             return redirect()->to(site_url('admin/bridge-whitelist'))
-                ->with('success', "Domain {$cleanHost} berhasil ditambahkan dengan IP {$resolvedIps}.");
+                ->with('success', "Domain {$cleanHost} berhasil ditambahkan dengan IP {$cleanIps}.");
         }
 
         return redirect()->to(site_url('admin/bridge-whitelist'))
@@ -133,8 +147,9 @@ class BridgeWhitelistController extends BaseController
         }
 
         $rules = [
-            'label'  => 'required|min_length[3]|max_length[255]',
-            'domain' => 'required|min_length[3]|max_length[255]',
+            'label'      => 'required|min_length[3]|max_length[255]',
+            'domain'     => 'permit_empty|max_length[255]',
+            'ip_address' => 'permit_empty|max_length[255]',
         ];
 
         if (!$this->validate($rules)) {
@@ -143,10 +158,24 @@ class BridgeWhitelistController extends BaseController
                 ->with('error', 'Validasi gagal. Pastikan data terisi dengan benar.');
         }
 
-        $rawDomain = $this->request->getPost('domain');
         $label     = trim($this->request->getPost('label'));
+        $rawDomain = trim($this->request->getPost('domain') ?? '');
+        $rawIp     = trim($this->request->getPost('ip_address') ?? '');
         $isActive  = $this->request->getPost('is_active') ? 1 : 0;
-        $cleanHost = BridgeWhitelistModel::cleanHost($rawDomain);
+
+        if (empty($rawDomain) && empty($rawIp)) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Nama domain atau alamat IP server wajib diisi minimal salah satu.');
+        }
+
+        $cleanHost = !empty($rawDomain) ? BridgeWhitelistModel::cleanHost($rawDomain) : '';
+        $cleanIps  = !empty($rawIp) ? BridgeWhitelistModel::cleanIpList($rawIp) : null;
+
+        if (empty($cleanHost) && !empty($cleanIps)) {
+            $firstIp = explode(',', $cleanIps)[0];
+            $cleanHost = trim($firstIp);
+        }
 
         // Cek duplikasi dengan entri lain
         $existing = $this->whitelistModel->where('domain', $cleanHost)->where('id !=', $id)->first();
@@ -156,16 +185,18 @@ class BridgeWhitelistController extends BaseController
                 ->with('error', "Domain {$cleanHost} sudah digunakan oleh data lain.");
         }
 
-        // Jika domain berubah atau IP belum ada, lakukan resolusi ulang DNS
-        $resolvedIps = $entry['ip_address'];
         $lastResolved = $entry['last_resolved_at'];
 
-        if ($cleanHost !== $entry['domain'] || empty($resolvedIps)) {
-            $newIps = BridgeWhitelistModel::resolveHostToIps($cleanHost);
-            if ($newIps) {
-                $resolvedIps  = $newIps;
+        if (!empty($cleanIps)) {
+            $resolvedIps  = $cleanIps;
+            $lastResolved = date('Y-m-d H:i:s');
+        } elseif ($cleanHost !== $entry['domain'] || empty($entry['ip_address'])) {
+            $resolvedIps = BridgeWhitelistModel::resolveHostToIps($cleanHost);
+            if ($resolvedIps) {
                 $lastResolved = date('Y-m-d H:i:s');
             }
+        } else {
+            $resolvedIps = $entry['ip_address'];
         }
 
         $this->whitelistModel->update($id, [
@@ -216,13 +247,19 @@ class BridgeWhitelistController extends BaseController
         $resolvedIps = BridgeWhitelistModel::resolveHostToIps($entry['domain']);
 
         if ($resolvedIps) {
+            // Gabungkan IP hasil resolusi dengan IP yang sudah tersimpan sebelumnya
+            $currentIps = !empty($entry['ip_address']) ? array_map('trim', explode(',', $entry['ip_address'])) : [];
+            $newIps     = array_map('trim', explode(',', $resolvedIps));
+            $mergedIps  = array_values(array_unique(array_filter(array_merge($currentIps, $newIps))));
+            $finalIps   = implode(', ', $mergedIps);
+
             $this->whitelistModel->update($id, [
-                'ip_address'       => $resolvedIps,
+                'ip_address'       => $finalIps,
                 'last_resolved_at' => date('Y-m-d H:i:s'),
             ]);
 
             return redirect()->to(site_url('admin/bridge-whitelist'))
-                ->with('success', "Alamat IP domain {$entry['domain']} berhasil disinkronkan: {$resolvedIps}.");
+                ->with('success', "Alamat IP domain {$entry['domain']} berhasil disinkronkan: {$finalIps}.");
         }
 
         return redirect()->to(site_url('admin/bridge-whitelist'))
@@ -242,8 +279,13 @@ class BridgeWhitelistController extends BaseController
         foreach ($entries as $entry) {
             $resolvedIps = BridgeWhitelistModel::resolveHostToIps($entry['domain']);
             if ($resolvedIps) {
+                $currentIps = !empty($entry['ip_address']) ? array_map('trim', explode(',', $entry['ip_address'])) : [];
+                $newIps     = array_map('trim', explode(',', $resolvedIps));
+                $mergedIps  = array_values(array_unique(array_filter(array_merge($currentIps, $newIps))));
+                $finalIps   = implode(', ', $mergedIps);
+
                 $this->whitelistModel->update($entry['id'], [
-                    'ip_address'       => $resolvedIps,
+                    'ip_address'       => $finalIps,
                     'last_resolved_at' => $now,
                 ]);
                 $successCount++;

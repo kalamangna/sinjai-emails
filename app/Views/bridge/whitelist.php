@@ -92,8 +92,8 @@
                     <tr>
                         <th class="px-6 py-3 border-b border-slate-200">Instansi atau Aplikasi</th>
                         <th class="px-6 py-3 border-b border-slate-200">Nama Domain</th>
-                        <th class="px-6 py-3 border-b border-slate-200">Alamat IP Terdaftar</th>
-                        <th class="px-6 py-3 border-b border-slate-200">Resolusi Terakhir</th>
+                        <th class="px-6 py-3 border-b border-slate-200">Alamat IP Server</th>
+                        <th class="px-6 py-3 border-b border-slate-200">Pembaruan Terakhir</th>
                         <th class="px-6 py-3 border-b border-slate-200 text-center">Status</th>
                         <th class="px-6 py-3 border-b border-slate-200 text-right">Aksi</th>
                     </tr>
@@ -126,11 +126,17 @@
                                 <td class="px-6 py-4 font-mono font-medium text-xs text-slate-700">
                                     <?= esc($item['domain']) ?>
                                 </td>
-                                <td class="px-6 py-4 font-mono">
+                                <td class="px-6 py-4">
                                     <?php if (!empty($item['ip_address'])): ?>
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                            <?= esc($item['ip_address']) ?>
-                                        </span>
+                                        <div class="flex flex-wrap gap-1 max-w-sm">
+                                            <?php foreach (array_map('trim', explode(',', $item['ip_address'])) as $singleIp): ?>
+                                                <?php if (!empty($singleIp)): ?>
+                                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                                        <?= esc($singleIp) ?>
+                                                    </span>
+                                                <?php endif; ?>
+                                            <?php endforeach; ?>
+                                        </div>
                                     <?php else: ?>
                                         <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-amber-50 text-amber-700 border border-amber-200">
                                             Belum teresolusi
@@ -200,9 +206,13 @@ $addContent = '
             <input type="text" name="label" required maxlength="255" class="block w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm text-slate-800 placeholder-slate-400 font-medium transition-all" placeholder="Pemerintah Desa Tongke-tongke">
         </div>
         <div>
-            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Nama Domain atau Alamat IP</label>
-            <input type="text" name="domain" required maxlength="255" class="block w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm text-slate-800 placeholder-slate-400 font-mono transition-all" placeholder="desa-tongketongke.sinjaikab.go.id">
-            <p class="text-[11px] text-slate-500 mt-1.5">Sistem akan otomatis melakukan resolusi DNS ke alamat IP server target.</p>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Nama Domain</label>
+            <input type="text" name="domain" maxlength="255" class="block w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm text-slate-800 placeholder-slate-400 font-mono transition-all" placeholder="tongketongke.desa.id">
+        </div>
+        <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Alamat IP Server</label>
+            <input type="text" name="ip_address" maxlength="255" class="block w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm text-slate-800 placeholder-slate-400 font-mono transition-all" placeholder="165.101.18.95">
+            <p class="text-[11px] text-slate-500 mt-1.5">Dapat diisi manual jika server menggunakan Cloudflare atau memiliki IP berbeda dari DNS publik. Pisahkan dengan tanda koma jika lebih dari satu IP. Kosongkan untuk resolusi otomatis dari nama domain.</p>
         </div>
     </div>
 </form>
@@ -233,8 +243,13 @@ $editContent = '
             <input type="text" id="edit-label" name="label" required maxlength="255" class="block w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm text-slate-800 placeholder-slate-400 font-medium transition-all">
         </div>
         <div>
-            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Nama Domain atau Alamat IP</label>
-            <input type="text" id="edit-domain" name="domain" required maxlength="255" class="block w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm text-slate-800 placeholder-slate-400 font-mono transition-all">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Nama Domain</label>
+            <input type="text" id="edit-domain" name="domain" maxlength="255" class="block w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm text-slate-800 placeholder-slate-400 font-mono transition-all">
+        </div>
+        <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Alamat IP Server</label>
+            <input type="text" id="edit-ip-address" name="ip_address" maxlength="255" class="block w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm text-slate-800 placeholder-slate-400 font-mono transition-all" placeholder="165.101.18.95">
+            <p class="text-[11px] text-slate-500 mt-1.5">Alamat IP server yang diizinkan mengakses API bridge. Pisahkan dengan tanda koma jika lebih dari satu IP.</p>
         </div>
         <div class="pt-2">
             <label class="flex items-center gap-2.5 cursor-pointer">
@@ -267,6 +282,7 @@ function openEditModal(data) {
 
     document.getElementById('edit-label').value = data.label || '';
     document.getElementById('edit-domain').value = data.domain || '';
+    document.getElementById('edit-ip-address').value = data.ip_address || '';
     document.getElementById('edit-is-active').checked = parseInt(data.is_active) === 1;
 
     openModal('modal-edit-domain');
