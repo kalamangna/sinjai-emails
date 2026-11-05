@@ -16,7 +16,7 @@ class BridgeWhitelistController extends BaseController
 
     /**
      * Tampilan Antarmuka Daftar Whitelist Bridge
-     * GET /admin/bridge-whitelist
+     * GET /bridge/whitelist
      */
     public function index()
     {
@@ -65,7 +65,7 @@ class BridgeWhitelistController extends BaseController
 
     /**
      * Tambah Entri Whitelist Domain Baru
-     * POST /admin/bridge-whitelist/store
+     * POST /bridge/whitelist/store
      */
     public function store()
     {
@@ -126,23 +126,23 @@ class BridgeWhitelistController extends BaseController
         $this->whitelistModel->insert($data);
 
         if ($cleanIps) {
-            return redirect()->to(site_url('admin/bridge-whitelist'))
+            return redirect()->to(site_url('bridge/whitelist'))
                 ->with('success', "Domain {$cleanHost} berhasil ditambahkan dengan IP {$cleanIps}.");
         }
 
-        return redirect()->to(site_url('admin/bridge-whitelist'))
+        return redirect()->to(site_url('bridge/whitelist'))
             ->with('info', "Domain {$cleanHost} berhasil disimpan. DNS belum berhasil diresolusi ke alamat IP.");
     }
 
     /**
      * Perbarui Data Entri Whitelist
-     * POST /admin/bridge-whitelist/update/(:num)
+     * POST /bridge/whitelist/update/(:num)
      */
     public function update(int $id)
     {
         $entry = $this->whitelistModel->find($id);
         if (!$entry) {
-            return redirect()->to(site_url('admin/bridge-whitelist'))
+            return redirect()->to(site_url('bridge/whitelist'))
                 ->with('error', 'Data whitelist tidak ditemukan.');
         }
 
@@ -207,19 +207,19 @@ class BridgeWhitelistController extends BaseController
             'last_resolved_at' => $lastResolved,
         ]);
 
-        return redirect()->to(site_url('admin/bridge-whitelist'))
+        return redirect()->to(site_url('bridge/whitelist'))
             ->with('success', "Data domain {$cleanHost} berhasil diperbarui.");
     }
 
     /**
      * Ubah Status Aktif atau Nonaktif Entri Whitelist
-     * POST /admin/bridge-whitelist/toggle/(:num)
+     * POST /bridge/whitelist/toggle/(:num)
      */
     public function toggle(int $id)
     {
         $entry = $this->whitelistModel->find($id);
         if (!$entry) {
-            return redirect()->to(site_url('admin/bridge-whitelist'))
+            return redirect()->to(site_url('bridge/whitelist'))
                 ->with('error', 'Data whitelist tidak ditemukan.');
         }
 
@@ -228,19 +228,19 @@ class BridgeWhitelistController extends BaseController
 
         $statusLabel = $newStatus ? 'diaktifkan' : 'dinonaktifkan';
 
-        return redirect()->to(site_url('admin/bridge-whitelist'))
+        return redirect()->to(site_url('bridge/whitelist'))
             ->with('success', "Domain {$entry['domain']} berhasil {$statusLabel}.");
     }
 
     /**
      * Sinkronkan Ulang Alamat IP DNS untuk Satu Entri
-     * POST /admin/bridge-whitelist/sync/(:num)
+     * POST /bridge/whitelist/sync/(:num)
      */
     public function sync(int $id)
     {
         $entry = $this->whitelistModel->find($id);
         if (!$entry) {
-            return redirect()->to(site_url('admin/bridge-whitelist'))
+            return redirect()->to(site_url('bridge/whitelist'))
                 ->with('error', 'Data whitelist tidak ditemukan.');
         }
 
@@ -258,17 +258,17 @@ class BridgeWhitelistController extends BaseController
                 'last_resolved_at' => date('Y-m-d H:i:s'),
             ]);
 
-            return redirect()->to(site_url('admin/bridge-whitelist'))
+            return redirect()->to(site_url('bridge/whitelist'))
                 ->with('success', "Alamat IP domain {$entry['domain']} berhasil disinkronkan: {$finalIps}.");
         }
 
-        return redirect()->to(site_url('admin/bridge-whitelist'))
+        return redirect()->to(site_url('bridge/whitelist'))
             ->with('error', "Gagal melakukan resolusi DNS untuk domain {$entry['domain']}. Pastikan domain aktif.");
     }
 
     /**
      * Sinkronkan Seluruh Alamat IP Whitelist yang Terdaftar
-     * POST /admin/bridge-whitelist/sync-all
+     * POST /bridge/whitelist/sync-all
      */
     public function syncAll()
     {
@@ -292,25 +292,25 @@ class BridgeWhitelistController extends BaseController
             }
         }
 
-        return redirect()->to(site_url('admin/bridge-whitelist'))
+        return redirect()->to(site_url('bridge/whitelist'))
             ->with('success', "Sinkronisasi selesai. Sebanyak {$successCount} alamat IP domain berhasil diperbarui.");
     }
 
     /**
      * Hapus Entri Whitelist
-     * POST /admin/bridge-whitelist/delete/(:num)
+     * POST /bridge/whitelist/delete/(:num)
      */
     public function delete(int $id)
     {
         $entry = $this->whitelistModel->find($id);
         if (!$entry) {
-            return redirect()->to(site_url('admin/bridge-whitelist'))
+            return redirect()->to(site_url('bridge/whitelist'))
                 ->with('error', 'Data whitelist tidak ditemukan.');
         }
 
         $this->whitelistModel->delete($id);
 
-        return redirect()->to(site_url('admin/bridge-whitelist'))
+        return redirect()->to(site_url('bridge/whitelist'))
             ->with('success', "Domain {$entry['domain']} berhasil dihapus dari whitelist.");
     }
 }

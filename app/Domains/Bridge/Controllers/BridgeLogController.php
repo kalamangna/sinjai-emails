@@ -16,7 +16,7 @@ class BridgeLogController extends BaseController
 
     /**
      * Tampilan Antarmuka Tabel Log Koneksi Bridge
-     * GET /admin/bridge-log
+     * GET /bridge/log
      */
     public function index()
     {
@@ -109,13 +109,13 @@ class BridgeLogController extends BaseController
 
     /**
      * Unduh Berkas Mentah Log Akses Bridge
-     * GET /admin/bridge-log/download
+     * GET /bridge/log/download
      */
     public function download()
     {
         if (!file_exists($this->logFile)) {
             session()->setFlashdata('error', 'Berkas log koneksi bridge belum tersedia.');
-            return redirect()->to(site_url('admin/bridge-log'));
+            return redirect()->to(site_url('bridge/log'));
         }
 
         $fileName = 'bridge_access_' . date('Y-m-d') . '.log';
@@ -124,13 +124,13 @@ class BridgeLogController extends BaseController
 
     /**
      * Kosongkan Berkas Log Akses Bridge (Khusus Super Admin)
-     * POST /admin/bridge-log/clear
+     * POST /bridge/log/clear
      */
     public function clear()
     {
         if (session()->get('role') !== 'super_admin') {
             session()->setFlashdata('error', 'Aksi hanya diizinkan untuk Super Admin.');
-            return redirect()->to(site_url('admin/bridge-log'));
+            return redirect()->to(site_url('bridge/log'));
         }
 
         if (file_exists($this->logFile)) {
@@ -138,7 +138,7 @@ class BridgeLogController extends BaseController
         }
 
         session()->setFlashdata('success', 'Catatan log koneksi bridge berhasil dikosongkan.');
-        return redirect()->to(site_url('admin/bridge-log'));
+        return redirect()->to(site_url('bridge/log'));
     }
 
     /**

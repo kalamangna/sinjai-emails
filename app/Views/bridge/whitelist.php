@@ -13,7 +13,7 @@
                 <i class="fas fa-plus mr-1.5 text-white/80"></i> Tambah Domain
             </button>
             <?php if ($totalDomains > 0): ?>
-                <form action="<?= site_url('admin/bridge-whitelist/sync-all') ?>" method="POST" class="inline" onsubmit="handleFormSubmit(this, 'Menyinkronkan IP...')">
+                <form action="<?= site_url('bridge/whitelist/sync-all') ?>" method="POST" class="inline" onsubmit="handleFormSubmit(this, 'Menyinkronkan IP...')">
                     <?= csrf_field() ?>
                     <button type="submit" class="btn btn-outline text-xs px-3 py-2">
                         <i class="fas fa-sync-alt mr-1.5 text-slate-600"></i> Sinkronkan Semua IP
@@ -50,7 +50,7 @@
 
         <!-- Bilah Filter -->
         <div class="p-4 sm:p-6 border-b border-slate-100 bg-slate-50">
-            <form method="GET" action="<?= site_url('admin/bridge-whitelist') ?>" class="grid grid-cols-1 md:grid-cols-12 gap-y-4 gap-x-4 items-end">
+            <form method="GET" action="<?= site_url('bridge/whitelist') ?>" class="grid grid-cols-1 md:grid-cols-12 gap-y-4 gap-x-4 items-end">
                 
                 <!-- Pencarian -->
                 <div class="md:col-span-6">
@@ -78,7 +78,7 @@
                     <button type="submit" class="flex-1 btn btn-solid text-xs">
                         <i class="fas fa-filter mr-1.5 text-white/80"></i> Filter
                     </button>
-                    <a href="<?= site_url('admin/bridge-whitelist') ?>" class="btn btn-outline text-xs px-3" title="Reset">
+                    <a href="<?= site_url('bridge/whitelist') ?>" class="btn btn-outline text-xs px-3" title="Reset">
                         <i class="fas fa-undo"></i>
                     </a>
                 </div>
@@ -147,7 +147,7 @@
                                     <?= !empty($item['last_resolved_at']) ? date('d M Y H:i', strtotime($item['last_resolved_at'])) : 'Belum pernah' ?>
                                 </td>
                                 <td class="px-6 py-4 text-center whitespace-nowrap">
-                                    <form action="<?= site_url('admin/bridge-whitelist/toggle/' . $item['id']) ?>" method="POST" class="inline">
+                                    <form action="<?= site_url('bridge/whitelist/toggle/' . $item['id']) ?>" method="POST" class="inline">
                                         <?= csrf_field() ?>
                                         <button type="submit" class="px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-widest transition-colors <?= $item['is_active'] ? 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' ?>" title="Ubah Status">
                                             <?= $item['is_active'] ? 'Aktif' : 'Nonaktif' ?>
@@ -157,7 +157,7 @@
                                 <td class="px-6 py-4 text-right whitespace-nowrap">
                                     <div class="inline-flex items-center gap-1.5">
                                         <!-- Tombol Sinkronkan IP -->
-                                        <form action="<?= site_url('admin/bridge-whitelist/sync/' . $item['id']) ?>" method="POST" class="inline" onsubmit="handleFormSubmit(this, 'Menyinkronkan IP...')">
+                                        <form action="<?= site_url('bridge/whitelist/sync/' . $item['id']) ?>" method="POST" class="inline" onsubmit="handleFormSubmit(this, 'Menyinkronkan IP...')">
                                             <?= csrf_field() ?>
                                             <button type="submit" class="btn btn-outline btn-xs !p-1.5 text-slate-600" title="Sinkronkan IP" aria-label="Sinkronkan IP">
                                                 <i class="fas fa-sync-alt"></i>
@@ -174,7 +174,7 @@
                                         </button>
 
                                         <!-- Tombol Hapus Domain -->
-                                        <form action="<?= site_url('admin/bridge-whitelist/delete/' . $item['id']) ?>" method="POST" class="inline" onsubmit="return confirm('Hapus domain <?= esc($item['domain']) ?>? Akses API bridge dari server terkait akan ditolak sistem.');">
+                                        <form action="<?= site_url('bridge/whitelist/delete/' . $item['id']) ?>" method="POST" class="inline" onsubmit="return confirm('Hapus domain <?= esc($item['domain']) ?>? Akses API bridge dari server terkait akan ditolak sistem.');">
                                             <?= csrf_field() ?>
                                             <button type="submit" class="btn btn-outline btn-xs !p-1.5 text-rose-600 border-rose-200 hover:bg-rose-50" title="Hapus Domain" aria-label="Hapus Domain">
                                                 <i class="fas fa-trash-alt"></i>
@@ -198,7 +198,7 @@
 <!-- Modal Tambah Domain -->
 <?php
 $addContent = '
-<form id="form-add-domain" action="' . site_url('admin/bridge-whitelist/store') . '" method="POST" onsubmit="handleFormSubmit(this, \'Menyimpan...\')">
+<form id="form-add-domain" action="' . site_url('bridge/whitelist/store') . '" method="POST" onsubmit="handleFormSubmit(this, \'Menyimpan...\')">
     ' . csrf_field() . '
     <div class="space-y-4">
         <div>
@@ -278,7 +278,7 @@ echo view('components/modal', [
 <script>
 function openEditModal(data) {
     const form = document.getElementById('form-edit-domain');
-    form.action = '<?= site_url('admin/bridge-whitelist/update') ?>/' + data.id;
+    form.action = '<?= site_url('bridge/whitelist/update') ?>/' + data.id;
 
     document.getElementById('edit-label').value = data.label || '';
     document.getElementById('edit-domain').value = data.domain || '';

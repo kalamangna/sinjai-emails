@@ -5,14 +5,14 @@
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight"><?= esc($title) ?></h1>
         <div class="flex flex-wrap items-center gap-2">
-            <a href="<?= site_url('admin/helpdesk') ?>" class="btn <?= empty($statusFilter) ? 'btn-solid' : 'btn-outline' ?> btn-sm text-[10px]">Semua</a>
-            <a href="<?= site_url('admin/helpdesk?status=Menunggu') ?>" class="btn <?= $statusFilter == 'Menunggu' ? 'btn-solid !bg-amber-500 !border-amber-600' : 'btn-outline text-amber-600 border-amber-200' ?> btn-sm text-[10px]">
+            <a href="<?= site_url('helpdesk/manage') ?>" class="btn <?= empty($statusFilter) ? 'btn-solid' : 'btn-outline' ?> btn-sm text-[10px]">Semua</a>
+            <a href="<?= site_url('helpdesk/manage?status=Menunggu') ?>" class="btn <?= $statusFilter == 'Menunggu' ? 'btn-solid !bg-amber-500 !border-amber-600' : 'btn-outline text-amber-600 border-amber-200' ?> btn-sm text-[10px]">
                 Menunggu (<?= $statusCounts['Menunggu'] ?>)
             </a>
-            <a href="<?= site_url('admin/helpdesk?status=Diproses') ?>" class="btn <?= $statusFilter == 'Diproses' ? 'btn-solid !bg-blue-500 !border-blue-600' : 'btn-outline text-blue-600 border-blue-200' ?> btn-sm text-[10px]">
+            <a href="<?= site_url('helpdesk/manage?status=Diproses') ?>" class="btn <?= $statusFilter == 'Diproses' ? 'btn-solid !bg-blue-500 !border-blue-600' : 'btn-outline text-blue-600 border-blue-200' ?> btn-sm text-[10px]">
                 Diproses (<?= $statusCounts['Diproses'] ?>)
             </a>
-            <a href="<?= site_url('admin/helpdesk?status=Selesai') ?>" class="btn <?= $statusFilter == 'Selesai' ? 'btn-solid !bg-emerald-600 !border-emerald-700' : 'btn-outline text-emerald-600 border-emerald-200' ?> btn-sm text-[10px]">
+            <a href="<?= site_url('helpdesk/manage?status=Selesai') ?>" class="btn <?= $statusFilter == 'Selesai' ? 'btn-solid !bg-emerald-600 !border-emerald-700' : 'btn-outline text-emerald-600 border-emerald-200' ?> btn-sm text-[10px]">
                 Selesai (<?= $statusCounts['Selesai'] ?>)
             </a>
         </div>
@@ -57,10 +57,10 @@
                             </td>
                             <td class="px-6 py-4 text-right whitespace-nowrap">
                                 <div class="flex items-center justify-end gap-2">
-                                    <a href="<?= site_url('admin/helpdesk/detail/' . $t['id']) ?>" class="btn btn-outline btn-xs no-underline">
+                                    <a href="<?= site_url('helpdesk/manage/detail/' . $t['id']) ?>" class="btn btn-outline btn-xs no-underline">
                                         Lihat Detail
                                     </a>
-                                    <form action="<?= site_url('admin/helpdesk/delete/' . $t['id']) ?>" method="POST" onsubmit="return confirm('Hapus permohonan ini?');" class="inline">
+                                    <form action="<?= site_url('helpdesk/manage/delete/' . $t['id']) ?>" method="POST" onsubmit="return confirm('Hapus permohonan ini?');" class="inline">
                                         <?= csrf_field() ?>
                                         <button type="submit" class="btn btn-outline btn-xs text-red-600 border-red-200 hover:bg-red-50 !p-1.5" title="Hapus Permohonan">
                                             <i class="fas fa-trash-alt"></i>

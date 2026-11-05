@@ -9,11 +9,11 @@
             <h1 class="text-2xl font-bold text-slate-800 uppercase tracking-tight"><?= esc($title) ?></h1>
         </div>
         <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto">
-            <a href="<?= site_url('admin/bridge-log/download') ?>" class="flex-1 sm:flex-none btn btn-outline text-xs px-3 py-2 no-underline">
+            <a href="<?= site_url('bridge/log/download') ?>" class="flex-1 sm:flex-none btn btn-outline text-xs px-3 py-2 no-underline">
                 <i class="fas fa-download mr-1.5 text-slate-600"></i> Unduh Berkas Log
             </a>
             <?php if (session()->get('role') === 'super_admin'): ?>
-                <form action="<?= site_url('admin/bridge-log/clear') ?>" method="POST" onsubmit="return confirm('Kosongkan seluruh berkas log koneksi bridge? Data riwayat akan dihapus permanen.');" class="inline">
+                <form action="<?= site_url('bridge/log/clear') ?>" method="POST" onsubmit="return confirm('Kosongkan seluruh berkas log koneksi bridge? Data riwayat akan dihapus permanen.');" class="inline">
                     <?= csrf_field() ?>
                     <button type="submit" class="btn btn-outline text-xs px-3 py-2 text-rose-600 hover:bg-rose-50 border-rose-200">
                         <i class="fas fa-trash-alt mr-1.5"></i> Kosongkan Log
@@ -48,7 +48,7 @@
 
         <!-- Bilah Filter -->
         <div class="p-4 sm:p-6 border-b border-slate-100 bg-slate-50">
-            <form method="GET" action="<?= site_url('admin/bridge-log') ?>" class="grid grid-cols-1 md:grid-cols-12 gap-y-4 gap-x-4 items-end">
+            <form method="GET" action="<?= site_url('bridge/log') ?>" class="grid grid-cols-1 md:grid-cols-12 gap-y-4 gap-x-4 items-end">
                 
                 <!-- Pencarian -->
                 <div class="md:col-span-5">
@@ -92,7 +92,7 @@
                     <button type="submit" class="flex-1 btn btn-solid text-xs">
                         <i class="fas fa-filter mr-1.5 text-white/80"></i> Filter
                     </button>
-                    <a href="<?= site_url('admin/bridge-log') ?>" class="btn btn-outline text-xs px-3" title="Reset">
+                    <a href="<?= site_url('bridge/log') ?>" class="btn btn-outline text-xs px-3" title="Reset">
                         <i class="fas fa-undo"></i>
                     </a>
                 </div>

@@ -3,6 +3,28 @@
 Semua perubahan penting pada proyek ini dicatat di berkas ini.
 Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+# [06 November 2026] — Implementasi Log API Gateway, Pengerasan Keamanan, dan Penataan Rute Modular
+
+- **Implementasi Fitur Log Akses API Gateway**:
+  - Mengembangkan pencatatan log pada filter [`ApiGatewayFilter.php`](app/Filters/ApiGatewayFilter.php) untuk merekam seluruh riwayat permintaan API (`Timestamp | IP | Method | Path | Status | Duration | User Agent`) ke dalam berkas `writable/logs/api_gateway.log`.
+  - Mengembangkan controller [`GatewayLogController.php`](app/Domains/Api/Controllers/GatewayLogController.php) dan tampilan antarmuka [`app/Views/api/log.php`](app/Views/api/log.php) bertema Slate Clean dengan 4 kartu ringkasan metrik (Total, Berhasil, Ditolak, Kendala Server), formulir filter pencarian entri, filter status kode HTTP, filter metode, paginasi data, serta fitur unduh berkas log dan pengosongan riwayat.
+- **Pengerasan Keamanan API Gateway**:
+  - Menerapkan komparasi token otentikasi *timing-safe* menggunakan fungsi `hash_equals` pada [`ApiGatewayFilter.php`](app/Filters/ApiGatewayFilter.php) untuk mencegah serangan kebocoran waktu (*timing attack*).
+  - Menerapkan *Static IP Whitelist* berbasis subnet/CIDR khusus untuk server VM SinjaiKab (Subnet DC `10.91.162.0/24`, Tailscale `100.64.0.0/10`, IP publik `103.170.105.101`, dan `36.88.112.133`) serta menolak akses dari localhost atau IP luar.
+  - Mengaktifkan pembatasan laju (*rate limiting / throttling*) maksimal 120 permintaan per menit per alamat IP pada rute `api/v1` dan `api/v1/*`.
+- **Perbaikan Bug Antarmuka & Sidebar Glitch**:
+  - Memperbaiki kedipan (*glitch*) saat mengklik submenu `Integrasi` dan `Layanan` pada [`app/Views/layouts/main.php`](app/Views/layouts/main.php) menggunakan atribut inline `data-sidebar-menu` dan aturan CSS `display: block` sebelum manipulasi DOM selesai dijalankan.
+- **Standarisasi dan Penataan Rute Aplikasi**:
+  - Menata ulang arsitektur rute dengan menghapus inkonsistensi prefiks `/admin` menuju format domain modular kanonikal:
+    - `/helpdesk/manage` untuk panel pengelolaan tiket helpdesk internal.
+    - `/api/docs` untuk panduan integrasi API dan `/api/log` untuk riwayat log akses API Gateway.
+    - `/bridge/whitelist` dan `/bridge/log` untuk manajemen whitelist IP dan log akses Bridge TTE.
+  - Mempertahankan seluruh rute lama (`admin/helpdesk`, `admin/bridge-log`, `admin/bridge-whitelist`, `admin/api-gateway-log`, dll.) sebagai alias kompatibilitas penuh (*backward compatibility*).
+  - Memperketat pengecualian filter CSRF pada [`app/Config/Filters.php`](app/Config/Filters.php) dari `api/*` menjadi spesifik `api/v1` dan `api/v1/*` agar antarmuka web admin tetap terproteksi CSRF penuh.
+  - Menyelaraskan teks label pada menu navigasi sidebar menjadi `Panduan API` dan `Log API`.
+
+---
+
 # [04 November 2026] — Implementasi Whitelist IP dan Pemantauan Log Koneksi Bridge TTE
 
 - **Pengerasan Keamanan Verifikasi IP dan Mitigasi Header Spoofing**:

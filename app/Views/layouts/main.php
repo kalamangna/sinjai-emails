@@ -91,6 +91,8 @@
         html[data-sidebar-menu="website"] #submenu-website,
         html[data-sidebar-menu="batch"] #submenu-batch,
         html[data-sidebar-menu="tte_pk"] #submenu-tte_pk,
+        html[data-sidebar-menu="layanan"] #submenu-layanan,
+        html[data-sidebar-menu="integrasi"] #submenu-integrasi,
         html[data-sidebar-menu="master"] #submenu-master {
             display: block;
         }
@@ -484,6 +486,12 @@
                         activeGroupId = parentSubmenu.id.replace('submenu-', '');
                         localStorage.setItem('sidebar-active-menu', activeGroupId);
                         html.setAttribute('data-sidebar-menu', activeGroupId);
+                        parentSubmenu.style.display = 'block';
+                        const parentBtn = parentSubmenu.previousElementSibling;
+                        if (parentBtn) {
+                            parentBtn.setAttribute('aria-expanded', 'true');
+                            parentBtn.classList.add('active-parent');
+                        }
                     }
                 }
             });

@@ -75,7 +75,8 @@ class Filters extends BaseFilters
     public array $globals = [
         'before' => [
             'csrf' => ['except' => [
-                'api/*',
+                'api/v1',
+                'api/v1/*',
                 'api_trigger_queue',
                 'apiTriggerQueue',
                 'email/sync_pegawai',
@@ -118,6 +119,7 @@ class Filters extends BaseFilters
     public array $filters = [
         'throttle' => [
             'before' => [
+                'api/v1',
                 'api/v1/*',
                 'email/search'
             ]

@@ -4,7 +4,7 @@
 <div class="space-y-6">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div class="flex items-center gap-4">
-            <a href="<?= site_url('admin/helpdesk') ?>" class="btn btn-outline !w-10 !h-10 shrink-0">
+            <a href="<?= site_url('helpdesk/manage') ?>" class="btn btn-outline !w-10 !h-10 shrink-0">
                 <i class="fas fa-arrow-left"></i>
             </a>
             <div>
@@ -73,7 +73,7 @@
                     <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Tindak Lanjut</h3>
                 </div>
                 <div class="p-6">
-                    <form action="<?= site_url('admin/helpdesk/update_status/' . $ticket['id']) ?>" method="POST" class="space-y-5">
+                    <form action="<?= site_url('helpdesk/manage/update_status/' . $ticket['id']) ?>" method="POST" class="space-y-5">
                         <?= csrf_field() ?>
                         
                         <div>
@@ -108,7 +108,7 @@
     </div>
     <!-- Zona Berbahaya (Danger Zone) -->
     <div class="mt-6 flex justify-end gap-3">
-        <form action="<?= site_url('admin/helpdesk/delete/' . $ticket['id']) ?>" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus tiket ini secara permanen?');">
+        <form action="<?= site_url('helpdesk/manage/delete/' . $ticket['id']) ?>" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus tiket ini secara permanen?');">
             <?= csrf_field() ?>
             <button type="submit" class="btn btn-solid-danger" title="Hapus Permohonan">
                 <i class="fas fa-trash-alt mr-1.5"></i> Hapus Permanen

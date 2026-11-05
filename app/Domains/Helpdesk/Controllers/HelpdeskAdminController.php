@@ -47,7 +47,7 @@ class HelpdeskAdminController extends BaseController
     public function detail($id)
     {
         $ticket = $this->helpdeskModel->find($id);
-        if (!$ticket) return redirect()->to('admin/helpdesk')->with('error', 'Tiket tidak ditemukan');
+        if (!$ticket) return redirect()->to('helpdesk/manage')->with('error', 'Tiket tidak ditemukan');
 
         $data = [
             'title' => 'Detail Helpdesk Layanan',
@@ -71,19 +71,19 @@ class HelpdeskAdminController extends BaseController
         helper('audit');
         log_audit('UPDATE', 'Helpdesk', $id, 'Ubah status tiket ' . ($result['ticket']['tiket_id'] ?? '') . ' ke ' . $newStatus);
 
-        return redirect()->to('admin/helpdesk/detail/' . $id)->with('success', 'Status tiket berhasil diperbarui.');
+        return redirect()->to('helpdesk/manage/detail/' . $id)->with('success', 'Status tiket berhasil diperbarui.');
     }
 
     public function delete($id)
     {
         $ticket = $this->helpdeskModel->find($id);
-        if (!$ticket) return redirect()->to('admin/helpdesk')->with('error', 'Tiket tidak ditemukan');
+        if (!$ticket) return redirect()->to('helpdesk/manage')->with('error', 'Tiket tidak ditemukan');
 
         $this->helpdeskModel->delete($id);
 
         helper('audit');
         log_audit('DELETE', 'Helpdesk', $id, 'Hapus tiket: ' . $ticket['tiket_id']);
 
-        return redirect()->to('admin/helpdesk')->with('success', 'Tiket berhasil dihapus.');
+        return redirect()->to('helpdesk/manage')->with('success', 'Tiket berhasil dihapus.');
     }
 }

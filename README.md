@@ -18,8 +18,8 @@ Aplikasi ini menerapkan standar estetika **"Slate Clean Government"**—antarmuk
 
 ### ✍️ Integrasi TTE BSrE
 - **TTE Bridge Service:** Modul perantara arsitektur MVC pada rute `/bridge` dan dokumentasi teknis `/bridge/panduan` untuk menjembatani integrasi penandatanganan elektronik sistem eksternal ke server e-Sign BSrE lokal secara aman melalui HTTP Basic Auth, proteksi SSRF, validasi berkas PDF, serta pembatasan laju permintaan.
-- **Whitelist Bridge:** Pengamanan akses API Bridge TTE berbasis nama domain atau alamat IP server pemanggil (`/admin/bridge-whitelist`) dengan fitur resolusi otomatis DNS A record ke IP, sinkronisasi IP, penguncian akses otomatis saat whitelist aktif, dan fallback terbuka terproteksi Basic Auth jika whitelist belum memiliki entri aktif.
-- **Log Bridge:** Pemantauan riwayat koneksi masuk API Bridge (`/admin/bridge-log`) dengan pencatatan log akses terpisah di `writable/logs/bridge_access.log`, ringkasan metrik performa, filter status HTTP dan metode, serta fitur unduh berkas log.
+- **Whitelist Bridge:** Pengamanan akses API Bridge TTE berbasis nama domain atau alamat IP server pemanggil (`/bridge/whitelist`) dengan fitur resolusi otomatis DNS A record ke IP, sinkronisasi IP, penguncian akses otomatis saat whitelist aktif, dan fallback terbuka terproteksi Basic Auth jika whitelist belum memiliki entri aktif.
+- **Log Bridge:** Pemantauan riwayat koneksi masuk API Bridge (`/bridge/log`) dengan pencatatan log akses terpisah di `writable/logs/bridge_access.log`, ringkasan metrik performa, filter status HTTP dan metode, serta fitur unduh berkas log.
 - **TTE PK (Tanda Tangan Elektronik Bupati):** Modul antrean khusus Super Admin (`/tte-pk`) untuk penandatanganan digital Perjanjian Kerja oleh Bupati Sinjai (Pihak Kesatu) pada tag `${ttd_pengirim2}`. Mendukung pemilahan dokumen **PK PPPK** dan **PK PPPK PW**, filter unit kerja induk hierarkis, eksekusi TTE tunggal maupun massal (*batch sign*) berkecepatan tinggi dengan pengaman otomatis terhadap kesalahan otentikasi BSrE, serta dukungan konfigurasi NIK otomatis via `BSRE_BUPATI_NIK`.
 - **Portal TTE PPPK:** Akses publik mandiri bagi aparatur PPPK (`/portal-pk`) untuk verifikasi identitas (NIP, NIK, Tanggal Lahir), pratinjau dokumen Perjanjian Kerja secara langsung, dan pembubuhan TTE resmi via API BSrE menggunakan Passphrase pribadi.
 - **Monitoring Status:** Pelacakan status Sertifikat Elektronik secara real-time (ISSUE, EXPIRED, NO_CERTIFICATE, dll).
@@ -55,8 +55,8 @@ Penyediaan data internal yang aman untuk integrasi lintas sektoral di Pemkab Sin
 - **Health Check API:** Titik akhir internal untuk memantau konektivitas layanan eksternal (cPanel, BSrE, Pegawai API) secara real-time.
 - **Endpoints:** `/api/v1/emails`, `/api/v1/pns`, `/api/v1/pppk`, `/api/v1/pppk-pw`, `/api/v1/unit/{id}`.
 - **Data Terintegrasi:** Menyertakan informasi hierarki `unit_kerja` (child/sub-unit), `parent_unit_kerja` (OPD induk), dan `api_unit_id` (External ID) untuk integrasi data yang presisi.
-- **Keamanan:** Mendukung *Bearer Token* dan *Session-based Access* (untuk pengguna terdaftar).
-- **Dokumentasi:** Halaman panduan interaktif di `/api-gateway` lengkap dengan daftar ID Unit Kerja eksternal.
+- **Keamanan Ketat:** Proteksi Bearer Token dengan perbandingan *timing-safe* (`hash_equals`), pembatasan laju (*rate limiting*) 120 req/menit, serta *Static IP Whitelist* khusus jaringan server VM SinjaiKab dan Tailscale.
+- **Dokumentasi & Pemantauan:** Panduan interaktif di `/api/docs` dan antarmuka monitoring riwayat log akses di `/api/log`.
 
 ### 📄 Sistem Ekspor
 - **Mesin PDF:** Pelaporan profesional menggunakan `Dompdf`, dioptimalkan untuk standar visual "Slate Clean".

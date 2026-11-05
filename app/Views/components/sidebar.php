@@ -42,9 +42,9 @@
         $default_active = 'tte_pk';
     } elseif ($isActive('unit_kerja/manage') || strpos($current_clean_url, site_url('auth/users')) !== false || $isActive('audit-trail')) {
         $default_active = 'master';
-    } elseif ($isActive('assistance') || strpos($current_clean_url, site_url('assistance')) !== false || strpos($full_url, site_url('admin/helpdesk')) !== false) {
+    } elseif ($isActive('assistance') || strpos($current_clean_url, site_url('assistance')) !== false || strpos($full_url, site_url('helpdesk/manage')) !== false || strpos($full_url, site_url('helpdesk/admin')) !== false || strpos($full_url, site_url('admin/helpdesk')) !== false) {
         $default_active = 'layanan';
-    } elseif ($isActive('api-gateway') || strpos($current_clean_url, site_url('admin/bridge-log')) !== false || strpos($current_clean_url, site_url('admin/bridge-whitelist')) !== false) {
+    } elseif ($isActive('api-gateway') || strpos($current_clean_url, site_url('api/docs')) !== false || strpos($current_clean_url, site_url('api/log')) !== false || strpos($current_clean_url, site_url('api-gateway')) !== false || strpos($current_clean_url, site_url('bridge')) !== false || strpos($current_clean_url, site_url('admin/api-gateway-log')) !== false || strpos($current_clean_url, site_url('admin/bridge-log')) !== false || strpos($current_clean_url, site_url('admin/bridge-whitelist')) !== false) {
         $default_active = 'integrasi';
     }
     ?>
@@ -213,7 +213,7 @@
                     <i class="fas fa-chevron-down text-[10px]"></i>
                 </button>
                 <div id="submenu-layanan" class="sidebar-submenu mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
-                    <a href="<?= site_url('admin/helpdesk') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= strpos($full_url, site_url('admin/helpdesk')) !== false ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
+                    <a href="<?= site_url('helpdesk/manage') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= (strpos($full_url, site_url('helpdesk/manage')) !== false || strpos($full_url, site_url('helpdesk/admin')) !== false || strpos($full_url, site_url('admin/helpdesk')) !== false) ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
                         Helpdesk
                     </a>
                     <?php if (session()->get('role') === 'super_admin'): ?>
@@ -259,13 +259,16 @@
                     <i class="fas fa-chevron-down text-[10px]"></i>
                 </button>
                 <div id="submenu-integrasi" class="sidebar-submenu mt-1 ml-4 pl-4 border-l border-slate-700 space-y-1">
-                    <a href="<?= site_url('api-gateway') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= $isActive('api-gateway') ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
-                        API Gateway
+                    <a href="<?= site_url('api/docs') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= (strpos($full_url, site_url('api/docs')) !== false || (strpos($full_url, site_url('api-gateway')) !== false && strpos($full_url, site_url('api-gateway/log')) === false && strpos($full_url, site_url('api-gateway-log')) === false)) ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
+                        Panduan API
                     </a>
-                    <a href="<?= site_url('admin/bridge-whitelist') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= strpos($full_url, site_url('admin/bridge-whitelist')) !== false ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
+                    <a href="<?= site_url('api/log') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= (strpos($full_url, site_url('api/log')) !== false || strpos($full_url, site_url('api-gateway/log')) !== false || strpos($full_url, site_url('admin/api-gateway-log')) !== false || strpos($full_url, site_url('api-gateway-log')) !== false) ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
+                        Log API
+                    </a>
+                    <a href="<?= site_url('bridge/whitelist') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= (strpos($full_url, site_url('bridge/whitelist')) !== false || strpos($full_url, site_url('admin/bridge-whitelist')) !== false || strpos($full_url, site_url('bridge-whitelist')) !== false) ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
                         Whitelist Bridge
                     </a>
-                    <a href="<?= site_url('admin/bridge-log') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= strpos($full_url, site_url('admin/bridge-log')) !== false ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
+                    <a href="<?= site_url('bridge/log') ?>" class="block px-4 py-2 text-sm font-medium rounded-lg transition-all <?= (strpos($full_url, site_url('bridge/log')) !== false || strpos($full_url, site_url('admin/bridge-log')) !== false || strpos($full_url, site_url('bridge-log')) !== false) ? 'text-white bg-slate-700' : 'text-slate-100 hover:text-white hover:bg-slate-700/80' ?>">
                         Log Bridge
                     </a>
                 </div>
