@@ -60,6 +60,9 @@ class AlertService
                               ->where('emails.pimpinan', 1)
                               ->orWhere('emails.pimpinan_desa', 1)
                           ->groupEnd()
+                          ->orderBy('emails.pimpinan', 'DESC')
+                          ->orderBy('unit_kerja.nama_unit_kerja', 'ASC')
+                          ->orderBy('emails.name', 'ASC')
                           ->findAll();
     }
 
@@ -93,8 +96,9 @@ class AlertService
                             ->findAll();
     }
 
-    public function appendTteReport(\App\Shared\Libraries\TelegramMessageBuilder $builder, string $mode = 'HARIAN', bool $isSummary = false)
+    public function appendTteReport(\App\Shared\Libraries\TelegramMessageBuilder $builder, string $mode = 'HARIAN', bool $isSummary = false): array
     {
+        $extraMessages = [];
         $isHarian = strtoupper($mode) === 'HARIAN';
 
         if ($isHarian) {
@@ -102,56 +106,42 @@ class AlertService
             $count = count($expired);
 
             if ($count === 0) {
-                return;
+                return [];
             }
 
-            $builder->addSection("TTE Expired ($count Akun)", "⚠️");
+            $perPage = 9;
+            $chunks = array_chunk($expired, $perPage);
+            $totalParts = count($chunks);
 
-            foreach (array_slice($expired, 0, 5) as $acc) {
-                $name = htmlspecialchars(mb_strtoupper(trim($acc['name'] ?? $acc['email'])), ENT_NOQUOTES, 'UTF-8');
-                $unit = trim($acc['unit_name'] ?? '');
-                $jabatan = trim($acc['jabatan'] ?? '');
+            $sectionTitle = $totalParts > 1 
+                ? "TTE Expired: {$count} Akun — Bagian 1 dari {$totalParts}" 
+                : "TTE Expired: {$count} Akun";
 
-                if (!empty($unit) && !empty($jabatan)) {
-                    if (mb_stripos($jabatan, $unit) !== false) {
-                        $instansi = $jabatan;
-                    } elseif (mb_stripos($unit, 'DESA') === 0 && mb_stripos($jabatan, 'KEPALA DESA') !== false) {
-                        $instansi = $unit;
-                    } else {
-                        $instansi = $unit;
-                    }
-                } else {
-                    $instansi = $unit ?: $jabatan;
-                }
+            $builder->addSection($sectionTitle, '⚠️');
+            $this->addExpiredAccountsToBuilder($builder, $chunks[0]);
 
-                $instansiText = !empty($instansi) ? htmlspecialchars(mb_strtoupper($instansi), ENT_NOQUOTES, 'UTF-8') : '';
-                $email = htmlspecialchars($acc['email'] ?? '', ENT_NOQUOTES, 'UTF-8');
+            for ($i = 1; $i < $totalParts; $i++) {
+                $partNum = $i + 1;
+                $extraBuilder = new \App\Shared\Libraries\TelegramMessageBuilder();
+                $extraBuilder->setTitle("TTE PIMPINAN EXPIRED BAGIAN {$partNum} DARI {$totalParts}", '⚠️')
+                             ->addKeyValue('Total Akun', "{$count} Akun", '📊');
 
-                $lines = ["👤 <b>{$name}</b>"];
-                if ($instansiText !== '') {
-                    $lines[] = "🏛️ {$instansiText}";
-                }
-                if ($email !== '') {
-                    $lines[] = "📧 {$email}";
-                }
-
-                $builder->addText(implode("\n", $lines));
+                $this->addExpiredAccountsToBuilder($extraBuilder, $chunks[$i]);
+                $extraMessages[] = $extraBuilder->build();
             }
 
-            if ($count > 5) {
-                $builder->addText("<i>...dan " . ($count - 5) . " akun lainnya.</i>");
-            }
+            return $extraMessages;
         } else {
             // Mode Bulanan / Penuh: Tampilkan rekap per unit kerja
             $grouped = $this->getExpiredTtePegawaiGroupedByUnitKerja();
             if (empty($grouped)) {
-                return;
+                return [];
             }
 
             $totalExpired = array_sum(array_column($grouped, 'total'));
             $totalUnits = count($grouped);
 
-            $builder->addSection("TTE Pegawai Expired ($totalExpired Akun)", "⚠️");
+            $builder->addSection("TTE Pegawai Expired: {$totalExpired} Akun", '⚠️');
 
             $unitLines = [];
             foreach (array_slice($grouped, 0, 6) as $row) {
@@ -165,6 +155,42 @@ class AlertService
             if ($totalUnits > 6) {
                 $builder->addText("<i>...dan " . ($totalUnits - 6) . " unit kerja lainnya.</i>");
             }
+
+            return [];
+        }
+    }
+
+    private function addExpiredAccountsToBuilder(\App\Shared\Libraries\TelegramMessageBuilder $builder, array $accounts): void
+    {
+        foreach ($accounts as $acc) {
+            $name = htmlspecialchars(mb_strtoupper(trim($acc['name'] ?? $acc['email'])), ENT_NOQUOTES, 'UTF-8');
+            $unit = trim($acc['unit_name'] ?? '');
+            $jabatan = trim($acc['jabatan'] ?? '');
+
+            if (!empty($unit) && !empty($jabatan)) {
+                if (mb_stripos($jabatan, $unit) !== false) {
+                    $instansi = $jabatan;
+                } elseif (mb_stripos($unit, 'DESA') === 0 && mb_stripos($jabatan, 'KEPALA DESA') !== false) {
+                    $instansi = $unit;
+                } else {
+                    $instansi = $unit;
+                }
+            } else {
+                $instansi = $unit ?: $jabatan;
+            }
+
+            $instansiText = !empty($instansi) ? htmlspecialchars(mb_strtoupper($instansi), ENT_NOQUOTES, 'UTF-8') : '';
+            $email = htmlspecialchars($acc['email'] ?? '', ENT_NOQUOTES, 'UTF-8');
+
+            $lines = ["👤 <b>{$name}</b>"];
+            if ($instansiText !== '') {
+                $lines[] = "🏛️ {$instansiText}";
+            }
+            if ($email !== '') {
+                $lines[] = "📧 {$email}";
+            }
+
+            $builder->addText(implode("\n", $lines));
         }
     }
 
@@ -271,8 +297,15 @@ class AlertService
             $builder = new \App\Shared\Libraries\TelegramMessageBuilder();
             $builder->setTitle('TTE PIMPINAN EXPIRED', '🔏')
                     ->addDivider();
-            $this->appendTteReport($builder);
+            $extraMessages = $this->appendTteReport($builder);
             $this->telegram->sendMessage($builder->build());
+
+            if (!empty($extraMessages)) {
+                foreach ($extraMessages as $extraMsg) {
+                    sleep(1);
+                    $this->telegram->sendMessage($extraMsg);
+                }
+            }
 
         } catch (\Throwable $e) {
             if (is_cli()) CLI::error('Error checking TTE expired alerts: ' . $e->getMessage());

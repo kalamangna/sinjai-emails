@@ -272,8 +272,9 @@ class QueueWorker extends BaseCommand
         }
 
         // 1. TTE Section (Harian / Bulanan / Penuh)
+        $extraMessages = [];
         if (isset($stats['tte']['executed'])) {
-            $alertService->appendTteReport($builder, $mode, true);
+            $extraMessages = $alertService->appendTteReport($builder, $mode, true);
         }
 
         // 2. cPanel / Quota Section (Mingguan / Penuh)
@@ -302,6 +303,13 @@ class QueueWorker extends BaseCommand
             CLI::error('Failed to send sync summary Telegram notification');
         } else {
             CLI::write('Sync summary notification sent successfully to Telegram.', 'green');
+
+            if (!empty($extraMessages) && is_array($extraMessages)) {
+                foreach ($extraMessages as $extraMsg) {
+                    sleep(1);
+                    $telegram->sendMessage($extraMsg);
+                }
+            }
         }
     }
 }

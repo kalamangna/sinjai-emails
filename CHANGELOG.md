@@ -3,8 +3,13 @@
 Semua perubahan penting pada proyek ini dicatat di berkas ini.
 Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-# [07 November 2026] — Resolusi Paksa IPv4 untuk Notifikasi Telegram dan Integrasi API Eksternal
+# [07 November 2026] — Pemisahan Multi-Pesan Notifikasi TTE Expired Harian dan Resolusi Paksa IPv4
 
+- **Penyajian Lengkap Akun TTE Pimpinan Expired pada Sinkronisasi Harian**:
+  - Menghilangkan pembatasan 5 akun (`array_slice`) pada [`AlertService.php`](app/Shared/Services/AlertService.php) agar seluruh akun pimpinan dengan sertifikat TTE kedaluwarsa ditampilkan secara utuh tanpa terpotong.
+  - Menerapkan pembagian pesan otomatis (*auto-chunking*) per 9 akun per pesan pada [`AlertService.php`](app/Shared/Services/AlertService.php) dan [`QueueWorker.php`](app/Commands/QueueWorker.php) jika jumlah akun kedaluwarsa banyak, guna mencegah batas panjang karakter Telegram (4096 karakter) serta menjaga keterbacaan pesan di ponsel.
+  - Mengurutkan daftar akun pimpinan kedaluwarsa secara konsisten (Lurah terlebih dahulu, dilanjutkan Kepala Desa berdasarkan abjad nama desa dan nama pejabat).
+  - Menghilangkan tanda kurung pada label status laporan ringkasan sesuai panduan copywriting.
 - **Resolusi Paksa IPv4 pada Pustaka Telegram**:
   - Menambahkan opsi konfigurasi `'force_ip_resolve' => 'v4'` pada inisialisasi cURL di [`TelegramLibrary.php`](app/Shared/Libraries/TelegramLibrary.php) guna mencegah kegagalan pengiriman notifikasi akibat percobaan koneksi ke alamat IPv6 Telegram (`api.telegram.org`) pada lingkungan server tanpa rute keluar IPv6 publik.
 - **Pengerasan Koneksi API Eksternal**:
