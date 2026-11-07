@@ -3,6 +3,15 @@
 Semua perubahan penting pada proyek ini dicatat di berkas ini.
 Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+# [07 November 2026] — Resolusi Paksa IPv4 untuk Notifikasi Telegram dan Integrasi API Eksternal
+
+- **Resolusi Paksa IPv4 pada Pustaka Telegram**:
+  - Menambahkan opsi konfigurasi `'force_ip_resolve' => 'v4'` pada inisialisasi cURL di [`TelegramLibrary.php`](app/Shared/Libraries/TelegramLibrary.php) guna mencegah kegagalan pengiriman notifikasi akibat percobaan koneksi ke alamat IPv6 Telegram (`api.telegram.org`) pada lingkungan server tanpa rute keluar IPv6 publik.
+- **Pengerasan Koneksi API Eksternal**:
+  - Menambahkan konfigurasi `'force_ip_resolve' => 'v4'` pada pustaka [`BsreApi.php`](app/Shared/Libraries/BsreApi.php) dan [`PegawaiApi.php`](app/Shared/Libraries/PegawaiApi.php) untuk menjamin kestabilan komunikasi data dengan server intranet atau jaringan eksternal berbasis IPv4.
+
+---
+
 # [06 November 2026] — Implementasi Log API Gateway, Pengerasan Keamanan, dan Penataan Rute Modular
 
 - **Implementasi Fitur Log Akses API Gateway**:

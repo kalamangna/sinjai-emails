@@ -33,18 +33,23 @@ class TelegramLibrary
         }
 
         try {
-            $client = Services::curlrequest();
+            $client = Services::curlrequest([
+                'timeout'          => 10,
+                'http_errors'      => false,
+                'force_ip_resolve' => 'v4',
+            ]);
             $url = $this->apiUrl . $this->token . '/sendMessage';
 
             $response = $client->request('POST', $url, [
                 'form_params' => [
-                    'chat_id' => $this->chatId,
-                    'text' => $message,
-                    'parse_mode' => $parseMode,
-                    'disable_web_page_preview' => true
+                    'chat_id'                  => $this->chatId,
+                    'text'                     => $message,
+                    'parse_mode'               => $parseMode,
+                    'disable_web_page_preview' => true,
                 ],
-                'timeout' => 10,
-                'http_errors' => false
+                'timeout'          => 10,
+                'http_errors'      => false,
+                'force_ip_resolve' => 'v4',
             ]);
 
             $statusCode = $response->getStatusCode();

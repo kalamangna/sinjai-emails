@@ -14,8 +14,9 @@ class PegawaiApi
     {
         $this->baseUrl = rtrim(env('PEGAWAI_BASE_URL') ?: 'https://apps.sinjaikab.go.id/api/pegawai', '/') . '/';
         $this->client = Services::curlrequest([
-            'timeout' => 15,
-            'verify'  => false
+            'timeout'          => 15,
+            'verify'           => false,
+            'force_ip_resolve' => 'v4',
         ]);
     }
 

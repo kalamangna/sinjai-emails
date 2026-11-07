@@ -24,8 +24,9 @@ class BsreApi
         }
 
         $this->client = Services::curlrequest([
-            'timeout'  => 30,
-            'verify'   => false, // Set true di production jika SSL valid
+            'timeout'          => 30,
+            'verify'           => false, // Set true di production jika SSL valid
+            'force_ip_resolve' => 'v4',
         ], null, null, false);
     }
 
