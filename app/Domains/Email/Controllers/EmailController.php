@@ -320,16 +320,16 @@ class EmailController extends BaseController
             }
 
             if ($pk['tte_status'] === 'completed' && !empty($pk['tte_bupati_file'])) {
-                return redirect()->back()->with('error', 'Dokumen PK ini sudah ditandatangani oleh Bupati Sinjai sebelumnya.');
+                return redirect()->back()->with('error', 'Dokumen PK sudah ditandatangani Bupati Sinjai.');
             }
 
             if (empty($pk['tte_pegawai_file'])) {
-                return redirect()->back()->with('error', 'PPPK yang bersangkutan belum menandatangani dokumen ini.');
+                return redirect()->back()->with('error', 'Dokumen belum ditandatangani PPPK terkait.');
             }
 
             $sourcePdfPath = WRITEPATH . 'uploads/signed_pk/' . $pk['tte_pegawai_file'];
             if (!file_exists($sourcePdfPath)) {
-                return redirect()->back()->with('error', 'Berkas PDF yang ditandatangani PPPK tidak ditemukan di server.');
+                return redirect()->back()->with('error', 'Berkas PDF tanda tangan PPPK tidak ditemukan.');
             }
 
             // Panggil API BSrE untuk TTE Bupati pada tag ${ttd_pengirim2}
@@ -423,7 +423,7 @@ class EmailController extends BaseController
         try {
             $cpanelApi = new \App\Shared\Libraries\CpanelApi();
             $email = $this->emailModel->find($id);
-            if (!$email) return redirect()->to('email')->with('error', 'Email account not found.');
+            if (!$email) return redirect()->to('email')->with('error', 'Akun email tidak ditemukan.');
             
             $cpanelApi->delete_email_account($email['email']);
             $this->emailModel->delete($id, true); // True to purge from soft deletes

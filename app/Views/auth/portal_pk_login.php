@@ -109,8 +109,8 @@
                 <?php endif; ?>
 
                 <div class="pt-2">
-                    <button type="submit" class="w-full btn btn-solid py-2.5">
-                        Masuk <i class="fas fa-sign-in-alt ml-2 text-white/80"></i>
+                    <button type="submit" id="btn-login" class="w-full btn btn-solid py-2.5">
+                        <span>Masuk</span> <i class="fas fa-sign-in-alt ml-2 text-white/80"></i>
                     </button>
                 </div>
             </form>
@@ -122,6 +122,24 @@
     </div>
 
     <script>
+        // Reload otomatis jika halaman dipulihkan dari bfcache browser
+        window.addEventListener('pageshow', (event) => {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
+
+        // Pencegahan klik ganda saat submit formulir login
+        const loginForm = document.querySelector('form');
+        const loginBtn = document.getElementById('btn-login');
+        if (loginForm && loginBtn) {
+            loginForm.addEventListener('submit', () => {
+                loginBtn.disabled = true;
+                loginBtn.classList.add('opacity-75', 'cursor-not-allowed');
+                loginBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin mr-2"></i> Memproses...';
+            });
+        }
+
         // Flash Message Auto Close
         document.addEventListener('DOMContentLoaded', () => {
             const flashMessages = document.querySelectorAll('.flash-message');

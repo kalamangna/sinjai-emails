@@ -67,7 +67,7 @@
                         </span>
                         <input type="text" name="username" id="username" value="<?= old('username') ?>" required autofocus
                             class="block w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 placeholder-slate-400 placeholder:font-normal transition-all"
-                            placeholder="Masukkan username...">
+                            placeholder="admin">
                     </div>
                 </div>
 
@@ -79,7 +79,7 @@
                         </span>
                         <input type="password" name="password" id="password" required
                             class="block w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-slate-700 text-sm font-medium text-slate-800 placeholder-slate-400 placeholder:font-normal transition-all"
-                            placeholder="Masukkan password...">
+                            placeholder="••••••••">
                     </div>
                 </div>
 
@@ -96,8 +96,8 @@
                 <?php endif; ?>
 
                 <div class="pt-2">
-                    <button type="submit" class="w-full btn btn-solid py-2.5">
-                        Masuk <i class="fas fa-sign-in-alt ml-2 text-white/80"></i>
+                    <button type="submit" id="btn-login" class="w-full btn btn-solid py-2.5">
+                        <span>Masuk</span> <i class="fas fa-sign-in-alt ml-2 text-white/80"></i>
                     </button>
                 </div>
             </form>
@@ -127,6 +127,24 @@
         try {
             localStorage.removeItem('sinjai_last_active');
         } catch (e) {}
+
+        // Reload otomatis jika halaman dipulihkan dari bfcache browser
+        window.addEventListener('pageshow', (event) => {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
+
+        // Pencegahan klik ganda saat submit formulir login
+        const loginForm = document.querySelector('form');
+        const loginBtn = document.getElementById('btn-login');
+        if (loginForm && loginBtn) {
+            loginForm.addEventListener('submit', () => {
+                loginBtn.disabled = true;
+                loginBtn.classList.add('opacity-75', 'cursor-not-allowed');
+                loginBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin mr-2"></i> Memproses...';
+            });
+        }
 
         // Flash Message Auto Close
         document.addEventListener('DOMContentLoaded', () => {

@@ -81,7 +81,7 @@ class WebOpdController extends BaseController
         $data['website'] = $model->find($id);
 
         if (!$data['website']) {
-            return redirect()->to('web_opd')->with('error', 'Data not found.');
+            return redirect()->to('web_opd')->with('error', 'Data OPD tidak ditemukan.');
         }
 
         // Fetch the unit_kerja name for display
@@ -98,7 +98,7 @@ class WebOpdController extends BaseController
         $website = $model->find($id);
 
         if (!$website) {
-            return redirect()->to('web_opd')->with('error', 'Data not found.');
+            return redirect()->to('web_opd')->with('error', 'Data OPD tidak ditemukan.');
         }
 
         $data = [

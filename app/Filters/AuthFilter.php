@@ -14,10 +14,10 @@ class AuthFilter implements FilterInterface
             if ($request->isAJAX()) {
                 return service('response')->setJSON([
                     'success' => false, 
-                    'message' => 'Sesi Anda telah berakhir. Silakan login kembali.'
+                    'message' => 'Sesi berakhir. Silakan login kembali.'
                 ])->setStatusCode(401);
             }
-            return redirect()->to('/login')->with('error', 'Sesi Anda telah berakhir. Silakan login kembali.');
+            return redirect()->to('/login')->withCookies()->with('error', 'Sesi berakhir. Silakan login kembali.');
         }
     }
 

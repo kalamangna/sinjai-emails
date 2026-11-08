@@ -176,7 +176,7 @@ class AssistanceController extends BaseController
         $activity = $this->assistanceModel->find($id);
 
         if (!$activity) {
-            return redirect()->to('/assistance')->with('error', 'Activity not found.');
+            return redirect()->to('/assistance')->with('error', 'Data aktivitas tidak ditemukan.');
         }
 
         // Decode services JSON string to array for the view

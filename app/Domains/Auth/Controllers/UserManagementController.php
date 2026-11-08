@@ -61,7 +61,7 @@ class UserManagementController extends BaseController
     {
         $user = $this->userModel->find($id);
         if (!$user) {
-            return redirect()->to('/auth/users')->with('error', 'User tidak ditemukan.');
+            return redirect()->to('/auth/users')->with('error', 'Pengguna tidak ditemukan.');
         }
 
         $data = [
@@ -75,7 +75,7 @@ class UserManagementController extends BaseController
     {
         $user = $this->userModel->find($id);
         if (!$user) {
-            return redirect()->to('/auth/users')->with('error', 'User tidak ditemukan.');
+            return redirect()->to('/auth/users')->with('error', 'Pengguna tidak ditemukan.');
         }
 
         $rules = [
@@ -111,7 +111,7 @@ class UserManagementController extends BaseController
     public function delete($id)
     {
         if (session()->get('id') == $id) {
-            return redirect()->to('/auth/users')->with('error', 'Anda tidak dapat menghapus akun Anda sendiri.');
+            return redirect()->to('/auth/users')->with('error', 'Tidak dapat menghapus akun sendiri.');
         }
 
         $this->userModel->delete($id);

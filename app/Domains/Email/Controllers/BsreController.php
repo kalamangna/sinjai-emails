@@ -144,7 +144,7 @@ class BsreController extends BaseController
         // Check if user is super_admin or admin
         $role = session()->get('role');
         if ($role !== 'super_admin' && $role !== 'admin') {
-            return redirect()->to('email')->with('error', 'Unauthorized access');
+            return redirect()->to('email')->with('error', 'Akses ditolak.');
         }
 
         set_time_limit(0);

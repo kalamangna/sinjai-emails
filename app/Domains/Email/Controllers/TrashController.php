@@ -32,7 +32,7 @@ class TrashController extends BaseController
             $email = $emailModel->onlyDeleted()->find($id);
             
             if (!$email) {
-                return redirect()->to('/email/trash')->with('error', 'Akun tidak ditemukan di tempat sampah.');
+                return redirect()->to('/email/trash')->with('error', 'Akun tidak ditemukan di kotak sampah.');
             }
 
             // 1. Mandatory Unsuspend in cPanel
@@ -71,7 +71,7 @@ class TrashController extends BaseController
 
             return redirect()->to('/email/trash')->with('success', 'Akun berhasil dipulihkan.');
         } catch (\Throwable $e) {
-            return redirect()->to('/email/trash')->with('error', 'Gagal mempulihkan akun: ' . $e->getMessage());
+            return redirect()->to('/email/trash')->with('error', 'Gagal memulihkan akun: ' . $e->getMessage());
         }
     }
 

@@ -78,7 +78,7 @@ class BridgeWhitelistController extends BaseController
         if (!$this->validate($rules)) {
             return redirect()->back()
                 ->withInput()
-                ->with('error', 'Validasi gagal. Pastikan data instansi telah diisi dengan benar.');
+                ->with('error', 'Validasi gagal. Pastikan data instansi terisi benar.');
         }
 
         $label     = trim($this->request->getPost('label'));
@@ -88,7 +88,7 @@ class BridgeWhitelistController extends BaseController
         if (empty($rawDomain) && empty($rawIp)) {
             return redirect()->back()
                 ->withInput()
-                ->with('error', 'Nama domain atau alamat IP server wajib diisi minimal salah satu.');
+                ->with('error', 'Domain atau IP server wajib diisi minimal salah satu.');
         }
 
         $cleanHost = !empty($rawDomain) ? BridgeWhitelistModel::cleanHost($rawDomain) : '';
@@ -155,7 +155,7 @@ class BridgeWhitelistController extends BaseController
         if (!$this->validate($rules)) {
             return redirect()->back()
                 ->withInput()
-                ->with('error', 'Validasi gagal. Pastikan data terisi dengan benar.');
+                ->with('error', 'Validasi gagal. Pastikan data terisi benar.');
         }
 
         $label     = trim($this->request->getPost('label'));
@@ -166,7 +166,7 @@ class BridgeWhitelistController extends BaseController
         if (empty($rawDomain) && empty($rawIp)) {
             return redirect()->back()
                 ->withInput()
-                ->with('error', 'Nama domain atau alamat IP server wajib diisi minimal salah satu.');
+                ->with('error', 'Domain atau IP server wajib diisi minimal salah satu.');
         }
 
         $cleanHost = !empty($rawDomain) ? BridgeWhitelistModel::cleanHost($rawDomain) : '';
@@ -263,7 +263,7 @@ class BridgeWhitelistController extends BaseController
         }
 
         return redirect()->to(site_url('bridge/whitelist'))
-            ->with('error', "Gagal melakukan resolusi DNS untuk domain {$entry['domain']}. Pastikan domain aktif.");
+            ->with('error', "Gagal resolusi DNS domain {$entry['domain']}. Pastikan domain aktif.");
     }
 
     /**

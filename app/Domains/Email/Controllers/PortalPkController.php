@@ -34,6 +34,10 @@ class PortalPkController extends BaseController
             return redirect()->to('portal-pk/dashboard');
         }
 
+        $this->response->setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0, post-check=0, pre-check=0');
+        $this->response->setHeader('Pragma', 'no-cache');
+        $this->response->setHeader('Expires', '0');
+
         $data = [
             'title' => 'Portal TTE PK'
         ];
@@ -92,7 +96,7 @@ class PortalPkController extends BaseController
         // Pastikan akun memiliki data Perjanjian Kerja (PK)
         $pk = $this->pkModel->where('email', $email['email'])->first();
         if (!$pk) {
-            return redirect()->back()->withInput()->with('error', 'Data Perjanjian Kerja (PK) untuk akun Anda belum tercatat di sistem. Silakan hubungi BKPSDMA.');
+            return redirect()->back()->withInput()->with('error', 'Data Perjanjian Kerja belum tercatat di sistem. Hubungi BKPSDMA.');
         }
 
         // Set session khusus portal PPPK
@@ -128,7 +132,7 @@ class PortalPkController extends BaseController
 
         if (!$email) {
             $this->logout();
-            return redirect()->to('portal-pk')->with('error', 'Sesi Anda telah kedaluwarsa. Silakan masuk kembali.');
+            return redirect()->to('portal-pk')->withCookies()->with('error', 'Sesi berakhir. Silakan login kembali.');
         }
 
         if (empty($email['unit_kerja']) && !empty($email['unit_kerja_name'])) {
@@ -218,7 +222,7 @@ class PortalPkController extends BaseController
 
         // Cek jika sudah pernah ditandatangani
         if (in_array($pk['tte_status'] ?? '', ['signed_pppk', 'completed']) && !empty($pk['tte_pegawai_file'])) {
-            return redirect()->back()->with('error', 'Dokumen Perjanjian Kerja ini sudah Anda tanda tangani sebelumnya.');
+            return redirect()->back()->with('error', 'Dokumen Perjanjian Kerja sudah ditandatangani.');
         }
 
         // 1. Generate draf PDF ke temporary file
@@ -294,7 +298,7 @@ class PortalPkController extends BaseController
             }
         }
 
-        return redirect()->to('portal-pk/dashboard')->with('error', 'Dokumen belum selesai ditandatangani oleh kedua pihak.');
+        return redirect()->to('portal-pk/dashboard')->with('error', 'Dokumen belum selesai ditandatangani kedua pihak.');
     }
 
     /**
@@ -313,7 +317,7 @@ class PortalPkController extends BaseController
             'pppk_status_asn_id',
         ]);
 
-        return redirect()->to('portal-pk')->with('success', 'Anda telah keluar dari Portal PPPK.');
+        return redirect()->to('portal-pk')->withCookies()->with('success', 'Anda telah keluar dari Portal PPPK.');
     }
 
     /**

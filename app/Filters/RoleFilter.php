@@ -17,10 +17,10 @@ class RoleFilter implements FilterInterface
             if ($request->isAJAX()) {
                 return service('response')->setJSON([
                     'success' => false, 
-                    'message' => 'Anda tidak memiliki hak akses untuk aksi ini.'
+                    'message' => 'Akses ditolak. Anda tidak memiliki izin untuk aksi ini.'
                 ])->setStatusCode(403);
             }
-            return redirect()->back()->with('error', 'Anda tidak memiliki hak akses untuk melakukan aksi ini.');
+            return redirect()->back()->with('error', 'Akses ditolak. Anda tidak memiliki izin untuk aksi ini.');
         }
     }
 

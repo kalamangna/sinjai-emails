@@ -47,7 +47,7 @@ class HelpdeskAdminController extends BaseController
     public function detail($id)
     {
         $ticket = $this->helpdeskModel->find($id);
-        if (!$ticket) return redirect()->to('helpdesk/manage')->with('error', 'Tiket tidak ditemukan');
+        if (!$ticket) return redirect()->to('helpdesk/manage')->with('error', 'Tiket tidak ditemukan.');
 
         $data = [
             'title' => 'Detail Helpdesk Layanan',
@@ -77,7 +77,7 @@ class HelpdeskAdminController extends BaseController
     public function delete($id)
     {
         $ticket = $this->helpdeskModel->find($id);
-        if (!$ticket) return redirect()->to('helpdesk/manage')->with('error', 'Tiket tidak ditemukan');
+        if (!$ticket) return redirect()->to('helpdesk/manage')->with('error', 'Tiket tidak ditemukan.');
 
         $this->helpdeskModel->delete($id);
 

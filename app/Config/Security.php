@@ -60,9 +60,10 @@ class Security extends BaseConfig
      *
      * Expiration time for Cross Site Request Forgery protection cookie.
      *
-     * Defaults to two hours (in seconds).
+     * Setting to 0 (zero) means expire when the browser is closed (session cookie),
+     * preventing CSRF failure on long idle tabs after auto-logout.
      */
-    public int $expires = 7200;
+    public int $expires = 0;
 
     /**
      * --------------------------------------------------------------------------

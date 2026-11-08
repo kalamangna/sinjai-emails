@@ -201,7 +201,7 @@ class TteBupatiController extends BaseController
         }
 
         if (empty($nik)) {
-            return redirect()->back()->with('error', 'NIK Penandatangan belum dikonfigurasi (BSRE_BUPATI_NIK).');
+            return redirect()->back()->with('error', 'NIK Penandatangan belum dikonfigurasi.');
         }
 
         $pk = $this->pkModel->withPegawaiDetails()->where('pk.id', $id)->first();
@@ -210,16 +210,16 @@ class TteBupatiController extends BaseController
         }
 
         if ($pk['tte_status'] === 'completed' && !empty($pk['tte_bupati_file'])) {
-            return redirect()->back()->with('error', 'Dokumen ini telah selesai ditandatangani oleh Bupati.');
+            return redirect()->back()->with('error', 'Dokumen ini sudah ditandatangani Bupati.');
         }
 
         if (empty($pk['tte_pegawai_file'])) {
-            return redirect()->back()->with('error', 'Dokumen ini belum ditandatangani oleh PPPK.');
+            return redirect()->back()->with('error', 'Dokumen ini belum ditandatangani PPPK.');
         }
 
         $sourcePdfPath = WRITEPATH . 'uploads/signed_pk/' . $pk['tte_pegawai_file'];
         if (!file_exists($sourcePdfPath)) {
-            return redirect()->back()->with('error', 'Berkas PDF bertandatangan PPPK tidak ditemukan di server.');
+            return redirect()->back()->with('error', 'Berkas PDF tanda tangan PPPK tidak ditemukan.');
         }
 
         $bsreApi = new BsreApi();

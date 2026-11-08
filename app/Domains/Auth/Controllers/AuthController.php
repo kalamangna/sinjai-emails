@@ -20,6 +20,11 @@ class AuthController extends BaseController
             return redirect()->to('dashboard');
         }
 
+        // Cegah caching halaman login agar token keamanan selalu sinkron
+        $this->response->setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0, post-check=0, pre-check=0');
+        $this->response->setHeader('Pragma', 'no-cache');
+        $this->response->setHeader('Expires', '0');
+
         $data = [
             'title' => 'Masuk'
         ];
@@ -60,10 +65,10 @@ class AuthController extends BaseController
         session()->destroy();
 
         if ($isExpired) {
-            return redirect()->to('/login')->with('error', 'Sesi Anda telah berakhir karena tidak ada aktivitas. Silakan login kembali.');
+            return redirect()->to('/login')->withCookies()->with('error', 'Sesi berakhir. Silakan login kembali.');
         }
 
-        return redirect()->to('/login');
+        return redirect()->to('/login')->withCookies();
     }
 
     public function keepAlive()

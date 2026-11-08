@@ -3,6 +3,20 @@
 Semua perubahan penting pada proyek ini dicatat di berkas ini.
 Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+# [08 November 2026] — Perbaikan Validasi CSRF Pasca Auto-Logout dan Standardisasi Pesan Galat
+
+- **Penanganan Validasi CSRF Pasca Auto-Logout**:
+  - Mengubah masa berlaku cookie CSRF (`$expires`) menjadi `0` (*session cookie*) pada [`Security.php`](app/Config/Security.php) agar cookie keamanan tidak kedaluwarsa secara sepihak saat sesi pengguna ditinggalkan (*idle timeout*).
+  - Menyematkan `withCookies()` pada pengalihan status sesi di [`AuthController.php`](app/Domains/Auth/Controllers/AuthController.php), [`PortalPkController.php`](app/Domains/Email/Controllers/PortalPkController.php), dan [`AuthFilter.php`](app/Filters/AuthFilter.php) untuk memastikan persistensi cookie respons ke peramban.
+  - Menerapkan header HTTP pencegah penyimpanan cache (`Cache-Control: no-store, no-cache, must-revalidate`) pada tampilan formulir login di [`AuthController.php`](app/Domains/Auth/Controllers/AuthController.php) dan [`PortalPkController.php`](app/Domains/Email/Controllers/PortalPkController.php).
+  - Menambahkan penanganan pemulihan *bfcache* (`pageshow`) dan perlindungan klik ganda (*double-click prevention*) pada formulir masuk di [`login.php`](app/Views/auth/login.php) serta [`portal_pk_login.php`](app/Views/auth/portal_pk_login.php).
+- **Lokalisasi dan Standardisasi Pesan Galat**:
+  - Menambahkan berkas bahasa [`app/Language/id/Security.php`](app/Language/id/Security.php) untuk menerjemahkan penolakan validasi keamanan CSRF menjadi pesan informatif baku: `Sesi berakhir. Silakan login kembali.`
+  - Menyederhanakan dan menata ulang pesan galat di seluruh kontroler dan filter aplikasi ([`PortalPkController.php`](app/Domains/Email/Controllers/PortalPkController.php), [`EmailController.php`](app/Domains/Email/Controllers/EmailController.php), [`TteBupatiController.php`](app/Domains/Email/Controllers/TteBupatiController.php), [`UserManagementController.php`](app/Domains/Auth/Controllers/UserManagementController.php), [`TrashController.php`](app/Domains/Email/Controllers/TrashController.php), [`BridgeWhitelistController.php`](app/Domains/Bridge/Controllers/BridgeWhitelistController.php), [`HelpdeskAdminController.php`](app/Domains/Helpdesk/Controllers/HelpdeskAdminController.php), [`RoleFilter.php`](app/Filters/RoleFilter.php), dan [`error_403.php`](app/Views/errors/html/error_403.php)) agar ringkas, lugas, mempertahankan konteks objek, serta bebas dari tanda kurung dan pleonasme.
+  - Memperbarui placeholder formulir masuk pada [`login.php`](app/Views/auth/login.php) agar menggunakan format contoh riil sesuai panduan penulisan teks.
+
+---
+
 # [07 November 2026] — Pemisahan Multi-Pesan Notifikasi TTE Expired Harian dan Resolusi Paksa IPv4
 
 - **Penyajian Lengkap Akun TTE Pimpinan Expired pada Sinkronisasi Harian**:

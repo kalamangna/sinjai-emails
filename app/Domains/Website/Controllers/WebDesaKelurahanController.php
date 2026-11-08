@@ -132,7 +132,7 @@ class WebDesaKelurahanController extends BaseController
         $data['website'] = $model->find($id);
 
         if (!$data['website']) {
-            return redirect()->to('web_desa_kelurahan')->with('error', 'Data not found.');
+            return redirect()->to('web_desa_kelurahan')->with('error', 'Data desa tidak ditemukan.');
         }
 
         $data['platforms'] = $platformModel->orderBy("FIELD(nama_platform, 'KOMINFO', 'SIDEKA-NG', 'OPENSID', 'PIHAK KETIGA')")->findAll();
@@ -146,7 +146,7 @@ class WebDesaKelurahanController extends BaseController
         $website = $model->find($id);
 
         if (!$website) {
-            return redirect()->to('web_desa_kelurahan')->with('error', 'Data not found.');
+            return redirect()->to('web_desa_kelurahan')->with('error', 'Data desa tidak ditemukan.');
         }
 
         $domain = $this->request->getPost('domain');

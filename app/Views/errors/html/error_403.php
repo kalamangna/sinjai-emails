@@ -45,9 +45,9 @@
                 <h1 class="text-xl md:text-2xl font-bold text-slate-800 uppercase tracking-tight">403 - Akses Ditolak</h1>
                 <p class="text-xs md:text-sm text-slate-600 leading-relaxed font-medium">
                     <?php if (ENVIRONMENT !== 'production') : ?>
-                        <?= nl2br(esc($message ?? 'Tindakan yang Anda minta tidak diizinkan.')) ?>
+                        <?= nl2br(esc($message ?? 'Akses tidak diizinkan.')) ?>
                     <?php else : ?>
-                        Sesi validasi keamanan kedaluwarsa atau tindakan tidak diizinkan. Silakan login kembali.
+                        Sesi berakhir atau akses tidak diizinkan. Silakan login kembali.
                     <?php endif; ?>
                 </p>
             </div>
