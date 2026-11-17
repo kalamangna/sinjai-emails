@@ -3,7 +3,13 @@
 Semua perubahan penting pada proyek ini dicatat di berkas ini.
 Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-# [17 November 2026] — Pencegahan Auto-Zoom Formulir pada Perangkat Mobile
+# [17 November 2026] — Optimalisasi Pencarian Global Mobile dan Pencegahan Auto-Zoom Formulir
+
+- **Optimalisasi Pencarian Global pada Perangkat Mobile**:
+  - Memperlebar daftar hasil pencarian ([`global_search.php`](app/Views/components/global_search.php)) secara penuh di layar mobile (`fixed left-3 right-3 top-[4.25rem]` dengan tinggi maksimal `70vh`) agar informasi pegawai tidak terpotong ruang header yang sempit, sambil mempertahankan tata letak dropdown standar pada layar desktop.
+  - Menyesuaikan tinggi input pencarian menjadi `h-10` dan menambahkan tombol hapus cepat (`#global-search-clear`) untuk mempermudah pengosongan kata kunci pada perangkat sentuh.
+  - Menambahkan pembukaan ulang hasil saat input difokuskan kembali, pembatalan *request* sebelumnya menggunakan `AbortController` saat pengetikan cepat, serta *HTML escaping* pada penyajian hasil pencarian.
+  - Mengompilasi ulang aset CSS ke [`public/css/output.css`](public/css/output.css).
 
 - **Perbaikan Ukuran Font Input Mobile**:
   - Menambahkan aturan `@media (max-width: 767px)` pada [`public/css/input.css`](public/css/input.css) untuk memastikan elemen `input` (selain `checkbox`, `radio`, `range`, `file`, `hidden`), `select`, `textarea`, serta `.choices__inner` dan `.choices__input` memiliki `font-size: 16px !important` pada layar mobile guna mencegah peramban (seperti iOS Safari) melakukan *auto-zoom* saat pengisian formulir, tanpa mengubah ukuran tampilan desktop.
