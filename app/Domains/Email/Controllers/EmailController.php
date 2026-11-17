@@ -161,6 +161,12 @@ class EmailController extends BaseController
         }
         $newUser  = explode('@', $newEmail)[0];
 
+        $isPimpinanDesa = $this->request->getPost('pimpinan_desa') ? 1 : 0;
+        $jabatan = mb_strtoupper(trim((string) $this->request->getPost('jabatan')), 'UTF-8');
+        if ($isPimpinanDesa === 1 && $jabatan === '') {
+            $jabatan = 'KEPALA DESA';
+        }
+
         $profileData = [
             'name'           => $this->request->getPost('name'),
             'gelar_depan'    => $this->request->getPost('gelar_depan'),
@@ -169,7 +175,7 @@ class EmailController extends BaseController
             'nip'            => $this->request->getPost('nip') ?: null,
             'tempat_lahir'   => $this->request->getPost('tempat_lahir'),
             'pendidikan'     => $this->request->getPost('pendidikan'),
-            'jabatan'        => mb_strtoupper($this->request->getPost('jabatan'), 'UTF-8'),
+            'jabatan'        => $jabatan,
             'golongan'       => $this->request->getPost('golongan'),
             'pangkat_golruang' => $this->request->getPost('pangkat_golruang'),
             'pangkat_nama'   => $this->request->getPost('pangkat_nama'),
@@ -177,7 +183,7 @@ class EmailController extends BaseController
             'eselon_id'      => $this->request->getPost('eselon') ?: null,
             'unit_kerja_id'  => $this->request->getPost('unit_kerja_id') ?: null,
             'pimpinan'       => $this->request->getPost('pimpinan') ? 1 : 0,
-            'pimpinan_desa'  => $this->request->getPost('pimpinan_desa') ? 1 : 0,
+            'pimpinan_desa'  => $isPimpinanDesa,
             'tanggal_lahir'  => $this->request->getPost('tanggal_lahir') ?: null,
             'user'           => $newUser,
             'email'          => $newEmail,

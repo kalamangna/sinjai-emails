@@ -5,6 +5,10 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 # [17 November 2026] — Optimalisasi Pencarian Global Mobile dan Pencegahan Auto-Zoom Formulir
 
+- **Pengisian Otomatis Jabatan Kepala Desa**:
+  - Menambahkan pengisian otomatis kolom `jabatan` menjadi `KEPALA DESA` saat opsi `Kepala Desa` dipilih pada formulir edit profil ([`edit_profile.php`](app/Views/email/edit_profile.php)).
+  - Menambahkan *fallback* otomatis pengisian `jabatan` menjadi `KEPALA DESA` pada [`EmailController.php`](app/Domains/Email/Controllers/EmailController.php) dan pembaruan massal di [`EmailBatchService.php`](app/Domains/Batch/Services/EmailBatchService.php) apabila peran Kepala Desa aktif dan jabatan masih kosong.
+
 - **Penambahan Cache Buster Aset CSS**:
   - Menambahkan parameter versi berbasis `filemtime` (`?v=...`) pada pemanggilan [`public/css/output.css`](public/css/output.css) di [`main.php`](app/Views/layouts/main.php), halaman autentikasi, publik, verifikasi, dan halaman galat agar peramban selalu memuat berkas CSS terbaru secara otomatis tanpa *hard reload* setelah pembaruan gaya.
 

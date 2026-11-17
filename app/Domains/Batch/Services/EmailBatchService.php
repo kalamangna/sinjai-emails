@@ -175,6 +175,9 @@ class EmailBatchService
             if (isset($newPimpinanDesa) && $newPimpinanDesa !== '' && (int)$emailRecord['pimpinan_desa'] !== (int)$newPimpinanDesa) {
                 $emailUpdateData['pimpinan_desa'] = $newPimpinanDesa;
             }
+            if ((int)$newPimpinanDesa === 1 && empty(trim((string)($newJabatans[$index] ?? ''))) && trim((string)($emailRecord['jabatan'] ?? '')) === '') {
+                $emailUpdateData['jabatan'] = 'KEPALA DESA';
+            }
 
             $pkUpdateData = [];
             

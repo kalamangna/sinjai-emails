@@ -222,6 +222,17 @@
             statusAsnSelect.addEventListener('change', toggleFields);
             toggleFields(); // Initial call
         }
+
+        // Isi otomatis jabatan menjadi KEPALA DESA saat peran Kepala Desa dipilih
+        const pimpinanDesaSelect = document.getElementById('pimpinan_desa');
+        const jabatanInput = document.getElementById('jabatan');
+        if (pimpinanDesaSelect && jabatanInput) {
+            pimpinanDesaSelect.addEventListener('change', function() {
+                if (this.value === '1') {
+                    jabatanInput.value = 'KEPALA DESA';
+                }
+            });
+        }
     });
 </script>
 <?= $this->endSection() ?>
