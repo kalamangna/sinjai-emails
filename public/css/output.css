@@ -4630,6 +4630,10 @@ input::placeholder,
   padding-left: 2.5rem;
 }
 
+.pl-12 {
+  padding-left: 3rem;
+}
+
 .pl-3 {
   padding-left: 0.75rem;
 }
@@ -6280,6 +6284,10 @@ input::placeholder,
     height: 75vh;
   }
 
+  .sm\:h-auto {
+    height: auto;
+  }
+
   .sm\:max-h-\[200px\] {
     max-height: 200px;
   }
@@ -6437,8 +6445,16 @@ input::placeholder,
     margin-bottom: 0px;
   }
 
+  .md\:block {
+    display: block;
+  }
+
   .md\:flex {
     display: flex;
+  }
+
+  .md\:hidden {
+    display: none;
   }
 
   .md\:w-1\/2 {

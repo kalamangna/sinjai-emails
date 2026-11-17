@@ -5,6 +5,10 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 # [17 November 2026] — Optimalisasi Pencarian Global Mobile dan Pencegahan Auto-Zoom Formulir
 
+- **Perbaikan Responsivitas Riwayat Laporan**:
+  - Menambahkan tampilan daftar ringkas vertikal khusus mobile (`md:hidden`) beserta tombol aksi dan hapus ramah sentuh (`h-10`, `w-10`) pada [`history.php`](app/Views/email/exports/history.php), sambil mempertahankan tabel 5 kolom untuk layar desktop.
+  - Mengompilasi ulang aset CSS ke [`public/css/output.css`](public/css/output.css).
+
 - **Peningkatan Halaman Detail Akun**:
   - Menambahkan tombol salin (*copy*) untuk kolom nama, NIK, dan NIP pada [`detail.php`](app/Views/email/detail.php).
   - Mengatur ulang tata letak kartu pada [`detail.php`](app/Views/email/detail.php) agar kartu Kredensial tampil di atas kartu Profil pada layar mobile, serta memindahkan kartu QR Code ke bawah kartu Kredensial pada tampilan desktop.
