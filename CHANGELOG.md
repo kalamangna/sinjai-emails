@@ -5,6 +5,10 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 # [17 November 2026] — Optimalisasi Pencarian Global Mobile dan Pencegahan Auto-Zoom Formulir
 
+- **Validasi Format dan Proteksi Sinkronisasi NIK/NIP**:
+  - Menambahkan validasi panjang dan format angka wajib 16 digit untuk `nik` serta 18 digit untuk `nip` pada proses pembuatan dan pembaruan profil di [`EmailService.php`](app/Domains/Email/Services/EmailService.php).
+  - Menambahkan proteksi pada `syncPegawaiFromApi` di [`EmailService.php`](app/Domains/Email/Services/EmailService.php) agar nilai `nik` dan `nip` dari API SIMPEG yang tidak memenuhi format baku atau sudah digunakan akun lain otomatis diabaikan.
+
 - **Pengisian Otomatis Jabatan Kepala Desa**:
   - Menambahkan pengisian otomatis kolom `jabatan` menjadi `KEPALA DESA` saat opsi `Kepala Desa` dipilih pada formulir edit profil ([`edit_profile.php`](app/Views/email/edit_profile.php)).
   - Menambahkan *fallback* otomatis pengisian `jabatan` menjadi `KEPALA DESA` pada [`EmailController.php`](app/Domains/Email/Controllers/EmailController.php) dan pembaruan massal di [`EmailBatchService.php`](app/Domains/Batch/Services/EmailBatchService.php) apabila peran Kepala Desa aktif dan jabatan masih kosong.

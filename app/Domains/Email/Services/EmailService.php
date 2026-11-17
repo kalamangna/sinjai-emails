@@ -682,6 +682,9 @@ class EmailService
 
         if (!empty($data['nik'])) {
             $cleanNik = str_replace([' ', '.', '-', '\''], '', $data['nik']);
+            if (!preg_match('/^\d{16}$/', $cleanNik)) {
+                throw new Exception('NIK harus berupa 16 digit angka.');
+            }
             $existing_nik = $this->emailModel->where('nik', $cleanNik)->first();
             if ($existing_nik) {
                 throw new Exception('NIK already exists in local database.');
@@ -691,6 +694,9 @@ class EmailService
 
         if (!empty($data['nip'])) {
             $cleanNip = str_replace([' ', '.', '-', '\''], '', $data['nip']);
+            if (!preg_match('/^\d{18}$/', $cleanNip)) {
+                throw new Exception('NIP harus berupa 18 digit angka.');
+            }
             $existing_nip = $this->emailModel->where('nip', $cleanNip)->first();
             if ($existing_nip) {
                 throw new Exception('NIP sudah digunakan oleh akun lain (' . $existing_nip['email'] . ').');
@@ -799,13 +805,19 @@ class EmailService
         $newUser = explode('@', $newEmail)[0];
         $profileData['user'] = $newUser;
 
-        // Bersihkan NIK & NIP
+        // Bersihkan dan validasi format NIK (16 digit) & NIP (18 digit)
         if (!empty($profileData['nik'])) {
             $cleanNik = str_replace([' ', '.', '-', '\''], '', $profileData['nik']);
+            if (!preg_match('/^\d{16}$/', $cleanNik)) {
+                throw new Exception('NIK harus berupa 16 digit angka.');
+            }
             $profileData['nik'] = $cleanNik;
         }
         if (!empty($profileData['nip'])) {
             $cleanNip = str_replace([' ', '.', '-', '\''], '', $profileData['nip']);
+            if (!preg_match('/^\d{18}$/', $cleanNip)) {
+                throw new Exception('NIP harus berupa 18 digit angka.');
+            }
             $profileData['nip'] = $cleanNip;
         }
 
@@ -1398,10 +1410,23 @@ class EmailService
         if (isset($source['pangkat_nama']))    $updateData['pangkat_nama']    = trim($source['pangkat_nama']);
         if (isset($source['pangkat_golruang'])) $updateData['pangkat_golruang'] = trim($source['pangkat_golruang']);
         if (!empty($source['nip'])) {
-            $updateData['nip'] = trim($source['nip']);
+            $simpegNip = str_replace([' ', '.', '-', '\''], '', trim((string)$source['nip']));
+            if (preg_match('/^\d{18}$/', $simpegNip)) {
+                $dupNip = $this->emailModel->where('nip', $simpegNip)->where('id !=', $currentEmail['id'])->first();
+                if (!$dupNip) {
+                    $updateData['nip'] = $simpegNip;
+                }
+            }
         }
         if (!empty($source['nik']) && empty($currentEmail['nik'])) {
-            $updateData['nik'] = trim($source['nik']);
+            $simpegNik = str_replace([' ', '.', '-', '\''], '', trim((string)$source['nik']));
+            // Abaikan NIK rusak atau duplikat dari SIMPEG agar tidak mengotori database lokal
+            if (preg_match('/^\d{16}$/', $simpegNik)) {
+                $dupNik = $this->emailModel->where('nik', $simpegNik)->where('id !=', $currentEmail['id'])->first();
+                if (!$dupNik) {
+                    $updateData['nik'] = $simpegNik;
+                }
+            }
         }
         if (empty($currentEmail['status_asn_id'])) {
             $updateData['status_asn_id'] = 1;
