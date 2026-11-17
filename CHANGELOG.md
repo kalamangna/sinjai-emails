@@ -5,6 +5,9 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 # [17 November 2026] — Optimalisasi Pencarian Global Mobile dan Pencegahan Auto-Zoom Formulir
 
+- **Penambahan Cache Buster Aset CSS**:
+  - Menambahkan parameter versi berbasis `filemtime` (`?v=...`) pada pemanggilan [`public/css/output.css`](public/css/output.css) di [`main.php`](app/Views/layouts/main.php), halaman autentikasi, publik, verifikasi, dan halaman galat agar peramban selalu memuat berkas CSS terbaru secara otomatis tanpa *hard reload* setelah pembaruan gaya.
+
 - **Optimalisasi Pencarian Global pada Perangkat Mobile**:
   - Memperlebar daftar hasil pencarian ([`global_search.php`](app/Views/components/global_search.php)) secara penuh di layar mobile (`fixed left-3 right-3 top-[4.25rem]` dengan tinggi maksimal `70vh`) agar informasi pegawai tidak terpotong ruang header yang sempit, sambil mempertahankan tata letak dropdown standar pada layar desktop.
   - Menyesuaikan tinggi input pencarian menjadi `h-10` dan menambahkan tombol hapus cepat (`#global-search-clear`) untuk mempermudah pengosongan kata kunci pada perangkat sentuh.

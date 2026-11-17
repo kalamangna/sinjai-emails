@@ -23,7 +23,7 @@
     <meta name="twitter:image" content="<?= base_url('meta.png') ?>">
 
     <link rel="icon" type="image/png" href="<?= base_url('logo.png') ?>">
-    <link href="<?= base_url('css/output.css') ?>" rel="stylesheet">
+    <link href="<?= base_url('css/output.css') ?>?v=<?= @filemtime(FCPATH . 'css/output.css') ?: '1' ?>" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

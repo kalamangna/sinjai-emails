@@ -22,7 +22,7 @@ $errorId = uniqid('error', true);
     <link rel="icon" type="image/png" href="<?= base_url('logo.png') ?>">
 
     <!-- Tailwind CSS (Local Build) -->
-    <link href="/css/output.css" rel="stylesheet">
+    <link href="/css/output.css?v=<?= defined('FCPATH') ? (@filemtime(FCPATH . 'css/output.css') ?: '1') : '1' ?>" rel="stylesheet">
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
