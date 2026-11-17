@@ -7,6 +7,17 @@
     textarea::placeholder {
         @apply text-slate-400 font-normal;
     }
+
+    /* Cegah auto-zoom browser mobile saat fokus ke elemen form */
+    @media (max-width: 767px) {
+        :root input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="hidden"]),
+        :root select,
+        :root textarea,
+        .choices .choices__inner,
+        .choices .choices__input {
+            font-size: 16px !important;
+        }
+    }
 }
 
 @layer components {

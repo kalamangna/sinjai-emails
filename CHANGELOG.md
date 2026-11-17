@@ -3,6 +3,14 @@
 Semua perubahan penting pada proyek ini dicatat di berkas ini.
 Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+# [17 November 2026] — Pencegahan Auto-Zoom Formulir pada Perangkat Mobile
+
+- **Perbaikan Ukuran Font Input Mobile**:
+  - Menambahkan aturan `@media (max-width: 767px)` pada [`public/css/input.css`](public/css/input.css) untuk memastikan elemen `input` (selain `checkbox`, `radio`, `range`, `file`, `hidden`), `select`, `textarea`, serta `.choices__inner` dan `.choices__input` memiliki `font-size: 16px !important` pada layar mobile guna mencegah peramban (seperti iOS Safari) melakukan *auto-zoom* saat pengisian formulir, tanpa mengubah ukuran tampilan desktop.
+  - Mengompilasi ulang aset CSS ke [`public/css/output.css`](public/css/output.css).
+
+---
+
 # [08 November 2026] — Perbaikan Validasi CSRF Pasca Auto-Logout dan Standardisasi Pesan Galat
 
 - **Penanganan Validasi CSRF Pasca Auto-Logout**:
