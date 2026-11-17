@@ -5,6 +5,11 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 # [17 November 2026] — Optimalisasi Pencarian Global Mobile dan Pencegahan Auto-Zoom Formulir
 
+- **Peningkatan Halaman Detail Akun**:
+  - Menambahkan tombol salin (*copy*) untuk kolom nama, NIK, dan NIP pada [`detail.php`](app/Views/email/detail.php).
+  - Mengatur ulang tata letak kartu pada [`detail.php`](app/Views/email/detail.php) agar kartu Kredensial tampil di atas kartu Profil pada layar mobile, serta memindahkan kartu QR Code ke bawah kartu Kredensial pada tampilan desktop.
+  - Mengompilasi ulang aset CSS ke [`public/css/output.css`](public/css/output.css).
+
 - **Validasi Format dan Proteksi Sinkronisasi NIK/NIP**:
   - Menambahkan validasi panjang dan format angka wajib 16 digit untuk `nik` serta 18 digit untuk `nip` pada proses pembuatan dan pembaruan profil di [`EmailService.php`](app/Domains/Email/Services/EmailService.php).
   - Menambahkan proteksi pada `syncPegawaiFromApi` di [`EmailService.php`](app/Domains/Email/Services/EmailService.php) agar nilai `nik` dan `nip` dari API SIMPEG yang tidak memenuhi format baku atau sudah digunakan akun lain otomatis diabaikan.

@@ -58,7 +58,14 @@ if ((int)$parentId === 348) {
                             <i class="fas fa-copy"></i>
                         </button>
                     </div>
-                    <p class="text-sm font-medium text-slate-700 uppercase tracking-tight"><?= esc($email['name']) ?></p>
+                    <div class="flex items-center justify-center md:justify-start gap-2">
+                        <p class="text-sm font-medium text-slate-700 uppercase tracking-tight"><?= esc($email['name']) ?: '-' ?></p>
+                        <?php if (!empty($email['name'])): ?>
+                            <button type="button" class="text-slate-700 hover:text-slate-800 transition-colors p-1" onclick="copyToClipboard('<?= esc($email['name'], 'js') ?>', this)" title="Salin Nama" aria-label="Salin Nama">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        <?php endif; ?>
+                    </div>
 
                     <div class="flex flex-wrap items-center justify-center md:justify-start gap-2 mt-4">
                         <?php 
@@ -129,7 +136,7 @@ if ((int)$parentId === 348) {
     <!-- Detail Informasi -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Profil -->
-        <div class="lg:col-span-2 space-y-6">
+        <div class="order-2 lg:order-none lg:col-span-2 space-y-6">
             <!-- Data Personal & Kepegawaian -->
             <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
                 <div class="px-4 sm:px-6 py-4 border-b border-slate-100 bg-slate-50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -157,7 +164,14 @@ if ((int)$parentId === 348) {
                             <div class="space-y-4">
                                 <div>
                                     <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">NIK</label>
-                                    <p id="nik-text" class="text-sm font-semibold text-slate-800 font-mono"><?= esc($email['nik']) ?: '-' ?></p>
+                                    <div class="flex items-center gap-2 mt-0.5">
+                                        <p id="nik-text" class="text-sm font-semibold text-slate-800 font-mono"><?= esc($email['nik']) ?: '-' ?></p>
+                                        <?php if (!empty($email['nik'])): ?>
+                                            <button type="button" class="text-slate-700 hover:text-slate-800 transition-colors p-1" onclick="copyToClipboard(document.getElementById('nik-text').textContent.trim(), this)" title="Salin NIK" aria-label="Salin NIK">
+                                                <i class="fas fa-copy"></i>
+                                            </button>
+                                        <?php endif; ?>
+                                    </div>
                                 </div>
                                 <div>
                                     <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">Tempat, Tanggal Lahir</label>
@@ -194,6 +208,11 @@ if ((int)$parentId === 348) {
                                     <label class="block text-[9px] font-bold text-slate-700 uppercase tracking-tight">NIP</label>
                                     <div class="flex items-center gap-2 flex-wrap mt-0.5">
                                         <p class="text-sm font-semibold text-slate-800 font-mono"><?= esc($email['nip']) ?: '-' ?></p>
+                                        <?php if (!empty($email['nip'])): ?>
+                                            <button type="button" class="text-slate-700 hover:text-slate-800 transition-colors p-1" onclick="copyToClipboard('<?= esc($email['nip'], 'js') ?>', this)" title="Salin NIP" aria-label="Salin NIP">
+                                                <i class="fas fa-copy"></i>
+                                            </button>
+                                        <?php endif; ?>
                                         <?php if ($bupInfo && ($bupInfo['is_approaching'] || $bupInfo['is_pensiun'])): ?>
                                             <?php
                                             $bupBadgeClass = $bupInfo['is_pensiun']
@@ -427,27 +446,9 @@ if ((int)$parentId === 348) {
         </div>
 
         <!-- Infrastruktur & Kredensial -->
-        <div class="flex flex-col gap-6">
-            <!-- QR Code (Visible only if TTE status is ISSUE) -->
-            <div id="qrcode-card" class="hidden bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
-                <div class="px-6 py-4 border-b border-slate-100 bg-slate-50">
-                    <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">QR Code</h3>
-                </div>
-                <div class="p-6 flex flex-col items-center gap-4">
-                    <a id="qrcode-link" href="" target="_blank" class="relative p-2 bg-white border border-slate-100 rounded-xl shadow-sm hover:border-slate-800 hover:shadow-md transition-all group/qr">
-                        <img id="qrcode-image" src="" alt="QR Code" class="w-32 h-32">
-                        <!-- Logo Overlay -->
-                        <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-                            <div class="w-8 h-8 bg-white p-1 rounded-lg shadow-sm border border-slate-100">
-                                <img src="<?= base_url('logo.png') ?>" alt="Logo" class="w-full h-full object-contain">
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            </div>
-
+        <div class="contents lg:flex lg:flex-col lg:gap-6">
             <!-- Kata Sandi -->
-            <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
+            <div class="order-1 lg:order-none bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
                 <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
                     <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Kredensial</h3>
                     <?php if (in_array(session()->get('role'), ['super_admin', 'admin'])): ?>
@@ -476,8 +477,26 @@ if ((int)$parentId === 348) {
                 </div>
             </div>
 
+            <!-- QR Code (Visible only if TTE status is ISSUE) -->
+            <div id="qrcode-card" class="order-3 lg:order-none hidden bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
+                <div class="px-6 py-4 border-b border-slate-100 bg-slate-50">
+                    <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">QR Code</h3>
+                </div>
+                <div class="p-6 flex flex-col items-center gap-4">
+                    <a id="qrcode-link" href="" target="_blank" class="relative p-2 bg-white border border-slate-100 rounded-xl shadow-sm hover:border-slate-800 hover:shadow-md transition-all group/qr">
+                        <img id="qrcode-image" src="" alt="QR Code" class="w-32 h-32">
+                        <!-- Logo Overlay -->
+                        <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                            <div class="w-8 h-8 bg-white p-1 rounded-lg shadow-sm border border-slate-100">
+                                <img src="<?= base_url('logo.png') ?>" alt="Logo" class="w-full h-full object-contain">
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
             <!-- Penyimpanan -->
-            <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
+            <div class="order-4 lg:order-none bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
                 <div class="px-6 py-4 border-b border-slate-100 bg-slate-50">
                     <h3 class="text-xs font-bold text-slate-800 uppercase tracking-tight">Penyimpanan</h3>
                 </div>
