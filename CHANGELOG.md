@@ -3,6 +3,15 @@
 Semua perubahan penting pada proyek ini dicatat di berkas ini.
 Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+# [24 November 2026] — Penyempurnaan Normalisasi Jabatan Fungsional Kesehatan
+
+- **Perbaikan Normalisasi Jabatan Fungsional Kesehatan**:
+  - Menambahkan standarisasi nomenklatur `EPIDEMIOLOG` menjadi `EPIDEMIOLOG KESEHATAN` dan `ENTOMOLOG` menjadi `ENTOMOLOG KESEHATAN` sesuai PermenPAN-RB Nomor 68 dan 69 Tahun 2021 pada [`EmailService::normalizeJabatanName()`](app/Domains/Email/Services/EmailService.php).
+  - Menambahkan pengecualian `ASISTEN PENATA ANESTESI` pada deteksi jabatan Asisten Sekda di `$isTopSetdaLeader`, `isPimpinanJabatan()`, dan `normalizeJabatanName()` pada [`EmailService.php`](app/Domains/Email/Services/EmailService.php) agar tidak terdeteksi sebagai pimpinan daerah.
+  - Melengkapi daftar `$isSpecificNonTopLeader`, pembersihan embel-embel lokasi unit kerja (termasuk `UPT`, `RSU`, dan `RUMAH SAKIT`), serta daftar `$profesiKeahlian` (dengan pengurutan frasa terpanjang seperti `EPIDEMIOLOG KESEHATAN`, `ENTOMOLOG KESEHATAN`, `PENYULUH KESEHATAN MASYARAKAT`, `ASISTEN PENATA ANESTESI`, `DOKTER PENDIDIK KLINIS`, `DOKTER GIGI`, serta penambahan `TENAGA SANITASI LINGKUNGAN`, `TENAGA PROMOSI KESEHATAN DAN ILMU PERILAKU`, `TEKNISI TRANSFUSI DARAH`, `TEKNISI KARDIOVASKULER`, `OPTOMETRIS`, dan `PSIKOLOG KLINIS`) pada [`EmailService.php`](app/Domains/Email/Services/EmailService.php).
+
+---
+
 # [17 November 2026] — Optimalisasi Pencarian Global Mobile dan Pencegahan Auto-Zoom Formulir
 
 - **Perbaikan Responsivitas Riwayat Laporan**:
