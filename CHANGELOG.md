@@ -12,6 +12,7 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Menambahkan koreksi typo dan ejaan lama profesi kesehatan (`EPIDEMIOLOGI` menjadi `EPIDEMIOLOG KESEHATAN`, `FISIOTERAPI` menjadi `FISIOTERAPIS`, `PEREKAM MEDIK` menjadi `PEREKAM MEDIS`, serta `PELAKSANA ELEKTROMEDIK` dan `TEKNISI ELEKTROMEDIK` menjadi `TEKNISI ELEKTROMEDIS`) pada [`EmailService::normalizeJabatanName()`](app/Domains/Email/Services/EmailService.php).
   - Menambahkan pembersihan akhiran `UPTD RSUD`, `RSUD`, dan `RUMAH SAKIT` tanpa kewajiban kata `PADA`/`DI` pada jabatan struktural (`KEPALA BAGIAN`, `KEPALA BIDANG`, `KEPALA SEKSI`, `KEPALA SUB BAGIAN`) di [`EmailService::normalizeJabatanName()`](app/Domains/Email/Services/EmailService.php).
   - Menambahkan koreksi typo `ANASTESIOLOGI` menjadi `ANESTESIOLOGI`, `ANASTESI` menjadi `ANESTESI`, serta standarisasi `DOKTER UMUM` menjadi `DOKTER` pada [`EmailService::normalizeJabatanName()`](app/Domains/Email/Services/EmailService.php).
+  - Menambahkan standarisasi nomenklatur `SANITARIAN` menjadi `TENAGA SANITASI LINGKUNGAN` sesuai PermenPAN-RB Nomor 71 Tahun 2021 pada [`EmailService::normalizeJabatanName()`](app/Domains/Email/Services/EmailService.php).
 
 ---
 

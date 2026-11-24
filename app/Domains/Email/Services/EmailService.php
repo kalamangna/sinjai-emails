@@ -2360,6 +2360,8 @@ class EmailService
 
         // Standarisasi Nomenklatur Profesi Kesehatan (Perawat Gigi -> Terapis Gigi dan Mulut sesuai PermenPAN-RB No. 37/2019)
         $jab = preg_replace('/\bPERAWAT\s+GIGI\b/i', 'TERAPIS GIGI DAN MULUT', $jab);
+        // Standarisasi Nomenklatur Sanitarian -> Tenaga Sanitasi Lingkungan (PermenPAN-RB No. 71/2021)
+        $jab = preg_replace('/\bSANITARIAN\b/i', 'TENAGA SANITASI LINGKUNGAN', $jab);
         $jab = preg_replace('/\bDOKTER\s+UMUM\b/i', 'DOKTER', $jab);
         $jab = preg_replace('/\bPEREKAM\s+MEDIK\b/i', 'PEREKAM MEDIS', $jab);
         $jab = preg_replace('/\bTEKNISI\s+ELEKTROMEDIK\b/i', 'TEKNISI ELEKTROMEDIS', $jab);
