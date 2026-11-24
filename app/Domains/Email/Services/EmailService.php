@@ -2176,7 +2176,7 @@ class EmailService
             if (!empty($unitKerjaName) && strpos(strtoupper($unitKerjaName), 'BAGIAN ') === 0) {
                 return 'KEPALA BAGIAN';
             }
-            $jab = preg_replace('/\s+(?:(?:PADA|DI)\s+)?(SEKRETARIAT\s+DAERAH|SEKRETARIAT\s+DPRD|SETDA|SETWAN|KABUPATEN\s+SINJAI)\b.*$/i', '', $jab);
+            $jab = preg_replace('/\s+(?:(?:PADA|DI)\s+)?(?:SEKRETARIAT\s+DAERAH|SEKRETARIAT\s+DPRD|SETDA|SETWAN|(?:UPTD?\s+)?(?:RSUD|RUMAH\s+SAKIT)|KABUPATEN\s+SINJAI)\b.*$/i', '', $jab);
             return trim($jab);
         }
         if (stripos($jab, 'KEPALA DINAS') === 0 || stripos($jab, 'KADIS') === 0) {
@@ -2347,6 +2347,7 @@ class EmailService
                 $jab = preg_replace('/\s+(?:(?:PADA|DI)\s+)?(DINAS|BADAN|INSPEKTORAT|SEKRETARIAT|KANTOR|KECAMATAN|KEC(?:\.|\b)|KELURAHAN|KEL(?:\.|\b)|PUSKESMAS|SATPOL\s*PP|SATUAN\s+POLISI|SATPOL|BPBD)\b.*$/i', '', $jab);
             }
             $jab = preg_replace('/\s+(?:PADA|DI)\s+(UPTD|UPT|RSUD)\b.*$/i', '', $jab);
+            $jab = preg_replace('/\s+(?:(?:PADA|DI)\s+)?(?:UPTD?\s+)?(?:RSUD|RUMAH\s+SAKIT)\b.*$/i', '', $jab);
             $jab = preg_replace('/\s+(?:(?:PADA|DI)\s+)?(?:KABUPATEN|KAB\.)\s+SINJAI\s*.*$/i', '', $jab);
         }
 
