@@ -2109,6 +2109,13 @@ class EmailService
         $jab = preg_replace('/^((?:(?:AHLI\s+(?:PERTAMA|MUDA|MADYA|UTAMA)|TERAMPIL|MAHIR|PENYELIA|PEMULA|PELAKSANA)\s*(?:-\s*)?)?)FISIOTERAPI\b/i', '$1FISIOTERAPIS', $jab);
         $jab = preg_replace('/\bANASTESIOLOGI\b/i', 'ANESTESIOLOGI', $jab);
         $jab = preg_replace('/\bANASTESI\b/i', 'ANESTESI', $jab);
+        $jab = preg_replace('/\bEPIDEMOLOG\b/i', 'EPIDEMIOLOG', $jab);
+        $jab = preg_replace('/\bKEWIRUSAHAAN\b/i', 'KEWIRAUSAHAAN', $jab);
+        $jab = preg_replace('/\bPENGEMBANGAN\s+KEWIRAUSAHAAN\b/i', 'PENGEMBANG KEWIRAUSAHAAN', $jab);
+        $jab = preg_replace('/\bKELAUTAN\s+DAN\s+PERIKAN\b/i', 'KELAUTAN DAN PERIKANAN', $jab);
+        $jab = preg_replace('/\bAKUNTASI\b/i', 'AKUNTANSI', $jab);
+        $jab = preg_replace('/\bPEMBIYAAN\b/i', 'PEMBIAYAAN', $jab);
+        $jab = preg_replace('/\bDANN\b/i', 'DAN', $jab);
         $jab = preg_replace('/\bBULUPACCING\b/i', 'BULUPANCING', $jab);
         $jab = preg_replace('/\b(PUSKSEWAN|PUSKSE\s*WAN|PUSKES\s+WAN)\b/i', 'PUSKESWAN', $jab);
         $jab = preg_replace('/\bBBI\b/i', 'BALAI BENIH IKAN', $jab);
@@ -2366,6 +2373,19 @@ class EmailService
         $jab = preg_replace('/\bPEREKAM\s+MEDIK\b/i', 'PEREKAM MEDIS', $jab);
         $jab = preg_replace('/\bTEKNISI\s+ELEKTROMEDIK\b/i', 'TEKNISI ELEKTROMEDIS', $jab);
         $jab = preg_replace('/^PELAKSANA\s*(?:-\s*)?ELEKTROMEDIK\b/i', 'TEKNISI ELEKTROMEDIS TERAMPIL', $jab);
+        $jab = preg_replace('/^PELAKSANA\s*(?:-\s*)?REKAM\s+MEDIK\b/i', 'PEREKAM MEDIS TERAMPIL', $jab);
+        // Standarisasi Singkatan & Nomenklatur JF (PermenPAN-RB 6/2014, 37/2020, 81/2020)
+        $jab = preg_replace('/\bANALIS\s+SDM\s+APARATUR\b/i', 'ANALIS SUMBER DAYA MANUSIA APARATUR', $jab);
+        $jab = preg_replace('/\bPRANATA\s+HUMAS\b/i', 'PRANATA HUBUNGAN MASYARAKAT', $jab);
+        $jab = preg_replace('/\bPENATA\s+KEPENDUDUKAN\s+DAN\s+KB\b/i', 'PENATA KEPENDUDUKAN DAN KELUARGA BERENCANA', $jab);
+
+        // Standarisasi Nomenklatur Lama JF Bidang PUPR (PermenPAN-RB No. 5, 6, 7, 8 Tahun 2022)
+        if (!preg_match('/^(KEPALA|SEKRETARIS|BIDANG|SEKSI|SUB\s)/i', $jab)) {
+            $jab = preg_replace('/\b(?:TEKNIK|TEHNIK|TEKHNIK)\s+JALAN\s+DAN\s+JEMBATAN\b/i', 'PENATA KELOLA JALAN DAN JEMBATAN', $jab);
+            $jab = preg_replace('/\b(?:TEKNIK|TEHNIK|TEKHNIK)\s+TATA\s+BANGUNAN\s+DAN\s+PERUMAHAN\b/i', 'PENATA KELOLA BANGUNAN GEDUNG DAN KAWASAN PERMUKIMAN', $jab);
+            $jab = preg_replace('/\b(?:TEKNIK|TEHNIK|TEKHNIK)\s+PENYEHATAN\s+LINGKUNGAN\b/i', 'PENATA KELOLA PENYEHATAN LINGKUNGAN', $jab);
+            $jab = preg_replace('/\b(?:TEKNIK|TEHNIK|TEKHNIK)\s+PENGAIRAN\b/i', 'PENGELOLA SUMBER DAYA AIR', $jab);
+        }
 
         // Koreksi typo profesi EPIDEMIOLOGI -> EPIDEMIOLOG KESEHATAN tanpa mengubah disiplin ilmu seperti ANALIS EPIDEMIOLOGI
         $jab = preg_replace('/\bEPIDEMIOLOGI\s+KESEHATAN\b/i', 'EPIDEMIOLOG KESEHATAN', $jab);

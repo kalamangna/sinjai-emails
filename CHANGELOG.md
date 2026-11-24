@@ -13,6 +13,7 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Menambahkan pembersihan akhiran `UPTD RSUD`, `RSUD`, dan `RUMAH SAKIT` tanpa kewajiban kata `PADA`/`DI` pada jabatan struktural (`KEPALA BAGIAN`, `KEPALA BIDANG`, `KEPALA SEKSI`, `KEPALA SUB BAGIAN`) di [`EmailService::normalizeJabatanName()`](app/Domains/Email/Services/EmailService.php).
   - Menambahkan koreksi typo `ANASTESIOLOGI` menjadi `ANESTESIOLOGI`, `ANASTESI` menjadi `ANESTESI`, serta standarisasi `DOKTER UMUM` menjadi `DOKTER` pada [`EmailService::normalizeJabatanName()`](app/Domains/Email/Services/EmailService.php).
   - Menambahkan standarisasi nomenklatur `SANITARIAN` menjadi `TENAGA SANITASI LINGKUNGAN` sesuai PermenPAN-RB Nomor 71 Tahun 2021 pada [`EmailService::normalizeJabatanName()`](app/Domains/Email/Services/EmailService.php).
+  - Menambahkan koreksi typo (`EPIDEMOLOG`, `KEWIRUSAHAAN`, `PENGEMBANGAN KEWIRAUSAHAAN`, `KELAUTAN DAN PERIKAN`, `AKUNTASI`, `PEMBIYAAN`, `DANN`, `PELAKSANA REKAM MEDIK`), standarisasi singkatan JF (`ANALIS SDM APARATUR`, `PRANATA HUMAS`, `PENATA KEPENDUDUKAN DAN KB`), serta standarisasi nomenklatur lama JF Bidang PUPR (PermenPAN-RB Nomor 5–8 Tahun 2022) pada [`EmailService::normalizeJabatanName()`](app/Domains/Email/Services/EmailService.php).
 
 ---
 
