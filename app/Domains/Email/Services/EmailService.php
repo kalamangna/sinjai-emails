@@ -2107,6 +2107,8 @@ class EmailService
         $jab = preg_replace('/\bGURUR\b/i', 'GURU', $jab);
         $jab = preg_replace('/\bFISIOTRAPI\b/i', 'FISIOTERAPIS', $jab);
         $jab = preg_replace('/^((?:(?:AHLI\s+(?:PERTAMA|MUDA|MADYA|UTAMA)|TERAMPIL|MAHIR|PENYELIA|PEMULA|PELAKSANA)\s*(?:-\s*)?)?)FISIOTERAPI\b/i', '$1FISIOTERAPIS', $jab);
+        $jab = preg_replace('/\bANASTESIOLOGI\b/i', 'ANESTESIOLOGI', $jab);
+        $jab = preg_replace('/\bANASTESI\b/i', 'ANESTESI', $jab);
         $jab = preg_replace('/\bBULUPACCING\b/i', 'BULUPANCING', $jab);
         $jab = preg_replace('/\b(PUSKSEWAN|PUSKSE\s*WAN|PUSKES\s+WAN)\b/i', 'PUSKESWAN', $jab);
         $jab = preg_replace('/\bBBI\b/i', 'BALAI BENIH IKAN', $jab);
@@ -2358,6 +2360,7 @@ class EmailService
 
         // Standarisasi Nomenklatur Profesi Kesehatan (Perawat Gigi -> Terapis Gigi dan Mulut sesuai PermenPAN-RB No. 37/2019)
         $jab = preg_replace('/\bPERAWAT\s+GIGI\b/i', 'TERAPIS GIGI DAN MULUT', $jab);
+        $jab = preg_replace('/\bDOKTER\s+UMUM\b/i', 'DOKTER', $jab);
         $jab = preg_replace('/\bPEREKAM\s+MEDIK\b/i', 'PEREKAM MEDIS', $jab);
         $jab = preg_replace('/\bTEKNISI\s+ELEKTROMEDIK\b/i', 'TEKNISI ELEKTROMEDIS', $jab);
         $jab = preg_replace('/^PELAKSANA\s*(?:-\s*)?ELEKTROMEDIK\b/i', 'TEKNISI ELEKTROMEDIS TERAMPIL', $jab);
