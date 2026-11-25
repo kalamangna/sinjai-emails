@@ -173,6 +173,43 @@ class BridgeController extends BaseController
                                     'message' => 'Format berkas tidak valid. Hanya berkas PDF yang diizinkan.'
                                 ]);
                         }
+
+                        // Validasi magic bytes dan MIME type untuk mencegah spoofing ekstensi berkas
+                        $tmpPath = $file['tmp_name'] ?? '';
+                        $isValidPdf = false;
+                        if ($tmpPath !== '' && is_readable($tmpPath)) {
+                            $fh = @fopen($tmpPath, 'rb');
+                            if ($fh !== false) {
+                                $header = fread($fh, 5);
+                                fclose($fh);
+                                if ($header === '%PDF-') {
+                                    $isValidPdf = true;
+                                    if (function_exists('finfo_open')) {
+                                        $finfo = @finfo_open(FILEINFO_MIME_TYPE);
+                                        if ($finfo !== false) {
+                                            $mimeType = @finfo_file($finfo, $tmpPath);
+                                            @finfo_close($finfo);
+                                            if ($mimeType !== false && !in_array($mimeType, ['application/pdf', 'application/x-pdf'], true)) {
+                                                $isValidPdf = false;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        if (!$isValidPdf) {
+                            $this->logTte("AKSES DITOLAK: Isi atau MIME berkas bukan PDF asli [{$file['name']}].");
+                            $this->logAccess(400, (microtime(true) - $startTime) * 1000, $username);
+
+                            return $this->response
+                                ->setStatusCode(400)
+                                ->setJSON([
+                                    'status'  => false,
+                                    'error'   => 'Bad Request',
+                                    'message' => 'Format berkas tidak valid. Pastikan berkas yang diunggah adalah dokumen PDF asli.'
+                                ]);
+                        }
                     }
                 }
             }

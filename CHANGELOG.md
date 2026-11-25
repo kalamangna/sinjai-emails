@@ -3,6 +3,15 @@
 Semua perubahan penting pada proyek ini dicatat di berkas ini.
 Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+# [25 November 2026] — Peningkatan Keamanan dan Antarmuka Bridge TTE
+
+- **Perbaikan Keamanan dan Validasi Bridge TTE**:
+  - Mempersempit pengecualian filter CSRF pada [`Filters.php`](app/Config/Filters.php) dari `bridge/*` menjadi `bridge/api/*` (dengan tetap mempertahankan `bridge` untuk rute legacy), sehingga rute admin `POST bridge/log/clear` dan seluruh `POST bridge/whitelist/*` kembali terlindungi CSRF.
+  - Menambahkan validasi *magic bytes* (`%PDF-`) serta pemeriksaan MIME type `finfo` (`application/pdf` atau `application/x-pdf`) pada unggahan berkas di [`BridgeController::proxy()`](app/Domains/Bridge/Controllers/BridgeController.php) untuk mencegah *spoofing* ekstensi berkas.
+  - Memperbaiki fungsi `handleFormSubmit()` pada [`whitelist.php`](app/Views/bridge/whitelist.php) agar mengenali tombol submit di luar elemen `<form>` (atribut `form="..."`) sehingga pencegahan klik ganda aktif pada modal tambah dan ubah domain, serta meringkas label checkbox status aktif menjadi `Izinkan Akses Bridge`.
+
+---
+
 # [24 November 2026] — Penyempurnaan Normalisasi Jabatan Fungsional Kesehatan
 
 - **Perbaikan Normalisasi Jabatan Fungsional Kesehatan**:

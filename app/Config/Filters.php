@@ -83,7 +83,7 @@ class Filters extends BaseFilters
                 'bsre/sync-status',
                 'auth/keep-alive',
                 'bridge',
-                'bridge/*'
+                'bridge/api/*'
             ]],
         ],
         'after' => [

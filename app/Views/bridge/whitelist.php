@@ -254,7 +254,7 @@ $editContent = '
         <div class="pt-2">
             <label class="flex items-center gap-2.5 cursor-pointer">
                 <input type="checkbox" id="edit-is-active" name="is_active" value="1" class="w-4 h-4 text-slate-700 border-slate-300 rounded focus:ring-slate-700">
-                <span class="text-xs font-semibold text-slate-700">Aktifkan Pengamanan Whitelist untuk Domain Ini</span>
+                <span class="text-xs font-semibold text-slate-700">Izinkan Akses Bridge</span>
             </label>
         </div>
     </div>
@@ -289,11 +289,13 @@ function openEditModal(data) {
 }
 
 function handleFormSubmit(form, loadingText) {
-    const submitBtn = form.querySelector('button[type="submit"]');
+    let submitBtn = form.querySelector('button[type="submit"]');
+    if (!submitBtn && form.id) {
+        submitBtn = document.querySelector('button[type="submit"][form="' + form.id + '"]');
+    }
     if (submitBtn) {
         submitBtn.disabled = true;
         submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
-        const originalHtml = submitBtn.innerHTML;
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1.5"></i> ' + loadingText;
     }
 }
